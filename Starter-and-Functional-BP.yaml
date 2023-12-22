@@ -302,9 +302,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 18.15.0'
+      displayName: 'Use Node 20.9.0'
       inputs:
-        versionSpec: 18.15.0
+        versionSpec: 20.9.0
       retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
@@ -386,9 +386,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-starter/frontend'
     - task: NodeTool@0
-      displayName: 'Use Node 18.15.0'
+      displayName: 'Use Node 20.9.0'
       inputs:
-        versionSpec: 18.15.0
+        versionSpec: 20.9.0
       retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
@@ -535,9 +535,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-reactjs'
     - task: NodeTool@0
-      displayName: 'Use Node 18.15.0'
+      displayName: 'Use Node 20.9.0'
       inputs:
-        versionSpec: 18.15.0
+        versionSpec: 20.9.0
       retryCountOnTaskFailure: 5
     # - task: Npm@1
     #   displayName: 'Npm Update Version'
