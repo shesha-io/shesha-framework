@@ -323,14 +323,14 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
 
-        {model.formSelectionMode === 'name' &&
-        <SettingsFormItem name="createFormId" label="Create form" hidden={model.canAddInline === 'no'} jsSetting >
+        {model.formSelectionMode === 'name' && model.canAddInline === 'yes' &&
+        <SettingsFormItem name="createFormId" label="Create form" jsSetting >
           <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
         </SettingsFormItem>
         }
 
-        {model.formSelectionMode === 'view' &&
-          <SettingsFormItem name="createFormType" label="Create form type" hidden={model.canAddInline === 'no'} jsSetting>
+        {model.formSelectionMode === 'view' && model.canAddInline === 'yes' &&
+          <SettingsFormItem name="createFormType" label="Create form type" jsSetting>
             <AutoComplete
               disabled={readOnly}
               options={formTypesOptions}
@@ -347,6 +347,29 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                 )
               }
             />
+          </SettingsFormItem>
+        }
+        {model.canAddInline === 'yes' &&
+          <SettingsFormItem name="modalWidth" label="Dialog Width (%)">
+            <Select disabled={readOnly} allowClear>
+              <Select.Option key={1} value='40%'>Small</Select.Option>
+              <Select.Option key={2} value='60%'>Medium</Select.Option>
+              <Select.Option key={3} value='80%'>Large</Select.Option>
+              <Select.Option key={4} value="custom">Custom</Select.Option>
+            </Select>
+          </SettingsFormItem>
+        }
+        {model.canAddInline === 'yes' && model.modalWidth === 'custom' &&
+          <SettingsFormItem name="widthUnits" label="Units">
+            <Select disabled={readOnly} allowClear>
+              <Select.Option key={1} value='%'>Percentage (%)</Select.Option>
+              <Select.Option key={2} value='px'>'Pixels (px)</Select.Option>
+            </Select>
+          </SettingsFormItem>
+        }
+        {model.canAddInline === 'yes' && model.modalWidth === 'custom' && !!model.widthUnits &&
+          <SettingsFormItem name="customWidth" label="Enter Custom Width">
+            <InputNumber disabled={readOnly}/>
           </SettingsFormItem>
         }
         {

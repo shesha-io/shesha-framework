@@ -641,7 +641,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     return result;
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
   
-  //console.log(`dataList render, ${records?.length} records`);
+  const content = useDeepCompareMemo(() => {
+    return groups 
+      ? groups?.map((item: RowsGroup, index) =>  renderGroup(item, index))
+      : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index));
+  }, [groups, records, formConfigs]);
 
   return (
     <>
@@ -653,6 +657,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           creater={createAction}
           onToggle={(isOpen) => setCreateModalOpen(isOpen)}
           data={onNewListItemInitialize}
+          width={props.modalWidth}
         />
       }
       <Show when={showFormInfo}>
@@ -695,10 +700,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           })}
         >
           <Show when={Boolean(records) /*&& Boolean(formConfiguration?.markup)*/}>
-            { groups 
-              ? groups?.map((item: RowsGroup, index) =>  renderGroup(item, index))
-              : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index))
-            }
+            { content }
           </Show>
         </div>
       </ShaSpin>

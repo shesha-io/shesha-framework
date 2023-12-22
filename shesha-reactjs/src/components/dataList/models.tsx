@@ -31,6 +31,8 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   allowChangeEditMode?: boolean;
 
   actionRef?: MutableRefObject<any>;
+
+  modalWidth?: string;
 }
 
 export interface IDataListBaseProps {

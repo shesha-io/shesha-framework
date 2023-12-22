@@ -60,13 +60,12 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   }), [entityType, displayProperty, selection]);
 
   const isEmptySelection = !selection || (Array.isArray(selection) && selection.length === 0);
-  const canFetch = !isEmptySelection && entityType;
-  const mustFetch = canFetch && !itemsAlreadyLoaded;
+  const mustFetch = !isEmptySelection && entityType && !itemsAlreadyLoaded;
 
   const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGetEntityPayload>(
       `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
       {
-          //lazy: !mustFetch,
+          lazy: true,
           queryParams: getValuePayload,
       }
   );
