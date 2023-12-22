@@ -56,8 +56,8 @@ export const Login: FC = () => {
         <div className="sha-space-inline">
           <Checkbox className="sha-remember-me-check">Remember Me</Checkbox>
 
-          <Link href={URL_FORGOT_PASSWORD}>
-            <a className="sha-forget-password-link">Forgot Password</a>
+          <Link href={URL_FORGOT_PASSWORD} className="sha-forget-password-link">
+            Forgot Password
           </Link>
         </div>
 
@@ -80,8 +80,8 @@ export const Login: FC = () => {
         <div className="sha-space-inline lg-margin-top">
           <span className="sha-dont-have-password">Don't have an account?</span>
 
-          <Link href={URL_FORGOT_PASSWORD}>
-            <a className="sha-forget-password-link">Register</a>
+          <Link href={URL_FORGOT_PASSWORD} className="sha-forget-password-link">
+            Register
           </Link>
         </div>
       </Form>

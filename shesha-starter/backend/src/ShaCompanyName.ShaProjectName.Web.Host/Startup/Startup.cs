@@ -131,9 +131,8 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 
 					// configure plugins
 					var pluginsFolder = Path.Combine(_hostEnvironment.ContentRootPath, "Plugins");
-					if (!Directory.Exists(pluginsFolder))
-						Directory.CreateDirectory(pluginsFolder);
-					options.PlugInSources.AddFolder(Path.Combine(_hostEnvironment.ContentRootPath, "Plugins"), SearchOption.AllDirectories);
+					if (Directory.Exists(pluginsFolder))
+						options.PlugInSources.AddFolder(Path.Combine(_hostEnvironment.ContentRootPath, "Plugins"), SearchOption.AllDirectories);
 				}
 			);
 		}

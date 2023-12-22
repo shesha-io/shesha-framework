@@ -8,8 +8,8 @@ interface IProps extends PropsWithChildren {
 const ShaMenuDrawerWrapper: FC<IProps> = ({ children, target }) => {
   if (target) {
     return (
-      <Link href={target}>
-        <a className="menu-item">{children}</a>
+      <Link href={target} className="menu-item">
+        {children}
       </Link>
     );
   }

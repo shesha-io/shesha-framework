@@ -27,7 +27,7 @@ const ShaMenuDrawer: FC<IProps> = ({ items = [], open, onClose }) => (
           {title}
         </span>
 
-        {!!childItems.length && (
+        {childItems && childItems.length && (
           <ShaMenuDrawerMenuItem childItems={childItems} />
         )}
       </ShaMenuDrawerWrapper>
