@@ -13,14 +13,10 @@ import { IConfigurableActionConfiguration, useConfigurableAction } from '@/provi
 import { IKeyValue } from '@/interfaces/keyValue';
 import { mapKeyValueToDictionary } from '@/utils/dictionary';
 import { navigateArgumentsForm } from './actions/navigate-arguments';
-import { Router } from 'next/router';
+import { NextRouter } from 'next/router';
 import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
 import { shaRoutingReducer } from './reducer';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-
-export interface IRoutingProviderProvider {
-  router: Router;
-}
 
 export type NavigationType = 'url' | 'form';
 
@@ -34,7 +30,7 @@ export interface INavigateActoinArguments {
 }
 
 interface ShaRoutingProviderProps {
-  router: Router;
+  router: NextRouter;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
 }
 
