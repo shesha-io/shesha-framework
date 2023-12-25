@@ -57,8 +57,8 @@ export const migrateReadOnly = <T extends IConfigurableFormComponent,>(prev: T, 
     prev.readOnly === true
       ? !!disabled && disabled['_mode'] === 'code'
         ? {_value: true, _mode: 'value', _code: disabled['_code']}
-        : true
-    : disabled || prev.readOnly} as T;
+        : false
+    : !(disabled || prev.readOnly)} as T;
 
   if (isPropertySettings(model.editMode)) {
     const func = `// Automatically updated from 'disabled' property, please review\n\n` +
