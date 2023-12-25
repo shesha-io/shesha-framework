@@ -9,7 +9,7 @@ export const CustomNProgress = () => {
     NProgress.done();
   };
 
-  const showProgressBar = (delay: any) => {
+  const showProgressBar = (delay: number) => {
     const timer = setTimeout(startProgress, delay);
     Router.events.on('routeChangeComplete', () => stopProgress(timer));
     Router.events.on('routeChangeError', () => stopProgress(timer));

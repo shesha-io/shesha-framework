@@ -1,11 +1,11 @@
-import { MainLayout } from "@shesha-io/reactjs";
-import React from "react";
-import Banner from "src/components/Banner";
-import Card from "src/components/NavCard";
+import Banner from 'src/components/Banner';
+import Card from 'src/components/NavCard';
+import React from 'react';
+import { getLayout } from 'src/components/layouts';
+import { PageWithLayout } from '@shesha/reactjs';
 
-const Home: React.FC = () => {
+const Home: PageWithLayout<{}> = () => {
   return (
-    <MainLayout>
       <div
         style={{
           padding: "15px",
@@ -46,8 +46,9 @@ const Home: React.FC = () => {
           />
         </div>
       </div>
-    </MainLayout>
   );
 };
 
 export default Home;
+
+Home.getLayout = getLayout;

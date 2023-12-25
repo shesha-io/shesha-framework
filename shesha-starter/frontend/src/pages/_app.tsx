@@ -1,88 +1,62 @@
+import React, { useEffect } from 'react';
+import { AppProps } from 'next/app';
+import { BASE_URL } from 'src/api/utils/constants';
+import { CustomErrorBoundary, CustomNProgress } from 'components';
+import { StyledThemeProvider } from 'src/definitions/styled-components';
+import { useRouter } from 'next/router';
 import {
   GlobalStateProvider,
   PageWithLayout,
   ShaApplicationProvider,
   StoredFilesProvider,
-} from "@shesha-io/reactjs";
-import { CustomErrorBoundary, CustomNProgress } from "components";
-import App from "next/app";
-import { withRouter } from "next/router";
-import React from "react";
-import { BASE_URL } from "src/api/utils/constants";
-import { StyledThemeProvider } from "src/definitions/styled-components";
-require("@shesha-io/reactjs/dist/styles.less");
+} from "@shesha/reactjs";
+require("@shesha/reactjs/dist/styles.less");
 require("src/styles/compiled.antd.variable.css");
 require("src/styles/custom-n-progress.less");
 
-interface IState {}
+function App({ Component, pageProps }: AppProps): JSX.Element {
+  const router = useRouter();
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export class Main extends App<{}, {}, IState> {
-  static async getInitialProps({
-    Component,
-    ctx,
-  }: {
-    Component: any;
-    ctx: any;
-  }): Promise<{
-    pageProps: any;
-  }> {
-    const pageProps = Component.getInitialProps
-      ? await Component.getInitialProps(ctx)
-      : {};
-    return { pageProps };
-  }
+  useEffect(() => {
+    setAppInsights();
+  }, []);
 
-  constructor(props: any) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() {
-    this.setAppInsights();
-  }
-
-  setAppInsights() {
+  const setAppInsights = () => {
     // Register Application Insights
     if (process.browser && process.env.NODE_ENV === "production") {
       import("utils/applicationInsights").then(({ initAppInsights }) => {
         initAppInsights();
       });
     }
-  }
+  };
 
-  render() {
-    const { Component, pageProps, router } = this.props;
-
-    // Use the layout defined at the page level, if available
-    const getLayout =
-      (Component as PageWithLayout<any>).getLayout ?? ((page) => page);
-
-    return (
-      <CustomErrorBoundary>
-        <StyledThemeProvider>
-          <GlobalStateProvider>
-            <ShaApplicationProvider 
-                backendUrl={BASE_URL} 
-                router={router}
-                noAuth={router?.asPath?.includes("/no-auth")}
-              >
-              <CustomNProgress />
-              <StoredFilesProvider
-                baseUrl={BASE_URL}
-                ownerId={""}
-                ownerType={""}
-              >
-                {getLayout(
-                  <Component {...(router?.query || {})} {...pageProps} />
-                )}
-              </StoredFilesProvider>
-            </ShaApplicationProvider>
-          </GlobalStateProvider>
-        </StyledThemeProvider>
-      </CustomErrorBoundary>
-    );
-  }
+  // Use the layout defined at the page level, if available
+  const getLayout =
+    (Component as PageWithLayout<{}>).getLayout ?? ((page) => page);
+  return (
+    <CustomErrorBoundary>
+      <StyledThemeProvider>
+        <GlobalStateProvider>
+          <ShaApplicationProvider
+            backendUrl={BASE_URL}
+            router={router}
+            noAuth={router?.asPath?.includes("/no-auth")}
+          >
+            <CustomNProgress />
+            <StoredFilesProvider
+              baseUrl={BASE_URL}
+              ownerId={""}
+              ownerType={""}
+            >
+              {getLayout(
+                <Component {...(router?.query || {})} {...pageProps} />
+              )}
+            </StoredFilesProvider>
+          </ShaApplicationProvider>
+        </GlobalStateProvider>
+      </StyledThemeProvider>
+    </CustomErrorBoundary>
+  );
 }
 
-export default withRouter(Main);
+export default App;
