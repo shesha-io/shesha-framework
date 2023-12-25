@@ -30,7 +30,7 @@ namespace Shesha.EntityReferences
                 throw new NullReferenceException($"entity.{nameof(GenericEntityReference.Id)} can not be NULL");
 
             _className = _entity.GetType().StripCastleProxyType().FullName;
-            _displayName = _entity.GetDisplayName();
+            _displayName = _entity.GetEntityDisplayName();
         }
 
         public virtual string Id { get; internal set; }

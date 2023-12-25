@@ -127,7 +127,7 @@ namespace Shesha.DynamicEntities
             if (propType.IsEntityType())
             {
                 var jref = new JObject();
-                jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetDisplayName()));
+                jref.Add(nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JProperty.FromObject(val.GetEntityDisplayName()));
                 jref.Add(nameof(EntityReferenceDto<int>._className).ToCamelCase(), JProperty.FromObject(propType.FullName));
                 jref.Add(nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JProperty.FromObject(val.GetId()));
                 return jref;

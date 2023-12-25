@@ -1,14 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Configuration;
-using System.Diagnostics.Contracts;
-using System.Globalization;
-using System.Reflection;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Reflection;
 using EntityExtensions = Shesha.Extensions.EntityExtensions;
 
 namespace Shesha.Utilities
@@ -355,7 +353,7 @@ namespace Shesha.Utilities
 
             if (string.IsNullOrEmpty(format))
             {
-                var displayFormatAtt = (DisplayFormatAttribute)ReflectionHelper.GetPropertyAttribute(propInfo, typeof(DisplayFormatAttribute));
+                var displayFormatAtt = propInfo.GetAttribute<DisplayFormatAttribute>();
                 if (displayFormatAtt != null)
                 {
                     if (displayFormatAtt.ApplyFormatInEditMode && !string.IsNullOrEmpty(displayFormatAtt.DataFormatString))
