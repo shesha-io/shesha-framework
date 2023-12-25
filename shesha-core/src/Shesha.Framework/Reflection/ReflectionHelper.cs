@@ -1,4 +1,12 @@
-﻿using System;
+﻿using Abp.Dependency;
+using Abp.Domain.Entities;
+using Shesha.Attributes;
+using Shesha.Domain;
+using Shesha.Domain.Attributes;
+using Shesha.Extensions;
+using Shesha.Services;
+using Shesha.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -6,16 +14,6 @@ using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Abp.Dependency;
-using Abp.Domain.Entities;
-using Abp.Reflection;
-using Castle.DynamicProxy;
-using Shesha.Attributes;
-using Shesha.Domain;
-using Shesha.Domain.Attributes;
-using Shesha.Extensions;
-using Shesha.Services;
-using Shesha.Utilities;
 
 namespace Shesha.Reflection
 {
@@ -267,39 +265,6 @@ namespace Shesha.Reflection
             return currentType;
         }
 
-        public static Attribute GetPropertyAttribute(PropertyInfo propInfo, Type attributeType)
-        {
-            return GetPropertyAttribute(propInfo, attributeType, false);
-        }
-
-        public static Attribute GetPropertyAttribute(PropertyInfo propInfo, Type attributeType, bool inherit)
-        {
-            var attributes = propInfo.GetCustomAttributes(attributeType, inherit);
-
-            if (attributes.Length == 0)
-                return null;
-
-            /*
-            if (attributes.Length > 1)
-                Logger.WriteLog(LogLevel.WARN,
-                    string.Format(
-                        "Multiple instances of the same attribute '{0}' on property '{1}' from type '{2}' exist and may hide the intended value.",
-                        attributeType.Name, propInfo.Name, propInfo.DeclaringType.FullName));
-            */
-
-            return attributes[0] as Attribute;
-        }
-
-        public static T GetPropertyAttribute<T>(PropertyInfo propInfo) where T : Attribute
-        {
-            return GetPropertyAttribute<T>(propInfo, false);
-        }
-
-        public static T GetPropertyAttribute<T>(PropertyInfo propInfo, bool inherit) where T : Attribute
-        {
-            return (T)GetPropertyAttribute(propInfo, typeof(T), inherit);
-        }
-
         #region FindPropertyWithUniqueAttribute
 
         /// <summary>
@@ -477,9 +442,9 @@ namespace Shesha.Reflection
         }
 
         /// <summary>
-        /// Return display name of the specified property
+        /// Return display name of the specified member
         /// </summary>
-        public static string GetDisplayName(PropertyInfo property)
+        public static string GetDisplayName(this MemberInfo property)
         {
             var displayAttribute = property.GetAttribute<DisplayAttribute>();
 
@@ -487,37 +452,12 @@ namespace Shesha.Reflection
         }
 
         /// <summary>
-        /// Return display name of the specified type
+        /// Return description of the specified member
         /// </summary>
-        public static string GetDisplayName(Type type)
-        {
-            var displayAttribute = type.GetAttribute<DisplayAttribute>();
-
-            return displayAttribute?.GetName() ?? type.Name.ToFriendlyName();
-        }
-
-        /// <summary>
-        /// Return description of the specified property
-        /// </summary>
-        public static string GetDescription(this PropertyInfo property)
+        public static string GetDescription(this MemberInfo property)
         {
             var descriptionAttribute = property.GetAttribute<DescriptionAttribute>();
             var displayAttribute = property.GetAttribute<DisplayAttribute>();
-
-            var description = descriptionAttribute?.Description;
-            if (string.IsNullOrWhiteSpace(description))
-                description = displayAttribute?.GetDescription();
-
-            return description;
-        }
-
-        /// <summary>
-        /// Return description of the specified property
-        /// </summary>
-        public static string GetDescription(this Type type)
-        {
-            var descriptionAttribute = type.GetAttribute<DescriptionAttribute>();
-            var displayAttribute = type.GetAttribute<DisplayAttribute>();
 
             var description = descriptionAttribute?.Description;
             if (string.IsNullOrWhiteSpace(description))

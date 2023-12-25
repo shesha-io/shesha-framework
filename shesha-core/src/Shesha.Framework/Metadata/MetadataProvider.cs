@@ -3,7 +3,6 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using NetTopologySuite.Geometries;
-using NetTopologySuite.Operation;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -208,7 +207,7 @@ namespace Shesha.Metadata
 
         private string GetStringFormat(PropertyInfo propInfo) 
         {
-            var dataTypeAtt = ReflectionHelper.GetPropertyAttribute<DataTypeAttribute>(propInfo);
+            var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
 
             switch (dataTypeAtt?.DataType)
             {
@@ -235,12 +234,11 @@ namespace Shesha.Metadata
         public DataTypeInfo GetDataType(PropertyInfo propInfo)
         {
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(propInfo.PropertyType);
-            //var isNullable = ReflectionHelper.IsNullableType(propInfo.PropertyType);
 
             if (propType == typeof(Guid)) 
                 return new DataTypeInfo(DataTypes.Guid);
 
-            var dataTypeAtt = ReflectionHelper.GetPropertyAttribute<DataTypeAttribute>(propInfo);
+            var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
 
             // for enums - use underlaying type
             if (propType.IsEnum)

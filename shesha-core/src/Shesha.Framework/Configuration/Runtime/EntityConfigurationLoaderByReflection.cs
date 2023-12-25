@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Reflection;
-using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
 
 namespace Shesha.Configuration.Runtime
 {
@@ -83,7 +82,7 @@ namespace Shesha.Configuration.Runtime
                 case GeneralDataType.Numeric:
                 case GeneralDataType.ReferenceList:
                     {
-                        var refListAtt = ReflectionHelper.GetPropertyAttribute<ReferenceListAttribute>(prop, true);
+                        var refListAtt = prop.GetAttribute<ReferenceListAttribute>(true);
                         var refListId = refListAtt?.GetReferenceListIdentifier(prop);
                         if (refListId == null)
                         {
@@ -113,7 +112,7 @@ namespace Shesha.Configuration.Runtime
                     break;
                 case GeneralDataType.MultiValueReferenceList: 
                     {
-                        var mvRefListAtt = ReflectionHelper.GetPropertyAttribute<MultiValueReferenceListAttribute>(prop, true);
+                        var mvRefListAtt = prop.GetAttribute<MultiValueReferenceListAttribute>(true);
                         var refListId = mvRefListAtt.GetReferenceListIdentifier(prop);
                         propConfig.ReferenceListName = refListId.Name;
                         propConfig.ReferenceListModule = refListId.Module;
@@ -126,7 +125,7 @@ namespace Shesha.Configuration.Runtime
                     break;
             }
 
-            propConfig.Label = GetPropertyLabel(prop);
+            propConfig.Label = prop.GetDisplayName();
 
             LoadChangeLoggingPropertyConfiguration(prop, propConfig);
         }
@@ -203,7 +202,7 @@ namespace Shesha.Configuration.Runtime
             }
             else if (underlyingPropType == typeof(DateTime))
             {
-                var dataTypeAtt = ReflectionHelper.GetPropertyAttribute<DataTypeAttribute>(propInfo);
+                var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
 
                 if (dataTypeAtt != null &&
                     dataTypeAtt.GetDataTypeName().Equals("Date", StringComparison.InvariantCultureIgnoreCase))
@@ -253,28 +252,6 @@ namespace Shesha.Configuration.Runtime
         private static bool IsPropertyStoredFile(PropertyInfo propInfo)
         {
             return typeof(StoredFile).IsAssignableFrom(propInfo.PropertyType);
-        }
-
-        private static string GetPropertyLabel(PropertyInfo propInfo)
-        {
-            try
-            {
-                var labelAtt = ReflectionHelper.GetPropertyAttribute<DisplayAttribute>(propInfo);
-
-                if (labelAtt != null && !string.IsNullOrWhiteSpace(labelAtt.Name))
-                {
-                    return labelAtt.Name;
-                }
-                else
-                {
-                    return propInfo.Name.SplitUpperCaseToString();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(
-                    $"An error occured whilst trying to retrieve label of property '{propInfo.Name}' on type of '{propInfo.DeclaringType.FullName}'.", ex);
-            }
         }
 
         private static void LoadChangeLoggingPropertyConfiguration(PropertyInfo propInfo, PropertyConfiguration propConfig)

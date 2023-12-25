@@ -41,7 +41,7 @@ namespace Shesha.JsonEntities.Proxy
                     if (property != null)
                     {
                         property.SetValue(invocation.InvocationTarget, invocation.Arguments[0]);
-                        var eref = new JsonReference() { Id = invocation.Arguments[0]?.GetId(), _displayName = invocation.Arguments[0]?.GetDisplayName() };
+                        var eref = new JsonReference() { Id = invocation.Arguments[0]?.GetId(), _displayName = invocation.Arguments[0]?.GetEntityDisplayName() };
                         if (proxy._references.ContainsKey(propName.ToCamelCase()))
                             proxy._references[propName.ToCamelCase()] = eref;
                         else

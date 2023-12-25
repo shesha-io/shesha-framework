@@ -97,7 +97,7 @@ namespace Shesha.DynamicEntities
                             var idType = typeof(EntityReferenceDto<>).MakeGenericType(srcValue.GetType().GetProperty("Id").PropertyType);
                             var idWithName = Activator.CreateInstance(idType);
                             idType.GetProperty(nameof(EntityReferenceDto<int>.Id)).SetValue(idWithName, id);
-                            idType.GetProperty(nameof(EntityReferenceDto<int>._displayName)).SetValue(idWithName, srcValue.GetDisplayName());
+                            idType.GetProperty(nameof(EntityReferenceDto<int>._displayName)).SetValue(idWithName, srcValue.GetEntityDisplayName());
 
                             destProp.SetValue(dest, idWithName);
                         }

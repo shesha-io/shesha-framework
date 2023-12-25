@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Configuration;
-using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Shesha.Configuration.Runtime;
@@ -15,6 +7,14 @@ using Shesha.Domain.Attributes;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Configuration;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Shesha.Extensions
 {
@@ -43,7 +43,7 @@ namespace Shesha.Extensions
         /// Returns the DisplayName of the entity.
         /// </summary>
         /// <returns>Returns the DisplayName of the entity.</returns>
-        public static string GetDisplayName(this object entity)
+        public static string GetEntityDisplayName(this object entity)
         {
             if (entity == null)
                 return "";
@@ -253,7 +253,7 @@ namespace Shesha.Extensions
                 var typedVal = (DateTime)val;
                 string finalFormat;
 
-                var dataTypeAtt = ReflectionHelper.GetPropertyAttribute<DataTypeAttribute>(propInfo);
+                var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
                 if (dataTypeAtt != null && dataTypeAtt.GetDataTypeName().Equals("Date", StringComparison.InvariantCultureIgnoreCase))
                 {
                     finalFormat = StringHelper.FirstValue(format, defaultDateFormat);
