@@ -4,7 +4,7 @@ import FormItem from "antd/lib/form/FormItem";
 import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import { URL_LOGIN_PAGE } from "routes";
-import { useAuth, ValidationErrors } from "@shesha-io/reactjs";
+import { useAuth, ValidationErrors } from "@shesha/reactjs";
 import { ForgotPasswordPage, VerifyOtpModal } from "../../../components/pages/account/forgot-password/styles";
 import {
   ResetPasswordVerifyOtpInput,
@@ -128,7 +128,7 @@ export const ForgotPassword: FC<IProps> = () => {
           }
           type="success"
         />
-        <ValidationErrors error={verifyOtpError?.data as any} />
+        <ValidationErrors error={verifyOtpError?.data} />
 
         <Form form={verifyOtpForm} onFinish={handleVerifyOtpFormFinish}>
           <FormItem

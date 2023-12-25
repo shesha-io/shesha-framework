@@ -43,7 +43,7 @@ export enum HttpStatusCodes {
   RequestEntityTooLarge = 413, // The server will not accept the request, because the request entity is too large
   RequestURITooLong = 414, // The server will not accept the request, because the URL is too long. Occurs when you convert a POST request to a GET request with a long query information
   UnsupportedMediaType = 415, // The server will not accept the request, because the media type is not supported
-  RequestedRangeNotSatisfiable = 415, // The client has asked for a portion of the file, but the server cannot supply that portion
+  RequestedRangeNotSatisfiable = 416, // The client has asked for a portion of the file, but the server cannot supply that portion
   ExpectationFailed = 417, // The server cannot meet the requirements of the Expect request-header field
 
   // 5xx: Server Error

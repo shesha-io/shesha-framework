@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
+import Router from 'next/router';
+import { Button } from 'antd';
+import { CustomErrorBoundaryContainer } from './styles';
 import { FallbackProps } from 'react-error-boundary';
 import { FrownTwoTone } from '@ant-design/icons';
-import { Button } from 'antd';
-import Router from 'next/router';
-import './styles.ts';
-import { CustomErrorBoundaryContainer } from './styles';
 
 const errorBoundaryErrorHandler = ({ error }: FallbackProps) => {
   // Do something with the error

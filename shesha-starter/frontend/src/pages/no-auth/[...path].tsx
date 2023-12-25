@@ -1,7 +1,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import { NextPageWithLayout } from "models";
-import { FormIdentifier } from "@shesha-io/reactjs";
+import { FormIdentifier } from "@shesha/reactjs";
 
 type FormMode = "designer" | "edit" | "readonly";
 
@@ -24,7 +24,7 @@ interface IDynamicPageProps {
 
 const LazyLoadedPage = dynamic(
   async () => {
-    const modules = await import("@shesha-io/reactjs");
+    const modules = await import("@shesha/reactjs");
     return modules.DynamicPage;
   },
   { ssr: false }
