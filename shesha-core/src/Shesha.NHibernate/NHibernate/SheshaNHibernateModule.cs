@@ -271,7 +271,7 @@ namespace Shesha.NHibernate
                     {
                         AsyncHelper.RunSync(async () =>
                         {
-                            if (ioc.Resolve(bootstrapperType) is IBootstrapper bootstrapper)
+                            if (ioc.IsRegistered(bootstrapperType) && ioc.Resolve(bootstrapperType) is IBootstrapper bootstrapper)
                             {
                                 Logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
 
