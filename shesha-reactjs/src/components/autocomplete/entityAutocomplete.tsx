@@ -103,15 +103,15 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     if (onChange) onChange(null);
   }, 300);
 
-  const wrapValue = (localValue: TValue | TValue[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
+  const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
     if (!Boolean(localValue)) return undefined;
     if (mode === 'multiple') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
-          return getLabeledValue(o, options);
+          return getLabeledValue(o, allOptions);
         })
-        : [getLabeledValue(localValue as TValue, options)];
-    } else return getLabeledValue(localValue as TValue, options);
+        : [getLabeledValue(localValue as TValue, allOptions)];
+    } else return getLabeledValue(localValue as TValue, allOptions);
   };
 
   const options = useMemo<ISelectOption<TValue>[]>(() => {
@@ -125,7 +125,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       return option;
     });
 
-    const selectedItem = wrapValue(value);
+    const selectedItem = wrapValue(value, fetchedItems);
 
     // Remove items which are already exist in the fetched items.
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
@@ -162,7 +162,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   };
 
   const dataLoaded = fetchedData && fetchedData.length > 0;
-  const autocompleteValue = value || dataLoaded || fetchError ? wrapValue(value) : undefined;
+  const autocompleteValue = value || dataLoaded || fetchError ? wrapValue(value, options) : undefined;
   const selectPlaceholder = value && !dataLoaded && loading ? 'Loading...' : placeholder ?? '';
 
   if (readOnly) {
@@ -198,7 +198,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       showArrow={true}
       filterOption={false}
       onSearch={handleSearch}
-      defaultValue={wrapValue(defaultValue)}
+      defaultValue={wrapValue(defaultValue, options)}
       value={autocompleteValue}
       onChange={handleChange}
       allowClear={true}

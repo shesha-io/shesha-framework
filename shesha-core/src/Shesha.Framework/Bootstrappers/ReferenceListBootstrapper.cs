@@ -61,10 +61,13 @@ namespace Shesha.Bootstrappers
                 })
                 .ToList();
 
-            Logger.Warn($"Found {grouppedLists.Count()} assemblies to bootstrap");
-
-            if (!grouppedLists.Any())
+            if (!grouppedLists.Any()) 
+            {
+                Logger.Warn($"Reference lists to bootstrap not found");
                 return;
+            }                
+
+            Logger.Warn($"Found {grouppedLists.Count()} assemblies to bootstrap");
 
             foreach (var group in grouppedLists) 
             {
