@@ -7,6 +7,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { useFormData, useGlobalState } from '@/providers';
 import { ComponentsContainer } from '@/components';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import ParentProvider from '@/providers/parentProvider/index';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -35,19 +36,16 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     };
 
     return (
-      <ComponentsContainer
-        containerId={model.id}
-        {...flexAndGridStyles}
-        // display={model?.display}
-        // direction={model.direction}
-        // justifyContent={model.direction === 'horizontal' ? model?.justifyContent : null}
-        // alignItems={model.direction === 'horizontal' ? model?.alignItems : null}
-        // justifyItems={model.direction === 'horizontal' ? model?.justifyItems : null}
-        className={model.className}
-        wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
-        style={getStyle(model?.style, formData)}
-        dynamicComponents={model?.isDynamic ? model?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []}
-      />
+      <ParentProvider model={model}>
+        <ComponentsContainer
+          containerId={model.id}
+          {...flexAndGridStyles}
+          className={model.className}
+          wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
+          style={getStyle(model?.style, formData)}
+          dynamicComponents={model?.isDynamic ? model?.components : []}
+        />
+      </ParentProvider>
     );
   },
   settingsFormMarkup: (data) => getSettings(data),

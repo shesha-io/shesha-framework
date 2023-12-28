@@ -44,6 +44,8 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
         const ctxRef = useRef<IContextSettingsRef>();
         const modeRef = useRef<ISwitchModeSettingsRef>();
 
+        if (model.hidden) return null;
+
         const label = <span>{props.label}</span>;
 
         return (

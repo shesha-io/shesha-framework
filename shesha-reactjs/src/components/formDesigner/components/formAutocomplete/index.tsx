@@ -5,7 +5,6 @@ import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm } from '@/providers';
 import FormAutocomplete from '@/components/formAutocomplete';
 import { IFormAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -19,13 +18,12 @@ const FormAutocompleteComponent: IToolboxComponent<IFormAutocompleteComponentPro
   isHidden: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
 
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => 
           <FormAutocomplete
-            readOnly={formMode === 'readonly'}
+            readOnly={model.readOnly}
             convertToFullId={model.convertToFullId}
             value={value}
             onChange={onChange}

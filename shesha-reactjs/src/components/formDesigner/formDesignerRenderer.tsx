@@ -15,6 +15,7 @@ import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramewor
 import { getFormFullName } from '@/utils/form';
 import HelpTextPopover from '@/components/helpTextPopover';
 import { useDataContextManager } from '@/providers/dataContextManager';
+import ParentProvider from '@/providers/parentProvider/index';
 
 const { Title } = Typography;
 
@@ -84,11 +85,13 @@ export const FormDesignerRenderer: FC = ({}) => {
               placeholder: 'Properties',
             }}
           >
-            <ConfigurableFormRenderer form={form} skipFetchData={true}>
-              {isDebug && (
-                <DebugPanel formData={form.getFieldsValue()} />
-              )}
-            </ConfigurableFormRenderer>
+            <ParentProvider model={{}} formMode='designer'>
+              <ConfigurableFormRenderer form={form} skipFetchData={true}>
+                {isDebug && (
+                  <DebugPanel formData={form.getFieldsValue()} />
+                )}
+              </ConfigurableFormRenderer>
+            </ParentProvider>
           </SidebarContainer>
         </ConditionalWrap>
       </div>

@@ -14,6 +14,7 @@ import React from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { executeFunction } from '@/utils';
+import ParentProvider from '@/providers/parentProvider/index';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -41,7 +42,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       ...(executeFunction(model?.style, { data, globalState }) || {}),
     };
 
-    const headerComponents = model?.header?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) ?? [];
+    const headerComponents = model?.header?.components ?? [];
     const extra =
       headerComponents?.length > 0 || formMode === 'designer' ? (
         <ComponentsContainer
@@ -52,24 +53,26 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       ) : null;
 
     return (
-      <CollapsiblePanel
-        header={evaluatedLabel}
-        expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
-        collapsedByDefault={collapsedByDefault}
-        extra={extra}
-        collapsible={collapsible === 'header' ? 'header' : 'icon'}
-        showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
-        ghost={ghost}
-        style={getPanelStyle}
-        className={model.className}
-      >
-        <ComponentsContainer
-          containerId={model.content.id}
-          dynamicComponents={
-            model?.isDynamic ? model?.content.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []
-          }
-        />
-      </CollapsiblePanel>
+      <ParentProvider model={model}>
+        <CollapsiblePanel
+          header={evaluatedLabel}
+          expandIconPosition={expandIconPosition !== 'hide' ? (expandIconPosition as ExpandIconPosition) : 'start'}
+          collapsedByDefault={collapsedByDefault}
+          extra={extra}
+          collapsible={collapsible === 'header' ? 'header' : 'icon'}
+          showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
+          ghost={ghost}
+          style={getPanelStyle}
+          className={model.className}
+        >
+          <ComponentsContainer
+            containerId={model.content.id}
+            dynamicComponents={
+              model?.isDynamic ? model?.content.components : []
+            }
+          />
+        </CollapsiblePanel>
+      </ParentProvider>
     );
   },
   settingsFormMarkup: settingsForm,

@@ -6,13 +6,16 @@ import { removeUndefinedProperties } from '@/utils/array';
 import { executeScriptSync } from '@/utils/publicUtils';
 import { ICommonContainerProps } from '@/designer-components/container/interfaces';
 import DynamicComponent from '../dynamicView/dynamicComponent';
+import { useParent } from '@/providers/parentProvider/index';
 
 interface IComponentsContainerSubFormProps extends IComponentsContainerBaseProps, ICommonContainerProps {}
 
 export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = (props) => {
   const { containerId, readOnly } = props;
   const { getChildComponents, context } = useSubForm();
-  const components = getChildComponents(containerId);
+
+  const parent = useParent();
+  const components = getChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
   const style = getAlignmentStyle(props);
 

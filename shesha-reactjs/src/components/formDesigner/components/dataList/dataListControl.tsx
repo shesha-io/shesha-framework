@@ -5,8 +5,9 @@ import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useApplicationContext, useConfigurableAction, useConfigurableActionDispatcher, YesNoInherit } from '@/index';
+import { useApplicationContext, useConfigurableAction, useConfigurableActionDispatcher, useDeepCompareMemo, YesNoInherit } from '@/index';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
+import { useParent } from '@/providers/parentProvider/index';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -47,8 +48,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   } = dataSource;
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
+  const parent = useParent(false);
   const allData = useApplicationContext();
-  const isDesignMode = allData.formMode === 'designer';
+  const isDesignMode = allData.formMode === 'designer' || parent?.formMode === 'designer';
 
   const repository = getRepository();
 
@@ -75,7 +77,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     []
   );
 
-  const data = useMemo(() => {
+  const data = useDeepCompareMemo(() => {
     return isDesignMode
       ? props.orientation === 'vertical'
         ? [{}]
@@ -193,13 +195,12 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   return (
     <ConfigurableFormItem
-      model={{ ...props }}
+      model={{ ...props, hideLabel: true }}
       className={classNames(
         'sha-datalist-component',
         { horizontal: props?.orientation === 'horizontal' && allData.formMode !== 'designer' } //
       )}
-      labelCol={{ span: 0 }}
-      wrapperCol={{ span: 24 }}
+      wrapperCol={{  md: 24 }}
     >
       <DataList
         {...props}

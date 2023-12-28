@@ -39,6 +39,12 @@ export const getSettings = (data: any) =>
               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
               label: 'Hidden',
             })
+            .addEditMode({
+              id: 'abc823d6-dca4-408a-b7d8-5b42eacb1234',
+              propertyName: 'editMode',
+              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+              label: 'Edit mode',
+            })
             .addCheckbox({
               id: 'c9900272-11c6-4484-be5b-e48c859f86e4',
               propertyName: 'noDefaultStyling',

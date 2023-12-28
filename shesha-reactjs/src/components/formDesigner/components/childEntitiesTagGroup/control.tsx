@@ -155,7 +155,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     <div className="child-entity-tag-container">
       {open && (
         <DataContextProvider id={propertyName} name={propertyName} description={propertyName} type={'childEntitiesTagGroup'} dynamicData={{[propertyName]: activeValue?.data}}>
-          <SubFormProvider context={propertyName} propertyName={propertyName} markup={markup} >
+          <SubFormProvider id={model.id} context={propertyName} propertyName={propertyName} markup={markup} >
             <ChildEntitiesTagGroupModal
               {...model}
               formInfo={formConfiguration}

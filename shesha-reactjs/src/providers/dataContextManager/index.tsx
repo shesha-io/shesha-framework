@@ -101,9 +101,13 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             return dataContexts;
 
         let c = dataContexts.find(x => x.id === topId);
-        while (c != null) {
+        while (!!c) {
             ctxs.push(c);
             c = dataContexts.find(x => x.id === c.parentId);
+            if (!!c && c?.id === c?.parentId) {
+                console.error(`The hierarchy of contexts is broken, id === parentId: ${c.id} {${c.name}: ${c.description}}`);
+                c = null;
+            }
         }
         return ctxs;
     };

@@ -310,4 +310,4 @@ storybook-static
 
 **/.next/**
 **/.rollup.cache/**
-/shesha-core/src/Shesha.Web.Host/appsettings.Alex.json
+

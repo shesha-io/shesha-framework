@@ -141,7 +141,8 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
           ...allData,
           formMode: props.readOnly ? 'readonly' : undefined, // imitate form mode according to cell mode
           tableRow: injectables.injectedTableRow
-        });
+        },
+        props.readOnly);
         
       let editorModel: IColumnEditorProps = {
           ...actualModel,

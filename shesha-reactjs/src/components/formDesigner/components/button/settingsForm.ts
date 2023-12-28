@@ -121,7 +121,7 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       label: 'Hidden',
     })
-    .addReadOnlyMode({
+    .addEditMode({
       id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
       propertyName: 'editMode',
       parentId: 'root',

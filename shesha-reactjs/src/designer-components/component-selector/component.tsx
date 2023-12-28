@@ -3,7 +3,7 @@ import { evaluateString, validateConfigurableComponentSettings } from '@/provide
 import React from 'react';
 import { ConfigurableFormItem, FormComponentSelector } from '@/components';
 import { IToolboxComponent } from '@/interfaces';
-import { useForm, useFormData, useMetadata } from '@/providers';
+import { useFormData, useMetadata } from '@/providers';
 import { IComponentSelectorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
@@ -18,7 +18,6 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
   isHidden: true,
   Factory: ({ model: passedModel }) => {
     const { style, ...model } = passedModel;
-    const { formMode } = useForm();
     const { data: formData } = useFormData();
 
     const propertyName = model.propertyAccessor
@@ -38,7 +37,7 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
           noSelectionItem={
             noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined
           }
-          readOnly={formMode === 'readonly'}
+          readOnly={model.readOnly}
           propertyMeta={propertyMeta}
         />
       </ConfigurableFormItem>
