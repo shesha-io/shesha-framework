@@ -43,11 +43,10 @@ import {
   useSheshaApplication,
 } from '@/providers';
 
-
 /**
  * Form configuration DTO
  */
-export interface FormConfigurationDto {
+ export interface FormConfigurationDto {
   id?: string;
   /**
    * Form path/id is used to identify a form
@@ -149,11 +148,11 @@ export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string,
   const requestParams = formRawId
     ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formRawId } }
     : formFullName
-      ? {
+    ? {
         url: '/api/services/Shesha/FormConfiguration/GetByName',
         queryParams: { name: formFullName.name, module: formFullName.module, version: formFullName.version },
       }
-      : null;
+    : null;
 
   return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(
     requestParams.url,
@@ -213,8 +212,8 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
   const reFetcher = () => {
     return canFetch
       ? reFetch().then((response) => {
-        return getMarkupFromResponse(response);
-      })
+          return getMarkupFromResponse(response);
+        })
       : Promise.reject('Can`t fetch form due to internal state');
   };
 
@@ -242,6 +241,7 @@ export interface FormWithDataResponse {
   loaderHint?: string;
   error?: IErrorInfo;
   dataFetcher?: () => Promise<EntityAjaxResponse | void>;
+  refetcher?: () => void;
 }
 export interface FormWithDataState {
   loaderHint?: string;
@@ -308,7 +308,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
     dataFetcher();
   };
 
-  useEffect(() => {
+  const fetchAll = (skipCache: boolean) => {
     const requestId = nanoid();
     formRequestRef.current = requestId;
 
@@ -338,7 +338,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
         fetchedData: null,
       }));
 
-      getForm({ formId, configurationItemMode: args.configurationItemMode, skipCache: false })
+      getForm({ formId, configurationItemMode: args.configurationItemMode, skipCache: skipCache })
         .then((form) => {
           if (formRequestRef.current !== requestId) return;
 
@@ -407,10 +407,13 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
         fetchedData: null,
       }));
     }
+  };
+
+  useEffect(() => {
+    fetchAll(false);
+
     // return cleanup: clean up form and data
   }, [formId, dataId, configurationItemMode]);
-
-  // todo: return errors
 
   const result: FormWithDataResponse = {
     loaderHint: state.loaderHint,
@@ -419,6 +422,9 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
     fetchedData: state.fetchedData,
     error: state.error,
     dataFetcher: state.dataFetcher,
+    refetcher: () => {
+      fetchAll(true);
+    },
   };
 
   return result;
@@ -467,8 +473,10 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
   const { formMarkup, formSettings, toolboxComponents } = payload;
   if (!formMarkup) return null;
 
-  const components = componentsTreeToFlatStructure(toolboxComponents, getComponentsFromMarkup(formMarkup))
-    .allComponents;
+  const components = componentsTreeToFlatStructure(
+    toolboxComponents,
+    getComponentsFromMarkup(formMarkup)
+  ).allComponents;
   let fieldNames = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
@@ -537,8 +545,8 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
                 idx === 0
                   ? metadata.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
                   : parent?.property?.dataType === 'object'
-                    ? parent.property.properties?.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                    : null,
+                  ? parent.property.properties?.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                  : null,
             };
             // If property metadata is not set - fetch it using dispatcher.
             // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests

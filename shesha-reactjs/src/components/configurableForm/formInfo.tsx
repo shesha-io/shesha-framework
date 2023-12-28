@@ -1,23 +1,48 @@
-import React, { FC } from 'react';
-import { useAppConfigurator, useSheshaApplication } from '@/providers';
-import { FormIdentifier, IPersistedFormProps } from '@/providers/form/models';
-import { Card } from 'antd';
+import React, { FC, useState } from 'react';
+import { useAppConfigurator } from '@/providers';
+import { IPersistedFormProps } from '@/providers/form/models';
+import { Button, Card } from 'antd';
 import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
 import { getFormFullName } from '@/utils/form';
 import StatusTag from '@/components/statusTag';
 import HelpTextPopover from '@/components/helpTextPopover';
 import { BlockOutlined, CloseOutlined } from '@ant-design/icons';
+import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
 
-export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, versionStatus, name, module }) => {
+export interface FormInfoProps {
+  /**
+   * Persisted form props
+   */
+  formProps: IPersistedFormProps;
+  /**
+   * Is used for update of the form markup. If value of this handler is not defined - the form is read-only
+   */
+  onMarkupUpdated?: () => void;
+}
+
+export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
+  const { id, versionNo, description, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock } = useAppConfigurator();
-  const app = useSheshaApplication();
+  
+  const [open, setOpen] = useState(false);
 
+  /*
+  const app = useSheshaApplication();
   const getDesignerUrl = (fId: FormIdentifier) => {
     return typeof fId === 'string'
       ? `${app.routes.formsDesigner}?id=${fId}`
       : Boolean(fId?.name)
-      ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
-      : null;
+        ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
+        : null;
+  };
+  */
+
+  const onModalOpen = () => setOpen(true);
+  const onUpdated = () => {
+    console.log('LOG: markup updated!');
+    if (onMarkupUpdated)
+      onMarkupUpdated();
+    setOpen(false);
   };
 
   return (
@@ -27,9 +52,12 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
       title={
         <>
           {id && (
-            <a target="_blank" href={getDesignerUrl(id)}>
+            <Button style={{ padding: 0 }} type="link" onClick={onModalOpen}>
               <BlockOutlined title="Click to open this form in the designer" />
-            </a>
+            </Button>
+            // <a target="_blank" href={getDesignerUrl(id)}>
+            //   <BlockOutlined title="Click to open this form in the designer" />
+            // </a>
           )}
           <span className="sha-form-info-card-title">
             Form: {getFormFullName(module, name)} v{versionNo}
@@ -40,7 +68,16 @@ export const FormInfo: FC<IPersistedFormProps> = ({ id, versionNo, description, 
       }
       extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}
       size="small"
-    ></Card>
+    >
+      {id && open && (
+        <QuickEditDialog
+          formId={id}
+          open={open}
+          onCancel={() => setOpen(false)}
+          onUpdated={onUpdated}
+        />
+      )}
+    </Card>
   );
 };
 

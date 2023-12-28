@@ -661,7 +661,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         />
       }
       <Show when={showFormInfo}>
-        <FormInfo {...persistedFormProps} />
+        <FormInfo formProps={persistedFormProps} />
       </Show>
       <div>
         <Show when={selectionMode === 'multiple'}>

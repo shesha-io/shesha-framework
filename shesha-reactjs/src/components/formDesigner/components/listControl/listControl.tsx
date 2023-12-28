@@ -586,7 +586,7 @@ const ListControl: FC<IListControlProps> = (props) => {
       }
     >
       <Show when={showFormInfo}>
-        <FormInfo {...formConfiguration} />
+        <FormInfo formProps={formConfiguration} />
       </Show>
 
       <Show when={selectionMode === 'multiple'}>
