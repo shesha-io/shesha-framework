@@ -1,7 +1,6 @@
 import Address from '@/components/formDesigner/components/address';
 import Alert from '@/components/formDesigner/components/alert';
 import AutocompleteTagGroup from '@/components/formDesigner/components/autocompleteTagGroup';
-import DisplayFormItem from '@/components/formDesigner/components/basicDisplayFormItem';
 import Button from '@/components/formDesigner/components/button/button';
 import ButtonGroup from '@/components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
 import Buttons from '@/components/formDesigner/components/button/buttonGroup/buttonsComponent';
@@ -147,7 +146,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       Checkbox,
       CheckboxGroup,
       DateField,
-      DisplayFormItem,
       Dropdown,
       Link,
       NumberFieldComponent,

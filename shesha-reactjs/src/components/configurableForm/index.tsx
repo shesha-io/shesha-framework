@@ -15,6 +15,7 @@ import Show from '@/components/show';
 import FormInfo from './formInfo';
 import { Result } from 'antd';
 import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
+import ParentProvider from '@/providers/parentProvider/index';
 
 export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const {
@@ -71,28 +72,30 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     return (
       <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
         {(flatComponents) => (
-          <FormProvider
-            needDebug={needDebug}
-            name="Form"
-            {...flatComponents}
-            formSettings={formSettings}
-            formMarkup={providedMarkup}
-            mode={mode}
-            form={restProps.form}
-            actions={actions}
-            sections={sections}
-            context={context}
-            formRef={formRef}
-            onValuesChange={restProps.onValuesChange}
-            refetchData={refetchData}
-            isActionsOwner={isActionsOwner}
-            propertyFilter={propertyFilter}
-          >
-            <Show when={Boolean(showFormInfo)}>
-              <FormInfo {...persistedFormProps} />
-            </Show>
-            <ConfigurableFormRenderer {...restProps} />
-          </FormProvider>
+          <ParentProvider model={{}} formMode={mode}>
+            <FormProvider
+              needDebug={needDebug}
+              name="Form"
+              {...flatComponents}
+              formSettings={formSettings}
+              formMarkup={providedMarkup}
+              mode={mode}
+              form={restProps.form}
+              actions={actions}
+              sections={sections}
+              context={context}
+              formRef={formRef}
+              onValuesChange={restProps.onValuesChange}
+              refetchData={refetchData}
+              isActionsOwner={isActionsOwner}
+              propertyFilter={propertyFilter}
+            >
+              <Show when={Boolean(showFormInfo)}>
+                <FormInfo {...persistedFormProps} />
+              </Show>
+              <ConfigurableFormRenderer {...restProps} />
+            </FormProvider>
+          </ParentProvider>
         )}
       </FormMarkupConverter>
     );

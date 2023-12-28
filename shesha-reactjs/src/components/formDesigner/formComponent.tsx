@@ -1,8 +1,8 @@
 import { useDeepCompareMemo } from '@/hooks';
 import React, { FC, MutableRefObject } from 'react';
-import { getActualModel, useApplicationContext } from '@/utils/publicUtils';
-import { useForm } from '@/providers/form';
+import { getActualModelWithParent, useApplicationContext } from '@/utils/publicUtils';
 import { IConfigurableFormComponent } from '@/index';
+import { useParent } from '@/providers/parentProvider/index';
 
 export interface IFormComponentProps {
   id: string;
@@ -10,18 +10,23 @@ export interface IFormComponentProps {
 }
 
 const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
-  const { getComponentModel, form, getToolboxComponent, isComponentHidden, isComponentReadOnly } = useForm();
   const allData = useApplicationContext();
+  const { getComponentModel, form, getToolboxComponent, isComponentHidden, isComponentReadOnly } = allData.form;
+
+  const parent = useParent(false);
 
   const model = getComponentModel(id);
-  const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => getActualModel(model, allData),
-    [model, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+  const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
+    return getActualModelWithParent(
+      {...model, editMode: typeof model.editMode === 'undefined' ? undefined : model.editMode}, // add editMode property if not exists
+      allData, parent);
+  }, [model, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
 
   const toolboxComponent = getToolboxComponent(model.type);
   if (!toolboxComponent) return <div>Component not found</div>;
 
-  actualModel.hidden = isComponentHidden(actualModel);
-  actualModel.readOnly = isComponentReadOnly(actualModel);
+  actualModel.hidden = actualModel.hidden || isComponentHidden(model); // check `model` without modification
+  actualModel.readOnly = actualModel.readOnly || isComponentReadOnly(model); // check `model` without modification
 
   return (
     <toolboxComponent.Factory 

@@ -9,6 +9,7 @@ import { getLayoutStyle } from '@/utils/publicUtils';
 import { nanoid } from 'nanoid';
 import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import ParentProvider from '@/providers/parentProvider/index';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
@@ -24,17 +25,19 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     return (
       <Split cursor="col-resize" style={style}>
-        {columns &&
-          columns.map((col) => (
-            <Fragment>
-              <ComponentsContainer
-                containerId={col.id}
-                dynamicComponents={
-                  model?.isDynamic ? col?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []
-                }
-              />
-            </Fragment>
+        <ParentProvider model={model}>
+          {columns &&
+            columns.map((col) => (
+              <Fragment>
+                <ComponentsContainer
+                  containerId={col.id}
+                  dynamicComponents={
+                    model?.isDynamic ? col?.components : []
+                  }
+                />
+              </Fragment>
           ))}
+        </ParentProvider>
       </Split>
     );
   },

@@ -57,12 +57,13 @@ import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { useDataContext } from '@/providers/dataContextProvider';
-import { useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IConfigurableActionConfiguration, useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance } from 'axios';
 import { MessageApi } from 'antd/lib/message/index';
 import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
+import { StandardNodeTypes } from '@/interfaces/formComponent';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -200,18 +201,51 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
-export const getActualModel = <T>(model: T, allData: any, useFormModeReadOnly: boolean = true): T => {
+export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolean = undefined): T => {
   const m = {} as T;
   for (var propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
     m[propName] = getSettingValue(model[propName], allData, calcValue);
   }
 
+  const readOnly = typeof parentReadOnly === 'undefined' 
+    ? allData?.formMode === 'readonly'
+    : parentReadOnly;
+
   // update ReadOnly if exists
-  if (!!m['editMode'])
-    m['readOnly'] = getReadOnlyBool(m['editMode'], useFormModeReadOnly && allData['formMode'] === 'readonly');
+  if (m.hasOwnProperty('editMode'))
+    m['readOnly'] = getReadOnlyBool(m['editMode'], readOnly);
 
   return m;
+};
+
+export const getActualModelWithParent = <T extends IConfigurableFormComponent>(model: T, allData: any, parent: any): T => {
+  const parentReadOnly = allData.formMode !== 'designer' && (parent?.model?.readOnly ?? allData.formMode === 'readonly');
+  const actualModel = getActualModel(model, allData, parentReadOnly);
+  // update Id for complex containers (SubForm, DataList item, etc)
+  if (!!parent?.subFormIdPrefix) {
+    actualModel.id = `${parent?.subFormIdPrefix}.${actualModel.id}`;
+    actualModel.parentId = `${parent?.subFormIdPrefix}.${actualModel.parentId}`;
+    actualModel.componentName = !!parent?.model?.componentName 
+      ? `${parent?.model?.componentName}.${actualModel.componentName}`
+      : actualModel.componentName;
+    actualModel.context = !!actualModel.context ? `${parent?.subFormIdPrefix}.${actualModel.context}` : actualModel.context;
+    updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
+  }
+  return actualModel;
+};
+
+const  updateConfigurableActionParent = (model: any, parentId: string) => {
+  for (const key in model) {
+    if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
+      const config = model[key] as IConfigurableActionConfiguration;
+      if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
+        model[key] = {...config, actionOwner: `${parentId}.${config.actionOwner}`};
+      } else {
+        updateConfigurableActionParent(config, parentId);
+      }
+    }
+  }
 };
 
 export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
@@ -730,7 +764,7 @@ export const getEnabledComponentIds = (
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
-      const readOnly = getReadOnlyBool(getActualPropertyValue(component, allData, 'editMode')?.editMode, allData['formMode'] === 'readonly');
+      const readOnly = getReadOnlyBool(getActualPropertyValue(component, allData, 'editMode')?.editMode, false); // use false because components will use parent enabled by default
       const isEnabled = !readOnly &&
         (!Boolean(component?.enabledFunc) ||
         (typeof component?.enabledFunc === 'function' && component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));

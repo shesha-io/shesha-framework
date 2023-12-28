@@ -10,6 +10,7 @@ import { getLayoutStyle } from '@/utils/publicUtils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { ColumnsSettingsForm } from './columnsSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import ParentProvider from '@/providers/parentProvider/index';
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
@@ -24,24 +25,24 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
 
     return (
       <Row gutter={[gutterX, gutterY]} style={getLayoutStyle(model, { data, globalState })}>
-        {columns &&
-          columns.map((col, index) => (
-            <Col
-              key={index}
-              md={col.flex}
-              offset={col.offset}
-              pull={col.pull}
-              push={col.push}
-              className="sha-designer-column"
-            >
-              <ComponentsContainer
-                containerId={col.id}
-                dynamicComponents={
-                  model?.isDynamic ? col?.components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []
-                }
-              />
-            </Col>
+        <ParentProvider model={model}>
+          {columns &&
+            columns.map((col, index) => (
+              <Col
+                key={index}
+                md={col.flex}
+                offset={col.offset}
+                pull={col.pull}
+                push={col.push}
+                className="sha-designer-column"
+              >
+                <ComponentsContainer
+                  containerId={col.id}
+                  dynamicComponents={model?.isDynamic ? col?.components : []}
+                />
+              </Col>
           ))}
+        </ParentProvider>
       </Row>
     );
   },

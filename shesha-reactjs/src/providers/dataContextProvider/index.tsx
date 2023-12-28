@@ -1,6 +1,6 @@
 import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
 import { IModelMetadata } from "@/interfaces/metadata";
-import { IConfigurableActionConfiguration, MetadataProvider, useConfigurableActionDispatcher, useMetadataDispatcher } from "@/providers";
+import { IConfigurableActionConfiguration, MetadataProvider, useConfigurableActionDispatcher, useMetadataDispatcher, useSubForm } from "@/providers";
 import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
@@ -50,7 +50,11 @@ export interface IDataContextProviderProps {
 
 const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({ children, ...props }) => {
     
-    const { id, name, description, type = 'custom', initialData, metadata, dynamicData } = props;
+    const { name, description, type = 'custom', initialData, metadata, dynamicData } = props;
+
+    const subForm = useSubForm(false);
+
+    const id = !!subForm?.id ? subForm?.id + '_' + props.id : props.id;
 
     const { onChangeContext, onUpdateContextApi, getDataContextData, onChangeContextData } = useDataContextManager();
     const metadataDispatcher = useMetadataDispatcher();

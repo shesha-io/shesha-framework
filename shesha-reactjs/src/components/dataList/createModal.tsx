@@ -2,6 +2,7 @@ import { ComponentsContainer, FormRawMarkup, IFormSettings, IPersistedFormProps,
 import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';
+import ParentProvider from '@/providers/parentProvider/index';
 import { Modal, Skeleton } from 'antd';
 import React, { FC } from 'react';
 import FormInfo from '../configurableForm/formInfo';
@@ -10,6 +11,7 @@ import { ItemContainerForm } from './itemContainerForm';
 import { IDataListProps, NewItemInitializer } from './models';
 
 export interface IDataListItemCreateModalProps {
+  id: string;
   formInfo?: IPersistedFormProps;
   creater?: (data: any) => Promise<any>;
   data?: object | NewItemInitializer;
@@ -47,10 +49,11 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
         >
           <CreateModal
             formInfo={props.formInfo}
-            loading={false} 
+            loading={false}
             onToggle={onToggle}
-            width={width}
-           />
+            width={width} 
+            id={props.id}           
+          />
         </DataListCrudProvider>
       )}
     </FormMarkupConverter>
@@ -107,9 +110,12 @@ const CreateModal: FC<ICreateModalProps> = ({
         </Show>
 
         <ValidationErrors error={saveError} />
-        <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-          <ComponentsContainer containerId={'root'}/>
-        </ComponentsContainerProvider>
+
+        <ParentProvider model={{}} formMode='edit'>
+          <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+            <ComponentsContainer containerId={'root'}/>
+          </ComponentsContainerProvider>
+        </ParentProvider>
       </Skeleton>
     </Modal>
   );

@@ -21,6 +21,7 @@ import DataListItemCreateModal from './createModal';
 import { useMemo } from 'react';
 import { axiosHttp } from '@/index';
 import moment from 'moment';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 interface EntityForm {
   entityType: string;
@@ -31,6 +32,7 @@ interface EntityForm {
 }
 
 export const DataList: FC<Partial<IDataListProps>> = ({
+  id,
   formId,
   formType,
   createFormId,
@@ -75,9 +77,17 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const [entityForms, setEntityForms] = useState<EntityForm[]>([]);
   const [formConfigs, setFormConfigs] = useState<IFormDto[]>([]);
-  const [entityTypes, setEntityTypes] = useState<string[]>([]);
-  const [formConfigInfo, setFormConfigInfo] = useState<IFormDto>();
-  const [createFormConfigInfo, setCreateFormConfigInfo] = useState<IFormDto>();
+
+  const [entityTypes, setEntityTypes] = useState<string[]>(
+    formSelectionMode === 'name'
+      ? ['formName']
+      : !!entityType 
+        ? [entityType] : 
+        []
+  );
+
+  //const [formConfigInfo, setFormConfigInfo] = useState<IFormDto>();
+  //const [createFormConfigInfo, setCreateFormConfigInfo] = useState<IFormDto>();
 
   const [createEntityForm, setCreateEntityForm] = useState<EntityForm>();
   //const [createFormConfig, setCreateFormConfig] = useState<IFormDto>();
@@ -147,25 +157,22 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const { formInfoBlockVisible } = useAppConfigurator();
 
-  const showFormInfo = Boolean(formConfigInfo) && formInfoBlockVisible;
-  const persistedFormProps: IPersistedFormProps = {
-    id: formConfigInfo?.id,
-    module: formConfigInfo?.module,
-    versionNo: formConfigInfo?.versionNo,
-    description: formConfigInfo?.description,
-    versionStatus: formConfigInfo?.versionStatus,
-    name: formConfigInfo?.name,
-  };
+  const entityFormId = entityForms[0]?.formId;
+  const persistedFormProps = useMemo(() => {
+    const c = formConfigs.find(x => x.module === entityFormId?.module && x.name === entityFormId?.name);
+    return !!c && formInfoBlockVisible 
+      ? {...c} as IPersistedFormProps
+      : undefined;
+  }, [entityFormId?.module, entityFormId?.name, formConfigs?.length, formInfoBlockVisible]);
+   
+  const cfid = asFormFullName(createFormId);
+  const persistedCreateFormProps = useMemo(() => {
+    const c = formConfigs.find(x => x.module === cfid?.module && x.name === cfid?.name);
+    return !!c && formInfoBlockVisible
+      ? {...c} as IPersistedFormProps
+      : undefined;
 
-  const showCreateFormInfo = Boolean(createFormConfigInfo) && formInfoBlockVisible;
-  const persistedCreateFormProps: IPersistedFormProps = {
-    id: createFormConfigInfo?.id,
-    module: createFormConfigInfo?.module,
-    versionNo: createFormConfigInfo?.versionNo,
-    description: createFormConfigInfo?.description,
-    versionStatus: createFormConfigInfo?.versionStatus,
-    name: createFormConfigInfo?.name,
-  };
+  }, [cfid?.module, cfid?.name, , formConfigs?.length, formInfoBlockVisible]);
 
   const [measuredRef, measured] = useMeasure();
   const [itemWidthCalc, setItemWidth] = useState({});
@@ -191,8 +198,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
 
   const updateEntityForms = (entityForm: EntityForm) => {
-    if (!formConfigInfo)
-      setFormConfigInfo(entityForm.formConfiguration);
     setEntityForms((prev) =>
       prev.map((x) => {
         return x.entityType === entityForm.entityType ? entityForm : x;
@@ -222,15 +227,21 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       entityForm.formId = formid;
       entityForm.isFetchingFormId = false;
       entityForm.formConfiguration = formConfigs.find((x) => x.name === formid.name && x.module === formid.module);
-      if (!Boolean(entityForm.formConfiguration)) getFormConfig(entityForm, updater);
-      updater(entityForm);
+      if (!Boolean(entityForm.formConfiguration)) 
+        getFormConfig(entityForm, updater);
+      else
+        updater(entityForm);
     });
   };
 
   /** Make list of entityTypes */
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (formSelectionMode === 'name') {
       setEntityTypes(['formName']);
+      return;
+    }
+    if (!!entityType) {
+      setEntityTypes([entityType]);
       return;
     }
     if (formSelectionMode === 'expression') {
@@ -267,11 +278,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       setEntityTypes(et);
       return;
     }
-    if (Boolean(entityType)) {
-      setEntityTypes([entityType]);
-      return;
-    }
 
+    // if dynamic form and EntityType is not provided
     const et = [];
     records.forEach((x) => {
       if (Boolean((x as any)?._className) && !Boolean(et.find((e) => e === (x as any)?._className))) {
@@ -288,7 +296,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       let changed = false;
       const fcFetching = [];
 
-        // create from
+      // create from
       let cForm = !!createEntityForm ? {...createEntityForm} : undefined;
       if (Boolean(cForm)) {
         if (cForm.isFetchingFormConfiguration || cForm.isFetchingFormId) {
@@ -307,8 +315,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           ) {
             fcFetching.push(`${cForm.formId?.name}_${cForm.formId?.module}`);
             getFormConfig(cForm, (e) => {
-              if (!createFormConfigInfo)
-                setCreateFormConfigInfo(e.formConfiguration);
               setCreateEntityForm({...e});
             });
           }
@@ -318,7 +324,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           changed = true;
         }
       } else {
-        const cForm: EntityForm = {
+        cForm = {
           entityType: entityTypes[0],
           formId: formSelectionMode === 'name' ? asFormFullName(createFormId) : undefined,
           isFetchingFormId: false,
@@ -330,20 +336,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         else if (fcFetching.indexOf(`${cForm.formId?.name}_${cForm.formId?.module}`) === -1) {
           fcFetching.push(`${cForm.formId?.name}_${cForm.formId?.module}`);
           getFormConfig(cForm, (e) => {
-            if (!createFormConfigInfo)
-              setCreateFormConfigInfo(e.formConfiguration);
             setCreateEntityForm({...e});
           });
         }
         changed = true;
       }
       if (changed) setCreateEntityForm(cForm);
-
+      
       entityTypes.forEach((etype) => {
-        if (Boolean(etype)) {
-          const eForm = eForms.find((x) => x.entityType === etype);
+        if (!!etype) {
+          let eForm = eForms.find((x) => x.entityType === etype);
           // item form
-          if (Boolean(eForm)) {
+          if (!!eForm) {
             if (eForm.isFetchingFormConfiguration || eForm.isFetchingFormId) {
               return;
             } else if (Boolean(eForm.formConfiguration)) {
@@ -372,14 +376,15 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               changed = true;
             }
           } else {
-            const eForm: EntityForm = {
+            eForm = {
               entityType: etype,
               formId: formSelectionMode === 'name' ? asFormFullName(formId) : undefined,
               isFetchingFormId: false,
               isFetchingFormConfiguration: false,
               formConfiguration: undefined,
             };
-            if (!Boolean(eForm.formId)) getEntityFormIdInternal(eForm, formType, updateEntityForms);
+            if (!eForm.formId) 
+              getEntityFormIdInternal(eForm, formType, updateEntityForms);
             else if (fcFetching.indexOf(`${eForm.formId?.name}_${eForm.formId?.module}`) === -1) {
               fcFetching.push(`${eForm.formId?.name}_${eForm.formId?.module}`);
               getFormConfig(eForm, updateEntityForms);
@@ -472,7 +477,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           markup={formConfig?.markup}
           formSettings={formConfig?.settings}
           data={values}
-          listId='list'
+          listId={id}
           listName='Data List'
           itemIndex={index}
           itemId={item['id']}
@@ -651,7 +656,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     <>
       {createModalOpen && createEntityForm?.formConfiguration &&
         <DataListItemCreateModal 
-          formInfo={showCreateFormInfo ? persistedCreateFormProps : undefined}
+          id={id}
+          formInfo={persistedCreateFormProps}
           markup={createEntityForm.formConfiguration.markup} 
           formSettings={createEntityForm.formConfiguration.settings}
           creater={createAction}
@@ -660,7 +666,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           width={props.modalWidth}
         />
       }
-      <Show when={showFormInfo}>
+      <Show when={!!persistedFormProps}>
         <FormInfo {...persistedFormProps} />
       </Show>
       <div>

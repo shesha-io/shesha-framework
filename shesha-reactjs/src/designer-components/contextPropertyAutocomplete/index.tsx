@@ -37,7 +37,14 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 
   const {defaultModelType, readOnly, formData, onValuesChange} = model;
 
-  const [state, setState] = useState<IContextPropertyAutocompleteState>({mode: !!formData?.context ? 'context' : 'formData', context: formData?.context});
+  const initialState: IContextPropertyAutocompleteState = {
+    mode: !!formData?.context || formData?.propertyName !== formData?.componentName 
+      ? 'context' 
+      : 'formData',
+    context: formData?.context
+  };
+
+  const [state, setState] = useState<IContextPropertyAutocompleteState>(initialState);
 
   const setContextMode = () => {
     setState({...state, mode: 'context'});
@@ -112,6 +119,8 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
     const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
     const { formData, formSettings, setFormData } = useForm();
   
+    if (model.hidden) return null;
+
     return (
       <ContextPropertyAutocomplete {...model}
         readOnly={model.readOnly} 

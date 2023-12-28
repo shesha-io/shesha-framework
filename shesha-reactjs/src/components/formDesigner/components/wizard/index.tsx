@@ -24,6 +24,7 @@ import {
   migratePropertyName,
   migrateFunctionToProp,
 } from '@/designer-components/_common-migrations/migrateSettings';
+import ParentProvider from '@/providers/parentProvider/index';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -117,7 +118,6 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
     direction,
     isDynamic,
     labelPlacement,
-    readOnly,
     wizardType = 'default',
   } = model;
 
@@ -136,7 +136,7 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
       content: (
         <ComponentsContainer
           containerId={id}
-          dynamicComponents={isDynamic ? components?.map((c) => ({ ...c, readOnly })) : []}
+          dynamicComponents={isDynamic ? components : []}
         />
       ),
     };
@@ -148,90 +148,92 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
   const btnStyle = getWizardButtonStyle(buttonsLayout);
 
   return (
-    <div className="sha-wizard" style={getLayoutStyle(model, { data, globalState })}>
-      <div className={classNames('sha-wizard-container', { vertical: direction === 'vertical' })}>
-        <Steps
-          type={wizardType}
-          current={current}
-          items={steps}
-          size={model['size']}
-          direction={direction}
-          labelPlacement={labelPlacement}
-        />
+    <ParentProvider model={model}>
+      <div className="sha-wizard" style={getLayoutStyle(model, { data, globalState })}>
+        <div className={classNames('sha-wizard-container', { vertical: direction === 'vertical' })}>
+          <Steps
+            type={wizardType}
+            current={current}
+            items={steps}
+            size={model['size']}
+            direction={direction}
+            labelPlacement={labelPlacement}
+          />
 
-        <div className="sha-steps-content">{steps[current]?.content}</div>
-      </div>
-
-      <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
-        <div
-          className={classNames('sha-steps-buttons-container', {
-            split: splitButtons,
-            left: buttonsLayout === 'left',
-            right: buttonsLayout === 'right',
-          })}
-        >
-          <ConditionalWrap
-            condition={splitButtons}
-            wrap={(children) => (
-              <Space>
-                <div className={classNames('sha-steps-buttons')}>{children}</div>
-              </Space>
-            )}
-          >
-            {current > 0 && (
-              <Button
-                style={btnStyle('back')}
-                onClick={back}
-                disabled={!executeBooleanExpression(currentStep?.backButtonCustomEnabled, true)}
-              >
-                {currentStep.backButtonText ? currentStep.backButtonText : 'Back'}
-              </Button>
-            )}
-
-            {currentStep?.allowCancel === true && (
-              <Button
-                style={btnStyle('cancel')}
-                onClick={cancel}
-                disabled={!executeBooleanExpression(currentStep?.cancelButtonCustomEnabled, true)}
-              >
-                {currentStep.cancelButtonText ? currentStep.cancelButtonText : 'Cancel'}
-              </Button>
-            )}
-          </ConditionalWrap>
-
-          <ConditionalWrap
-            condition={splitButtons}
-            wrap={(children) => (
-              <Space>
-                <div className={classNames('sha-steps-buttons')}>{children}</div>
-              </Space>
-            )}
-          >
-            {current < visibleSteps.length - 1 && (
-              <Button
-                type="primary"
-                style={btnStyle('next')}
-                onClick={next}
-                disabled={!executeBooleanExpression(currentStep?.nextButtonCustomEnabled, true)}
-              >
-                {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
-              </Button>
-            )}
-
-            {current === visibleSteps.length - 1 && (
-              <Button
-                type="primary"
-                style={btnStyle('next')}
-                onClick={done}
-                disabled={!executeBooleanExpression(currentStep?.doneButtonCustomEnabled, true)}
-              >
-                {currentStep.doneButtonText ? currentStep.doneButtonText : 'Done'}
-              </Button>
-            )}
-          </ConditionalWrap>
+          <div className="sha-steps-content">{steps[current]?.content}</div>
         </div>
-      </ConditionalWrap>
-    </div>
+
+        <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
+          <div
+            className={classNames('sha-steps-buttons-container', {
+              split: splitButtons,
+              left: buttonsLayout === 'left',
+              right: buttonsLayout === 'right',
+            })}
+          >
+            <ConditionalWrap
+              condition={splitButtons}
+              wrap={(children) => (
+                <Space>
+                  <div className={classNames('sha-steps-buttons')}>{children}</div>
+                </Space>
+              )}
+            >
+              {current > 0 && (
+                <Button
+                  style={btnStyle('back')}
+                  onClick={back}
+                  disabled={!executeBooleanExpression(currentStep?.backButtonCustomEnabled, true)}
+                >
+                  {currentStep.backButtonText ? currentStep.backButtonText : 'Back'}
+                </Button>
+              )}
+
+              {currentStep?.allowCancel === true && (
+                <Button
+                  style={btnStyle('cancel')}
+                  onClick={cancel}
+                  disabled={!executeBooleanExpression(currentStep?.cancelButtonCustomEnabled, true)}
+                >
+                  {currentStep.cancelButtonText ? currentStep.cancelButtonText : 'Cancel'}
+                </Button>
+              )}
+            </ConditionalWrap>
+
+            <ConditionalWrap
+              condition={splitButtons}
+              wrap={(children) => (
+                <Space>
+                  <div className={classNames('sha-steps-buttons')}>{children}</div>
+                </Space>
+              )}
+            >
+              {current < visibleSteps.length - 1 && (
+                <Button
+                  type="primary"
+                  style={btnStyle('next')}
+                  onClick={next}
+                  disabled={!executeBooleanExpression(currentStep?.nextButtonCustomEnabled, true)}
+                >
+                  {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
+                </Button>
+              )}
+
+              {current === visibleSteps.length - 1 && (
+                <Button
+                  type="primary"
+                  style={btnStyle('next')}
+                  onClick={done}
+                  disabled={!executeBooleanExpression(currentStep?.doneButtonCustomEnabled, true)}
+                >
+                  {currentStep.doneButtonText ? currentStep.doneButtonText : 'Done'}
+                </Button>
+              )}
+            </ConditionalWrap>
+          </div>
+        </ConditionalWrap>
+      </div>
+    </ParentProvider>
   );
 };
 

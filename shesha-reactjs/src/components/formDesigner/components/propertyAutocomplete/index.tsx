@@ -8,7 +8,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IPropertyAutocompleteComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
-import { MetadataProvider, useForm, useFormData } from '@/providers';
+import { MetadataProvider, useFormData } from '@/providers';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { PropertyAutocomplete } from '../../../propertyAutocomplete/propertyAutocomplete';
 
@@ -20,7 +20,6 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
   icon: <FileSearchOutlined />,
   isHidden: true,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
     const { data: formData } = useFormData();
     const { modelType: modelTypeExpression } = model;
 
@@ -40,7 +39,7 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
                 dropdownStyle={getStyle(model?.dropdownStyle, formData)}
                 size={model.size}
                 mode={model.mode}
-                readOnly={formMode === 'readonly'}
+                readOnly={model.readOnly}
                 showFillPropsButton={model.showFillPropsButton ?? true}
                 value={value}
                 onChange={onChange}

@@ -1,10 +1,13 @@
 import { ConfigurableFormComponent, joinStringValues, useForm } from '@/index';
+import { useParent } from '@/providers/parentProvider/index';
 import React, { CSSProperties, FC, PropsWithChildren } from 'react';
 import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';
 
 export const ItemContainerForm: FC<PropsWithChildren <IComponentsContainerProps>> = (props) => {
   const form = useForm();
-  const components = form.getChildComponents(props.containerId);
+  const parent = useParent();
+
+  const components = form.getChildComponents(props.containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
   const renderComponents = () => {
     const renderedComponents = components.map((c, index) => (

@@ -12,6 +12,7 @@ import { Tabs, TabsProps } from 'antd';
 import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import ParentProvider from '@/providers/parentProvider/index';
 
 type TabItem = TabsProps['items'][number];
 
@@ -76,7 +77,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           children: (
             <ComponentsContainer
               containerId={id}
-              dynamicComponents={model?.isDynamic ? components?.map((c) => ({ ...c, readOnly: model?.readOnly })) : []}
+              dynamicComponents={model?.isDynamic ? components : []}
             />
           ),
         };
@@ -87,7 +88,9 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     }, [tabs, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
     return model.hidden ? null : (
-      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
+      <ParentProvider model={model}>
+        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
+      </ParentProvider>
     );
   },
   initModel: (model) => {
