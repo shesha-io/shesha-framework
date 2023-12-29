@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useSheshaApplication } from '..';
+import { FormIdentifier, useSheshaApplication } from '..';
 import { IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import defaultToolboxComponents from './defaults/toolboxComponents';
 
@@ -32,4 +32,17 @@ export const useFormDesignerComponents = (): IToolboxComponents => {
 
   const toolboxComponents = useMemo(() => toolbarGroupsToComponents(componentGroups), [componentGroups]);
   return toolboxComponents;
+};
+
+const getDesignerUrl = (designerUrl: string, fId: FormIdentifier) => {
+  return typeof fId === 'string'
+    ? `${designerUrl}?id=${fId}`
+    : Boolean(fId?.name)
+      ? `${designerUrl}?module=${fId.module}&name=${fId.name}`
+      : null;
+};
+
+export const useFormDesignerUrl = (formId: FormIdentifier) => {
+  const app = useSheshaApplication();
+  return getDesignerUrl(app.routes.formsDesigner, formId);
 };

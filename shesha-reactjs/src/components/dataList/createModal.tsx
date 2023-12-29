@@ -106,7 +106,7 @@ const CreateModal: FC<ICreateModalProps> = ({
     >
       <Skeleton loading={loading}>
         <Show when={!!formInfo}>
-          <FormInfo {...formInfo} />
+          <FormInfo formProps={formInfo} />
         </Show>
 
         <ValidationErrors error={saveError} />

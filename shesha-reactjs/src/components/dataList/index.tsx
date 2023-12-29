@@ -1,27 +1,46 @@
-import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
-import React, { FC, useEffect, useState } from 'react';
-import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useSheshaApplication } from '@/providers';
-import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
-import { getFormConfiguration, getMarkupFromResponse } from '@/providers/form/api';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import DataListItemCreateModal from './createModal';
 import FormInfo from '../configurableForm/formInfo';
+import moment from 'moment';
+import React, { FC, useEffect, useState } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
-import { IDataListProps, NewItemInitializer } from './models';
-import { asFormRawId, asFormFullName, useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
-import './styles/index.less';
-import { isEqual } from 'lodash';
-import { useDeepCompareMemo } from '@/hooks';
-import { ValueRenderer } from '@/components/valueRenderer/index';
-import { toCamelCase } from '@/utils/string';
-import { DataListItemRenderer } from './itemRenderer';
-import DataListItemCreateModal from './createModal';
-import { useMemo } from 'react';
+import {
+  Alert,
+  Checkbox,
+  Collapse,
+  Divider,
+  Typography
+  } from 'antd';
+import {
+  asFormFullName,
+  asFormRawId,
+  executeScriptSync,
+  getStyle,
+  useApplicationContext
+  } from '@/providers/form/utils';
 import { axiosHttp } from '@/index';
-import moment from 'moment';
+import { DataListItemRenderer } from './itemRenderer';
+import {
+  FormFullName,
+  IFormDto,
+  IPersistedFormProps,
+  useAppConfigurator,
+  useConfigurableActionDispatcher,
+  useSheshaApplication
+  } from '@/providers';
+import { getFormConfiguration, getMarkupFromResponse } from '@/providers/form/api';
+import { IDataListProps, NewItemInitializer } from './models';
+import { isEqual } from 'lodash';
+import { toCamelCase } from '@/utils/string';
+import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useDeepCompareMemo } from '@/hooks';
+import { useMeasure, usePrevious } from 'react-use';
+import { useMemo } from 'react';
+import { ValueRenderer } from '@/components/valueRenderer/index';
+import './styles/index.less';
 
 interface EntityForm {
   entityType: string;
@@ -81,8 +100,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const [entityTypes, setEntityTypes] = useState<string[]>(
     formSelectionMode === 'name'
       ? ['formName']
-      : !!entityType 
-        ? [entityType] : 
+      : !!entityType
+        ? [entityType] :
         []
   );
 
@@ -116,8 +135,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     changeSelectedIds(
       val
         ? records?.map((item: any) => {
-            return item?.id;
-          })
+          return item?.id;
+        })
         : []
     );
     onMultiSelectRows(
@@ -152,7 +171,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
 
-    return executeScriptSync(formIdExpression, {...allData, item});
+    return executeScriptSync(formIdExpression, { ...allData, item });
   };
 
   const { formInfoBlockVisible } = useAppConfigurator();
@@ -160,16 +179,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const entityFormId = entityForms[0]?.formId;
   const persistedFormProps = useMemo(() => {
     const c = formConfigs.find(x => x.module === entityFormId?.module && x.name === entityFormId?.name);
-    return !!c && formInfoBlockVisible 
-      ? {...c} as IPersistedFormProps
+    return !!c && formInfoBlockVisible
+      ? { ...c } as IPersistedFormProps
       : undefined;
   }, [entityFormId?.module, entityFormId?.name, formConfigs?.length, formInfoBlockVisible]);
-   
+
   const cfid = asFormFullName(createFormId);
   const persistedCreateFormProps = useMemo(() => {
     const c = formConfigs.find(x => x.module === cfid?.module && x.name === cfid?.name);
     return !!c && formInfoBlockVisible
-      ? {...c} as IPersistedFormProps
+      ? { ...c } as IPersistedFormProps
       : undefined;
 
   }, [cfid?.module, cfid?.name, , formConfigs?.length, formInfoBlockVisible]);
@@ -227,7 +246,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       entityForm.formId = formid;
       entityForm.isFetchingFormId = false;
       entityForm.formConfiguration = formConfigs.find((x) => x.name === formid.name && x.module === formid.module);
-      if (!Boolean(entityForm.formConfiguration)) 
+      if (!Boolean(entityForm.formConfiguration))
         getFormConfig(entityForm, updater);
       else
         updater(entityForm);
@@ -297,7 +316,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       const fcFetching = [];
 
       // create from
-      let cForm = !!createEntityForm ? {...createEntityForm} : undefined;
+      let cForm = !!createEntityForm ? { ...createEntityForm } : undefined;
       if (Boolean(cForm)) {
         if (cForm.isFetchingFormConfiguration || cForm.isFetchingFormId) {
           return;
@@ -315,7 +334,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           ) {
             fcFetching.push(`${cForm.formId?.name}_${cForm.formId?.module}`);
             getFormConfig(cForm, (e) => {
-              setCreateEntityForm({...e});
+              setCreateEntityForm({ ...e });
             });
           }
           changed = true;
@@ -331,18 +350,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           isFetchingFormConfiguration: false,
           formConfiguration: undefined,
         };
-        if (!Boolean(cForm.formId)) 
-          getEntityFormIdInternal(cForm, createFormType, (e) => setCreateEntityForm({...e}));
+        if (!Boolean(cForm.formId))
+          getEntityFormIdInternal(cForm, createFormType, (e) => setCreateEntityForm({ ...e }));
         else if (fcFetching.indexOf(`${cForm.formId?.name}_${cForm.formId?.module}`) === -1) {
           fcFetching.push(`${cForm.formId?.name}_${cForm.formId?.module}`);
           getFormConfig(cForm, (e) => {
-            setCreateEntityForm({...e});
+            setCreateEntityForm({ ...e });
           });
         }
         changed = true;
       }
       if (changed) setCreateEntityForm(cForm);
-      
+
       entityTypes.forEach((etype) => {
         if (!!etype) {
           let eForm = eForms.find((x) => x.entityType === etype);
@@ -383,7 +402,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
               isFetchingFormConfiguration: false,
               formConfiguration: undefined,
             };
-            if (!eForm.formId) 
+            if (!eForm.formId)
               getEntityFormIdInternal(eForm, formType, updateEntityForms);
             else if (fcFetching.indexOf(`${eForm.formId?.name}_${eForm.formId?.module}`) === -1) {
               fcFetching.push(`${eForm.formId?.name}_${eForm.formId?.module}`);
@@ -467,7 +486,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       return false;
     };
 
-    if (!formConfig?.markup) 
+    if (!formConfig?.markup)
       return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
 
     return (
@@ -484,11 +503,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           allowEdit={canEditInline}
           allowDelete={canDeleteInline}
           updater={(rowData) => updateAction(index, rowData)}
-          deleter={() => deleteAction(index, values)}        
+          deleter={() => deleteAction(index, values)}
           allowChangeEditMode={inlineEditMode === 'one-by-one'}
           editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
           autoSave={inlineSaveMode === 'auto'}
-          />
+        />
       </div>
     );
   };
@@ -645,20 +664,20 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     return result;
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
-  
+
   const content = useDeepCompareMemo(() => {
-    return groups 
-      ? groups?.map((item: RowsGroup, index) =>  renderGroup(item, index))
-      : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index));
+    return groups
+      ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
+      : records?.map((item: any, index) => renderRow(item, index, records?.length - 1 === index));
   }, [groups, records, formConfigs]);
 
   return (
     <>
       {createModalOpen && createEntityForm?.formConfiguration &&
-        <DataListItemCreateModal 
+        <DataListItemCreateModal
           id={id}
           formInfo={persistedCreateFormProps}
-          markup={createEntityForm.formConfiguration.markup} 
+          markup={createEntityForm.formConfiguration.markup}
           formSettings={createEntityForm.formConfiguration.settings}
           creater={createAction}
           onToggle={(isOpen) => setCreateModalOpen(isOpen)}
@@ -667,7 +686,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         />
       }
       <Show when={!!persistedFormProps}>
-        <FormInfo {...persistedFormProps} />
+        <FormInfo formProps={persistedFormProps} />
       </Show>
       <div>
         <Show when={selectionMode === 'multiple'}>
@@ -706,7 +725,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           })}
         >
           <Show when={Boolean(records) /*&& Boolean(formConfiguration?.markup)*/}>
-            { content }
+            {content}
           </Show>
         </div>
       </ShaSpin>

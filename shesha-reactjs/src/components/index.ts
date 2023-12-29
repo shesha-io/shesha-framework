@@ -90,7 +90,7 @@ export {
   type IAppEditModeTogglerProps as IEditModeTogglerProps,
 } from './appConfigurator/editModeToggler'; // todo: convert to subtype
 export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // todo: convert to subtype
-export { default as FormDesigner, type IFormDesignerProps } from './formDesigner/formDesigner';
+export { FormDesigner, type IFormDesignerProps } from './formDesigner/index';
 export { default as QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
 export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 

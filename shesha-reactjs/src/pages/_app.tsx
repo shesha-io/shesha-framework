@@ -1,9 +1,10 @@
-import { CustomErrorBoundary } from '@/components/index';
-import { PageWithLayout } from '@/interfaces/index';
-import { GlobalStateProvider, ShaApplicationProvider, StoredFilesProvider } from '@/providers';
-import { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
+import CustomNProgress from '@/app-components/global/customNProgress';
 import React from 'react';
+import { AppProps } from 'next/app';
+import { CustomErrorBoundary } from '@/components/index';
+import { GlobalStateProvider, ShaApplicationProvider, StoredFilesProvider } from '@/providers';
+import { PageWithLayout } from '@/interfaces/index';
+import { useRouter } from 'next/router';
 require('@/styles/index.less');
 require('@/styles/compiled.antd.variable.css');
 
@@ -23,6 +24,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
 					router={router as any}
 					noAuth={router?.asPath?.includes('/no-auth')}
 				>
+					<CustomNProgress />
 					{/* <CustomNProgress /> */}
 					<StoredFilesProvider baseUrl={BASE_URL} ownerId={''} ownerType={''}>
 						{getLayout(<Component {...(router?.query || {})} {...pageProps} />)}

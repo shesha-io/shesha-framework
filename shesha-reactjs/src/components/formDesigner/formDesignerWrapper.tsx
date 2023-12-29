@@ -1,20 +1,25 @@
-import React, { FC } from 'react';
-import { Form, FormInstance, Result, Skeleton } from 'antd';
-import { FormProvider } from '@/providers/form';
+import React, { FC, PropsWithChildren } from 'react';
+import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import {
+  Form,
+  FormInstance,
+  Result,
+  Skeleton
+  } from 'antd';
+import { FormDesignerProvider, useFormDesigner } from '@/providers/formDesigner';
 import { FormIdentifier } from '@/providers/form/models';
+import { FormMarkupConverter } from '@/providers/formMarkupConverter';
 import { FormPersisterProvider } from '@/providers/formPersisterProvider';
 import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/contexts';
-import { FormDesignerProvider, useFormDesigner } from '@/providers/formDesigner';
-import { FormMarkupConverter } from '@/providers/formMarkupConverter';
-import { FormDesignerRenderer } from './formDesignerRenderer';
-import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+import { FormProvider } from '@/providers/form';
+import { MetadataProvider } from '@/providers';
 import { ResultStatusType } from 'antd/lib/result';
 
-export interface IFormDesignerProps {
+export interface IFormProviderWrapperProps extends PropsWithChildren {
   formId: FormIdentifier;
 }
 
-export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
+export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, children }) => {
   const [form] = Form.useForm();
 
   return (
@@ -26,14 +31,16 @@ export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
 
           if (formStore.loaded && formStore.markup)
             return (
-              <FormMarkupConverter markup={formStore.markup} formSettings={{...formStore.formSettings, isSettingsForm: false}}>
+              <FormMarkupConverter markup={formStore.markup} formSettings={{ ...formStore.formSettings, isSettingsForm: false }}>
                 {flatComponents => (
                   <FormDesignerProvider
                     flatComponents={flatComponents}
                     formSettings={formStore.formSettings}
                     readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
                   >
-                    <FormProviderWrapper form={form}/>
+                    <FormProviderWrapperInner form={form}>
+                      {children}
+                    </FormProviderWrapperInner>
                   </FormDesignerProvider>
                 )}
               </FormMarkupConverter>
@@ -55,10 +62,11 @@ export const FormDesigner: FC<IFormDesignerProps> = ({ formId }) => {
   );
 };
 
-const FormProviderWrapper: FC<{ form: FormInstance }> = ({ form }) => {
+const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
   const { allComponents, componentRelations, formSettings } = useFormDesigner();
 
   return (
+
     <FormProvider
       needDebug
       name="Designer Form"
@@ -69,9 +77,15 @@ const FormProviderWrapper: FC<{ form: FormInstance }> = ({ form }) => {
       isActionsOwner={true}
       form={form}
     >
-      <FormDesignerRenderer />
+      <>
+        {formSettings.modelType ? (
+          <MetadataProvider id="designer" modelType={formSettings.modelType}>
+            {children}
+          </MetadataProvider>
+        ) : (
+          <>{ children }</>
+        )}
+      </>
     </FormProvider>
   );
 };
-
-export default FormDesigner;

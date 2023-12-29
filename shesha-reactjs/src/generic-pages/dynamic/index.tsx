@@ -315,6 +315,7 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
                   initialValues={formWithData.fetchedData}
                   skipFetchData
                   refetchData={() => refetchFormData()}
+                  refetcher={formWithData.refetcher}
                   className="sha-dynamic-page"
                   isActionsOwner={true}
                 />
