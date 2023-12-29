@@ -27,6 +27,6 @@ FormDesignerInterface.Visual = FormDesignerRenderer;
 FormDesignerInterface.NonVisual = FormProviderWrapper;
 
 export {
-    FormDesigner,
+    FormDesignerInterface as FormDesigner,
     type IFormDesignerProps,
 };

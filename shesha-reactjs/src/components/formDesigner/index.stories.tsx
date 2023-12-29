@@ -7,7 +7,7 @@ import { Story } from '@storybook/react';
 
 export default {
   title: 'Components/Temp/FormDesigner',
-  component: FormDesigner,
+  component: FormDesigner.NonVisual,
 };
 
 export interface IFormDesignerStoryProps {

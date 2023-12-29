@@ -12,6 +12,7 @@ import { FormMarkupConverter } from '@/providers/formMarkupConverter';
 import { FormPersisterProvider } from '@/providers/formPersisterProvider';
 import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/contexts';
 import { FormProvider } from '@/providers/form';
+import { MetadataProvider } from '@/providers';
 import { ResultStatusType } from 'antd/lib/result';
 
 export interface IFormProviderWrapperProps extends PropsWithChildren {
@@ -30,7 +31,7 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
 
           if (formStore.loaded && formStore.markup)
             return (
-              <FormMarkupConverter markup={formStore.markup} formSettings={{...formStore.formSettings, isSettingsForm: false}}>
+              <FormMarkupConverter markup={formStore.markup} formSettings={{ ...formStore.formSettings, isSettingsForm: false }}>
                 {flatComponents => (
                   <FormDesignerProvider
                     flatComponents={flatComponents}
@@ -65,6 +66,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
   const { allComponents, componentRelations, formSettings } = useFormDesigner();
 
   return (
+
     <FormProvider
       needDebug
       name="Designer Form"
@@ -75,7 +77,15 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
       isActionsOwner={true}
       form={form}
     >
-      {children}
+      <>
+        {formSettings.modelType ? (
+          <MetadataProvider id="designer" modelType={formSettings.modelType}>
+            {children}
+          </MetadataProvider>
+        ) : (
+          <>{ children }</>
+        )}
+      </>
     </FormProvider>
   );
 };

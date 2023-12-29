@@ -23,19 +23,8 @@ export interface FormInfoProps {
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
   const { id, versionNo, description, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock } = useAppConfigurator();
-  
-  const [open, setOpen] = useState(false);
 
-  /*
-  const app = useSheshaApplication();
-  const getDesignerUrl = (fId: FormIdentifier) => {
-    return typeof fId === 'string'
-      ? `${app.routes.formsDesigner}?id=${fId}`
-      : Boolean(fId?.name)
-        ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
-        : null;
-  };
-  */
+  const [open, setOpen] = useState(false);
 
   const onModalOpen = () => setOpen(true);
   const onUpdated = () => {
@@ -55,9 +44,6 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
             <Button style={{ padding: 0 }} type="link" onClick={onModalOpen}>
               <BlockOutlined title="Click to open this form in the designer" />
             </Button>
-            // <a target="_blank" href={getDesignerUrl(id)}>
-            //   <BlockOutlined title="Click to open this form in the designer" />
-            // </a>
           )}
           <span className="sha-form-info-card-title">
             Form: {getFormFullName(module, name)} v{versionNo}

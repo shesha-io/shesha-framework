@@ -8,7 +8,7 @@ import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/provi
 import classNames from 'classnames';
 import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter';
-import { FormIdentifier, FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
+import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
 import { convertToMarkupWithSettings } from '@/providers/form/utils';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import Show from '@/components/show';
@@ -16,6 +16,7 @@ import FormInfo from './formInfo';
 import { Result } from 'antd';
 import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
 import { FormPersisterActionsContext } from '@/providers/formPersisterProvider/contexts';
+import { useFormDesignerUrl } from '@/providers/form/hooks';
 
 interface RenderWithMarkupArgs {
   providedMarkup: FormRawMarkup;
@@ -48,14 +49,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const canConfigure = Boolean(app.routes.formsDesigner) && Boolean(formId);
   const { router } = useShaRouting(false) ?? {};
 
-  const getDesignerUrl = (fId: FormIdentifier) => {
-    return typeof fId === 'string'
-      ? `${app.routes.formsDesigner}?id=${fId}`
-      : Boolean(fId?.name)
-        ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
-        : null;
-  };
-  const formDesignerUrl = getDesignerUrl(formId);
+  const formDesignerUrl = useFormDesignerUrl(formId);
   const openInDesigner = () => {
     if (formDesignerUrl && router) {
       router.push(formDesignerUrl).then(() => switchApplicationMode('live'));
@@ -118,7 +112,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               persistedFormProps: formProps,
               onMarkupUpdated: refetchMarkup
                 ? () => {
-                  console.log('!!!');
+                  console.log('LOG: markup updated callback 1');
                   refetchMarkup();
                 }
                 : undefined
@@ -144,7 +138,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
                             formSettings: persister.formSettings,
                             persistedFormProps: persister.formProps,
                             onMarkupUpdated: () => {
-                              console.log('LOG: updated!');
+                              console.log('LOG: markup updated callback 2');
                               persisterActions.loadForm({ skipCache: true });
                             }
                           })}
