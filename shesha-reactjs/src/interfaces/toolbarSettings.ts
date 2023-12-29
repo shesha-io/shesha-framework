@@ -216,7 +216,7 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'editableTagGroup');
   }
 
-  public addReadOnlyMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
+  public addEditMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
     return this.addProperty(props, 'editModeSelector');
   }
 

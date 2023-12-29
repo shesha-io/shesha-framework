@@ -34,6 +34,7 @@ const SubFormTestPage: PageWithLayout<ISubFormTestPageProps> = () => {
                 </Form.Item>
                 <Form.Item>
                     <SubFormProvider
+                        id='test'
                         propertyName={"subformtest"}
                         //markup={{ components: formConfiguration?.markup, formSettings: formConfiguration?.settings }}
                         properties={[]}

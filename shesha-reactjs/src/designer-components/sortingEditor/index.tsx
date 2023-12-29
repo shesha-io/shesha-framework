@@ -6,7 +6,7 @@ import { ConfigurableFormItem } from '@/components/index';
 import settingsFormJson from './settingsForm.json';
 import { evaluateString, validateConfigurableComponentSettings } from '@/utils/publicUtils';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
-import { useForm, useFormData } from '@/providers/index';
+import { useFormData } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
@@ -24,12 +24,11 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
     icon: <GroupOutlined />,
     isHidden: true,
     Factory: ({ model }) => {
-        const { formMode } = useForm();
         const { data: formData } = useFormData();
         const { modelType: modelTypeExpression } = model;
 
         const modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
-        const readOnly = model.readOnly || formMode === 'readonly';
+        const readOnly = model.readOnly;
         
         return (
             <ConfigurableFormItem model={model}>

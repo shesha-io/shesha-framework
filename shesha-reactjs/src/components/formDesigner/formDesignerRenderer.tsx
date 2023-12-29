@@ -1,7 +1,7 @@
-import { FormDesignerToolbar } from './toolbar/formDesignerToolbar';
 import React, { FC } from 'react';
-import { DesignerTitle } from './designerTitle/index';
 import { DesignerMainArea } from './designerMainArea/index';
+import { DesignerTitle } from './designerTitle/index';
+import { FormDesignerToolbar } from './toolbar/formDesignerToolbar';
 
 export const FormDesignerRenderer: FC = ({ }) => {
   return (

@@ -3,6 +3,7 @@ import { IErrorInfo } from '@/interfaces/errorInfo';
 import { CrudMode } from './models';
 
 export interface ICrudStateContext {
+  id?: string;
   isNewObject: boolean;
   allowEdit: boolean;
   allowDelete: boolean;

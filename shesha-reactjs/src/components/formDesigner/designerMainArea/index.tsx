@@ -1,9 +1,10 @@
 import ComponentPropertiesPanel from '../componentPropertiesPanel';
 import ComponentPropertiesTitle from '../componentPropertiesTitle';
+import ParentProvider from '@/providers/parentProvider';
 import React, { FC } from 'react';
 import Toolbox from '../toolbox';
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
-import { DebugPanel } from '../debugPanel/index';
+import { DebugPanel } from '../debugPanel';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 
@@ -33,11 +34,13 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                 placeholder: 'Properties',
             }}
         >
-            <ConfigurableFormRenderer form={form} skipFetchData={true}>
-                {isDebug && (
-                    <DebugPanel formData={form.getFieldsValue()} />
-                )}
-            </ConfigurableFormRenderer>
+            <ParentProvider model={{}} formMode='designer'>
+                <ConfigurableFormRenderer form={form} skipFetchData={true}>
+                    {isDebug && (
+                        <DebugPanel formData={form.getFieldsValue()} />
+                    )}
+                </ConfigurableFormRenderer>
+            </ParentProvider>
         </SidebarContainer>
     );
 };

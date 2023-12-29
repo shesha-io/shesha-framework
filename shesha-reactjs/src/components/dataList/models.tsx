@@ -36,6 +36,8 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
 }
 
 export interface IDataListBaseProps {
+  id: string;
+  
   dataSource?: string;
 
   formSelectionMode?: FormSelectionMode;

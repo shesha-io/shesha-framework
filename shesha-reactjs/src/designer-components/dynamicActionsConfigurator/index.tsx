@@ -5,7 +5,6 @@ import { Form } from 'antd';
 import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { ThunderboltOutlined } from '@ant-design/icons';
-import { useForm } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActionsConfiguratorComponentProps> = {
@@ -14,15 +13,12 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
   icon: <ThunderboltOutlined />,
   isHidden: false,
   Factory: ({ model }) => {
-    const { isComponentHidden, formMode } = useForm();
 
-    const isHidden = isComponentHidden(model);
-
-    if (isHidden) return null;
+    if (model.hidden) return null;
 
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <DynamicActionsConfigurator editorConfig={model} readOnly={formMode === 'readonly'} />
+        <DynamicActionsConfigurator editorConfig={model} readOnly={model.readOnly} />
       </Form.Item>
     );
   },

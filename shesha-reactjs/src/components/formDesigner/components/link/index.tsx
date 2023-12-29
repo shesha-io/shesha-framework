@@ -10,6 +10,7 @@ import { AlignItems, JustifyContent, JustifyItems } from '@/designer-components/
 import { ContainerDirection } from '../../common/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import ConfigurableFormItem from '../formItem';
+import ParentProvider from '@/providers/parentProvider/index';
 
 export interface IAlertProps extends IConfigurableFormComponent {
   text: string;
@@ -85,16 +86,18 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
           }
 
           const containerHolder = () => (
-            <ComponentsContainer
-              containerId={id}
-              direction={direction}
-              justifyContent={model.direction === 'horizontal' ? model?.justifyContent : null}
-              alignItems={model.direction === 'horizontal' ? model?.alignItems : null}
-              justifyItems={model.direction === 'horizontal' ? model?.justifyItems : null}
-              className={model.className}
-              itemsLimit={1}
-              dynamicComponents={model?.isDynamic ? model?.components?.map(c => ({ ...c, readOnly: model?.readOnly })) : []}
-            />
+            <ParentProvider model={model}>
+              <ComponentsContainer
+                containerId={id}
+                direction={direction}
+                justifyContent={model.direction === 'horizontal' ? model?.justifyContent : null}
+                alignItems={model.direction === 'horizontal' ? model?.alignItems : null}
+                justifyItems={model.direction === 'horizontal' ? model?.justifyItems : null}
+                className={model.className}
+                itemsLimit={1}
+                dynamicComponents={model?.isDynamic ? model?.components : []}
+              />
+            </ParentProvider>
           );
           if (isDesignerMode) {
             return containerHolder();

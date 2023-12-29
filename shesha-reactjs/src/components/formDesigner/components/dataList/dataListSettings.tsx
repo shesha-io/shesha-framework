@@ -323,7 +323,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
 
-        {model.formSelectionMode === 'name' && model.canAddInline === 'yes' &&
+        {model.formSelectionMode !== 'view' && model.canAddInline === 'yes' &&
         <SettingsFormItem name="createFormId" label="Create form" jsSetting >
           <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
         </SettingsFormItem>

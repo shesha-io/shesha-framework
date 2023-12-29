@@ -11,6 +11,7 @@ import {
 import { executeScriptSync } from '@/providers/form/utils';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { IDrawerProps } from './models';
+import ParentProvider from '@/providers/parentProvider/index';
 
 export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, Omit<DrawerProps, 'id'> {}
 
@@ -147,10 +148,12 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
         </Space>
       }
     >
-      <ComponentsContainer
-        containerId={id}
-        dynamicComponents={isDynamic ? components?.map(c => ({ ...c, readOnly: readOnly })) : []}
-      />
+      <ParentProvider model={props}>
+        <ComponentsContainer
+          containerId={id}
+          dynamicComponents={isDynamic ? components?.map(c => ({ ...c, readOnly: readOnly })) : []}
+        />
+      </ParentProvider>
     </Drawer>
   );
 };

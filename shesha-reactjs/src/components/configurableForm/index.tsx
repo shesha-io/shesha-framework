@@ -1,21 +1,22 @@
-import React, { FC } from 'react';
-import ConfigurableFormRenderer from './configurableFormRenderer';
-import { IConfigurableFormProps } from './models';
-import { FormProvider } from '@/providers/form';
-import ConfigurableComponent from '../appConfigurator/configurableComponent';
-import EditViewMsg from '../appConfigurator/editViewMsg';
-import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
 import classNames from 'classnames';
-import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
-import { FormMarkupConverter } from '@/providers/formMarkupConverter';
-import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import { convertToMarkupWithSettings } from '@/providers/form/utils';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
-import Show from '@/components/show';
+import ConfigurableComponent from '../appConfigurator/configurableComponent';
+import ConfigurableFormRenderer from './configurableFormRenderer';
+import EditViewMsg from '../appConfigurator/editViewMsg';
 import FormInfo from './formInfo';
-import { Result } from 'antd';
-import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
+import ParentProvider from '@/providers/parentProvider';
+import React, { FC } from 'react';
+import Show from '@/components/show';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
+import { convertToMarkupWithSettings } from '@/providers/form/utils';
+import { FormMarkupConverter } from '@/providers/formMarkupConverter';
 import { FormPersisterActionsContext } from '@/providers/formPersisterProvider/contexts';
+import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
+import { FormProvider } from '@/providers/form';
+import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
+import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
+import { IConfigurableFormProps } from './models';
+import { Result } from 'antd';
+import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
 
 interface RenderWithMarkupArgs {
@@ -71,28 +72,30 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     return (
       <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
         {(flatComponents) => (
-          <FormProvider
-            needDebug={needDebug}
-            name="Form"
-            {...flatComponents}
-            formSettings={formSettings}
-            formMarkup={providedMarkup}
-            mode={mode}
-            form={restProps.form}
-            actions={actions}
-            sections={sections}
-            context={context}
-            formRef={formRef}
-            onValuesChange={restProps.onValuesChange}
-            refetchData={refetchData}
-            isActionsOwner={isActionsOwner}
-            propertyFilter={propertyFilter}
-          >
-            <Show when={Boolean(showFormInfo)}>
-              <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
-            </Show>
-            <ConfigurableFormRenderer {...restProps} />
-          </FormProvider>
+          <ParentProvider model={{}} formMode={mode}>
+            <FormProvider
+              needDebug={needDebug}
+              name="Form"
+              {...flatComponents}
+              formSettings={formSettings}
+              formMarkup={providedMarkup}
+              mode={mode}
+              form={restProps.form}
+              actions={actions}
+              sections={sections}
+              context={context}
+              formRef={formRef}
+              onValuesChange={restProps.onValuesChange}
+              refetchData={refetchData}
+              isActionsOwner={isActionsOwner}
+              propertyFilter={propertyFilter}
+            >
+              <Show when={Boolean(showFormInfo)}>
+                <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
+              </Show>
+              <ConfigurableFormRenderer {...restProps} />
+            </FormProvider>
+          </ParentProvider>
         )}
       </FormMarkupConverter>
     );

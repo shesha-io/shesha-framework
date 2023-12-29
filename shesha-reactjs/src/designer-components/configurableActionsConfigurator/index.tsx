@@ -7,7 +7,6 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ThunderboltOutlined } from '@ant-design/icons';
-import { useForm } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
@@ -16,13 +15,12 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   icon: <ThunderboltOutlined />,
   isHidden: false,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
 
     if (model.hidden) return null;
 
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator editorConfig={model} level={1} readOnly={formMode === 'readonly'} label={model.label} description={model.description} />
+        <ConfigurableActionConfigurator editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
       </Form.Item>
     );
   },

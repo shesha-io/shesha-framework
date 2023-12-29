@@ -9,6 +9,7 @@ import ComponentsContainer from '../../containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import { useFormData, useGlobalState } from '@/providers';
 import { getLayoutStyle } from '@/utils/publicUtils';
+import ParentProvider from '@/providers/parentProvider/index';
 
 export interface IDividerProps extends IConfigurableFormComponent {
   container?: boolean;
@@ -39,7 +40,7 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
     };
 
     return model?.container ? (
-      <ComponentsContainer containerId={model.id} render={(components) => <Divider {...props}>{components}</Divider>} />
+      <ParentProvider model={model}><ComponentsContainer containerId={model.id} render={(components) => <Divider {...props}>{components}</Divider>} /></ParentProvider>
     ) : (
       <Divider style={getLayoutStyle(model, { data, globalState })} {...props} />
     );

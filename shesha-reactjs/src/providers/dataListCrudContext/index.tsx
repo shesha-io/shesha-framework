@@ -29,6 +29,7 @@ import { useDelayedUpdate } from '../delayedUpdateProvider/index';
 export type DataProcessor = (data: any) => Promise<any>;
 
 export interface ICrudProviderProps {
+  id?: string;
   isNewObject: boolean;
   allowEdit: boolean;
   allowDelete: boolean;
@@ -51,7 +52,6 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
     mode = 'read',
     formSettings
   } = props;
-
   const [form] = Form.useForm();
 
   const flatComponents = mode === 'read' ? props.displayComponents : props.editorComponents;
@@ -75,6 +75,7 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
 
 const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const {
+    id,
     children,
     data,
     updater,
@@ -88,8 +89,10 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     allowChangeMode,
     autoSave = false
   } = props;
+
   const [state, dispatch] = useThunkReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
+    id,
     isNewObject,
     allowEdit,
     allowDelete,

@@ -48,6 +48,7 @@ import {
   fetchDataSuccessAction,
   setMarkupWithSettingsAction,
 } from './actions';
+import ParentProvider from '../parentProvider/index';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -61,31 +62,33 @@ interface QueryParamsEvaluatorArguments {
 }
 type QueryParamsEvaluator = (args: QueryParamsEvaluatorArguments) => object;
 
-const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
-  formSelectionMode,
-  formType,
-  children,
-  value,
-  formId,
-  getUrl,
-  postUrl,
-  putUrl,
-  onCreated,
-  onUpdated,
-  actionsOwnerId,
-  actionOwnerName,
-  dataSource,
-  markup,
-  properties,
-  propertyName,
-  labelCol,
-  wrapperCol,
-  queryParams,
-  onChange,
-  defaultValue,
-  entityType,
-  context,
-}) => {
+const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) => {
+  const {
+    formSelectionMode,
+    formType,
+    children,
+    value,
+    formId,
+    getUrl,
+    postUrl,
+    putUrl,
+    onCreated,
+    onUpdated,
+    id,
+    componentName,
+    dataSource,
+    markup,
+    properties,
+    propertyName,
+    labelCol,
+    wrapperCol,
+    queryParams,
+    onChange,
+    defaultValue,
+    entityType,
+    context,
+  } = props;
+
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
 
   const { publish } = usePubSub();
@@ -437,7 +440,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
   //#endregion
 
   const getChildComponents = (componentId: string) => {
+    
     const childIds = state.componentRelations[componentId];
+
     if (!childIds) return [];
     const components = childIds.map((childId) => {
       return state.allComponents[childId];
@@ -445,12 +450,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
     return components;
   };
 
-  const actionDependencies = [actionsOwnerId];
+  const actionDependencies = [id];
   useConfigurableAction(
     {
       name: 'Get form data',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
+      owner: componentName,
+      ownerUid: id,
       hasArguments: false,
       executer: () => {
         debouncedFetchData(true); // todo: return real promise
@@ -463,8 +468,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
   useConfigurableAction(
     {
       name: 'Post form data',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
+      owner: componentName,
+      ownerUid: id,
       hasArguments: false,
       executer: () => {
         postData(); // todo: return real promise
@@ -477,8 +482,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
   useConfigurableAction(
     {
       name: 'Update form data',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
+      owner: componentName,
+      ownerUid: id,
       hasArguments: false,
       executer: () => {
         putData(); // todo: return real promise
@@ -532,7 +537,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = ({
           getChildComponents,
         }}
       >
-        {children}
+        <ParentProvider model={props} subFormIdPrefix={id}>
+          {children}
+        </ParentProvider>
       </SubFormActionsContext.Provider>
     </SubFormContext.Provider>
   );

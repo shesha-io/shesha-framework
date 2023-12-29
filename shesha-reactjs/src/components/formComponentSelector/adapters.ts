@@ -31,7 +31,7 @@ const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
 
 const labelProperties = ['label', 'hideLabel', 'labelAlign', 'description'];
 const bindingProperties = ['name', 'propertyName', 'defaultValue'];
-const visibilityProperties = ['hidden', 'disabled', 'readOnly', 'visibility', 'hideBorder'];
+const visibilityProperties = ['hidden', 'disabled', 'readOnly', 'visibility', 'hideBorder', 'editMode'];
 const styleProperties = ['style', 'size'];
 const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibilityProperties, ...styleProperties];
 

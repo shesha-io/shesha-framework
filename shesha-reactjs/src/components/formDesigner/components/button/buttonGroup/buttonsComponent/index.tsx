@@ -5,7 +5,6 @@ import { buttonsSettingsForm } from './settings';
 import { GroupOutlined } from '@ant-design/icons';
 import { IButtonsProps as IButtonsComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
-import { useForm } from '@/providers';
 
 const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
   type: 'buttons',
@@ -13,10 +12,9 @@ const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
   icon: <GroupOutlined />,
   isHidden: true,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
     return (
       <ConfigurableFormItem model={model}>
-        <ButtonGroupSettingsModal title="Configure Buttons" readOnly={ formMode === 'readonly' }/>
+        <ButtonGroupSettingsModal title="Configure Buttons" readOnly={model.readOnly}/>
       </ConfigurableFormItem>
     );
   },

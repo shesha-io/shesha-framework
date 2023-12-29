@@ -6,7 +6,6 @@ import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/model
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { ITableComponentBaseProps } from '../models';
-import { useForm } from '@/providers';
 
 interface IColumnsEditorComponentProps extends ITableComponentBaseProps, IConfigurableFormComponent {
   //items: ColumnsItemProps[];
@@ -23,10 +22,9 @@ const EntityPickerColumnsEditorComponent: IToolboxComponent<IColumnsEditorCompon
   icon: <ColumnWidthOutlined />,
   isHidden: true, // We do not want to show this on the component toolbox
   Factory: ({ model }) => {
-    const { formMode } = useForm();
     return (
       <ConfigurableFormItem model={model}>
-        <ColumnsConfig readOnly={formMode === 'readonly'} />
+        <ColumnsConfig readOnly={model.readOnly} />
       </ConfigurableFormItem>
     );
   },

@@ -1,4 +1,4 @@
-import { ComponentsContainer, FormRawMarkup, IFormSettings } from "@/index";
+import { ComponentsContainer, FormItemProvider, FormRawMarkup, IFormSettings } from "@/index";
 import { DataListCrudProvider } from "@/providers/dataListCrudContext/index";
 import { CrudMode } from "@/providers/crudContext/models";
 import { ComponentsContainerProvider } from "@/providers/form/nesting/containerContext";
@@ -6,6 +6,7 @@ import { FormMarkupConverter } from "@/providers/formMarkupConverter/index";
 import React, { FC } from "react";
 import CrudActionButtons from "./crudActionButtons";
 import { ItemContainerForm } from "./itemContainerForm";
+import ParentProvider from "@/providers/parentProvider/index";
 
 export interface IDataListItemProps {
   listId: string;
@@ -72,9 +73,14 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
               <CrudActionButtons />
             </div>
             <div className="sha-datalist-cell">
-              <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-                <ComponentsContainer containerId={'root'}/>
-              </ComponentsContainerProvider>
+              <ParentProvider model={{}} subFormIdPrefix={itemListId}>
+                <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+                  {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
+                  <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+                    <ComponentsContainer containerId={'root'}/>
+                  </FormItemProvider>
+                </ComponentsContainerProvider>
+              </ParentProvider>
             </div>
           </DataListCrudProvider>
           );
