@@ -2,7 +2,7 @@ import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, FormIdentifier, IFormDto, useAppConfigurator, useConfigurableActionDispatcher } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
@@ -487,7 +487,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         />
       }
       <Show when={!!persistedFormProps}>
-        <FormInfo {...persistedFormProps} />
+        <FormInfo formProps={{...(persistedFormProps as IPersistedFormProps)}} />
       </Show>
       <div>
         <Show when={selectionMode === 'multiple'}>

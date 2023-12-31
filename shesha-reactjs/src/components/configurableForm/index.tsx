@@ -1,21 +1,30 @@
-import React, { FC } from 'react';
-import ConfigurableFormRenderer from './configurableFormRenderer';
-import { IConfigurableFormProps } from './models';
-import { FormProvider } from '@/providers/form';
-import ConfigurableComponent from '../appConfigurator/configurableComponent';
-import EditViewMsg from '../appConfigurator/editViewMsg';
-import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
 import classNames from 'classnames';
-import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
-import { FormMarkupConverter } from '@/providers/formMarkupConverter';
-import { FormIdentifier, FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import { convertToMarkupWithSettings } from '@/providers/form/utils';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
-import Show from '@/components/show';
+import ConfigurableComponent from '../appConfigurator/configurableComponent';
+import ConfigurableFormRenderer from './configurableFormRenderer';
+import EditViewMsg from '../appConfigurator/editViewMsg';
 import FormInfo from './formInfo';
-import { Result } from 'antd';
+import ParentProvider from '@/providers/parentProvider';
+import React, { FC } from 'react';
+import Show from '@/components/show';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
+import { convertToMarkupWithSettings } from '@/providers/form/utils';
+import { FormMarkupConverter } from '@/providers/formMarkupConverter';
+import { FormPersisterActionsContext } from '@/providers/formPersisterProvider/contexts';
+import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
+import { FormProvider } from '@/providers/form';
+import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
 import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
-import ParentProvider from '@/providers/parentProvider/index';
+import { IConfigurableFormProps } from './models';
+import { Result } from 'antd';
+import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
+import { useFormDesignerUrl } from '@/providers/form/hooks';
+
+interface RenderWithMarkupArgs {
+  providedMarkup: FormRawMarkup;
+  formSettings: IFormSettings;
+  persistedFormProps?: IPersistedFormProps;
+  onMarkupUpdated?: () => void;
+}
 
 export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const {
@@ -28,6 +37,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     context,
     formRef,
     refetchData,
+    refetcher: refetchMarkup,
     formProps,
     isActionsOwner,
     propertyFilter,
@@ -40,14 +50,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const canConfigure = Boolean(app.routes.formsDesigner) && Boolean(formId);
   const { router } = useShaRouting(false) ?? {};
 
-  const getDesignerUrl = (fId: FormIdentifier) => {
-    return typeof fId === 'string'
-      ? `${app.routes.formsDesigner}?id=${fId}`
-      : Boolean(fId?.name)
-      ? `${app.routes.formsDesigner}?module=${fId.module}&name=${fId.name}`
-      : null;
-  };
-  const formDesignerUrl = getDesignerUrl(formId);
+  const formDesignerUrl = useFormDesignerUrl(formId);
   const openInDesigner = () => {
     if (formDesignerUrl && router) {
       router.push(formDesignerUrl).then(() => switchApplicationMode('live'));
@@ -56,11 +59,8 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
 
   const markupWithSettings = convertToMarkupWithSettings(markup, isSettings);
 
-  const renderWithMarkup = (
-    providedMarkup: FormRawMarkup,
-    formSettings: IFormSettings,
-    persistedFormProps?: IPersistedFormProps
-  ) => {
+  const renderWithMarkup = (args: RenderWithMarkupArgs) => {
+    const { providedMarkup, formSettings, persistedFormProps, onMarkupUpdated } = args;
     if (!providedMarkup) return null;
 
     const formStatusInfo = persistedFormProps?.versionStatus
@@ -91,7 +91,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               propertyFilter={propertyFilter}
             >
               <Show when={Boolean(showFormInfo)}>
-                <FormInfo {...persistedFormProps} />
+                <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
               </Show>
               <ConfigurableFormRenderer {...restProps} />
             </FormProvider>
@@ -109,25 +109,47 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
             <EditViewMsg />
           </BlockOverlay>
           {markup ? (
-            renderWithMarkup(markupWithSettings.components, markupWithSettings.formSettings, formProps)
+            renderWithMarkup({
+              providedMarkup: markupWithSettings.components,
+              formSettings: markupWithSettings.formSettings,
+              persistedFormProps: formProps,
+              onMarkupUpdated: refetchMarkup
+                ? () => {
+                  console.log('LOG: markup updated callback 1');
+                  refetchMarkup();
+                }
+                : undefined
+            })
           ) : (
             <FormPersisterProvider formId={formId}>
-              <FormPersisterConsumer>
-                {(persister) => (
-                  <>
-                    {persister.loadError?.code === 404 && (
-                      <Result
-                        status="404"
-                        //style={{ height: '100vh - 55px' }}
-                        title="404"
-                        subTitle={getFormNotFoundMessage(formId)}
-                      />
+              <FormPersisterActionsContext.Consumer>
+                {(persisterActions) => (
+                  <FormPersisterConsumer>
+                    {(persister) => (
+                      <>
+                        {persister.loadError?.code === 404 && (
+                          <Result
+                            status="404"
+                            //style={{ height: '100vh - 55px' }}
+                            title="404"
+                            subTitle={getFormNotFoundMessage(formId)}
+                          />
+                        )}
+                        {persister.loaded &&
+                          renderWithMarkup({
+                            providedMarkup: persister.markup,
+                            formSettings: persister.formSettings,
+                            persistedFormProps: persister.formProps,
+                            onMarkupUpdated: () => {
+                              console.log('LOG: markup updated callback 2');
+                              persisterActions.loadForm({ skipCache: true });
+                            }
+                          })}
+                      </>
                     )}
-                    {persister.loaded &&
-                      renderWithMarkup(persister.markup, persister.formSettings, persister.formProps)}
-                  </>
+                  </FormPersisterConsumer>
                 )}
-              </FormPersisterConsumer>
+              </FormPersisterActionsContext.Consumer>
             </FormPersisterProvider>
           )}
         </div>

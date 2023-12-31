@@ -1,13 +1,13 @@
 import React from 'react';
-import { Story } from '@storybook/react';
-import FormDesigner from './formDesigner';
-import { addStory } from '@/stories/utils';
-import { FormIdentifier, FormMode } from '@/providers/form/models';
 import StoryApp from '@/components/storyBookApp';
+import { addStory } from '@/stories/utils';
+import { FormDesigner } from './index';
+import { FormIdentifier, FormMode } from '@/providers/form/models';
+import { Story } from '@storybook/react';
 
 export default {
   title: 'Components/Temp/FormDesigner',
-  component: FormDesigner,
+  component: FormDesigner.NonVisual,
 };
 
 export interface IFormDesignerStoryProps {

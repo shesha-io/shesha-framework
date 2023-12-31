@@ -46,24 +46,24 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
   const showFormInfo = !!formInfo && formInfoBlockVisible && !!ConfigurationItemVersionStatusMap?.[formInfo?.versionStatus];
 
   return (
-        <Modal
-          open={open}
-          onOk={onOk}
-          onCancel={onCancel}
-          title={title}
-          width={width}
-          okButtonProps={{ disabled: readOnly }}
-        >
-          <Skeleton loading={loading}>
-            <Show when={showFormInfo}>
-              <FormInfo {...formInfo} />
-            </Show>
+    <Modal
+      open={open}
+      onOk={onOk}
+      onCancel={onCancel}
+      title={title}
+      width={width}
+      okButtonProps={{ disabled: readOnly }}
+    >
+      <Skeleton loading={loading}>
+        <Show when={showFormInfo}>
+          <FormInfo formProps={formInfo} />
+        </Show>
 
-            <ValidationErrors error={error} />
+        <ValidationErrors error={error} />
 
-              <SubForm readOnly={readOnly} />
-          </Skeleton>
-        </Modal>
+        <SubForm readOnly={readOnly} />
+      </Skeleton>
+    </Modal>
   );
 };
 

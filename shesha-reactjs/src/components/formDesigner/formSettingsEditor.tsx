@@ -95,5 +95,3 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
     </Modal>
   );
 };
-
-export default FormSettingsEditor;
