@@ -1,16 +1,15 @@
 import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState, useRef, MutableRefObject } from 'react';
 import { useMeasure, usePrevious } from 'react-use';
-import { FormFullName, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useSheshaApplication } from '@/providers';
+import { FormFullName, FormIdentifier, IFormDto, useAppConfigurator, useConfigurableActionDispatcher } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
-import { getFormConfiguration, getMarkupFromResponse } from '@/providers/form/api';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
 import { IDataListProps, NewItemInitializer } from './models';
-import { asFormRawId, asFormFullName, useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
+import { useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
 import './styles/index.less';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
@@ -19,15 +18,14 @@ import { toCamelCase } from '@/utils/string';
 import { DataListItemRenderer } from './itemRenderer';
 import DataListItemCreateModal from './createModal';
 import { useMemo } from 'react';
-import { axiosHttp } from '@/index';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 interface EntityForm {
   entityType: string;
-  isFetchingFormId: boolean;
-  formId: FormFullName;
-  isFetchingFormConfiguration: boolean;
+  isFetchingFormId?: boolean;
+  formId: FormIdentifier;
+  isFetchingFormConfiguration?: boolean;
   formConfiguration: IFormDto;
 }
 
@@ -69,30 +67,41 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   actionRef,
   ...props
 }) => {
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  //const refreshRef = useRef(0);
+
+  let skipCache = false;
+  /*const now = new Date().valueOf();
+  if ((now - refreshRef.current) > 5000) {
+    skipCache = true;
+    refreshRef.current = now;
+  }*/
+
+  interface IFormIdDictionary {
+    [key: string]: Promise<FormFullName>;
+  }
+
+  const loadedFormId = useRef<IFormIdDictionary>({});
+  if (skipCache)
+    loadedFormId.current = {};
+
+  const entityForms = useRef<EntityForm[]>([]);
+  const entityFormInfo = useRef<EntityForm>();
+  const createFormInfo = useRef<EntityForm>();
+
+  useDeepCompareEffect(() => {
+    entityForms.current = [];
+    entityFormInfo.current = undefined;
+    createFormInfo.current = undefined;
+  }, [formId, formType, createFormId, createFormType, entityType, formSelectionMode]);
+
   const allData = useApplicationContext();
+  const { configurationItemMode } = useAppConfigurator();
   const { executeAction } = useConfigurableActionDispatcher();
 
   const computedGroupStyle = getStyle(groupStyle, allData.data) ?? {};
 
-  const [entityForms, setEntityForms] = useState<EntityForm[]>([]);
-  const [formConfigs, setFormConfigs] = useState<IFormDto[]>([]);
-
-  const [entityTypes, setEntityTypes] = useState<string[]>(
-    formSelectionMode === 'name'
-      ? ['formName']
-      : !!entityType 
-        ? [entityType] : 
-        []
-  );
-
-  //const [formConfigInfo, setFormConfigInfo] = useState<IFormDto>();
-  //const [createFormConfigInfo, setCreateFormConfigInfo] = useState<IFormDto>();
-
-  const [createEntityForm, setCreateEntityForm] = useState<EntityForm>();
-  //const [createFormConfig, setCreateFormConfig] = useState<IFormDto>();
   const [createModalOpen, setCreateModalOpen] = useState<boolean>(false);
-
 
   const onSelectRowLocal = (index: number, row: any) => {
     if (selectionMode === 'none') return;
@@ -139,15 +148,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (!isFetchingTableData && records?.length && props.onFetchDataSuccess) props.onFetchDataSuccess();
   }, [isFetchingTableData]);
 
-  const { getEntityFormId } = useConfigurationItemsLoader();
-
-  useEffect(() => {
-    if (formSelectionMode === 'expression') setEntityForms([]);
-  }, [records]);
-
-  useEffect(() => {
-    setEntityForms([]);
-  }, [formType, formSelectionMode, formIdExpression]);
+  const { getEntityFormId, getForm } = useConfigurationItemsLoader();
 
   const getFormIdFromExpression = (item): FormFullName => {
     if (!formIdExpression) return null;
@@ -157,22 +158,13 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const { formInfoBlockVisible } = useAppConfigurator();
 
-  const entityFormId = entityForms[0]?.formId;
-  const persistedFormProps = useMemo(() => {
-    const c = formConfigs.find(x => x.module === entityFormId?.module && x.name === entityFormId?.name);
-    return !!c && formInfoBlockVisible 
-      ? {...c} as IPersistedFormProps
-      : undefined;
-  }, [entityFormId?.module, entityFormId?.name, formConfigs?.length, formInfoBlockVisible]);
-   
-  const cfid = asFormFullName(createFormId);
-  const persistedCreateFormProps = useMemo(() => {
-    const c = formConfigs.find(x => x.module === cfid?.module && x.name === cfid?.name);
-    return !!c && formInfoBlockVisible
-      ? {...c} as IPersistedFormProps
-      : undefined;
+  const persistedFormProps = formInfoBlockVisible
+    ? entityFormInfo.current?.formConfiguration
+    : undefined;
 
-  }, [cfid?.module, cfid?.name, , formConfigs?.length, formInfoBlockVisible]);
+  const persistedCreateFormProps = formInfoBlockVisible
+    ? createFormInfo.current?.formConfiguration
+    : undefined;
 
   const [measuredRef, measured] = useMeasure();
   const [itemWidthCalc, setItemWidth] = useState({});
@@ -197,260 +189,95 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     setItemWidth(res);
   }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
 
-  const updateEntityForms = (entityForm: EntityForm) => {
-    setEntityForms((prev) =>
-      prev.map((x) => {
-        return x.entityType === entityForm.entityType ? entityForm : x;
-      })
-    );
+  const isReady = (forms: EntityForm[]) => {
+    if (!(!forms || forms.length === 0 || forms.find(x => !x.formConfiguration)))
+      updateContent();
   };
 
-  const getFormConfig = (entityForm: EntityForm, updater: (entityForm: EntityForm) => void) => {
-    entityForm.isFetchingFormConfiguration = true;
-    getFormConfiguration(entityForm.formId, backendUrl, httpHeaders).then((response) => {
-      const markupWithSettings = getMarkupFromResponse(response);
-      const formConf = {
-        ...response.result,
-        markup: markupWithSettings?.components,
-        settings: markupWithSettings?.formSettings,
+  const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>) => {
+    let entityForm = entityForms.current.find((x) => x.entityType === className);
+    if (!entityForm) {
+      entityForm = {
+        entityType: className,
+        formId: fId,
+        formConfiguration: null
       };
-      setFormConfigs((prev) => [...prev, formConf]);
-      entityForm.isFetchingFormConfiguration = false;
-      entityForm.formConfiguration = formConf;
-      updater(entityForm);
-    });
+      entityForms.current.push(entityForm);
+    }
+  
+    if (!entityFormInfo?.current)
+      entityFormInfo.current = entityForm;
+
+    if (!!entityForm.formId) {
+      getForm({formId: entityForm.formId, configurationItemMode, skipCache})
+        .then(response => {
+          const ef = entityForms.current.find(x => x.entityType === entityForm.entityType);
+          if (ef) {
+            ef.formConfiguration = response;
+            isReady(entityForms.current);
+          }
+        });
+    } else {
+
+      const f = loadedFormId.current[`${entityForm.entityType}_${fType}`]
+        ?? getEntityFormId(entityForm.entityType, fType);
+
+      f.then((e) => 
+        getForm({formId: e, configurationItemMode, skipCache})
+        .then(response => {
+          const ef = entityForms.current.find(x => x.entityType === entityForm.entityType);
+          if (ef) {
+            ef.formId = e;
+            ef.formConfiguration = response;
+            isReady(entityForms.current);
+          }
+        })
+      );
+
+      loadedFormId.current[`${entityForm.entityType}_${formType}`] = f;
+    };
   };
 
-  const getEntityFormIdInternal = (entityForm: EntityForm, formType: string, updater: (entityForm: EntityForm) => void) => {
-    entityForm.isFetchingFormId = true;
-    getEntityFormId(entityForm.entityType, formType, (formid) => {
-      entityForm.formId = formid;
-      entityForm.isFetchingFormId = false;
-      entityForm.formConfiguration = formConfigs.find((x) => x.name === formid.name && x.module === formid.module);
-      if (!Boolean(entityForm.formConfiguration)) 
-        getFormConfig(entityForm, updater);
-      else
-        updater(entityForm);
-    });
-  };
-
-  /** Make list of entityTypes */
   useDeepCompareEffect(() => {
-    if (formSelectionMode === 'name') {
-      setEntityTypes(['formName']);
-      return;
-    }
-    if (!!entityType) {
-      setEntityTypes([entityType]);
-      return;
-    }
-    if (formSelectionMode === 'expression') {
-      const et = [];
-      const ef = [...entityForms];
-      const fcFetching = [];
-      records.forEach((x, index) => {
-        const ename = `expression_${index}_${x['id']}`;
-        const entityForm = entityForms.find((x) => x.entityType === ename);
-        if (!Boolean(entityForm)) {
-          const fc = getFormIdFromExpression(x);
-          const eForm: EntityForm = {
-            entityType: ename,
-            formId: fc ?? { name: '', module: '' },
-            isFetchingFormId: false,
-            isFetchingFormConfiguration: false,
-            formConfiguration: Boolean(fc)
-              ? formConfigs.find((x) => x.name === fc.name && x.module === fc.module)
-              : null,
-          };
-          if (
-            !Boolean(eForm.formConfiguration) &&
-            fcFetching.indexOf(`${eForm.formId?.name}_${eForm.formId?.module}`) === -1 &&
-            Boolean(eForm.formId?.name)
-          ) {
-            fcFetching.push(`${eForm.formId?.name}_${eForm.formId?.module}`);
-            getFormConfig(eForm, updateEntityForms);
-          }
-          ef.push(eForm);
-        }
-        et.push(ename);
-      });
-      if (entityForms?.length !== ef?.length) setEntityForms(ef);
-      setEntityTypes(et);
-      return;
-    }
-
-    // if dynamic form and EntityType is not provided
-    const et = [];
-    records.forEach((x) => {
-      if (Boolean((x as any)?._className) && !Boolean(et.find((e) => e === (x as any)?._className))) {
-        et.push((x as any)?._className);
-      }
-    });
-    setEntityTypes(et);
-  }, [records, entityType, formSelectionMode, formIdExpression, formType, createFormType, formId, createFormId]);
-
-  /** Fetch forms data for all entity types */
-  useEffect(() => {
-    if (records?.length > 0 || formSelectionMode === 'name') {
-      let eForms = [...entityForms];
-      let changed = false;
-      const fcFetching = [];
-
-      // create from
-      let cForm = !!createEntityForm ? {...createEntityForm} : undefined;
-      if (Boolean(cForm)) {
-        if (cForm.isFetchingFormConfiguration || cForm.isFetchingFormId) {
-          return;
-        } else if (Boolean(cForm.formConfiguration)) {
-          return;
-          //const formConfig = entityForm.formConfiguration;
-        } else if (Boolean(cForm.formId)) {
-          cForm.formConfiguration = formConfigs.find(
-            (x) => x.name === cForm.formId.name && x.module === cForm.formId.module
-          );
-          if (
-            !Boolean(cForm.formConfiguration) &&
-            fcFetching.indexOf(`${cForm.formId?.name}_${cForm.formId?.module}`) === -1 &&
-            Boolean(cForm.formId?.name)
-          ) {
-            fcFetching.push(`${cForm.formId?.name}_${cForm.formId?.module}`);
-            getFormConfig(cForm, (e) => {
-              setCreateEntityForm({...e});
-            });
-          }
-          changed = true;
-        } else {
-          cForm = { ...cForm, isFetchingFormId: cForm.entityType === entityTypes[0] ? true : cForm.isFetchingFormId };
-          changed = true;
-        }
-      } else {
-        cForm = {
-          entityType: entityTypes[0],
-          formId: formSelectionMode === 'name' ? asFormFullName(createFormId) : undefined,
-          isFetchingFormId: false,
-          isFetchingFormConfiguration: false,
-          formConfiguration: undefined,
-        };
-        if (!Boolean(cForm.formId)) 
-          getEntityFormIdInternal(cForm, createFormType, (e) => setCreateEntityForm({...e}));
-        else if (fcFetching.indexOf(`${cForm.formId?.name}_${cForm.formId?.module}`) === -1) {
-          fcFetching.push(`${cForm.formId?.name}_${cForm.formId?.module}`);
-          getFormConfig(cForm, (e) => {
-            setCreateEntityForm({...e});
-          });
-        }
-        changed = true;
-      }
-      if (changed) setCreateEntityForm(cForm);
-      
-      entityTypes.forEach((etype) => {
-        if (!!etype) {
-          let eForm = eForms.find((x) => x.entityType === etype);
-          // item form
-          if (!!eForm) {
-            if (eForm.isFetchingFormConfiguration || eForm.isFetchingFormId) {
-              return;
-            } else if (Boolean(eForm.formConfiguration)) {
-              return;
-              //const formConfig = entityForm.formConfiguration;
-            } else if (Boolean(eForm.formId)) {
-              eForm.formConfiguration = formConfigs.find(
-                (x) => x.name === eForm.formId.name && x.module === eForm.formId.module
-              );
-              if (
-                !Boolean(eForm.formConfiguration) &&
-                fcFetching.indexOf(`${eForm.formId?.name}_${eForm.formId?.module}`) === -1 &&
-                Boolean(eForm.formId?.name)
-              ) {
-                fcFetching.push(`${eForm.formId?.name}_${eForm.formId?.module}`);
-                getFormConfig(eForm, updateEntityForms);
-              }
-              eForms = eForms.map((x) => {
-                return x.entityType === eForm.entityType ? eForm : x;
-              });
-              changed = true;
-            } else {
-              eForms = eForms.map((x) => {
-                return { ...x, isFetchingFormId: x.entityType === etype ? true : x.isFetchingFormId };
-              });
-              changed = true;
-            }
-          } else {
-            eForm = {
-              entityType: etype,
-              formId: formSelectionMode === 'name' ? asFormFullName(formId) : undefined,
-              isFetchingFormId: false,
-              isFetchingFormConfiguration: false,
-              formConfiguration: undefined,
-            };
-            if (!eForm.formId) 
-              getEntityFormIdInternal(eForm, formType, updateEntityForms);
-            else if (fcFetching.indexOf(`${eForm.formId?.name}_${eForm.formId?.module}`) === -1) {
-              fcFetching.push(`${eForm.formId?.name}_${eForm.formId?.module}`);
-              getFormConfig(eForm, updateEntityForms);
-            }
-            eForms.push(eForm);
-            changed = true;
-          }
-        }
-      });
-      if (changed) setEntityForms(eForms);
-    }
-  }, [entityTypes]);
-
-  /** Rendering subform if exists for each item */
-  const renderSubForm = (item: any, index: number) => {
-    let values: { [key: string]: any; id: string } = { ...item };
-
-    let formConfig: IFormDto = null; //formConfiguration;
-
-    if (!Boolean(formConfig)) {
+    records.forEach((item) => {
+      let fId = null;
+      let className = null;
       if (formSelectionMode === 'name') {
-        const fid = asFormRawId(formId);
-        if (Boolean(fid)) {
-          formConfig = formConfigs.find((x) => {
-            return x.id === fid;
-          });
-        } else {
-          const f = asFormFullName(formId);
-          if (!Boolean(f)) return null;
-          formConfig = formConfigs.find((x) => {
-            return x.name === f.name && x.module === f.module && (!f.version || x.versionNo === f.version);
-          });
-        }
+        className = '$formName$';
+        fId = formId;
       }
       if (formSelectionMode === 'view') {
-        const className = entityType ?? item?._className;
-        if (Boolean(className)) {
-          const entityForm = entityForms.find((x) => x.entityType === className);
-          if (Boolean(entityForm)) {
-            if (entityForm.isFetchingFormConfiguration || entityForm.isFetchingFormId) {
-              return null;
-            } else if (Boolean(entityForm.formConfiguration)) {
-              formConfig = entityForm.formConfiguration;
-            } else {
-              return null;
-            }
-          } else {
-            return null;
-          }
-        } else {
-          return null;
-        }
+        className = entityType ?? item?._className;
       }
       if (formSelectionMode === 'expression') {
-        const formId = getFormIdFromExpression(item);
-        if (!Boolean(formId)) return null;
-        formConfig = formConfigs.find((x) => {
-          return (
-            x.name === formId.name && x.module === formId.module && (!formId.version || x.versionNo === formId.version)
-          );
-        });
-        if (!Boolean(formConfigs)) {
-          return null;
-        }
+        fId = getFormIdFromExpression(item);
       }
-    };
+      getEntityForm(className, fId, formType, entityFormInfo);
+    });
+
+    let fId = createFormId;
+    let className = '$createFormName$';
+    if (formSelectionMode === 'view') {
+      className = !!entityType ? entityType : '$createFormName$';
+    }
+
+    getEntityForm(className, fId, createFormType, createFormInfo);
+
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode]);
+
+  const renderSubForm = (item: any, index: number) => {
+    let className = null;
+    if (formSelectionMode === 'name') {
+      className = '$formName$';
+    }
+    if (formSelectionMode === 'view') {
+      className = entityType ?? item?._className;
+    }
+
+    let entityForm = entityForms.current.find((x) => x.entityType === className);
+
+    if (!entityForm?.formConfiguration?.markup) 
+      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
 
     const dblClick = () => {
       if (props.dblClickActionConfiguration) {
@@ -466,17 +293,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       } else console.error('Action is not configured');
       return false;
     };
-
-    if (!formConfig?.markup) 
-      return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
-
+  
     return (
       <div onDoubleClick={dblClick}>
         <DataListItemRenderer
           isNewObject={false}
-          markup={formConfig?.markup}
-          formSettings={formConfig?.settings}
-          data={values}
+          markup={entityForm?.formConfiguration?.markup}
+          formSettings={entityForm?.formConfiguration?.settings}
+          data={item}
           listId={id}
           listName='Data List'
           itemIndex={index}
@@ -484,7 +308,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           allowEdit={canEditInline}
           allowDelete={canDeleteInline}
           updater={(rowData) => updateAction(index, rowData)}
-          deleter={() => deleteAction(index, values)}        
+          deleter={() => deleteAction(index, item)}        
           allowChangeEditMode={inlineEditMode === 'one-by-one'}
           editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
           autoSave={inlineSaveMode === 'auto'}
@@ -632,34 +456,30 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [props.onNewListItemInitialize]);
 
   const onNewListItemInitialize = useMemo<NewItemInitializer>(() => {
-    const result: NewItemInitializer = props.onNewListItemInitialize
-      ? () => {
-        // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-        //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewListItemInitializeExecuter(allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.contexts, axiosHttp(backendUrl), moment);
-        return Promise.resolve(result);
-      }
-      : () => {
-        return Promise.resolve({});
-      };
-
-    return result;
+    return () => Promise.resolve(
+      props.onNewListItemInitialize
+        ? onNewListItemInitializeExecuter(allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
+        : {}
+    );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
   
-  const content = useDeepCompareMemo(() => {
-    return groups 
+  const [content, setContent] = useState<React.JSX.Element[]>(null);
+
+  const updateContent = () => {
+    setContent(groups 
       ? groups?.map((item: RowsGroup, index) =>  renderGroup(item, index))
-      : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index));
-  }, [groups, records, formConfigs]);
+      : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index))
+    );
+  };
 
   return (
     <>
-      {createModalOpen && createEntityForm?.formConfiguration &&
+      {createModalOpen && createFormInfo?.current?.formConfiguration &&
         <DataListItemCreateModal 
           id={id}
           formInfo={persistedCreateFormProps}
-          markup={createEntityForm.formConfiguration.markup} 
-          formSettings={createEntityForm.formConfiguration.settings}
+          markup={createFormInfo?.current?.formConfiguration.markup} 
+          formSettings={createFormInfo?.current?.formConfiguration.settings}
           creater={createAction}
           onToggle={(isOpen) => setCreateModalOpen(isOpen)}
           data={onNewListItemInitialize}

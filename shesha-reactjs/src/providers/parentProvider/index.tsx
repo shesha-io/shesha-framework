@@ -15,12 +15,13 @@ export interface IParentProviderProps {
 
 export const ParentProviderStateContext = createContext<IParentProviderStateContext>({model: {}});
 
-const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = ({ 
-  children,
-  subFormIdPrefix,
-  model,
-  formMode
-}) => {
+const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
+  const { 
+    children,
+    subFormIdPrefix,
+    model,
+    formMode
+  } = props;
 
   const parent = useParent(false);
 

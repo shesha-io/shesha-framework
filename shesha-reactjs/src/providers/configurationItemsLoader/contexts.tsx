@@ -44,7 +44,7 @@ export interface IConfigurationItemsLoaderActionsContext {
   updateComponent: (payload: IUpdateComponentPayload) => Promise<void>;
 
   clearFormCache: (payload: IClearFormCachePayload) => void;
-  getEntityFormId: (className: string, formType: string, action: (formId: FormFullName) => void) => void;
+  getEntityFormId: (className: string, formType: string) => Promise<FormFullName>;
 }
 
 /** initial state */
