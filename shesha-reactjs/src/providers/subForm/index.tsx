@@ -192,7 +192,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   useEffect(() => {
     if (value && formSelectionMode === 'dynamic') {
       if (value && typeof value === 'object' && value['_className'] && !formConfig?.formId)
-        getEntityFormId(value['_className'], formType, (formid) => {
+        getEntityFormId(value['_className'], formType).then((formid) => {
           setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
         });
     }

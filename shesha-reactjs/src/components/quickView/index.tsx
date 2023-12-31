@@ -41,7 +41,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
 
   useEffect(() => {
     if (props.className && !formConfig)
-      getEntityFormId(props.className, props.formType ?? 'Quickview', (f) => {
+      getEntityFormId(props.className, props.formType ?? 'Quickview').then((f) => {
         setFormConfig(f);
       });
   }, [props.className, props.formType, formConfig]);

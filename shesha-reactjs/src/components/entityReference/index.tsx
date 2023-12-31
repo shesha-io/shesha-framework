@@ -109,7 +109,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       Boolean(formType) &&
       props.entityReferenceType !== 'Quickview'
     ) {
-      getEntityFormId(entityType, formType, (formid) => {
+      getEntityFormId(entityType, formType).then((formid) => {
         setFormIdentifier({ name: formid.name, module: formid.module });
       });
     }
