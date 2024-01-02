@@ -198,5 +198,5 @@ export const CrashFix = addStory(Template, {
     name: 'reflist-test-detailsview',
     module: 'Boxfusion.SheshaFunctionalTests.Common',
   },
-  id: 'c46e2e9e-e85d-4372-ae2e-0033f08d471f'
+  id: '445fcddd-adeb-4e7b-8d58-0bbaf494635f'
 });

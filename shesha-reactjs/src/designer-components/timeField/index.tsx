@@ -14,7 +14,11 @@ import { axiosHttp } from '@/utils/fetchers';
 import { getNumericValue } from '@/utils/string';
 import settingsFormJson from './settingsForm.json';
 import './styles/index.less';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migratePropertyName,
+  migrateCustomFunctions,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 type RangeValue = [moment.Moment, moment.Moment];
@@ -50,9 +54,9 @@ const getMoment = (value: any, dateFormat: string): Moment => {
   if (value === null || value === undefined) return undefined;
   const values = [
     isMoment(value) ? value : null,
-    typeof(value) === 'number' ? moment.utc(value * 1000) : null, // time in millis
-    typeof(value) === 'string' ? moment(value as string, dateFormat) : null, 
-    typeof(value) === 'string' ? moment(value as string) : null
+    typeof value === 'number' ? moment.utc(value * 1000) : null, // time in millis
+    typeof value === 'string' ? moment(value as string, dateFormat) : null,
+    typeof value === 'string' ? moment(value as string) : null,
   ];
 
   const parsed = values.find((i) => isMoment(i) && i.isValid());
@@ -61,13 +65,12 @@ const getMoment = (value: any, dateFormat: string): Moment => {
 };
 
 const getTotalSeconds = (value: Moment): number => {
-  if (!isMoment(value) || !value.isValid())
-    return undefined;
+  if (!isMoment(value) || !value.isValid()) return undefined;
 
   const timeOnly = moment.duration({
     hours: value.hours(),
     minutes: value.minutes(),
-    seconds: value.seconds()
+    seconds: value.seconds(),
   });
   return timeOnly.asSeconds();
 };
@@ -87,7 +90,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
-    
+
     const eventProps = {
       model,
       form,
@@ -103,12 +106,11 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) =>  {
-          const customEvent =  customTimeEventHandler(eventProps);
+        {(value, onChange) => {
+          const customEvent = customTimeEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function') 
-              onChange(...args);
+            if (typeof onChange === 'function') onChange(...args);
           };
           return <TimePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
         }}
@@ -124,11 +126,11 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
     };
     return customModel;
   },
-  migrator: (m) => m
-    .add<ITimePickerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ITimePickerProps>(1, (prev) => migrateVisibility(prev))
-    .add<ITimePickerProps>(2, (prev) => migrateReadOnly(prev))
-  ,
+  migrator: (m) =>
+    m
+      .add<ITimePickerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ITimePickerProps>(1, (prev) => migrateVisibility(prev))
+      .add<ITimePickerProps>(2, (prev) => migrateReadOnly(prev)),
 };
 
 const TimePickerWrapper: FC<ITimePickerProps> = ({
@@ -161,32 +163,26 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
     secondStep: 60 % secondStepLocal === 0 ? secondStepLocal : 1, // It should be a factor of 60.
   };
 
-  
-  const getDefaultRangePickerValues = () =>
-    Array.isArray(defaultValue) && defaultValue?.length === 2
-      ? defaultValue?.map((v) => moment(new Date(v), format))
-      : [null, null];
+  const getRangePickerValues = (value: string | [string, string]) =>
+    Array.isArray(value) && value?.length === 2 ? value?.map((v) => getMoment(v, format)) : [null, null];
 
   const handleTimePickerChange = (newValue: Moment, timeString: string) => {
-    if (onChange){
+    if (onChange) {
       const seconds = getTotalSeconds(newValue);
       (onChange as TimePickerChangeEvent)(seconds, timeString);
     }
   };
   const handleTimePickerSelect = (newValue: Moment) => {
-    if (onChange){
+    if (onChange) {
       const seconds = getTotalSeconds(newValue);
-      const timeString = seconds
-        ? moment(seconds * 1000).format(format)
-        : undefined;
+      const timeString = seconds ? moment(seconds * 1000).format(format) : undefined;
       (onChange as TimePickerChangeEvent)(seconds, timeString);
     }
-  };  
+  };
 
   const handleRangePicker = (values: Moment[], timeString: [string, string]) => {
-    if (onChange){
-      const seconds = values?.map(value => getTotalSeconds(value));
-
+    if (onChange) {
+      const seconds = values?.map((value) => getTotalSeconds(value));
       (onChange as RangePickerChangeEvent)(seconds, timeString);
     }
   };
@@ -201,14 +197,12 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
         bordered={!hideBorder}
         onChange={handleRangePicker}
         format={format}
-        value={getDefaultRangePickerValues() as RangeValue}
+        value={getRangePickerValues(value || defaultValue) as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
         className="sha-timepicker"
-        
         {...rest}
         placeholder={[placeholder, placeholder]}
-     
       />
     );
   }
@@ -219,7 +213,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
       onChange={handleTimePickerChange}
       onSelect={handleTimePickerSelect}
       format={format}
-      value={evaluatedValue|| (defaultValue && moment(defaultValue))}
+      value={evaluatedValue || (defaultValue && moment(defaultValue))}
       {...steps}
       style={getStyle(style, formData)}
       className="sha-timepicker"
