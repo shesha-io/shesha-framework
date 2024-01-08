@@ -1,6 +1,6 @@
 import React, { FC, MutableRefObject, useEffect, useRef } from 'react';
-import { Button, Tooltip } from 'antd';
-import { DeleteFilled, StopOutlined, EyeInvisibleOutlined, EditOutlined, FunctionOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+import { StopOutlined, EyeInvisibleOutlined, EditOutlined, FunctionOutlined } from '@ant-design/icons';
 import FormComponent from '../formComponent';
 import { useComponentModel, useForm } from '@/providers/form';
 import DragWrapper from './dragWrapper';
@@ -59,7 +59,6 @@ interface IConfigurableFormComponentDesignerProps {
 const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
   const allData = useApplicationContext('all');
   const {
-    deleteComponent,
     selectedComponentId,
     readOnly,
     activeDataSourceId,
@@ -76,11 +75,8 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
   }, []);
   
 
-  const onDeleteClick = () => {
-    deleteComponent({ componentId: componentModel.id });
-  };
 
-  const hiddenByCondition = allData?.form?.visibleComponentIds && !allData.form.visibleComponentIds.includes(componentModel.id);
+ const hiddenByCondition = allData?.form?.visibleComponentIds && !allData.form.visibleComponentIds.includes(componentModel.id);
   const disabledByCondition = allData?.form?.enabledComponentIds && !allData.form.enabledComponentIds.includes(componentModel.id);
 
   const invalidConfiguration =
@@ -127,13 +123,8 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
       </span>
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
-      {!readOnly && (
-        <div className="sha-component-controls">
-          <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
-        </div>
-      )}
       <div>
-        <DragWrapper componentId={componentModel.id} componentRef={componentRef} >
+        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
         <div style={{ padding: '5px 3px' }}>
           <ComponentRenderer id={componentModel.id} componentRef={componentRef} />
         </div>

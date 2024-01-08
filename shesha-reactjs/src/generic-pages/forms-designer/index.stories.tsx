@@ -83,5 +83,9 @@ export const RefListStatus = addStory(Template, {
   formId: '757a9c7d-0366-4b54-a751-de2e36ee6f6c',
 });
 export const RichTextEditor = addStory(Template, {
-  formId: 'de18f1ff-89ab-4cdb-bdd2-2bfead1119b1',
+  formId: 'ea560a2f-0016-4b60-9486-d9081fb060bf',
+});
+
+export const RefListStatusDemo = addStory(Template, {
+  formId: 'ba7e55c3-85f0-4067-be92-5ddcdd7e8e62',
 });

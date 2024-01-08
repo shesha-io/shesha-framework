@@ -1,18 +1,20 @@
 import React, { FC, MutableRefObject, PropsWithChildren, useEffect, useState } from 'react';
 import { useForm } from '@/providers/form';
 import { useMetadata } from '@/providers';
-import { Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useDataContext } from '@/providers/dataContextProvider';
+import { DeleteFilled } from '@ant-design/icons';
 
 interface IDragWrapperProps {
   componentId: string;
   componentRef: MutableRefObject<any>;
+  readOnly?: boolean;
 }
 
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
   const { getComponentModel } = useForm();
-  const { selectedComponentId, setSelectedComponent, isDebug } = useFormDesigner();
+  const { selectedComponentId, setSelectedComponent, isDebug, deleteComponent } = useFormDesigner();
 
   const [selected, setSelected] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -67,9 +69,17 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
     e.stopPropagation();
     setIsOpen(false);
   };
+  const onDeleteClick = () => {
+    deleteComponent({ componentId: componentModel.id });
+  };
 
   return (
     <div className="sha-component-drag-handle" onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
+      {!props?.readOnly && isOpen && (
+        <div className="sha-component-controls">
+          <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
+        </div>
+      )}
       <Tooltip title={tooltip} placement="right" open={isOpen}>
         {props.children}
       </Tooltip>
