@@ -3,7 +3,7 @@ import { Button, Tooltip } from 'antd';
 import { DeleteFilled, StopOutlined, EyeInvisibleOutlined, EditOutlined, FunctionOutlined } from '@ant-design/icons';
 import FormComponent from '../formComponent';
 import { useComponentModel, useForm } from '@/providers/form';
-import DragHandle from './dragHandle';
+import DragWrapper from './dragWrapper';
 import ValidationIcon from './validationIcon';
 import { Show } from '@/components/show';
 import classNames from 'classnames';
@@ -133,10 +133,11 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
         </div>
       )}
       <div>
-        <DragHandle componentId={componentModel.id} componentRef={componentRef} />
-        <div style={{ paddingLeft: '15px' }}>
+        <DragWrapper componentId={componentModel.id} componentRef={componentRef} >
+        <div style={{ padding: '5px 3px' }}>
           <ComponentRenderer id={componentModel.id} componentRef={componentRef} />
         </div>
+        </DragWrapper>
       </div>
     </div>
   );
