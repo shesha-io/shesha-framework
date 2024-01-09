@@ -50,7 +50,7 @@ export const ForgotPassword: FC<IProps> = () => {
           toggleVerifyOtpModalVisibility();
         })
         .catch((e) => {
-          console.log('LOG: rejected', e);
+          console.error('Failed to send OTP:', e);
           toggleVerifyOtpModalVisibility();
         });
     }

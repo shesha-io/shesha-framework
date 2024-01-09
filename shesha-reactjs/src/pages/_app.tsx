@@ -24,7 +24,6 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
 					noAuth={router?.asPath?.includes('/no-auth')}
 				>
 					<CustomNProgress />
-					{/* <CustomNProgress /> */}
 					<StoredFilesProvider baseUrl={BASE_URL} ownerId={''} ownerType={''}>
 						{getLayout(<Component {...(router?.query || {})} {...pageProps} />)}
 					</StoredFilesProvider>

@@ -115,7 +115,6 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               persistedFormProps: formProps,
               onMarkupUpdated: refetchMarkup
                 ? () => {
-                  console.log('LOG: markup updated callback 1');
                   refetchMarkup();
                 }
                 : undefined
@@ -141,7 +140,6 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
                             formSettings: persister.formSettings,
                             persistedFormProps: persister.formProps,
                             onMarkupUpdated: () => {
-                              console.log('LOG: markup updated callback 2');
                               persisterActions.loadForm({ skipCache: true });
                             }
                           })}

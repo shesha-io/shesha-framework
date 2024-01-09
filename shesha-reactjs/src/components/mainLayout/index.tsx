@@ -23,7 +23,6 @@ import { useLocalStorage } from '@/hooks';
 import { useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
-import './styles/styles.less';
 
 const { Header, Content, Footer, Sider } = Layout;
 

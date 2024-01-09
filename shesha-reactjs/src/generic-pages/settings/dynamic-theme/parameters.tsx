@@ -78,7 +78,6 @@ const ThemeParameters: FC = () => {
   const textConfigs: IThemeConfig[] = [
     { name: 'default', onChange: (hex: string) => updateTheme('text', { default: hex }) },
     { name: 'secondary', onChange: (hex: string) => updateTheme('text', { secondary: hex }) },
-    { name: 'link', onChange: (hex: string) => updateTheme('text', { link: hex }), hint: 'Placeholder for now' },
   ];
 
   return (
@@ -139,20 +138,7 @@ const ThemeParameters: FC = () => {
             <Radio value="light">Light</Radio>
           </Radio.Group>
         </Form.Item>
-
-        <Form.Item label="Background">
-          {renderColor(
-            "sidebarBackground",
-            '',
-            theme?.sidebarBackground,
-            ({ hex }) => changeTheme({ ...theme, sidebarBackground: hex }),
-            null,
-            'Placeholder for now'
-          )}
-        </Form.Item>
       </Form>
-
-      <Divider />
     </Fragment>
   );
 };

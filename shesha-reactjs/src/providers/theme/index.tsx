@@ -1,5 +1,5 @@
-import { ConfigProvider } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { ConfigProvider, ThemeConfig } from 'antd';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
 import { THEME_CONFIG_NAME } from '@/shesha-constants';
 import { useDebouncedCallback } from 'use-debounce';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
@@ -54,17 +54,37 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     debouncedSave(theme);
   };
 
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
+  const themeConfig = useMemo<ThemeConfig>(() => {
+    const appTheme = state.theme?.application;
+    const result: ThemeConfig = {
+      cssVar: true,
+      token: appTheme
+        ? {
+          colorPrimary: appTheme.primaryColor,
+          colorInfo: appTheme.infoColor,
+          colorSuccess: appTheme.successColor,
+          colorError: appTheme.errorColor,
+          colorWarning: appTheme.warningColor,
+        }
+        : undefined,
+    };
+    return result;
+  }, [state.theme]);
+
   return (
     <UiStateContext.Provider value={state}>
       <UiActionsContext.Provider
         value={{
           changeTheme,
-
-          /* NEW_ACTION_GOES_HERE */
         }}
       >
-        <ConfigProvider prefixCls={prefixCls}>{children}</ConfigProvider>
+        <ConfigProvider
+          prefixCls={prefixCls}
+          iconPrefixCls={iconPrefixCls}
+          theme={themeConfig}
+        >
+          {children}
+        </ConfigProvider>
       </UiActionsContext.Provider>
     </UiStateContext.Provider>
   );

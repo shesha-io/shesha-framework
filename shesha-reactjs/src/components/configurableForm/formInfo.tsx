@@ -28,7 +28,6 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
 
   const onModalOpen = () => setOpen(true);
   const onUpdated = () => {
-    console.log('LOG: markup updated!');
     if (onMarkupUpdated)
       onMarkupUpdated();
     setOpen(false);
