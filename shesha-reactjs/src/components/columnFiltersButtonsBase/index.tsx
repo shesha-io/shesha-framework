@@ -18,13 +18,13 @@ export const ColumnFiltersButtonsBase: FC<IColumnFiltersButtonsBaseProps> = ({
     <div className="column-filters-buttons">
       <div className="column-filters-buttons-left">
         {false /*not implemented and temporary removed*/ && toggleSaveFilterModal && (
-          <Button size="small" type="ghost" onClick={() => toggleSaveFilterModal(true)}>
+          <Button size="small" type="default" ghost={true} onClick={() => toggleSaveFilterModal(true)}>
             Save
           </Button>
         )}
       </div>
       <div className="column-filters-buttons-right">
-        <Button size="small" type="ghost" onClick={clearFilters}>
+        <Button size="small" type="default" ghost={true} onClick={clearFilters}>
           Clear
         </Button>
 

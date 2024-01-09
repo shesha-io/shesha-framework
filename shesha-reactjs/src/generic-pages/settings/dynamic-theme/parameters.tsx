@@ -37,13 +37,14 @@ const ThemeParameters: FC = () => {
 
   const renderColor = useCallback(
     (
+      key: string,
       colorName: string,
       initialColor: string,
       onChange: (color: ColorResult) => void,
       presetColors?: string[],
       hint?: string
     ) => (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+      <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
         <ColorPicker
           title={humanizeString(colorName)}
           presetColors={presetColors ?? PRESET_COLORS}
@@ -85,14 +86,15 @@ const ThemeParameters: FC = () => {
       <SectionSeparator title="Theme" />
 
       <Space direction="vertical" align="start">
-        {colorConfigs.map((config) =>
-          renderColor(config.name, theme?.application?.[config.name], ({ hex }) => config.onChange(hex))
+        {colorConfigs.map((config, index) =>
+          renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], ({ hex }) => config.onChange(hex))
         )}
 
         <Divider />
 
         {/* Layout background Color */}
         {renderColor(
+          'layoutBackground',
           'layoutBackground',
           theme?.layoutBackground,
           ({ hex }) => changeTheme({ ...theme, layoutBackground: hex }),
@@ -105,8 +107,9 @@ const ThemeParameters: FC = () => {
       <SectionSeparator title="Text" />
 
       <Space direction="vertical" align="start">
-        {textConfigs.map((config) =>
+        {textConfigs.map((config, index) =>
           renderColor(
+            `text_${index}`, 
             config.name,
             theme?.text?.[config.name],
             ({ hex }) => config.onChange(hex),
@@ -139,6 +142,7 @@ const ThemeParameters: FC = () => {
 
         <Form.Item label="Background">
           {renderColor(
+            "sidebarBackground",
             '',
             theme?.sidebarBackground,
             ({ hex }) => changeTheme({ ...theme, sidebarBackground: hex }),

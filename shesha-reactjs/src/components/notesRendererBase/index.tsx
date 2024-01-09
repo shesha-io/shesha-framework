@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect, CSSProperties, useRef } from 'react';
 import DateDisplay from '@/components/dateDisplay';
-import { Skeleton, Comment, Card, List, Empty, Input, notification, Button, Typography } from 'antd';
+import { Skeleton, Card, List, Empty, Input, notification, Button, Typography } from 'antd';
+import { Comment } from '@/components/antd';
 import { CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { INote, ICreateNotePayload } from '@/providers/notes/contexts';
 import _ from 'lodash';

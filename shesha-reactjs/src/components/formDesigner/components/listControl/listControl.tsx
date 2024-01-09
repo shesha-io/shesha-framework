@@ -698,7 +698,8 @@ const ListControl: FC<IListControlProps> = (props) => {
                                 <div className="sha-list-component-add-item-btn">
                                   <Button
                                     danger
-                                    type="ghost"
+                                    type="default"
+                                    ghost={true}
                                     size="small"
                                     className="dynamic-delete-button"
                                     onClick={() => {

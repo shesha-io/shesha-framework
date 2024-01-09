@@ -52,7 +52,6 @@ export default {
     'sortablejs',
     'classnames',
     'nanoid',
-    'react-calendar-timeline',
     'invert-color',
     'use-debounce',
     'react-markdown',

@@ -60,7 +60,7 @@ import { useDataContext } from '@/providers/dataContextProvider';
 import { IConfigurableActionConfiguration, useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance } from 'axios';
-import { MessageApi } from 'antd/lib/message/index';
+import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
@@ -87,7 +87,7 @@ export interface IApplicationContext {
   /** Axios Http */
   http: AxiosInstance;
   /** Message API */
-  message: MessageApi;
+  message: MessageInstance;
   /** Other data */
   [key: string]: any;
 }

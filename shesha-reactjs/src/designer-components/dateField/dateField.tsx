@@ -1,5 +1,6 @@
 import { CalendarOutlined } from '@ant-design/icons';
-import { DatePicker, message } from 'antd';
+import { message } from 'antd';
+import { DatePicker } from '@/components/antd';
 import moment, { isMoment } from 'moment';
 import React, { FC, Fragment } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';

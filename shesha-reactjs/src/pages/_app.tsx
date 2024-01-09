@@ -6,7 +6,6 @@ import { GlobalStateProvider, ShaApplicationProvider, StoredFilesProvider } from
 import { PageWithLayout } from '@/interfaces/index';
 import { useRouter } from 'next/router';
 require('@/styles/index.less');
-require('@/styles/compiled.antd.variable.css');
 
 const BASE_URL = "http://localhost:21021";
 

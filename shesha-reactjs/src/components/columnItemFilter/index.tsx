@@ -1,6 +1,6 @@
 import React, { FC, ChangeEvent, useState, Fragment, useEffect, useMemo } from 'react';
 import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
-import { Input, DatePicker, TimePicker, InputNumber, Checkbox, Dropdown, Select, Spin, MenuProps } from 'antd';
+import { Input, InputNumber, Checkbox, Dropdown, Select, Spin, MenuProps } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { Moment } from 'moment';
 import { ColumnFilter, IndexColumnFilterOption } from '@/providers/dataTable/interfaces';
@@ -16,11 +16,11 @@ import { useEntityAutocomplete } from '@/utils/autocomplete';
 import { EntityData } from '@/interfaces/gql';
 import { ProperyDataType } from '@/interfaces/metadata';
 import { IDictionary } from '@/interfaces';
+import { DatePicker, TimePicker, TimeRangePicker } from '@/components/antd';
 
 type MenuItem = MenuProps['items'][number];
 
 const { RangePicker: DateRangePicker } = DatePicker;
-const { RangePicker: TimeRangePicker } = TimePicker;
 
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
   date: ['equals', 'between', 'before', 'after'],

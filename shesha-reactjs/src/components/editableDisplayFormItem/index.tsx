@@ -1,6 +1,7 @@
 import React, { FC, Fragment } from 'react';
 import FormItem from 'antd/lib/form/FormItem';
-import { InputNumber, Input, Checkbox, Tooltip, DatePicker } from 'antd';
+import { InputNumber, Input, Checkbox, Tooltip } from 'antd';
+import { DatePicker } from '@/components/antd';
 import { InputNumberProps } from 'antd/lib/input-number';
 import { PickerProps } from 'antd/lib/date-picker/generatePicker';
 import { CheckboxProps, CheckboxChangeEvent } from 'antd/lib/checkbox';

@@ -35,6 +35,7 @@ export interface IButtonGroupItemBase {
   itemType: ButtonGroupItemType;
   icon?: string;
   buttonType?: ButtonType;
+  ghost?: boolean;
   customVisibility?: string;
   customEnabled?: string;
   permissions?: string[];

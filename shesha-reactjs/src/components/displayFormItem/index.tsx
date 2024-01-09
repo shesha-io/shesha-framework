@@ -67,7 +67,8 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
               <Button
                 className="ant-blend-btn"
                 icon={<EditOutlined />}
-                type="ghost"
+                type="default"
+                ghost={true}
                 onClick={() => setState({ ...state, isEdit: true })}
               />
             )}

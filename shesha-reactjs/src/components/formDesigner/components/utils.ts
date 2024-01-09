@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import { MessageApi } from 'antd/lib/message';
+import { MessageInstance } from 'antd/es/message/interface';
 import { AxiosInstance } from 'axios';
 import { DOMAttributes } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
@@ -21,7 +21,7 @@ export interface ICustomEventHandler {
   formMode: FormMode;
   globalState: IAnyObject;
   http: AxiosInstance;
-  message: MessageApi;
+  message: MessageInstance;
   moment: object;
   setFormData: (payload: ISetFormDataPayload) => void;
   setGlobalState: (payload: ISetStatePayload) => void;
@@ -40,7 +40,7 @@ export const onCustomEventsHandler = <FormCustomEvent = any>(
   formMode: FormMode,
   globalState: IAnyObject,
   http: AxiosInstance,
-  message: MessageApi,
+  message: MessageInstance,
   moment: object,
   setFormData: SetFormDataFunc,
   setGlobalState: SetGlobalStateFunc

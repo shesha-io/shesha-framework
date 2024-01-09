@@ -138,7 +138,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
         setUploadFile({
             uid: nanoid(),
             url: null,
-            status: 'success',
+            status: 'done',
             name: rcFile.name,
             size: rcFile.size,
             type: rcFile.type,

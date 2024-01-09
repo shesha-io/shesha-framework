@@ -14,7 +14,11 @@ export const migrateV0toV1 = (props: IChildTableComponentProps, context: Setting
             return item;
 
         const button = item as IButtonGroupButtonV0;
-        const newItem: IButtonItem = { ...button };
+        const newItem: IButtonItem = { 
+            ...button,
+            buttonType: button.buttonType === 'ghost' ? 'default' : button.buttonType,
+            ghost: button.buttonType === 'ghost',
+        };
         newItem.actionConfiguration = getActionConfiguration(button, context);
 
         return newItem;
