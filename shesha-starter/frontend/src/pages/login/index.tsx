@@ -10,7 +10,7 @@ import { ILoginForm } from "models";
 import Link from "next/link";
 import React from "react";
 import { URL_FORGOT_PASSWORD } from "routes";
-import { useAuth, ValidationErrors } from "@shesha/reactjs";
+import { useAuth, ValidationErrors } from "@shesha-io/reactjs";
 import { LoginPageWrapper } from "../../components/pages/logon/styles";
 
 export const Login = () => {

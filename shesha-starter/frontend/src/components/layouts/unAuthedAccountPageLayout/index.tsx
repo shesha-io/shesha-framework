@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import { Row, Col } from "antd";
-import { useUi } from "@shesha/reactjs";
+import { useUi } from "@shesha-io/reactjs";
 import { UnAuthedLayoutContainer } from "./styles";
 
 interface IProps {
