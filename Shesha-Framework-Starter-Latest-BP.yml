@@ -235,7 +235,7 @@ stages:
       displayName: 'Npm Update Version'
       inputs:
         command: custom
-        workingDir: shesha-starter-tests/frontend
+        workingDir: shesha-starter/frontend
         verbose: false
         customCommand: 'version $(versionNo) --allow-same-version'
       # condition: ne(variables['currentBranch'], 'refs/heads/main')        
@@ -257,7 +257,7 @@ stages:
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: 'shesha-starter-tests/frontend'
+        workingDir: 'shesha-starter/frontend'
         verbose: true
         customCommand: run build
     # Creating a temporary directory to copy both node apps
