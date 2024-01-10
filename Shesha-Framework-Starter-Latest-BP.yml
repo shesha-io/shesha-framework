@@ -105,7 +105,7 @@ stages:
       displayName: dotnet Restore
       inputs:
         command: 'restore'
-        projects: backend/src/*Host/*.csproj
+        projects: shesha-starter/backend/src/*Host/*.csproj
         feedsToUse: 'config'
         nugetConfigPath: 'backend/.nuget/NuGet.Config'
         # feedsToUse: 'select'
@@ -113,14 +113,14 @@ stages:
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: backend/src/*Host/*.csproj
+        projects: shesha-starter/backend/src/*Host/*.csproj
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: backend/src/*Host/*.csproj
+        projects: shesha-starter/backend/src/*Host/*.csproj
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -144,7 +144,7 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: backend/src/*Host/*.csproj
+        packagesToPack: shesha-starter/backend/src/*Host/*.csproj
         # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
         configuration: '$(BuildParameters.configuration)'
         nobuild: false
