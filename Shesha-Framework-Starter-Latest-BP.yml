@@ -107,7 +107,7 @@ stages:
         command: 'restore'
         projects: shesha-starter/backend/src/*Host/*.csproj
         feedsToUse: 'config'
-        nugetConfigPath: 'backend/.nuget/NuGet.Config'
+        nugetConfigPath: shesha-starter/backend/.nuget/NuGet.Config
         # feedsToUse: 'select'
         # vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
