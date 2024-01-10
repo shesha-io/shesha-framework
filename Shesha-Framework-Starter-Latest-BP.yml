@@ -194,7 +194,7 @@ stages:
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
           write-host "The current version is: $(versionNo)"
-        workingDirectory: 'shesha-starter/adminportal'
+        workingDirectory: 'shesha-starter/frontend'
     - task: NodeTool@0
       displayName: 'Use Node 20.9.0'
       inputs:
@@ -219,7 +219,7 @@ stages:
     #   displayName: Install Latest Shesha
     #   inputs:
     #     command: custom
-    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     workingDir: 'shesha-functional-tests/frontend'
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     - task: Npm@1
@@ -233,7 +233,7 @@ stages:
       displayName: 'Npm Update Version'
       inputs:
         command: custom
-        workingDir: shesha-starter-tests/adminportal
+        workingDir: shesha-starter-tests/frontend
         verbose: false
         customCommand: 'version $(versionNo) --allow-same-version'
       # condition: ne(variables['currentBranch'], 'refs/heads/main')        
@@ -241,21 +241,21 @@ stages:
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: shesha-starter/adminportal
+        workingDir: shesha-starter/frontend
         verbose: false
         customCommand: 'install'
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
     #     command: custom
-    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     workingDir: 'shesha-functional-tests/frontend'
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: 'shesha-starter-tests/adminportal'
+        workingDir: 'shesha-starter-tests/frontend'
         verbose: true
         customCommand: run build
     # Creating a temporary directory to copy both node apps
