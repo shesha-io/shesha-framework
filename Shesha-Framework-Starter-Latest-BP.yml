@@ -269,7 +269,7 @@ stages:
           # Write your PowerShell commands here.
           mkdir temp
           Write-Host "Copying Shesha ReactJS Artifacts"
-          cp -R frontent temp
+          cp -R frontend temp
         workingDirectory: '$(System.DefaultWorkingDirectory)/shesha-starter'
     - task: ArchiveFiles@2
       inputs:
