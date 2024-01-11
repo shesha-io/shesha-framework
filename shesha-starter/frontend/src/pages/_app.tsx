@@ -39,7 +39,8 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
         <GlobalStateProvider>
           <ShaApplicationProvider
             backendUrl={BASE_URL}
-            router={router}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            router={router as any}
             noAuth={router?.asPath?.includes("/no-auth")}
           >
             <CustomNProgress />
