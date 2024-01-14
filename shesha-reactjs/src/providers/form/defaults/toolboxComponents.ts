@@ -46,6 +46,7 @@ import SizableColumnsComponent from '@/components/formDesigner/components/sizabl
 import Space from '@/components/formDesigner/components/space';
 import Statistic from '@/components/formDesigner/components/statistic';
 import StatusTag from '@/components/formDesigner/components/statusTag';
+import StyleBox from '@/components/formDesigner/components/styleBox';
 import SubForm from '@/components/formDesigner/components/subForm';
 import Switch from '@/components/formDesigner/components/switch/switch';
 import Tabs from '@/components/formDesigner/components/tabs';
@@ -152,6 +153,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       Rate,
       Radio,
       Section,
+      StyleBox,
       Switch,
       TextAreaComponent,
       TextFieldComponent,
