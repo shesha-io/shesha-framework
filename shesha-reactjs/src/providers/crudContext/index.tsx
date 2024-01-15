@@ -58,7 +58,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     onSave,
     allowChangeMode,
     autoSave = false,
-    formSettings
+    formSettings,
   } = props;
   const [state, dispatch] = useThunkReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
@@ -84,7 +84,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   }, [autoSave]);
 
   useEffect(() => {
-    const modeToUse = allowChangeMode ? state.mode : mode;
+    
+    const modeToUse = mode == 'read' ? mode : allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
@@ -272,7 +273,12 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           mode={state.mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}
         >
-          <FormWrapper form={form} initialValues={state.initialValues} onValuesChange={onValuesChange} formSettings={formSettings}>
+          <FormWrapper
+            form={form}
+            initialValues={state.initialValues}
+            onValuesChange={onValuesChange}
+            formSettings={formSettings}
+          >
             {children}
           </FormWrapper>
         </FormProvider>
@@ -298,7 +304,13 @@ interface FormWrapperProps {
   formSettings?: IFormSettings;
 }
 
-const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, formSettings, children }) => {
+const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({
+  initialValues,
+  onValuesChange,
+  form,
+  formSettings,
+  children,
+}) => {
   const { updateStateFormData: setFormData } = useForm();
 
   const onValuesChangeInternal = (changedValues: any, values: any) => {
@@ -309,7 +321,13 @@ const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, o
   };
 
   return (
-    <Form component={false} form={form} initialValues={initialValues} onValuesChange={onValuesChangeInternal} {...formSettings}>
+    <Form
+      component={false}
+      form={form}
+      initialValues={initialValues}
+      onValuesChange={onValuesChangeInternal}
+      {...formSettings}
+    >
       {children}
     </Form>
   );

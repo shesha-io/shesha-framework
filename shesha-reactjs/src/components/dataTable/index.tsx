@@ -34,6 +34,7 @@ import { ValueRenderer } from '../valueRenderer/index';
 import { isEqual } from "lodash";
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
+import { adjustWidth, getCruadActionWidth } from './cell/utils';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -72,6 +73,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   customUpdateUrl,
   customDeleteUrl,
   onRowSave,
+  inlineEditMode,
   onRowSaveSuccessAction: onRowSaveSuccess,
   ...props
 }) => {
@@ -108,6 +110,53 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     strictSortBy,
     setColumnWidths,
   } = store;
+
+  const evaluateYesNoInheritJs = (
+    value: YesNoInheritJs,
+    jsExpression: string,
+    formMode: FormMode,
+    formData: any,
+    globalState: IAnyObject
+  ): boolean => {
+    switch (value) {
+      case 'yes':
+        return true;
+      case 'no':
+        return false;
+      case 'inherit':
+        return formMode === 'edit';
+      case 'js': {
+        return (
+          jsExpression &&
+          executeScriptSync<boolean>(jsExpression, {
+            formData: formData,
+            globalState: globalState,
+            moment: moment,
+          })
+        );
+      }
+    }
+    return false;
+  };
+
+  const prevCrudOptions = usePrevious({
+    canDelete: evaluateYesNoInheritJs(
+      props.canDeleteInline,
+      props.canDeleteInlineExpression,
+      formMode,
+      formData,
+      globalState
+    ),
+    canEdit: evaluateYesNoInheritJs(
+      props.canEditInline,
+      props.canEditInlineExpression,
+      formMode,
+      formData,
+      globalState
+    ),
+    inlineEditMode,
+    canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
+  });
 
   const onSelectRowLocal = (index: number, row: any) => {
     if (onSelectRow) {
@@ -203,33 +252,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return result;
   }, [onNewRowInitializeExecuter, formData, globalState]);
 
-  const evaluateYesNoInheritJs = (
-    value: YesNoInheritJs,
-    jsExpression: string,
-    formMode: FormMode,
-    formData: any,
-    globalState: IAnyObject
-  ): boolean => {
-    switch (value) {
-      case 'yes':
-        return true;
-      case 'no':
-        return false;
-      case 'inherit':
-        return formMode === 'edit';
-      case 'js': {
-        return (
-          jsExpression &&
-          executeScriptSync<boolean>(jsExpression, {
-            formData: formData,
-            globalState: globalState,
-            moment: moment,
-          })
-        );
-      }
-    }
-    return false;
-  };
 
   const crudOptions = useMemo(() => {
     const result = {
@@ -252,9 +274,10 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     };
     return {
       ...result,
+      ...getCruadActionWidth(result, prevCrudOptions, inlineEditMode),
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
-  }, [props.canDeleteInline, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
+  }, [props.canDeleteInline, props.canEditInline, props.canAddInline, formMode, formData, globalState, inlineEditMode]);
 
   const preparedColumns = useMemo(() => {
     const localPreparedColumns = columns
@@ -262,6 +285,24 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         return column.show && !(column.columnType === 'crud-operations' && !crudOptions.enabled);
       })
       .map<DataTableColumn>((columnItem) => {
+
+        if (columnItem.columnType === 'crud-operations') {
+          const { maxWidth, minWidth } = adjustWidth(
+            {
+              maxWidth: columnItem.maxWidth,
+              minWidth: columnItem.minWidth,
+            },
+            {
+              canDivideByThree: crudOptions.canDivideByThree,
+              canDivideWidth: crudOptions.canDivideWidth,
+              canDoubleWidth: crudOptions.canDoubleWidth,
+              canTripeWidth: crudOptions.canTripeWidth,
+              singleButtonWidth: crudOptions.singleButtonWidth,
+            }
+          );
+          columnItem.minWidth = minWidth;
+          columnItem.maxWidth = maxWidth;
+        }
         const strictWidth =
           columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
             ? columnItem.minWidth
@@ -286,7 +327,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       });
 
     return localPreparedColumns;
-  }, [columns, crudOptions.enabled, sortMode]);
+  }, [columns,
+    crudOptions.enabled,
+    crudOptions.canAdd,
+    crudOptions.canEdit,
+    crudOptions.canDelete,
+    inlineEditMode,
+    sortMode]);
 
   // sort
   const defaultSorting = sortMode === 'standard'
@@ -606,7 +653,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     newRowCapturePosition: props.newRowCapturePosition,
     createAction: creater,
     newRowInitData: crudOptions.onNewRowInitialize,
-    inlineEditMode: props.inlineEditMode,
+    inlineEditMode,
     inlineSaveMode: props.inlineSaveMode,
     inlineEditorComponents,
     inlineCreatorComponents,

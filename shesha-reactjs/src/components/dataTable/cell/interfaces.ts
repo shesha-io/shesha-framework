@@ -3,6 +3,7 @@ import { ITableColumn } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ITableDataColumn } from '@/providers/dataTable/interfaces';
 import { IFieldComponentProps } from '@/providers/datatableColumnsConfigurator/models';
+import { InlineEditMode } from '@/components/reactTable/interfaces';
 
 export interface IHasColumnConfig<TConfig extends ITableColumn> {
   columnConfig?: TConfig;
@@ -28,3 +29,32 @@ export interface IComponentWrapperProps {
   defaultValue?: any;
   readOnly?: boolean;
 }
+
+export interface IGetCrudProps {
+  canDoubleWidth?: boolean;
+  canDivideWidth?: boolean;
+  canTripeWidth?: boolean;
+  canDivideByThree?: boolean;
+  singleButtonWidth?: boolean;
+}
+
+export interface ICrudOptions {
+  canDelete?: boolean;
+  canEdit?: boolean;
+  inlineEditMode?: InlineEditMode;
+  canAdd?: boolean;
+}
+export interface IChangeProps {
+  add?: boolean;
+  edit?: boolean;
+  delete?: boolean;
+  inlineEditMode?: boolean;
+}
+
+export interface ICrudOptions {
+  canTripeWidth?: boolean;
+  canDivideWidth?: boolean;
+  singleButtonWidth?: boolean;
+  canDivideByThree?: boolean;
+  canDoubleWidth?: boolean;
+};
