@@ -9,7 +9,13 @@ export const adjustWidth = (currentWidth: { minWidth: number; maxWidth: number }
   } else if (crudOptions.singleButtonWidth && crudOptions.canDivideWidth) {
     currentWidth.minWidth /= 2;
     currentWidth.maxWidth /= 2;
-  } else if (crudOptions.singleButtonWidth && crudOptions.canDivideByThree) {
+  } else if (crudOptions.canDivideWidth && crudOptions.canDoubleWidth) {
+    if (currentWidth.minWidth % 2 == 0) {
+      currentWidth.minWidth = (currentWidth.minWidth / 2) * 2;
+      currentWidth.maxWidth = (currentWidth.maxWidth / 2) * 2;
+    }
+  }
+  else if (crudOptions.singleButtonWidth && crudOptions.canDivideByThree) {
     currentWidth.minWidth /= 3;
     currentWidth.maxWidth /= 3;
   } else if (crudOptions.canDivideByThree && crudOptions.canDoubleWidth) {
@@ -61,7 +67,7 @@ export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperPr
 export const getCruadActionWidth = (
   currentOptions: ICrudOptions,
   prevCrudOptions: ICrudOptions,
-  inlineEditMode: InlineEditMode
+  inlineEditMode: InlineEditMode,
 ): IGetCrudProps => {
   let canDoubleWidth = false;
   let canDivideWidth = false;
@@ -202,14 +208,19 @@ export const getCruadActionWidth = (
       }
     }
   }
+  
 
   if (!change(changes)) {
     // In readonly mode or form designer loading
-    if (canEdit && inlineEditMode === 'all-at-once' && canDelete) {
-      canTripeWidth = true;
-    } else if ((canEdit && (canAdd || canDelete)) || canAdd) {
-      canDoubleWidth = true;
-    }
+      if (canEdit && inlineEditMode === 'all-at-once' && canDelete) {
+        canTripeWidth = true;
+      } else if ((canEdit && (canDelete||canAdd)) || canAdd) {
+        canDoubleWidth = true;
+      }
+
+    
+
+   
   }
 
   return {
