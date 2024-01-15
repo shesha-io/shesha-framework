@@ -1,5 +1,5 @@
 import { Empty, Form } from 'antd';
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useRef, useState,useMemo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableForm } from '@/components';
 import { IPropertyMetadata } from '@/interfaces/metadata';
@@ -8,16 +8,19 @@ import { IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/mode
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { FormMarkup } from '@/providers/form/models';
 import columnSettingsJson from './columnSettings.json';
+import { getItemById } from '@/providers/datatableColumnsConfigurator/utils';
+import { usePrevious } from 'react-use';
 
 export interface IProps {}
 
 export const ColumnProperties: FC<IProps> = () => {
-  const { selectedItemId, getItem, updateItem, readOnly } = useColumnsConfigurator();
+  const { selectedItemId, getItem, updateItem, readOnly,items } = useColumnsConfigurator();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
   const [form] = Form.useForm();
 
   const formRef = useRef<ConfigurableFormInstance>(null);
+  const previousItems = usePrevious(items);
 
   const debouncedSave = useDebouncedCallback(
     (values) => {
@@ -27,15 +30,33 @@ export const ColumnProperties: FC<IProps> = () => {
     300
   );
 
-  useEffect(() => {
-    form.resetFields();
 
-    if (formRef.current) {
-      const values = form.getFieldsValue();
 
-      formRef.current.updateStateFormData({ values, mergeValues: false });
-    }
-  }, [selectedItemId]);
+ const columnTypeChanged=useMemo(()=>{
+
+  if(selectedItemId===null) return false;
+
+  if(previousItems?.length){
+    const prevItem = getItemById(previousItems, selectedItemId);
+    const latestItem = getItemById(items, selectedItemId);
+    return prevItem?.columnType!==latestItem?.columnType;
+  }
+  return false;
+
+
+ },[selectedItemId,items,previousItems])
+
+
+
+ useEffect(() => {
+  form.resetFields();
+
+  if (formRef.current) {
+    const values = form.getFieldsValue();
+
+    formRef.current.updateStateFormData({ values, mergeValues: false });
+  }
+}, [selectedItemId]);
 
   const getEditor = () => {
     const emptyEditor = null;
@@ -78,7 +99,7 @@ export const ColumnProperties: FC<IProps> = () => {
   useEffect(() => {
     const currentEditor = getEditor();
     setEditor(currentEditor);
-  }, [selectedItemId]);
+  }, [selectedItemId,columnTypeChanged]);
 
   if (!Boolean(selectedItemId)) {
     return (
