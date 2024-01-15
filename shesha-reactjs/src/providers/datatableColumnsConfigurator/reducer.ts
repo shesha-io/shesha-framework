@@ -12,6 +12,8 @@ import { getItemById, getItemPositionById } from './utils';
 
 const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
   {
+
+
     [ColumnsActionEnums.AddColumn]: (state: IColumnsConfiguratorStateContext) => {
       const buttonsCount = state.items.filter((i) => i.itemType === 'item').length;
       const columnProps: IDataColumnsProps = {
@@ -107,27 +109,37 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
       const { payload } = action;
 
       const {
-        settings: { columnType, minWidth, maxWidth },
+        settings: { columnType },
       } = payload;
+
+      const newItems = [...state.items];
+      
+      const position = getItemPositionById(newItems, payload.id);
+
+      const currentVersion = newItems[position.index];
 
 
       if (!!columnType) {
-        const hasPredefinedWidth = ['action', 'crud-operations'].includes(columnType);
-        const width = hasPredefinedWidth ? 35 : null;
-        if (!minWidth) {
-          payload.settings.maxWidth = width;
-        }
-        if (!maxWidth) {
-          payload.settings.minWidth = width;
-        }
-      }
-      const newItems = [...state.items];
 
-      const position = getItemPositionById(newItems, payload.id);
+        const fromDataToAction=!['action', 'crud-operations'].includes(currentVersion?.columnType) && ['action', 'crud-operations'].includes(columnType);
+
+        const fromActionToData=['action', 'crud-operations'].includes(currentVersion?.columnType) && !['action', 'crud-operations'].includes(columnType);
+
+        if(fromDataToAction){
+          payload.settings.minWidth = 35;
+          payload.settings.maxWidth = 35;
+        }else if(fromActionToData){
+          payload.settings.minWidth = 100;
+          payload.settings.maxWidth = null;
+    
+        }
+ 
+      }
+      
       if (!position) return state;
 
       const newArray = position.ownerArray;
-      newArray[position.index] = {
+      newItems[position.index] = {
         ...newArray[position.index],
         ...payload.settings,
       };
