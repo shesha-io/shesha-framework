@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Shesha.Bootstrappers;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Specifications;
@@ -26,89 +27,95 @@ namespace Shesha.Settings
         private readonly ISettingDefinitionManager _settingDefinitionManager;
         private readonly ISettingStore _settingStore;
         private readonly IModuleManager _moduleManager;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public SettingsBootstrapper(ISettingDefinitionManager settingDefinitionManager, ISettingStore settingStore, IRepository<SettingConfiguration, Guid> settingConfigurationRepository, 
             IModuleManager moduleManager,
-            IRepository<Module, Guid> moduleRepository)
+            IRepository<Module, Guid> moduleRepository,
+            IUnitOfWorkManager unitOfWorkManager)
         {
             _settingDefinitionManager = settingDefinitionManager;
             _settingStore = settingStore;
             _settingConfigurationRepository = settingConfigurationRepository;
             _moduleManager = moduleManager;
             _moduleRepository = moduleRepository;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public async Task ProcessAsync()
         {
-            var definitionsInCode = _settingDefinitionManager.GetAll();
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var definitionsInCode = _settingDefinitionManager.GetAll();
 
-            var configurationsInDb = await _settingConfigurationRepository.GetAll().ToListAsync();
+                var configurationsInDb = await _settingConfigurationRepository.GetAll().ToListAsync();
 
-            var modules = _moduleRepository.GetAll().ToList();
-            // delete only the ones which are hard linked to the app
-            //var toDelete = configurationsInDb
+                var modules = _moduleRepository.GetAll().ToList();
+                // delete only the ones which are hard linked to the app
+                //var toDelete = configurationsInDb
 
-            // check for duplicated settings names
-            var duplicates = definitionsInCode.GroupBy(d => d.FullName, 
-                d => d, 
-                (name, items) => new { 
-                    Name = name, 
-                    Items = items 
-                })
-                .Where(g => g.Items.Count() > 1)
-                .ToDictionary(i => i.Name, i => i.Items.ToList());
-            if (duplicates.Any())
-                throw new AmbiguousSettingsException(duplicates);
+                // check for duplicated settings names
+                var duplicates = definitionsInCode.GroupBy(d => d.FullName,
+                    d => d,
+                    (name, items) => new {
+                        Name = name,
+                        Items = items
+                    })
+                    .Where(g => g.Items.Count() > 1)
+                    .ToDictionary(i => i.Name, i => i.Items.ToList());
+                if (duplicates.Any())
+                    throw new AmbiguousSettingsException(duplicates);
 
-            var consolidated = definitionsInCode.Select(d => new {
-                    Code = d, 
+                var consolidated = definitionsInCode.Select(d => new {
+                    Code = d,
                     Db = configurationsInDb.FirstOrDefault(c => new ByNameAndModuleSpecification<SettingConfiguration>(d.Name, d.ModuleName).IsSatisfiedBy(c))
                 })
-                .ToList();
+                    .ToList();
 
-            var toAdd = consolidated.Where(i => i.Db == null).ToList();
-            foreach (var itemToAdd in toAdd) 
-            {
-                var definition = itemToAdd.Code;
-
-                var module = !string.IsNullOrWhiteSpace(definition.ModuleName)
-                    ? modules.FirstOrDefault(m => m.Name == definition.ModuleName)
-                    : null;
-
-                var dataType = definition.GetSettingDataType();
-
-                await _settingStore.CreateSettingConfigurationAsync(new CreateSettingDefinitionDto
+                var toAdd = consolidated.Where(i => i.Db == null).ToList();
+                foreach (var itemToAdd in toAdd)
                 {
-                    Name = definition.Name,
-                    Label = definition.DisplayName,
-                    Description = definition.Description,
-                    Category = definition.Category,                    
-                    IsClientSpecific = definition.IsClientSpecific,
-                    DataType = dataType.DataType,
-                    EditorFormModule = definition.EditForm?.Module,
-                    EditorFormName = definition.EditForm?.Name,
-                    ModuleId = module?.Id,
-                });
-            }
+                    var definition = itemToAdd.Code;
 
-            var toUpdate = consolidated.Where(i => i.Db != null).ToList();
-            foreach (var itemToUpdate in toUpdate) 
-            {
-                var config = itemToUpdate.Db;
-                var definition = itemToUpdate.Code;
+                    var module = !string.IsNullOrWhiteSpace(definition.ModuleName)
+                        ? modules.FirstOrDefault(m => m.Name == definition.ModuleName)
+                        : null;
 
-                var module = !string.IsNullOrWhiteSpace(definition.ModuleName)
-                    ? modules.FirstOrDefault(m => m.Name == definition.ModuleName)
-                    : null;
+                    var dataType = definition.GetSettingDataType();
 
-                config.Label = definition.DisplayName;
-                config.Description = definition.Description;
-                config.Category = definition.Category;
-                config.IsClientSpecific = definition.IsClientSpecific;
-                config.EditorFormModule = definition.EditForm?.Module;
-                config.EditorFormName = definition.EditForm?.Name;
+                    await _settingStore.CreateSettingConfigurationAsync(new CreateSettingDefinitionDto
+                    {
+                        Name = definition.Name,
+                        Label = definition.DisplayName,
+                        Description = definition.Description,
+                        Category = definition.Category,
+                        IsClientSpecific = definition.IsClientSpecific,
+                        DataType = dataType.DataType,
+                        EditorFormModule = definition.EditForm?.Module,
+                        EditorFormName = definition.EditForm?.Name,
+                        ModuleId = module?.Id,
+                    });
+                }
 
-                await _settingConfigurationRepository.UpdateAsync(config);                
+                var toUpdate = consolidated.Where(i => i.Db != null).ToList();
+                foreach (var itemToUpdate in toUpdate)
+                {
+                    var config = itemToUpdate.Db;
+                    var definition = itemToUpdate.Code;
+
+                    var module = !string.IsNullOrWhiteSpace(definition.ModuleName)
+                        ? modules.FirstOrDefault(m => m.Name == definition.ModuleName)
+                        : null;
+
+                    config.Label = definition.DisplayName;
+                    config.Description = definition.Description;
+                    config.Category = definition.Category;
+                    config.IsClientSpecific = definition.IsClientSpecific;
+                    config.EditorFormModule = definition.EditForm?.Module;
+                    config.EditorFormName = definition.EditForm?.Name;
+
+                    await _settingConfigurationRepository.UpdateAsync(config);
+                }
             }
         }
     }
