@@ -203,34 +203,12 @@
             "version": 1
           },
           {
-            "id": "a5e5f68d-5c9e-44df-a213-31b1ea169d57",
-            "type": "numberField",
-            "propertyName": "padding",
+            "id": "8473d32d-ef70-4310-abef-28c887b940b0",
+            "type": "styleBox",
+            "propertyName": "stylingBox",
             "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
-            "label": "Padding",
             "validate": {},
-            "settingsValidationErrors": [],
-            "description": "Enter a number to set the padding of the component"
-          },
-          {
-            "id": "3ccc25e6-49eb-4669-a73b-8d1e7681cb05",
-            "type": "numberField",
-            "propertyName": "marginTop",
-            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
-            "label": "Margin Top",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "Enter a number to set the margin top of the component"
-          },
-          {
-            "id": "f6451b4a-e227-411a-b560-e4a940276201",
-            "type": "numberField",
-            "propertyName": "marginBottom",
-            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
-            "label": "Margin Bottom",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "description": "Enter a number to set the margin bottom of the component"
+            "settingsValidationErrors": []
           }
         ]
       }
