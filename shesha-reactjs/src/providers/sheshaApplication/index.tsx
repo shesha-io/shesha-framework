@@ -49,6 +49,7 @@ import {
   SheshaApplicationActionsContext,
   SheshaApplicationStateContext,
 } from './contexts';
+import { SheshaCommonContexts } from '../dataContextManager/models';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -161,7 +162,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           <ReferenceListDispatcherProvider>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
-                                <DataContextProvider id={'appContext'} name={'appContext'} description={'Application context'} type={'root'}>
+                                <DataContextProvider id={SheshaCommonContexts.ApplicationContext} name={SheshaCommonContexts.ApplicationContext} description={'Application context'} type={'root'}>
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>

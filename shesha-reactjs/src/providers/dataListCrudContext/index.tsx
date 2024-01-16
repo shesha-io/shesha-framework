@@ -25,6 +25,7 @@ import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from '../crudCo
 import { CrudMode } from '../crudContext/models';
 import reducer from '../crudContext/reducer';
 import { useDelayedUpdate } from '../delayedUpdateProvider/index';
+import ParentProvider from '../parentProvider/index';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -41,33 +42,32 @@ export interface ICrudProviderProps {
   deleter?: () => Promise<any>;
   onSave?: DataProcessor;
   autoSave?: boolean;
-  editorComponents?: IFlatComponentsStructure;
-  displayComponents?: IFlatComponentsStructure;
+  flatComponents?: IFlatComponentsStructure;
   formSettings?: IFormSettings;
+  itemListId?: string;
 }
 
 const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const {
     children,
     mode = 'read',
-    formSettings
+    formSettings,
   } = props;
   const [form] = Form.useForm();
 
-  const flatComponents = mode === 'read' ? props.displayComponents : props.editorComponents;
 
   return (
       <FormProvider
         form={form}
         name={''}
-        allComponents={flatComponents.allComponents}
-        componentRelations={flatComponents.componentRelations}
+        allComponents={props.flatComponents.allComponents}
+        componentRelations={props.flatComponents.componentRelations}
         formSettings={formSettings}
         mode={mode === 'read' ? 'readonly' : 'edit'}
         isActionsOwner={false}
       >
         <CrudProvider {...props}>
-            {children}
+          {children}
         </CrudProvider>
       </FormProvider>
   );
@@ -87,7 +87,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     allowDelete,
     onSave,
     allowChangeMode,
-    autoSave = false
+    autoSave = false,
+    itemListId
   } = props;
 
   const [state, dispatch] = useThunkReducer(reducer, {
@@ -303,12 +304,17 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     getInitialData,
   };
 
+  const parentMode = state.mode === "update" ? "editable" : "readOnly";
+
   return (
     <CrudContext.Provider value={contextValue}>
       <Form 
         key={state.mode}
-        component={false} form={form} initialValues={state.initialValues} onValuesChange={onValuesChangeInternal} {...props.formSettings}>
-        {children}
+        component={false} form={form} initialValues={state.initialValues} onValuesChange={onValuesChangeInternal} {...props.formSettings}
+      >
+        <ParentProvider model={{componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read"}} subFormIdPrefix={itemListId}>
+          {children}
+        </ParentProvider>
       </Form>
     </CrudContext.Provider>
   );

@@ -11,7 +11,7 @@ export interface IConfigurableFormComponentProps {
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   const allData = useApplicationContext();
-  const { form, getToolboxComponent, isComponentHidden, isComponentReadOnly } = allData.form;
+  const { form, getToolboxComponent, isComponentReadOnly } = allData.form;
 
   const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(model.type);
@@ -26,7 +26,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   if (!toolboxComponent) return null;
 
   // ToDo: AS review hidden and enabled for SubForm
-  actualModel.hidden = actualModel.hidden || isComponentHidden(model); // check `model` without modification
+  actualModel.hidden = actualModel.hidden;// || !isComponentFiltered(model); // check `model` without modification
   actualModel.readOnly = actualModel.readOnly || isComponentReadOnly(model); // check `model` without modification
 
   const renderComponent = () => {

@@ -99,6 +99,8 @@ export interface IFormActionsContext {
   getSection: (id: string, name: string) => FormSection;
 
   getToolboxComponent: (type: string) => IToolboxComponent;
+
+  isComponentFiltered: (component: IConfigurableFormComponent) => boolean;
 }
 
 /** Form initial state */
