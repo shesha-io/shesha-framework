@@ -75,10 +75,10 @@ interface ISubFormWrapperProps
   id: string;
 }
 
-const SubFormWrapper: FC<ISubFormWrapperProps> = ({ style, readOnly, ...props }) => {
+const SubFormWrapper: FC<ISubFormWrapperProps> = ({ style, ...props }) => {
   return (
     <SubFormProvider {...props} key={props.id}>
-      <SubForm style={style} readOnly={readOnly} />
+      <SubForm style={style} readOnly={props.readOnly} />
     </SubFormProvider>
   );
 };

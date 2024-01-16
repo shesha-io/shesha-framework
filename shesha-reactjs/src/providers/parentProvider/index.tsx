@@ -4,12 +4,14 @@ import { FormMode } from "../index";
 export interface IParentProviderStateContext {
   formMode?: FormMode;
   subFormIdPrefix?: string;
+  context?: string;
   model: any;
 }
 
 export interface IParentProviderProps { 
   formMode?: FormMode;
   subFormIdPrefix?: string;
+  context?: string;
   model: any;
 }
 
@@ -20,7 +22,8 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     children,
     subFormIdPrefix,
     model,
-    formMode
+    formMode,
+    context
   } = props;
 
   const parent = useParent(false);
@@ -28,6 +31,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
   const value: IParentProviderStateContext = {
     formMode: formMode ?? parent?.formMode,
     subFormIdPrefix: subFormIdPrefix ?? parent?.subFormIdPrefix,
+    context,
     model: {...parent?.model, ...model}
   };
 

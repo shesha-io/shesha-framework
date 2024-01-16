@@ -75,6 +75,7 @@ import { MessageApi } from 'antd/lib/message/index';
 import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
+import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -242,7 +243,7 @@ export const getActualModelWithParent = <T extends IConfigurableFormComponent>(
     actualModel.componentName = !!parent?.model?.componentName
       ? `${parent?.model?.componentName}.${actualModel.componentName}`
       : actualModel.componentName;
-    actualModel.context = !!actualModel.context
+    actualModel.context = !!actualModel.context && parent?.context !== actualModel.context // If the subForm has the same context then don't update context name
       ? `${parent?.subFormIdPrefix}.${actualModel.context}`
       : actualModel.context;
     updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
@@ -254,7 +255,11 @@ const updateConfigurableActionParent = (model: any, parentId: string) => {
   for (const key in model) {
     if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
       const config = model[key] as IConfigurableActionConfiguration;
+  
       if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
+        // skip SheshaActionOwners actions since they are common
+        if (Object.values(SheshaActionOwners).filter(i => i === config.actionOwner)?.length > 0)
+          continue;
         model[key] = { ...config, actionOwner: `${parentId}.${config.actionOwner}` };
       } else {
         updateConfigurableActionParent(config, parentId);
