@@ -2,7 +2,7 @@ import React, { FC, ReactNode, useMemo } from 'react';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ColProps, Form, FormItemProps } from 'antd';
 import { useForm } from '@/providers/form';
-import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
+import { getFieldNameFromExpression, getValidationRules, isCommonContext } from '@/providers/form/utils';
 import classNames from 'classnames';
 import './styles.less';
 import { useFormItem } from '@/providers';
@@ -40,9 +40,11 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
-  }, [formItem]);
+  }, [formItemlabelCol, formItemWrapperCol]);
 
-  const propName = namePrefix ? namePrefix + '.' + model.propertyName : model.propertyName;
+  const propName = namePrefix && !isCommonContext(model.context)
+    ? namePrefix + '.' + model.propertyName 
+    : model.propertyName;
 
   const { hideLabel } = model;
 

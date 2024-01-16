@@ -43,8 +43,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
           mode='create'
           allowChangeMode={false}
           autoSave={false}
-          editorComponents={flatComponents}
-          displayComponents={flatComponents}
+          flatComponents={flatComponents}
           formSettings={formSettings}
         >
           <CreateModal
