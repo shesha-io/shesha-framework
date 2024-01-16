@@ -42,8 +42,7 @@ export interface ICrudProviderProps {
   deleter?: () => Promise<any>;
   onSave?: DataProcessor;
   autoSave?: boolean;
-  editorComponents?: IFlatComponentsStructure;
-  displayComponents?: IFlatComponentsStructure;
+  flatComponents?: IFlatComponentsStructure;
   formSettings?: IFormSettings;
   itemListId?: string;
 }
@@ -56,14 +55,13 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
   } = props;
   const [form] = Form.useForm();
 
-  const flatComponents = mode === 'read' ? props.displayComponents : props.editorComponents;
 
   return (
       <FormProvider
         form={form}
         name={''}
-        allComponents={flatComponents.allComponents}
-        componentRelations={flatComponents.componentRelations}
+        allComponents={props.flatComponents.allComponents}
+        componentRelations={props.flatComponents.componentRelations}
         formSettings={formSettings}
         mode={mode === 'read' ? 'readonly' : 'edit'}
         isActionsOwner={false}
