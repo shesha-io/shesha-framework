@@ -26,7 +26,7 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   if (!toolboxComponent) return null;
 
   // ToDo: AS review hidden and enabled for SubForm
-  actualModel.hidden = actualModel.hidden;// || !isComponentFiltered(model); // check `model` without modification
+  actualModel.hidden = allData.formMode !== 'designer' && actualModel.hidden ;// || !isComponentFiltered(model)); // check `model` without modification
   actualModel.readOnly = actualModel.readOnly;// || isComponentReadOnly(model); // check `model` without modification
 
   const renderComponent = () => {
