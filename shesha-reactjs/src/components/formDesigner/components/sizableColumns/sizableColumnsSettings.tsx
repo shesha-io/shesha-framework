@@ -1,4 +1,4 @@
-import { Checkbox, Input, InputNumber } from 'antd';
+import { Checkbox, Input } from 'antd';
 import { ISizableColumnComponentProps } from './interfaces';
 import React, { FC } from 'react';
 import SizableColumnsList from './sizableColumnList';
@@ -8,6 +8,7 @@ import { EXPOSED_VARIABLES } from './exposedVariables';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import StyleBox from '../styleBox/components/box';
 
 export const SizableColumnsSettingsForm: FC<ISettingsFormFactoryArgs<ISizableColumnComponentProps>> = (props) => {
   return SettingsForm<ISizableColumnComponentProps>({ ...props, children: <SizableColumnsSettings {...props} /> });
@@ -42,12 +43,8 @@ const SizableColumnsSettings = ({ readOnly }: ISettingsFormFactoryArgs<ISizableC
         />
       </SettingsFormItem>
 
-      <SettingsFormItem name="padding" label="Padding" jsSetting>
-        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
-      </SettingsFormItem>
-
-      <SettingsFormItem name="margin" label="Margin" jsSetting>
-        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+      <SettingsFormItem name="stylingBox">
+        <StyleBox />
       </SettingsFormItem>
     </>
   );

@@ -71,7 +71,7 @@ elseif ("$PipeSourceBranch" -like "*/tags/release-*"){
     $version = Split-Path $path -Leaf
     Write-Host $version
 
-    $releaseVersion = "$version".Replace("release-", "")
+    $releaseVersion = "$version".Replace("release-", "") + '.' + $PipeBuildId
     $releaseBranch = "refs/heads/releases/$releaseVersion"
 
     write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"

@@ -39,9 +39,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Import" Version="0.0.60622-build" />
-    <PackageReference Include="Shesha.Sms.Clickatell" Version="0.0.60622-build" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.0.60622-build" />
+    <PackageReference Include="Shesha.Import" Version="0.29.0-beta" />
+    <PackageReference Include="Shesha.Sms.Clickatell" Version="0.29.0-beta" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.29.0-beta" />
   </ItemGroup>
 
   <ItemGroup>
