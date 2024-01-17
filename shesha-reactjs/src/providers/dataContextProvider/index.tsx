@@ -1,6 +1,6 @@
 import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
 import { IModelMetadata } from "@/interfaces/metadata";
-import { IConfigurableActionConfiguration, MetadataProvider, useConfigurableActionDispatcher, useMetadataDispatcher, useSubForm } from "@/providers";
+import { IConfigurableActionConfiguration, MetadataProvider, useConfigurableActionDispatcher, useMetadataDispatcher } from "@/providers";
 import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
@@ -48,13 +48,9 @@ export interface IDataContextProviderProps {
     onChangeAction?: IConfigurableActionConfiguration;
 }
 
-const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({ children, ...props }) => {
+const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({ children, id, ...props }) => {
     
     const { name, description, type = 'custom', initialData, metadata, dynamicData } = props;
-
-    const subForm = useSubForm(false);
-
-    const id = !!subForm?.id ? subForm?.id + '_' + props.id : props.id;
 
     const { onChangeContext, onUpdateContextApi, getDataContextData, onChangeContextData } = useDataContextManager();
     const metadataDispatcher = useMetadataDispatcher();
@@ -76,7 +72,7 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     });
 
     const getFieldValue = (name: string) => {
-        const data = getDataContextData(props.id);
+        const data = getDataContextData(id);
         if (!!data) {
             const propName = getFieldNameFromExpression(name);
 
@@ -95,12 +91,12 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     };
 
     const setFieldValue = (name: string, value: any) => {
-        const data = setValueByPropertyName({...getDataContextData(props.id) ?? {}}, name, value, true);
+        const data = setValueByPropertyName({...getDataContextData(id) ?? {}}, name, value, true);
         const changedData = setValueByPropertyName({}, name, value);
 
         if (onChangeData.current)
             onChangeData.current(data, changedData);
-        onChangeContextData(props.id, data);
+        onChangeContextData(id, data);
 
         onChangeAction(changedData);
     };
@@ -108,7 +104,7 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     const setData = (data: any) => {
         if (onChangeData.current)
             onChangeData.current({...data}, {...data});
-        onChangeContextData(props.id, {...data});
+        onChangeContextData(id, {...data});
 
         onChangeAction(data);
     };
@@ -123,7 +119,7 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     };
 
     const getData = () => {
-        return {...getDataContextData(props.id)} ?? {};
+        return {...getDataContextData(id)} ?? {};
     };
 
     const updateApi = (api: any) => {
@@ -157,7 +153,7 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
         if (dynamicData) {
             if (onChangeData.current)
                 onChangeData.current(dynamicData, dynamicData);
-            onChangeContextData(props.id, dynamicData);
+            onChangeContextData(id, dynamicData);
         }
     }, [dynamicData]);
 
@@ -165,7 +161,7 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
         initialData?.then(res => {
             if (onChangeData.current)
                 onChangeData.current(res, res);
-            onChangeContextData(props.id, res);
+            onChangeContextData(id, res);
         });
         metadata?.then(res => {
             onChangeContext({

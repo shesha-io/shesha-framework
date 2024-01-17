@@ -6,7 +6,6 @@ import { FormMarkupConverter } from "@/providers/formMarkupConverter/index";
 import React, { FC } from "react";
 import CrudActionButtons from "./crudActionButtons";
 import { ItemContainerForm } from "./itemContainerForm";
-import ParentProvider from "@/providers/parentProvider/index";
 
 export interface IDataListItemProps {
   listId: string;
@@ -52,40 +51,37 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
 
   return (
     <div key={itemListId}>
-      <FormMarkupConverter markup={markup} formSettings={formSettings}>
-        {(flatComponents) => {
-          return (
-          <DataListCrudProvider
-            isNewObject={isNewObject}
-            data={data}
-            allowEdit={allowEdit}
-            updater={updater}
-            allowDelete={allowDelete}
-            deleter={deleter}
-            mode={editMode}
-            allowChangeMode={allowChangeEditMode}
-            autoSave={autoSave}
-            editorComponents={flatComponents}
-            displayComponents={flatComponents}
-            formSettings={formSettings}
-          >
-            <div className="sha-datalist-actions">
-              <CrudActionButtons />
-            </div>
-            <div className="sha-datalist-cell">
-              <ParentProvider model={{}} subFormIdPrefix={itemListId}>
-                <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-                  {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
-                  <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-                    <ComponentsContainer containerId={'root'}/>
-                  </FormItemProvider>
-                </ComponentsContainerProvider>
-              </ParentProvider>
-            </div>
-          </DataListCrudProvider>
-          );
-       }}
-      </FormMarkupConverter>
+        <FormMarkupConverter markup={markup} formSettings={formSettings}>
+          {(flatComponents) => {
+            return (
+            <DataListCrudProvider
+              isNewObject={isNewObject}
+              data={data}
+              allowEdit={allowEdit}
+              updater={updater}
+              allowDelete={allowDelete}
+              deleter={deleter}
+              mode={editMode}
+              allowChangeMode={allowChangeEditMode}
+              autoSave={autoSave}
+              flatComponents={flatComponents}
+              formSettings={formSettings}
+            >
+              <div className="sha-datalist-actions">
+                <CrudActionButtons />
+              </div>
+              <div className="sha-datalist-cell">
+                  <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+                    {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
+                    <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+                      <ComponentsContainer containerId={'root'}/>
+                    </FormItemProvider>
+                  </ComponentsContainerProvider>
+              </div>
+            </DataListCrudProvider>
+            );
+        }}
+        </FormMarkupConverter>
     </div>
   );
 };

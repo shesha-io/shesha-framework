@@ -37,8 +37,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       if (!childsVisible) return null;
     }
 
+    const styling = JSON.parse(model.stylingBox || '{}');
+
     const getPanelStyle = {
-      ...pickStyleFromModel(model, 'padding', 'marginTop', 'marginBottom'),
+      ...pickStyleFromModel(styling),
       ...(executeFunction(model?.style, { data, globalState }) || {}),
     };
 
@@ -67,9 +69,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
         >
           <ComponentsContainer
             containerId={model.content.id}
-            dynamicComponents={
-              model?.isDynamic ? model?.content.components : []
-            }
+            dynamicComponents={model?.isDynamic ? model?.content.components : []}
           />
         </CollapsiblePanel>
       </ParentProvider>

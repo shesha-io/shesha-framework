@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -37,7 +37,7 @@ import {
 import { useFormDesignerComponents } from './hooks';
 import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
 import formReducer from './reducer';
-import { convertActions, convertSectionsToList, getEnabledComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
+import { convertActions, convertSectionsToList, getEnabledComponentIds, getFilteredComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 export interface IFormProviderProps {
@@ -181,6 +181,34 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const formProviderContext = useFormProviderContext();
 
+  const filteredComponents = useRef<string[]>(
+    getFilteredComponentIds(
+      allComponents,
+      {
+        ...formProviderContext,
+        data: state.formData,
+        formMode: state.formMode
+      },
+      propertyFilter
+    )
+  );
+
+  useEffect(() => {
+    filteredComponents.current = getFilteredComponentIds(
+      allComponents,
+      {
+        ...formProviderContext,
+        data: state.formData,
+        formMode: state.formMode
+      },
+      propertyFilter
+    );
+  }, [allComponents, propertyFilter, formProviderContext, state.formData, state.formMode]);
+
+  const isComponentFiltered = (component: IConfigurableFormComponent): boolean => {
+    return filteredComponents.current?.includes(component.id);
+  };
+
   const getToolboxComponent = (type: string) => toolboxComponents[type];
 
   //#region data fetcher
@@ -259,7 +287,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
         data: formContext.formData,
         formMode: formContext.formMode
       },
-      propertyFilter
+      filteredComponents.current
     );
     setVisibleComponents({ componentIds: visibleComponents });
   };
@@ -435,6 +463,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     getToolboxComponent,
     setFormData,
     hasVisibleChilds,
+    isComponentFiltered
   };
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
 

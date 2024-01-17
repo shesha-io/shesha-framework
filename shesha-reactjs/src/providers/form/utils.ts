@@ -52,18 +52,31 @@ import {
   ViewType,
 } from './models';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
-import { IDataContextManagerFullInstance, IDataContextsData, useDataContextManager } from '@/providers/dataContextManager';
+import {
+  IDataContextManagerFullInstance,
+  IDataContextsData,
+  useDataContextManager,
+} from '@/providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { useDataContext } from '@/providers/dataContextProvider';
-import { IConfigurableActionConfiguration, useDataTableStore, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import {
+  IConfigurableActionConfiguration,
+  useDataTableStore,
+  useForm,
+  useFormData,
+  useGlobalState,
+  useSheshaApplication,
+} from '@/providers';
 import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance } from 'axios';
 import { MessageApi } from 'antd/lib/message/index';
 import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
+import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
+import { SheshaCommonContexts } from '../dataContextManager/models';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -98,15 +111,15 @@ export function useFormProviderContext(): IApplicationContext {
   const { globalState, setState: setGlobalState } = useGlobalState();
   return {
     contextManager: dcm,
-    contexts: {...dcm?.getDataContextsData('all')},
+    contexts: { ...dcm?.getDataContextsData('all') },
     globalState,
     setGlobalState,
     selectedRow: useDataTableStore(false)?.selectedRow,
     moment: moment,
     http: axiosHttp(backendUrl),
-    message
-   };
-};
+    message,
+  };
+}
 
 export function useApplicationContext(topContextId?: string): IApplicationContext {
   let tcId = useDataContext(false)?.id;
@@ -186,12 +199,12 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
 };
 
 export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => {
-  return editMode === false // check exact condition
-    || editMode === 'readOnly'
-    || (editMode === 'inherited'
-      || editMode === undefined
-      || editMode === true // check exact condition
-      ) && parentReadOnly;
+  return (
+    editMode === false || // check exact condition
+    editMode === 'readOnly' ||
+    ((editMode === 'inherited' || editMode === undefined || editMode === true) && // check exact condition
+      parentReadOnly)
+  );
 };
 
 /**
@@ -208,39 +221,54 @@ export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolea
     m[propName] = getSettingValue(model[propName], allData, calcValue);
   }
 
-  const readOnly = typeof parentReadOnly === 'undefined' 
-    ? allData?.formMode === 'readonly'
-    : parentReadOnly;
+  const readOnly = typeof parentReadOnly === 'undefined' ? allData?.formMode === 'readonly' : parentReadOnly;
 
   // update ReadOnly if exists
-  if (m.hasOwnProperty('editMode'))
-    m['readOnly'] = getReadOnlyBool(m['editMode'], readOnly);
+  if (m.hasOwnProperty('editMode')) m['readOnly'] = getReadOnlyBool(m['editMode'], readOnly);
 
   return m;
 };
 
-export const getActualModelWithParent = <T extends IConfigurableFormComponent>(model: T, allData: any, parent: any): T => {
-  const parentReadOnly = allData.formMode !== 'designer' && (parent?.model?.readOnly ?? allData.formMode === 'readonly');
+export const getActualModelWithParent = <T extends IConfigurableFormComponent>(
+  model: T,
+  allData: any,
+  parent: any
+): T => {
+  const parentReadOnly =
+    allData.formMode !== 'designer' && (parent?.model?.readOnly ?? allData.formMode === 'readonly');
   const actualModel = getActualModel(model, allData, parentReadOnly);
   // update Id for complex containers (SubForm, DataList item, etc)
   if (!!parent?.subFormIdPrefix) {
     actualModel.id = `${parent?.subFormIdPrefix}.${actualModel.id}`;
     actualModel.parentId = `${parent?.subFormIdPrefix}.${actualModel.parentId}`;
-    actualModel.componentName = !!parent?.model?.componentName 
+    actualModel.componentName = !!parent?.model?.componentName
       ? `${parent?.model?.componentName}.${actualModel.componentName}`
       : actualModel.componentName;
-    actualModel.context = !!actualModel.context ? `${parent?.subFormIdPrefix}.${actualModel.context}` : actualModel.context;
+
+    actualModel.context = 
+      !!actualModel.context 
+      && parent?.context !== actualModel.context // If the subForm has the same context then don't update context name
+      && !isCommonContext(actualModel.context) // If a common context then don't update context name
+      ? `${parent?.subFormIdPrefix}.${actualModel.context}`
+      : actualModel.context;
     updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
   }
   return actualModel;
 };
 
-const  updateConfigurableActionParent = (model: any, parentId: string) => {
+export const isCommonContext = (name: string): boolean => (Object.values(SheshaCommonContexts).filter(i => i === name)?.length > 0);
+
+
+const updateConfigurableActionParent = (model: any, parentId: string) => {
   for (const key in model) {
     if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
       const config = model[key] as IConfigurableActionConfiguration;
+  
       if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
-        model[key] = {...config, actionOwner: `${parentId}.${config.actionOwner}`};
+        // skip SheshaActionOwners actions since they are common
+        if (Object.values(SheshaActionOwners).filter(i => i === config.actionOwner)?.length > 0)
+          continue;
+        model[key] = { ...config, actionOwner: `${parentId}.${config.actionOwner}` };
       } else {
         updateConfigurableActionParent(config, parentId);
       }
@@ -732,6 +760,27 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
 export const getVisibleComponentIds = (
   components: IComponentsDictionary,
   allData: IApplicationContext,
+  filteredComponents?: string[]
+): string[] => {
+  const visibleComponents: string[] = [];
+  for (const key in components) {
+    if (components.hasOwnProperty(key)) {
+      const component = components[key] as IConfigurableFormComponent;
+
+      if (filteredComponents?.includes(component.id)
+        && !getActualPropertyValue(component, allData, 'hidden')?.hidden)
+        visibleComponents.push(key);
+    }
+  }
+  return visibleComponents;
+};
+
+/**
+ * Return ids of filtered components according to the custom visibility
+ */
+export const getFilteredComponentIds = (
+  components: IComponentsDictionary,
+  allData: IApplicationContext,
   propertyFilter?: (name: string) => boolean
 ): string[] => {
   const visibleComponents: string[] = [];
@@ -739,35 +788,40 @@ export const getVisibleComponentIds = (
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
 
-      if (propertyFilter && component.propertyName) {
-        const filteredOut = propertyFilter(component.propertyName);
-        if (filteredOut === false) continue;
-      }
-
-      const hidden = getActualPropertyValue(component, allData, 'hidden')?.hidden;
-
-      const isVisible = !hidden && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode));
-      if (isVisible) visibleComponents.push(key);
+      if (isComponentFiltered(component, allData, propertyFilter))
+        visibleComponents.push(key);
     }
   }
   return visibleComponents;
 };
 
+const isComponentFiltered = (
+  component: IConfigurableFormComponent,
+  allData: IApplicationContext,
+  propertyFilter?: (name: string) => boolean
+): boolean => {
+  if (propertyFilter && component.propertyName) {
+    const filteredOut = propertyFilter(component.propertyName);
+    if (filteredOut === false) return false;
+  }
+
+  return (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode));
+};
+
 /**
  * Return ids of enabled components according to the custom enabled
  */
-export const getEnabledComponentIds = (
-  components: IComponentsDictionary,
-  allData: IApplicationContext,
-): string[] => {
+export const getEnabledComponentIds = (components: IComponentsDictionary, allData: IApplicationContext): string[] => {
   const enabledComponents: string[] = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
       const readOnly = getReadOnlyBool(getActualPropertyValue(component, allData, 'editMode')?.editMode, false); // use false because components will use parent enabled by default
-      const isEnabled = !readOnly &&
+      const isEnabled =
+        !readOnly &&
         (!Boolean(component?.enabledFunc) ||
-        (typeof component?.enabledFunc === 'function' && component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));
+          (typeof component?.enabledFunc === 'function' &&
+            component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));
 
       if (isEnabled) enabledComponents.push(key);
     }
@@ -1308,6 +1362,19 @@ export const getObjectWithOnlyIncludedKeys = (obj: IAnyObject, includedProps: st
 export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: any[]): { [key: string]: any } => {
   let style = {};
 
+  if (!args.length) {
+    args = [
+      'paddingTop',
+      'paddingRight',
+      'paddingBottom',
+      'paddingLeft',
+      'marginTop',
+      'marginRight',
+      'marginBottom',
+      'marginLeft',
+    ];
+  }
+
   if (model) {
     args.forEach((arg) => {
       if (model[arg]) style = { ...style, [arg]: `${model[arg]}px` };
@@ -1329,7 +1396,8 @@ export const getStyle = (
 };
 
 export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }) => {
-  let style = pickStyleFromModel(model, 'padding', 'margin');
+  const styling = JSON.parse(model?.stylingBox || '{}');
+  let style = pickStyleFromModel(styling);
 
   try {
     return { ...style, ...(executeFunction(model?.style, args) || {}) };

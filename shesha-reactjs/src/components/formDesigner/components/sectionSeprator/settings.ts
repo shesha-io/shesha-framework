@@ -51,23 +51,12 @@ export const getSettings = (data: any) =>
       description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
       exposedVariables: [{ name: 'data', description: 'Form values', type: 'object' }],
     })
-    .addNumberField({
-      id: '5405ce52-9f25-4eb6-8402-4539daf63a30',
-      propertyName: 'padding',
+    .addStyleBox({
+      id: 'a0e21b98-0cb9-45ef-8b79-c78c884534f4',
+      propertyName: 'stylingBox',
       parentId: 'root',
-      label: 'Padding',
       validate: {},
       settingsValidationErrors: [],
-      description: 'Enter a number to set the padding of the component',
-    })
-    .addNumberField({
-      id: 'e00e83f5-5fdf-4dd8-8b32-c3b4b37e0632',
-      propertyName: 'margin',
-      parentId: 'root',
-      label: 'Margin',
-      validate: {},
-      settingsValidationErrors: [],
-      description: 'Enter a number to set the margin of the component',
     })
     .addCodeEditor({
       id: '77af6050-c35a-470b-9924-b63d6bf355b6',
