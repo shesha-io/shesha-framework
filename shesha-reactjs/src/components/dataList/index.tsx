@@ -25,6 +25,7 @@ interface EntityForm {
   entityType: string;
   isFetchingFormId?: boolean;
   formId: FormIdentifier;
+  formType?: string;
   isFetchingFormConfiguration?: boolean;
   formConfiguration: IFormDto;
 }
@@ -195,27 +196,25 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>) => {
-    let entityForm = entityForms.current.find((x) => x.entityType === className);
+    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
     if (!entityForm) {
       entityForm = {
         entityType: className,
         formId: fId,
-        formConfiguration: null
+        formConfiguration: null,
+        formType: fType,
       };
       entityForms.current.push(entityForm);
-    }
-  
-    if (!entityFormInfo?.current)
-      entityFormInfo.current = entityForm;
+      if (!entityFormInfo?.current)
+        entityFormInfo.current = entityForm;
+    } else 
+      return;
 
     if (!!entityForm.formId) {
       getForm({formId: entityForm.formId, configurationItemMode, skipCache})
         .then(response => {
-          const ef = entityForms.current.find(x => x.entityType === entityForm.entityType);
-          if (ef) {
-            ef.formConfiguration = response;
-            isReady(entityForms.current);
-          }
+          entityForm.formConfiguration = response;
+          isReady(entityForms.current);
         });
     } else {
 
@@ -225,56 +224,58 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       f.then((e) => 
         getForm({formId: e, configurationItemMode, skipCache})
         .then(response => {
-          const ef = entityForms.current.find(x => x.entityType === entityForm.entityType);
-          if (ef) {
-            ef.formId = e;
-            ef.formConfiguration = response;
-            isReady(entityForms.current);
-          }
+          entityForm.formId = e;
+          entityForm.formConfiguration = response;
+          isReady(entityForms.current);
         })
       );
 
-      loadedFormId.current[`${entityForm.entityType}_${formType}`] = f;
+      loadedFormId.current[`${entityForm.entityType}_${fType}`] = f;
     };
   };
 
   useDeepCompareEffect(() => {
+    let fId = createFormId;
+    let className = '$createFormName$';
+    let fType = null;
+    if (formSelectionMode === 'view') {
+      fId = null;
+      className = entityType ?? '$createFormName$';
+      fType = !!createFormType ? createFormType : null;
+    }
+    getEntityForm(className, fId, fType, createFormInfo);
+
     records.forEach((item) => {
       let fId = null;
       let className = null;
+      let fType = null;
       if (formSelectionMode === 'name') {
         className = '$formName$';
         fId = formId;
       }
       if (formSelectionMode === 'view') {
+        fType = !!formType ? formType : null;
         className = entityType ?? item?._className;
       }
       if (formSelectionMode === 'expression') {
         fId = getFormIdFromExpression(item);
       }
-      getEntityForm(className, fId, formType, entityFormInfo);
+      getEntityForm(className, fId, fType, entityFormInfo);
     });
-
-    let fId = createFormId;
-    let className = '$createFormName$';
-    if (formSelectionMode === 'view') {
-      className = !!entityType ? entityType : '$createFormName$';
-    }
-
-    getEntityForm(className, fId, createFormType, createFormInfo);
-
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
+    let fType = null;
     if (formSelectionMode === 'name') {
       className = '$formName$';
     }
     if (formSelectionMode === 'view') {
       className = entityType ?? item?._className;
+      fType = formType;
     }
 
-    let entityForm = entityForms.current.find((x) => x.entityType === className);
+    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
     if (!entityForm?.formConfiguration?.markup) 
       return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
