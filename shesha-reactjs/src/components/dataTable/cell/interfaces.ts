@@ -1,5 +1,5 @@
 import { CellProps } from 'react-table';
-import { ITableColumn } from '@/interfaces';
+import { FormMode, ITableColumn } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ITableDataColumn } from '@/providers/dataTable/interfaces';
 import { IFieldComponentProps } from '@/providers/datatableColumnsConfigurator/models';
@@ -30,19 +30,12 @@ export interface IComponentWrapperProps {
   readOnly?: boolean;
 }
 
-export interface IGetCrudProps {
-  canDoubleWidth?: boolean;
-  canDivideWidth?: boolean;
-  canTripeWidth?: boolean;
-  canDivideByThree?: boolean;
-  singleButtonWidth?: boolean;
-}
-
-export interface ICrudOptions {
+export interface ITableCrudOptions {
   canDelete?: boolean;
   canEdit?: boolean;
   inlineEditMode?: InlineEditMode;
   canAdd?: boolean;
+  formMode:FormMode
 }
 export interface IChangeProps {
   add?: boolean;
@@ -52,9 +45,8 @@ export interface IChangeProps {
 }
 
 export interface ICrudOptions {
-  canTripeWidth?: boolean;
   canDivideWidth?: boolean;
-  singleButtonWidth?: boolean;
-  canDivideByThree?: boolean;
   canDoubleWidth?: boolean;
-};
+  canTripleWidth?: boolean;
+  canDivideByThreeWidth ?: boolean;
+}

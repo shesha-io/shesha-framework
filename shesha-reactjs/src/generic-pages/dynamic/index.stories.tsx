@@ -166,11 +166,11 @@ export const WorkflowDefinitions = addStory(Template, {
 
 export const RefListStatusDetails = addStory(Template, {
   formId: {
-    name: 'mergechanges-details',
-    module: 'Boxfusion.SheshaFunctionalTests.Common',
+    name: 'reference-list-details',
+    module: 'shesha',
   },
   mode: 'readonly',
-  id: 'd6829b83-14e3-474a-a28d-0e27cba796cb',
+  id: '8e79a648-1c29-46ee-a76d-9b898b106a81',
 });
 export const DataList = addStory(Template, {
   formId: {

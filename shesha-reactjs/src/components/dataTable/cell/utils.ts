@@ -1,233 +1,225 @@
 import { IComponentMetadata } from '@/providers';
-import { IComponentWrapperProps, ICrudOptions, IGetCrudProps } from './interfaces';
-import { InlineEditMode } from '@shesha/reactjs/dist/components/reactTable/interfaces';
-
+import { IComponentWrapperProps, ICrudOptions, ITableCrudOptions } from './interfaces';
+ 
 export const adjustWidth = (currentWidth: { minWidth: number; maxWidth: number }, crudOptions: ICrudOptions) => {
-  if (crudOptions.canTripeWidth && crudOptions.canDivideWidth) {
-    currentWidth.minWidth = (currentWidth.minWidth / 2) * 3;
-    currentWidth.maxWidth = (currentWidth.maxWidth / 2) * 3;
-  } else if (crudOptions.singleButtonWidth && crudOptions.canDivideWidth) {
-    currentWidth.minWidth /= 2;
-    currentWidth.maxWidth /= 2;
-  } else if (crudOptions.canDivideWidth && crudOptions.canDoubleWidth) {
-    if (currentWidth.minWidth % 2 == 0) {
-      currentWidth.minWidth = (currentWidth.minWidth / 2) * 2;
-      currentWidth.maxWidth = (currentWidth.maxWidth / 2) * 2;
-    }
-  }
-  else if (crudOptions.singleButtonWidth && crudOptions.canDivideByThree) {
-    currentWidth.minWidth /= 3;
-    currentWidth.maxWidth /= 3;
-  } else if (crudOptions.canDivideByThree && crudOptions.canDoubleWidth) {
+  const { canDoubleWidth, canDivideWidth, canTripleWidth, canDivideByThreeWidth } = crudOptions;
+  if (canDoubleWidth && canDivideByThreeWidth) {
     if (currentWidth.minWidth % 3 == 0) {
       currentWidth.minWidth = (currentWidth.minWidth / 3) * 2;
       currentWidth.maxWidth = (currentWidth.maxWidth / 3) * 2;
     }
-  } else if (crudOptions.canTripeWidth) {
-    currentWidth.minWidth *= 3;
-    currentWidth.maxWidth *= 3;
-  } else if (crudOptions.canDoubleWidth) {
+  } else if (canDivideWidth && canTripleWidth) {
+    if (currentWidth.minWidth % 2 == 0) {
+      currentWidth.minWidth = (currentWidth.minWidth / 2) * 3;
+      currentWidth.maxWidth = (currentWidth.maxWidth / 2) * 3;
+    }
+  } else if (canDoubleWidth) {
     currentWidth.minWidth *= 2;
     currentWidth.maxWidth *= 2;
-  } else if (crudOptions.canDivideWidth) {
-    if (currentWidth.minWidth % 2 == 0) {
-      currentWidth.minWidth /= 2;
-      currentWidth.maxWidth /= 2;
-    }
-  } else if (crudOptions.canDivideByThree) {
-    if (currentWidth.minWidth % 3 == 0) {
-      currentWidth.minWidth /= 3;
-      currentWidth.maxWidth /= 3;
-    }
+  } else if (canDivideWidth) {
+    currentWidth.minWidth /= 2;
+    currentWidth.maxWidth /= 2;
+  } else if (canTripleWidth) {
+    currentWidth.minWidth *= 3;
+    currentWidth.maxWidth *= 3;
+  } else if (canDivideByThreeWidth) {
+    currentWidth.minWidth /= 3;
+    currentWidth.maxWidth /= 3;
   }
+ 
   return currentWidth;
 };
-
+ 
 export const asNumber = (value: any): number => {
   return typeof value === 'number' ? value : null;
 };
-
+ 
 function change(changes: Object) {
   return Object.values(changes).some((value) => value === true);
 }
-
+ 
 export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperProps) => {
   let result: IComponentMetadata = {};
-
+ 
   /** Adds injectedTableRow to result if applicable **/
   if (defaultRow) result = { ...result, injectedTableRow: defaultRow };
-
+ 
   /** Adds injectedDefaultValue to result if applicable **/
   if (defaultValue) result = { ...result, injectedDefaultValue: defaultValue };
-
+ 
   return result;
 };
-
-
-export const getCruadActionWidth = (
-  currentOptions: ICrudOptions,
-  prevCrudOptions: ICrudOptions,
-  inlineEditMode: InlineEditMode,
-): IGetCrudProps => {
+ 
+const getWidthMultiplier = ({ canEdit, canAdd, canDelete, inlineEditMode }: ITableCrudOptions) => {
+  if (canEdit && canDelete && inlineEditMode === 'all-at-once') {
+    return 3;
+  } else if (canEdit || canAdd) {
+    return 2;
+  }
+  return 1;
+};
+ 
+export const getCruadActionConditions = (
+  currentOptions: ITableCrudOptions,
+  prevCrudOptions: ITableCrudOptions
+): ICrudOptions => {
   let canDoubleWidth = false;
   let canDivideWidth = false;
-  let canTripeWidth = false;
-  let canDivideByThree = false;
-  let singleButtonWidth = false;
-
-  const { canAdd, canEdit, canDelete } = currentOptions;
-
+  let canTripleWidth = false;
+  let canDivideByThreeWidth = false;
+ 
+  const { canAdd, canEdit, canDelete, inlineEditMode, formMode } = currentOptions;
+ 
   const {
     canAdd: prevAdd,
     canEdit: prevEdit,
     canDelete: prevDelete,
-    inlineEditMode: prevInLineEditMode,
+    inlineEditMode: prevInLineEdit,
+    formMode: prevFormMode,
   } = prevCrudOptions || {};
-
+ 
   const changes = {
     add: prevAdd !== canAdd,
     edit: prevEdit !== canEdit,
     delete: prevDelete !== canDelete,
-    inlineEditMode: prevInLineEditMode !== inlineEditMode,
+    inlineEditMode: prevInLineEdit !== inlineEditMode,
+    formMode: prevFormMode !== formMode,
   };
-
+ 
   const yesToNo = {
     add: prevAdd === true && canAdd === false,
     edit: prevEdit === true && canEdit === false,
     delete: prevDelete === true && canDelete === false,
-    inlineEditMode: prevInLineEditMode === 'all-at-once' && inlineEditMode !== 'all-at-once',
+    inlineEditMode: prevInLineEdit === 'all-at-once' && inlineEditMode !== 'all-at-once',
+    formMode: prevFormMode === 'edit' && formMode !== 'edit',
   };
-
-  const isEditModeAll = inlineEditMode === 'all-at-once';
-
-  if (changes.edit) {
-    const noToYesEdit = !yesToNo.edit;
-    if (noToYesEdit) {
-      if (isEditModeAll) {
-        if (canDelete && canAdd) {
+ 
+  const isAllAtOnce = inlineEditMode === 'all-at-once';
+ 
+  const isMoreCrudChanges = Object.values(changes).filter((value) => value === true).length > 1;
+ 
+  // In readonly mode or form designer loading
+  if (!change(changes) || isMoreCrudChanges) {
+    if (changes.formMode) {
+      const prevWidthMultiplier = prevCrudOptions && getWidthMultiplier(prevCrudOptions);
+      const currentWidthMultiplier =currentOptions && getWidthMultiplier(currentOptions);
+ 
+      if (prevWidthMultiplier === 3) {
+        if  (currentWidthMultiplier === 2) {
+          canDoubleWidth = true;
+          canDivideByThreeWidth = true;
+        }else if(currentWidthMultiplier === 1){
+          canDivideByThreeWidth = true;
+        }
+      } else if (prevWidthMultiplier === 2) {
+        if (currentWidthMultiplier=== 3) {
+          canTripleWidth = true;
           canDivideWidth = true;
-          canTripeWidth = true;
-        } else if (!canAdd && canDelete) {
-          canTripeWidth = true;
+        }else if(currentWidthMultiplier === 1){
+          canDivideWidth = true;
         }
       } else {
-        if (!canAdd && canDelete) {
+        if (canEdit && isAllAtOnce && canDelete) {
+          canTripleWidth = true;
+        } else if (canEdit || canAdd) {
           canDoubleWidth = true;
         }
       }
     } else {
-      if (isEditModeAll) {
-        if (canDelete && canAdd) {
-          canDoubleWidth = true;
-          canDivideByThree = true;
-        } else if (!canAdd && canDelete) {
-          canDivideByThree = true;
-        }
-      } else {
-        if (!canAdd && canDelete) {
-          canDivideWidth = true;
-          singleButtonWidth = true;
-        }
+      if (canEdit && isAllAtOnce && canDelete) {
+        canTripleWidth = true;
+      } else if (canEdit || canAdd) {
+        canDoubleWidth = true;
       }
     }
-  }
+  } else {
+    //Edit change
+    if (changes?.edit) {
+      if (!yesToNo.edit) {
+        if (isAllAtOnce) {
+          if (canDelete && !canAdd) {
+            canTripleWidth = true;
+          } else if (!canAdd) {
+            canDoubleWidth = true;
+          } else if (canAdd && canDelete) {
+            canDivideWidth = true;
+            canTripleWidth = true;
+          }
+        } else {
+          if (!canAdd) {
+            canDoubleWidth = true;
+          }
+        }
+      } else if (yesToNo.edit) {
+        if (isAllAtOnce) {
+          if (canDelete && canAdd) {
+            canDivideByThreeWidth = true;
+            canDoubleWidth = true;
+          } else if (!canAdd && canDelete) {
+            canDivideByThreeWidth = true;
+          }else if(!canDelete && !canAdd){
+            canDivideWidth = true;
+          }
+        } else {
+          if (!canAdd) {
+            canDivideWidth = true;
+          }
+      }
 
-  if (changes.add) {
-    const noToYesAdd = !yesToNo.add;
-    if (noToYesAdd) {
-      if (isEditModeAll) {
-        if (!canEdit && canDelete) {
-          canDoubleWidth = true;
-        }
-      } else {
-        if (!canEdit && canDelete) {
-          canDoubleWidth = true;
-        } else if (canEdit && !canDelete) {
-          canDoubleWidth = true;
-        }
-      }
-    } else {
-      if (isEditModeAll) {
-        if (!canEdit && canDelete) {
-          canDivideWidth = true;
-          singleButtonWidth = true;
-        }
-      } else {
-        if (!canEdit && canDelete) {
-          canDivideWidth = true;
-          singleButtonWidth = true;
-        } else if (canEdit && !canDelete) {
-          canDivideWidth = true;
-        }
-      }
     }
-  }
-
-  if (changes.delete) {
-    const noToYesDelete = !yesToNo.delete;
-    if (noToYesDelete) {
-      if (isEditModeAll) {
+ 
+    }
+ 
+    //Delete change
+    if (changes?.delete) {
+      if (!yesToNo?.delete) {
         if (canEdit) {
-          canDivideWidth = true;
-          canTripeWidth = true;
+          if (isAllAtOnce) {
+            canDivideWidth = true;
+            canTripleWidth = true;
+          }
         }
-      } else {
-        if (canEdit && !canAdd) {
-          canDoubleWidth = true;
-        }
-      }
-    } else {
-      if (isEditModeAll) {
+      } else if (yesToNo?.delete) {
         if (canEdit) {
-          canDivideByThree = true;
-          canDoubleWidth = true;
+          if (isAllAtOnce) {
+            canDivideByThreeWidth = true;
+            canDoubleWidth = true;
+          }
         }
-      } else {
-        if (canEdit && !canAdd) {
+      }
+    }
+ 
+    //Add change
+    if (changes?.add) {
+      if (!canEdit) {
+        if (!yesToNo?.add) {
+          canDoubleWidth = true;
+        } else {
           canDivideWidth = true;
         }
       }
     }
-  }
-
-  if (changes.inlineEditMode && canEdit) {
-    const noToYesInlineEdit = !yesToNo.inlineEditMode;
-    if (noToYesInlineEdit) {
-      if (canDelete) {
-        canDivideWidth = true;
-        canTripeWidth = true;
-      } else if (!canDelete && !canAdd) {
-        canDoubleWidth = true;
-      }
-    } else {
-      if (canDelete) {
-        canDoubleWidth = true;
-        canDivideByThree = true;
-      } else if (!canDelete && !canAdd) {
-        canDivideWidth = true;
+ 
+    //Edit mode change
+    if (changes?.inlineEditMode && canEdit) {
+      if (!yesToNo?.inlineEditMode) {
+        if (canDelete) {
+          canDivideWidth = true;
+          canTripleWidth = true;
+        }
+      } else if (yesToNo?.inlineEditMode) {
+        if (canDelete) {
+          canDivideByThreeWidth = true;
+          canDoubleWidth = true;
+        }
       }
     }
   }
-  
-
-  if (!change(changes)) {
-    // In readonly mode or form designer loading
-      if (canEdit && inlineEditMode === 'all-at-once' && canDelete) {
-        canTripeWidth = true;
-      } else if ((canEdit && (canDelete||canAdd)) || canAdd) {
-        canDoubleWidth = true;
-      }
-
-    
-
-   
-  }
-
+ 
   return {
     canDoubleWidth,
     canDivideWidth,
-    canTripeWidth,
-    canDivideByThree,
-    singleButtonWidth,
+    canTripleWidth,
+    canDivideByThreeWidth,
   };
 };

@@ -1,13 +1,18 @@
 import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
+import React, {useMemo } from 'react';
 import { useCrud } from '@/providers/crudContext';
 import { ITableCrudOperationsColumn } from '@/providers/dataTable/interfaces';
 import { IHasColumnConfig } from './interfaces';
 import ActionButton, { IActionButtonProps } from '@/components/actionButton/index';
 
-export interface ICrudOperationsCellProps extends IHasColumnConfig<ITableCrudOperationsColumn> {}
+export interface ICrudOperationsCellProps extends IHasColumnConfig<ITableCrudOperationsColumn> {
+
+}
+
+
 
 export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
+
   const {
     mode,
     switchMode,
@@ -26,9 +31,16 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     deletingError,
   } = useCrud();
 
+
+
+
+
   const onEditClick = () => {
     switchMode('update');
+  
   };
+
+
 
   const onSaveUpdateClick = async () => {
     try {
@@ -51,6 +63,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
   const onCancelEditClick = async () => {
     await reset();
     switchMode('read');
+
   };
 
   const onDeleteClick = () => {
@@ -58,6 +71,8 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
   };
 
   const buttons = useMemo<IActionButtonProps[]>(() => {
+
+
     const allButtons: IActionButtonProps[] = [
       {
         title: 'Add',
@@ -123,6 +138,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
     isDeleting,
     deletingError,
   ]);
+
 
   return (
     <div className="sha-crud-cell">
