@@ -21,7 +21,7 @@
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.23.0" />
     <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 
   <ItemGroup>
