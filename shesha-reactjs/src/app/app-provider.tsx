@@ -38,8 +38,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
     const noAuthRoutes = ['/no-auth', '/login', '/account/forgot-password', '/account/reset-password'];
     const noAuth = Boolean(noAuthRoutes.find(r => pathname?.includes(r)));
 
-    console.log("LOG: app provider", { query, pathname, noAuth });
-
     return (
         <GlobalStateProvider>
             <AppProgressBar

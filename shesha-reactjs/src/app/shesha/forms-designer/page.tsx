@@ -1,38 +1,27 @@
 "use client";
 
-import React from 'react';
-import { FormIdentifier, PageWithLayout } from '@/interfaces';
+import React, { FC } from 'react';
+import { FormIdentifier } from '@/interfaces';
 import { FormsDesignerPage } from '@/generic-pages/forms-designer';
+import { useSearchParams, notFound } from 'next/navigation';
 
-interface ISearchParams {
-    /**
-     * Form name.
-     */
-    name?: string;
+const Page: FC = () => {
+    const query = useSearchParams();
+    const id = query.get("id");
+    const name = query.get("name");
+    const moduleName = query.get("module");
 
-    /**
-     * Module name.
-     */
-    module?: string;
+    const formId: FormIdentifier = id
+        ? id
+        : name
+            ? {
+                name: name,
+                module: moduleName
+            }
+            : undefined;
 
-    /**
-     * Form id
-     */
-    id?: string;
-}
-interface IFormsDesignerPageProps {
-    searchParams: ISearchParams;
-}
-
-const Page: PageWithLayout<IFormsDesignerPageProps> = ({ searchParams }) => {
-    const formId: FormIdentifier = searchParams.id
-        ? searchParams.id
-        : {
-            name: searchParams.name,
-            module: searchParams.module
-        };
-
-    console.log("LOG: formId", formId, searchParams);
+    if (!formId)
+        return notFound();
 
     return <FormsDesignerPage formId={formId} />;
 };
