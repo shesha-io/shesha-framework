@@ -35,7 +35,7 @@
     "lint-fix": "eslint src/**/*.ts{,x} --fix",
     "dev": "next dev",
     "build-next": "next build",
-    "start-next": "node --max-old-space-size=8192 server.js"
+    "start-next": "NODE_ENV=production node --max-old-space-size=8192 server.js"
   },
   "resolutions": {
     "jodit-react": "1.3.9",

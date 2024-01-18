@@ -1,7 +1,8 @@
 import { Input } from 'antd';
 import React, { FC } from 'react';
 import { IInputDirection, IValue } from '../interfaces';
-import { getStyleChangeValue, getStyleClassName, getStyleValue } from './utils';
+import { getStyleChangeValue, getStyleValue } from './utils';
+import { getStyleClassName } from '../styles/styles';
 
 interface IProps {
   direction: keyof IInputDirection;
