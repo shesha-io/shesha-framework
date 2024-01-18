@@ -15,12 +15,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.15" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
-    <PackageReference Include="Shesha.Application" Version="0.0.60622-build" />
-    <PackageReference Include="Shesha.Core" Version="0.0.60622-build" />
-    <PackageReference Include="Shesha.Framework" Version="0.0.60622-build" />
-    <PackageReference Include="Shesha.NHibernate" Version="0.0.60622-build" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.0.60622-build" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+    <PackageReference Include="Shesha.Application" Version="0.29.0-beta" />
+    <PackageReference Include="Shesha.Core" Version="0.29.0-beta" />
+    <PackageReference Include="Shesha.Framework" Version="0.29.0-beta" />
+    <PackageReference Include="Shesha.NHibernate" Version="0.29.0-beta" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.29.0-beta" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Select, Input, Checkbox, InputNumber } from 'antd';
+import { Select, Input, Checkbox } from 'antd';
 import SectionSeparator from '@/components/sectionSeparator';
 import EditableTagGroup from '@/components/editableTagGroup';
 import { ITabPaneProps, ITabsComponentProps } from './models';
@@ -11,6 +11,7 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { CodeEditor } from '@/components';
+import StyleBox from '../styleBox/components/box';
 
 const { Option } = Select;
 
@@ -133,12 +134,8 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
         />
       </SettingsFormItem>
 
-      <SettingsFormItem name="padding" label="Padding" jsSetting>
-        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
-      </SettingsFormItem>
-
-      <SettingsFormItem name="margin" label="Margin" jsSetting>
-        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+      <SettingsFormItem name="stylingBox">
+        <StyleBox />
       </SettingsFormItem>
     </>
   );

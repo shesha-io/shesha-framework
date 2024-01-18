@@ -1,5 +1,5 @@
 import React, { FC, useRef } from 'react';
-import { Select, Input, RefSelectProps, Checkbox, InputNumber } from 'antd';
+import { Select, Input, RefSelectProps, Checkbox } from 'antd';
 import EditableTagGroup from '@/components/editableTagGroup';
 import { IWizardStepProps, IWizardComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
@@ -12,6 +12,7 @@ import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCo
 import { CodeEditor } from '@/components';
 import { useDeepCompareMemo } from '@/hooks';
 import { getActualModel, useApplicationContext } from '@/providers/form/utils';
+import StyleBox from '../styleBox/components/box';
 
 const { Option } = Select;
 
@@ -60,8 +61,9 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
   const steps = props?.model?.steps?.map((item) => ({ ...item, label: item?.title }));
 
   const stepList = useDeepCompareMemo(
-    () => model?.steps?.map(item => getActualModel(item, allData)),
-    [model.steps, allData.globalState, allData.contexts.lastUpdate]);
+    () => model?.steps?.map((item) => getActualModel(item, allData)),
+    [model.steps, allData.globalState, allData.contexts.lastUpdate]
+  );
   const selectRef = useRef<RefSelectProps>();
 
   return (
@@ -198,12 +200,8 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
           />
         </SettingsFormItem>
 
-        <SettingsFormItem name="padding" label="Padding" jsSetting>
-          <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
-        </SettingsFormItem>
-
-        <SettingsFormItem name="margin" label="Margin" jsSetting>
-          <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+        <SettingsFormItem name="stylingBox">
+          <StyleBox />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

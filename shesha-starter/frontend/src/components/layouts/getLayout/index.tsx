@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { MainLayout } from "@shesha/reactjs";
+import { MainLayout } from "@shesha-io/reactjs";
 
 /**
  * Returns the component wrapped up in a layout

@@ -20,7 +20,7 @@ export const setValueByPropertyName = (data: any, propertyName: string, value: a
     if (Array.isArray(propName) && propName.length > 0) {
         let prop = resultData;
         propName.forEach((item, index) => {
-            if (index < propName.length - 1) {
+            if (index < propName.length - 1 && item?.length > 0) {
                 if (typeof prop[item] !== 'object') {
                     prop = prop[item] = {};
                 } else {
@@ -31,7 +31,8 @@ export const setValueByPropertyName = (data: any, propertyName: string, value: a
                 }
             }
         });
-        prop[propName[propName.length - 1]] = value;
+        if (propName[propName.length - 1]?.length > 0)
+            prop[propName[propName.length - 1]] = value;
     }
     return resultData;
 };

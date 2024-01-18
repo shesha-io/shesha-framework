@@ -22,7 +22,7 @@
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",
     "@next/bundle-analyzer": "^14.0.4",
-    "@shesha-io/reactjs": "^0.0.60788-build",
+    "@shesha-io/reactjs": "0.29.0-beta",
     "@types/react-dom": "^18.2.4",
     "antd": "^4.24.0",
     "axios": "^0.21.1",

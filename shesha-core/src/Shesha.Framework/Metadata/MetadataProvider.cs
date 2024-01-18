@@ -79,8 +79,13 @@ namespace Shesha.Metadata
             var entityPropAttr = property.GetCustomAttribute<EntityPropertyAttribute>();
             var path = string.IsNullOrEmpty(entityPropAttr?.Name) ? property.Name : entityPropAttr.Name;
 
-            var entityConfig = property.DeclaringType != null && property.DeclaringType.IsEntityType()
-                ? _entityConfigurationStore.Get(property.DeclaringType)
+            var ownerType = property.DeclaringType != null && property.DeclaringType.IsEntityType()
+                ? property.DeclaringType
+                : property.ReflectedType.IsEntityType()
+                    ? property.ReflectedType
+                    : null;
+            var entityConfig = ownerType != null
+                ? _entityConfigurationStore.Get(ownerType)
                 : null;
             var epc = entityConfig?[property.Name];
 

@@ -27,6 +27,7 @@ import { IContextPropertyAutocompleteComponentProps } from '@/designer-component
 import { ITextAreaComponentProps } from '@/designer-components/textArea/interfaces';
 import { IRadioProps } from '@/components/formDesigner/components/radio/utils';
 import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
+import { IStyleBoxComponentProps } from '@/components/formDesigner/components/styleBox/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -39,7 +40,8 @@ type SectionSeparatorType = ToolbarSettingsProp & Omit<ISectionSeparatorComponen
 
 type TextFieldType = ToolbarSettingsProp & Omit<ITextFieldComponentProps, 'hidden' | 'type'>;
 
-type ContextPropertyAutocompleteType = ToolbarSettingsProp & Omit<IContextPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
+type ContextPropertyAutocompleteType = ToolbarSettingsProp &
+  Omit<IContextPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
 type PropertyAutocompleteType = ToolbarSettingsProp & Omit<IPropertyAutocompleteComponentProps, 'hidden' | 'type'>;
 
@@ -90,6 +92,7 @@ type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
 
 type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, 'hidden' | 'type'>;
 
+type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -134,7 +137,9 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'textField');
   }
 
-  public addContextPropertyAutocomplete(props: ContextPropertyAutocompleteType | ((data: T) => ContextPropertyAutocompleteType)) {
+  public addContextPropertyAutocomplete(
+    props: ContextPropertyAutocompleteType | ((data: T) => ContextPropertyAutocompleteType)
+  ) {
     return this.addProperty(props, 'contextPropertyAutocomplete');
   }
 
@@ -204,7 +209,7 @@ export class DesignerToolbarSettings<T> {
 
   public addRadio(props: RadioType | ((data: T) => RadioType)) {
     return this.addProperty(props, 'radio');
-  }  
+  }
 
   public addConfigurableActionConfigurator(
     props: ConfigurableActionConfiguratorType | ((data: T) => ConfigurableActionConfiguratorType)
@@ -218,6 +223,10 @@ export class DesignerToolbarSettings<T> {
 
   public addEditMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
     return this.addProperty(props, 'editModeSelector');
+  }
+
+  public addStyleBox(props: StyleBoxType | ((data: T) => StyleBoxType)) {
+    return this.addProperty(props, 'styleBox');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {

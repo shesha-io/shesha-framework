@@ -8,6 +8,7 @@ import SectionSeparator from '@/components/sectionSeparator';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import StyleBox from '../styleBox/components/box';
 
 export const ColumnsSettingsForm: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) =>
   SettingsForm<IColumnsComponentProps>({ ...props, children: <ColumnsSettings {...props} /> });
@@ -49,12 +50,8 @@ const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({
         />
       </SettingsFormItem>
 
-      <SettingsFormItem name="padding" label="Padding" jsSetting>
-        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
-      </SettingsFormItem>
-
-      <SettingsFormItem name="margin" label="Margin" jsSetting>
-        <InputNumber min={1} readOnly={readOnly} style={{ width: '100%' }} />
+      <SettingsFormItem name="stylingBox">
+        <StyleBox />
       </SettingsFormItem>
     </>
   );

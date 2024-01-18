@@ -128,24 +128,12 @@
       ]
     },
     {
-      "id": "3c971dff-36ae-4c06-8255-1b25a80ac4d5",
-      "type": "numberField",
-      "propertyName": "padding",
-      "parentId": "root",
-      "label": "Padding",
+      "id": "d9adcd79-771f-4585-a09d-9b769f594490",
+      "type": "styleBox",
+      "propertyName": "stylingBox",
+      "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
       "validate": {},
-      "settingsValidationErrors": [],
-      "description": "Enter a number to set the padding of the component"
-    },
-    {
-      "id": "4e69f619-1197-4e50-befe-8bbf1254ca38",
-      "type": "numberField",
-      "propertyName": "margin",
-      "parentId": "root",
-      "label": "Margin",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "description": "Enter a number to set the margin of the component"
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {

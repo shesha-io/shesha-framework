@@ -537,7 +537,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           getChildComponents,
         }}
       >
-        <ParentProvider model={props} subFormIdPrefix={id}>
+        <ParentProvider model={props} subFormIdPrefix={id} context={context}>
           {children}
         </ParentProvider>
       </SubFormActionsContext.Provider>

@@ -171,11 +171,8 @@ export interface IConfigurableFormComponent
   /** Default style CSS applied as expression */
   style?: string;
 
-  /** Default margin style applied as string */
-  margin?: string;
-
-  /** Default padding style applied as string */
-  padding?: string;
+  /** Default css style applied as string */
+  stylingBox?: string;
 }
 
 export interface IComponentsContainer {

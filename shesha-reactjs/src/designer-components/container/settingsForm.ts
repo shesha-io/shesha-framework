@@ -308,22 +308,11 @@ export const getSettings = (data: any) =>
       exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
       hidden: { _code: 'return  getSettingValue(data?.noDefaultStyling);', _mode: 'code', _value: false } as any,
     })
-    .addNumberField({
-      id: '524de992-b214-4269-ad5e-1b0099616958',
-      propertyName: 'padding',
+    .addStyleBox({
+      id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
+      propertyName: 'stylingBox',
       parentId: 'root',
-      label: 'Padding',
       validate: {},
       settingsValidationErrors: [],
-      description: 'Enter a number to set the padding of the component',
-    })
-    .addNumberField({
-      id: 'bb1e907f-6017-4368-9233-b4823308800f',
-      propertyName: 'margin',
-      parentId: 'root',
-      label: 'Margin',
-      validate: {},
-      settingsValidationErrors: [],
-      description: 'Enter a number to set the margin of the component',
     })
     .toJson();

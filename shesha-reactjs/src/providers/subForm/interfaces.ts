@@ -40,6 +40,8 @@ export interface ISubFormProviderProps extends IValuable, IChangeable {
   postUrl?: string;
   putUrl?: string;
   //#endregion
+
+  readOnly?: boolean;
 }
 
 export interface IProperty {

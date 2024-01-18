@@ -8,7 +8,7 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
-import { IDataListProps, NewItemInitializer } from './models';
+import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, Row, RowOrGroup, RowsGroup } from './models';
 import { useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
@@ -25,6 +25,7 @@ interface EntityForm {
   entityType: string;
   isFetchingFormId?: boolean;
   formId: FormIdentifier;
+  formType?: string;
   isFetchingFormConfiguration?: boolean;
   formConfiguration: IFormDto;
 }
@@ -89,11 +90,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const entityFormInfo = useRef<EntityForm>();
   const createFormInfo = useRef<EntityForm>();
 
+  const [content, setContent] = useState<React.JSX.Element[]>(null);
+  const rows = useRef<React.JSX.Element[]>(null);
+
   useDeepCompareEffect(() => {
     entityForms.current = [];
     entityFormInfo.current = undefined;
     createFormInfo.current = undefined;
   }, [formId, formType, createFormId, createFormType, entityType, formSelectionMode]);
+
+  useDeepCompareEffect(() => {
+    updateContent();
+  }, [selectedRow, selectedRows, selectionMode]);
 
   const allData = useApplicationContext();
   const { configurationItemMode } = useAppConfigurator();
@@ -190,32 +198,32 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
 
   const isReady = (forms: EntityForm[]) => {
-    if (!(!forms || forms.length === 0 || forms.find(x => !x.formConfiguration)))
+    if (!(!forms || forms.length === 0 || forms.find(x => !x.formConfiguration))) {
+      updateRows();
       updateContent();
+    }
   };
 
-  const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>) => {
-    let entityForm = entityForms.current.find((x) => x.entityType === className);
+  const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
+    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
     if (!entityForm) {
       entityForm = {
         entityType: className,
         formId: fId,
-        formConfiguration: null
+        formConfiguration: null,
+        formType: fType,
       };
       entityForms.current.push(entityForm);
-    }
-  
-    if (!entityFormInfo?.current)
-      entityFormInfo.current = entityForm;
+      if (!entityFormInfo?.current)
+        entityFormInfo.current = entityForm;
+    } else 
+      return !!entityForm.formConfiguration;
 
     if (!!entityForm.formId) {
       getForm({formId: entityForm.formId, configurationItemMode, skipCache})
         .then(response => {
-          const ef = entityForms.current.find(x => x.entityType === entityForm.entityType);
-          if (ef) {
-            ef.formConfiguration = response;
-            isReady(entityForms.current);
-          }
+          entityForm.formConfiguration = response;
+          isReady(entityForms.current);
         });
     } else {
 
@@ -225,56 +233,67 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       f.then((e) => 
         getForm({formId: e, configurationItemMode, skipCache})
         .then(response => {
-          const ef = entityForms.current.find(x => x.entityType === entityForm.entityType);
-          if (ef) {
-            ef.formId = e;
-            ef.formConfiguration = response;
-            isReady(entityForms.current);
-          }
+          entityForm.formId = e;
+          entityForm.formConfiguration = response;
+          isReady(entityForms.current);
         })
       );
 
-      loadedFormId.current[`${entityForm.entityType}_${formType}`] = f;
+      loadedFormId.current[`${entityForm.entityType}_${fType}`] = f;
     };
+    return false;
   };
 
   useDeepCompareEffect(() => {
+    let  isReady = true;
+
+    let fId = createFormId;
+    let className = '$createFormName$';
+    let fType = null;
+    if (formSelectionMode === 'view') {
+      fId = null;
+      className = entityType ?? '$createFormName$';
+      fType = !!createFormType ? createFormType : null;
+    }
+    isReady = getEntityForm(className, fId, fType, createFormInfo) && isReady;
+
     records.forEach((item) => {
       let fId = null;
       let className = null;
+      let fType = null;
       if (formSelectionMode === 'name') {
         className = '$formName$';
         fId = formId;
       }
       if (formSelectionMode === 'view') {
+        fType = !!formType ? formType : null;
         className = entityType ?? item?._className;
       }
       if (formSelectionMode === 'expression') {
         fId = getFormIdFromExpression(item);
       }
-      getEntityForm(className, fId, formType, entityFormInfo);
+      isReady = getEntityForm(className, fId, fType, entityFormInfo) && isReady;
     });
 
-    let fId = createFormId;
-    let className = '$createFormName$';
-    if (formSelectionMode === 'view') {
-      className = !!entityType ? entityType : '$createFormName$';
+    // we don't need to wait form requests if all form is ready
+    if (isReady) {
+      updateRows();
+      updateContent();
     }
-
-    getEntityForm(className, fId, createFormType, createFormInfo);
-
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
+    let fType = null;
     if (formSelectionMode === 'name') {
       className = '$formName$';
     }
     if (formSelectionMode === 'view') {
       className = entityType ?? item?._className;
+      fType = formType;
     }
 
-    let entityForm = entityForms.current.find((x) => x.entityType === className);
+    let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
 
     if (!entityForm?.formConfiguration?.markup) 
       return <Alert className="sha-designer-warning" message="Form configuration not found" type="warning" />;
@@ -317,22 +336,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   };
 
-  type Row = any;
-  type RowOrGroup = Row | RowsGroup;
-  interface RowsGroup {
-    value: any;
-    index: number;
-    $childs: RowOrGroup[];
-  }
-  interface GroupLevelInfo {
-    propertyName: string;
-    index: number;
-    currentGroup?: RowsGroup;
-    propertyPath: string[];
-  }
-  type GroupLevels = GroupLevelInfo[];
   const isGroup = (item: RowOrGroup): item is RowsGroup => {
-    return item && Array.isArray(item.$childs);
+    return item && Array.isArray((item as RowsGroup).$childs);
   };
 
   const groups = useDeepCompareMemo(() => {
@@ -349,7 +354,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       };
 
       const result: RowsGroup[] = [];
-      records.forEach(row => {
+      records.forEach((row, rowIndex) => {
         let parent: RowOrGroup[] = result;
         let differenceFound = false;
         groupLevels.forEach((g, index) => {
@@ -366,7 +371,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           }
           parent = g.currentGroup.$childs;
         });
-        parent.push(row);
+        parent.push({index: rowIndex, row} as Row);
       });
       return result;
     }
@@ -400,7 +405,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           {group.$childs.map((child, index, records) => {
             return isGroup(child)
               ? renderGroup(child, index)
-              : renderRow(child, index, records?.length - 1 === index);
+              : renderRow(child.row, child.index, records?.length - 1 === index);
           })}
         </Collapse.Panel>
       </Collapse>
@@ -409,10 +414,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
     const selected =
-      selectedRow?.index === index ||
+      selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
     return (
-      <div key={item['id'] ?? index}>
+      <div>
         <ConditionalWrap
           condition={selectionMode !== 'none'}
           wrap={(children) => (
@@ -434,7 +439,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             }}
             style={itemWidthCalc}
           >
-            {renderSubForm(item, index)}
+            {rows.current?.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>{' '}
         {!isLastItem && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />}
@@ -463,11 +468,15 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
   
-  const [content, setContent] = useState<React.JSX.Element[]>(null);
+
+  const updateRows = () => {
+    rows.current = records?.map((item: any, index) => renderSubForm(item, index));
+  };
+
 
   const updateContent = () => {
     setContent(groups 
-      ? groups?.map((item: RowsGroup, index) =>  renderGroup(item, index))
+      ? groups?.map((item: RowsGroup, index) => renderGroup(item, index))
       : records?.map((item: any, index) =>  renderRow(item, index, records?.length - 1 === index))
     );
   };

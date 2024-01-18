@@ -56,7 +56,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
         {(value) => 
           <Input readOnly={readOnly} value={value} onChange={(e) => {
               const name = e.target.value;
-              onValuesChange({componenName: name, propertyName: name});
+              onValuesChange({componentName: name, propertyName: name});
             }}
           />
         }

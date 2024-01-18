@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
-import { AppProps } from 'next/app';
-import { BASE_URL } from 'src/api/utils/constants';
-import { CustomErrorBoundary, CustomNProgress } from 'components';
-import { StyledThemeProvider } from 'src/definitions/styled-components';
-import { useRouter } from 'next/router';
+import React, { useEffect } from "react";
+import { AppProps } from "next/app";
+import { BASE_URL } from "src/api/utils/constants";
+import { CustomErrorBoundary, CustomNProgress } from "components";
+import { StyledThemeProvider } from "src/definitions/styled-components";
+import { useRouter } from "next/router";
 import {
   GlobalStateProvider,
   PageWithLayout,
   ShaApplicationProvider,
   StoredFilesProvider,
-} from "@shesha/reactjs";
-require("@shesha/reactjs/dist/styles.less");
+} from "@shesha-io/reactjs";
+require("@shesha-io/reactjs/dist/styles.less");
 require("src/styles/compiled.antd.variable.css");
 require("src/styles/custom-n-progress.less");
 
@@ -39,15 +39,12 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
         <GlobalStateProvider>
           <ShaApplicationProvider
             backendUrl={BASE_URL}
-            router={router}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            router={router as any}
             noAuth={router?.asPath?.includes("/no-auth")}
           >
             <CustomNProgress />
-            <StoredFilesProvider
-              baseUrl={BASE_URL}
-              ownerId={""}
-              ownerType={""}
-            >
+            <StoredFilesProvider baseUrl={BASE_URL} ownerId={""} ownerType={""}>
               {getLayout(
                 <Component {...(router?.query || {})} {...pageProps} />
               )}

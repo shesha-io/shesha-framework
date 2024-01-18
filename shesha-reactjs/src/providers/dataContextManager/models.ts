@@ -18,3 +18,7 @@ export interface IDataContextDictionary {
 export interface IRegisterDataContextPayload extends IDataContextDescriptor {
   initialData?: any;
 }
+
+export enum SheshaCommonContexts {
+  ApplicationContext = 'appContext'
+}

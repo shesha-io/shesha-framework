@@ -86,3 +86,21 @@ interface IDataListActions {
   updateAction?: (rowIndex: number, data: any) => Promise<any>;
   createAction?: (data: any) => Promise<any>;
 }
+
+export interface Row {
+  index: number;
+  row: any;
+};
+export type RowOrGroup = Row | RowsGroup;
+export interface RowsGroup {
+  value: any;
+  index: number;
+  $childs: RowOrGroup[];
+}
+export interface GroupLevelInfo {
+  propertyName: string;
+  index: number;
+  currentGroup?: RowsGroup;
+  propertyPath: string[];
+}
+export type GroupLevels = GroupLevelInfo[];

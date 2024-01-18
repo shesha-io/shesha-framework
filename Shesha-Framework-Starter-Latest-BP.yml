@@ -105,20 +105,22 @@ stages:
       displayName: dotnet Restore
       inputs:
         command: 'restore'
-        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
-        feedsToUse: 'select'
-        vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
+        projects: shesha-starter/backend/src/*Host/*.csproj
+        feedsToUse: 'config'
+        nugetConfigPath: shesha-starter/backend/.nuget/NuGet.Config
+        # feedsToUse: 'select'
+        # vstsFeed: '44b4667a-8963-403d-9962-bde66225adbd'
     - task: DotNetCoreCLI@2
       displayName: dotnet build
       inputs:
-        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
+        projects: shesha-starter/backend/src/*Host/*.csproj
         arguments: --configuration $(BuildParameters.configuration)
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
         command: publish
         publishWebProjects: false
-        projects: shesha-starter/backend/ShaCompanyName.ShaProjectName.sln
+        projects: shesha-starter/backend/src/*Host/*.csproj
         arguments: --configuration $(BuildParameters.configuration) --output $(build.artifactstagingdirectory) --no-build
         zipAfterPublish: false
         modifyOutputPath: false
@@ -142,7 +144,7 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-starter/src/**/*.csproj'
+        packagesToPack: shesha-starter/backend/src/*Host/*.csproj
         # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
         configuration: '$(BuildParameters.configuration)'
         nobuild: false
@@ -194,7 +196,7 @@ stages:
           # Write your PowerShell commands here.
           write-host "The current branch is: $(currentBranch)"
           write-host "The current version is: $(versionNo)"
-        workingDirectory: 'shesha-starter/adminportal'
+        workingDirectory: 'shesha-starter/frontend'
     - task: NodeTool@0
       displayName: 'Use Node 20.9.0'
       inputs:
@@ -219,7 +221,7 @@ stages:
     #   displayName: Install Latest Shesha
     #   inputs:
     #     command: custom
-    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     workingDir: 'shesha-functional-tests/frontend'
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     - task: Npm@1
@@ -233,7 +235,7 @@ stages:
       displayName: 'Npm Update Version'
       inputs:
         command: custom
-        workingDir: shesha-starter-tests/adminportal
+        workingDir: shesha-starter/frontend
         verbose: false
         customCommand: 'version $(versionNo) --allow-same-version'
       # condition: ne(variables['currentBranch'], 'refs/heads/main')        
@@ -241,21 +243,21 @@ stages:
       displayName: 'Npm Install'
       inputs:
         command: custom
-        workingDir: shesha-starter/adminportal
+        workingDir: shesha-starter/frontend
         verbose: false
         customCommand: 'install'
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
     #     command: custom
-    #     workingDir: 'shesha-functional-tests/adminportal'
+    #     workingDir: 'shesha-functional-tests/frontend'
     #     verbose: true
     #     customCommand: install @shesha/reactjs@latest
     - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom
-        workingDir: 'shesha-starter-tests/adminportal'
+        workingDir: 'shesha-starter/frontend'
         verbose: true
         customCommand: run build
     # Creating a temporary directory to copy both node apps
@@ -265,14 +267,13 @@ stages:
         targetType: 'inline'
         script: |
           # Write your PowerShell commands here.
-          mkdir $(System.DefaultWorkingDirectory)/temp
+          mkdir temp
           Write-Host "Copying Shesha ReactJS Artifacts"
-          cp -R shesha-reactjs $(System.DefaultWorkingDirectory)/temp/shesha-reactjs
-          cp -R shesha-starter-tests $(System.DefaultWorkingDirectory)/temp/shesha-starter-tests
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+          cp -R frontend temp
+        workingDirectory: '$(System.DefaultWorkingDirectory)/shesha-starter'
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-starter/temp'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
