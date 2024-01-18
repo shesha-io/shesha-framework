@@ -4,18 +4,19 @@ import { SidebarContainer } from '@/components';
 import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
 import { ColumnProperties } from './columnProperties';
 import ColumnsContainer from './columnsContainer';
-import './styles/index.less';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IColumnsConfiguratorProps {}
 
 export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = () => {
   const { items, addColumn: addButton, addGroup, readOnly } = useColumnsConfigurator();
+  const { styles } = useStyles();
 
   return (
-    <div className="sha-toolbar-configurator">
+    <div className={styles.shaToolbarConfigurator}>
       <h4>Here you can configure columns by adjusting their settings and ordering.</h4>
       {!readOnly && (
-        <div className="sha-action-buttons">
+        <div className={styles.shaActionButtons}>
           {false && (
             <Button onClick={addGroup} type="primary">
               Add Group

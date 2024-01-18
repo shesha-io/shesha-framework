@@ -1,4 +1,4 @@
-import { IDictionary } from "@/index";
+import { IDictionary } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
 
 export const mapKeyValueToDictionary = (value: IKeyValue[]): IDictionary<string> => {

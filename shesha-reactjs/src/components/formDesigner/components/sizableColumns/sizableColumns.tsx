@@ -6,7 +6,7 @@ import { useFormData, useGlobalState } from '@/providers';
 import Split from 'react-split';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { getLayoutStyle } from '@/utils/publicUtils';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import ParentProvider from '@/providers/parentProvider/index';

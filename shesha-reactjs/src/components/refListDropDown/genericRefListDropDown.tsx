@@ -38,15 +38,15 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     return includeFilters ? filtered : !filtered;
   };
 
-  const wrapValue = (localValue: TValue | TValue[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
+  const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
     if (localValue === undefined) return undefined;
     if (mode === 'multiple' || mode === 'tags') {
       return Array.isArray(localValue)
         ? (localValue as TValue[]).map<CustomLabeledValue<TValue>>((o) => {
-            return getLabeledValue(o, options);
+            return getLabeledValue(o, allOptions);
           })
-        : [getLabeledValue(localValue as TValue, options)];
-    } else return getLabeledValue(localValue as TValue, options);
+        : [getLabeledValue(localValue as TValue, allOptions)];
+    } else return getLabeledValue(localValue as TValue, allOptions);
   };
 
   const options = useMemo<ISelectOption<TValue>[]>(() => {
@@ -60,7 +60,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       return option;
     });
 
-    const selectedItem = wrapValue(value);
+    const selectedItem = wrapValue(value, fetchedItems);
     // Remove items which are already exist in the fetched items.
     // Note: we shouldn't process full list and make it unique because by this way we'll hide duplicates received from the back-end
     const selectedItems = selectedItem
@@ -90,7 +90,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   if (readOnly) {
     return (
       <ReadOnlyDisplayFormItem
-        value={wrapValue(value)}
+        value={wrapValue(value, options)}
         disabled={disabled}
         type={mode === 'multiple' || mode === 'tags' ? 'dropdownMultiple' : 'dropdown'}
       />
@@ -128,7 +128,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       {...rest}
       style={{ ...style, width }}
       onChange={handleChange}
-      value={wrapValue(value)}
+      value={wrapValue(value, options)}
       mode={mode}
     >
       {options?.map(({ value: localValue, label, data }, index) => (

@@ -1,5 +1,5 @@
-import { ConfigProvider } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { ConfigProvider, ThemeConfig } from 'antd';
+import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
 import { THEME_CONFIG_NAME } from '@/shesha-constants';
 import { useDebouncedCallback } from 'use-debounce';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
@@ -15,12 +15,14 @@ export interface ThemeProviderProps {
 
 const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   children,
-  iconPrefixCls,
-
-  // TODO: Later this to be configurable so that. Currently if you change it the layout fails because the styling references the `--ant prefixCls`
+  iconPrefixCls = 'anticon',
   prefixCls = 'ant',
 }) => {
-  const [state, dispatch] = useReducer(uiReducer, THEME_CONTEXT_INITIAL_STATE);
+  const [state, dispatch] = useReducer(uiReducer, {
+    ...THEME_CONTEXT_INITIAL_STATE, 
+    prefixCls: prefixCls, 
+    iconPrefixCls: iconPrefixCls
+  });
 
   const { getComponent, updateComponent } = useConfigurationItemsLoader();
 
@@ -54,17 +56,45 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     debouncedSave(theme);
   };
 
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
+  const themeConfig = useMemo<ThemeConfig>(() => {
+    const appTheme = state.theme?.application;
+    const themeDefaults: ThemeConfig['token'] = {
+    };
+    // paddingSM: 4,
+    // paddingMD: 8,
+    // paddingLG: 12,
+
+    const theme: ThemeConfig['token'] = appTheme
+      ? {
+        colorPrimary: appTheme.primaryColor,
+        colorInfo: appTheme.infoColor,
+        colorSuccess: appTheme.successColor,
+        colorError: appTheme.errorColor,
+        colorWarning: appTheme.warningColor,
+      }
+      : {};
+
+    const result: ThemeConfig = {
+      cssVar: true,
+      token: { ...themeDefaults, ...theme},
+    };
+    return result;
+  }, [state.theme]);
+
   return (
     <UiStateContext.Provider value={state}>
       <UiActionsContext.Provider
         value={{
           changeTheme,
-
-          /* NEW_ACTION_GOES_HERE */
         }}
       >
-        <ConfigProvider prefixCls={prefixCls}>{children}</ConfigProvider>
+        <ConfigProvider
+          prefixCls={prefixCls}
+          iconPrefixCls={iconPrefixCls}
+          theme={themeConfig}
+        >
+          {children}
+        </ConfigProvider>
       </UiActionsContext.Provider>
     </UiStateContext.Provider>
   );

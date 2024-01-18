@@ -26,6 +26,7 @@ import { genericItemActionArgumentsForm } from './configurable-actions/generic-i
 import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfiguratorStateContext } from './contexts';
 import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
+import { useStyles } from '@/components/appConfigurator/styles/styles';
 
 export interface IAppConfiguratorProviderProps {}
 
@@ -95,6 +96,7 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
 
 const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProps>> = ({ children }) => {
   const configuratorSettings = useAppConfiguratorSettings();
+  const { styles } = useStyles();
 
   const [state, dispatch] = useReducer(appConfiguratorReducer, {
     ...APP_CONTEXT_INITIAL_STATE,
@@ -199,12 +201,12 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   useEffect(() => {
     if (!document) return;
-
+    const classes = styles.shaAppEditMode.split(' ');
     if (state.mode === 'live') {
-      document.body.classList.remove('sha-app-editmode');
+      document.body.classList.remove(...classes);
     }
     if (state.mode === 'edit') {
-      document.body.classList.add('sha-app-editmode');
+      document.body.classList.add(...classes);
     }
   }, [state.mode]);
 

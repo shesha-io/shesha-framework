@@ -4,7 +4,7 @@ import React, {
   PropsWithChildren,
   useContext,
   useReducer
-  } from 'react';
+} from 'react';
 import { asFormFullName } from '../form/utils';
 import { FormIdentifier } from '@/interfaces';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -13,7 +13,6 @@ import { IConfigurableActionConfiguration, useConfigurableAction } from '@/provi
 import { IKeyValue } from '@/interfaces/keyValue';
 import { mapKeyValueToDictionary } from '@/utils/dictionary';
 import { navigateArgumentsForm } from './actions/navigate-arguments';
-import { NextRouter } from 'next/router';
 import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
 import { shaRoutingReducer } from './reducer';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
@@ -21,6 +20,16 @@ import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 export type NavigationType = 'url' | 'form';
 
 const NAVIGATE_ACTION_NAME = 'Navigate';
+
+interface IRouter {
+  push(href: string): void;
+  /**
+   * Navigate to the previous history entry.
+   */
+  back(): void;
+  query: NodeJS.Dict<string | string[]>;
+  asPath: string;
+}
 
 export interface INavigateActoinArguments {
   navigationType: NavigationType;
@@ -30,7 +39,7 @@ export interface INavigateActoinArguments {
 }
 
 interface ShaRoutingProviderProps {
-  router: NextRouter;
+  router: IRouter;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
 }
 
@@ -55,7 +64,8 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
 
   const navigateToRawUrl = (url: string): Promise<boolean> => {
     if (state?.router) {
-      return state?.router?.push(url);
+      state.router.push(url);
+      return Promise.resolve(true);
     }
 
     if (window) {
@@ -80,7 +90,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
   };
 
   const getUrlFromNavigationRequest = (request: INavigateActoinArguments): string => {
-    switch(request?.navigationType){
+    switch (request?.navigationType) {
       case 'url': return prepareUrl(request.url, request.queryParameters);
       case 'form': {
         const formUrl = getFormUrl(request.formId);
@@ -163,4 +173,4 @@ const isNavigationActionConfiguration = (actionConfig: IConfigurableActionConfig
   return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === NAVIGATE_ACTION_NAME;
 };
 
-export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState, isNavigationActionConfiguration };
+export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState, isNavigationActionConfiguration, type IRouter };

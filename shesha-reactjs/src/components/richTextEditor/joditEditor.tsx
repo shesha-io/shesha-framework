@@ -9,7 +9,7 @@ const JoditEditor = lazy(async () => {
     // temporary disable ace editor because of conflicts with code editor
     defaultOptions['sourceEditor'] = 'area';
 
-    return import('jodit-react');
+    return (await import('jodit-react') as any);
 });
 
 export interface IJoditEditorProps {

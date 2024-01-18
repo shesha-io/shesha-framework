@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import { QueryBuilder } from '@/components';
-import './styles/queryBuilderPlain.less';
+import { useStyles } from './styles/styles';
 
 export interface IQueryBuilderPlainProps {
   value?: object;
@@ -10,6 +10,7 @@ export interface IQueryBuilderPlainProps {
 }
 
 export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange, readOnly = false }) => {
+  const { styles } = useStyles();
   const handleChange = (jsonLogicResult: JsonLogicResult) => {
     if (readOnly) return;
     if (jsonLogicResult) {
@@ -26,7 +27,7 @@ export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange
   };
 
   return (
-    <div className="sha-query-builder-plain-wrapper">
+    <div className={styles.shaQueryBuilderPlainWrapper}>
       <QueryBuilder
         value={value}
         onChange={handleChange}

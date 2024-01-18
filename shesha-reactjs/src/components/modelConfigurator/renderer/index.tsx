@@ -9,10 +9,12 @@ import { PermissionEditorComponent } from '../permissionEditor';
 import { PropertiesEditorComponent } from '../propertiesEditor';
 import { useModelConfigurator } from '@/providers';
 import { ViewsEditorComponent } from '../viewsEditor';
+import { useStyles } from '../styles/styles';
 
 export interface IModelConfiguratorRendererProps {}
 
 export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = () => {
+  const { styles } = useStyles();
   const { modelConfiguration, form, save, id } = useModelConfigurator();
 
   const onSettingsSave = values => {
@@ -23,7 +25,7 @@ export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = ()
   };
 
   return (
-    <div className="sha-model-configurator">
+    <div className={styles.shaModelConfigurator}>
       {false && <ModelConfiguratorToolbar />}
       <CustomErrorBoundary>
         <ConfigurableForm

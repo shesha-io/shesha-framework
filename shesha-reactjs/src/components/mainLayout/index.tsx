@@ -12,7 +12,7 @@ import React, {
   ReactNode,
   useEffect,
   useMemo
-  } from 'react';
+} from 'react';
 import { IHtmlHeadProps } from '@/components/htmlHead';
 import { Layout } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
@@ -23,7 +23,7 @@ import { useLocalStorage } from '@/hooks';
 import { useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
-import './styles/styles.less';
+import { useStyles } from './styles/styles';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -51,7 +51,6 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   fixHeading?: boolean;
   showHeading?: boolean;
   noPadding?: boolean;
-  toolbar?: ReactNodeOrFunc;
   customComponent?: ReactNode;
 
   /**
@@ -89,12 +88,12 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     showHeading = true,
     reference,
     noPadding = false,
-    toolbar,
     headerControls,
     customComponent,
     imgSrc,
   } = props;
   const { theme: themeFromStorage } = useTheme();
+  const { styles } = useStyles();
   const sidebarDefaults = useSidebarMenuDefaults();
 
   const { setGlobalVariables } = useSheshaApplication();
@@ -151,7 +150,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   return (
     <Layout style={style}>
       <Sider
-        className="sha-main-sider"
+        className={styles.mainSider}
         collapsible
         collapsed={collapsed}
         onCollapse={onCollapse}
@@ -166,29 +165,23 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         />
       </Sider>
 
-      <Layout className="site-layout">
-        <Header className="site-layout-background" style={headerStyle}>
+      <Layout className={styles.layout}>
+        <Header className={styles.antLayoutHeader} style={headerStyle}>
           <LayoutHeader collapsed={collapsed} customComponent={customComponent} imgSrc={imgSrc} />
         </Header>
-        <Content className={classNames({ collapsed })} style={contentStyle}>
+        <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <>
             {breadcrumb}
-            <div className={classNames('sha-layout-heading', headingClass)}>
+            <div className={classNames(styles.shaLayoutHeading, headingClass)}>
               {renderPageTitle()} {renderPageControls()}
             </div>
 
             <div
-              className={classNames('sha-site-layout-background', headingClass, {
-                'sha-site-layout-background-no-padding': noPadding,
+              className={classNames(styles.shaSiteLayoutBackground, headingClass, {
+                [styles.shaSiteLayoutBackgroundNoPadding]: noPadding,
               })}
               style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
             >
-              {toolbar && (
-                <div className="sha-site-layout-toolbar">
-                  <NodeOrFuncRenderer>{toolbar}</NodeOrFuncRenderer>
-                </div>
-              )}
-
               {children}
             </div>
           </>
@@ -211,7 +204,7 @@ const MainLayout = withAuth(DefaultLayout);
  * @param page the page to be rendered within the layout
  * @returns the component wrapped up in a layout
  */
- export const getLayout = (page: ReactElement): JSX.Element => {
+export const getLayout = (page: ReactElement): JSX.Element => {
   return <MainLayout noPadding><>{page}</></MainLayout>;
 };
 

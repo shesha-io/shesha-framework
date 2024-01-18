@@ -6,6 +6,7 @@ import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import classNames from 'classnames';
 import { ISidebarMenuItem } from '@/interfaces/sidebar';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 const { Text } = Typography;
 
@@ -15,6 +16,7 @@ export interface IProps extends ISidebarMenuItem {
 
 export const SidebarMenuItem: FC<IProps> = props => {
   const { deleteItem, selectedItemId } = useSidebarMenuConfigurator();
+  const { styles } = useStyles();
 
   const onDeleteClick = () => {
     deleteItem(props.id);
@@ -31,23 +33,23 @@ export const SidebarMenuItem: FC<IProps> = props => {
   ) : null;
 
   return (
-    <div className={classNames('sha-sidebar-item', { selected: selectedItemId === props.id })}>
-      <div className="sha-sidebar-item-header">
+    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })}>
+      <div className={styles.shaToolbarItemHeader}>
         <DragHandle id={props.id} />
         {props.itemType === 'button' && (
           <>
             {renderedIcon}
-            <span className="sha-sidebar-item-name">{props.title}</span>
+            <span className={styles.shaToolbarItemName}>{props.title}</span>
             {props.tooltip && (
               <Tooltip title={props.tooltip}>
-                <QuestionCircleOutlined className="sha-help-icon" />
+                <QuestionCircleOutlined className={styles.shaHelpIcon} />
               </Tooltip>
             )}
           </>
         )}
         {props.itemType === 'divider' && (<Text type="secondary">— divider —</Text>)}
 
-        <div className="sha-sidebar-item-controls">
+        <div className={styles.shaToolbarItemControls}>
           <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
         </div>
       </div>

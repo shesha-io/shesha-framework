@@ -6,6 +6,7 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
+import { useStyles } from '../styles/styles';
 
 export interface IProps {
   items: IPropertyMetadata[];
@@ -38,6 +39,7 @@ interface NodesWithExpanded {
 }
 
 const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => {
+  const { styles } = useStyles();
   const [manuallyExpanded, setManuallyExpanded] = useState<string[]>(null);
   const { startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
   const treeData = useMemo<NodesWithExpanded>(() => {
@@ -106,14 +108,14 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
           put: false,
         }}
         sort={false}
-        draggable=".sha-toolbox-component"
-        ghostClass="sha-component-ghost"
+        draggable={`.${styles.shaToolboxComponent}`}
+        ghostClass={styles.shaComponentGhost}
         onStart={onDragStart}
         onEnd={onDragEnd}
       >
-        <div className="sha-toolbox-component">
+        <div className={styles.shaToolboxComponent}>
           {icon}
-          <span className="sha-component-title">{getTitle(node.meta)}</span>
+          <span className={styles.shaComponentTitle}>{getTitle(node.meta)}</span>
         </div>
       </ReactSortable>
     );
@@ -125,7 +127,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
 
   return (
     <Tree<DataNodeWithMeta>
-      className="sha-datasource-tree"
+      className={styles.shaDatasourceTree}
       showIcon
       treeData={treeData.nodes}
       expandedKeys={defaultExpandAll && !Boolean(manuallyExpanded) ? treeData.expandedKeys : manuallyExpanded}

@@ -26,7 +26,7 @@ import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from '@/interf
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
 import { IToolboxComponents } from '@/interfaces';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { removeNullUndefined } from '@/providers/utils';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {

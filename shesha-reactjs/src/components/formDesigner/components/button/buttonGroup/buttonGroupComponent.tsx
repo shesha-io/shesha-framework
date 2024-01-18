@@ -38,6 +38,8 @@ import { useDeepCompareMemo } from '@/hooks';
 import { useForm } from '@/providers/form';
 import { useSheshaApplication } from '@/providers';
 import type { MenuProps } from 'antd';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -112,6 +114,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
 };
 
 export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles, disabled }) => {
+  const { styles } = useStyles();
   const allData = useApplicationContext();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
@@ -172,7 +175,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 
   if (isInline) {
     return (
-      <div className={noStyles ? null : 'sha-responsive-button-group-inline-container'}>
+      <div className={noStyles ? null : styles.shaResponsiveButtonGroupInlineContainer}>
         <Space>
           {filteredItems?.map((item) =>
             (<InlineItem item={item} uuid={item.id} size={size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem}/>)
@@ -183,11 +186,11 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
   } else {
     const menuItems = filteredItems?.map((props) => createMenuItem(props, size, getIsVisible, allData, prepareItem));
     return (
-      <div className="sha-responsive-button-group-container">
+      <div className={styles.shaResponsiveButtonGroupContainer}>
         <Menu
           mode="horizontal"
           items={menuItems}
-          className={`sha-responsive-button-group space-${spaceSize}`}
+          className={classNames(styles.shaResponsiveButtonGroup, `space-${spaceSize}`)}
           style={{ width: '30px' }}
         />
       </div>

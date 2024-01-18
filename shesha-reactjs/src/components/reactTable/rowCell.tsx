@@ -1,6 +1,6 @@
-import { nanoid } from 'nanoid/non-secure';
 import React, { FC, ReactNode } from 'react';
 import { Cell, CellPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
+import { useStyles } from './styles/styles';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,
@@ -21,8 +21,14 @@ export interface IRowCellProps {
 }
 
 export const RowCell: FC<IRowCellProps> = ({ cell, preContent }) => {
+  const { styles } = useStyles();
+  const { key, ...restProps } = cell.getCellProps(cellProps);
   return (
-    <div key={nanoid()} {...cell.getCellProps(cellProps)} className="td">
+    <div 
+      key={key} 
+      {...restProps}
+      className={styles.td}
+    >
       {preContent}
       {cell.render('Cell')}
     </div>

@@ -5,7 +5,7 @@ import { BorderlessTableOutlined } from '@ant-design/icons';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import Show from '@/components/show';
 import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { ListEditor } from '@/index';
+import { ListEditor } from '@/components';
 
 export interface ILabelValueItem {
   [key: string]: string;

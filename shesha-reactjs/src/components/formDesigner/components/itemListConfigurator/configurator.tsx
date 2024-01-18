@@ -4,7 +4,6 @@ import { Alert, Button } from 'antd';
 import { ItemConfigProperties } from './properties';
 import { SidebarContainer } from '../../..';
 import { useItemListConfigurator } from '@/providers';
-import './styles/index.less';
 
 export interface IItemListConfiguratorProps {
   allowAddGroups?: boolean;

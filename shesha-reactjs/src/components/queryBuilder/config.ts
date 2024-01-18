@@ -133,8 +133,10 @@ evaluateTypes.forEach(type => {
 const knownFuncNames = ['NOW', 'LOWER', 'NOW', 'UPPER', 'RELATIVE_DATETIME'];
 const knownFuncs: Funcs = {};
 knownFuncNames.forEach(funcName => {
-  if (BasicFuncs.hasOwnProperty(funcName))
-  knownFuncs[funcName] = BasicFuncs[funcName];
+  
+  if (Object.hasOwn(BasicFuncs, funcName))
+  //if (BasicFuncs.hasOwnProperty(funcName))
+    knownFuncs[funcName] = BasicFuncs[funcName];
 });
 
 const funcs: Funcs = {

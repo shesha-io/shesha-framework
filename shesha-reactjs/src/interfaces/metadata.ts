@@ -1,5 +1,5 @@
-import { IDictionary } from '..';
 import { DataTypes } from "./dataTypes";
+import { IDictionary } from "./shesha";
 
 export interface IPropertyMetadataBase {
   isVisible?: boolean;

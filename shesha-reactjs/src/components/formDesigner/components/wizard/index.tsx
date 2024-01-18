@@ -14,11 +14,11 @@ import { IStepProps, IWizardComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { IWizardComponentPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateWizardActions } from './migrations/migrateWizardActions';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { useForm, useFormData, useGlobalState } from '@/providers';
 import { useFormExpression } from '@/hooks/index';
 import { useWizard } from './hooks';
-import './styles.less';
+import { useStyles } from './styles';
 import {
   migrateCustomFunctions,
   migratePropertyName,
@@ -106,6 +106,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 };
 
 const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
+  const { styles } = useStyles();
   const { formMode } = useForm();
   const { executeBooleanExpression } = useFormExpression();
   const { data } = useFormData();
@@ -149,8 +150,8 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
 
   return (
     <ParentProvider model={model}>
-      <div className="sha-wizard" style={getLayoutStyle(model, { data, globalState })}>
-        <div className={classNames('sha-wizard-container', { vertical: direction === 'vertical' })}>
+      <div className={styles.shaWizard} style={getLayoutStyle(model, { data, globalState })}>
+        <div className={classNames(styles.shaWizardContainer, { vertical: direction === 'vertical' })}>
           <Steps
             type={wizardType}
             current={current}
@@ -160,12 +161,12 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
             labelPlacement={labelPlacement}
           />
 
-          <div className="sha-steps-content">{steps[current]?.content}</div>
+          <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
         </div>
 
         <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
           <div
-            className={classNames('sha-steps-buttons-container', {
+            className={classNames(styles.shaStepsButtonsContainer, {
               split: splitButtons,
               left: buttonsLayout === 'left',
               right: buttonsLayout === 'right',
@@ -175,7 +176,7 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
               condition={splitButtons}
               wrap={(children) => (
                 <Space>
-                  <div className={classNames('sha-steps-buttons')}>{children}</div>
+                  <div className={styles.shaStepsButtons}>{children}</div>
                 </Space>
               )}
             >
@@ -204,7 +205,7 @@ const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
               condition={splitButtons}
               wrap={(children) => (
                 <Space>
-                  <div className={classNames('sha-steps-buttons')}>{children}</div>
+                  <div className={styles.shaStepsButtons}>{children}</div>
                 </Space>
               )}
             >

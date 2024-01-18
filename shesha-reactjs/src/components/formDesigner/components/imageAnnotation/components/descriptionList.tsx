@@ -1,11 +1,13 @@
 import React, { FC } from 'react';
 import DisplayFormItem from '@/components/displayFormItem';
 import { IDataAnnotationListProps } from '../model';
+import { useStyles } from '../styles/styles';
 
 const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
+  const { styles } = useStyles();
   const filteredData = data?.map(({ id, mark, comment }) => ({ id, mark, comment }));
   return (
-    <div className="List-Container">
+    <div className={styles.listContainer}>
       {filteredData
         ?.filter(mark => !!mark?.comment)
         ?.sort((a, b) => {
@@ -15,8 +17,8 @@ const DescriptionsList: FC<IDataAnnotationListProps> = ({ data }) => {
         ?.map(mrk => {
           const [index, comment] = mrk.comment?.split('.') || [];
           return (
-            <div className="List-item">
-              <span className="numbering">{`${index}.`}</span>
+            <div className={styles.listItem}>
+              <span className={styles.numbering}>{`${index}.`}</span>
               <DisplayFormItem> {comment}</DisplayFormItem>
             </div>
           );

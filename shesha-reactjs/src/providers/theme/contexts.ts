@@ -17,6 +17,8 @@ export interface IConfigurableTheme {
 
 export interface IThemeStateContext {
   readonly theme?: IConfigurableTheme;
+  prefixCls: string;
+  iconPrefixCls: string;
 }
 
 export interface IThemeActionsContext {
@@ -42,6 +44,8 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
       link: '',
     },
   },
+  prefixCls: 'antd',
+  iconPrefixCls: 'antdicon',
 };
 
 export const UiStateContext = createContext<IThemeStateContext>(THEME_CONTEXT_INITIAL_STATE);

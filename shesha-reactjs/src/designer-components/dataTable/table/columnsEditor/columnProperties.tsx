@@ -44,7 +44,7 @@ export const ColumnProperties: FC<IProps> = () => {
   return false;
 
 
- },[selectedItemId,items,previousItems])
+ },[selectedItemId,items,previousItems]);
 
 
 

@@ -126,15 +126,15 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     const modules: ModulesDictionary = {};
     allItems.forEach((item) => {
       const itemModule = item.module ?? { id: null, name: LEGACY_ITEMS_MODULE_NAME };
-      let module: IModule = modules[itemModule.id];
-      if (!module) {
-        module = { id: itemModule.id, name: itemModule.name, description: itemModule.description, itemTypes: {} };
-        modules[itemModule.id] = module;
+      let moduleContainer: IModule = modules[itemModule.id];
+      if (!moduleContainer) {
+        moduleContainer = { id: itemModule.id, name: itemModule.name, description: itemModule.description, itemTypes: {} };
+        modules[itemModule.id] = moduleContainer;
       }
-      let itemType = module.itemTypes[item.itemType];
+      let itemType = moduleContainer.itemTypes[item.itemType];
       if (!itemType) {
         itemType = { name: item.itemType, items: [], applications: {} };
-        module.itemTypes[itemType.name] = itemType;
+        moduleContainer.itemTypes[itemType.name] = itemType;
       }
 
       const configurationItem: IConfigurationItem = {
@@ -165,21 +165,21 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     for (const moduleName in modules) {
       if (!modules.hasOwnProperty(moduleName)) continue;
-      const module = modules[moduleName];
+      const moduleContainer = modules[moduleName];
       const moduleNode: ConfigItemDataNode = {
-        key: module.id ?? '-',
-        title: module.name,
+        key: moduleContainer.id ?? '-',
+        title: moduleContainer.name,
         children: [],
         isLeaf: false,
       };
       treeNodes.push(moduleNode);
 
-      for (const itName in module.itemTypes) {
-        if (!module.itemTypes.hasOwnProperty(itName)) continue;
-        const itemType = module.itemTypes[itName];
+      for (const itName in moduleContainer.itemTypes) {
+        if (!moduleContainer.itemTypes.hasOwnProperty(itName)) continue;
+        const itemType = moduleContainer.itemTypes[itName];
         if (itemType) {
           const itemTypeNode: ConfigItemDataNode = {
-            key: `${module.id}/${itemType.name}`,
+            key: `${moduleContainer.id}/${itemType.name}`,
             title: itemType.name,
             children: [],
             isLeaf: false,
@@ -191,7 +191,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
             const application = itemType.applications[appKey];
 
             const appNode: ConfigItemDataNode = {
-              key: `${module.id}/${itemType.name}/${application.appKey}`,
+              key: `${moduleContainer.id}/${itemType.name}/${application.appKey}`,
               title: application.appKey,
               isLeaf: false,
               children: application.items.map<ConfigItemDataNode>((item) => ({

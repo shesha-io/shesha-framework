@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
+import { useStyles } from './styles/styles';
 
 const { Panel } = Collapse;
 
@@ -38,13 +39,14 @@ export const CollapsiblePanel: FC<ICollapsiblePanelProps> = ({
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
+  const { styles } = useStyles();
 
   return (
     <Collapse
       defaultActiveKey={collapsedByDefault ? [] : ['1']}
       onChange={onChange}
       expandIconPosition={expandIconPosition}
-      className={classNames('sha-collapsible-panel', className, { 'no-content-padding': noContentPadding })}
+      className={classNames(styles.shaCollapsiblePanel, className, { [styles.noContentPadding]: noContentPadding })}
       style={style}
       ghost={ghost}
     >
@@ -52,7 +54,7 @@ export const CollapsiblePanel: FC<ICollapsiblePanelProps> = ({
         key="1"
         collapsible={collapsible}
         showArrow={showArrow}
-        header={<span className={`ant-collapse-header-text`}>{header || ' '}</span>}
+        header={header || ' '}
         extra={
           <span onClick={onContainerClick} className={extraClassName}>
             {extra}

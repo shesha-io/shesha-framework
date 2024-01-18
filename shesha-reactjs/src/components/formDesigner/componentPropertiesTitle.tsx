@@ -2,11 +2,13 @@ import React, { FC } from 'react';
 import { Button } from 'antd';
 import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { useStyles } from './styles/styles';
 
 export interface IProps {}
 
 export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
   const { deleteComponent, duplicateComponent, selectedComponentId, readOnly } = useFormDesigner();
+  const { styles } = useStyles();
 
   const onDeleteClick = () => {
     if (!readOnly)
@@ -18,7 +20,7 @@ export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
   };
 
   return (
-    <div className="component-properties-actions">
+    <div className={styles.componentPropertiesActions}>
       Properties
       {selectedComponentId && !readOnly && (
         <div className="action-buttons">

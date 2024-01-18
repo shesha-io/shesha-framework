@@ -8,6 +8,7 @@ import { ProtectedContent, AppEditModeToggler, ConfigurableLogo } from '@/compon
 import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
 import { useSidebarMenu } from '@/providers';
 import ConfigurationItemViewModeToggler from '../appConfigurator/configurationItemViewModeToggler';
+import { useStyles } from './styles/styles';
 
 const { Search } = Input;
 type MenuItem = MenuProps['items'][number];
@@ -24,6 +25,7 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
   const { loginInfo, logoutUser } = useAuth();
   const sidebar = useSidebarMenu(false);
   const { accountDropdownListItems, actions } = sidebar || {};
+  const { styles } = useStyles();
 
   const accountMenuItems = useMemo<MenuItem[]>(() => {
     const result = (accountDropdownListItems ?? []).map<MenuItem>(({ icon, text, url: link, onClick }, index) => (
@@ -54,8 +56,8 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
   }, [accountDropdownListItems]);
 
   return (
-    <div className={classNames('layout-header', { collapsed })}>
-      <div className="layout-header-left">
+    <div className={classNames(styles.layoutHeader, { collapsed })}>
+      <div className={styles.layoutHeaderLeft}>
         <ConfigurableLogo imgSrc={imgSrc} />
 
         {onSearch && (
@@ -65,8 +67,8 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
         )}
       </div>
 
-      <div className="layout-header-right">
-        <div className="custom-components">{customComponent}</div>
+      <div className={styles.layoutHeaderRight}>
+        <div className={styles.customComponents}>{customComponent}</div>
 
         <div className="actions">
           {actions?.map(({ icon, url }) => (

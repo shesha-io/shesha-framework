@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { useMemo } from 'react';
 import { ITableColumnsBuilder, TableColumnsFluentSyntax } from '@/providers/dataTable/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';

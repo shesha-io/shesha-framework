@@ -4,7 +4,7 @@ import SettingsControl, { ISwitchModeSettingsRef, SettingsControlChildrenType } 
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getPropertySettingsFromData } from './utils';
-import './styles/index.less';
+import { useStyles } from './styles/styles';
 import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
@@ -35,6 +35,7 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
 };
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
+    const { styles } = useStyles();
     const { getFieldsValue } = useSettingsForm<any>();
     const formData = getFieldsValue();
     const { _mode: mode, _code: code } = getPropertySettingsFromData(formData, props.name?.toString());
@@ -82,11 +83,11 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
         >
             {(value, onChange) => {
                 return (
-                <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>
+                <div className={ mode === 'code' ? styles.contentCode : styles.contentJs}>
                     <Button
                         disabled={props.readOnly}
                         shape="round"
-                        className='sha-js-switch'
+                        className={styles.jsSwitch}
                         type={'primary'}
                         danger={mode === 'value' && !!code }
                         ghost
@@ -96,7 +97,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         {mode === 'code' ? 'Value' : 'JS'}
                     </Button>
 
-                    <div className='sha-js-content'>
+                    <div className={styles.jsContent}>
                         <SettingsControl 
                             id={props.name.toString()} 
                             propertyName={props.name.toString()}

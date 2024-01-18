@@ -2,7 +2,7 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import { Alert, Button, Input, Modal, Select, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import _, { isEmpty } from 'lodash';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useMedia } from 'react-use';
 import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
@@ -18,7 +18,8 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import TablePager from '@/components/tablePager';
 import { IEntityPickerProps, IEntityPickerState } from './models';
 import { evaluateDynamicFilters } from '@/utils';
-import { useDeepCompareMemo } from '@/index';
+import { useDeepCompareMemo } from '@/hooks';
+import { useStyles } from './styles/styles';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 
@@ -81,6 +82,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     width,
   } = props;
 
+  const { styles } = useStyles();
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({
     showModal: false,
@@ -285,7 +287,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
   );
 
   return (
-    <div className="entity-picker-container">
+    <div className={styles.entityPickerContainer}>
       <div>
         {useButtonPicker ? (
           <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
@@ -317,7 +319,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
             </Select>
             <Button
               onClick={showPickerDialog}
-              className="picker-input-group-ellipsis"
+              className={styles.pickerInputGroupEllipsis}
               disabled={disabled}
               loading={loading ?? false}
               size={size}
@@ -329,7 +331,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 
       <Modal
         title={title || 'Select Item'}
-        className="entity-picker-modal"
+        className={styles.entityPickerModal}
         open={state?.showModal}
         onOk={onModalOk}
         onCancel={handleCancel}
@@ -342,7 +344,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
           <GlobalTableFilter
             searchProps={{ size: 'middle', autoFocus: true, placeholder: 'Search by Title, Type or Keyword...' }}
           />
-          <div className="entity-picker-modal-pager-container">
+          <div className={styles.entityPickerModalPagerContainer}>
             <TablePager />
           </div>
 

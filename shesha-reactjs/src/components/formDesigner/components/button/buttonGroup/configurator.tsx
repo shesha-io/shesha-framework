@@ -4,7 +4,7 @@ import { SidebarContainer } from '../../../..';
 import { ButtonGroupProperties } from './properties';
 import ButtonGroupItemsContainer from './buttonGroupItemsContainer';
 import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
-import './styles/index.less';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IButtonGroupConfiguratorProps {
   allowAddGroups?: boolean;
@@ -17,6 +17,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   render,
   heading,
 }) => {
+  const { styles } = useStyles();
   const { items, addButton, addGroup, readOnly } = useButtonGroupConfigurator();
 
   const content = () => {
@@ -42,13 +43,13 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
 
     return 'Properties';
   };
-
+  
   return (
-    <div className="sha-button-group-configurator">
+    <div className={styles.shaToolbarConfigurator}>
       <Alert message={<h4>{readOnly ? 'Here you can view buttons configuration.' : 'Here you can configure the button group by adjusting their settings and ordering.'}</h4>} />
 
       {!readOnly && (
-        <div className="sha-action-buttons">
+        <div className={styles.shaActionButtons}>
           {allowAddGroups && (
             <Button onClick={addGroup} type="primary">
               Add Group

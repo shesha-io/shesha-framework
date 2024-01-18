@@ -8,6 +8,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import JsonProperty from './jsonProperty';
 import GenericEntityProperty from './genericEntityProperty';
 import EntityProperty from './entityProperty';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IItemsContainerProps {
   index?: number[];
@@ -56,6 +57,7 @@ const renderItem = (itemProps: IModelItem, index: number[], key: string) => {
 
 export const ItemsContainer: FC<IItemsContainerProps> = props => {
   const { updateChildItems } = usePropertiesEditor();
+  const { styles } = useStyles();
 
   const onSetList = (newState: ItemInterface[]) => {
     // temporary commented out, the behavoiur of the sortablejs differs sometimes
@@ -77,11 +79,11 @@ export const ItemsContainer: FC<IItemsContainerProps> = props => {
         name: 'toolbarItems',
       }}
       sort={true}
-      draggable=".sha-sidebar-item"
+      draggable={`.${styles.shaToolbarItem}`}
       animation={75}
-      ghostClass="sha-sidebar-item-ghost"
+      ghostClass={styles.shaToolbarItemGhost}
       emptyInsertThreshold={20}
-      handle=".sha-sidebar-item-drag-handle"
+      handle={`.${styles.shaToolbarItemDragHandle}`}
       scroll={true}
       bubbleScroll={true}
     >

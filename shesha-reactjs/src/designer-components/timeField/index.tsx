@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { TimePicker, message } from 'antd';
+import { message } from 'antd';
+import { TimeRangePicker, TimePicker } from '@/components/antd';
 import moment, { Moment, isMoment } from 'moment';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
@@ -13,9 +14,10 @@ import { getStyle, validateConfigurableComponentSettings } from '@/providers/for
 import { axiosHttp } from '@/utils/fetchers';
 import { getNumericValue } from '@/utils/string';
 import settingsFormJson from './settingsForm.json';
-import './styles/index.less';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { TimeSteps } from '@/components/antd/timepicker';
+import { useStyles } from './styles/styles';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -148,6 +150,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
   ...rest
 }) => {
   const { data: formData } = useFormData();
+  const { styles } = useStyles();
 
   const evaluatedValue = getMoment(value, format);
 
@@ -155,10 +158,10 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
   const minuteStepLocal = getNumericValue(minuteStep);
   const secondStepLocal = getNumericValue(secondStep);
 
-  const steps = {
-    hourStep: 24 % hourStepLocal === 0 ? hourStepLocal : 1, // It should be a factor of 24.
-    minuteStep: 60 % minuteStepLocal === 0 ? minuteStepLocal : 1, // It should be a factor of 60.
-    secondStep: 60 % secondStepLocal === 0 ? secondStepLocal : 1, // It should be a factor of 60.
+  const steps: TimeSteps = {
+    hourStep: 1 <= hourStepLocal && hourStepLocal <= 23 ? hourStepLocal as TimeSteps['hourStep'] : 1, // value should be in range 1..23
+    minuteStep: 1 <= minuteStepLocal && minuteStepLocal <= 59 ? minuteStepLocal as TimeSteps['minuteStep'] : 1, // value should be in range 1..59
+    secondStep: 1 <= secondStepLocal && secondStepLocal <= 59 ? secondStepLocal as TimeSteps['secondStep'] : 1, // value should be in range 1..59
   };
 
   
@@ -197,14 +200,14 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
 
   if (range) {
     return (
-      <TimePicker.RangePicker
+      <TimeRangePicker
         bordered={!hideBorder}
         onChange={handleRangePicker}
         format={format}
         value={getDefaultRangePickerValues() as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
-        className="sha-timepicker"
+        className={styles.shaTimepicker}
         
         {...rest}
         placeholder={[placeholder, placeholder]}
@@ -222,7 +225,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
       value={evaluatedValue|| (defaultValue && moment(defaultValue))}
       {...steps}
       style={getStyle(style, formData)}
-      className="sha-timepicker"
+      className={styles.shaTimepicker}
       placeholder={placeholder}
       {...rest}
     />

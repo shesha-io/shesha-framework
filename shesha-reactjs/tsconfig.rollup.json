@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "example",
+    "rollup.config.mjs",
+    "**/tests",
+    "**/*.test.js",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.d.ts",
+    "**/__test__/**",
+    "**/app/**"
+  ],
+}

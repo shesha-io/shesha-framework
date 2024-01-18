@@ -7,6 +7,7 @@ import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/qu
 import { QueryBuilderProvider, useMetadata } from '@/providers';
 import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
 import { TableViewProperties } from './tableViewProperties';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 const { TabPane } = Tabs;
 
@@ -25,6 +26,7 @@ export const TableViewSelectorConfigurator = forwardRef<
       onQueryBuilderValueChange();
     },
   }));
+  const { styles } = useStyles();
 
   const metadata = useMetadata(false);
 
@@ -49,7 +51,7 @@ export const TableViewSelectorConfigurator = forwardRef<
   }, [selectedItem, selectedItemId, items]);
 
   return (
-    <div className="sha-toolbar-configurator">
+    <div className={styles.shaToolbarConfigurator}>
       <SidebarContainer
         rightSidebarProps={{
           open: true,
@@ -58,13 +60,13 @@ export const TableViewSelectorConfigurator = forwardRef<
         }}
       >
         {!readOnly && (
-          <Alert message="Here you can adjust filter settings" className="sha-toolbar-configurator-alert" />
+          <Alert message="Here you can adjust filter settings" className={styles.shaToolbarConfiguratorAlert} />
         )}
 
         <QueryBuilderProvider metadata={metadata?.metadata}>
           <Tabs
             defaultActiveKey="queryBuilderConfigureTab"
-            className="sha-toolbar-configurator-body-tabs"
+            className={styles.shaToolbarConfiguratorBodyTabs}
             destroyInactiveTabPane
             onChange={onQueryBuilderValueChange}
           >

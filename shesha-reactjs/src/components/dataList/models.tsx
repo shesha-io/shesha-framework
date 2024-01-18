@@ -1,5 +1,5 @@
 import { MutableRefObject } from 'react';
-import { FormIdentifier } from '@/index';
+import { FormIdentifier } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { ISelectionProps } from '@/providers/dataTable/contexts';

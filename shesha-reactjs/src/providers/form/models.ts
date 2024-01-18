@@ -219,7 +219,7 @@ export type FormMarkup =
 
 export interface FormFullName {
   readonly name: string;
-  readonly module?: string;
+  readonly module?: string | null;
   readonly version?: number;
 }
 export type FormUid = string;

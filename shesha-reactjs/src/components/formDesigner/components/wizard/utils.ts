@@ -1,5 +1,5 @@
 import { findLastIndex } from 'lodash';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IWizardSequence, IWizardStepProps } from './models';
 

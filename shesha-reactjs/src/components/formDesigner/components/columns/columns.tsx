@@ -4,7 +4,7 @@ import { SplitCellsOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
 import ComponentsContainer from '../../containers/componentsContainer';
 import { useFormData, useGlobalState } from '@/providers';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { IColumnsComponentProps } from './interfaces';
 import { getLayoutStyle } from '@/utils/publicUtils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';

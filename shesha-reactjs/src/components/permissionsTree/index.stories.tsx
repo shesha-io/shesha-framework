@@ -1,16 +1,14 @@
-import AuthContainer from '@/components/authedContainer';
 import React from 'react';
 import { addStory } from '@/stories/utils';
-import { FormProvider, GlobalStateProvider, ShaApplicationProvider } from '@/providers';
+import { FormProvider } from '@/providers';
 import { PermissionsTree, PermissionsTreeMode } from '.';
 import { Story } from '@storybook/react';
+import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/PermissionsTree',
   component: PermissionsTree
 };
-
-const backendUrl = process.env.STORYBOOK_BASE_URL; // TODO: Make this configurable
 
 export interface IPermissionTreeStoryProps {
   value?: string[];
@@ -19,26 +17,22 @@ export interface IPermissionTreeStoryProps {
   /**
    * Whether this control is disabled
    */
-   disabled?: boolean;
+  disabled?: boolean;
   /**
    * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
    */
   readOnly?: boolean;
   height?: number;
-  mode: PermissionsTreeMode;  
+  mode: PermissionsTreeMode;
 }
 
 const Template: Story<IPermissionTreeStoryProps> = (props) => {
   return (
-    <GlobalStateProvider>
-        <ShaApplicationProvider backendUrl={backendUrl}>
-            <AuthContainer layout>
-                <FormProvider mode={'edit'} name={''} allComponents={{}} componentRelations={{}} formSettings={undefined} isActionsOwner={false}>
-                  <PermissionsTree formComponentName={''} formComponentId={''} {...props} />
-                </FormProvider>
-            </AuthContainer>
-        </ShaApplicationProvider>
-    </GlobalStateProvider>                
+    <StoryApp>
+      <FormProvider mode={'edit'} name={''} allComponents={{}} componentRelations={{}} formSettings={undefined} isActionsOwner={false}>
+        <PermissionsTree formComponentName={''} formComponentId={''} {...props} />
+      </FormProvider>
+    </StoryApp>
   );
 };
 

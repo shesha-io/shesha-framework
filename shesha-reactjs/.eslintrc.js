@@ -26,7 +26,7 @@ module.exports = {
     '/.storybook/**',
     '.eslintrc.js',
     'rollup.config.mjs',
-    'less-bundle.js',
+    'next.config.js',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -266,5 +266,5 @@ module.exports = {
     'import/core-modules': [],
     'import/ignore': ['node_modules', '\\.(coffee|scss|css|less|hbs|svg|json)$'],
   },
-  extends: ['plugin:storybook/recommended', 'plugin:react-hooks/recommended'],
+  extends: ['plugin:storybook/recommended', 'plugin:react-hooks/recommended', 'plugin:@next/next/recommended'],
 };

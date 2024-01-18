@@ -1,11 +1,16 @@
-import { CloseOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { CloseOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { Button, message } from 'antd';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { FC } from 'react';
 import { useSettingsEditor } from './provider';
 
 export interface ISettingsEditorToolbarProps {
 
+}
+
+interface MenuItem {
+    isVisible: boolean;
+    content: () => ReactNode;
 }
 
 export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
@@ -32,47 +37,50 @@ export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
     const canSave = Boolean(selectedSetting) && editorMode === 'edit';
     const canCancelEdit = Boolean(selectedSetting) && editorMode === 'edit';
     const canEditConfigurations = false;
-    
-    return (
+
+    const items: MenuItem[] = [
+        {
+            isVisible: canEdit,
+            content: () => (
+                <Button onClick={onEditClick} type="link">
+                    <EditOutlined /> Edit
+                </Button>
+            )
+        },
+        {
+            isVisible: canSave,
+            content: () => (
+                <Button onClick={onSaveClick} type="link">
+                    <SaveOutlined /> Save
+                </Button>
+            )
+        },
+        {
+            isVisible: canCancelEdit,
+            content: () => (
+                <Button onClick={onCancelEditClick} type="link">
+                    <CloseOutlined /> Cancel Edit
+                </Button>
+            )
+        },
+        {
+            isVisible: canEditConfigurations,
+            content: () => (
+                <Button onClick={onEditSettingConfigurationClick} type="link">
+                    <EditOutlined /> Edit Setting Configuration
+                </Button>
+            )
+        },
+    ];
+
+    const visibleItems = items.filter(i => i.isVisible);
+
+    return visibleItems.length === 0
+    ? null
+    : (
         <div className="sha-components-container horizontal sha-index-toolbar">
             <div className="sha-components-container-inner">
-                {false && (
-                    <Button type="link">
-                        <PlusOutlined /> New
-                    </Button>)}
-                {
-                    false && (
-                        <Button type="link">
-                            <DeleteOutlined /> Delete
-                        </Button>)
-                }
-                {
-                    canEdit && (
-                        <Button onClick={onEditClick} type="link">
-                            <EditOutlined /> Edit
-                        </Button>
-                    )
-                }
-                {
-                    canSave && (
-                        <Button onClick={onSaveClick} type="link">
-                            <SaveOutlined /> Save
-                        </Button>
-                    )
-                }
-                {
-                    canCancelEdit && (
-                        <Button onClick={onCancelEditClick} type="link">
-                            <CloseOutlined /> Cancel Edit
-                        </Button>
-                    )
-                }
-
-                {canEditConfigurations && (
-                    <Button onClick={onEditSettingConfigurationClick} type="link">
-                        <EditOutlined /> Edit Setting Configuration
-                    </Button>
-                )}
+                { visibleItems.map((item, index) => <React.Fragment key={index}>{item.content()}</React.Fragment>) }
             </div>
         </div>
     );

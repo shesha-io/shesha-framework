@@ -5,13 +5,14 @@ import { useKeyPress } from "react-use";
 import { Option } from "antd/lib/mentions";
 import { useLocalStorage } from "@/hooks";
 import { CloseOutlined } from "@ant-design/icons";
-import "./styles/index.less";
 import DebugPanelDataContent from "./dataContent";
+import { useStyles } from './styles/styles';
 
 export interface DebugPanelProps {
 }
 
 export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) => {
+  const { styles } = useStyles();
   const [open, setOpen] = useState(false);
   const [ctrlPressed] = useKeyPress('Control');
   const [f12Pressed] = useKeyPress('F12');
@@ -106,7 +107,7 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
 
   const title = <>
     {position === 'bottom' &&
-      <div className='debugPanelBottomResizer'
+      <div className={styles.debugPanelBottomResizer}
         draggable
         onDragStart={initialY}
         onDragEnd={resizeY}
@@ -133,24 +134,26 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
         height={height}
         width={width}
         maskClosable={false}
-        className='debugPanelDrawer'
+        className={styles.debugPanelDrawer}
         maskStyle={{height: 0}}
-        headerStyle={{padding: '4px 12px 12px 8px', fontSize: 12}}
-        bodyStyle={{padding: '4px 4px 12px 4px', overflow: 'hidden'}}
+        styles={{ 
+          header: {padding: '4px 12px 12px 8px', fontSize: 12},
+          body:  {padding: '4px 4px 12px 4px', overflow: 'hidden'},          
+        }}
       > 
-        <div className='debugPanelBody'>
+        <div className={styles.debugPanelBody}>
           { position === 'right' &&
-            <div className='debugPanelRightResizer'
+            <div className={styles.debugPanelRightResizer}
               draggable
               onDragStart={initialX}
               onDragEnd={resizeX}
             />
           }
-          <div className='debugPanelContent'>
+          <div className={styles.debugPanelContent}>
             <DebugPanelDataContent />
           </div>
           { position === 'left' &&
-            <div className='debugPanelLeftResizer'
+            <div className={styles.debugPanelLeftResizer}
               draggable
               onDragStart={initialX}
               onDragEnd={resizeX}
@@ -158,7 +161,7 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
           }
         </div>
         {position === 'top' &&
-          <div className='debugPanelTopResizer'
+          <div className={styles.debugPanelTopResizer}
             draggable
             onDragStart={initialY}
             onDragEnd={resizeY}

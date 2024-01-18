@@ -7,7 +7,6 @@ import CustomInput from './components/customAnnotationInput';
 import DescriptionsList from './components/descriptionList';
 import WarningMessage from './components/warningMessage';
 import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
-import './styles/index.less';
 import {
   canSubmit,
   getImageBits,
@@ -15,6 +14,7 @@ import {
   parseIntOrDefault,
   sortAnnotationData,
 } from './utilis';
+import { useStyles } from './styles/styles';
 
 interface IProps {
   model: IImageProps;
@@ -34,6 +34,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     style,
   } = model;
 
+  const { styles } = useStyles();
   const { data: formData } = useFormData();
 
   const { globalState } = useGlobalState();
@@ -162,9 +163,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
         notFoundUrl={!newUrl}
         url={newUrl}
       />
-      <div className="annotation-conatainer">
+      <div className={styles.annotationConatainer}>
         <div
-          className="container-image"
+          className={styles.containerImage}
           ref={imageFrameRef}
           style={{ ...pageSize, ...getStyle(style, formData, globalState) }}
         >
@@ -189,11 +190,11 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
             marginWithInput={2}
           />
         </div>
-        {isReadOnly && <div className="container-image-Cover" style={{ ...pageSize }} />}
+        {isReadOnly && <div className={styles.containerImageCover} style={{ ...pageSize }} />}
 
         {!isOnImage && allowAddingNotes && (
           <div
-            className="description-container"
+            className={styles.descriptionContainer}
             style={{
               height: pageSize.height,
             }}

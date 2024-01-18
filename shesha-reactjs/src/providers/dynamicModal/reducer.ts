@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { handleActions } from 'redux-actions';
 import { DynamicModalActionEnums, ICreateModalPayload } from './actions';
 import { DYNAMIC_MODAL_CONTEXT_INITIAL_STATE, IDynamicModalStateContext } from './contexts';

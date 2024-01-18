@@ -3,6 +3,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { IToolboxComponent } from '@/interfaces';
 import { Show } from '@/components';
 import { Space, Tooltip } from 'antd';
+import { useStyles } from './styles/styles';
 
 export interface IProps {
   component: IToolboxComponent;
@@ -10,6 +11,7 @@ export interface IProps {
 }
 
 const ToolbarComponent: FC<IProps> = ({ component /*, index*/ }) => {
+  const { styles } = useStyles();
   const ComponentContent = () => (
     <div>
       {component.icon}
@@ -26,7 +28,7 @@ const ToolbarComponent: FC<IProps> = ({ component /*, index*/ }) => {
   );
 
   return (
-    <div className="sha-toolbox-component">
+    <div className={styles.shaToolboxComponent}>
       <ComponentContent />
     </div>
   );

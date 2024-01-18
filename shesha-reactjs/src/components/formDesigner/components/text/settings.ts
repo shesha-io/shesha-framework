@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces';
 import {
   FONT_SIZES,

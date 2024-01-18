@@ -4,17 +4,18 @@ import { SidebarContainer } from '@/components/';
 import { ToolbarItemProperties } from './itemProperties';
 import SidebarItemsContainer from './sidebarItemsContainer';
 import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
-import '../styles/index.less';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface ISidebarConfiguratorProps {}
 
 const Configurator: FC<ISidebarConfiguratorProps> = () => {
+  const { styles } = useStyles();
   const { items, addItem, addGroup } = useSidebarMenuConfigurator();
-
+  
   return (
-    <div className="sha-sidebar-configurator">
+    <div className={styles.shaToolbarConfigurator}>
       <h4>You can customize the Menu component from this screen.</h4>
-      <div className="sha-action-buttons">
+      <div className={styles.shaActionButtons}>
         <Button onClick={addGroup} type="primary">
           Add Group
         </Button>

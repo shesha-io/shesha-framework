@@ -39,7 +39,7 @@ const AceEditorLazy = React.lazy<typeof ReactAce>(() => new Promise(async resolv
     langTools.addCompleter(metadataCodeCompleter);
     langTools.addCompleter(contextCodeCompleter);
 
-    resolve(reactAce);
+    resolve(reactAce as any);
 }));
 
 export const CodeEditor: FC<ICodeEditorProps> = (props) => {

@@ -2,7 +2,7 @@ import React, { FC, ReactNode, useMemo } from 'react';
 import { useFormDesignerComponents } from '../form/hooks';
 import { FormRawMarkup, IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { componentsTreeToFlatStructure, getComponentsFromMarkup, upgradeComponents } from '../form/utils';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { updateSettingsComponents } from '@/designer-components/_settings/utils';
 
 export interface IFormMarkupConverterProps {

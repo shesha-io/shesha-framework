@@ -3,7 +3,7 @@ import { Button, Form, message, notification, Result, Spin } from 'antd';
 import classNames from 'classnames';
 import isDeepEqual from 'fast-deep-equal/react';
 import moment from 'moment';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import Link from 'next/link';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableForm, ValidationErrors } from '@/components';

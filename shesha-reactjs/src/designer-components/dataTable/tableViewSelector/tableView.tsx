@@ -5,6 +5,7 @@ import React, { FC, useState } from 'react';
 import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
 import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
 import DragHandle from './dragHandle';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IProps extends ITableViewProps {
   index: number[];
@@ -17,6 +18,7 @@ interface ITableViewState {
 }
 
 export const TableView: FC<IProps> = ({ onConfigClick, tooltip, id, name }) => {
+  const { styles } = useStyles();
   const { deleteItem: deleteButton, selectedItemId, readOnly } = useTableViewSelectorConfigurator();
   const [] = useState<ITableViewState>();
 
@@ -31,19 +33,19 @@ export const TableView: FC<IProps> = ({ onConfigClick, tooltip, id, name }) => {
   };
 
   return (
-    <div className={classNames('sha-toolbar-item', { selected: selectedItemId === id })}>
-      <div className="sha-toolbar-item-header">
+    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === id })}>
+      <div className={styles.shaToolbarItemHeader}>
         <DragHandle id={id} />
         <Space>
           {name}
 
           {tooltip && (
-            <Tooltip title={tooltip} className="sha-tooltip-icon">
+            <Tooltip title={tooltip} className={styles.shaTooltipIcon}>
               <QuestionCircleOutlined />
             </Tooltip>
           )}
         </Space>
-        <div className="sha-toolbar-item-controls">
+        <div className={styles.shaToolbarItemControls}>
           <Button icon={<SettingOutlined />} onClick={onEditBtnClick} size="small" />
 
           {!readOnly && <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />}

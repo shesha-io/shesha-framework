@@ -14,7 +14,9 @@ export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigr
         ...props,
         actionConfiguration: actionConfiguration,
         type: props['type'] ?? "button",
-        propertyName: props['name']
+        propertyName: props['name'],
+        buttonType: props.buttonType === 'ghost' ? 'default' : props.buttonType,
+        ghost: props.buttonType === 'ghost',
     };
     return result;
 };

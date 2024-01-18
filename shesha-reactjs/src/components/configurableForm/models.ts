@@ -15,6 +15,7 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
   layout?: FormLayout;
   initialValues?: Store;
   parentFormValues?: Store;
+  className?: string;
   onValuesChange?: (changedValues: any, values: Values) => void;
 
   /**

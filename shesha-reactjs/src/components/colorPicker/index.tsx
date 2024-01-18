@@ -1,9 +1,9 @@
 import React, { FC, useMemo, useState } from 'react';
 import { Popover } from 'antd';
 import { ColorResult, SketchPicker, SketchPickerProps } from 'react-color';
-import './styles/styles.less';
 import { useDeepCompareEffect } from 'react-use';
 import classNames from 'classnames';
+import { useStyles } from './styles/styles';
 
 interface IColorPickerProps extends Omit<SketchPickerProps, 'color'> {
   title?: string;
@@ -18,6 +18,7 @@ interface IColorPickerState {
 
 const ColorPicker: FC<IColorPickerProps> = ({ title, color, onChange, onChangeComplete, ...props }) => {
   const [state, setState] = useState<IColorPickerState>({ color, visible: false });
+  const { styles } = useStyles();
 
   useDeepCompareEffect(() => {
     setState(prev => ({ ...prev, color }));
@@ -48,7 +49,7 @@ const ColorPicker: FC<IColorPickerProps> = ({ title, color, onChange, onChangeCo
   }, [state?.color]);
 
   if (props.readOnly)
-    return <span className={classNames('color-picker-selector')} style={{ background: backgroundColor }} />;
+    return <span className={classNames(styles['color-picker-selector'])} style={{ background: backgroundColor }} />;
 
   return (
     <Popover
@@ -65,7 +66,7 @@ const ColorPicker: FC<IColorPickerProps> = ({ title, color, onChange, onChangeCo
         />
       }
     >
-      <span className={classNames('color-picker-selector', 'editable')} style={{ background: backgroundColor }} />
+      <span className={classNames(styles.colorPickerSelector, styles.editable)} style={{ background: backgroundColor }} />
     </Popover>
   );
 };

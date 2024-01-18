@@ -2,7 +2,6 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import postCss from 'rollup-plugin-postcss';
 import multi from '@rollup/plugin-multi-entry';
-import url from '@rollup/plugin-url';
 import svgr from '@svgr/rollup';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import localResolve from 'rollup-plugin-local-resolve';
@@ -52,7 +51,6 @@ export default {
     'sortablejs',
     'classnames',
     'nanoid',
-    'react-calendar-timeline',
     'invert-color',
     'use-debounce',
     'react-markdown',
@@ -66,23 +64,10 @@ export default {
     terser(),
     postCss({
       plugins: [],
-      extensions: ['.css', '.less'],
+      extensions: ['.css'],
       use: [
         'sass',
-        [
-          'less',
-          {
-            javascriptEnabled: true,
-            modifyVars: {
-              'primary-color': '#1DA57A',
-              'border-radius-base': '2px',
-            },
-          },
-        ],
       ],
-    }),
-    url({
-      include: ['./src/styles/index.less'],
     }),
     svgr(),
     nodeResolve({
@@ -92,7 +77,7 @@ export default {
     }),
     typescript({
       noEmitOnError: true,
-      tsconfig: './tsconfig.json'
+      tsconfig: './tsconfig.rollup.json'
     }),
     commonjs({
       include: 'node_modules/**',

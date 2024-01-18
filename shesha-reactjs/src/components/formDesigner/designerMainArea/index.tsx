@@ -7,6 +7,7 @@ import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import { DebugPanel } from '../debugPanel';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { useStyles } from '../styles/styles';
 
 export interface IDesignerMainAreaProps {
 
@@ -16,6 +17,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { isDebug, readOnly } = useFormDesigner();
     const formInstance = useForm();
     const { form } = formInstance;
+    const { styles } = useStyles();
 
     return (
         <SidebarContainer
@@ -35,7 +37,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
             }}
         >
             <ParentProvider model={{}} formMode='designer'>
-                <ConfigurableFormRenderer form={form} skipFetchData={true}>
+                <ConfigurableFormRenderer form={form} skipFetchData={true} className={styles.designerWorkArea}>
                     {isDebug && (
                         <DebugPanel formData={form.getFieldsValue()} />
                     )}

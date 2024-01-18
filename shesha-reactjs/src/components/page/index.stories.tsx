@@ -1,8 +1,7 @@
 import React from 'react';
 import { Story } from '@storybook/react';
 import { SidebarMenuDefaultsProvider } from '@/providers';
-import Page, { IBreadcrumbItem, IPageProps } from './';
-import { ITagProps } from './pageHeaderTag';
+import { Page, IBreadcrumbItem, IPageProps } from './';
 import StoryApp from '@/components/storyBookApp';
 
 export default {
@@ -14,20 +13,6 @@ const defaultProps: IPageProps = {
   title: 'Default layout',
 };
 
-
-const headerTagList: ITagProps[] = [
-  {
-    title: 'Date registered',
-    tag: 'some tag',
-  },
-  {
-    title: 'Payment Status',
-    tag: {
-      color: 'blue',
-      text: 'PAID',
-    },
-  },
-];
 
 const breadcrumbItems: IBreadcrumbItem[] = [
   {
@@ -79,7 +64,7 @@ export const WithToolBarItem = WithToolBarItemTemplate.bind({ ...defaultProps })
 const WithHeaderListTemplate: Story<IPageProps> = args => (
   <StoryApp>
     <SidebarMenuDefaultsProvider items={[]}>
-      <Page {...args} title="Any title" headerTagList={headerTagList}>
+      <Page {...args} title="Any title">
         <div>This is a div</div>
       </Page>
     </SidebarMenuDefaultsProvider>
@@ -110,7 +95,6 @@ const CompleteExampleTemplate: Story<IPageProps> = args => (
       <Page
         {...args}
         title="Any title"
-        headerTagList={headerTagList}
         breadcrumbItems={breadcrumbItems}
         backUrl="/"
       >

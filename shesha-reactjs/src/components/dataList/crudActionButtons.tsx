@@ -2,6 +2,7 @@ import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, 
 import React, { useMemo } from 'react';
 import { useDataListCrud } from '@/providers/dataListCrudContext/index';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
+import { useStyles } from './styles/styles';
 
 export const CrudActionButtons = () => {
   const {
@@ -21,6 +22,8 @@ export const CrudActionButtons = () => {
     isDeleting,
     deletingError,
   } = useDataListCrud();
+
+  const { styles } = useStyles();
 
   const onEditClick = () => {
     switchMode('update');
@@ -121,7 +124,7 @@ export const CrudActionButtons = () => {
   ]);
 
   return (
-    <div className="sha-datalist-component-item-checkbox">
+    <div className={styles.shaDatalistComponentItemCheckbox}>
       {buttons.map((btn, idx) => (
         <ActionButton {...btn} key={idx} />
       ))}

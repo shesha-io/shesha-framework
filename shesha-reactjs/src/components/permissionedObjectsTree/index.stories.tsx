@@ -1,10 +1,8 @@
-import AuthContainer from '@/components/authedContainer';
 import PermissionedObjectsTree from '.';
 import React from 'react';
 import { addStory } from '@/stories/utils';
-import { GlobalStateProvider, ShaApplicationProvider } from '@/providers';
 import { Story } from '@storybook/react';
-import './index.less';
+import StoryApp from '../storyBookApp';
 
 export default {
   title: 'Components/PermissionedObjectsTree',
@@ -12,24 +10,18 @@ export default {
 };
 
 export interface IPermissionedObjectsConfiguratorStoryProps {
-  type?: string; 
+  type?: string;
 }
-
-const backendUrl = process.env.STORYBOOK_BASE_URL; // TODO: Make this configurable
 
 // Create a master template for mapping args to render the component
 //const Template: Story<IPermissionedObjectsConfiguratorStoryProps> =  (props) => (
 const Template: Story<IPermissionedObjectsConfiguratorStoryProps> = (props) => {
   return (
-    <GlobalStateProvider>
-      <ShaApplicationProvider backendUrl={backendUrl}>
-        <AuthContainer layout>
-          <div id='test' className='treeContainer'>
-            <PermissionedObjectsTree objectsType={props.type}></PermissionedObjectsTree>  
-          </div>
-        </AuthContainer>
-      </ShaApplicationProvider>
-    </GlobalStateProvider>
+    <StoryApp>
+      <div id='test' className='treeContainer'>
+        <PermissionedObjectsTree objectsType={props.type}></PermissionedObjectsTree>
+      </div>
+    </StoryApp>
   );
 };
 

@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { handleActions } from 'redux-actions';
 import { ISidebarGroup, ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SidebarMenuActionEnums } from './actions';

@@ -1,5 +1,5 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 
 export const navigateArgumentsForm = new DesignerToolbarSettings()
   .addRadio({

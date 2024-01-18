@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';

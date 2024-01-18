@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import PubSub from 'pubsub-js';
 import React, { PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { clearStateAction, setPubsubAction, setStateAction } from './actions';

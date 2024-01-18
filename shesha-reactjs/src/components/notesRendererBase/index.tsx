@@ -1,12 +1,13 @@
 import React, { FC, useState, useEffect, CSSProperties, useRef } from 'react';
 import DateDisplay from '@/components/dateDisplay';
-import { Skeleton, Comment, Card, List, Empty, Input, notification, Button, Typography } from 'antd';
+import { Skeleton, Card, List, Empty, Input, notification, Button, Typography } from 'antd';
+import { Comment } from '@/components/antd';
 import { CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { INote, ICreateNotePayload } from '@/providers/notes/contexts';
 import _ from 'lodash';
 import ShaDivider from '@/components/shaDivider';
 import classNames from 'classnames';
-import './styles/styles.less';
+import { useStyles } from './styles/index.style';
 
 const { Paragraph } = Typography;
 
@@ -43,6 +44,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
 }) => {
   const [newComments, setNewComments] = useState('');
   const textRef = useRef(null);
+  const { styles } = useStyles();
 
   useEffect(() => {
     if (!isPostingNotes && newComments) {
@@ -68,9 +70,9 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   };
 
   return (
-    <div className={classNames('sha-notes', className)} style={style}>
+    <div className={classNames(styles.notes, className)} style={style}>
       {showCommentBox && (
-        <div className="notes-textarea">
+        <div className={styles.notesTextarea}>
           <Input.TextArea
             ref={textRef}
             rows={2}
@@ -81,7 +83,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
             autoSize={autoSize ? { minRows: 2 } : false}
           />
           {showSaveBtn && (
-            <div className={classNames('notes-textarea-save-btn', { right: buttonFloatRight })}>
+            <div className={classNames(styles.saveBtn, { right: buttonFloatRight })}>
               <Button
                 size="small"
                 type="primary"
@@ -98,10 +100,10 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
       )}
 
       <Skeleton loading={isFetchingNotes} active>
-        <Card className={classNames('comment-list-card', commentListClassName)} size="small">
+        <Card className={classNames(styles.commentListCard, commentListClassName)} size="small">
           <List
             locale={{ emptyText: <Empty description="The are no notes" /> }}
-            className="comment-list scroll scroll-y"
+            className={`${styles.commentList} scroll scroll-y`}
             style={{ ...commentListStyles }}
             itemLayout="horizontal"
             dataSource={_.orderBy(notes, ['creationTime'], ['desc']).map(({ noteText, author, creationTime, id }) => ({
@@ -115,10 +117,10 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
               id,
             }))}
             renderItem={({ postedBy, id, content, postedDate }) => (
-              <div className="comment-item-body">
-                <DeleteOutlined onClick={() => deleteNotes(id)} />
+              <div className={styles.commentItemBody}>
+                <DeleteOutlined className={styles.deleteIcon} onClick={() => deleteNotes(id)} />
                 <Comment
-                  className="comment-item"
+                  className={styles.commentItem}
                   author={postedBy || 'Anonymous'}
                   content={content}
                   datetime={postedDate}

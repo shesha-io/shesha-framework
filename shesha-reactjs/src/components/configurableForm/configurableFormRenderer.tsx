@@ -26,7 +26,7 @@ import qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
 import { FormConfigurationDto, useFormData } from '@/providers/form/api';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useModelApiEndpoint } from './useActionEndpoint';
 import { StandardEntityActions } from '@/interfaces/metadata';
@@ -34,6 +34,8 @@ import { useMutate } from '@/hooks/useMutate';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { useDataContextManager } from '@/providers/dataContextManager/index';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -48,6 +50,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 }) => {
 
   const formInstance =  useForm();
+  const { styles } = useStyles();
   //const contextManager = useDataContextManager(false);
   //if (contextManager)
   //  contextManager.updateFormInstance(formInstance);
@@ -414,13 +417,12 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       <Form
         form={form}
         labelWrap
-        //component={false}
         size={props.size}
         onFinish={onFinishInternal}
         onFinishFailed={onFinishFailedInternal}
         onValuesChange={onValuesChangeInternal}
         initialValues={initialValues}
-        className={`sha-form sha-form-${formMode} ${isDragging ? 'sha-dragging' : ''}`}
+        className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
         {...mergedProps}
       >
         <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>

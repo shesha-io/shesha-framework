@@ -19,7 +19,6 @@ import { IKeyValue } from '@/interfaces/keyValue';
 import { ShaLink, ValidationErrors } from '@/components';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
-import './styles/index.less';
 import {
   FormIdentifier,
 
@@ -29,6 +28,7 @@ import {
   useMetadataDispatcher,
   useSheshaApplication,
 } from '@/providers';
+import { useStyles } from './styles/styles';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -78,6 +78,7 @@ export interface IEntityReferenceProps {
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { globalState } = useGlobalState();
+  const { styles } = useStyles();
 
   const useFormLocal = useForm(false);
   // fix for storybook
@@ -200,7 +201,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const content = useMemo(() => {
     if (!((formIdentifier && displayText && entityId) || props.entityReferenceType === 'Quickview'))
       return (
-        <Button className="entity-reference-btn" type="link">
+        <Button className={styles.entityReferenceBtn} type="link">
           <span>
             <Spin size="small" /> Loading...
           </span>
@@ -209,14 +210,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.disabled)
       return (
-        <Button className="entity-reference-btn" disabled type="link">
+        <Button className={styles.entityReferenceBtn} disabled type="link">
           {displayText}
         </Button>
       );
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <ShaLink className="entity-reference-btn" linkToForm={formIdentifier} params={{ id: entityId }}>
+        <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
           {displayText}
         </ShaLink>
       );
@@ -237,7 +238,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       );
 
     return (
-      <Button className="entity-reference-btn" type="link" onClick={dialogExecute}>
+      <Button className={styles.entityReferenceBtn} type="link" onClick={dialogExecute}>
         {displayText}
       </Button>
     );
@@ -245,14 +246,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
     return (
-      <Button className="entity-reference-btn" type="link" disabled>
+      <Button className={styles.entityReferenceBtn} type="link" disabled>
         Form identifier is not configured
       </Button>
     );
 
   if (!props.value)
     return (
-      <Button className="entity-reference-btn" type="link" disabled>
+      <Button className={styles.entityReferenceBtn} type="link" disabled>
         {displayText}
       </Button>
     );

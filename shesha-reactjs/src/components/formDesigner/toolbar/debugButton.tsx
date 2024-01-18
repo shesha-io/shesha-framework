@@ -4,23 +4,24 @@ import { Button } from 'antd';
 import { useFormDesigner } from '@/providers/formDesigner';
 
 export interface IDebugButtonProps {
-    
+
 }
 
 export const DebugButton: FC<IDebugButtonProps> = () => {
-    const { setDebugMode, isDebug } = useFormDesigner();
+  const { setDebugMode, isDebug } = useFormDesigner();
 
-    return (
-        <Button
-          key="debug"
-          onClick={() => {
-            setDebugMode(!isDebug);
-          }}
-          title="Debug"
-          type={isDebug ? 'primary' : 'ghost'}
-          shape="circle"
-        >
-          <BugOutlined />
-        </Button>
-    );
+  return (
+    <Button
+      key="debug"
+      onClick={() => {
+        setDebugMode(!isDebug);
+      }}
+      title="Debug"
+      type="primary"
+      ghost={!isDebug}
+      shape="circle"
+    >
+      <BugOutlined />
+    </Button>
+  );
 };

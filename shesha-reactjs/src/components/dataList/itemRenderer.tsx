@@ -1,4 +1,6 @@
-import { ComponentsContainer, FormItemProvider, FormRawMarkup, IFormSettings } from "@/index";
+import { ComponentsContainer } from "@/components";
+import { FormRawMarkup, IFormSettings } from "@/interfaces";
+import { FormItemProvider } from "@/providers";
 import { DataListCrudProvider } from "@/providers/dataListCrudContext/index";
 import { CrudMode } from "@/providers/crudContext/models";
 import { ComponentsContainerProvider } from "@/providers/form/nesting/containerContext";
@@ -6,6 +8,7 @@ import { FormMarkupConverter } from "@/providers/formMarkupConverter/index";
 import React, { FC } from "react";
 import CrudActionButtons from "./crudActionButtons";
 import { ItemContainerForm } from "./itemContainerForm";
+import { useStyles } from './styles/styles';
 
 export interface IDataListItemProps {
   listId: string;
@@ -46,42 +49,42 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
     autoSave,
     isNewObject
   } = props;
-
+  const { styles } = useStyles();
   const itemListId = `${listId}_${!!itemId ? itemId.toString() : itemIndex}`;
 
   return (
     <div key={itemListId}>
-        <FormMarkupConverter markup={markup} formSettings={formSettings}>
-          {(flatComponents) => {
-            return (
-            <DataListCrudProvider
-              isNewObject={isNewObject}
-              data={data}
-              allowEdit={allowEdit}
-              updater={updater}
-              allowDelete={allowDelete}
-              deleter={deleter}
-              mode={editMode}
-              allowChangeMode={allowChangeEditMode}
-              autoSave={autoSave}
+      <FormMarkupConverter markup={markup} formSettings={formSettings}>
+        {(flatComponents) => {
+          return (
+          <DataListCrudProvider
+            isNewObject={isNewObject}
+            data={data}
+            allowEdit={allowEdit}
+            updater={updater}
+            allowDelete={allowDelete}
+            deleter={deleter}
+            mode={editMode}
+            allowChangeMode={allowChangeEditMode}
+            autoSave={autoSave}
               flatComponents={flatComponents}
-              formSettings={formSettings}
-            >
-              <div className="sha-datalist-actions">
-                <CrudActionButtons />
-              </div>
-              <div className="sha-datalist-cell">
-                  <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-                    {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
-                    <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-                      <ComponentsContainer containerId={'root'}/>
-                    </FormItemProvider>
-                  </ComponentsContainerProvider>
-              </div>
-            </DataListCrudProvider>
-            );
-        }}
-        </FormMarkupConverter>
+            formSettings={formSettings}
+          >
+            <div className={styles.shaDatalistActions}>
+              <CrudActionButtons />
+            </div>
+            <div className={styles.shaDatalistCell}>
+                <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+                  {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
+                  <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+                    <ComponentsContainer containerId={'root'}/>
+                  </FormItemProvider>
+                </ComponentsContainerProvider>
+            </div>
+          </DataListCrudProvider>
+          );
+       }}
+      </FormMarkupConverter>
     </div>
   );
 };

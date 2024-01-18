@@ -3,7 +3,8 @@ import { BulbTwoTone, DownOutlined, QuestionCircleOutlined } from '@ant-design/i
 import { Dropdown, MenuProps, Popover, Space, Tooltip, Typography } from 'antd';
 import { IStoredFilter } from '@/providers/dataTable/interfaces';
 import Show from '@/components/show';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
+import { useStyles } from './styles/styles';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -32,6 +33,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   selectedFilterId,
   onSelectFilter,
 }) => {
+  const { styles } = useStyles();
   const getSelectedFilter = () => {
     if (filters?.length === 0) {
       return null;
@@ -108,7 +110,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   );
 
   return (
-    <div className="table-view-selector">
+    <div className={styles.tableViewSelector}>
       <Space>
         <Show when={!hidden}>
           <Show when={filters?.length === 1}>{renderTitle()}</Show>
@@ -124,7 +126,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
 
         <Show when={Boolean(unevaluatedExpressions?.length)}>
           <Popover content={getPopoverHintContent} trigger="hover" title="Some fields have not been evaluated">
-            <span className="table-view-selector-bulb">
+            <span className={styles.indexViewSelectorBulb}>
               <BulbTwoTone twoToneColor="orange" />
             </span>
           </Popover>

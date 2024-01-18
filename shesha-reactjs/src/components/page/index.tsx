@@ -1,11 +1,9 @@
 import { Breadcrumb, Space } from 'antd';
 import classNames from 'classnames';
-import { nanoid } from 'nanoid/non-secure';
 import React, { FC, PropsWithChildren, useEffect } from 'react';
-import { CancelButton, ShaSpin } from '..';
+import { ShaSpin } from '..';
 import Show from '@/components/show';
-import { useShaRouting, useSheshaApplication, useTheme } from '@/providers';
-import PageHeaderTag, { ITagProps } from './pageHeaderTag';
+import { useSheshaApplication, useTheme } from '@/providers';
 import StatusTag, { IStatusTagProps } from '@/components/statusTag';
 import { FormIdentifier } from '@/providers/form/models';
 
@@ -26,7 +24,6 @@ export interface IBreadcrumbItem {
 export interface IPageProps extends IPageHeadProps {
   backUrl?: string;
   breadcrumbItems?: IBreadcrumbItem[];
-  headerTagList?: ITagProps[];
   loading?: boolean;
   noPadding?: boolean;
   loadingText?: string;
@@ -37,14 +34,12 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
   children,
   title,
   backUrl,
-  headerTagList,
   loading,
   breadcrumbItems,
   loadingText = 'Loading...',
   noPadding = false,
   status,
 }) => {
-  const { router } = useShaRouting();
   const { applicationName } = useSheshaApplication();
   const { theme } = useTheme();
 
@@ -52,13 +47,9 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
     document.title = `${applicationName} | ${title}`;
   }, [applicationName, title]);
 
-  const onBackButtonClick = () => router?.push(backUrl);
-
   const hasBackUrl = !!backUrl?.trim();
 
-  const hasTagList = !!headerTagList?.length;
-
-  const showHeading = !!title || hasBackUrl || hasTagList;
+  const showHeading = !!title || hasBackUrl;
 
   const hasStatus = Boolean(status);
 
@@ -83,24 +74,6 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
                 </h1>
               </Show>
             </div>
-
-            <Show when={hasBackUrl || hasTagList}>
-              <div className="sha-page-heading-right">
-                <Show when={hasTagList}>
-                  {headerTagList?.map(tag => (
-                    <PageHeaderTag {...tag} key={nanoid()} />
-                  ))}
-                </Show>
-
-                <Show when={hasBackUrl && hasTagList}>
-                  <span className="sha-page-heading-right-tag-separator">|</span>
-                </Show>
-
-                <Show when={hasBackUrl}>
-                  <CancelButton onCancel={onBackButtonClick} />
-                </Show>
-              </div>
-            </Show>
           </div>
         </Show>
 
@@ -124,5 +97,3 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
     </section>
   );
 };
-
-export default Page;

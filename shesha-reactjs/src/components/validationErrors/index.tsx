@@ -2,6 +2,7 @@ import React, { FC, Fragment } from 'react';
 import { Alert, AlertProps } from 'antd';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { useStyles } from './styles/styles';
 
 export interface IValidationErrorsProps {
   error: string | IErrorInfo | IAjaxResponseBase;
@@ -15,12 +16,13 @@ const DEFAULT_ERROR_MSG = 'Sorry, an error has occurred. Please try again later'
  * A component for displaying validation errors
  */
 export const ValidationErrors: FC<IValidationErrorsProps> = ({ error, renderMode = 'alert', defaultMessage = 'Please correct the errors and try again:' }) => {
+  const { styles } = useStyles();
   if (!error) return null;
 
   const renderValidationErrors = (props: AlertProps) => {
 
     if (renderMode === 'alert') {
-      return <Alert className="sha-validation-error-alert" type="error" showIcon closable {...props} />;
+      return <Alert className={styles.shaValidationErrorAlert} type="error" showIcon closable {...props} />;
     }
 
     return (

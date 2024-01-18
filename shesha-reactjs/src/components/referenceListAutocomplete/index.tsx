@@ -180,7 +180,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
         const result: IOption[] = [];
         if (fetchedItems) {
             fetchedItems.forEach(item => {
-                const module = item.module ?? { name: LEGACY_REFERENCE_LISTS_MODULE_NAME, id: '-' };
+                const moduleDto = item.module ?? { name: LEGACY_REFERENCE_LISTS_MODULE_NAME, id: '-' };
 
                 const opt: IOption = {
                     label: (
@@ -197,11 +197,11 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
                         module: item.module?.name,
                     }
                 };
-                let group = result.find(g => g.value === module.id);
+                let group = result.find(g => g.value === moduleDto.id);
                 if (!group) {
                     group = {
-                        label: module.name,
-                        value: module.id,
+                        label: moduleDto.name,
+                        value: moduleDto.id,
                         data: null,
                         options: [opt],
                     };

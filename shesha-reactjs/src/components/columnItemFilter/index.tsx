@@ -1,6 +1,6 @@
 import React, { FC, ChangeEvent, useState, Fragment, useEffect, useMemo } from 'react';
 import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
-import { Input, DatePicker, TimePicker, InputNumber, Checkbox, Dropdown, Select, Spin, MenuProps } from 'antd';
+import { Input, InputNumber, Checkbox, Dropdown, Select, Spin, MenuProps } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { Moment } from 'moment';
 import { ColumnFilter, IndexColumnFilterOption } from '@/providers/dataTable/interfaces';
@@ -16,11 +16,12 @@ import { useEntityAutocomplete } from '@/utils/autocomplete';
 import { EntityData } from '@/interfaces/gql';
 import { ProperyDataType } from '@/interfaces/metadata';
 import { IDictionary } from '@/interfaces';
+import { DatePicker, TimePicker, TimeRangePicker } from '@/components/antd';
+import { useStyles } from './styles/styles';
 
 type MenuItem = MenuProps['items'][number];
 
 const { RangePicker: DateRangePicker } = DatePicker;
-const { RangePicker: TimeRangePicker } = TimePicker;
 
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
   date: ['equals', 'between', 'before', 'after'],
@@ -66,6 +67,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   entityReferenceTypeShortAlias,
   autocompleteUrl,
 }) => {
+  const { styles } = useStyles();
   const options = useMemo(() => {
     return allOptions[dataType] || [];
   }, [dataType]);
@@ -133,11 +135,11 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
   return (
     <div
-      className="sha-column-item-filter"
+      className={styles.shaColumnItemFilter}
       onMouseOver={toggleShowIconVisibility}
       onMouseLeave={toggleShowIconVisibility}
     >
-      <div className="filter-heading">
+      <div className={styles.filterHeading}>
         <div className="filter-heading-left">
           <span className="label">{filterName || 'Something'}</span>
           {!hideFilterOptions() && (
@@ -155,7 +157,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
           <DeleteOutlined onClick={handleDeleteFilter} />
         </div>
       </div>
-      <div className="filter-input">
+      <div className={styles.filterInput}>
         {dataType === 'string' && (
           <StringFilter
             onChange={handleStringFilter}

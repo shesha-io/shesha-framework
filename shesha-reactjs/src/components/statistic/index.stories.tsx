@@ -3,7 +3,7 @@ import { Story } from '@storybook/react';
 import ShaStatistic from '.';
 import { CollapsiblePanel } from '..';
 import { Col, Row } from 'antd';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { ArrowUpOutlined } from '@ant-design/icons';
 
 export default {

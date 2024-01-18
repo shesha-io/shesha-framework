@@ -1,6 +1,7 @@
 import React, { FC, PropsWithChildren, useState } from 'react';
-import { useAppConfigurator /*, useConfigurableComponent*/ } from '@/providers';
+import { useAppConfigurator } from '@/providers';
 import { ComponentSettingsModal } from './componentSettingsModal';
+import { useStyles } from './styles/styles';
 
 export interface IComponentStateProps<TSettings = any> {
   isSelected: boolean;
@@ -30,10 +31,11 @@ export interface IBlockOverlayProps {
 }
 
 const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, children, visible }) => {
+  const { styles } = useStyles();
   if (!visible) return null;
 
   return (
-    <div onClick={onClick} className="sha-configurable-component-overlay">
+    <div onClick={onClick} className={styles.shaConfigurableComponentOverlay}>
       {children}
     </div>
   );
@@ -46,6 +48,7 @@ export const ConfigurableComponent = <TSettings extends any>({
 }: IConfigurableComponentProps<TSettings>) => {
   const [modalVisible, setModalVisible] = useState(false);
   const { mode } = useAppConfigurator();
+  const { styles } = useStyles();
 
   if (!children) return null;
 
@@ -62,7 +65,7 @@ export const ConfigurableComponent = <TSettings extends any>({
   const componentState: IComponentStateProps = {
     isEditMode: mode === 'edit',
     isSelected: false,
-    wrapperClassName: 'sha-configurable-component',
+    wrapperClassName: styles.shaConfigurableComponent,
     settings: null,
   };
 

@@ -3,9 +3,9 @@ import React, { FC, Fragment, PropsWithChildren, useState } from 'react';
 import { ShaRoutingProvider, SidebarMenuProvider, useAuth } from '@/providers';
 import SectionSeparator from '@/components/sectionSeparator';
 import classNames from 'classnames';
-import './index.less';
 import { ValidationErrors } from '@/components/validationErrors';
 import { IErrorInfo } from '@/interfaces/errorInfo';
+import { useStyles } from './styles';
 
 const { Item } = Form;
 
@@ -20,6 +20,7 @@ interface IAuthContainerProps {
 }
 
 const AuthContainer: FC<PropsWithChildren<IAuthContainerProps>> = ({ children, layout = false }) => {
+  const { styles } = useStyles();
   const [isSignInModalVisible, setSignInModalVisibility] = useState(false);
 
   const { loginUser, logoutUser, isInProgress, loginInfo, error } = useAuth();
@@ -44,11 +45,11 @@ const AuthContainer: FC<PropsWithChildren<IAuthContainerProps>> = ({ children, l
 
   return (
     <>
-      <div className="sha-storybook-authenticated-container">
+      <div className={styles.shaStorybookAuthenticatedContainer}>
         {layout ||
           (!isLoggedIn && (
             <Fragment>
-              <div className="sha-storybook-authenticated-action-btn">
+              <div className={styles.shaStorybookAuthenticatedActionBtn}>
                 {isLoggedIn ? (
                   <Button type="primary" onClick={logout} danger>
                     Logout
@@ -67,12 +68,12 @@ const AuthContainer: FC<PropsWithChildren<IAuthContainerProps>> = ({ children, l
         {isLoggedIn ? (
           <ShaRoutingProvider router={null}>
             <SidebarMenuProvider items={[]}>
-              <div className={classNames({ 'sha-storybook-authenticated-container-layout': layout })}>{children}</div>
+              <div className={classNames({ [styles.shaStorybookAuthenticatedContainerLayout]: layout })}>{children}</div>
             </SidebarMenuProvider>
           </ShaRoutingProvider>
         ) : (
           <Fragment>
-            <div className="sha-storybook-authenticated-action-btn">
+            <div className={styles.shaStorybookAuthenticatedActionBtn}>
               <Button type="primary" onClick={showSignInModal}>
                 Authorize
               </Button>
