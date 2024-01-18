@@ -101,7 +101,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   useDeepCompareEffect(() => {
     updateContent();
-  }, [selectedRow, selectedRow, selectionMode]);
+  }, [selectedRow, selectedRows, selectionMode]);
 
   const allData = useApplicationContext();
   const { configurationItemMode } = useAppConfigurator();
