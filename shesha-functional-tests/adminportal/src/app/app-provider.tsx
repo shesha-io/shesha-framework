@@ -5,10 +5,9 @@ import {
     GlobalStateProvider,
     ShaApplicationProvider,
     StoredFilesProvider,
-} from '@/providers';
+    MainLayout    
+} from '@shesha/reactjs';
 import { ReadonlyURLSearchParams, usePathname, useSearchParams } from 'next/navigation';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import { MainLayout } from '@/components';
 import { AppProgressBar, useRouter } from 'next-nprogress-bar';
 import { useTheme } from 'antd-style';
 
@@ -54,9 +53,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                 noAuth={false}
             >
                 <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
-                    <ConditionalWrap condition={!noAuth} wrap={cnt => <MainLayout noPadding>{cnt}</MainLayout>}>
-                        {children}
-                    </ConditionalWrap>
+                    { noAuth ? (<>{children}</>) : (<MainLayout noPadding>{children}</MainLayout>)  }
                 </StoredFilesProvider>
             </ShaApplicationProvider>
         </GlobalStateProvider>

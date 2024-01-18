@@ -1,20 +1,25 @@
+"use client";
+
 import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input } from 'antd';
 import FormItem from 'antd/lib/form/FormItem';
-import { ILoginForm } from 'models';
 import Link from 'next/link';
 import React from 'react';
-import { URL_FORGOT_PASSWORD } from 'routes';
-import { useAuth, ValidationErrors } from '@shesha/reactjs';
-import { LoginPageWrapper } from '../../components/pages/login/styles';
+import { URL_FORGOT_PASSWORD, useAuth, ValidationErrors } from '@shesha/reactjs';
+import { LoginPageWrapper } from './wrapper';
 
-export const Login = () => {
+interface ILoginForm {
+  readonly userNameOrEmailAddress: string;
+  readonly password: string;
+  readonly rememberMe?: boolean;
+}
+
+const Login = () => {
   const {
     loginUser,
     errorInfo,
     isInProgress: { loginUser: isLoggingInUser },
   } = useAuth();
-  // const { nextRoute } = useRouteState();
 
   const [form] = Form.useForm<ILoginForm>();
 

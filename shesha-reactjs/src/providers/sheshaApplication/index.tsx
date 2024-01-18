@@ -8,7 +8,7 @@ import React, {
   useContext,
   useReducer,
   useRef
-  } from 'react';
+} from 'react';
 import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
 import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
@@ -50,6 +50,8 @@ import {
   SheshaApplicationStateContext,
 } from './contexts';
 import { SheshaCommonContexts } from '../dataContextManager/models';
+import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
+import { GlobalPageStyles } from '@/components/page/styles/styles';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -137,6 +139,8 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
           setGlobalVariables,
         }}
       >
+        <GlobalSheshaStyles />
+        <GlobalPageStyles />
         <SettingsProvider>
           <ConfigurableActionDispatcherProvider>
             <UiProvider>

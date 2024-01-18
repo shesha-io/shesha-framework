@@ -1,16 +1,23 @@
-import { SmileOutlined } from '@ant-design/icons';
-import { Alert, Button, Form, notification, Result } from 'antd';
-import FormItem from 'antd/lib/form/FormItem';
-import { useUserResetPasswordUsingToken } from 'api/user';
-import { PasswordConfirmPasswordInputs } from 'components';
-import { useRouter } from 'next/router';
-import React, { FC, useState } from 'react';
-import { URL_LOGIN_PAGE } from 'routes';
-import { useAuth, ValidationErrors } from '@shesha/reactjs';
-import { IPasswordConfirmPassword } from 'src/components/global/passwordConfirmPasswordInputs';
-import { ResetPasswordContainer } from '../../../components/pages/account/reset-password/styles';
+"use client";
 
-export const ResetPassword: FC = () => {
+import FormItem from 'antd/lib/form/FormItem';
+import React, { useState } from 'react';
+import {
+  Alert,
+  Button,
+  Form,
+  notification,
+  Result
+  } from 'antd';
+import PasswordConfirmPasswordInputs, { IPasswordConfirmPassword } from '../../../components/global/passwordConfirmPasswordInputs/index';
+import { ResetPasswordContainer } from '../../../components/pages/account/reset-password/styles';
+import { SmileOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/navigation';
+import { useUserResetPasswordUsingToken } from 'api/user';
+import { useAuth, PageWithLayout, ValidationErrors } from '@shesha/reactjs';
+import { URL_LOGIN_PAGE } from 'routes';
+
+const ResetPassword: PageWithLayout<{}> = () => {
   const { verifyOtpResPayload, resetPasswordSuccess } = useAuth();
   const [form] = Form.useForm<IPasswordConfirmPassword>();
 
@@ -86,5 +93,7 @@ export const ResetPassword: FC = () => {
     </ResetPasswordContainer>
   );
 };
+
+ResetPassword.requireAuth = false;
 
 export default ResetPassword;

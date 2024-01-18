@@ -1,16 +1,29 @@
-import { IdcardOutlined } from '@ant-design/icons';
-import { Alert, Button, Form, Input } from 'antd';
+"use client";
+
 import FormItem from 'antd/lib/form/FormItem';
-import { useRouter } from 'next/router';
-import React, { FC, useState } from 'react';
-import { URL_LOGIN_PAGE } from 'routes';
-import { useAuth, ValidationErrors } from '@shesha/reactjs';
+import React, { useState } from 'react';
+import {
+  Alert,
+  Button,
+  Form,
+  Input
+  } from 'antd';
 import { ForgotPasswordPage, VerifyOtpModal } from '../../../components/pages/account/forgot-password/styles';
-import { ResetPasswordVerifyOtpInput, useResetPasswordSendOtp, useResetPasswordVerifyOtp, UserResetPasswordSendOtpQueryParams } from 'api/user';
+import { IdcardOutlined } from '@ant-design/icons';
+import {
+  ResetPasswordVerifyOtpInput,
+  useResetPasswordSendOtp,
+  useResetPasswordVerifyOtp,
+  UserResetPasswordSendOtpQueryParams
+  } from 'api/user';
+import { useRouter } from 'next/navigation';
+import { useAuth, ValidationErrors, PageWithLayout } from '@shesha/reactjs';
+import { URL_LOGIN_PAGE } from 'routes';
+
 
 interface IProps { }
 
-export const ForgotPassword: FC<IProps> = () => {
+const ForgotPassword: PageWithLayout<IProps> = () => {
   const router = useRouter();
 
   const { verifyOtpSuccess } = useAuth();
@@ -39,7 +52,7 @@ export const ForgotPassword: FC<IProps> = () => {
           toggleVerifyOtpModalVisibility();
         })
         .catch((e) => {
-          console.log('LOG: rejected', e);
+          console.error('Failed to send OTP:', e);
           toggleVerifyOtpModalVisibility();
         });
     }
@@ -130,5 +143,7 @@ export const ForgotPassword: FC<IProps> = () => {
     </ForgotPasswordPage>
   );
 };
+
+ForgotPassword.requireAuth = false;
 
 export default ForgotPassword;

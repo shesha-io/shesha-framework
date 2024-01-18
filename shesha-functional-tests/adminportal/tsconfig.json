@@ -103,6 +103,11 @@
     "typeRoots": [
       "typings",
       "node_modules/@types"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
     ]
   },
   "exclude": [
@@ -113,6 +118,7 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next/types/**/*.ts"
   ]
 }
