@@ -3,6 +3,7 @@ import { Divider, Dropdown, MenuProps, Space, Switch, Tag, Typography } from 'an
 import React, { FC, ReactNode, useMemo } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
+import { useStyles } from './styles/styles';
 
 const { Text } = Typography;
 
@@ -50,6 +51,7 @@ export const ConfigurationItemViewModeToggler: FC<IAppEditModeTogglerProps> = ()
     formInfoBlockVisible,
     toggleShowInfoBlock,
   } = useAppConfigurator();
+  const { styles } = useStyles();
 
   const menuItems = useMemo<MenuProps['items']>(() => {
     return ConfigurationItemModes.map(item => ({
@@ -78,10 +80,10 @@ export const ConfigurationItemViewModeToggler: FC<IAppEditModeTogglerProps> = ()
   return (
     <Dropdown
       menu={{ items: menuItems, selectable: true, selectedKeys: [configurationItemMode] }}
-      className="sha-config-item-mode-toggler"
+      className={styles.shaConfigItemModeToggler}
       trigger={['click']}
       dropdownRender={menu => (
-        <div className="dropdown-content">
+        <div className={styles.appModesDropdown}>
           {menu}
           <Divider style={{ margin: 0 }} />
           <Space style={{ padding: 8 }}>

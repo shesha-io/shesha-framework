@@ -1,6 +1,6 @@
 import { RadioChangeEvent, SpaceProps } from 'antd';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { CSSProperties } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';

@@ -12,8 +12,8 @@ import {
   getFontSizeStyle,
   getPaddingSizeStyle,
 } from './utils';
-import './styles/index.less';
 import classNames from 'classnames';
+import { useStyles } from './styles/styles';
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -70,6 +70,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   ...model
 }) => {
   const { theme } = useTheme();
+  const { styles } = useStyles();
   // NOTE: to be replaced with a generic context implementation
   const sizeIdentifier = textType === 'title' ? level : fontSize;
 
@@ -121,7 +122,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     level: level ? (Number(level) as LevelType) : 1,
   };
 
-  const className = classNames('typography-text', { primary: contentType === 'primary', info: contentType === 'info' });
+  const className = classNames(styles.typographyText, { [styles.primary]: contentType === 'primary', [styles.info]: contentType === 'info' });
 
   if (textType === 'span') {
     return (

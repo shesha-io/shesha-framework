@@ -9,7 +9,7 @@ import { ModelActionEnums } from './actions';
 import { handleActions } from 'redux-actions';
 import { getItemPositionById } from './utils';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { MetadataSourceType } from '@/interfaces/metadata';
 
 const findItemById = (items: IModelItem[], id: string): IModelItem => {

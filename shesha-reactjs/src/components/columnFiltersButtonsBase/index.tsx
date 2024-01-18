@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
+import { useStyles } from './styles/styles';
 
 export interface IColumnFiltersButtonsBaseProps {
   applyFilters: () => void;
@@ -14,16 +15,17 @@ export const ColumnFiltersButtonsBase: FC<IColumnFiltersButtonsBaseProps> = ({
   toggleSaveFilterModal,
   isFetchingTableData,
 }) => {
+  const { styles } = useStyles();
   return (
-    <div className="column-filters-buttons">
-      <div className="column-filters-buttons-left">
+    <div className={styles.columnFiltersButtons}>
+      <div className={styles.columnFiltersButtonsLeft}>
         {false /*not implemented and temporary removed*/ && toggleSaveFilterModal && (
           <Button size="small" type="default" ghost={true} onClick={() => toggleSaveFilterModal(true)}>
             Save
           </Button>
         )}
       </div>
-      <div className="column-filters-buttons-right">
+      <div className={styles.columnFiltersButtonsRight}>
         <Button size="small" type="default" ghost={true} onClick={clearFilters}>
           Clear
         </Button>

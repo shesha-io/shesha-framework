@@ -9,7 +9,7 @@ import { Button, notification } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import { ICommonModalProps } from '../../dynamicModal/models';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';

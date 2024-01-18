@@ -8,6 +8,8 @@ import DataSourceTree from './dataSourceTree';
 import { IPropertyMetadata, isEntityMetadata } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 const { Panel } = Collapse;
 
@@ -43,25 +45,23 @@ const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): I
 export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.datasources.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.datasources.search', '');
+  const { styles } = useStyles();
 
   const currentMeta = useMetadata(false);
-  const currentDataSource: IDataSource = isEntityMetadata(currentMeta?.metadata)
-    ? {
-        id: currentMeta.id,
-        name: currentMeta.metadata.name,
-        containerType: currentMeta.metadata.entityType,
-        items: currentMeta.metadata.properties,
-      }
-    : null;
 
   const { dataSources: formDs, activeDataSourceId } = useFormDesigner();
 
   const allDataSources = useMemo<IDataSource[]>(() => {
     const dataSources = [...formDs];
-    if (currentDataSource) dataSources.push(currentDataSource);
+    if (isEntityMetadata(currentMeta?.metadata)) dataSources.push({
+      id: currentMeta.id,
+      name: currentMeta.metadata.name,
+      containerType: currentMeta.metadata.entityType,
+      items: currentMeta.metadata.properties,
+    });
 
     return dataSources;
-  }, [formDs, currentDataSource]);
+  }, [formDs, currentMeta?.metadata]);
 
   const datasourcesWithVisible = useMemo<FilteredDataSource[]>(() => {
     const dataSources = allDataSources.map<FilteredDataSource>(ds => ({
@@ -87,18 +87,14 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
             const visibleItems = ds.visibleItems;
             const shortName = getClassNameFromFullName(ds.datasource.name);
 
-            const classes = ['sha-toolbox-panel'];
-            if (ds.datasource.id === activeDataSourceId) classes.push('active');
-
             let header = (
               <Tooltip placement="bottom" title={ds.datasource.name} mouseEnterDelay={1}>
                 {shortName}
               </Tooltip>
             );
-
       
             return visibleItems.length === 0 ? null : (
-              <Panel header={header} key={dsIndex.toString()} className={classes.reduce((a, c) => a + ' ' + c)}>
+              <Panel header={header} key={dsIndex.toString()} className={classNames(styles.shaToolboxPanel, { active: ds.datasource.id === activeDataSourceId })}>
                 <DataSourceTree
                   items={visibleItems}
                   searchText={searchText}

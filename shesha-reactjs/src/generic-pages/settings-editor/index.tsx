@@ -1,5 +1,5 @@
 import React from 'react';
-import { SettingsEditor } from '@/components';
+import { Page, SettingsEditor } from '@/components';
 import { PageWithLayout } from '@/interfaces';
 
 export interface ISettingsPageProps {
@@ -7,5 +7,11 @@ export interface ISettingsPageProps {
 }
 
 export const SettingsPage: PageWithLayout<ISettingsPageProps> = () => {
-  return <SettingsEditor />;
+  return (
+    <Page
+      title="Application Settings"
+    >
+      <SettingsEditor />
+    </Page>
+  );
 };

@@ -1,4 +1,6 @@
-import { ConfigurableFormComponent, joinStringValues, useForm } from '@/index';
+import { useForm } from '@/providers';
+import { ConfigurableFormComponent } from '@/components';
+import { joinStringValues } from '@/utils';
 import { useParent } from '@/providers/parentProvider/index';
 import React, { CSSProperties, FC, PropsWithChildren } from 'react';
 import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';

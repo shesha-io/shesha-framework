@@ -3,13 +3,14 @@ import ConfigurableFormComponent from '../configurableFormComponent';
 import { useForm } from '@/providers/form';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
-import { joinStringValues } from '@/utils';
 import DynamicComponent from '../components/dynamicView/dynamicComponent';
 import { useFormDesigner } from '@/providers/formDesigner';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { useFormData, useGlobalState } from '@/providers';
 import { executeScriptSync } from '@/utils/publicUtils';
 import { IComponentsContainerProps } from './componentsContainer';
+import { useStyles } from '../styles/styles';
+import classNames from 'classnames';
 
 export const ComponentsContainerForm: FC<IComponentsContainerProps> = (props) => {
   const { formMode } = useForm();
@@ -126,6 +127,7 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
     noDefaultStyling,
   } = props;
 
+  const { styles } = useStyles();
   const { getChildComponentIds } = useForm();
   const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging, readOnly, hasDragged } =
     useFormDesigner();
@@ -218,13 +220,13 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
     <ConditionalWrap
       condition={!noDefaultStyling}
       wrap={(content) => (
-        <div className={joinStringValues(['sha-components-container', direction, className])} style={wrapperStyle}>
+        <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
           {content}
         </div>
       )}
     >
       <>
-        {childIds.length === 0 && <div className="sha-drop-hint">Drag and Drop form component</div>}
+        {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
@@ -237,15 +239,15 @@ const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProp
             name: 'shared',
           }}
           sort={true}
-          draggable=".sha-component"
+          draggable={`.${styles.shaComponent}`}
           animation={75}
-          ghostClass="sha-component-ghost"
+          ghostClass={styles.shaComponentGhost}
           emptyInsertThreshold={20}
-          handle=".sha-component-drag-handle"
+          handle={`.${styles.componentDragHandle}`}
           scroll={true}
           bubbleScroll={true}
           direction={direction}
-          className={noDefaultStyling ? '' : `sha-components-container-inner`}
+          className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
           style={{ ...style, ...incomingStyle }}
         >
           {renderComponents()}
@@ -268,6 +270,7 @@ const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> 
     style: incomingStyle,
     noDefaultStyling,
   } = props;
+  const { styles } = useStyles();
   const { getChildComponents } = useForm();
 
   const components = getChildComponents(containerId);
@@ -285,8 +288,8 @@ const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> 
   return noDefaultStyling ? (
     <div style={{ ...style, textJustify: 'auto' }}>{renderComponents()}</div>
   ) : (
-    <div className={joinStringValues(['sha-components-container', direction, className])} style={wrapperStyle}>
-      <div className="sha-components-container-inner" style={style}>
+    <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
+      <div className={styles.shaComponentsContainerInner} style={style}>
         {renderComponents()}
       </div>
       {children}

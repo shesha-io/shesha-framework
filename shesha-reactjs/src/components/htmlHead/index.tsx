@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-// import NextHead from 'next/head';
 
 const defaultDescription = '';
 const defaultOGURL = '';

@@ -14,10 +14,10 @@ import { getStyle, validateConfigurableComponentSettings } from '@/providers/for
 import { axiosHttp } from '@/utils/fetchers';
 import { getNumericValue } from '@/utils/string';
 import settingsFormJson from './settingsForm.json';
-import './styles/index.less';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { TimeSteps } from '@/components/antd/timepicker';
+import { useStyles } from './styles/styles';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -150,6 +150,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
   ...rest
 }) => {
   const { data: formData } = useFormData();
+  const { styles } = useStyles();
 
   const evaluatedValue = getMoment(value, format);
 
@@ -206,7 +207,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
         value={getDefaultRangePickerValues() as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
-        className="sha-timepicker"
+        className={styles.shaTimepicker}
         
         {...rest}
         placeholder={[placeholder, placeholder]}
@@ -224,7 +225,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
       value={evaluatedValue|| (defaultValue && moment(defaultValue))}
       {...steps}
       style={getStyle(style, formData)}
-      className="sha-timepicker"
+      className={styles.shaTimepicker}
       placeholder={placeholder}
       {...rest}
     />

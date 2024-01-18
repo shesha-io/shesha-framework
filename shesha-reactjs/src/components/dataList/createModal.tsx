@@ -1,4 +1,5 @@
-import { ComponentsContainer, FormRawMarkup, IFormSettings, IPersistedFormProps, Show, ValidationErrors } from '@/index';
+import { ComponentsContainer, Show, ValidationErrors } from '@/components';
+import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/interfaces';
 import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';

@@ -8,7 +8,7 @@ import CodeEditor from '@/components/formDesigner/components/codeEditor/codeEdit
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator/configurator';
 import { YesNoInheritJs } from '@/components/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from '@/components/reactTable/interfaces';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';

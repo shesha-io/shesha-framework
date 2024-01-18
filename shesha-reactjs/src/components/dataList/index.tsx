@@ -10,7 +10,6 @@ import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
 import { IDataListProps, NewItemInitializer } from './models';
 import { useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
-import './styles/index.less';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
@@ -20,6 +19,7 @@ import DataListItemCreateModal from './createModal';
 import { useMemo } from 'react';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useStyles } from './styles/styles';
 
 interface EntityForm {
   entityType: string;
@@ -67,7 +67,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   actionRef,
   ...props
 }) => {
-
+  const { styles } = useStyles();
   //const refreshRef = useRef(0);
 
   let skipCache = false;
@@ -417,7 +417,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           condition={selectionMode !== 'none'}
           wrap={(children) => (
             <Checkbox
-              className={classNames('sha-datalist-component-item-checkbox', { selected })}
+              className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}
               checked={selected}
               onChange={() => {
                 onSelectRowLocal(index, item);
@@ -428,7 +428,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           )}
         >
           <div
-            className={classNames('sha-datalist-component-item', { selected })}
+            className={classNames(styles.shaDatalistComponentItem, { selected })}
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
@@ -437,7 +437,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             {renderSubForm(item, index)}
           </div>
         </ConditionalWrap>{' '}
-        {!isLastItem && <Divider className={classNames('sha-datalist-component-divider', { selected })} />}
+        {!isLastItem && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />}
       </div>
     );
   };
@@ -520,7 +520,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         <div
           key="spin_key"
           ref={measuredRef}
-          className={classNames('sha-datalist-component-body', {
+          className={classNames(styles.shaDatalistComponentBody, {
             loading: isFetchingTableData && records?.length === 0,
             horizontal: orientation === 'horizontal',
           })}

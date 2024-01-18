@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
 import { CSSProperties } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { useStyles } from './styles/styles';
 
 export interface IAddressAndCoords {
   address: string;
@@ -64,6 +65,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   size,
   searchOptions,
 }) => {
+  const { styles } = useStyles();
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
   const [showSuggestionsDropdownContainer, setShowSuggestionsDropdownContainer] = useState(true);
   const suggestionRef = useRef<ISuggestion[]>([]);
@@ -188,11 +190,9 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
       onSelect={handleSelect}
       debounce={debounce}
       searchOptions={searchOptions}
-
-      // className="location-search-input"
     >
       {({ getInputProps, suggestions, getSuggestionItemProps }) => (
-        <div className="location-search-input-wrapper">
+        <div className={styles.locationSearchInputWrapper}>
           {(() => {
             const inputProps = getInputProps({ placeholder });
 
@@ -231,7 +231,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             );
           })()}
           <div
-            className={classNames('dropdown-container', {
+            className={classNames(styles.dropdownContainer, {
               hidden: !showSuggestionsDropdownContainer,
             })}
           >
@@ -244,12 +244,12 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
               return (
                 <div
                   {...getSuggestionItemProps(localSuggestion)}
-                  className={classNames('suggestion-container', {
+                  className={classNames(styles.dropdownContainer, {
                     highlighted: highlightedPlaceId === localSuggestion?.placeId,
                   })}
                   key={localSuggestion?.placeId}
                 >
-                  <div className="suggestion">{localSuggestion?.description}</div>
+                  <div className={styles.suggestion}>{localSuggestion?.description}</div>
                 </div>
               );
             })}

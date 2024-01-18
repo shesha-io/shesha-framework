@@ -1,7 +1,0 @@
-{
-  "bundlerOptions": {
-    "entryFile": "./src/styles/default.scss",
-    "outFile": "./dist/default.scss",
-    "ignoreImports": ["src/styles/variables", "src/styles/mixins"]
-  }
-}

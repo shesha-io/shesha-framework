@@ -9,7 +9,7 @@ import { getPropertySettingsFromData, getValueFromPropertySettings } from './uti
 import { IContextSettingsRef, ISwitchModeSettingsRef, SettingsControl } from './settingsControl';
 import { getSettings } from './settings';
 import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
-import './styles/index.less';
+import { useStyles } from './styles/styles';
 import { useRef } from 'react';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 
@@ -27,6 +27,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     Factory: ({ model }) => {
 
         const { formData } = useForm();
+        const { styles } = useStyles();
 
         const { _mode: mode, _code: code } = getPropertySettingsFromData(formData, model.propertyName);
 
@@ -53,11 +54,11 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                 {(value, onChange) => {
                     const localValue = getValueFromPropertySettings(value);
                     return (
-                    <div className={ mode === 'code' ? 'sha-js-content-code' : 'sha-js-content-js'}>
+                    <div className={ mode === 'code' ? styles.contentCode : styles.contentJs}>
                         <Button
                             disabled={model.readOnly}
                             shape="round"
-                            className='sha-js-switch'
+                            className={styles.jsSwitch}
                             type='primary'
                             danger={mode === 'value' && !!code }
                             ghost
@@ -66,7 +67,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                         >
                             {mode === 'code' ? 'Value' : 'JS'}
                         </Button>
-                        <div className='sha-js-content'>
+                        <div className={styles.jsContent}>
                             <DataContextProvider id={model.id} name={props.propertyName} description={props.propertyName} type={'settings'}
                                 initialData={new Promise((resolve) => {
                                     resolve(setValueByPropertyName({}, internalProps?.propertyName, localValue));

@@ -14,8 +14,9 @@ import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import { FileVersionsPopup } from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
-import './styles/styles.less';
 import Show from '@/components/show';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 const { Dragger } = Upload;
 
@@ -52,6 +53,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     succeeded: { downloadZip: downloadZipSuccess },
     */
   } = useStoredFile();
+  const { styles } = useStyles();
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
 
@@ -86,18 +88,18 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <React.Fragment>
         {fileInfo && (
-          <a className="sha-upload-history-control">
+          <a className={styles.shaUploadHistoryControl}>
             {false && <InfoCircleOutlined />}
             <FileVersionsPopup fileId={fileInfo.id} />
           </a>
         )}
         {allowReplace && (
-          <a className="sha-upload-replace-control" onClick={onReplaceClick}>
+          <a className={styles.shaUploadReplaceControl} onClick={onReplaceClick}>
             <SyncOutlined title="Replace" />
           </a>
         )}
         {allowDelete && (
-          <a className="sha-upload-remove-control" onClick={onDeleteClick}>
+          <a className={styles.shaUploadRemoveControl} onClick={onDeleteClick}>
             <DeleteOutlined title="Remove" />
           </a>
         )}
@@ -123,9 +125,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
     },
     itemRender: (_originNode, file, _currFileList) => {
       return (
-        <div className={file.error ? 'sha-upload-list-item-error' : ''}>
-          <div className="sha-upload-list-item-info">
-            {isUploading && <LoadingOutlined className="sha-upload-uploading" />}
+        <div className={file.error ? styles.shaUploadListItemError : ''}>
+          <div className={styles.shaUploadListItemInfo}>
+            {isUploading && <LoadingOutlined className={styles.shaUploadUploading} />}
             <a target="_blank" title={file.name} onClick={onDownloadClick}>
               {file.name} ({filesize(file.size)})
             </a>
@@ -138,7 +140,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading;
-  const classes = fileInfo || isUploading ? 'sha-upload sha-upload-has-file' : 'sha-upload';
+  const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
     <Button
@@ -173,11 +175,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
         <span ref={uploadDraggerSpanRef} />
 
         <Show when={showUploadButton}>
-          <p className="ant-upload-drag-icon">
+          <p className={styles.antUploadDragIcon}>
             <InboxOutlined />
           </p>
-          <p className="ant-upload-text">Click or drag file to this area to upload</p>
-          <p className="ant-upload-hint">
+          <p className={styles.antUploadText}>Click or drag file to this area to upload</p>
+          <p className={styles.antUploadHint}>
             Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
           </p>
         </Show>
@@ -185,7 +187,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     );
   };
 
-  return <span className="sha-file-upload-container">{isStub ? renderStub() : renderUploader()}</span>;
+  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
 };
 
 export default FileUpload;

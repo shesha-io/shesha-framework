@@ -3,6 +3,7 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
 import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
 import { FilterItem } from './filterItem';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IFilterContainerProps {
   index?: number[];
@@ -11,6 +12,7 @@ export interface IFilterContainerProps {
 
 export const FilterContainer: FC<IFilterContainerProps> = (props) => {
   const { updateChildItems, readOnly } = useTableViewSelectorConfigurator();
+  const { styles } = useStyles();
 
   const onSetList = (newState: ItemInterface[], _sortable, _store) => {
     // temporary commented out, the behavoiur of the sortablejs differs sometimes
@@ -34,11 +36,11 @@ export const FilterContainer: FC<IFilterContainerProps> = (props) => {
         name: 'toolbarItems',
       }}
       sort={true}
-      draggable=".sha-toolbar-item"
+      draggable={`.${styles.shaToolbarItem}`}
       animation={75}
-      ghostClass="sha-toolbar-item-ghost"
+      ghostClass={styles.shaToolbarItemGhost}
       emptyInsertThreshold={20}
-      handle=".sha-toolbar-item-drag-handle"
+      handle={`.${styles.shaToolbarItemDragHandle}`}
       scroll={true}
       bubbleScroll={true}
     >

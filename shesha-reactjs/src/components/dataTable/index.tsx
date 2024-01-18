@@ -34,6 +34,7 @@ import { ValueRenderer } from '../valueRenderer/index';
 import { isEqual } from "lodash";
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
+import { useStyles } from './styles/styles';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -175,6 +176,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onRowsChanged(tableData);
     }
   }, [tableData]);
+  const { styles } = useStyles();
 
   const metadata = useMetadata(false)?.metadata;
 
@@ -277,7 +279,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           maxWidth: Boolean(columnItem.maxWidth) ? columnItem.maxWidth : undefined,
           width: width,
           resizable: !strictWidth,
-          disableSortBy: !columnItem.isSortable || sortMode === 'strict',
+          disableSortBy: Boolean(!columnItem.isSortable || sortMode === 'strict'),
           disableResizing: Boolean(strictWidth),
           Cell: cellRenderer,
           originalConfig: columnItem,
@@ -623,7 +625,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   return (
     <Fragment>
-      <div className="sha-child-table-error-container">
+      <div className={styles.shaChildTableErrorContainer}>
         {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
       </div>
 

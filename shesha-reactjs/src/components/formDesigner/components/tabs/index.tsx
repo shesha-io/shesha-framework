@@ -7,7 +7,7 @@ import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { Tabs, TabsProps } from 'antd';
 import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';

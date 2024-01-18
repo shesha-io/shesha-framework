@@ -30,7 +30,7 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
                 onCancel={onCancel}
                 width={'80%'}
                 footer={null}
-                bodyStyle={{ padding: 0 }}
+                styles={{ body: { padding: 0 } }}
             >
                 <FormDesigner.NonVisual formId={latestFormId ?? formId}>
                     <div className="ant-modal-header">

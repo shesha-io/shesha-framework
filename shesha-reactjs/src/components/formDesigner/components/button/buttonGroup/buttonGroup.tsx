@@ -7,13 +7,16 @@ import { getButtonGroupMenuItem } from './utils';
 import { IButtonGroupComponentProps } from './models';
 import { useDataTable, useGlobalState, useSheshaApplication } from '@/providers';
 import { useForm } from '@/providers/form';
-import { ButtonGroupItemProps/*, IButtonGroupButton*/ } from '@/providers/buttonGroupConfigurator/models';
+import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 type MenuButton = ButtonGroupItemProps & {
   childItems?: MenuButton[];
 };
 
 export const ButtonGroup: FC<IButtonGroupComponentProps> = ({ items, id, size, spaceSize = 'middle', isInline, noStyles }) => {
+  const { styles } = useStyles();
   const { formMode, formData, form } = useForm();
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { globalState } = useGlobalState();
@@ -100,7 +103,7 @@ export const ButtonGroup: FC<IButtonGroupComponentProps> = ({ items, id, size, s
   return (
     <Fragment>
       {isInline && (
-        <div className={noStyles ? null : 'sha-responsive-button-group-inline-container'}>
+        <div className={noStyles ? null : styles.shaResponsiveButtonGroupInlineContainer}>
           <Space>
             {filteredItems?.map((props) =>
               renderButtonItem(props, props?.id, !localexecuteExpression(props.customEnabled))
@@ -110,11 +113,11 @@ export const ButtonGroup: FC<IButtonGroupComponentProps> = ({ items, id, size, s
       )}
 
       {!isInline && (
-        <div className="sha-responsive-button-group-container">
+        <div className={styles.shaResponsiveButtonGroupContainer}>
           <Menu
             mode="horizontal"
             items={filteredItems?.map((props) => renderMenuButton(props))}
-            className={`sha-responsive-button-group space-${spaceSize}`}
+            className={classNames(styles.shaResponsiveButtonGroup, `space-${spaceSize}`)}
             style={{ width: '30px' }}
           />
         </div>

@@ -4,7 +4,6 @@ import { IGenericListEditorProps } from './interfaces';
 import { ListItem } from './models';
 import { GenericListEditorProvider } from './provider';
 import { ListEditorRenderer } from './renderer';
-import './styles/index.less';
 
 export interface IListStateProps<TItem = any> {
   value: TItem[];

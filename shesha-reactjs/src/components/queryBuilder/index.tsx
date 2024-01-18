@@ -24,6 +24,7 @@ import { Skeleton } from 'antd';
 import { useQueryBuilder } from '@/providers';
 import { usePrevious } from 'react-use';
 import { FuncSelect } from './funcSelect/index';
+import { useStyles } from './styles/styles';
 
 export interface IQueryBuilderColumn extends ITableColumn {
   fieldSettings?: FieldSettings;
@@ -206,6 +207,7 @@ const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   value,
   qbConfig,
 }) => {
+  const { styles } = useStyles();
   const lastLocallyChangedValue = useRef(value);
   const changedOutside = value !== lastLocallyChangedValue.current;
   const prevValue = usePrevious(value);
@@ -249,7 +251,7 @@ const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   };
 
   return (
-    <div className="sha-query-builder">
+    <div className={styles.shaQueryBuilder}>
       {tree && qbConfig && <Query {...qbConfig} value={tree} onChange={handleChange} renderBuilder={renderBuilder} />}
     </div>
   );

@@ -17,6 +17,7 @@ import { EntityData } from '@/interfaces/gql';
 import { ProperyDataType } from '@/interfaces/metadata';
 import { IDictionary } from '@/interfaces';
 import { DatePicker, TimePicker, TimeRangePicker } from '@/components/antd';
+import { useStyles } from './styles/styles';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -66,6 +67,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   entityReferenceTypeShortAlias,
   autocompleteUrl,
 }) => {
+  const { styles } = useStyles();
   const options = useMemo(() => {
     return allOptions[dataType] || [];
   }, [dataType]);
@@ -133,11 +135,11 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
   return (
     <div
-      className="sha-column-item-filter"
+      className={styles.shaColumnItemFilter}
       onMouseOver={toggleShowIconVisibility}
       onMouseLeave={toggleShowIconVisibility}
     >
-      <div className="filter-heading">
+      <div className={styles.filterHeading}>
         <div className="filter-heading-left">
           <span className="label">{filterName || 'Something'}</span>
           {!hideFilterOptions() && (
@@ -155,7 +157,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
           <DeleteOutlined onClick={handleDeleteFilter} />
         </div>
       </div>
-      <div className="filter-input">
+      <div className={styles.filterInput}>
         {dataType === 'string' && (
           <StringFilter
             onChange={handleStringFilter}

@@ -1,4 +1,4 @@
-import { nanoid } from "nanoid";
+import { nanoid } from '@/utils/uuid';
 import { useSheshaApplication } from "@/providers";
 import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";

@@ -10,6 +10,7 @@ import { DebugButton } from './debugButton';
 import { UndoRedoButtons } from './undoRedoButtons';
 import { PreviewButton } from './previewButton';
 import { FormSettingsButton } from './formSettingsButton';
+import { useStyles } from '../styles/styles';
 
 export interface IProps { }
 
@@ -17,6 +18,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
   const { routes } = useSheshaApplication();
   const { router } = useShaRouting(false) ?? {};
   const { readOnly } = useFormDesigner();
+  const { styles } = useStyles();
 
   const onVersionCreated = (newVersion: FormConfigurationDto) => {
     const url = `${routes.formsDesigner}?id=${newVersion.id}`;
@@ -29,15 +31,15 @@ export const FormDesignerToolbar: FC<IProps> = () => {
   };
 
   return (
-    <div className="sha-designer-toolbar">
-      <div className="sha-designer-toolbar-left">
+    <div className={styles.shaDesignerToolbar}>
+      <div className={styles.shaDesignerToolbarLeft}>
         {!readOnly && (
           <SaveMenu />
         )}
         <CreateNewVersionButton onSuccess={onVersionCreated} />
         <PublishButton />
       </div>
-      <div className="sha-designer-toolbar-right">
+      <div className={styles.shaDesignerToolbarRight}>
         <FormSettingsButton />
         <PreviewButton />
         <DebugButton />

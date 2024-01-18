@@ -1,10 +1,11 @@
 import React, { CSSProperties, FC, Key } from 'react';
 import { Radio, RadioChangeEvent, RadioGroupProps } from 'antd';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import classNames from 'classnames';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
+import { useStyles } from './styles/styles';
 
 const RadioButton = Radio.Button;
 
@@ -48,6 +49,7 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
   onSelectionChange,
   ...rest
 }) => {
+  const { styles } = useStyles();
   const { data: refList } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName));
   
   const filter = ({ itemValue }: ReferenceListItemDto) => {
@@ -78,13 +80,13 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
   };
 
   return (
-    <Radio.Group onChange={handleChange} {...radioProps} className={'sha-ref-list-radio-buttons'}>
+    <Radio.Group onChange={handleChange} {...radioProps} className={styles.shaRefListRadioButtons}>
       {options?.map(({ item, itemValue }) => (
         <RadioType
           value={itemValue}
           style={radioStyle}
           key={nanoid()}
-          className={classNames({ 'buttons-vertical': orientation === 'vertical' && optionType === 'button' })}
+          className={classNames({ [styles.buttonsVertical]: orientation === 'vertical' && optionType === 'button' })}
         >
           {item}
         </RadioType>

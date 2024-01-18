@@ -1,5 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
+import { css, cx } from 'antd-style';
 import React, { PropsWithChildren } from 'react';
 import { FC } from 'react';
 
@@ -8,12 +9,18 @@ export interface IHelpTextPopoverProps {
 }
 
 export const HelpTextPopover: FC<PropsWithChildren<IHelpTextPopoverProps>> = ({ content, children }) => {
+    const className = cx("sha-help-icon", css`
+        cursor: help;
+        font-size: 14px;
+        color: #aaa;
+        margin-left: 5px;
+    `);
     return content
         ? (
             <>
                 {children}
                 <Tooltip title={content}>
-                    <QuestionCircleOutlined className="sha-help-icon" />
+                    <QuestionCircleOutlined className={className} />
                 </Tooltip>
             </>
         )

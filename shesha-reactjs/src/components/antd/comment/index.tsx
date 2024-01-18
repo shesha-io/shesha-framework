@@ -57,7 +57,7 @@ const Comment: React.FC<CommentProps> = ({
         actions && actions.length ? (
             <ul className={`${prefixCls}-actions`}>
                 {actions.map((action, index) => (
-                    <li key={`action-${index}`}>{action}</li> // eslint-disable-line react/no-array-index-key
+                    <li key={`action-${index}`}>{action}</li>
                 ))}
             </ul>
         ) : null;

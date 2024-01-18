@@ -20,7 +20,7 @@ import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/mo
 import { TableOutlined } from '@ant-design/icons';
 import { useDeepCompareEffect } from 'react-use';
 import {
-  CollapsibleSidebarContainer,
+  SidebarContainer,
   DataTable,
   DatatableAdvancedFilter,
   DatatableColumnsSelector,
@@ -32,6 +32,7 @@ import {
   useGlobalState,
   useSheshaApplication,
 } from '@/providers';
+import { GlobalTableStyles } from './styles/styles';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -179,18 +180,18 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
   };
 
-
   return (
-    <CollapsibleSidebarContainer
+    <SidebarContainer
       rightSidebarProps={{
-        open: isSelectingColumns || isFiltering,
         onOpen: toggleFieldPropertiesSidebar,
+        open: Boolean(isSelectingColumns || isFiltering),
         onClose: toggleFieldPropertiesSidebar,
         title: 'Table Columns',
         content: renderSidebarContent,
       }}
       allowFullCollapse
     >
+      <GlobalTableStyles/>
       <DataTable
         onMultiRowSelect={setMultiSelectedRow}
         selectedRowIndex={selectedRow?.index}
@@ -216,7 +217,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         minHeight={props.minHeight}
         maxHeight={props.maxHeight}
       />
-    </CollapsibleSidebarContainer>
+    </SidebarContainer>
   );
 };
 

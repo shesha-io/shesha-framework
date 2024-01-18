@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, { CSSProperties, FC, ReactNode } from 'react';
+import { useStyles } from './styles/styles';
 
 export interface ILayoutHeadingProps {
   extra?: ReactNode | (() => ReactNode);
@@ -8,12 +9,16 @@ export interface ILayoutHeadingProps {
   className?: string;
 }
 
-export const LayoutHeading: FC<ILayoutHeadingProps> = ({ title, extra, style, className }) => (
-  <div className={classNames('sha-layout-heading-content', className)} style={style}>
-    <h2 className="sha-layout-heading-title">{title}</h2>
+export const LayoutHeading: FC<ILayoutHeadingProps> = ({ title, extra, style, className }) => {
+  const { styles } = useStyles();
 
-    <div>{typeof extra === 'function' ? extra() : extra}</div>
-  </div>
-);
+  return (
+    <div className={classNames(styles.shaLayoutHeadingContent, className)} style={style}>
+      <h2 className={styles.shaLayoutHeadingTitle}>{title}</h2>
+  
+      <div>{typeof extra === 'function' ? extra() : extra}</div>
+    </div>
+  );
+};
 
 export default LayoutHeading;

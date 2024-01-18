@@ -13,13 +13,12 @@ import { FC } from 'react';
 import { Form, Spin, Upload } from 'antd';
 import { getIndexesList } from '../treeUtils';
 import { IDictionary } from '@/interfaces';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { RcFile } from 'antd/lib/upload/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 import { useSheshaApplication } from '@/providers';
-
-
+import { useStyles } from './styles/styles';
 
 const { Dragger } = Upload;
 
@@ -91,14 +90,6 @@ const packageInfo2TreeState = (pack: IPackageInfo): ITreeState => {
                 children: itemNodes,
                 isLeaf: false,
             };
-            /*
-            const itemNodes = itemType.items.map<ConfigItemDataNode>(item => ({
-                key: item.id,
-                title: item.name,
-                isLeaf: true,
-                itemId: item.id
-            }));
-            */
         });
 
         const moduleNode: ConfigItemDataNode = {
@@ -120,6 +111,7 @@ const packageInfo2TreeState = (pack: IPackageInfo): ITreeState => {
 };
 
 export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (props) => {
+    const { styles, prefixCls } = useStyles();
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const [uploadFile, setUploadFile] = useState<UploadFile>(null);
@@ -179,17 +171,17 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
 
     const fileRender = (_originNode, file, _currFileList) => {
         return (
-            <div className="sha-package-upload-file">
-                <span className="sha-package-upload-file-thumbnail">
+            <div className={styles.shaPackageUploadFile}>
+                <span className={styles.shaPackageUploadFileThumbnail}>
                     {isPackLoading
                         ? (<LoadingOutlined style={{ fontSize: '26px' }} className="sha-upload-uploading" />)
                         : (<FileZipTwoTone style={{ fontSize: '26px' }} />)
                     }
                 </span>
-                <span className="ant-upload-list-item-name" title={file.name}>
+                <span className={`${prefixCls}-upload-list-item-name`} title={file.name}>
                     {file.name}
                 </span>
-                <span className="ant-upload-list-item-card-actions picture">
+                <span className={`${prefixCls}-upload-list-item-card-actions picture`}>
                     {!isPackLoading && (
                         <a className="sha-upload-remove-control" onClick={onDeleteClick}>
                             <DeleteOutlined title="Remove" />
@@ -198,7 +190,6 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                 </span>
             </div>
         );
-        // {filesize(file.size)}
     };
 
     const importExecuter = () => {
@@ -247,14 +238,14 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                     listType="text"
                     maxCount={1}
                     itemRender={fileRender}
-                    className="sha-package-upload-drag"
+                    className={styles.shaPackageUploadDrag}
                     style={{ display: Boolean(uploadFile) ? "none" : undefined }}
                     fileList={uploadFile ? [uploadFile] : []}
                 >
-                    <p className="ant-upload-drag-icon">
+                    <p className={`${prefixCls}-upload-drag-icon`}>
                         <InboxOutlined />
                     </p>
-                    <p className="ant-upload-text">Click or drag <strong>.shaconfig</strong> file to this area to upload</p>
+                    <p className={`${prefixCls}-upload-text`}>Click or drag <strong>.shaconfig</strong> file to this area to upload</p>
                 </Dragger>
                 {treeState && (
                     <>

@@ -18,7 +18,7 @@ import { DataSourcesProvider } from '@/providers/dataSourcesProvider';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import { IToolboxComponentGroup } from '@/interfaces';
 import { ReferenceListDispatcherProvider } from '@/providers/referenceListDispatcher';
-import { NextRouter } from 'next/router';
+import { IRouter } from '@/providers/shaRouting';
 import { SettingsProvider } from '@/providers/settings';
 import { StackedNavigationProvider } from '@/generic-pages/dynamic/navigation/stakedNavigation';
 import { useDeepCompareEffect } from 'react-use';
@@ -54,7 +54,7 @@ export interface IShaApplicationProviderProps {
   backendUrl: string;
   applicationName?: string;
   accessTokenName?: string;
-  router?: NextRouter; // todo: replace with IRouter
+  router?: IRouter;
   toolboxComponentGroups?: IToolboxComponentGroup[];
   unauthorizedRedirectUrl?: string;
   themeProps?: ThemeProviderProps;

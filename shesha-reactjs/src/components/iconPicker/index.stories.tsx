@@ -2,7 +2,6 @@ import React from 'react';
 import { Story } from '@storybook/react';
 import IconPicker, { IIconPickerProps } from './';
 import { Form } from 'antd';
-// import './styles/index.less';
 
 export default {
   title: 'Components/IconPicker',

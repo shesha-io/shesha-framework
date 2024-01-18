@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormIdentifier } from '../../form/models';

@@ -3,7 +3,7 @@ import { FallbackProps } from 'react-error-boundary';
 import { FrownTwoTone } from '@ant-design/icons';
 import { Button, Space } from 'antd';
 import Router from 'next/router';
-import './styles/index.less';
+import { useStyles } from './styles/styles';
 
 const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>) => {
   // Do something with the error
@@ -20,25 +20,26 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
   error,
   resetErrorBoundary,
 }) => {
+  const { styles } = useStyles();
   errorBoundaryErrorHandler({ error });
 
   if (fullScreen) {
     return (
-      <div className="custom-error-boundary">
-        <h2 className="oops">Oops!</h2>
-        <FrownTwoTone twoToneColor="#ffa800" className="error-icon" />
-        <h3 className="primary-message">Aaaah! Something went wrong!</h3>
-        <p className="secondary-message">
+      <div className={styles.customErrorBoundary}>
+        <h2 className={styles.oops}>Oops!</h2>
+        <FrownTwoTone twoToneColor="#ffa800" className={styles.errorIcon} />
+        <h3 className={styles.primaryMessage}>Aaaah! Something went wrong!</h3>
+        <p className={styles.secondaryMessage}>
           Brace yourself till we get the error fixed. You may also refresh the page or try again later
         </p>
 
         <Space size="middle">
-          <Button type="primary" onClick={() => Router.push('/')} className="take-me-home">
+          <Button type="primary" onClick={() => Router.push('/')} className={styles.takeMeHome}>
             TAKE ME HOME
           </Button>
 
           {typeof resetErrorBoundary === 'function' && (
-            <Button onClick={resetErrorBoundary} className="take-me-home">
+            <Button onClick={resetErrorBoundary} className={styles.takeMeHome}>
               Try again
             </Button>
           )}
@@ -48,7 +49,7 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
   }
 
   return (
-    <div className="error-screen">
+    <div className={styles.errorScreen}>
       <h2>An error has occured</h2>
       <h4>{error?.message}</h4>
       {typeof resetErrorBoundary === 'function' && <button onClick={resetErrorBoundary}>Try again</button>}

@@ -5,6 +5,7 @@ import { message, Button, notification, Alert, Upload, ButtonProps } from 'antd'
 import { UploadChangeParam, RcFile } from 'antd/lib/upload/interface';
 import { IUploadFilePayload, IStoredFile, IDownloadFilePayload } from '@/providers/storedFiles/contexts';
 import { DraggerStub } from '@/components/fileUpload/stubs';
+import { useStyles } from './styles/styles';
 
 interface IUploaderFileTypes {
   name: string;
@@ -60,6 +61,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   maxHeight,
 }) => {
   const hasFiles = !!fileList.length;
+  const { styles } = useStyles();
 
   useEffect(() => {
     if (isDownloadZipSucceeded) {
@@ -151,7 +153,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    <div className="sha-stored-files-renderer" style={{ maxHeight }}>
+    <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
       {isDragger ? (
         isStub ? (
           <DraggerStub />
@@ -173,7 +175,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       )}
 
       {hasFiles && !!downloadZipFile && (
-        <div className="stored-files-renderer-btn-container">
+        <div className={styles.storedFilesRendererBtnContainer}>
           <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
             {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
           </Button>

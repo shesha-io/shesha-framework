@@ -4,13 +4,14 @@ import EditableTagGroup from '@/components/editableTagGroup';
 import { IWizardStepProps, IWizardComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import { getSettings } from './itemSettings';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { CodeEditor } from '@/components';
-import { getActualModel, useApplicationContext, useDeepCompareMemo } from '@/index';
+import { useDeepCompareMemo } from '@/hooks';
+import { getActualModel, useApplicationContext } from '@/providers/form/utils';
 
 const { Option } = Select;
 

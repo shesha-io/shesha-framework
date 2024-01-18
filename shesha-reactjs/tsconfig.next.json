@@ -1,6 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "jsx": "preserve",
-  }
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "jsx": "preserve"
+  },
+  "include": [
+    "src",
+    "typings",
+    ".next/types/**/*.ts"
+  ]
 }

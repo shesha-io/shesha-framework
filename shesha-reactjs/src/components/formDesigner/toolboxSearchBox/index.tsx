@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
+import { useStyles } from '../styles/styles';
 
 export interface ISearchBoxProps {
     value: string;
@@ -9,14 +10,14 @@ export interface ISearchBoxProps {
 }
 
 export const SearchBox: FC<ISearchBoxProps> = (props) => {
-
+    const { styles } = useStyles();
     const handleSearchChange = (e: React.FormEvent<HTMLInputElement>) => {
         props.onChange(e.currentTarget.value);
     };
 
     return (
         <Input
-            className='sha-component-search'
+            className={styles.shaComponentSearch}
             placeholder={props.placeholder}
             allowClear={true}
             value={props.value}

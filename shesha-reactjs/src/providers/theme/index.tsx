@@ -15,12 +15,14 @@ export interface ThemeProviderProps {
 
 const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   children,
-  iconPrefixCls,
-
-  // TODO: Later this to be configurable so that. Currently if you change it the layout fails because the styling references the `--ant prefixCls`
+  iconPrefixCls = 'anticon',
   prefixCls = 'ant',
 }) => {
-  const [state, dispatch] = useReducer(uiReducer, THEME_CONTEXT_INITIAL_STATE);
+  const [state, dispatch] = useReducer(uiReducer, {
+    ...THEME_CONTEXT_INITIAL_STATE, 
+    prefixCls: prefixCls, 
+    iconPrefixCls: iconPrefixCls
+  });
 
   const { getComponent, updateComponent } = useConfigurationItemsLoader();
 
@@ -56,17 +58,25 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme?.application;
+    const themeDefaults: ThemeConfig['token'] = {
+    };
+    // paddingSM: 4,
+    // paddingMD: 8,
+    // paddingLG: 12,
+
+    const theme: ThemeConfig['token'] = appTheme
+      ? {
+        colorPrimary: appTheme.primaryColor,
+        colorInfo: appTheme.infoColor,
+        colorSuccess: appTheme.successColor,
+        colorError: appTheme.errorColor,
+        colorWarning: appTheme.warningColor,
+      }
+      : {};
+
     const result: ThemeConfig = {
       cssVar: true,
-      token: appTheme
-        ? {
-          colorPrimary: appTheme.primaryColor,
-          colorInfo: appTheme.infoColor,
-          colorSuccess: appTheme.successColor,
-          colorError: appTheme.errorColor,
-          colorWarning: appTheme.warningColor,
-        }
-        : undefined,
+      token: { ...themeDefaults, ...theme},
     };
     return result;
   }, [state.theme]);

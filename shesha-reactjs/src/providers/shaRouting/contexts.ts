@@ -1,9 +1,8 @@
 import { createContext } from 'react';
-import { FormIdentifier, INavigateActoinArguments } from '@/providers';
-import { NextRouter } from 'next/router';
+import { FormIdentifier, INavigateActoinArguments, IRouter } from '@/providers';
 
 export interface IShaRoutingStateContext {
-  router?: NextRouter;
+  router?: IRouter;
   nextRoute?: string;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
 }

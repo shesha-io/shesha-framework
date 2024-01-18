@@ -6,7 +6,7 @@ import { ITabPaneProps, ITabsComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import itemSettings from './itemSettings.json';
 import { FormMarkup } from '@/providers/form/models';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';

@@ -4,6 +4,7 @@ import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator'
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import SidebarMenuGroup from './sidebarMenuGroup';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface ISidebarItemsContainerProps {
   index?: number[];
@@ -12,16 +13,16 @@ export interface ISidebarItemsContainerProps {
 
 export const SidebarItemsContainer: FC<ISidebarItemsContainerProps> = props => {
   const { updateChildItems } = useSidebarMenuConfigurator();
+  const { styles } = useStyles();
 
-  // <SidebarItemsContainer index={props.index} items={props.childItems || []} />
   const renderItem = (itemProps: ISidebarMenuItem, index: number, key: string) => {
     if (isSidebarGroup(itemProps)) {
       return (
-        <SidebarMenuGroup 
-          index={[...props.index, index]} 
+        <SidebarMenuGroup
+          index={[...props.index, index]}
           item={itemProps}
-          key={key} 
-          containerRendering={(args) => (<SidebarItemsContainer {...args}/>)}
+          key={key}
+          containerRendering={(args) => (<SidebarItemsContainer {...args} />)}
         />);
     } else {
       return <SidebarMenuItem id={index} index={[...props.index, index]} {...itemProps} key={key} />;
@@ -40,8 +41,6 @@ export const SidebarItemsContainer: FC<ISidebarItemsContainerProps> = props => {
 
   return (
     <ReactSortable
-      // onStart={onDragStart}
-      // onEnd={onDragEnd}
       list={props.items}
       setList={onSetList}
       fallbackOnBody={true}
@@ -50,11 +49,11 @@ export const SidebarItemsContainer: FC<ISidebarItemsContainerProps> = props => {
         name: 'toolbarItems',
       }}
       sort={true}
-      draggable=".sha-sidebar-item"
+      draggable={`.${styles.shaToolbarItem}`}
       animation={75}
-      ghostClass="sha-sidebar-item-ghost"
+      ghostClass={styles.shaToolbarItemGhost}
       emptyInsertThreshold={20}
-      handle=".sha-sidebar-item-drag-handle"
+      handle={`.${styles.shaToolbarItemDragHandle}`}
       scroll={true}
       bubbleScroll={true}
     >

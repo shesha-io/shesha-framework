@@ -51,9 +51,11 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const { router } = useShaRouting(false) ?? {};
 
   const formDesignerUrl = useFormDesignerUrl(formId);
+  
   const openInDesigner = () => {
     if (formDesignerUrl && router) {
-      router.push(formDesignerUrl).then(() => switchApplicationMode('live'));
+      router.push(formDesignerUrl);
+      switchApplicationMode('live');
     }
   };
 

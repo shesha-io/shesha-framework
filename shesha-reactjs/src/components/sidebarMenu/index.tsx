@@ -8,6 +8,8 @@ import { renderSidebarMenuItem } from './utils';
 import { useApplicationContext } from '@/utils/publicUtils';
 import { useLocalStorage } from '@/hooks';
 import { useSidebarMenu } from '@/providers/sidebarMenu';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 export interface ISidebarMenuProps {
   isCollapsed?: boolean;
@@ -20,6 +22,7 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
   const executionContext = useApplicationContext();
+  const { styles } = useStyles();
 
   const currentUrl = normalizeUrl(router?.asPath);
 
@@ -67,7 +70,7 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   return (
     <Menu
       mode="inline"
-      className="nav-links-renderer sha-sidebar-menu"
+      className={classNames(styles.shaSidebarMenu, "nav-links-renderer")}
       defaultOpenKeys={keys}
       selectedKeys={selectedKey ? [selectedKey] : undefined}
       onOpenChange={onOpenChange}

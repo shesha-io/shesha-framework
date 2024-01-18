@@ -1,10 +1,10 @@
 import { IConfigurableFormComponent, SettingsMigrationContext } from '@/interfaces/formDesigner';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { IChildTableComponentProps } from '../index';
 import { migrateFunctionToProp } from '@/designer-components/_common-migrations/migrateSettings';
-import { IFlatComponentsStructure } from '@/index';
+import { IFlatComponentsStructure } from '@/interfaces';
 
 export interface IPanelContent {
     id: string;

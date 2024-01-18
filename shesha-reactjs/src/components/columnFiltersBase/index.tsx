@@ -30,7 +30,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
   );
 
   return (
-    <div className="sha-column-filters">
+    <div style={{ flex: 1 }}>
       {filterableColumns.map(
         ({
           id,

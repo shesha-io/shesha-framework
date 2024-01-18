@@ -12,6 +12,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 const settingsForm = settingsFormJson as FormMarkup;
 
 const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentProps> = {
+  isHidden: true,
   type: 'labelValueEditor',
   name: 'Label Value editor',
   icon: <OneToOneOutlined />,

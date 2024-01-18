@@ -8,6 +8,7 @@ import StatusTag from '@/components/statusTag';
 import HelpTextPopover from '@/components/helpTextPopover';
 import { BlockOutlined, CloseOutlined } from '@ant-design/icons';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
+import { useStyles } from './styles/styles';
 
 export interface FormInfoProps {
   /**
@@ -23,6 +24,7 @@ export interface FormInfoProps {
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
   const { id, versionNo, description, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock } = useAppConfigurator();
+  const { styles } = useStyles();
 
   const [open, setOpen] = useState(false);
 
@@ -35,7 +37,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
 
   return (
     <Card
-      className="sha-form-info-card"
+      className={styles.shaFormInfoCard}
       bordered
       title={
         <>
@@ -44,7 +46,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
               <BlockOutlined title="Click to open this form in the designer" />
             </Button>
           )}
-          <span className="sha-form-info-card-title">
+          <span className={styles.shaFormInfoCardTitle}>
             Form: {getFormFullName(module, name)} v{versionNo}
           </span>
           {false && <HelpTextPopover content={description}></HelpTextPopover>}

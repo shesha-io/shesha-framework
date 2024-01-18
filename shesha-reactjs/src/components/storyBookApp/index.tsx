@@ -3,7 +3,8 @@ import { ReportingActions } from '@/providers/dynamicActions/implementations/rep
 import React, { FC, PropsWithChildren } from 'react';
 import { GlobalStateProvider, ShaApplicationProvider, SidebarMenuDefaultsProvider } from '@/providers';
 import AuthContainer from '@/components/authedContainer';
-// require('antd/dist/antd.less');
+import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
+import { GlobalPageStyles } from '@/components/page/styles/styles';
 
 const DEFAULT_ROUTER = {
   route: '',
@@ -38,10 +39,11 @@ export const StoryApp: FC<PropsWithChildren<{ layout?: boolean }>> = ({ children
   return (
     <GlobalStateProvider>
       <ShaApplicationProvider
-        //applicationKey='admin-portal'
         backendUrl={process.env.STORYBOOK_BASE_URL}
         router={DEFAULT_ROUTER as any}
       >
+        <GlobalSheshaStyles />
+        <GlobalPageStyles />
         <EntityCrudActions>
           <ReportingActions>
             <AuthContainer layout={layout}>

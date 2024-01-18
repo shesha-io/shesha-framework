@@ -1,8 +1,7 @@
 import React from 'react';
 import { Story } from '@storybook/react';
-import AuthContainer from '@/components/authedContainer';
-import { GlobalStateProvider, ShaApplicationProvider } from '@/providers';
 import { CurrencyConverter, ICurrencyConverterProps } from '@/components';
+import StoryApp from '../storyBookApp';
 
 // #region Storybook Metadata & Configuration
 
@@ -11,21 +10,15 @@ export default {
     component: CurrencyConverter
 };
 
-const backendUrl = process.env.STORYBOOK_BASE_URL;
-
 // #endregion
 
 // #region Base Mapping Template and Props
 
 const BaseTemplate: Story<ICurrencyConverterProps> = props => {
     return (
-        <GlobalStateProvider>
-            <ShaApplicationProvider backendUrl={backendUrl}>
-                <AuthContainer layout>
-                    <CurrencyConverter {...props} />
-                </AuthContainer>
-            </ShaApplicationProvider>
-        </GlobalStateProvider>
+        <StoryApp>
+            <CurrencyConverter {...props} />
+        </StoryApp>
     );
 };
 

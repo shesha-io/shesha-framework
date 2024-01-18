@@ -9,7 +9,7 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 import { IDataListComponentProps } from './model';
 import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];

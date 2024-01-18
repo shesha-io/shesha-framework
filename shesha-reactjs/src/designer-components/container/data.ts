@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 
 export const JUSTIFY_ITEMS = [
   { id: nanoid(), label: 'center', value: 'center' },

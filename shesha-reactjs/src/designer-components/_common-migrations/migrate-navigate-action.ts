@@ -1,9 +1,9 @@
-import { FormIdentifier, getUrlWithoutQueryParams } from "@/index";
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
 import { StandardNodeTypes } from "@/interfaces/formComponent";
+import { FormIdentifier } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
 import { INavigateActoinArguments as INavigateActionArguments } from "@/providers/shaRouting/index";
-import { getQueryString } from "@/utils/url";
+import { getQueryString, getUrlWithoutQueryParams } from "@/utils/url";
 
 export const migrateNavigateAction = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
     return updateActionRecursive(prev, action => {
@@ -55,7 +55,7 @@ const parseDynamicUrl = (url: string): DynamicUrlParsingResponse => {
 
     const urlParts = urlWithoutQuery.split('/').filter(e => Boolean(e));
     const isDynamic = (urlParts.length === 2 || urlParts.length === 3) && urlParts[0].toLowerCase() === 'dynamic';
-    const module = isDynamic && urlParts.length === 3 ? urlParts[1] : undefined;
+    const moduleName = isDynamic && urlParts.length === 3 ? urlParts[1] : undefined;
     const form = isDynamic 
         ? urlParts.length === 3 ? urlParts[2] : urlParts[1]
         : undefined;
@@ -71,7 +71,7 @@ const parseDynamicUrl = (url: string): DynamicUrlParsingResponse => {
     
     const result: DynamicUrlParsingResponse = {
         isDynamic: isDynamic,
-        formId: form ? { name: form, module } : undefined,
+        formId: form ? { name: form, module: moduleName } : undefined,
         url: urlWithoutQuery,
         queryParams: queryParams,
     };

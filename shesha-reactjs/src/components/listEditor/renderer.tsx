@@ -6,6 +6,7 @@ import { ListEditorChildrenFn } from '.';
 import { IListEditorContext } from './contexts';
 import { ListItem, SortableItem } from './models';
 import classNames from 'classnames';
+import { useStyles } from './styles/styles';
 
 export interface IListEditorRendererProps<TItem = any> {
     contextAccessor: () => IListEditorContext<TItem>;
@@ -13,6 +14,7 @@ export interface IListEditorRendererProps<TItem = any> {
 }
 
 export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRendererProps<TItem>) => {
+    const { styles } = useStyles();
     const { contextAccessor, children } = props;
     const { value, deleteItem, addItem, insertItem, updateItem, updateList, readOnly } = contextAccessor();
 
@@ -48,11 +50,11 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
     };
 
     return (
-        <div className="sha-list">
-            <div className="sha-list-header">
+        <div className={styles.list}>
+            <div className={styles.listHeader}>
                 <Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly}>Add</Button>
             </div>
-            <div className="sha-list-container">
+            <div className={styles.listContainer}>
                 {sortableItems && (
                     <ReactSortable<SortableItem<TItem>>
                         list={sortableItems}
@@ -63,11 +65,11 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                             name: 'rows',
                         }}
                         sort={true}
-                        draggable=".sha-list-item"
+                        draggable={`.${styles.listItem}`}
                         animation={75}
-                        ghostClass="sha-list-item-ghost"
+                        ghostClass={styles.listItemGhost}
                         emptyInsertThreshold={20}
-                        handle=".sha-drag-handle"
+                        handle={`.${styles.dragHandle}`}
                         scroll={true}
                         bubbleScroll={true}
                         disabled={readOnly}
@@ -114,13 +116,14 @@ export interface IListItemWrapperProps extends PropsWithChildren {
 }
 export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete, onInsert, readOnly, isLast }) => {
     const [placeholderPosition, setPlaceholderPosition] = useState<ItemInsertPosition>(null);
+    const { styles } = useStyles();
 
     const onDeleteClick = () => {
         onDelete();
     };
 
     return (
-        <div className='sha-list-item'>
+        <div className={styles.listItem}>
             {!readOnly && (
                 <>
                     <InsertItemMarker
@@ -128,17 +131,17 @@ export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete,
                         onOpenChange={(visible) => (setPlaceholderPosition(visible ? 'before' : null))}
                     />
                     {placeholderPosition === 'before' && <NewItemPlaceHolder className={placeholderPosition}/>}
-                    <span className="sha-drag-handle">
+                    <span className={styles.dragHandle}>
                         <MenuOutlined />
                     </span>
                 </>
             )}
-            <div className='sha-list-item-content'>
+            <div className={styles.listItemContent}>
                 {children}
             </div>
             {!readOnly && (
                 <>
-                    <div className='sha-list-item-controls'>
+                    <div className={styles.listItemControls}>
                         <Button
                             icon={<DeleteFilled color="red" />}
                             onClick={onDeleteClick}
@@ -168,7 +171,8 @@ interface NewItemPlaceHolderProps {
     className?: string;
 }
 const NewItemPlaceHolder: FC<NewItemPlaceHolderProps> = ({ className }) => {
-    return (<div className={classNames("sha-list-insert-placeholder", className)}></div>);
+    const { styles } = useStyles();
+    return (<div className={classNames(styles.listInsertPlaceholder, className)}></div>);
 };
 
 interface InsertItemMarkerProps {
@@ -176,15 +180,17 @@ interface InsertItemMarkerProps {
     onOpenChange?: (open: boolean) => void;
 }
 const InsertItemMarker: FC<InsertItemMarkerProps> = ({ onClick, onOpenChange }) => {
+    const { styles } = useStyles();
     return (
         <Tooltip
             placement="left"
             color="#fff"
-            arrowPointAtCenter={true}
+            arrow={{ pointAtCenter: true }}
             align={{ offset: [10, 0] }}
             overlayInnerStyle={{ borderRadius: '5px', padding: 0, minHeight: '5px' }}
             onOpenChange={onOpenChange}
             mouseEnterDelay={0}
+            mouseLeaveDelay={0}
             title={(<Button
                 onClick={onClick}
                 icon={<PlusOutlined />}
@@ -194,7 +200,7 @@ const InsertItemMarker: FC<InsertItemMarkerProps> = ({ onClick, onOpenChange }) 
                 Add
             </Button>)}
         >
-            <div className="sha-list-insert-area"></div>
+            <div className={styles.listInsertArea}></div>
         </Tooltip>
     );
 };

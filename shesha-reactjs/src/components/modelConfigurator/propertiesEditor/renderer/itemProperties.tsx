@@ -6,7 +6,7 @@ import { usePropertiesEditor } from '../provider';
 import { FormMarkup } from '@/providers/form/models';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import propertySettingsJson from './propertySettings.json';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 
 export interface IProps {}
 

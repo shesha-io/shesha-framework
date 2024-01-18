@@ -1,5 +1,5 @@
 import { Table, Tag } from 'antd';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import React, { FC, useMemo } from 'react';
 
 const columns = [

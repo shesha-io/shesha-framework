@@ -1,39 +1,30 @@
 import React from 'react';
 import { FC } from 'react';
-import { Row, Col, Typography } from 'antd';
+import { Row, Col } from 'antd';
 import SettingsMenu from './settingsMenu';
 import { SettingsEditorProvider } from './provider';
 import SettingEditor from './settingEditor';
 import SettingsEditorToolbar from './toolbar';
-
-const { Title } = Typography;
+import { useStyles } from './styles/styles';
 
 export interface ISettingsEditorProps {
 
 }
 
 export const SettingsEditor: FC<ISettingsEditorProps> = () => {
+  const { styles } = useStyles();
   return (
     <SettingsEditorProvider>
-      <div className="sha-page">
-        <div className="sha-page-heading">
-          <div className="sha-page-title" style={{ justifyContent: 'left' }}>
-            <Title level={4} style={{ margin: 'unset' }}>
-              Application Settings
-            </Title>
-          </div>
-        </div>
-        <div className="sha-page-content sha-settings-editor">
-          <SettingsEditorToolbar />
-          <Row>
-            <Col span={8} className="sha-settings-editor-sidebar">
-              <SettingsMenu />
-            </Col>
-            <Col span={16} className="sha-settings-editor-main">
-              <SettingEditor />
-            </Col>
-          </Row>
-        </div>
+      <div className={styles.shaSettingsEditor}>
+        <SettingsEditorToolbar />
+        <Row>
+          <Col span={8}>
+            <SettingsMenu />
+          </Col>
+          <Col span={16} className={styles.shaSettingsEditorMain}>
+            <SettingEditor />
+          </Col>
+        </Row>
       </div>
     </SettingsEditorProvider>
   );

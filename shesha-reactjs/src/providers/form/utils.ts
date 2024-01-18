@@ -2,7 +2,7 @@ import { Rule, RuleObject } from 'antd/lib/form';
 import Schema, { Rules, ValidateSource } from 'async-validator';
 import camelcase from 'camelcase';
 import Mustache from 'mustache';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import nestedProperty from 'nested-property';
 import { CSSProperties } from 'react';
 import {

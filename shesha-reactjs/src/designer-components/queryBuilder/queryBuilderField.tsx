@@ -6,8 +6,10 @@ import { useMedia } from 'react-use';
 import { QueryBuilder, Show } from '@/components';
 import CodeEditor from '@/components/codeEditor';
 import { IQueryBuilderFieldProps } from './models';
+import { useStyles } from './styles/styles';
 
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
+  const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
   const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult>(undefined);
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
@@ -44,7 +46,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   return (
     <>
       <Collapse
-        className="sha-query-builder-field"
+        className={styles.shaQueryBuilderField}
         activeKey={jsonExpanded ? '1' : null}
         expandIconPosition="end"
         bordered={false}
