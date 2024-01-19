@@ -314,5 +314,6 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       validate: {},
       settingsValidationErrors: [],
+      jsSetting: false,
     })
     .toJson();
