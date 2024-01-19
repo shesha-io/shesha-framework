@@ -224,6 +224,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
               parentId: 'root',
               validate: {},
               settingsValidationErrors: [],
+              jsSetting: false,
             })
             .toJson(),
         ],

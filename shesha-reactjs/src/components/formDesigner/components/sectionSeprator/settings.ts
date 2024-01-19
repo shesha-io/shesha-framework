@@ -57,6 +57,7 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       validate: {},
       settingsValidationErrors: [],
+      jsSetting: false,
     })
     .addCodeEditor({
       id: '77af6050-c35a-470b-9924-b63d6bf355b6',
