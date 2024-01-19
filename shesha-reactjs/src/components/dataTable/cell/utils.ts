@@ -4,12 +4,12 @@ import { IComponentWrapperProps, ICrudOptions, ITableCrudOptions } from './inter
 export const adjustWidth = (currentWidth: { minWidth: number; maxWidth: number }, crudOptions: ICrudOptions) => {
   const { canDoubleWidth, canDivideWidth, canTripleWidth, canDivideByThreeWidth } = crudOptions;
   if (canDoubleWidth && canDivideByThreeWidth) {
-    if (currentWidth.minWidth % 3 == 0) {
+    if (currentWidth.minWidth % 3 === 0) {
       currentWidth.minWidth = (currentWidth.minWidth / 3) * 2;
       currentWidth.maxWidth = (currentWidth.maxWidth / 3) * 2;
     }
   } else if (canDivideWidth && canTripleWidth) {
-    if (currentWidth.minWidth % 2 == 0) {
+    if (currentWidth.minWidth % 2 === 0) {
       currentWidth.minWidth = (currentWidth.minWidth / 2) * 3;
       currentWidth.maxWidth = (currentWidth.maxWidth / 2) * 3;
     }

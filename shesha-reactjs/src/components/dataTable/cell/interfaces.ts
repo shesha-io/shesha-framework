@@ -35,7 +35,7 @@ export interface ITableCrudOptions {
   canEdit?: boolean;
   inlineEditMode?: InlineEditMode;
   canAdd?: boolean;
-  formMode: FormMode
+  formMode: FormMode;
 }
 export interface IChangeProps {
   add?: boolean;
