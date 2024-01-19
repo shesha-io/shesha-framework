@@ -152,13 +152,21 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                       border: none;
                       padding: 0 5px;
                       width: auto;
-                      height: auto;
+                     height: auto;
+                      
+    
             
                       .${iconPrefixCls} {
                         font-size: 14px;
                         width: 14px;
                         min-width: 14px;
                       }
+                    }
+                    .sha-action-button {
+                      display: flex;
+                      width: auto;
+                      justify-content: center;
+                      align-items: center;
                     }
                 }
 

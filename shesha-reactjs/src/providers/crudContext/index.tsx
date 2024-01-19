@@ -84,7 +84,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   }, [autoSave]);
 
   useEffect(() => {
-    const modeToUse = allowChangeMode ? state.mode : mode;
+    //to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one) 
+    const modeToUse = mode=='read'?mode:allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
