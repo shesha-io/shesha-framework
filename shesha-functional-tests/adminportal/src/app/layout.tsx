@@ -1,15 +1,16 @@
 import React from 'react';
 import { Suspense } from 'react';
 import { AppProvider } from './app-provider';
-import { BASE_URL } from 'src/api/utils/constants';
-
-const BACKEND_URL = process.env.BACKEND_URL ?? BASE_URL;
+import { unstable_noStore as noStore } from 'next/cache';
 
 export default function RootLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    noStore();
+    const BACKEND_URL = process.env.BACKEND_URL ?? 'http://localhost:21021';
+
     return (
         <html lang="en">
             <body>
