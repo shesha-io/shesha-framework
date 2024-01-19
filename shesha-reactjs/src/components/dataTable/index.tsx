@@ -34,6 +34,7 @@ import { ValueRenderer } from '../valueRenderer/index';
 import { isEqual } from "lodash";
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
+import { useStyles } from './styles/styles';
 import { adjustWidth, getCruadActionConditions } from './cell/utils';
 
 export interface IIndexTableOptions {
@@ -72,8 +73,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   customCreateUrl,
   customUpdateUrl,
   customDeleteUrl,
-  inlineEditMode,
   onRowSave,
+  inlineEditMode,
   onRowSaveSuccessAction: onRowSaveSuccess,
   ...props
 }) => {
@@ -177,6 +178,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       onRowsChanged(tableData);
     }
   }, [tableData]);
+  const { styles } = useStyles();
 
   const metadata = useMetadata(false)?.metadata;
 
@@ -269,6 +271,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         formData,
         globalState
       ),
+      inlineEditMode,
+      formMode,
       canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
       onNewRowInitialize,
     };
@@ -281,31 +285,31 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const widthOptions = useMemo(() => {
     return getCruadActionConditions(crudOptions, prevCrudOptions);
   }, [crudOptions, prevCrudOptions]);
-  
+
   const preparedColumns = useMemo(() => {
     const localPreparedColumns = columns
-      .map((column) => {
-        if (column.columnType === 'crud-operations') {
-          const { maxWidth, minWidth } = adjustWidth(
-            {
-              maxWidth: column.maxWidth,
-              minWidth: column.minWidth,
-            },
-            {
-              canDivideWidth: widthOptions.canDivideWidth,
-              canDoubleWidth: widthOptions.canDoubleWidth,
-              canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
-              canTripleWidth: widthOptions.canTripleWidth,
-            }
-          );
-          column.minWidth = minWidth;
-          column.maxWidth = maxWidth;
-        }
-        return column;
-      })
-      .filter((column) => {
-        return column.show && !(column.columnType === 'crud-operations' && !crudOptions.enabled);
-      })
+    .map((column) => {
+      if (column.columnType === 'crud-operations') {
+        const { maxWidth, minWidth } = adjustWidth(
+          {
+            maxWidth: column.maxWidth,
+            minWidth: column.minWidth,
+          },
+          {
+            canDivideWidth: widthOptions.canDivideWidth,
+            canDoubleWidth: widthOptions.canDoubleWidth,
+            canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
+            canTripleWidth: widthOptions.canTripleWidth,
+          }
+        );
+        column.minWidth = minWidth;
+        column.maxWidth = maxWidth;
+      }
+      return column;
+    })
+    .filter((column) => {
+      return column.show && !(column.columnType === 'crud-operations' && !crudOptions.enabled);
+    })
       .map<DataTableColumn>((columnItem) => {
         const strictWidth =
           columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
@@ -322,7 +326,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           maxWidth: Boolean(columnItem.maxWidth) ? columnItem.maxWidth : undefined,
           width: width,
           resizable: !strictWidth,
-          disableSortBy: !columnItem.isSortable || sortMode === 'strict',
+          disableSortBy: Boolean(!columnItem.isSortable || sortMode === 'strict'),
           disableResizing: Boolean(strictWidth),
           Cell: cellRenderer,
           originalConfig: columnItem,
@@ -331,14 +335,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       });
 
     return localPreparedColumns;
-  }, [
+  },[
     columns,
     crudOptions.enabled,
     crudOptions.canAdd,
     crudOptions.canEdit,
     crudOptions.canDelete,
     crudOptions.inlineEditMode,
-    sortMode,
+    sortMode
   ]);
 
   // sort
@@ -659,7 +663,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     newRowCapturePosition: props.newRowCapturePosition,
     createAction: creater,
     newRowInitData: crudOptions.onNewRowInitialize,
-    inlineEditMode: props.inlineEditMode,
+    inlineEditMode ,
     inlineSaveMode: props.inlineSaveMode,
     inlineEditorComponents,
     inlineCreatorComponents,
@@ -676,7 +680,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   return (
     <Fragment>
-      <div className="sha-child-table-error-container">
+      <div className={styles.shaChildTableErrorContainer}>
         {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
       </div>
 
