@@ -18,6 +18,7 @@ import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { TimeSteps } from '@/components/antd/timepicker';
 import { useStyles } from './styles/styles';
+import { getRangePickerValues } from '../dateField/utils';
 
 type RangeValue = [moment.Moment, moment.Moment];
 
@@ -165,11 +166,6 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
   };
 
   
-  const getDefaultRangePickerValues = () =>
-    Array.isArray(defaultValue) && defaultValue?.length === 2
-      ? defaultValue?.map((v) => moment(new Date(v), format))
-      : [null, null];
-
   const handleTimePickerChange = (newValue: Moment, timeString: string) => {
     if (onChange){
       const seconds = getTotalSeconds(newValue);
@@ -204,7 +200,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
         bordered={!hideBorder}
         onChange={handleRangePicker}
         format={format}
-        value={getDefaultRangePickerValues() as RangeValue}
+        value={getRangePickerValues((value || defaultValue),format) as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
         className={styles.shaTimepicker}
