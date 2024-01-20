@@ -158,6 +158,8 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
   const minuteStepLocal = getNumericValue(minuteStep);
   const secondStepLocal = getNumericValue(secondStep);
 
+
+  //Should be a factors? if not shouldn't we delete the toolTips
   const steps: TimeSteps = {
     hourStep: 1 <= hourStepLocal && hourStepLocal <= 23 ? hourStepLocal as TimeSteps['hourStep'] : 1, // value should be in range 1..23
     minuteStep: 1 <= minuteStepLocal && minuteStepLocal <= 59 ? minuteStepLocal as TimeSteps['minuteStep'] : 1, // value should be in range 1..59
