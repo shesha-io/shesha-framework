@@ -162,6 +162,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           .transition();
           width: 100%;
           position: sticky;
+          overflow-x: auto;
     
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;

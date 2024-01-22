@@ -6,6 +6,7 @@ import { DesignerMainArea } from '../designerMainArea/index';
 import { DesignerTitle } from '../designerTitle/index';
 import { QuickEditToolbar } from './quickEditToolbar';
 import { FormConfigurationDto } from '@/providers/form/api';
+import { useStyles } from '../styles/styles';
 
 export interface IQuickEditDialogProps {
     open: boolean;
@@ -15,6 +16,7 @@ export interface IQuickEditDialogProps {
 }
 
 export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
+    const { styles } = useStyles();
     const { open, onCancel, onUpdated, formId } = props;
     const [latestFormId, setLatestFormId] = useState(null);
 
@@ -30,7 +32,7 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
                 onCancel={onCancel}
                 width={'80%'}
                 footer={null}
-                styles={{ body: { padding: 0 } }}
+                className={styles.quickEditModal}
             >
                 <FormDesigner.NonVisual formId={latestFormId ?? formId}>
                     <div className="ant-modal-header">
@@ -38,7 +40,7 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
                             <DesignerTitle />
                         </div>
                     </div>
-                    <div className="sha-form-designer">
+                    <div className={styles.formDesigner}>
                         <QuickEditToolbar 
                             onUpdated={onUpdated}
                             onNewVersionCreated={onNewVersionCreated}

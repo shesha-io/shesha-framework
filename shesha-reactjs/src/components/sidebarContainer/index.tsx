@@ -96,7 +96,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         <div
           className={classNames(
             styles.sidebarContainerMainArea,
-            'scroll scroll-x',
             { 'both-open': leftSidebarProps?.open && rightSidebarProps?.open },
             { 'left-only-open': leftSidebarProps?.open && !rightSidebarProps?.open },
             { 'right-only-open': rightSidebarProps?.open && !leftSidebarProps?.open },
