@@ -158,17 +158,17 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
   const minuteStepLocal = getNumericValue(minuteStep);
   const secondStepLocal = getNumericValue(secondStep);
 
+
+  //Should be a factors? if not shouldn't we delete the toolTips
   const steps: TimeSteps = {
     hourStep: 1 <= hourStepLocal && hourStepLocal <= 23 ? hourStepLocal as TimeSteps['hourStep'] : 1, // value should be in range 1..23
     minuteStep: 1 <= minuteStepLocal && minuteStepLocal <= 59 ? minuteStepLocal as TimeSteps['minuteStep'] : 1, // value should be in range 1..59
     secondStep: 1 <= secondStepLocal && secondStepLocal <= 59 ? secondStepLocal as TimeSteps['secondStep'] : 1, // value should be in range 1..59
   };
 
-  
-  const getDefaultRangePickerValues = () =>
-    Array.isArray(defaultValue) && defaultValue?.length === 2
-      ? defaultValue?.map((v) => moment(new Date(v), format))
-      : [null, null];
+   
+  const getRangePickerValues = (value: string | [string, string]) =>
+      Array.isArray(value) && value?.length === 2 ? value?.map((v) => getMoment(v, format)) : [null, null];
 
   const handleTimePickerChange = (newValue: Moment, timeString: string) => {
     if (onChange){
@@ -204,7 +204,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
         bordered={!hideBorder}
         onChange={handleRangePicker}
         format={format}
-        value={getDefaultRangePickerValues() as RangeValue}
+        value={getRangePickerValues(value || defaultValue) as RangeValue}
         {...steps}
         style={getStyle(style, formData)}
         className={styles.shaTimepicker}
