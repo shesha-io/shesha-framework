@@ -39,6 +39,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     const shaComponentValidationIcon = "sha-component-validation-icon";
     const designerWorkArea = "sha-designer-work-area";
 
+    const quickEditModal = cx("sha-designer-modal", css`
+        .${prefixCls}-modal-content {
+            padding: 0;
+            .${prefixCls}-modal-header {
+                padding: 16px 24px;
+                margin: 0;
+                border-bottom: ${sheshaStyles.border};
+            }
+        }
+    `);
+
     const formDesigner = cx("sha-form-designer", css`
         .${shaHelpIcon} {
             cursor: help;
@@ -326,5 +337,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         shaDropHint,
         designerWorkArea,
         componentPropertiesActions,
+        quickEditModal,
+        shaComponentControls,
     };
 });
