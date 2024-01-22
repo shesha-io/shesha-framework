@@ -14,6 +14,8 @@ export interface IModelConfiguratorProps {
 export const ModelConfigurator: FC<IModelConfiguratorProps> = (props) => {
   const [form] = Form.useForm();
 
+  console.log('ModelConfigurator', props.name, props.nameSpace);
+
   return (
     <ModelConfiguratorProvider 
       id={props.id}

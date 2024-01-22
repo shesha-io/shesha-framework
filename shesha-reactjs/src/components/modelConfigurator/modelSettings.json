@@ -61,9 +61,9 @@
       "tabs": [
         {
           "id": "X932kk2zE7XZCt3PB8aeq",
-          "label": "Details",
-          "title": "Details",
-          "key": "details",
+          "label": "General",
+          "title": "General",
+          "key": "general",
           "components": [
             {
               "id": "DDq9J9lhmoaWWl8WFQ8c4",
@@ -181,13 +181,13 @@
           "propertyName": "",
           "key": "appService",
           "hidden": {"_code": "return  getSettingValue(data?.entityConfigType) !== 1;", "_mode": "code", "_value": false},
-          "title": "Application Service",
+          "title": "CRUD APIs",
           "components": [
             {
               "id": "dNzhkcchpcbIupEVK4vjq",
               "type": "checkbox",
               "propertyName": "generateAppService",
-              "label": "Generate Application Service",
+              "label": "Generate CRUD APIs",
               "labelAlign": "right",
               "parentId": "1p3PpY7RbUyx1NMV3e5PA",
               "hidden": false,

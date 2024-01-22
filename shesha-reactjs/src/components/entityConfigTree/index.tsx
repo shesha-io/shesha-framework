@@ -161,7 +161,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
       }
     },{
       key:'6', label: <div>
-        <SectionSeparator title='Show.....'/>
+        <SectionSeparator title='Entities options'/>
         <div className="sha-page-heading">
         <div className="sha-page-heading-left">
           Show suppressed entities <Checkbox checked={showSuppress} onChange={(e) => {
@@ -194,7 +194,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           </Dropdown>
         </div>
       </div>
-      <div style={{height:'90vh', maxHeight:'80%' ,overflowY:'scroll'}}>
+      <div style={{height:'90vh',overflowY:'scroll'}}>
       <GrouppedObjectsTree<EntityConfigDto>
         items={items}
         openedKeys={openedKeys}

@@ -153,18 +153,21 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
   ];
 
   return (
-    <Page
+    <div>
+        <Page
       title={`Entity Configuration ${entityConfig?.label ? `- ${entityConfig?.label}` : ''}`}
       description=""
       loading={loadingState.loading}
       loadingText={loadingState.loadingText}
-     
+      
+    
     >
       <Row>
         <Col span="6">
           <div style={{ minHeight: '1000px', maxHeight: '1000px', overflow: 'none' }}>
             <EntityConfigTree
               onChange={onChange}
+              
               defaultSelected={entityConfigId}
               entityConfigTreeRef={entityConfigTreeRef}
             />
@@ -242,5 +245,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
         )}
       </Modal>
     </Page>
+    </div>
+  
   );
 };
