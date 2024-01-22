@@ -23,7 +23,6 @@ const RefListDropdownWidget: RefListDropdownWidgetType = {
         onChange={onChange}
         style={{ minWidth: '150px' }}
         size="small"
-        showArrow={true}
       />
     );
   },
