@@ -25,7 +25,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     placeholder,
     onChange,
     disabled,
-    bordered,
+    bordered = true,
     dataSourceUrl,
     style,
     size,
