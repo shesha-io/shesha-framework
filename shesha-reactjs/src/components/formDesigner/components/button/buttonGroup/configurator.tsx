@@ -46,7 +46,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   
   return (
     <div className={styles.shaToolbarConfigurator}>
-      <Alert message={<h4>{readOnly ? 'Here you can view buttons configuration.' : 'Here you can configure the button group by adjusting their settings and ordering.'}</h4>} />
+      <Alert message={readOnly ? 'Here you can view buttons configuration.' : 'Here you can configure the button group by adjusting their settings and ordering.'} />
 
       {!readOnly && (
         <div className={styles.shaActionButtons}>

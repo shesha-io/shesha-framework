@@ -201,7 +201,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
   if (range) {
     return (
       <TimeRangePicker
-        bordered={!hideBorder}
+        variant={hideBorder ? 'borderless' : undefined }
         onChange={handleRangePicker}
         format={format}
         value={getDefaultRangePickerValues() as RangeValue}
@@ -218,7 +218,7 @@ const TimePickerWrapper: FC<ITimePickerProps> = ({
 
   return (
     <TimePicker
-      bordered={!hideBorder}
+      variant={hideBorder ? 'borderless' : undefined }
       onChange={handleTimePickerChange}
       onSelect={handleTimePickerSelect}
       format={format}

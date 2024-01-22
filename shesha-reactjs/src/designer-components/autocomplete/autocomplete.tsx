@@ -172,7 +172,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       typeShortAlias: model.entityTypeShortAlias,
       entityDisplayProperty: model.entityDisplayProperty,
       allowInherited: true /*hardcoded for now*/,
-      bordered: !model.hideBorder,
+      variant: model.hideBorder ? 'borderless' : undefined,
       dataSourceUrl,
       dataSourceType: model.dataSourceType,
       mode: model.mode,
