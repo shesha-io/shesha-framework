@@ -36,6 +36,7 @@ import { ComponentsContainerProvider } from '@/providers/form/nesting/containerC
 import { useDataContextManager } from '@/providers/dataContextManager/index';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { defaultFormProps } from './formDefaults';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -415,6 +416,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   return (
     <Spin spinning={submitting}>
       <Form
+        {...defaultFormProps}
         form={form}
         labelWrap
         size={props.size}

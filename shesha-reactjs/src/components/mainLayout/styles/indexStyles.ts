@@ -100,4 +100,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
     visibility: hidden;
     content: '\a0';
   }
+  .sha-required-mark {
+    margin-left: 4px;
+    color: ${(p) => p.theme.colorErrorText};
+    font-family: ${(p) => p.theme.fontFamily};
+    line-height: 1;
+  }
 `;
