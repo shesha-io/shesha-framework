@@ -1,15 +1,7 @@
 import EntityConfigTree, { IEntityConfigTreeInstance } from '@/components/entityConfigTree';
 import IndexToolbar from '@/components/indexToolbar';
 import React, { useMemo, useRef, useState } from 'react';
-import {
-  Alert,
-  Checkbox,
-  Col,
-  Form,
-  message,
-  Modal,
-  Row
-  } from 'antd';
+import { Alert, Checkbox, Col, Form, message, Modal, Row } from 'antd';
 import { Autocomplete, ModelConfigurator, Page } from '@/components';
 import { DeleteOutlined, MergeCellsOutlined, SaveOutlined } from '@ant-design/icons';
 import { EntityConfigDto } from '@/apis/entityConfig';
@@ -162,14 +154,15 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
 
   return (
     <Page
-      title="Entity Configuration"
+      title={`Entity Configuration ${entityConfig?.label ? `- ${entityConfig?.label}` : ''}`}
       description=""
       loading={loadingState.loading}
       loadingText={loadingState.loadingText}
+     
     >
       <Row>
         <Col span="6">
-          <div style={{ minHeight: '1000px', maxHeight: '1000px', overflow: 'scroll' }}>
+          <div style={{ minHeight: '1000px', maxHeight: '1000px', overflow: 'none' }}>
             <EntityConfigTree
               onChange={onChange}
               defaultSelected={entityConfigId}
