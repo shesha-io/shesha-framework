@@ -328,8 +328,7 @@
             "propertyName": "hourStep",
             "parentId": "gObp3iAlgae3hRseoTAT6",
             "label": "Hour Step",
-            "min": 1,
-            "description": "It should be a factor of 24"
+            "min": 1
           },
           {
             "id": "d30ff140-74c0-41b5-bf79-1a7733e30982",
@@ -337,8 +336,7 @@
             "propertyName": "minuteStep",
             "parentId": "gObp3iAlgae3hRseoTAT6",
             "label": "Minute Step",
-            "min": 1,
-            "description": "It should be a factor of 60"
+            "min": 1
           },
           {
             "id": "9ddab21e-8afa-434d-8a78-1d8359ea8ad0",
@@ -346,8 +344,7 @@
             "propertyName": "secondStep",
             "parentId": "gObp3iAlgae3hRseoTAT6",
             "label": "Second Step",
-            "min": 1,
-            "description": "It should be a factor of 60"
+            "min": 1
           }
         ]
       },
