@@ -25,7 +25,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     //allowInherited,
     onChange,
     disabled,
-    bordered,
+    bordered = true,
     style,
     size,
     mode,
