@@ -4,6 +4,7 @@ import { Alert, Button } from 'antd';
 import { ItemConfigProperties } from './properties';
 import { SidebarContainer } from '../../..';
 import { useItemListConfigurator } from '@/providers';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IItemListConfiguratorProps {
   allowAddGroups?: boolean;
@@ -13,6 +14,7 @@ export interface IItemListConfiguratorProps {
 
 export const ItemListConfigurator: FC<IItemListConfiguratorProps> = ({ allowAddGroups = true, render, heading }) => {
   const { items, addItem, addGroup } = useItemListConfigurator();
+  const { styles } = useStyles();
 
   const content = () => {
     if (Boolean(render)) {
@@ -39,10 +41,10 @@ export const ItemListConfigurator: FC<IItemListConfiguratorProps> = ({ allowAddG
   };
 
   return (
-    <div className="sha-button-group-configurator">
-      <Alert message={<h4>Here you can configure the items by adjusting their settings and ordering.</h4>} />
+    <div className={styles.shaToolbarConfigurator}>
+      <Alert message="Here you can configure the items by adjusting their settings and ordering." />
 
-      <div className="sha-action-buttons">
+      <div className={styles.shaActionButtons}>
         {allowAddGroups && (
           <Button onClick={addGroup} type="primary">
             Add Group

@@ -18,6 +18,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
    const  shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
     .${shaActionButtons} {
+        margin: 8px 0;
         .ant-btn {
             margin-right: 8px;
         }

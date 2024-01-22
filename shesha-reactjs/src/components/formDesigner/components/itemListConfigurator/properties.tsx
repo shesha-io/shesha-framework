@@ -27,6 +27,9 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
     form?.setFieldsValue(componentModel);
   }, [selectedItemId]);
 
+  const onSettingsSave = values => {
+    console.log(values);
+  };
 
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const editor = useMemo(() => {
@@ -60,10 +63,6 @@ export const ItemConfigProperties: FC<IItemConfigPropertiesProps> = ({}) => {
       </div>
     );
   }
-
-  const onSettingsSave = values => {
-    console.log(values);
-  };
 
   return <>{editor}</>;
 };
