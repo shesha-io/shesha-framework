@@ -71,7 +71,6 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
     fieldSources: ["field", "func"],
     renderFunc: (props) => (<FuncSelect {...props} />),
     renderField: (props) => (<FieldAutocomplete {...props} /*fields={fields}*/ />),
-    renderOperator: (props, {RCE, W: {FieldSelect}}) => RCE(FieldSelect, { ...props, customProps: { dropdownMatchSelectWidth: false } }), // todo: remove after migration to antd 5
   };
 
   const convertFields = (fields: IProperty[]): Fields => {

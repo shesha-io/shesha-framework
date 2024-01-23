@@ -1,16 +1,16 @@
-import React, { FC, MutableRefObject, useMemo } from 'react';
+import React, { FC, MutableRefObject, useEffect, useState, useTransition } from 'react';
 import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
-import { Empty } from 'antd';
+import { Empty, Skeleton } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
 import { IConfigurableFormComponent, useMetadataDispatcher } from '@/providers';
-import { MetadataContext } from '@/providers/metadata/contexts';
+import { IMetadataContext, MetadataContext } from '@/providers/metadata/contexts';
 
 export interface IComponentPropertiesEditorProps {
   toolboxComponent: IToolboxComponent;
   componentModel: IConfigurableFormComponent;
-  onSave: (settings: IConfigurableFormComponent) => Promise<void>;
+  onSave: (settings: IConfigurableFormComponent) => void;
   readOnly: boolean;
   autoSave: boolean;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;
@@ -37,10 +37,58 @@ const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
   };
 };
 
+interface BuildEditorArgs extends IComponentPropertiesEditorProps {
+  metaProvider: IMetadataContext;
+  debouncedSave: (values: any) => void;
+}
+const buildEditor = ({ toolboxComponent, readOnly, metaProvider, componentModel, autoSave, onSave, debouncedSave, formRef, propertyFilter, layoutSettings }: BuildEditorArgs) => {
+  const emptyEditor = null;
+
+  if (!Boolean(toolboxComponent)) return emptyEditor;
+
+  const settingsFormFactory =
+    'settingsFormFactory' in toolboxComponent
+      ? toolboxComponent.settingsFormFactory
+      : 'settingsFormMarkup' in toolboxComponent
+        ? getDefaultFactory(toolboxComponent.settingsFormMarkup)
+        : null;
+  if (!settingsFormFactory) return emptyEditor;
+
+  const onCancel = () => {
+    // not used
+  };
+
+  const onValuesChange = (_changedValues, values) => {
+    if (autoSave && !readOnly)
+      debouncedSave(values);
+  };
+
+  return (
+    <MetadataContext.Provider value={metaProvider}>
+      <React.Fragment>
+        {settingsFormFactory({
+          readOnly: readOnly,
+          model: componentModel,
+          onSave,
+          onCancel,
+          onValuesChange,
+          toolboxComponent,
+          formRef: formRef,
+          propertyFilter,
+          layoutSettings,
+        })}
+      </React.Fragment>
+    </MetadataContext.Provider>
+  );
+};
+
+
 export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (props) => {
-  const { toolboxComponent, componentModel, readOnly, autoSave, formRef, propertyFilter, layoutSettings } = props;
+  const { toolboxComponent, componentModel, readOnly } = props;
 
   const { getActiveProvider } = useMetadataDispatcher(false) ?? {};
+  const [editor, setEditor] = useState();
+  const [isPending, startTransition] = useTransition();
 
   const debouncedSave = useDebouncedCallback(
     values => {
@@ -50,63 +98,35 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     300
   );
 
-  const metaProvider = getActiveProvider ? getActiveProvider() : null;
-
   const onSave = values => {
     if (!readOnly)
       props.onSave(values);
   };
 
-  const editor = useMemo(() => {
+  const metaProvider = getActiveProvider ? getActiveProvider() : null;
 
-    const emptyEditor = null;
-
-    if (!Boolean(toolboxComponent)) return emptyEditor;
-
-    const settingsFormFactory =
-      'settingsFormFactory' in toolboxComponent
-        ? toolboxComponent.settingsFormFactory
-        : 'settingsFormMarkup' in toolboxComponent
-          ? getDefaultFactory(toolboxComponent.settingsFormMarkup)
-          : null;
-    if (!settingsFormFactory) return emptyEditor;
-
-    const onCancel = () => {
-      //
-    };
-
-    const onValuesChange = (_changedValues, values) => {
-      if (autoSave && !readOnly)
-        debouncedSave(values);
-    };
-
-    return (
-      <MetadataContext.Provider value={metaProvider}>
-        <React.Fragment>
-          {settingsFormFactory({
-            readOnly: readOnly,
-            model: componentModel,
-            onSave,
-            onCancel,
-            onValuesChange,
-            toolboxComponent,
-            formRef: formRef,
-            propertyFilter,
-            layoutSettings,
-          })}
-        </React.Fragment>
-      </MetadataContext.Provider>
-    );
+  useEffect(() => {
+    startTransition(() => {
+      const newEditor = buildEditor({
+        ...props,
+        metaProvider,
+        onSave,
+        debouncedSave,
+      });
+      setEditor(newEditor);
+    });
   }, [toolboxComponent, readOnly, metaProvider?.modelType, componentModel]);
 
-  return Boolean(toolboxComponent)
-    ? <>{editor}</>
-    : (
-      <Empty
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description={
-          readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'
-        }
-      />
-    );
+  return isPending
+    ? <Skeleton loading />
+    : Boolean(editor)
+      ? <>{editor}</>
+      : (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'
+          }
+        />
+      );
 };

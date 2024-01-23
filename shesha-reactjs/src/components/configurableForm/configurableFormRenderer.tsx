@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { Form, message, Spin } from 'antd';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
@@ -185,9 +185,15 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   // reset form to initial data on any change of components or initialData
   // only if data is not fetched or form is not in designer mode
+  const isMountedRef = useRef<boolean>(false);
   useEffect(() => {
-    if (!fetchedFormEntity && !designerMode)
-      setFormData({ values: initialValues, mergeValues: false });
+    // skip reset if component is not yet monted
+    if (!isMountedRef.current){
+      isMountedRef.current = true;
+    } else {
+      if (!fetchedFormEntity && !designerMode)
+        setFormData({ values: initialValues, mergeValues: false });
+    }
   }, [allComponents, initialValues]);
 
   useEffect(() => {

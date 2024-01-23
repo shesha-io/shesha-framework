@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useMemo, useRef, useState } from 'react';
 import { normalizeUrl } from '@/utils/url';
 import { isSidebarButton } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
@@ -31,8 +31,6 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const items = getItems();
   const initialSelection = useRef<string>(undefined);
 
-  if ((items ?? []).length === 0) return null;
-
   const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => {
     setSelectedKey(itemId);
     executeAction({
@@ -41,25 +39,30 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     });
   };
 
-  const menuItems = items.map((item) =>
-    renderSidebarMenuItem({
-      item,
-      isItemVisible,
-      onButtonClick,
-      isRootItem: true,
-      onItemEvaluation: (nestedItem) => {
-        if (initialSelection.current === undefined && isSidebarButton(nestedItem) && isNavigationActionConfiguration(nestedItem.actionConfiguration)){
-          const url = getUrlFromNavigationRequest(nestedItem.actionConfiguration.actionArguments);
 
-          if (url && normalizeUrl(url) === currentUrl){
-            initialSelection.current = nestedItem.id;
-            if (!selectedKey)
-              setSelectedKey(nestedItem.id);
+  const menuItems = useMemo(() => {
+    return (items ?? []).map((item) =>
+      renderSidebarMenuItem({
+        item,
+        isItemVisible,
+        onButtonClick,
+        isRootItem: true,
+        onItemEvaluation: (nestedItem) => {
+          if (initialSelection.current === undefined && isSidebarButton(nestedItem) && isNavigationActionConfiguration(nestedItem.actionConfiguration)) {
+            const url = getUrlFromNavigationRequest(nestedItem.actionConfiguration.actionArguments);
+
+            if (url && normalizeUrl(url) === currentUrl) {
+              initialSelection.current = nestedItem.id;
+              if (!selectedKey)
+                setSelectedKey(nestedItem.id);
+            }
           }
-        }
-      },
-    })
-  );
+        },
+      })
+    );
+  }, [items]);
+
+  if (menuItems.length === 0) return null;
 
   const onOpenChange = (openKeys: React.Key[]) => {
     setOpenedKeys(openKeys);

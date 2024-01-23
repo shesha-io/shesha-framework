@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useEffect, useState } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useState } from 'react';
 import { useForm } from '@/providers/form';
 import { useMetadata } from '@/providers';
 import { Button, Tooltip } from 'antd';
@@ -17,8 +17,6 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
   const { styles } = useStyles();
   const { getComponentModel } = useForm();
   const { selectedComponentId, setSelectedComponent, isDebug, deleteComponent } = useFormDesigner();
-
-  const [selected, setSelected] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const metadata = useMetadata(false);
@@ -44,13 +42,6 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
     </div>
   );
 
-  // used to update metadata, context and componentRef after adding component to form
-  useEffect(() => {
-    if (selectedComponentId === props.componentId && !selected) {
-      setSelectedComponent(props.componentId, metadata?.id, dataContext, props.componentRef);
-    }
-  }, [selected]);
-
   const onClick = (e) => {
     e.stopPropagation();
     setSelectedComponent(
@@ -59,7 +50,6 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
       dataContext,
       props.componentRef
     );
-    setSelected(true);
   };
 
   const onMouseOver = (e) => {
@@ -82,6 +72,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
           <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
         </div>
       )}
+
       <Tooltip title={tooltip} placement="right" open={isOpen}>
         {props.children}
       </Tooltip>

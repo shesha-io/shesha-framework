@@ -205,7 +205,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
       style={{ minWidth: "150px" }}
 
       dropdownStyle={props?.dropdownStyle}
-      dropdownMatchSelectWidth={false}
+      popupMatchSelectWidth={false}
     >
     </Select>
   );
