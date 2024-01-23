@@ -39,15 +39,6 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     updateComponent({ name: THEME_CONFIG_NAME, isApplicationSpecific: true, settings: themeToSave });
   }, 300);
 
-  useEffect(() => {
-    // apply theme
-    ConfigProvider.config({
-      prefixCls,
-      theme: state?.theme?.application,
-      iconPrefixCls,
-    });
-  }, [state?.theme]);
-
   const changeTheme = (theme: IConfigurableTheme) => {
     // save theme to the state
     dispatch(setThemeAction(theme));

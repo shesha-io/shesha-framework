@@ -103,7 +103,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       showSearch
       labelInValue={true}
       defaultActiveFirstOption={false}
-      showArrow={showArrow}
+      suffixIcon={showArrow ? undefined : null}
       notFoundContent={
         refListLoading ? (
           <Spin />

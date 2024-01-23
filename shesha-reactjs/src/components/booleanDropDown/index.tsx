@@ -31,7 +31,7 @@ export const BooleanDropDown: FC<IBooleanDropDownProps> = ({ objectItem, setObje
     <Select
       showSearch={false}
       defaultActiveFirstOption={false}
-      showArrow={false}
+      suffixIcon={null} // hide arrow
       notFoundContent={null}
       allowClear={true}
       onSelect={handleOnSelect}

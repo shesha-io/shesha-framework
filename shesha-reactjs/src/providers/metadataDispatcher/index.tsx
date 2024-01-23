@@ -184,7 +184,8 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const activateProvider = (providerId: string) => {
-    dispatch(activateProviderAction(providerId));
+    if (state.activeProvider !== providerId)
+      dispatch(activateProviderAction(providerId));
   };
 
   const getActiveProvider = () => {

@@ -6,7 +6,7 @@ import { DesignerMainArea } from '../designerMainArea/index';
 import { DesignerTitle } from '../designerTitle/index';
 import { QuickEditToolbar } from './quickEditToolbar';
 import { FormConfigurationDto } from '@/providers/form/api';
-import { useStyles } from '../styles/styles';
+import { useMainStyles } from '../styles/styles';
 
 export interface IQuickEditDialogProps {
     open: boolean;
@@ -16,7 +16,7 @@ export interface IQuickEditDialogProps {
 }
 
 export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
-    const { styles } = useStyles();
+    const { styles } = useMainStyles();
     const { open, onCancel, onUpdated, formId } = props;
     const [latestFormId, setLatestFormId] = useState(null);
 

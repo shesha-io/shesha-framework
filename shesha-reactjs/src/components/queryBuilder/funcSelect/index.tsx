@@ -81,7 +81,7 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
     return (
         <Select
             dropdownAlign={dropdownAlign}
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             style={{ width }}
             placeholder={placeholder}
             size={ config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize }

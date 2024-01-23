@@ -1,7 +1,7 @@
 import { createStyles } from "antd-style";
 import { sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+export const useStyles = () => {
     const shaForm = "sha-form";
     const shaHelpIcon = "sha-help-icon";
     const shaDragging = "sha-dragging";
@@ -10,34 +10,104 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     const sidebarContainerMainAreaBody = "sidebar-container-main-area-body";
     const shaDesignerToolbar = "sha-designer-toolbar";
     const shaDesignerToolbarLeft = "sha-designer-toolbar-left";
-    const shaDesignerToolbarRight = "sha-designer-toolbar-right";    
+    const shaDesignerToolbarRight = "sha-designer-toolbar-right";
 
     const shaDesignerToolbox = "sha-designer-toolbox";
     const shaDatasourceTree = "sha-datasource-tree";
     const shaToolboxComponent = "sha-toolbox-component";
     const shaComponentTitle = "sha-component-title";
-    const siteTreeSearchValue = "site-tree-search-value";
     const shaComponentSearch = "sha-component-search";
     const shaToolboxPanel = "sha-toolbox-panel";
 
     const sidebarHeaderTitle = "sidebar-header-title";
     const shaDesignerHeader = "sha-designer-header";
-    const shaDesignerHeaderRight = "sha-designer-header-right";
     const componentPropertiesActions = "component-properties-actions";
 
     const shaComponentGhost = "sha-component-ghost";
     const shaComponent = "sha-component";
     const shaComponentsContainer = "sha-components-container";
-    const shaComponentsContainerInner = "sha-components-container-inner";    
-    const shaDropHint ="sha-drop-hint";
+    const shaComponentsContainerInner = "sha-components-container-inner";
+    const shaDropHint = "sha-drop-hint";
 
     const shaComponentIndicator = "sha-component-indicator";
     const shaComponentControls = "sha-component-controls";
+    const designerWorkArea = "sha-designer-work-area";
 
+    const siteTreeSearchValue = "site-tree-search-value";
     const shaDesignerWarning = "sha-designer-warning";
     const hasConfigErrors = "has-config-errors";
     const shaComponentValidationIcon = "sha-component-validation-icon";
-    const designerWorkArea = "sha-designer-work-area";
+    const shaDesignerHeaderRight = "sha-designer-header-right";
+
+    return {
+        styles: {
+            shaHelpIcon,
+            shaDragging,
+            componentDragHandle,
+            sidebarContainerMainAreaBody,
+            shaDesignerToolbar,
+            shaDesignerToolbarLeft,
+            shaDesignerToolbarRight,
+            shaDesignerToolbox,
+            sidebarHeaderTitle,
+            shaDesignerHeader,
+            shaComponentGhost,
+            shaComponent,
+            shaToolboxComponent,
+            shaComponentTitle,
+            shaComponentSearch,
+            shaToolboxPanel,
+            shaDatasourceTree,
+            shaComponentIndicator,
+            shaComponentsContainer,
+            shaComponentsContainerInner,
+            shaDropHint,
+            designerWorkArea,
+            componentPropertiesActions,
+            shaComponentControls,
+            siteTreeSearchValue,
+            shaDesignerWarning,
+            hasConfigErrors,
+            shaComponentValidationIcon,
+            shaDesignerHeaderRight,
+            shaForm,
+        }
+    };
+};
+
+export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+    const {
+        shaHelpIcon,
+        shaDragging,
+        componentDragHandle,
+        sidebarContainerMainAreaBody,
+        shaDesignerToolbar,
+        shaDesignerToolbarLeft,
+        shaDesignerToolbarRight,
+        shaDesignerToolbox,
+        sidebarHeaderTitle,
+        shaDesignerHeader,
+        shaComponentGhost,
+        shaComponent,
+        shaToolboxComponent,
+        shaComponentTitle,
+        shaComponentSearch,
+        shaToolboxPanel,
+        shaDatasourceTree,
+        shaComponentIndicator,
+        shaComponentsContainer,
+        //shaComponentsContainerInner,
+        shaDropHint,
+        designerWorkArea,
+        componentPropertiesActions,
+        shaComponentControls,
+        siteTreeSearchValue,
+        shaDesignerWarning,
+        hasConfigErrors,
+        shaComponentValidationIcon,
+        shaDesignerHeaderRight,
+        shaForm,
+    } = useStyles().styles;
 
     const quickEditModal = cx("sha-designer-modal", css`
         .${prefixCls}-modal-content {
@@ -314,30 +384,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
 
     return {
         formDesigner,
-        shaHelpIcon,
-        shaDragging,
-        componentDragHandle,
-        sidebarContainerMainAreaBody,
-        shaDesignerToolbar,
-        shaDesignerToolbarLeft,
-        shaDesignerToolbarRight,
-        shaDesignerToolbox,
-        sidebarHeaderTitle,
-        shaDesignerHeader,
-        shaComponentGhost,
-        shaComponent,
-        shaToolboxComponent,
-        shaComponentTitle,
-        shaComponentSearch,
-        shaToolboxPanel,
-        shaDatasourceTree,
-        shaComponentIndicator,
-        shaComponentsContainer,
-        shaComponentsContainerInner,
-        shaDropHint,
-        designerWorkArea,
-        componentPropertiesActions,
         quickEditModal,
-        shaComponentControls,
     };
 });

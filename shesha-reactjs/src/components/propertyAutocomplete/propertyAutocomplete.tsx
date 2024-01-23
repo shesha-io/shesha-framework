@@ -188,7 +188,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       notFoundContent="Not found"
       size={props.size}
       dropdownStyle={props?.dropdownStyle}
-      dropdownMatchSelectWidth={false}
+      popupMatchSelectWidth={false}
     />
   );
 
@@ -235,7 +235,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
         notFoundContent="Not found"
         size={props.size}
         dropdownStyle={props?.dropdownStyle}
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
       />
       <div style={{ marginTop: 16 }}>
         {tagChild}

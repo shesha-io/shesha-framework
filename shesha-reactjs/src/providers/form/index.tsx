@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -209,7 +209,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     return filteredComponents.current?.includes(component.id);
   };
 
-  const getToolboxComponent = (type: string) => toolboxComponents[type];
+  const getToolboxComponent = useCallback((type: string) => toolboxComponents[type], [toolboxComponents]);
 
   //#region data fetcher
 

@@ -217,7 +217,6 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
       labelInValue={true}
       notFoundContent={notFoundContent}
       defaultActiveFirstOption={false}
-      showArrow={true}
       filterOption={false}
       onSearch={handleSearch}
       defaultValue={wrapValue(defaultValue, options)}
