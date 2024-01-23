@@ -29,6 +29,7 @@ import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { SectionSeparator } from '..';
 
+
 type MenuItem = MenuProps['items'][number];
 
 export interface IEntityConfigTreeInstance {
@@ -161,19 +162,19 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
       }
     },{
       key:'6', label: <div>
-        <SectionSeparator title='Entities options'/>
+        <SectionSeparator />
         <div className="sha-page-heading">
         <div className="sha-page-heading-left">
-          Show suppressed entities <Checkbox checked={showSuppress} onChange={(e) => {
+           <Checkbox checked={showSuppress} onChange={(e) => {
             setShowSuppress(e.target.checked);
-          }} />
+          }} /> Show suppressed entities
         </div>
       </div>
-      <div className="sha-page-heading">
+      <div className="sha-page-heading" style={{borderBottom:'unset'}}>
         <div className="sha-page-heading-left">
-          Show not implemented entities <Checkbox checked={showNotImplemented} onChange={(e) => {
+         <Checkbox checked={showNotImplemented} onChange={(e) => {
             setShowNotImplemented(e.target.checked);
-          }} />
+          }} />   Show not implemented entities 
         </div>
       </div>
       </div>
