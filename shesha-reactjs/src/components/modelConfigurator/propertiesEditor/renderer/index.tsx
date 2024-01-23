@@ -1,10 +1,9 @@
-import React, { FC, useMemo } from 'react';
-import { Button, Tabs } from 'antd';
+import React, { FC } from 'react';
+import { Button} from 'antd';
 import { SidebarContainer } from '@/components/';
 import { ToolbarItemProperties } from './itemProperties';
 import ItemsContainer from './itemsContainer';
 import { usePropertiesEditor } from '../provider';
-import CodeEditor from '@/components/codeEditor';
 import { IPropertiesEditorProps } from '..';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
@@ -32,39 +31,25 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
     });
   };
 
-  const jsonSchema = useMemo(() => {
-    return JSON.stringify(items, null, 2);
-  }, [items]);
 
   return (
-    <Tabs
-      items={[
-        {
-          label: 'Designer',
-          key: '1',
-          children: (
-            <div className={styles.shaToolbarConfigurator}>
-              {allowAdd &&
-                <div className={styles.shaActionButtons} style={{ marginBottom: '8px' }}>
-                  <Button onClick={onAddClick} type="primary">
-                    Add Property
-                  </Button>
-                </div>}
+    <div className={styles.shaToolbarConfigurator}>
+    {allowAdd &&
+      <div className={styles.shaActionButtons} style={{ marginBottom: '8px' }}>
+        <Button onClick={onAddClick} type="primary">
+          Add Property
+        </Button>
+      </div>}
 
-              <SidebarContainer
-                rightSidebarProps={{
-                  open: true,
-                  title: 'Properties',
-                  content: <ToolbarItemProperties />,
-                }}
-              >
-                <ItemsContainer items={items} index={[]} />
-              </SidebarContainer>
-            </div>
-          ),
-        },
-        { label: 'Schema', key: '2', children: <CodeEditor value={jsonSchema} readOnly={true} width="100%" /> },
-      ]}
-    />
+    <SidebarContainer
+      rightSidebarProps={{
+        open: true,
+        title: 'Properties',
+        content: <ToolbarItemProperties />,
+      }}
+    >
+      <ItemsContainer items={items} index={[]} />
+    </SidebarContainer>
+  </div>
   );
 };

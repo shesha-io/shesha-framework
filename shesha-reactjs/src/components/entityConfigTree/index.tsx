@@ -27,6 +27,8 @@ import { EntityConfigType, MetadataSourceType } from '@/interfaces/metadata';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
+import { SectionSeparator } from '..';
+
 
 type MenuItem = MenuProps['items'][number];
 
@@ -158,13 +160,31 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
       key: '5', label: 'Group by Type', onClick: () => {
         setGroupBy('entityConfigType');
       }
-    },
+    },{
+      key:'6', label: <div>
+        <SectionSeparator />
+        <div className="sha-page-heading">
+        <div className="sha-page-heading-left">
+           <Checkbox checked={showSuppress} onChange={(e) => {
+            setShowSuppress(e.target.checked);
+          }} /> Show suppressed entities
+        </div>
+      </div>
+      <div className="sha-page-heading" style={{borderBottom:'unset'}}>
+        <div className="sha-page-heading-left">
+         <Checkbox checked={showNotImplemented} onChange={(e) => {
+            setShowNotImplemented(e.target.checked);
+          }} />   Show not implemented entities 
+        </div>
+      </div>
+      </div>
+  }
   ];
 
   return (
     <Spin spinning={isFetchingData} tip={'Fetching data...'} indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}>
-      <div className="sha-page-heading">
-        <div className="sha-page-heading-left">
+      <div className="sha-page-heading" >
+        <div className="sha-page-heading-left" >
           <SearchBox value={searchText} onChange={setSearchText} placeholder='Search objects' />
         </div>
         <div className="sha-page-heading-right">
@@ -175,21 +195,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           </Dropdown>
         </div>
       </div>
-      <div className="sha-page-heading">
-        <div className="sha-page-heading-left">
-          Show suppressed entities <Checkbox checked={showSuppress} onChange={(e) => {
-            setShowSuppress(e.target.checked);
-          }} />
-        </div>
-      </div>
-      <div className="sha-page-heading">
-        <div className="sha-page-heading-left">
-          Show not implemented entities <Checkbox checked={showNotImplemented} onChange={(e) => {
-            setShowNotImplemented(e.target.checked);
-          }} />
-        </div>
-      </div>
-
+      <div style={{height:'90vh',overflowY:'scroll'}}>
       <GrouppedObjectsTree<EntityConfigDto>
         items={items}
         openedKeys={openedKeys}
@@ -233,6 +239,10 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           </>;
         }}
       />
+
+      </div>
+ 
+  
     </Spin>
   );
 };

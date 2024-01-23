@@ -34,7 +34,7 @@ export const GlobalPageStyles = createGlobalStyle`
     min-height: ${sheshaStyles.pageToolbarHeight};
     background: white;
   
-    padding: 12px;
+    padding: 5px;
   
     .sha-page-title {
       margin: unset;

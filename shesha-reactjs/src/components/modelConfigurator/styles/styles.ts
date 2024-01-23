@@ -1,71 +1,76 @@
-import { createStyles } from "antd-style";
+import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const shaModelConfiguratorToolbar = "sha-model-configurator-toolbar";
-    const shaModelConfiguratorToolbarLeft = "sha-model-configurator-toolbar-left";
-    const shaModelConfiguratorToolbarRight = "sha-model-configurator-toolbar-right";
+  const shaModelConfiguratorToolbar = 'sha-model-configurator-toolbar';
+  const shaModelConfiguratorToolbarLeft = 'sha-model-configurator-toolbar-left';
+  const shaModelConfiguratorToolbarRight = 'sha-model-configurator-toolbar-right';
 
-    const sidebarHeaderTitle = "sidebar-header-title";
-    const componentPropertiesActions = "component-properties-actions";
-    const shaModelConfiguratorHeader = "sha-model-configurator-header";
+  const sidebarHeaderTitle = 'sidebar-header-title';
+  const componentPropertiesActions = 'component-properties-actions';
+  const shaModelConfiguratorHeader = 'sha-model-configurator-header';
 
-    const shaModelConfigurator = cx("sha-model-configurator", css`
-    .${shaModelConfiguratorToolbar} {
+  const shaModelConfigurator = cx(
+    'sha-model-configurator',
+    css`
+      padding-left: 12px;
+      
+      .${shaModelConfiguratorToolbar} {
         padding: 12px;
 
         .${shaModelConfiguratorToolbarLeft} {
-            float: left;
+          float: left;
 
-            .${prefixCls}-btn {
-                margin-right: 2px;
-            }
+          .${prefixCls}-btn {
+            margin-right: 2px;
+          }
         }
 
         .${shaModelConfiguratorToolbarRight} {
-            float: right;
+          float: right;
 
-            .${prefixCls}-btn {
-                margin-left: 2px;
-            }
+          .${prefixCls}-btn {
+            margin-left: 2px;
+          }
         }
 
         &:after {
-            content: '';
-            display: block;
-            clear: both;
+          content: '';
+          display: block;
+          clear: both;
         }
-    }
+      }
 
-    .${sidebarHeaderTitle} {
+      .${sidebarHeaderTitle} {
         .${componentPropertiesActions} {
-            width: 100%;
+          width: 100%;
 
-            .action-buttons {
-                float: right;
+          .action-buttons {
+            float: right;
 
-                .${prefixCls}-btn {
-                    margin-left: 2px;
-                }
-
-                .${prefixCls}-btn-dangerous {
-                    margin-left: 10px;
-                }
+            .${prefixCls}-btn {
+              margin-left: 2px;
             }
-        }
-    }
 
-    .${shaModelConfiguratorHeader} {
+            .${prefixCls}-btn-dangerous {
+              margin-left: 10px;
+            }
+          }
+        }
+      }
+
+      .${shaModelConfiguratorHeader} {
         display: flex;
         justify-content: space-between;
-    }
-  `);
-    return {
-        shaModelConfigurator,
-        shaModelConfiguratorToolbar,
-        shaModelConfiguratorToolbarLeft,
-        shaModelConfiguratorToolbarRight,
-        sidebarHeaderTitle,
-        componentPropertiesActions,
-        shaModelConfiguratorHeader,
-    };
+      }
+    `
+  );
+  return {
+    shaModelConfigurator,
+    shaModelConfiguratorToolbar,
+    shaModelConfiguratorToolbarLeft,
+    shaModelConfiguratorToolbarRight,
+    sidebarHeaderTitle,
+    componentPropertiesActions,
+    shaModelConfiguratorHeader,
+  };
 });

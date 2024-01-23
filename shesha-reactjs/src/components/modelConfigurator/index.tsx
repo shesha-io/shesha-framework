@@ -13,7 +13,7 @@ export interface IModelConfiguratorProps {
 
 export const ModelConfigurator: FC<IModelConfiguratorProps> = (props) => {
   const [form] = Form.useForm();
-
+  
   return (
     <ModelConfiguratorProvider 
       id={props.id}
