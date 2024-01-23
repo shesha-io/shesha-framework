@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { MoreOutlined } from '@ant-design/icons';
 import { useItemListConfigurator } from '@/providers';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IDragHandleProps {
   id: string;
@@ -8,11 +9,12 @@ export interface IDragHandleProps {
 
 export const DragHandle: FC<IDragHandleProps> = ({ id }) => {
   const { selectItem } = useItemListConfigurator();
+  const { styles } = useStyles();
 
   const onClick = () => selectItem(id);
 
   return (
-    <div className="sha-button-group-item-drag-handle" onClick={onClick}>
+    <div className={styles.shaToolbarItemDragHandle} onClick={onClick}>
       <MoreOutlined />
     </div>
   );

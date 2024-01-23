@@ -11,7 +11,7 @@ const nextConfig = () => {
   };
   /** @type {import('next').NextConfig} */
   const config = {
-    output: 'standalone',
+    //output: 'standalone',
     reactStrictMode: false,
     transpilePackages: [
       'antd',

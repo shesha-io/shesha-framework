@@ -25,7 +25,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     placeholder,
     onChange,
     disabled,
-    bordered,
+    bordered = true,
     dataSourceUrl,
     style,
     size,
@@ -228,7 +228,7 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
       loading={urlFetcher?.loading}
       placeholder={placeholder}
       disabled={disabled}
-      bordered={bordered}
+      variant={!bordered ? 'borderless' : undefined }
       onSelect={handleSelect}
       style={style}
       size={size}

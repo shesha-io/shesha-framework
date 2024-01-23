@@ -6,6 +6,7 @@ import { Button } from 'antd';
 import { DeleteFilled } from '@ant-design/icons';
 import { IConfigurableItemBase, IConfigurableItemGroup } from '@/providers/itemListConfigurator/contexts';
 import { useItemListConfigurator } from '@/providers';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IContainerRenderArgs {
   index?: number[];
@@ -20,26 +21,27 @@ export interface IListItemsGroupProps extends IConfigurableItemGroup {
 
 export const ListItemsGroup: FC<IListItemsGroupProps> = ({ id, label, title, name, childItems, index, icon, containerRendering }) => {
   const { deleteGroup, selectedItemId } = useItemListConfigurator();
+  const { styles } = useStyles();
 
   const onDeleteClick = () => {
     deleteGroup(id);
   };
 
   return (
-    <div className={classNames('sha-button-group-item', { selected: selectedItemId === id })}>
-      <div className="sha-button-group-group-header">
+    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === id })}>
+      <div className={styles.shaToolbarGroupHeader}>
         <DragHandle id={id} />
 
         {icon && <ShaIcon iconName={icon as IconType} />}
 
-        <span className="sha-button-group-item-name">{title || label || name}</span>
+        <span className={styles.shaToolbarItemName}>{title || label || name}</span>
 
-        <div className="sha-button-group-item-controls">
+        <div className={styles.shaToolbarItemControls}>
           <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
         </div>
       </div>
 
-      <div className="sha-button-group-group-container">
+      <div className={styles.shaToolbarGroupContainer}>
         {containerRendering({ index: index, items: childItems || [], id: id })}
       </div>
     </div>

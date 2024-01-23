@@ -24,6 +24,7 @@ import {
 import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from './contexts';
 import { CrudMode } from './models';
 import reducer from './reducer';
+import { defaultFormProps } from '@/components/configurableForm/formDefaults';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -84,7 +85,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   }, [autoSave]);
 
   useEffect(() => {
-    const modeToUse = allowChangeMode ? state.mode : mode;
+    //to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one) 
+    const modeToUse = mode ==='read'?mode:allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
@@ -309,7 +311,14 @@ const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, o
   };
 
   return (
-    <Form component={false} form={form} initialValues={initialValues} onValuesChange={onValuesChangeInternal} {...formSettings}>
+    <Form 
+      {...defaultFormProps}
+      component={false} 
+      form={form} 
+      initialValues={initialValues} 
+      onValuesChange={onValuesChangeInternal} 
+      {...formSettings}
+    >
       {children}
     </Form>
   );

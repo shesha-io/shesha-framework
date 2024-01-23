@@ -35,6 +35,7 @@ import { isEqual } from "lodash";
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
 import { useStyles } from './styles/styles';
+import { adjustWidth, getCruadActionConditions } from './cell/utils';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -73,6 +74,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   customUpdateUrl,
   customDeleteUrl,
   onRowSave,
+  inlineEditMode,
   onRowSaveSuccessAction: onRowSaveSuccess,
   ...props
 }) => {
@@ -233,6 +235,26 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     return false;
   };
 
+  const prevCrudOptions = usePrevious({
+    canDelete: evaluateYesNoInheritJs(
+      props.canDeleteInline,
+      props.canDeleteInlineExpression,
+      formMode,
+      formData,
+      globalState
+    ),
+    canEdit: evaluateYesNoInheritJs(
+      props.canEditInline,
+      props.canEditInlineExpression,
+      formMode,
+      formData,
+      globalState
+    ),
+    inlineEditMode,
+    formMode,
+    canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
+  });
+
   const crudOptions = useMemo(() => {
     const result = {
       canDelete: evaluateYesNoInheritJs(
@@ -249,6 +271,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         formData,
         globalState
       ),
+      inlineEditMode,
+      formMode,
       canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
       onNewRowInitialize,
     };
@@ -256,13 +280,36 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ...result,
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
-  }, [props.canDeleteInline, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
+  }, [props.canDeleteInline,inlineEditMode, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
+
+  const widthOptions = useMemo(() => {
+    return getCruadActionConditions(crudOptions, prevCrudOptions);
+  }, [crudOptions, prevCrudOptions]);
 
   const preparedColumns = useMemo(() => {
     const localPreparedColumns = columns
-      .filter((column) => {
-        return column.show && !(column.columnType === 'crud-operations' && !crudOptions.enabled);
-      })
+    .map((column) => {
+      if (column.columnType === 'crud-operations') {
+        const { maxWidth, minWidth } = adjustWidth(
+          {
+            maxWidth: column.maxWidth,
+            minWidth: column.minWidth,
+          },
+          {
+            canDivideWidth: widthOptions.canDivideWidth,
+            canDoubleWidth: widthOptions.canDoubleWidth,
+            canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
+            canTripleWidth: widthOptions.canTripleWidth,
+          }
+        );
+        column.minWidth = minWidth;
+        column.maxWidth = maxWidth;
+      }
+      return column;
+    })
+    .filter((column) => {
+      return column.show && !(column.columnType === 'crud-operations' && !crudOptions.enabled);
+    })
       .map<DataTableColumn>((columnItem) => {
         const strictWidth =
           columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
@@ -288,7 +335,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       });
 
     return localPreparedColumns;
-  }, [columns, crudOptions.enabled, sortMode]);
+  },[
+    columns,
+    crudOptions.enabled,
+    crudOptions.canAdd,
+    crudOptions.canEdit,
+    crudOptions.canDelete,
+    crudOptions.inlineEditMode,
+    sortMode
+  ]);
 
   // sort
   const defaultSorting = sortMode === 'standard'
@@ -608,7 +663,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     newRowCapturePosition: props.newRowCapturePosition,
     createAction: creater,
     newRowInitData: crudOptions.onNewRowInitialize,
-    inlineEditMode: props.inlineEditMode,
+    inlineEditMode ,
     inlineSaveMode: props.inlineSaveMode,
     inlineEditorComponents,
     inlineCreatorComponents,

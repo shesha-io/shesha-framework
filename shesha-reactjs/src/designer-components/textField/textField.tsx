@@ -54,7 +54,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       placeholder: model.placeholder,
       prefix: model.prefix,
       suffix: model.suffix,
-      bordered: !model.hideBorder,
+      variant: model.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,

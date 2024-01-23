@@ -5,6 +5,7 @@ import { Button, Tooltip } from 'antd';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useDataContext } from '@/providers/dataContextProvider';
 import { DeleteFilled } from '@ant-design/icons';
+import { useStyles } from '../styles/styles';
 
 interface IDragWrapperProps {
   componentId: string;
@@ -13,6 +14,7 @@ interface IDragWrapperProps {
 }
 
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
+  const { styles } = useStyles();
   const { getComponentModel } = useForm();
   const { selectedComponentId, setSelectedComponent, isDebug, deleteComponent } = useFormDesigner();
 
@@ -74,9 +76,9 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
   };
 
   return (
-    <div className="sha-component-drag-handle" onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
+    <div className={styles.componentDragHandle} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
       {!props?.readOnly && isOpen && (
-        <div className="sha-component-controls">
+        <div className={styles.shaComponentControls}>
           <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
         </div>
       )}

@@ -55,7 +55,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       showCount: model.showCount,
       maxLength: model.validate?.maxLength,
       allowClear: model.allowClear,
-      bordered: !model.hideBorder,
+      variant: model.hideBorder ? 'borderless' : undefined,
       size: model?.size,
       style: getTextAreaStyle(getStyle(model?.style, formData)),
     };

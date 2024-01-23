@@ -198,7 +198,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         disabled={readOnly}
         style={evaluatedStyle}
         allowClear
-        bordered={!hideBorder}
+        variant={hideBorder ? 'borderless' : undefined }
       />
     );
   }
@@ -209,7 +209,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
       disabledDate={(e) => disabledDate(props, e, formData, globalState)}
       //disabled={disabled}
       onChange={handleDatePickerChange}
-      bordered={!hideBorder}
+      variant={hideBorder ? 'borderless' : undefined }
       showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
       showNow={showNow}
       showToday={showToday}

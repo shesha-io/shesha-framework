@@ -3,7 +3,6 @@ import { GlobalStateActionEnums } from './actions';
 import {
   GLOBAL_STATE_CONTEXT_INITIAL_STATE,
   IGlobalStateStateContext,
-  ISetPubSubPayload,
   ISetStatePayload,
 } from './contexts';
 
@@ -40,17 +39,6 @@ const reducer = handleActions<IGlobalStateStateContext, any>(
       return {
         ...state,
         globalState: clonedState,
-      };
-    },
-    [GlobalStateActionEnums.SetPubSub]: (
-      state: IGlobalStateStateContext,
-      action: ReduxActions.Action<ISetPubSubPayload>
-    ): IGlobalStateStateContext => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        ...payload,
       };
     },
   },
