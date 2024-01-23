@@ -2,6 +2,7 @@
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
@@ -19,12 +20,22 @@ namespace Shesha.Domain
         public virtual Site PrimarySite { get; set; }
 
         public virtual string AccountNo { get; set; }
+
         [ReferenceList("Shesha.Core", "AccountStatus")]
         public virtual RefListAccountStatus? Status { get; set; }
+
         [ReferenceList("Shesha.Core", "AccountType")]
         public virtual RefListAccountType? AccountType { get; set; }
+
         public virtual DateTime? ActiveFromDate { get; set; }
+
         public virtual DateTime? ActiveToDate { get; set; }
+
+        [StringLength(200)]
+        public virtual string ContactEmail { get; set; }
+
+        [StringLength(50)]
+        public virtual string ContactMobileNo { get; set; }
 
     }
 }
