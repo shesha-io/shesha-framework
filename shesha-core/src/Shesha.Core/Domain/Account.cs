@@ -2,6 +2,7 @@
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
@@ -25,6 +26,13 @@ namespace Shesha.Domain
         public virtual RefListAccountType? AccountType { get; set; }
         public virtual DateTime? ActiveFromDate { get; set; }
         public virtual DateTime? ActiveToDate { get; set; }
+		[StringLength(50)]
+		public virtual string ContactEmail { get; set; }
+		[StringLength(50)]
+		public virtual string ContactTelephone { get; set; }
+		[StringLength(400)]
+		public virtual string FreeTextBillingAddress { get; set; }
+		public virtual Address BillingAddress { get; set; }
 
-    }
+	}
 }
