@@ -1,4 +1,4 @@
-import { IAjaxResponse, useMutateForEndpoint, IUseMutateResponseFixedEndpoint } from "@shesha/reactjs";
+import { IAjaxResponse, useMutateForEndpoint, IUseMutateResponseFixedEndpoint } from "@shesha-io/reactjs";
 
 export interface ResetPasswordSendOtpResponse {
     operationId?: string;

@@ -17,7 +17,7 @@ import {
   UserResetPasswordSendOtpQueryParams
   } from 'api/user';
 import { useRouter } from 'next/navigation';
-import { useAuth, ValidationErrors, PageWithLayout } from '@shesha/reactjs';
+import { useAuth, ValidationErrors, PageWithLayout } from '@shesha-io/reactjs';
 import { URL_LOGIN_PAGE } from 'routes';
 
 
