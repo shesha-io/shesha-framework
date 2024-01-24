@@ -1,6 +1,6 @@
 "use client";
 
-import { EntityConfiguratorPage } from  '@shesha/reactjs';
+import { EntityConfiguratorPage } from  '@shesha-io/reactjs';
 import React, { FC } from "react";
 
 const Page: FC = () => {
