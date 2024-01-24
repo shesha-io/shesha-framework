@@ -41,5 +41,13 @@ namespace Shesha.JsonLogic
         /// <param name="rule"></param>
         /// <returns></returns>
         Func<T, bool> ParsePredicateOf<T>(string rule);
+
+        /// <summary>
+        /// Evaluate JsonLogic predicate for the specified <paramref name="model"/>
+        /// </summary>
+        /// <param name="model">Model</param>
+        /// <param name="predicate">Predicate</param>
+        /// <returns></returns>
+        bool EvaluatePredicate(object model, string predicate);
     }
 }

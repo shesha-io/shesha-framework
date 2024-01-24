@@ -3,6 +3,7 @@ using Abp.Domain.Entities;
 using Abp.Timing;
 using Castle.Core;
 using Newtonsoft.Json.Linq;
+using NUglify;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonLogic.Exceptions;
@@ -1100,6 +1101,20 @@ namespace Shesha.JsonLogic
             var trimMethod = typeof(string).GetMethod(nameof(string.Trim), new Type[] { });
 
             return Expression.Call(member, trimMethod);
+        }
+
+        public bool EvaluatePredicateInternal<T>(T model, string predicate)
+        {
+            var expression = ParsePredicateOf<T>(predicate);
+            return expression.Invoke(model);
+        }
+
+        public bool EvaluatePredicate(object model, string predicate)
+        {
+            var method = this.GetType().GetMethod(nameof(EvaluatePredicateInternal));
+            var modelType = model.GetType();
+            var genericMethod = method.MakeGenericMethod(modelType);
+            return (bool)genericMethod.Invoke(this, new object[] { model, predicate });
         }
     }
 
