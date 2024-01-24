@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build-shesha": "echo \"Build Shesha\" && cd ../../shesha-reactjs && npm install && npm run build && npm pack && shx mv shesha-reactjs-*.tgz ../shesha-functional-tests/adminportal/shesha-local.tgz",
+    "build-shesha": "echo \"Build Shesha\" && cd ../../shesha-reactjs && npm install && npm run build && npm pack && shx mv shesha-io-reactjs-*.tgz ../shesha-functional-tests/adminportal/shesha-local.tgz",
     "preinstall": "npm run build-shesha && npm install shesha-local.tgz --force",
     "export": "next export",
     "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
