@@ -68,7 +68,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     propertiesFilter: getAllExceptPredicate([...allBaseProperties]),
   },
   [RefListStatusComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties]),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, 'referenceListId']),
   },
   [TextFieldComponent.type]: {
     propertiesFilter: getAllExceptPredicate([

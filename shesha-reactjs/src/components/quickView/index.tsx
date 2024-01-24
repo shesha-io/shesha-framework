@@ -9,6 +9,7 @@ import { FormIdentifier } from '@/providers/form/models';
 import { get } from '@/utils/fetchers';
 import ValidationErrors from '@/components/validationErrors';
 import { getQuickViewInitialValues } from './utils';
+import { useStyles } from '../entityReference/styles/styles';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -77,6 +78,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const [form] = Form.useForm();
   const { formItemLayout } = useUi();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
+  const { styles } = useStyles();
 
   useEffect(() => {
     if (formIdentifier) {
@@ -126,7 +128,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     }
 
     return (
-      <Button className="entity-reference-btn" type="link">
+      <Button className={styles.entityReferenceBtn} type="link">
         {formTitle ?? (
           <span>
             <Spin size="small" /> Loading...
