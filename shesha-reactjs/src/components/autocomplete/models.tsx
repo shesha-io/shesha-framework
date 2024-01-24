@@ -113,6 +113,7 @@ export interface IAutocompleteProps<TValue = any>
    * Data source of this Autocomplete
    */
   dataSourceType: AutocompleteDataSourceType;
+  className?: string;
 }
 
 export interface IEntityAutocompleteProps<TValue = any> extends ICommonAutocompleteProps<TValue> {

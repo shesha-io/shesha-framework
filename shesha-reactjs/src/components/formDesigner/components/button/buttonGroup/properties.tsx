@@ -50,7 +50,6 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
         wrapperCol={{ span: 24 }}
         mode={ readOnly ? 'readonly' : 'edit' }
         markup={markup}
-        onFinish={onSettingsSave}
         form={form}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
@@ -65,10 +64,6 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
       </div>
     );
   }
-
-  const onSettingsSave = values => {
-    console.log(values);
-  };
 
   return <>{editor}</>;
 };
