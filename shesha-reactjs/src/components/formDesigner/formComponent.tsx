@@ -32,7 +32,7 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
     <toolboxComponent.Factory 
       model={actualModel} 
       componentRef={componentRef} 
-      form={form} context={allData}
+      form={form}
     />
   );
 };

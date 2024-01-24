@@ -7,7 +7,7 @@ import React, {
   useMemo
   } from 'react';
 import { ColorResult } from 'react-color';
-import { executeScriptSync, IApplicationContext } from '@/providers/form/utils';
+import { executeScriptSync, IApplicationContext, useApplicationContext } from '@/providers/form/utils';
 import { HeartOutlined } from '@ant-design/icons';
 import { iconPickerFormSettings } from './settings';
 import { IIconPickerComponentProps } from './interfaces';
@@ -21,11 +21,13 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   name: 'Icon Picker',
   icon: <HeartOutlined />,
   canBeJsSetting: true,
-  Factory: ({ model, context: applicationContext }) => {
+  Factory: ({ model }) => {
+
+    const allData = useApplicationContext()
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<IconPickerWrapper {...model} applicationContext={applicationContext} value={value} onChange={onChange} />)}
+        {(value, onChange) => (<IconPickerWrapper {...model} applicationContext={allData} value={value} onChange={onChange} />)}
       </ConfigurableFormItem>
     );
   },
