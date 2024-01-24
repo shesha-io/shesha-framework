@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { Form, message, Spin } from 'antd';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
@@ -50,7 +50,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   ...props
 }) => {
 
-  const formInstance =  useForm();
+  const formInstance = useForm();
   const { styles } = useStyles();
   //const contextManager = useDataContextManager(false);
   //if (contextManager)
@@ -148,21 +148,21 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     formSettings?.initialValues?.forEach(({ key, value }) => {
       const evaluatedValue = value?.includes('{{')
         ? evaluateComplexString(value, [
-            { match: 'data', data: formData },
-            { match: 'parentFormValues', data: parentFormValues },
-            { match: 'globalState', data: globalState },
-            { match: 'query', data: queryParamsFromAddressBar },
-            { match: 'initialValues', data: initialValues },
-          ])
+          { match: 'data', data: formData },
+          { match: 'parentFormValues', data: parentFormValues },
+          { match: 'globalState', data: globalState },
+          { match: 'query', data: queryParamsFromAddressBar },
+          { match: 'initialValues', data: initialValues },
+        ])
         : value?.includes('{')
-        ? evaluateValue(value, {
+          ? evaluateValue(value, {
             data: formData,
             parentFormValues: parentFormValues,
             globalState: globalState,
             query: queryParamsFromAddressBar,
             initialValues: initialValues,
           })
-        : value;
+          : value;
       _.set(computedInitialValues, key, evaluatedValue);
     });
 
@@ -185,15 +185,9 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   // reset form to initial data on any change of components or initialData
   // only if data is not fetched or form is not in designer mode
-  const isMountedRef = useRef<boolean>(false);
   useEffect(() => {
-    // skip reset if component is not yet monted
-    if (!isMountedRef.current){
-      isMountedRef.current = true;
-    } else {
-      if (!fetchedFormEntity && !designerMode)
-        setFormData({ values: initialValues, mergeValues: false });
-    }
+    if (!fetchedFormEntity && !designerMode)
+      setFormData({ values: initialValues, mergeValues: false });
   }, [allComponents, initialValues]);
 
   useEffect(() => {
@@ -281,7 +275,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       form,
       setFormData,
       setGlobalState,
-      {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
+      { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
     );
   };
 
