@@ -22,7 +22,7 @@
     "@microsoft/signalr": "^5.0.6",
     "@next/bundle-analyzer": "^14.1.0",
     "@next/eslint-plugin-next": "^14.1.0",
-    "@shesha/reactjs": "file:shesha-local.tgz",
+    "@shesha-io/reactjs": "file:shesha-local.tgz",
     "@types/react-dom": "^18.2.4",
     "antd": "^5.13.1",
     "antd-style": "^3.6.1",
