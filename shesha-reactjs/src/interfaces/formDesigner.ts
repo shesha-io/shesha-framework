@@ -12,7 +12,6 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IPropertyMetadata } from './metadata';
-import { IApplicationContext } from '@/utils/publicUtils';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -51,7 +50,6 @@ export interface ComponentFactoryArguements<T extends IConfigurableFormComponent
   componentRef: MutableRefObject<any>;
   form: FormInstance<any>;
   children?: JSX.Element;
-  context?: IApplicationContext;
 }
 
 export type FormFactory<T extends IConfigurableFormComponent = any> = FC<ComponentFactoryArguements<T>>;
