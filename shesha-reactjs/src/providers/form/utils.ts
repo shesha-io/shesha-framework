@@ -770,7 +770,8 @@ export const getVisibleComponentIds = (
       const component = components[key] as IConfigurableFormComponent;
 
       if (filteredComponents?.includes(component.id)
-        && !getActualPropertyValue(component, allData, 'hidden')?.hidden)
+        && !getActualPropertyValue(component, allData, 'hidden')?.hidden
+        && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode)))
         visibleComponents.push(key);
     }
   }
@@ -779,15 +780,13 @@ export const getVisibleComponentIds = (
 
 const isComponentFiltered = (
   component: IConfigurableFormComponent,
-  allData: IApplicationContext,
   propertyFilter?: (name: string) => boolean
 ): boolean => {
   if (propertyFilter && component.propertyName) {
     const filteredOut = propertyFilter(component.propertyName);
     if (filteredOut === false) return false;
   }
-
-  return (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode));
+  return true;
 };
 
 /**
@@ -795,7 +794,6 @@ const isComponentFiltered = (
  */
 export const getFilteredComponentIds = (
   components: IComponentsDictionary,
-  allData: IApplicationContext,
   propertyFilter?: (name: string) => boolean
 ): string[] => {
   const visibleComponents: string[] = [];
@@ -803,7 +801,7 @@ export const getFilteredComponentIds = (
     if (components.hasOwnProperty(key)) {
       const component = components[key] as IConfigurableFormComponent;
 
-      if (isComponentFiltered(component, allData, propertyFilter))
+      if (isComponentFiltered(component, propertyFilter))
         visibleComponents.push(key);
     }
   }
