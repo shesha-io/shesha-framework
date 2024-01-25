@@ -3,7 +3,7 @@
 import { Alert, Card, Col, Row } from 'antd';
 import data from 'public/meta.json';
 import React from 'react';
-import { PageWithLayout, CollapsiblePanel } from '@shesha/reactjs';
+import { PageWithLayout, CollapsiblePanel } from '@shesha-io/reactjs';
 import styled from 'styled-components';
 
 const StyledAlert = styled(Alert)`

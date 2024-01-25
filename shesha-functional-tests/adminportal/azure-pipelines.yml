@@ -88,7 +88,7 @@ jobs:
     inputs:
       command: custom
       verbose: false
-      customCommand: install @shesha/reactjs@latest
+      customCommand: install @shesha-io/reactjs@latest
   - task: Npm@1
     displayName: Npm Build
     inputs:
@@ -189,7 +189,7 @@ jobs:
     inputs:
       command: custom
       verbose: false
-      customCommand: install @shesha/reactjs@latest
+      customCommand: install @shesha-io/reactjs@latest
   - task: Npm@1
     displayName: Npm Build
     inputs:
@@ -290,7 +290,7 @@ jobs:
     inputs:
       command: custom
       verbose: false
-      customCommand: install @shesha/reactjs@latest
+      customCommand: install @shesha-io/reactjs@latest
   - task: Npm@1
     displayName: Npm Build
     inputs:

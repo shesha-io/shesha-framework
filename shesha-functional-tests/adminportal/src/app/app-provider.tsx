@@ -6,7 +6,7 @@ import {
     ShaApplicationProvider,
     StoredFilesProvider,
     MainLayout    
-} from '@shesha/reactjs';
+} from '@shesha-io/reactjs';
 import { ReadonlyURLSearchParams, usePathname, useSearchParams } from 'next/navigation';
 import { AppProgressBar, useRouter } from 'next-nprogress-bar';
 import { useTheme } from 'antd-style';

@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef, useTransition } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -98,6 +98,8 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     formSettings: formSettings,
     formMarkup: formMarkup,
   };
+
+  const [/*isPending*/, startTransition] = useTransition();
 
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
@@ -364,6 +366,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
 
   const updateStateFormData = (payload: ISetFormDataPayload) => {
+    startTransition(() => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(setFormDataAction(payload));
       const newState = getState();
@@ -384,6 +387,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       } else {
         debouncedUpdateEnabledComponents(newState);
       }
+    });
     });
   };
 

@@ -14,7 +14,7 @@ import { ResetPasswordContainer } from '../../../components/pages/account/reset-
 import { SmileOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useUserResetPasswordUsingToken } from 'api/user';
-import { useAuth, PageWithLayout, ValidationErrors } from '@shesha/reactjs';
+import { useAuth, PageWithLayout, ValidationErrors } from '@shesha-io/reactjs';
 import { URL_LOGIN_PAGE } from 'routes';
 
 const ResetPassword: PageWithLayout<{}> = () => {

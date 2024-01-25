@@ -1,7 +1,7 @@
 "use client";
 
 import React, { FC } from 'react';
-import { FormIdentifier, FormsDesignerPage } from '@shesha/reactjs';
+import { FormIdentifier, FormsDesignerPage } from '@shesha-io/reactjs';
 import { useSearchParams, notFound } from 'next/navigation';
 
 const Page: FC = () => {

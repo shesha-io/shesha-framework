@@ -16,7 +16,7 @@ export const isPropertySettings = (data: any) => {
 };
 
 export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {
-    if (!propName) 
+    if (!propName || !data) 
         return { _mode: 'value', _code: undefined, _value: undefined };
 
     const propNames = propName.split('.');
@@ -39,10 +39,10 @@ export const getValueFromPropertySettings = (value: any): any => {
 };
 
 export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
-    if (isPropertySettings(value))
-        return value;
-    else
+    if (!isPropertySettings(value) || !value)
         return { _mode: 'value', _code: undefined, _value: value };
+    else
+        return value;
 };
 
 /**

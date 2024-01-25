@@ -7,6 +7,7 @@ import { IIconPickerComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { useApplicationContext } from '@/providers/form/utils';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
@@ -14,11 +15,13 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   name: 'Icon Picker',
   icon: <HeartOutlined />,
   canBeJsSetting: true,
-  Factory: ({ model, context: applicationContext }) => {
+  Factory: ({ model }) => {
+
+    const allData = useApplicationContext();
 
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<IconPickerWrapper {...model} applicationContext={applicationContext} value={value} onChange={onChange} />)}
+        {(value, onChange) => (<IconPickerWrapper {...model} applicationContext={allData} value={value} onChange={onChange} />)}
       </ConfigurableFormItem>
     );
   },

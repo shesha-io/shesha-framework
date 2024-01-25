@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build-shesha": "echo \"Build Shesha\" && cd ../../shesha-reactjs && npm install && npm run build && npm pack && shx mv shesha-reactjs-*.tgz ../shesha-functional-tests/adminportal/shesha-local.tgz",
+    "build-shesha": "echo \"Build Shesha\" && cd ../../shesha-reactjs && npm install && npm run build && npm pack && shx mv shesha-io-reactjs-*.tgz ../shesha-functional-tests/adminportal/shesha-local.tgz",
     "preinstall": "npm run build-shesha && npm install shesha-local.tgz --force",
     "export": "next export",
     "start": "NODE_ENV=production node --max-old-space-size=8192 server.js",
@@ -22,7 +22,7 @@
     "@microsoft/signalr": "^5.0.6",
     "@next/bundle-analyzer": "^14.1.0",
     "@next/eslint-plugin-next": "^14.1.0",
-    "@shesha/reactjs": "file:shesha-local.tgz",
+    "@shesha-io/reactjs": "file:shesha-local.tgz",
     "@types/react-dom": "^18.2.4",
     "antd": "^5.13.1",
     "antd-style": "^3.6.1",

@@ -1,84 +1,97 @@
-import React, { FC, ReactElement, useMemo } from 'react';
-import { PropertySettingMode } from '@/providers';
-import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
+import React, { FC, ReactElement } from 'react';
 import { getPropertySettingsFromValue } from './utils';
+import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
+import { Button } from 'antd';
+import { useStyles } from './styles/styles';
+import { isEqual } from 'lodash';
 
-export type SettingsControlChildrenType = (value: any, onChange:  (...args: any[]) => void, propertyName: string) => ReactElement;
+export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
-export interface IContextSettingsRef {
-    onChange: (...args: any[]) => void;
+export interface ISettingsControlProps {
+  propertyName: string;
+  readOnly?: boolean;
+  value?: IPropertySetting;
+  mode: PropertySettingMode;
+  onChange?: (value: IPropertySetting) => void;
+  readonly children?: SettingsControlChildrenType;
 }
 
-export interface ISwitchModeSettingsRef {
-    onChange: (mode: PropertySettingMode) => void;
-}
+export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
+  const { styles } = useStyles();
 
-interface ISettingsControlProps {
-    id: string;
-    propertyName: string;
-    readonly?: boolean;
-    value?: any;
-    mode: PropertySettingMode;
-    onChange?: (value: any) => void;
-    readonly children?: SettingsControlChildrenType;
-    contextRef?: React.MutableRefObject<IContextSettingsRef>;
-    modeRef?: React.MutableRefObject<ISwitchModeSettingsRef>;
-}
+  const setting = getPropertySettingsFromValue(props.value);
+  const { _mode: mode, _code: code } = setting;
 
-export const SettingsControl: FC<ISettingsControlProps> = ({ id, propertyName, readonly, value, mode, onChange, children, contextRef, modeRef }) => {
+  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode) => {
+    const newSetting = { ...value, _mode: (m ?? mode) };
+    const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
+    if (props.onChange)
+      props.onChange(newValue);
+  };
 
-    const settings = getPropertySettingsFromValue(value);
+  const codeOnChange = (val: any) => {
+    const newValue = { ...setting, _code: val };
+    onInternalChange(newValue);
+  };
 
-    const internalOnSwitchMode = useMemo(() => (mode) => {
-        const newValue = !!settings._code || mode === 'code' ? { _value: settings._value, _code: settings._code, _mode: mode } : settings._value;
-        if (onChange)
-            onChange(newValue);
-    }, [settings._code, settings._value, mode]);
+  const valueOnChange = (val: any) => {
+    if (!isEqual(setting?._value, val)) {
+      const newValue = { ...setting, _value: val };
+      onInternalChange(newValue);
+    }
+  };
 
-    const internalOnChange = useMemo(() => (val) => {
-        const newValue = !!settings._code ? { _value: val, _code: settings._code, _mode: mode } : val;
-        if (onChange)
-            onChange(newValue);
-    }, [settings._code, mode]);
+  const onSwitchMode = () => {
+    const newMode = mode === 'code' ? 'value' : 'code';
+    onInternalChange(setting, newMode);
+  };
 
-    if (contextRef && contextRef.current?.onChange !== internalOnChange)
-        contextRef.current = { onChange: internalOnChange };
+  const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
 
-    if (modeRef && modeRef.current?.onChange !== internalOnSwitchMode)
-        modeRef.current = { onChange: internalOnSwitchMode };
-
-    if (mode === 'code') {
-        return <CodeEditor
-            readOnly={readonly}
-            value={settings._code}
-            onChange={(val) => {
-                const newValue = !!val || mode === 'code' ? { _value: settings._value, _code: val, _mode: mode } : settings._value;
-                if (onChange)
-                onChange(newValue);
-            }}
+  return (
+    <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
+      <Button
+        disabled={props.readOnly}
+        shape="round"
+        className={styles.jsSwitch}
+        type='primary'
+        danger={mode === 'value' && !!code}
+        ghost
+        size='small'
+        onClick={onSwitchMode}
+      >
+        {mode === 'code' ? 'Value' : 'JS'}
+      </Button>
+      <div className={styles.jsContent}>
+        {mode === 'code' &&
+          <CodeEditor
+            readOnly={props.readOnly}
+            value={setting._code}
+            onChange={codeOnChange}
             mode='dialog'
             language='typescript'
-            id={id}
-            propertyName={propertyName + 'Code'}
+            propertyName={props.propertyName + 'Code'}
             exposedVariables={[
-                { name: "data", description: "Selected form values", type: "object" },
-                { name: "contexts", description: "Contexts data", type: "object" },
-                { name: "globalState", description: "Global state", type: "object" },
-                { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-                { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-                { name: "staticValue", description: "Static value of this setting", type: "any" },
-                { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
-                { name: "form", description: "Form instance", type: "object" },
-                { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-                { name: "moment", description: "moment", type: "object" },
-                { name: "http", description: "axiosHttp", type: "object" },
-                { name: "message", description: "message framework", type: "object" },
+              { name: "data", description: "Selected form values", type: "object" },
+              { name: "contexts", description: "Contexts data", type: "object" },
+              { name: "globalState", description: "Global state", type: "object" },
+              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+              { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
+              { name: "staticValue", description: "Static value of this setting", type: "any" },
+              { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
+              { name: "form", description: "Form instance", type: "object" },
+              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
+              { name: "moment", description: "moment", type: "object" },
+              { name: "http", description: "axiosHttp", type: "object" },
+              { name: "message", description: "message framework", type: "object" },
             ]}
-        />;
-    }
-
-    return children(settings._value, internalOnChange, propertyName);
+          />
+        }
+        {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
+      </div>
+    </div>
+  );
 };
 
 export default SettingsControl;
