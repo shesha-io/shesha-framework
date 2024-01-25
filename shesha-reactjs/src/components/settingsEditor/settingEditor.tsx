@@ -1,16 +1,9 @@
-import ConfigurableForm from '@/components/configurableForm';
-import React, {
-    useEffect,
-    useMemo,
-    useRef,
-    useState
-    } from 'react';
-import { ConfigurableFormInstance, DesignerToolbarSettings, FormMarkup } from '@/interfaces';
-import { DataTypes } from '@/interfaces/dataTypes';
-import { Empty, Form } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { CustomFormSettingEditor } from './customFormSettingEditor';
+import { Empty } from 'antd';
 import { FC } from 'react';
-import { ISettingIdentifier, SettingValue } from './provider/models';
-import { ISettingSelection } from './provider/contexts';
+import { GenericSettingEditor } from './genericSettingEditor';
+import { SettingValue } from './provider/models';
 import { useSettingsEditor } from './provider';
 
 export interface ISettingEditorProps {
@@ -55,136 +48,6 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
                 }
             />
         );
-};
-
-interface ISettingEditorWithValueProps extends ISettingEditorProps {
-    selection: ISettingSelection;
-    value?: SettingValue;
-}
-
-export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
-    const { selection, value } = props;
-    const { setting: configuration } = selection;
-    const [form] = Form.useForm();
-
-    const startSave = () => {
-        return form.validateFields().then(values => {
-            const settingId: ISettingIdentifier = {
-                name: selection.setting.name,
-                module: selection.setting.module,
-                appKey: selection.app?.appKey,
-            };
-
-            return saveSettingValue(settingId, values.value);
-        });
-    };
-
-    const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
-    useEffect(() => {
-        setEditor({ save: startSave });
-    }, [selection]);
-
-    const model = useMemo(() => {
-        return { value: value };
-    }, [value]);
-
-    const formMarkup: FormMarkup = useMemo(() => {
-        const builder = new DesignerToolbarSettings({  });
-        if (configuration.description){
-            builder.addAlert({
-                id: 'descriptionAlert',
-                propertyName: 'descriptionAlert',
-                text: configuration.description,
-                alertType: 'info',
-            });
-        }
-        switch (configuration.dataType) {
-            case DataTypes.string: {
-                builder.addTextField({
-                    id: 'value',
-                    propertyName: 'value',
-                    label: configuration.label,
-                    //description: configuration.description
-                });
-                break;
-            }
-            case DataTypes.number: {
-                builder.addNumberField({
-                    id: 'value',
-                    propertyName: 'value',
-                    label: configuration.label,
-                    //description: configuration.description
-                });
-                break;
-            }
-            case DataTypes.boolean: {
-                builder.addCheckbox({
-                    id: 'value',
-                    propertyName: 'value',
-                    label: configuration.label,
-                    //description: configuration.description
-                });
-                break;
-            }
-        }
-        return builder.toJson();
-    }, [configuration]);
-
-    return (
-        <ConfigurableForm
-            mode={editorMode}
-            form={form}
-            markup={formMarkup}
-            initialValues={model}
-        />
-    );
-};
-
-export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
-    const { selection, value } = props;
-    const { setting: configuration } = selection;
-    const { editorForm } = configuration;
-
-    const [form] = Form.useForm();
-    const formRef = useRef<ConfigurableFormInstance>();
-
-    const startSave = () => {
-        return form.validateFields().then(values => {
-            const settingId: ISettingIdentifier = {
-                name: selection.setting.name,
-                module: selection.setting.module,
-                appKey: selection.app?.appKey,
-            };
-            const data = selection.setting.dataType === DataTypes.object
-                ? { ...values ?? {} }
-                : values?.value; // extract scalar value
-            delete data._formFields;
-
-            return saveSettingValue(settingId, data);
-        });
-    };
-
-    const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
-    useEffect(() => {
-        setEditor({ save: startSave });
-    }, [selection]);
-
-    const initialValues = useMemo(() => {
-        const result = selection.setting.dataType === DataTypes.object
-            ? value
-            : { value }; // for scalar types add `value` property
-        return result;
-    }, [value]);
-    
-    return (
-        <ConfigurableForm
-            mode={editorMode}
-            form={form}
-            initialValues={initialValues}
-            formId={editorForm}
-            formRef={formRef}
-        />
-    );
 };
 
 export default SettingEditor;

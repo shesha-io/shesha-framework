@@ -1,12 +1,19 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { ReactPictureAnnotation } from 'react-picture-annotation';
-import { usePrevious } from '@/hooks';
-import { useFormData, useGlobalState } from '@/providers';
-import { getString, getStyle } from '@/providers/form/utils';
 import CustomInput from './components/customAnnotationInput';
 import DescriptionsList from './components/descriptionList';
+import React, {
+  FC,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import WarningMessage from './components/warningMessage';
+import { getString, getStyle } from '@/providers/form/utils';
 import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
+import { ReactPictureAnnotation } from 'react-picture-annotation';
+import { useFormData, useGlobalState } from '@/providers';
+import { usePrevious } from '@/hooks';
+import { useStyles } from './styles/styles';
 import {
   canSubmit,
   getImageBits,
@@ -14,7 +21,6 @@ import {
   parseIntOrDefault,
   sortAnnotationData,
 } from './utilis';
-import { useStyles } from './styles/styles';
 
 interface IProps {
   model: IImageProps;
@@ -57,6 +63,13 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
 
   const isReadOnly = readOnly;
 
+  const onResize = () => {
+    setPageSize({
+      width: parseIntOrDefault(imageFrameRef?.current?.offsetWidth),
+      height: parseIntOrDefault(imageFrameRef?.current?.offsetHeight),
+    });
+  };
+
   useEffect(() => {
     window.addEventListener('resize', onResize);
     const isNumbersOnly = !isOnImage && isReadOnly;
@@ -82,13 +95,6 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
   }, [height, width]);
 
   const url: string = getString(model?.url, formData, globalState) || formData?.[model.propertyName];
-
-  const onResize = () => {
-    setPageSize({
-      width: parseIntOrDefault(imageFrameRef?.current?.offsetWidth),
-      height: parseIntOrDefault(imageFrameRef?.current?.offsetHeight),
-    });
-  };
 
   const setIsRequired = (required: boolean) => {
     model.validate.required = required;

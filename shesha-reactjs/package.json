@@ -67,6 +67,7 @@
     "@next/bundle-analyzer": "^14.1.0",
     "@next/eslint-plugin-next": "^14.1.0",
     "@rollup/plugin-commonjs": "^25.0.2",
+    "@rollup/plugin-eslint": "^9.0.5",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-multi-entry": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.1.0",

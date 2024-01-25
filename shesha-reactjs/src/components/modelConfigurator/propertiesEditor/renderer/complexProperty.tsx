@@ -15,9 +15,11 @@ export interface IContainerRenderArgs {
   items: IModelItem[];
 }
 
+export type ContainerRenderer = (args: IContainerRenderArgs) => React.ReactNode;
+
 export interface IProps extends IModelItem {
   index: number[];
-  containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
+  containerRendering: ContainerRenderer;
 }
 
 export const ComplexProperty: FC<IProps> = props => {

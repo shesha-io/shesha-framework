@@ -1,14 +1,14 @@
-import { getAlignmentStyle } from '@/components/formDesigner/containers/componentsContainerForm';
-import { IComponentsContainerBaseProps } from '@/interfaces';
-import { useGlobalState, useSubForm } from '@/providers';
-import React, { FC, useCallback } from 'react';
-import { removeUndefinedProperties } from '@/utils/array';
-import { executeScriptSync } from '@/utils/publicUtils';
-import { ICommonContainerProps } from '@/designer-components/container/interfaces';
 import DynamicComponent from '../dynamicView/dynamicComponent';
+import React, { FC, useCallback } from 'react';
+import { executeScriptSync } from '@/utils/publicUtils';
+import { getAlignmentStyle } from '../../containers/util';
+import { ICommonContainerProps } from '@/designer-components/container/interfaces';
+import { IComponentsContainerBaseProps } from '@/interfaces';
+import { removeUndefinedProperties } from '@/utils/array';
+import { useGlobalState, useSubForm } from '@/providers';
 import { useParent } from '@/providers/parentProvider/index';
 
-interface IComponentsContainerSubFormProps extends IComponentsContainerBaseProps, ICommonContainerProps {}
+interface IComponentsContainerSubFormProps extends IComponentsContainerBaseProps, ICommonContainerProps { }
 
 export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = (props) => {
   const { containerId, readOnly } = props;
@@ -43,7 +43,7 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
             <DynamicComponent
               model={{
                 ...model,
-                 context: model.context ?? context,
+                context: model.context ?? context,
                 isDynamic: true,
                 readOnly: readOnly === true ? true : model?.readOnly,
                 customEnabled: '',

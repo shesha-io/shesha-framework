@@ -17,6 +17,15 @@ export interface IParentProviderProps {
 
 export const ParentProviderStateContext = createContext<IParentProviderStateContext>({model: {}});
 
+export function useParent(require: boolean = true) {
+  const stateContext = useContext(ParentProviderStateContext);
+
+  if (stateContext === undefined && require) {
+    throw new Error('useParent must be used within a ParentProvider');
+  }
+  return stateContext;
+}
+
 const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
   const { 
     children,
@@ -41,14 +50,5 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     </ParentProviderStateContext.Provider>
   );
 };
-
-export function useParent(require: boolean = true) {
-  const stateContext = useContext(ParentProviderStateContext);
-
-  if (stateContext === undefined && require) {
-    throw new Error('useParent must be used within a ParentProvider');
-  }
-  return stateContext;
-}
 
 export default ParentProvider;

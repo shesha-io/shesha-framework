@@ -41,6 +41,16 @@ export const hasTokenExpired = (date: string): boolean => {
   return new Date(date) < new Date();
 };
 
+export const removeAccessToken = (tokenName: string) => {
+  try {
+    getLocalStorage()?.removeItem(tokenName);
+    getLocalStorage()?.clear();
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export const getAccessToken = (tokenName: string): IAccessToken | null => {
   const token = getLocalStorage()?.getItem(tokenName);
 
@@ -56,16 +66,6 @@ export const getAccessToken = (tokenName: string): IAccessToken | null => {
   }
 
   return null;
-};
-
-export const removeAccessToken = (tokenName: string) => {
-  try {
-    getLocalStorage()?.removeItem(tokenName);
-    getLocalStorage()?.clear();
-    return true;
-  } catch (error) {
-    return false;
-  }
 };
 
 export const getHttpHeaders = (token: string | null) => {

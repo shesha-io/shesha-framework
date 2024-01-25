@@ -20,28 +20,6 @@ interface IShowModalActionArguments {
     submitHttpVerb?: 'POST' | 'PUT';
 }
 
-export const migrateV0toV1 = (model: IToolbarPropsV0, context: SettingsMigrationContext): IToolbarProps => {
-
-    const items = (model.items ?? []).map<ToolbarItemProps>(item => {
-        if (item.itemType === "item") {
-            if (item['actionConfiguration'])
-                return item;
-            const buttonProps = item as IToolbarButtonV0;
-            if (buttonProps.itemSubType === 'button') {
-
-                return {
-                    ...item,
-                    actionConfiguration: getActionConfiguration(buttonProps, context)
-                };
-            }
-        }
-
-        return item;
-    });
-
-    return { ...model, items: items };
-};
-
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
         _type: undefined,
@@ -321,3 +299,25 @@ interface IModalPropsV0 {
 }
 
 //#endregion
+
+export const migrateV0toV1 = (model: IToolbarPropsV0, context: SettingsMigrationContext): IToolbarProps => {
+
+    const items = (model.items ?? []).map<ToolbarItemProps>(item => {
+        if (item.itemType === "item") {
+            if (item['actionConfiguration'])
+                return item;
+            const buttonProps = item as IToolbarButtonV0;
+            if (buttonProps.itemSubType === 'button') {
+
+                return {
+                    ...item,
+                    actionConfiguration: getActionConfiguration(buttonProps, context)
+                };
+            }
+        }
+
+        return item;
+    });
+
+    return { ...model, items: items };
+};

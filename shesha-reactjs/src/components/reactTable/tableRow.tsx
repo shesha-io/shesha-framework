@@ -29,11 +29,6 @@ export interface ISortableRowProps {
   inlineDisplayComponents?: IFlatComponentsStructure;
 }
 
-export const SortableRow: FC<ISortableRowProps> = (props) => {
-  return <TableRow {...props} />;
-};
-
-
 interface RowDragHandleProps {
   row: Row<any>;
 }
@@ -149,4 +144,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       </div>
     </CrudProvider>
   );
+};
+
+export const SortableRow: FC<ISortableRowProps> = (props) => {
+  return <TableRow {...props} />;
 };

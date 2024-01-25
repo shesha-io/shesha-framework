@@ -5,15 +5,15 @@ import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 
-export type SettingsControlChildrenType = (value: any, onChange:  (val: any) => void, propertyName: string) => ReactElement;
+export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
 export interface ISettingsControlProps {
-    propertyName: string;
-    readOnly?: boolean;
-    value?: IPropertySetting;
-    mode: PropertySettingMode;
-    onChange?: (value: IPropertySetting) => void;
-    readonly children?: SettingsControlChildrenType;
+  propertyName: string;
+  readOnly?: boolean;
+  value?: IPropertySetting;
+  mode: PropertySettingMode;
+  onChange?: (value: IPropertySetting) => void;
+  readonly children?: SettingsControlChildrenType;
 }
 
 export const SettingsControl: FC<ISettingsControlProps> = (props) => {
@@ -24,20 +24,20 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   const { _mode: mode, _code: code } = setting;
 
   const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode) => {
-    const newSetting = {...value, _mode: (m ?? mode)}
+    const newSetting = { ...value, _mode: (m ?? mode) };
     const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
     if (props.onChange)
-       props.onChange(newValue);
+      props.onChange(newValue);
   };
 
   const codeOnChange = (val: any) => {
-      const newValue = {...setting, _code: val};
-      onInternalChange(newValue);
+    const newValue = { ...setting, _code: val };
+    onInternalChange(newValue);
   };
 
   const valueOnChange = (val: any) => {
     if (!isEqual(setting?._value, val)) {
-      const newValue = {...setting, _value: val};
+      const newValue = { ...setting, _value: val };
       onInternalChange(newValue);
     }
   };
@@ -47,16 +47,16 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
     onInternalChange(setting, newMode);
   };
 
-  const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName
+  const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
 
   return (
-    <div className={ mode === 'code' ? styles.contentCode : styles.contentJs}>
+    <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
       <Button
         disabled={props.readOnly}
         shape="round"
         className={styles.jsSwitch}
         type='primary'
-        danger={mode === 'value' && !!code }
+        danger={mode === 'value' && !!code}
         ghost
         size='small'
         onClick={onSwitchMode}

@@ -1,31 +1,30 @@
-import { Checkbox, Input, InputNumber, Select } from 'antd';
-import TextArea from 'antd/lib/input/TextArea';
-import React, { FC } from 'react';
-import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
-import Show from '@/components/show';
 import CodeEditor from '../codeEditor/codeEditor';
-import { Option } from 'antd/lib/mentions';
-import { IAddressCompomentProps } from './models';
-import { EXPOSED_VARIABLES } from './utils';
-import { useFormDesigner } from '@/providers/formDesigner';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
-import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
-import { useForm } from '@/providers';
-import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
-import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import React, { FC } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import Show from '@/components/show';
+import TextArea from 'antd/lib/input/TextArea';
+import {
+  Checkbox,
+  Input,
+  InputNumber,
+  Select
+  } from 'antd';
+import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
+import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
+import { EXPOSED_VARIABLES } from './utils';
+import { IAddressCompomentProps } from './models';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { Option } from 'antd/lib/mentions';
+import { useForm } from '@/providers';
+import { useFormDesigner } from '@/providers/formDesigner';
 
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 
-export const AddressSettingsForm: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = (props) => {
-  return (
-    SettingsForm<IEntityReferenceSettingsState>({...props, children: <AddressSettings {...props}/>})
-  );
-};
-
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
-  
+
   const { model: state, getFieldsValue, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
@@ -37,7 +36,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
     <>
       <SettingsCollapsiblePanel header='Display'>
         <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
-          readOnly={readOnly} 
+          readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
           formData={formData}
           onValuesChange={onValuesChange}
@@ -212,5 +211,11 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
+  );
+};
+
+export const AddressSettingsForm: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = (props) => {
+  return (
+    SettingsForm<IEntityReferenceSettingsState>({ ...props, children: <AddressSettings {...props} /> })
   );
 };

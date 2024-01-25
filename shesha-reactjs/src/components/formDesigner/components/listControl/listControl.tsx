@@ -290,49 +290,6 @@ const ListControl: FC<IListControlProps> = (props) => {
     }
   }, [value]);
 
-  const actionOwnerName = `List (${name})`;
-  useConfigurableAction(
-    {
-      name: 'Refresh list items',
-      owner: actionOwnerName,
-      ownerUid: containerId,
-      hasArguments: false,
-      executer: () => {
-        debouncedRefresh(); // todo: return real promise
-        return Promise.resolve();
-      },
-    },
-    [state]
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Save list items',
-      owner: actionOwnerName,
-      ownerUid: containerId,
-      hasArguments: false,
-      executer: () => {
-        submitListItems(submitUrl); // todo: return real promise
-        return Promise.resolve();
-      },
-    },
-    [state]
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Add list items',
-      owner: actionOwnerName,
-      ownerUid: containerId,
-      hasArguments: false,
-      executer: () => {
-        debouncedAddItems(state); // todo: return real promise
-        return Promise.resolve();
-      },
-    },
-    [state]
-  );
-
   const debouncedAddItems = useDebouncedCallback((data) => {
     onChange(Array.isArray(value) ? [...value, data] : [data]);
   }, 300);
@@ -478,6 +435,49 @@ const ListControl: FC<IListControlProps> = (props) => {
     [state, selectionMode]
   );
 
+  const actionOwnerName = `List (${name})`;
+  useConfigurableAction(
+    {
+      name: 'Refresh list items',
+      owner: actionOwnerName,
+      ownerUid: containerId,
+      hasArguments: false,
+      executer: () => {
+        debouncedRefresh(); // todo: return real promise
+        return Promise.resolve();
+      },
+    },
+    [state]
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Save list items',
+      owner: actionOwnerName,
+      ownerUid: containerId,
+      hasArguments: false,
+      executer: () => {
+        submitListItems(submitUrl); // todo: return real promise
+        return Promise.resolve();
+      },
+    },
+    [state]
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Add list items',
+      owner: actionOwnerName,
+      ownerUid: containerId,
+      hasArguments: false,
+      executer: () => {
+        debouncedAddItems(state); // todo: return real promise
+        return Promise.resolve();
+      },
+    },
+    [state]
+  );
+
   const isHidden = useMemo(() => {
     if (!customVisibility) return false;
 
@@ -578,7 +578,6 @@ const ListControl: FC<IListControlProps> = (props) => {
             </Show>
 
             <ButtonGroup
-              type={''}
               items={buttons || []}
               id={containerId}
               size="small"

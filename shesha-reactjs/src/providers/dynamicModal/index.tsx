@@ -56,6 +56,14 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     actionDependencies
   );
 
+  const removeModal = (id: string) => {
+    dispatch(removeModalAction(id));
+  };
+
+  const createModal = (modalProps: IModalProps) => {
+    dispatch(createModalAction({ modalProps }));
+  };
+
   useConfigurableAction<IShowModalActionArguments>(
     {
       name: 'Show Dialog',
@@ -104,6 +112,23 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     actionDependencies
   );
 
+  const getLatestVisibleInstance = () => {
+    const { instances = {} } = state;
+    const keys = Object.keys(instances);
+    let highestIndexKey = null;
+
+    for (let i = 0; i < keys.length; i++) {
+      if (
+        instances[keys[i]]?.isVisible &&
+        (highestIndexKey === null || instances[keys[i]]?.index > instances[highestIndexKey]?.index)
+      ) {
+        highestIndexKey = keys[i];
+      }
+    }
+
+    return highestIndexKey ? instances[highestIndexKey] : null;
+  };
+
   //#region Close the latest Dialog
   useConfigurableAction<IShowModalActionArguments>(
     {
@@ -129,33 +154,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   );
   //#endregion
 
-  const getLatestVisibleInstance = () => {
-    const { instances = {} } = state;
-    const keys = Object.keys(instances);
-    let highestIndexKey = null;
-
-    for (let i = 0; i < keys.length; i++) {
-      if (
-        instances[keys[i]]?.isVisible &&
-        (highestIndexKey === null || instances[keys[i]]?.index > instances[highestIndexKey]?.index)
-      ) {
-        highestIndexKey = keys[i];
-      }
-    }
-
-    return highestIndexKey ? instances[highestIndexKey] : null;
-  };
-
   const open = (modalProps: IModalProps) => {
     dispatch(openAction(modalProps));
-  };
-
-  const createModal = (modalProps: IModalProps) => {
-    dispatch(createModalAction({ modalProps }));
-  };
-
-  const removeModal = (id: string) => {
-    dispatch(removeModalAction(id));
   };
 
   const modalExists = (id: string) => {

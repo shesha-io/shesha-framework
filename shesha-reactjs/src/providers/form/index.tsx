@@ -86,6 +86,120 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   needDebug,
   ...props
 }) => {
+
+  const initial: IFormStateInternalContext = {
+    ...FORM_CONTEXT_INITIAL_STATE,
+    name: name,
+    formMode: mode,
+    form,
+    actions: convertActions(null, actions),
+    sections: convertSectionsToList(null, sections),
+    context,
+    formSettings: formSettings,
+    formMarkup: formMarkup,
+  };
+
+  const [/*isPending*/, startTransition] = useTransition();
+
+  const [state, dispatch] = useThunkReducer(formReducer, initial);
+
+  const toolboxComponents = useFormDesignerComponents();
+
+  const formProviderContext = useFormProviderContext();
+
+  const filteredComponents = useRef<string[]>(
+    getFilteredComponentIds(
+      allComponents,
+      {
+        ...formProviderContext,
+        data: state.formData,
+        formMode: state.formMode
+      },
+      propertyFilter
+    )
+  );
+
+  useEffect(() => {
+    filteredComponents.current = getFilteredComponentIds(
+      allComponents,
+      {
+        ...formProviderContext,
+        data: state.formData,
+        formMode: state.formMode
+      },
+      propertyFilter
+    );
+  }, [allComponents, propertyFilter, formProviderContext, state.formData, state.formMode]);
+
+  const isComponentFiltered = (component: IConfigurableFormComponent): boolean => {
+    return filteredComponents.current?.includes(component.id);
+  };
+
+  const getToolboxComponent = useCallback((type: string) => toolboxComponents[type], [toolboxComponents]);
+
+  //#region data fetcher
+
+  const fetchData = (): Promise<any> => {
+    return refetchData ? refetchData() : Promise.reject('fetcher not specified');
+  };
+
+  //#endregion
+
+  const setFormMode = (formMode: FormMode) => {
+    dispatch(setFormModeAction(formMode));
+  };
+
+  const setSettings = (settings: IFormSettings) => {
+    dispatch(setSettingsAction(settings));
+  };
+
+  useEffect(() => {
+    if (formSettings !== state.formSettings) {
+      setSettings(formSettings);
+    }
+  }, [formSettings]);
+
+  useEffect(() => {
+    if (mode !== state.formMode) {
+      setFormMode(mode);
+    }
+  }, [mode]);
+
+  const getComponentModel = (componentId) => {
+    return allComponents[componentId];
+  };
+
+  const isComponentReadOnly = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>): boolean => {
+    const disabledByCondition = model.isDynamic !== true && state.enabledComponentIds && !state.enabledComponentIds.includes(model.id);
+
+    return state.formMode !== 'designer' && disabledByCondition;
+  };
+
+  const isComponentHidden = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>): boolean => {
+    const hiddenByCondition = model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
+
+    return state.formMode !== 'designer' && hiddenByCondition;
+  };
+
+  const getChildComponents = (componentId: string) => {
+    const childIds = componentRelations[componentId];
+    if (!childIds) return [];
+    const components = childIds.map((childId) => {
+      return allComponents[childId];
+    });
+    return components;
+  };
+
+  const getChildComponentIds = (containerId: string): string[] => {
+    const childIds = componentRelations[containerId];
+    return childIds ?? [];
+  };
+
+  //#region Set visible components
+  const setVisibleComponents = (payload: ISetVisibleComponentsPayload) => {
+    dispatch(setVisibleComponentsAction(payload));
+  };
+
   //#region configurable actions
 
   const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : null;
@@ -162,119 +276,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   );
 
   //#endregion
-
-  const initial: IFormStateInternalContext = {
-    ...FORM_CONTEXT_INITIAL_STATE,
-    name: name,
-    formMode: mode,
-    form,
-    actions: convertActions(null, actions),
-    sections: convertSectionsToList(null, sections),
-    context,
-    formSettings: formSettings,
-    formMarkup: formMarkup,
-  };
-
-  const [_isPending, startTransition] = useTransition();
-
-  const [state, dispatch] = useThunkReducer(formReducer, initial);
-
-  const toolboxComponents = useFormDesignerComponents();
-
-  const formProviderContext = useFormProviderContext();
-
-  const filteredComponents = useRef<string[]>(
-    getFilteredComponentIds(
-      allComponents,
-      {
-        ...formProviderContext,
-        data: state.formData,
-        formMode: state.formMode
-      },
-      propertyFilter
-    )
-  );
-
-  useEffect(() => {
-    filteredComponents.current = getFilteredComponentIds(
-      allComponents,
-      {
-        ...formProviderContext,
-        data: state.formData,
-        formMode: state.formMode
-      },
-      propertyFilter
-    );
-  }, [allComponents, propertyFilter, formProviderContext, state.formData, state.formMode]);
-
-  const isComponentFiltered = (component: IConfigurableFormComponent): boolean => {
-    return filteredComponents.current?.includes(component.id);
-  };
-
-  const getToolboxComponent = useCallback((type: string) => toolboxComponents[type], [toolboxComponents]);
-
-  //#region data fetcher
-
-  const fetchData = (): Promise<any> => {
-    return refetchData ? refetchData() : Promise.reject('fetcher not specified');
-  };
-
-  //#endregion
-
-  useEffect(() => {
-    if (formSettings !== state.formSettings) {
-      setSettings(formSettings);
-    }
-  }, [formSettings]);
-
-  useEffect(() => {
-    if (mode !== state.formMode) {
-      setFormMode(mode);
-    }
-  }, [mode]);
-
-  const getComponentModel = (componentId) => {
-    return allComponents[componentId];
-  };
-
-  const isComponentReadOnly = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>): boolean => {
-    const disabledByCondition = model.isDynamic !== true && state.enabledComponentIds && !state.enabledComponentIds.includes(model.id);
-
-    return state.formMode !== 'designer' && disabledByCondition;
-  };
-
-  const isComponentHidden = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>): boolean => {
-    const hiddenByCondition = model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
-
-    return state.formMode !== 'designer' && hiddenByCondition;
-  };
-
-  const getChildComponents = (componentId: string) => {
-    const childIds = componentRelations[componentId];
-    if (!childIds) return [];
-    const components = childIds.map((childId) => {
-      return allComponents[childId];
-    });
-    return components;
-  };
-
-  const getChildComponentIds = (containerId: string): string[] => {
-    const childIds = componentRelations[containerId];
-    return childIds ?? [];
-  };
-
-  const setFormMode = (formMode: FormMode) => {
-    dispatch(setFormModeAction(formMode));
-  };
-
-  const setSettings = (settings: IFormSettings) => {
-    dispatch(setSettingsAction(settings));
-  };
-
-  //#region Set visible components
-  const setVisibleComponents = (payload: ISetVisibleComponentsPayload) => {
-    dispatch(setVisibleComponentsAction(payload));
-  };
 
   const updateVisibleComponents = (formContext: IFormStateInternalContext) => {
     /*const comps = updateSettingsComponentsDict(
@@ -366,27 +367,27 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const updateStateFormData = (payload: ISetFormDataPayload) => {
     startTransition(() => {
-      dispatch((dispatchThunk, getState) => {
-        dispatchThunk(setFormDataAction(payload));
-        const newState = getState();
+    dispatch((dispatchThunk, getState) => {
+      dispatchThunk(setFormDataAction(payload));
+      const newState = getState();
 
-        if (typeof props.onValuesChange === 'function')
-          props.onValuesChange(payload.values, newState.formData);
+      if (typeof props.onValuesChange === 'function')
+        props.onValuesChange(payload.values, newState.formData);
 
-        // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
+      // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
 
-        if (!newState.visibleComponentIds || newState.visibleComponentIds.length === 0) {
-          updateVisibleComponents(newState);
-        } else {
-          debouncedUpdateVisibleComponents(newState);
-        }
-        // Update enabled components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
-        if (!newState.enabledComponentIds || newState.enabledComponentIds.length === 0) {
-          updateEnabledComponents(newState);
-        } else {
-          debouncedUpdateEnabledComponents(newState);
-        }
-      });
+      if (!newState.visibleComponentIds || newState.visibleComponentIds.length === 0) {
+        updateVisibleComponents(newState);
+      } else {
+        debouncedUpdateVisibleComponents(newState);
+      }
+      // Update enabled components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
+      if (!newState.enabledComponentIds || newState.enabledComponentIds.length === 0) {
+        updateEnabledComponents(newState);
+      } else {
+        debouncedUpdateEnabledComponents(newState);
+      }
+    });
     });
   };
 

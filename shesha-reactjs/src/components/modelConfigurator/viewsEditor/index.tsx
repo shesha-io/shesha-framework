@@ -1,22 +1,20 @@
-import React, { FC, useMemo } from 'react';
-import { Button, Col, Form, Input, Row } from 'antd';
-import { EntityViewConfigurationDto } from '@/apis/modelConfigurations';
-import { DeleteFilled, PlusOutlined } from '@ant-design/icons';
 import FormAutocomplete from '@/components/formAutocomplete';
+import React, { FC, useMemo } from 'react';
+import {
+    Button,
+    Col,
+    Form,
+    Input,
+    Row
+    } from 'antd';
+import { DeleteFilled, PlusOutlined } from '@ant-design/icons';
+import { EntityViewConfigurationDto } from '@/apis/modelConfigurations';
 import { FormIdentifier } from '@/providers/form/models';
 
 interface IViewsEditorProps {
     value?: EntityViewConfigurationDto[];
     onChange?: (value: EntityViewConfigurationDto[]) => void;
 }
-
-export const ViewsEditorComponent: FC<IViewsEditorProps> = (props) => {
-    return (
-        <Form.Item name={"viewConfigurations"} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
-            <ViewsEditor {...props} />
-        </Form.Item>
-    );
-};
 
 const ViewsEditor: FC<IViewsEditorProps> = (props) => {
     const onDeleteClick = (type: string) => {
@@ -82,5 +80,13 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
                 </Col>
             </Row>
         </div>
+    );
+};
+
+export const ViewsEditorComponent: FC<IViewsEditorProps> = (props) => {
+    return (
+        <Form.Item name={"viewConfigurations"} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
+            <ViewsEditor {...props} />
+        </Form.Item>
     );
 };

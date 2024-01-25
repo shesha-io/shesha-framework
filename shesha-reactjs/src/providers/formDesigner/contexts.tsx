@@ -25,8 +25,6 @@ export type IFlagSucceededFlags = 'addComponent' | 'updateComponent' | 'deleteCo
 export type IFlagErrorFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
 export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
 
-export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> {}
-
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
 }
@@ -49,6 +47,8 @@ export interface IFormDesignerStateContext
   // todo: move to persister
   formSettings: IFormSettings;
 }
+
+export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> {}
 
 export interface AddComponentPayloadBase {
   index: number;

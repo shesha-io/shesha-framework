@@ -1,10 +1,5 @@
 import { IConfigurableItemBase, IConfigurableItemGroup } from './contexts';
 
-export const getItemById = (items: IConfigurableItemBase[], id: string): IConfigurableItemBase => {
-  const position = getItemPositionById(items, id);
-  return position ? position.ownerArray[position.index] : null;
-};
-
 export interface IItemPosition {
   ownerArray: IConfigurableItemBase[];
   index: number;
@@ -29,4 +24,9 @@ export const getItemPositionById = (items: IConfigurableItemGroup[], id: string)
   }
 
   return null;
+};
+
+export const getItemById = (items: IConfigurableItemBase[], id: string): IConfigurableItemBase => {
+  const position = getItemPositionById(items, id);
+  return position ? position.ownerArray[position.index] : null;
 };

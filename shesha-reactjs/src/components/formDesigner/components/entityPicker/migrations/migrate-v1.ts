@@ -1,54 +1,11 @@
-import { IEntityPickerComponentProps } from "..";
-import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
-import { SettingsMigrationContext } from "@/interfaces";
-import { IConfigurableActionColumnsProps, IConfigurableColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
-import { IModalProps } from "@/providers/dynamicModal/models";
-import { getClosestTableId } from "@/providers/form/utils";
+import { getClosestTableId } from '@/providers/form/utils';
+import { IConfigurableActionColumnsProps, IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IEntityPickerComponentProps } from '..';
+import { IModalProps } from '@/providers/dynamicModal/models';
+import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
+import { SettingsMigrationContext } from '@/interfaces';
 import { upgradeActionConfig } from '../../_common-migrations/upgrade-action-owners';
-
-export const migrateV0toV1 = (props: IEntityPickerComponentProps, context: SettingsMigrationContext): IEntityPickerComponentProps => {
-    const { items } = props;
-    const newItems = items.map(item => {
-        if (item.itemType === "item") {
-            const col = item as IConfigurableColumnsProps;
-            if (col.columnType === "action") {
-                const actonColumn = col as IConfigurableActionColumnsProps;
-                if (!actonColumn.actionConfiguration) {
-                    const oldColumn = actonColumn as IConfigurableActionColumnsPropsV0;
-                    switch (oldColumn.action) {
-                        case "navigate": {
-                            actonColumn.actionConfiguration = getNavigateActionConfig(oldColumn);
-                            break;
-                        }
-                        case "dialogue": {
-                            actonColumn.actionConfiguration = getShowDialogActionConfig(oldColumn);
-                            break;
-                        }
-                        case "editRow": {
-                            /*nop*/
-                        }
-                        case "deleteRow": {
-                            actonColumn.actionConfiguration = getDeleteRowActionConfig(oldColumn, context);
-                            break;
-                        }
-                        case "executeFormAction": {
-                            /*nop*/
-                        }
-                        case "executeScript": {
-                            actonColumn.actionConfiguration = getExecuteScriptActionConfig(oldColumn);
-                            break;
-                        }
-                    }
-
-                    actonColumn.actionConfiguration = upgradeActionConfig(actonColumn.actionConfiguration, context);
-                }
-            }
-        }
-        return item;
-    });
-    return { ...props, items: newItems };
-};
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
@@ -73,7 +30,7 @@ const getNavigateActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): 
 };
 
 const wrapInConfirmationIfRequired = (actionConfig: IConfigurableActionConfiguration, oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
-    if (oldColumn.showConfirmDialogBeforeSubmit){
+    if (oldColumn.showConfirmDialogBeforeSubmit) {
         return makeAction({
             actionOwner: 'Common',
             actionName: 'Show Confirmation Dialog',
@@ -139,7 +96,7 @@ const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0)
     };
     actionConfiguration.actionArguments = modalArguments;
 
-    if (convertedProps?.onSuccessRedirectUrl){
+    if (convertedProps?.onSuccessRedirectUrl) {
         actionConfiguration.handleSuccess = true;
         actionConfiguration.onSuccess = makeAction({
             actionOwner: 'Common',
@@ -150,7 +107,7 @@ const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0)
         });
 
     };
-    
+
     return actionConfiguration;
 };
 
@@ -210,4 +167,47 @@ interface IConfigurableActionColumnsPropsV0 {
 
     showConfirmDialogBeforeSubmit?: boolean;
     modalConfirmDialogMessage?: string;
-} 
+}
+
+export const migrateV0toV1 = (props: IEntityPickerComponentProps, context: SettingsMigrationContext): IEntityPickerComponentProps => {
+    const { items } = props;
+    const newItems = items.map(item => {
+        if (item.itemType === "item") {
+            const col = item as IConfigurableColumnsProps;
+            if (col.columnType === "action") {
+                const actonColumn = col as IConfigurableActionColumnsProps;
+                if (!actonColumn.actionConfiguration) {
+                    const oldColumn = actonColumn as IConfigurableActionColumnsPropsV0;
+                    switch (oldColumn.action) {
+                        case "navigate": {
+                            actonColumn.actionConfiguration = getNavigateActionConfig(oldColumn);
+                            break;
+                        }
+                        case "dialogue": {
+                            actonColumn.actionConfiguration = getShowDialogActionConfig(oldColumn);
+                            break;
+                        }
+                        case "editRow": {
+                            /*nop*/
+                        }
+                        case "deleteRow": {
+                            actonColumn.actionConfiguration = getDeleteRowActionConfig(oldColumn, context);
+                            break;
+                        }
+                        case "executeFormAction": {
+                            /*nop*/
+                        }
+                        case "executeScript": {
+                            actonColumn.actionConfiguration = getExecuteScriptActionConfig(oldColumn);
+                            break;
+                        }
+                    }
+
+                    actonColumn.actionConfiguration = upgradeActionConfig(actonColumn.actionConfiguration, context);
+                }
+            }
+        }
+        return item;
+    });
+    return { ...props, items: newItems };
+};

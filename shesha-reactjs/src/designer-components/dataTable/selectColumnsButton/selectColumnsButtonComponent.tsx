@@ -1,26 +1,25 @@
-import { SlidersOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import React, { FC } from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { useDataTableStore } from '@/providers';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import React from 'react';
 import settingsFormJson from './settingsForm.json';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { SelectColumnsButton } from './selectColumnsButton';
+import { SlidersOutlined } from '@ant-design/icons';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
-export interface IPagerComponentProps extends IConfigurableFormComponent {}
+export interface ISelectColumnsButtonComponentProps extends IConfigurableFormComponent { }
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const SelectColumnsButtonComponent: IToolboxComponent<IPagerComponentProps> = {
+const SelectColumnsButtonComponent: IToolboxComponent<ISelectColumnsButtonComponentProps> = {
   type: 'datatable.selectColumnsButton',
   name: 'Table Select Columns Button',
   icon: <SlidersOutlined />,
-  Factory: ({ model }) => {
-    return <SelectColumnsButton {...model} />;
+  Factory: ({ }) => {
+    return <SelectColumnsButton />;
   },
-  initModel: (model: IPagerComponentProps) => {
+  initModel: (model: ISelectColumnsButtonComponentProps) => {
     return {
       ...model,
       items: [],
@@ -28,31 +27,11 @@ const SelectColumnsButtonComponent: IToolboxComponent<IPagerComponentProps> = {
   },
   migrator: m => m
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IPagerComponentProps>(1, (prev) => migrateVisibility(prev))    
-,
+    .add<ISelectColumnsButtonComponentProps>(1, (prev) => migrateVisibility(prev))
+  ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   isHidden: true, // note: to be removed, now is used only for backward compatibility
-};
-
-export const SelectColumnsButton: FC<IPagerComponentProps> = ({}) => {
-  const {
-    isInProgress: { isSelectingColumns },
-    setIsInProgressFlag,
-  } = useDataTableStore();
-
-  const startTogglingColumnVisibility = () => setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
-
-  return (
-    <Button
-      type="link"
-      className="extra-btn column-visibility"
-      icon={<SlidersOutlined rotate={90} />}
-      disabled={!!isSelectingColumns}
-      onClick={startTogglingColumnVisibility}
-      size="small"
-    />
-  );
 };
 
 export default SelectColumnsButtonComponent;

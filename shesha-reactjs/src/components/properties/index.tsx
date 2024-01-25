@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
-import { Select, SelectProps } from 'antd';
 import { MetadataProvider, useMetadata } from '@/providers';
+import { Select, SelectProps } from 'antd';
 
 interface IPropertiesWrapperProps extends SelectProps {
   modelType: string;
@@ -12,14 +12,6 @@ export interface IFormProperty {
   propertyName: string;
   dataType: string;
 }
-
-const Properties: FC<IPropertiesWrapperProps> = ({ modelType, children, ...props }) => {
-  return (
-    <MetadataProvider modelType={modelType}>
-      <PropertiesEditor {...props}>{children}</PropertiesEditor>
-    </MetadataProvider>
-  );
-};
 
 interface PropertiesEditorProps extends SelectProps {
   mode?: 'multiple' | 'tags';
@@ -49,6 +41,14 @@ const PropertiesEditor: FC<PropertiesEditorProps> = ({ mode, ...props }) => {
         </Select.Option>
       ))}
     </Select>
+  );
+};
+
+const Properties: FC<IPropertiesWrapperProps> = ({ modelType, children, ...props }) => {
+  return (
+    <MetadataProvider modelType={modelType}>
+      <PropertiesEditor {...props}>{children}</PropertiesEditor>
+    </MetadataProvider>
   );
 };
 

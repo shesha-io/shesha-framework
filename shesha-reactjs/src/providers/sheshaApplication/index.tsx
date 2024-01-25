@@ -99,15 +99,15 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
 
   const authRef = useRef<IAuthProviderRefProps>();
 
+  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
+    dispatch(updateToolboxComponentGroupsAction(payload));
+  };
+
   useDeepCompareEffect(() => {
     if (toolboxComponentGroups?.length !== 0) {
       updateToolboxComponentGroups(toolboxComponentGroups);
     }
   }, [toolboxComponentGroups]);
-
-  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
-    dispatch(updateToolboxComponentGroupsAction(payload));
-  };
 
   const setRequestHeaders = (headers: IRequestHeaders) => {
     dispatch(setHeadersAction(headers));

@@ -1,10 +1,5 @@
 import { ColumnsItemProps, IConfigurableColumnGroup } from './models';
 
-export const getItemById = (items: ColumnsItemProps[], id: string): ColumnsItemProps => {
-  const position = getItemPositionById(items, id);
-  return position ? position.ownerArray[position.index] : null;
-};
-
 export interface IItemPosition {
   ownerArray: ColumnsItemProps[];
   index: number;
@@ -25,4 +20,9 @@ export const getItemPositionById = (items: ColumnsItemProps[], id: string): IIte
     }
   }
   return null;
+};
+
+export const getItemById = (items: ColumnsItemProps[], id: string): ColumnsItemProps => {
+  const position = getItemPositionById(items, id);
+  return position ? position.ownerArray[position.index] : null;
 };

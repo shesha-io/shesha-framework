@@ -1,6 +1,6 @@
 import { Checkbox, Form, Input, InputNumber, Select } from 'antd';
 import React, { FC, useState } from 'react';
-import { QueryBuilderComponentRenderer } from '@/designer-components/queryBuilder/queryBuilderComponent';
+import { QueryBuilderRenderer } from '@/designer-components/queryBuilder/queryBuilderRenderer';
 import { QueryBuilderWithModelType } from '@/designer-components/queryBuilder/queryBuilderWithModelType';
 import { Autocomplete } from '@/components/autocomplete';
 import FormAutocomplete from '@/components/formAutocomplete';
@@ -203,7 +203,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
           <SectionSeparator title="Query builder" />
 
           <QueryBuilderWithModelType modelType={state?.entityType}>
-            <QueryBuilderComponentRenderer
+            <QueryBuilderRenderer
               readOnly={readOnly}
               propertyName="filters"
               type={''}

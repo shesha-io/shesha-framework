@@ -1,10 +1,5 @@
 import { IModelItem } from '@/interfaces/modelConfigurator';
 
-export const getItemById = (items: IModelItem[], id: string): IModelItem => {
-  const position = getItemPositionById(items, id);
-  return position ? position.ownerArray[position.index] : null;
-};
-
 export interface IItemPosition {
   ownerArray: IModelItem[];
   index: number;
@@ -25,4 +20,9 @@ export const getItemPositionById = (items: IModelItem[], id: string): IItemPosit
     }
   }
   return null;
+};
+
+export const getItemById = (items: IModelItem[], id: string): IModelItem => {
+  const position = getItemPositionById(items, id);
+  return position ? position.ownerArray[position.index] : null;
 };

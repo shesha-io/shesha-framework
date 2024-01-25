@@ -1,35 +1,13 @@
-import { LayoutOutlined } from '@ant-design/icons';
-import { Alert } from 'antd';
-import React, { FC, Fragment, useEffect, useMemo } from 'react';
-import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { IToolboxComponent, YesNoInherit } from '@/interfaces';
-import { useDataTableStore, useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
-import DataTableProvider from '@/providers/dataTable';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import React from 'react';
 import settingsFormJson from './settingsForm.json';
-import { ColumnSorting, DataFetchingMode, FilterExpression, GroupingItem, ISortingItem, SortMode } from '@/providers/dataTable/interfaces';
+import { FormMarkup } from '@/providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { LayoutOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { ConfigurableFormItem } from '@/components';
-import { evaluateYesNo } from '@/utils/form';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
-
-export interface ITableContextComponentProps extends IConfigurableFormComponent {
-  sourceType?: 'Form' | 'Entity' | 'Url';
-  entityType?: string;
-  endpoint?: string;
-  components?: IConfigurableFormComponent[]; // If isDynamic we wanna
-  dataFetchingMode?: DataFetchingMode;
-  defaultPageSize?: number;
-  grouping?: GroupingItem[];
-  sortMode?: SortMode;
-  strictSortBy?: string;
-  strictSortOrder?: ColumnSorting;
-  standardSorting?: ISortingItem[];
-  allowReordering?: YesNoInherit;
-  permanentFilter?: FilterExpression;
-}
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { TableContext } from './tableContext';
+import { ITableContextComponentProps } from './models';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -72,114 +50,6 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-};
-
-export const TableContext: FC<ITableContextComponentProps> = (props) => {
-
-  const uniqueKey = useMemo(() => {
-    return `${props.sourceType}_${props.propertyName}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
-  }, [props.sourceType, props.propertyName, props.entityType]);
-
-  return <TableContextInner key={uniqueKey} {...props} />;
-};
-
-interface ITableContextInnerProps extends ITableContextComponentProps {
-}
-
-export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
-  const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
-  const { formMode } = useForm();
-  const { data } = useFormData();
-
-  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
-  const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
-
-  const isDesignMode = formMode === 'designer';
-
-  const getDataPath = evaluateString(endpoint, { data });
-
-  const configurationWarningMessage = !sourceType
-    ? 'Select `Source type` on the settings panel'
-    : sourceType === 'Entity' && !entityType
-      ? 'Select `Entity Type` on the settings panel'
-      : sourceType === 'Url' && !endpoint
-        ? 'Select `Custom Endpoint` on the settings panel'
-        : sourceType === 'Form' && !propertyName
-          ? 'Select `propertyName` on the settings panel'
-          : null;
-
-  if (isDesignMode && configurationWarningMessage)
-    return (
-      <Alert
-        className="sha-designer-warning"
-        message="Table is not configured"
-        description={configurationWarningMessage}
-        type="warning"
-        showIcon
-      />
-    );
-
-  const provider = (getFieldValue = undefined, onChange = undefined) =>
-    <DataTableProvider
-      userConfigId={props.id}
-      entityType={entityType}
-      getDataPath={getDataPath}
-      propertyName={propertyName}
-      actionOwnerId={id}
-      actionOwnerName={componentName}
-      sourceType={props.sourceType}
-      initialPageSize={props.defaultPageSize ?? 10}
-      dataFetchingMode={props.dataFetchingMode ?? 'paging'}
-      getFieldValue={getFieldValue}
-      onChange={onChange}
-      grouping={props.grouping}
-      sortMode={props.sortMode}
-      strictSortBy={props.strictSortBy}
-      strictSortOrder={props.strictSortOrder}
-      standardSorting={props.standardSorting}
-      allowReordering={evaluateYesNo(allowReordering, formMode)}
-      permanentFilter={permanentFilter}
-    >
-      <TableContextAccessor {...props} />
-    </DataTableProvider>
-    ;
-
-  return sourceType === 'Form'
-    ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
-      {(value, onChange) => provider(() => value, onChange)}
-    </ConfigurableFormItem>
-    : provider();
-};
-
-const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
-  const { registerActions } = useForm();
-  const { selectedRow, refreshTable, exportToExcel, setIsInProgressFlag } = useDataTableStore();
-
-  const toggleColumnsSelector = () => {
-    setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
-  };
-
-  const toggleAdvancedFilter = () => {
-    setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
-  };
-
-  // register available actions, refresh on every table configuration loading or change of the table Id
-  useEffect(
-    () =>
-      registerActions(id, {
-        refresh: refreshTable,
-        toggleColumnsSelector,
-        toggleAdvancedFilter,
-        exportToExcel,
-      }),
-    [selectedRow]
-  );
-
-  return (
-    <Fragment>
-      <ComponentsContainer containerId={id} />
-    </Fragment>
-  );
 };
 
 export default TableContextComponent;

@@ -16,19 +16,6 @@ const ReportTestItems: ButtonGroupItemProps[] = [
     { id: 'r3', name: 'btn3', label: 'report item 3', itemType: 'item', itemSubType: 'button', sortOrder: 2 },
 ];
 
-export const ReportingActions: FC<PropsWithChildren<IReportingActionsProps>> = ({ children }) => {
-    return (
-        <DynamicActionsProvider
-            id='reports'
-            name='Reports'
-            renderingHoc={reportingActionsHoc}
-            useEvaluator={useReportingActions}
-        >
-            {children}
-        </DynamicActionsProvider>
-    );
-};
-
 const useReportingActions: DynamicItemsEvaluationHook = (args) => {
     const { metadata } = useMetadata(false) ?? {};
     
@@ -50,4 +37,17 @@ const reportingActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
     
         return (<WrappedComponent {...props} items={testItems} hocType={'report'}/>);
     };
+};
+
+export const ReportingActions: FC<PropsWithChildren<IReportingActionsProps>> = ({ children }) => {
+    return (
+        <DynamicActionsProvider
+            id='reports'
+            name='Reports'
+            renderingHoc={reportingActionsHoc}
+            useEvaluator={useReportingActions}
+        >
+            {children}
+        </DynamicActionsProvider>
+    );
 };

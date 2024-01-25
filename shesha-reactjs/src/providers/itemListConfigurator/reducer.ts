@@ -10,6 +10,15 @@ import {
 } from './contexts';
 import { getItemById, getItemPositionById } from './utils';
 
+function removeIdDeep(list: IConfigurableItemBase[], idToRemove: string, childrenKey: string = 'children') {
+  const filtered = list.filter((entry) => entry.id !== idToRemove);
+
+  return filtered.map((entry) => {
+    if (!entry[childrenKey]) return entry;
+    return { ...entry, [childrenKey]: removeIdDeep(entry[childrenKey], idToRemove, childrenKey) };
+  });
+}
+
 const itemListConfiguratorReducer = handleActions<IItemListConfiguratorStateContext, any>(
   {
     [ItemListConfiguratorActionEnums.AddItem]: (
@@ -155,12 +164,3 @@ const itemListConfiguratorReducer = handleActions<IItemListConfiguratorStateCont
 );
 
 export default itemListConfiguratorReducer;
-
-function removeIdDeep(list: IConfigurableItemBase[], idToRemove: string, childrenKey: string = 'children') {
-  const filtered = list.filter((entry) => entry.id !== idToRemove);
-
-  return filtered.map((entry) => {
-    if (!entry[childrenKey]) return entry;
-    return { ...entry, [childrenKey]: removeIdDeep(entry[childrenKey], idToRemove, childrenKey) };
-  });
-}

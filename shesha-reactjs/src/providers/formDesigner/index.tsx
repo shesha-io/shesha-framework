@@ -93,6 +93,13 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const statePresent = state.present;
 
+  const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
+    dispatch((dispatchThunk, _getState) => {
+      dispatchThunk(setFlatComponentsAction(flatComponents));
+      dispatchThunk(UndoableActionCreators.clearHistory());
+    });
+  };
+
   useEffect(() => {
     if (
       flatComponents &&
@@ -103,25 +110,23 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     }
   }, [flatComponents]);
 
+  const setReadOnly = (value: boolean) => {
+    dispatch(setReadOnlyAction(value));
+  };
+
   useEffect(() => {
     setReadOnly(readOnly);
   }, [readOnly]);
+
+  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
+    dispatch(updateToolboxComponentGroupsAction(payload));
+  };
 
   useDeepCompareEffect(() => {
     if (toolboxComponentGroups?.length !== 0) {
       updateToolboxComponentGroups(toolboxComponentGroups);
     }
   }, [toolboxComponentGroups]);
-
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
-
-  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
-    dispatch(updateToolboxComponentGroupsAction(payload));
-  };
-
-  const setReadOnly = (value: boolean) => {
-    dispatch(setReadOnlyAction(value));
-  };
 
   const addDataProperty = useCallback((payload: IAddDataPropertyPayload) => {
     dispatch(dataPropertyAddAction(payload));
@@ -189,14 +194,6 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     }
 
     return null;
-  };
-
-
-  const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
-    dispatch((dispatchThunk, _getState) => {
-      dispatchThunk(setFlatComponentsAction(flatComponents));
-      dispatchThunk(UndoableActionCreators.clearHistory());
-    });
   };
 
   const setDebugMode = (isDebug: boolean) => {

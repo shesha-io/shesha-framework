@@ -23,14 +23,6 @@ import { useStyles } from './styles/styles';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 
-export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
-  return restProps.readOnly ? (
-    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
-  ) : (
-    <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
-  );
-};
-
 const getIdFromValue = (value: string | IEntityReferenceDto) => {
   return (value as IEntityReferenceDto)?.id ?? (value as string);
 };
@@ -114,6 +106,34 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
   });
   const selectedItems = selection?.rows;
 
+  const selectedMode = mode === 'single' ? undefined : mode;
+
+  const isMultiple = mode === 'multiple';
+
+  const onDblClick = (row: IAnyObject) => {
+    if (!row) return;
+    if (onSelect) {
+      onSelect(row);
+    } else {
+      if (isMultiple) {
+        const selectedItems = value && Array.isArray(value) ? value : [];
+        if (!selectedItems.includes(row.id))
+          selectedItems.push(
+            useRawValues ? row.id : { id: row.id, _displayName: row[displayEntityKey], _className: props.entityType }
+          );
+
+        onChange(selectedItems, null);
+      } else {
+        onChange(
+          useRawValues ? row.id : { id: row.id, _displayName: row[displayEntityKey], _className: props.entityType },
+          null
+        );
+      }
+    }
+
+    hidePickerDialog();
+  };
+
   const modalProps: IModalProps = {
     id: modalId,
     isVisible: false,
@@ -131,10 +151,6 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
   };
 
   const dynamicModal = useModal(modalProps);
-
-  const selectedMode = mode === 'single' ? undefined : mode;
-
-  const isMultiple = mode === 'multiple';
 
   const hasFilters = filters?.length > 0;
 
@@ -201,38 +217,14 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     } else console.warn('Modal Form is not specified');
   };
 
-  const onDblClick = (row: IAnyObject) => {
-    if (!row) return;
-    if (onSelect) {
-      onSelect(row);
-    } else {
-      if (isMultiple) {
-        const selectedItems = value && Array.isArray(value) ? value : [];
-        if (!selectedItems.includes(row.id))
-          selectedItems.push(
-            useRawValues ? row.id : { id: row.id, _displayName: row[displayEntityKey], _className: props.entityType }
-          );
-
-        onChange(selectedItems, null);
-      } else {
-        onChange(
-          useRawValues ? row.id : { id: row.id, _displayName: row[displayEntityKey], _className: props.entityType },
-          null
-        );
-      }
-    }
-
-    hidePickerDialog();
-  };
-
-  const onSelectRow = (_index: number, row: IAnyObject) => {
-    handleOnChange(row);
-  };
-
   const handleOnChange = (row: IAnyObject) => {
     if (onChange && !_.isEmpty(row)) {
       onChange(row && (row.id || row.Id), row);
     }
+  };
+
+  const onSelectRow = (_index: number, row: IAnyObject) => {
+    handleOnChange(row);
   };
 
   const handleMultiChange = selectedValues => {
@@ -369,6 +361,14 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
         <EntityPickerEditableInner {...props} disabled={disabled} displayEntityKey={displayEntityKey} />
       </DataTableProvider>
     </>
+  );
+};
+
+export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
+  return restProps.readOnly ? (
+    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
+  ) : (
+    <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );
 };
 

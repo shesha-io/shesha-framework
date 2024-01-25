@@ -7,20 +7,6 @@ import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable
 import { ReactNode } from 'react';
 import { SettingsMigrationContext } from '@/interfaces';
 
-export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigrationContext): IButtonComponentProps => {
-    const actionConfiguration = getActionConfiguration(props, context);
-
-    const result: IButtonComponentProps = {
-        ...props,
-        actionConfiguration: actionConfiguration,
-        type: props['type'] ?? "button",
-        propertyName: props['name'],
-        buttonType: props.buttonType === 'ghost' ? 'default' : props.buttonType,
-        ghost: props.buttonType === 'ghost',
-    };
-    return result;
-};
-
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments'>): IConfigurableActionConfiguration => {
     return {
         _type: undefined,
@@ -288,4 +274,18 @@ interface IModalPropsV0 {
 
     onCancel?: () => void;
 }
-  //#endregion
+//#endregion
+
+export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigrationContext): IButtonComponentProps => {
+    const actionConfiguration = getActionConfiguration(props, context);
+
+    const result: IButtonComponentProps = {
+        ...props,
+        actionConfiguration: actionConfiguration,
+        type: props['type'] ?? "button",
+        propertyName: props['name'],
+        buttonType: props.buttonType === 'ghost' ? 'default' : props.buttonType,
+        ghost: props.buttonType === 'ghost',
+    };
+    return result;
+};
