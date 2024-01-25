@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-use-before-define: 0 */
 import { Alert, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import React, { FC, useEffect, useState, useRef, MutableRefObject } from 'react';
@@ -472,7 +473,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const updateRows = () => {
     rows.current = records?.map((item: any, index) => renderSubForm(item, index));
   };
-
 
   const updateContent = () => {
     setContent(groups 

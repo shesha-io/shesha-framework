@@ -1,11 +1,16 @@
-import React, { FC, ReactNode, useEffect, useState } from 'react';
-import { Empty } from 'antd';
-import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableForm } from '@/components';
-import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
-import { FormMarkup } from '@/providers/form/models';
-import itemSettingsJson from './itemSettings.json';
 import groupSettingsJson from './groupSettings.json';
+import itemSettingsJson from './itemSettings.json';
+import React, {
+  FC,
+  ReactNode,
+  useEffect,
+  useState
+} from 'react';
+import { ConfigurableForm } from '@/components';
+import { Empty } from 'antd';
+import { FormMarkup } from '@/providers/form/models';
+import { useDebouncedCallback } from 'use-debounce';
+import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 
 export interface IProps { }
 
@@ -38,7 +43,6 @@ export const ToolbarItemProperties: FC<IProps> = () => {
         wrapperCol={{ span: 24 }}
         mode="edit"
         markup={markup}
-        onFinish={onSettingsSave}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
       />
@@ -57,10 +61,6 @@ export const ToolbarItemProperties: FC<IProps> = () => {
       </div>
     );
   }
-
-  const onSettingsSave = values => {
-    console.log(values);
-  };
 
   return <>{editor}</>;
 };

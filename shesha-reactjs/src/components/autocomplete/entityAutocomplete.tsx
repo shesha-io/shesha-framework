@@ -4,7 +4,7 @@ import {
   CustomLabeledValue,
   IEntityAutocompleteProps,
   ISelectOption
-  } from './models';
+} from './models';
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
 import { Select } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
@@ -69,8 +69,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
 
   const [autocompleteText, setAutocompleteText] = useState(null);
 
-  useSubscribe(subscribedEventNames, () => debouncedClear(autocompleteText));
-
   const extractProperty = (item: object, propertyName: string): string => {
     const propName = propertyName || '_displayName';
     var path = propName.split('.');
@@ -102,6 +100,8 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
 
     if (onChange) onChange(null);
   }, 300);
+
+  useSubscribe(subscribedEventNames, () => debouncedClear(autocompleteText));
 
   const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
     if (!Boolean(localValue)) return undefined;
@@ -148,7 +148,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
 
   const handleChange = (_value: CustomLabeledValue<TValue>, option: any) => {
     setAutocompleteText(null);
-    
+
     if (!Boolean(onChange)) return;
     const selectedValue = Boolean(option)
       ? Array.isArray(option)
@@ -181,7 +181,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   }
 
   const onFocus = () => {
-    debouncedFetchItems(autocompleteText);    
+    debouncedFetchItems(autocompleteText);
   };
 
   const onClear = () => {
@@ -206,7 +206,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       loading={loading}
       placeholder={selectPlaceholder}
       disabled={disabled}
-      variant={!bordered ? 'borderless' : undefined }
+      variant={!bordered ? 'borderless' : undefined}
       onSelect={handleSelect}
       style={style}
       size={size}

@@ -1,24 +1,25 @@
-import React, { FC, useRef } from 'react';
-import { Select, Input, RefSelectProps, Checkbox } from 'antd';
 import EditableTagGroup from '@/components/editableTagGroup';
-import { IWizardStepProps, IWizardComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
-import { getSettings } from './itemSettings';
-import { nanoid } from '@/utils/uuid';
+import React, { FC, useRef } from 'react';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
-import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
-import { CodeEditor } from '@/components';
-import { useDeepCompareMemo } from '@/hooks';
-import { getActualModel, useApplicationContext } from '@/providers/form/utils';
 import StyleBox from '../styleBox/components/box';
+import {
+  Checkbox,
+  Input,
+  RefSelectProps,
+  Select
+  } from 'antd';
+import { CodeEditor } from '@/components';
+import { getActualModel, useApplicationContext } from '@/providers/form/utils';
+import { getSettings } from './itemSettings';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { IWizardComponentProps, IWizardStepProps } from './models';
+import { nanoid } from '@/utils/uuid';
+import { useDeepCompareMemo } from '@/hooks';
 
 const { Option } = Select;
-
-export const WizardSettingsForm: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
-  return SettingsForm<IWizardComponentProps>({ ...props, children: <WizardSettings {...props} /> });
-};
 
 const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
   const { readOnly } = props;
@@ -206,6 +207,10 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
       </SettingsCollapsiblePanel>
     </>
   );
+};
+
+export const WizardSettingsForm: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
+  return SettingsForm<IWizardComponentProps>({ ...props, children: <WizardSettings {...props} /> });
 };
 
 export default WizardSettingsForm;

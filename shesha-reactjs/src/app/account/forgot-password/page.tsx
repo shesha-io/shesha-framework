@@ -7,20 +7,20 @@ import {
   Button,
   Form,
   Input
-  } from 'antd';
+} from 'antd';
 import { ForgotPasswordPage, VerifyOtpModal } from '@/app-components/pages/account/forgot-password/styles';
 import { IdcardOutlined } from '@ant-design/icons';
+import { PageWithLayout } from '@/interfaces';
 import {
   ResetPasswordVerifyOtpInput,
   useResetPasswordSendOtp,
   useResetPasswordVerifyOtp,
   UserResetPasswordSendOtpQueryParams
-  } from '@/apis/user';
+} from '@/apis/user';
 import { URL_LOGIN_PAGE } from '@/shesha-constants/standard-routes';
 import { useAuth } from '@/providers';
 import { useRouter } from 'next/navigation';
 import { ValidationErrors } from '@/components';
-import { PageWithLayout } from '@/interfaces';
 
 interface IProps { }
 
@@ -44,6 +44,8 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
   } = useResetPasswordSendOtp();
 
   const { mutate: verifyOtpHttp, loading: isVerifyingOtp, error: verifyOtpError } = useResetPasswordVerifyOtp();
+
+  const toggleVerifyOtpModalVisibility = () => setIsVerifyOtpModalVisible((visible) => !visible);
 
   const handleSendOtpFormFinish = ({ mobileNo }: UserResetPasswordSendOtpQueryParams) => {
     if (mobileNo) {
@@ -69,8 +71,6 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
         verifyOtpSuccess(response?.result);
       });
   };
-
-  const toggleVerifyOtpModalVisibility = () => setIsVerifyOtpModalVisible((visible) => !visible);
 
   return (
     <ForgotPasswordPage

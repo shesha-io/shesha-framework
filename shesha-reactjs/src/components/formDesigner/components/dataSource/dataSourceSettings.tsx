@@ -1,22 +1,21 @@
-import React, { FC, useMemo } from 'react';
-import { Divider, Input, InputNumber, Select } from 'antd';
-import { IDataSourceComponentProps } from './models';
-import { MetadataProvider } from '@/providers/metadata';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
-import { SectionSeparator } from '@/components';
 import EndpointsAutocomplete from '../../../endpointsAutocomplete/endpointsAutocomplete';
-import { Autocomplete } from '@/components/autocomplete';
-import TableViewSelectorSettingsModal from '@/designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
+import React, { FC, useMemo } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import TableViewSelectorSettingsModal from '@/designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
+import { Autocomplete } from '@/components/autocomplete';
+import {
+  Divider,
+  Input,
+  InputNumber,
+  Select
+} from 'antd';
+import { IDataSourceComponentProps } from './models';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { MetadataProvider } from '@/providers/metadata';
+import { SectionSeparator } from '@/components';
 
-export const DataSourceSettingsForm: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
-  return (
-    SettingsForm<IDataSourceComponentProps>({...props, children: <DataSourceSettings {...props} />})
-  );
-};
-
-const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = ({readOnly}) => {
+const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = ({ readOnly }) => {
   const { model: state } = useSettingsForm<IDataSourceComponentProps>();
 
   const settings = (
@@ -32,18 +31,18 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
         </Select>
       </SettingsFormItem>
       {(state.sourceType === 'Entity') &&
-      <SettingsFormItem key='entityType' name="entityType" label='Entity Type' jsSetting>
-        <Autocomplete.Raw dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
-      </SettingsFormItem>
+        <SettingsFormItem key='entityType' name="entityType" label='Entity Type' jsSetting>
+          <Autocomplete.Raw dataSourceType='url' dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
+        </SettingsFormItem>
       }
       {(state.sourceType === 'Entity' || state.sourceType === 'Url') &&
-      <SettingsFormItem key='endpoint' name="endpoint"  label='Endpoint' jsSetting>
-        <EndpointsAutocomplete />
-      </SettingsFormItem>
+        <SettingsFormItem key='endpoint' name="endpoint" label='Endpoint' jsSetting>
+          <EndpointsAutocomplete />
+        </SettingsFormItem>
       }
       <SectionSeparator title="Filters" />
-      <SettingsFormItem name="maxResultCount"  label='Max result count' tooltip='Leave empty to get all records' jsSetting>
-        <InputNumber min={0}/>
+      <SettingsFormItem name="maxResultCount" label='Max result count' tooltip='Leave empty to get all records' jsSetting>
+        <InputNumber min={0} />
       </SettingsFormItem>
       <Divider />
       <SettingsFormItem name="filters">
@@ -57,4 +56,10 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
   }, [state.entityType, state.sourceType]);
 
   return state.sourceType === 'Entity' && state.entityType ? meta : settings;
+};
+
+export const DataSourceSettingsForm: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
+  return (
+    SettingsForm<IDataSourceComponentProps>({ ...props, children: <DataSourceSettings {...props} /> })
+  );
 };

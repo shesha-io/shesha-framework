@@ -1,22 +1,16 @@
-import React, { FC } from 'react';
-import { Select, Input, Checkbox } from 'antd';
-import { IButtonGroupComponentProps } from './models';
-import { ButtonGroupSettingsModal } from './buttonGroupSettingsModal';
 import EditableTagGroup from '@/components/editableTagGroup';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
-import SettingsForm from '@/designer-components/_settings/settingsForm';
+import React, { FC } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import { ButtonGroupSettingsModal } from './buttonGroupSettingsModal';
+import { Checkbox, Input, Select } from 'antd';
+import { IButtonGroupComponentProps } from './models';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
 
 const { Option } = Select;
 
-export const ButtonGroupSettingsForm: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
-  return (
-    SettingsForm<IButtonGroupComponentProps>({...props, children: <ButtonGroupSettings {...props}/>})
-  );
-};
-
-const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = ({readOnly}) => {
+const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = ({ readOnly }) => {
 
   return (
     <>
@@ -29,7 +23,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
 
-        <SettingsFormItem name="size" label="Size" tooltip="This will set the size for all buttons"  jsSetting>
+        <SettingsFormItem name="size" label="Size" tooltip="This will set the size for all buttons" jsSetting>
           <Select disabled={readOnly}>
             <Option value="small">Small</Option>
             <Option value="middle">Middle</Option>
@@ -45,7 +39,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
           </Select>
         </SettingsFormItem>
 
-        <SettingsFormItem name="isInline" label="Is Button Inline" valuePropName="checked"  jsSetting>
+        <SettingsFormItem name="isInline" label="Is Button Inline" valuePropName="checked" jsSetting>
           <Checkbox />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
@@ -67,5 +61,11 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
+  );
+};
+
+export const ButtonGroupSettingsForm: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
+  return (
+    SettingsForm<IButtonGroupComponentProps>({ ...props, children: <ButtonGroupSettings {...props} /> })
   );
 };

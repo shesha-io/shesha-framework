@@ -7,35 +7,6 @@ import { IListComponentProps } from '../models';
 import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
 import { SettingsMigrationContext } from '@/interfaces';
 
-export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigrationContext): IListComponentProps => {
-    const { buttons } = props;
-
-    const newButtons = buttons.map(item => {
-        if (item.itemType !== "item")
-            return item;
-            
-        const button = item as IButtonGroupButtonV0;
-        const newItem: IButtonItem = { 
-            ...button,
-            buttonType: button.buttonType === 'ghost' ? 'default' : button.buttonType,
-            ghost: button.buttonType === 'ghost',
-        };
-        newItem.actionConfiguration = getActionConfiguration(button, context);
-
-        return newItem;
-    });
-
-    const formId = props['formPath'] && props['formPath']['id']
-        ? props['formPath']['id']
-        : null;
-
-    return { 
-        ...props, 
-        buttons: newButtons,
-        formId: formId,
-    };
-};
-
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
         _type: undefined,
@@ -51,7 +22,7 @@ const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' |
 const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
     if (buttonProps['actionConfiguration'])
         return buttonProps['actionConfiguration'] as IConfigurableActionConfiguration;
-        
+
     switch (buttonProps.buttonAction) {
         case "cancelFormEdit": {
             return makeAction({
@@ -319,4 +290,33 @@ interface IModalPropsV0 {
 
     onCancel?: () => void;
 }
-  //#endregion
+//#endregion
+
+export const migrateV0toV1 = (props: IListComponentProps, context: SettingsMigrationContext): IListComponentProps => {
+    const { buttons } = props;
+
+    const newButtons = buttons.map(item => {
+        if (item.itemType !== "item")
+            return item;
+
+        const button = item as IButtonGroupButtonV0;
+        const newItem: IButtonItem = {
+            ...button,
+            buttonType: button.buttonType === 'ghost' ? 'default' : button.buttonType,
+            ghost: button.buttonType === 'ghost',
+        };
+        newItem.actionConfiguration = getActionConfiguration(button, context);
+
+        return newItem;
+    });
+
+    const formId = props['formPath'] && props['formPath']['id']
+        ? props['formPath']['id']
+        : null;
+
+    return {
+        ...props,
+        buttons: newButtons,
+        formId: formId,
+    };
+};

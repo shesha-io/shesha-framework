@@ -36,15 +36,15 @@ const CurrencyConverter: FC<ICurrencyConverterProps> = ({
         clearState: clearGlobalState
     } = useGlobalState();
 
-    useEffect(() => {
-        onConvert();
-    }, [uExchange]);
-
     const onConvert = () => {
         setExchange(uAmount * rate);
         setGlobalState({ key: ECHANGE_GLOBAL_KEY, data: uExchange });
         message.info(uExchange);
     };
+
+    useEffect(() => {
+        onConvert();
+    }, [uExchange]);
 
     const onChange = (e) => {
         setAmount(e.target.value);

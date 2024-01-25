@@ -1,23 +1,19 @@
-import React, { FC } from 'react';
-import { Select, Input, Checkbox } from 'antd';
-import SectionSeparator from '@/components/sectionSeparator';
 import EditableTagGroup from '@/components/editableTagGroup';
-import { ITabPaneProps, ITabsComponentProps } from './models';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import itemSettings from './itemSettings.json';
-import { FormMarkup } from '@/providers/form/models';
-import { nanoid } from '@/utils/uuid';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
+import React, { FC } from 'react';
+import SectionSeparator from '@/components/sectionSeparator';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
-import { CodeEditor } from '@/components';
 import StyleBox from '../styleBox/components/box';
+import { Checkbox, Input, Select } from 'antd';
+import { CodeEditor } from '@/components';
+import { FormMarkup } from '@/providers/form/models';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { ITabPaneProps, ITabsComponentProps } from './models';
+import { nanoid } from '@/utils/uuid';
 
 const { Option } = Select;
-
-export const TabSettingsForm: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
-  return SettingsForm<ITabsComponentProps>({ ...props, children: <TabSettings {...props} /> });
-};
 
 const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOnly }) => {
   const { model } = useSettingsForm<ITabsComponentProps>();
@@ -139,4 +135,8 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
       </SettingsFormItem>
     </>
   );
+};
+
+export const TabSettingsForm: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
+  return SettingsForm<ITabsComponentProps>({ ...props, children: <TabSettings {...props} /> });
 };

@@ -1,14 +1,44 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { Form, message, Spin } from 'antd';
+import _ from 'lodash';
+import axios, { AxiosResponse } from 'axios';
+import classNames from 'classnames';
+import cleanDeep from 'clean-deep';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
-import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
-import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { useForm } from '@/providers/form';
-import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
-import { IAnyObject, ValidateErrorEntity } from '@/interfaces';
-import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '@/utils/form';
-import { useGlobalState, useSheshaApplication } from '@/providers';
 import moment from 'moment';
+import qs from 'qs';
+import React, {
+  FC,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useState
+  } from 'react';
+import {
+  addFormFieldsList,
+  hasFiles,
+  jsonToFormData,
+  removeGhostKeys
+  } from '@/utils/form';
+import { axiosHttp } from '@/utils/fetchers';
+import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
+import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
+import { defaultFormProps } from './formDefaults';
+import { Form, message, Spin } from 'antd';
+import { FormConfigurationDto, useFormData } from '@/providers/form/api';
+import { getQueryParams } from '@/utils/url';
+import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
+import { IAnyObject, ValidateErrorEntity } from '@/interfaces';
+import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
+import { nanoid } from '@/utils/uuid';
+import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
+import { StandardEntityActions } from '@/interfaces/metadata';
+import { useDataContextManager } from '@/providers/dataContextManager/index';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { useForm } from '@/providers/form';
+import { useFormDesigner } from '@/providers/formDesigner';
+import { useGlobalState, useSheshaApplication } from '@/providers';
+import { useModelApiEndpoint } from './useActionEndpoint';
+import { useMutate } from '@/hooks/useMutate';
+import { useStyles } from './styles/styles';
 import {
   evaluateComplexString,
   evaluateKeyValuesToObjectMatchedData,
@@ -18,25 +48,6 @@ import {
   getObjectWithOnlyIncludedKeys,
   IMatchData,
 } from '@/providers/form/utils';
-import cleanDeep from 'clean-deep';
-import { getQueryParams } from '@/utils/url';
-import _ from 'lodash';
-import { axiosHttp } from '@/utils/fetchers';
-import qs from 'qs';
-import axios, { AxiosResponse } from 'axios';
-import { FormConfigurationDto, useFormData } from '@/providers/form/api';
-import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
-import { nanoid } from '@/utils/uuid';
-import { useFormDesigner } from '@/providers/formDesigner';
-import { useModelApiEndpoint } from './useActionEndpoint';
-import { StandardEntityActions } from '@/interfaces/metadata';
-import { useMutate } from '@/hooks/useMutate';
-import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
-import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import { useDataContextManager } from '@/providers/dataContextManager/index';
-import { useStyles } from './styles/styles';
-import classNames from 'classnames';
-import { defaultFormProps } from './formDefaults';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -104,6 +115,63 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const queryParamsFromAddressBar = useMemo(() => getQueryParams(), []);
+
+  const sheshaUtils = {
+    prepareTemplate: (templateId: string, replacements: object): Promise<string> => {
+      if (!templateId) return Promise.resolve(null);
+
+      const payload = {
+        id: templateId,
+        properties: 'markup',
+      };
+      const url = `${backendUrl}/api/services/Shesha/FormConfiguration/Query?${qs.stringify(payload)}`;
+      return axios
+        .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, { headers: httpHeaders })
+        .then((response) => {
+          const markup = response.data.result.markup;
+
+          const preparedMarkup = evaluateString(markup, {
+            NEW_KEY: nanoid(),
+            GEN_KEY: nanoid(),
+            ...(replacements ?? {}),
+          });
+
+          return preparedMarkup;
+        });
+    },
+  };
+
+  const executeExpression = (
+    expression: string,
+    includeInitialValues = true,
+    includeMoment = true,
+    includeAxios = true,
+    includeMessage = true,
+    exposedData = null
+  ) => {
+    if (!expression) {
+      return null;
+    }
+    // tslint:disable-next-line:function-constructor
+    return new Function(
+      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData, setGlobalState, contexts',
+      expression
+    )(
+      exposedData || formData,
+      parentFormValues,
+      includeInitialValues ? initialValues : undefined,
+      globalState,
+      includeMoment ? moment : undefined,
+      includeAxios ? axiosHttp(backendUrl) : undefined,
+      includeMessage ? message : undefined,
+      sheshaUtils,
+      form,
+      setFormData,
+      setGlobalState,
+      { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
+    );
+  };
+
 
   // Execute onInitialized if provided
   useEffect(() => {
@@ -222,62 +290,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
 
   const { mutate: doSubmit, loading: submitting } = useMutate();
-
-  const sheshaUtils = {
-    prepareTemplate: (templateId: string, replacements: object): Promise<string> => {
-      if (!templateId) return Promise.resolve(null);
-
-      const payload = {
-        id: templateId,
-        properties: 'markup',
-      };
-      const url = `${backendUrl}/api/services/Shesha/FormConfiguration/Query?${qs.stringify(payload)}`;
-      return axios
-        .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url, { headers: httpHeaders })
-        .then((response) => {
-          const markup = response.data.result.markup;
-
-          const preparedMarkup = evaluateString(markup, {
-            NEW_KEY: nanoid(),
-            GEN_KEY: nanoid(),
-            ...(replacements ?? {}),
-          });
-
-          return preparedMarkup;
-        });
-    },
-  };
-
-  const executeExpression = (
-    expression: string,
-    includeInitialValues = true,
-    includeMoment = true,
-    includeAxios = true,
-    includeMessage = true,
-    exposedData = null
-  ) => {
-    if (!expression) {
-      return null;
-    }
-    // tslint:disable-next-line:function-constructor
-    return new Function(
-      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData, setGlobalState, contexts',
-      expression
-    )(
-      exposedData || formData,
-      parentFormValues,
-      includeInitialValues ? initialValues : undefined,
-      globalState,
-      includeMoment ? moment : undefined,
-      includeAxios ? axiosHttp(backendUrl) : undefined,
-      includeMessage ? message : undefined,
-      sheshaUtils,
-      form,
-      setFormData,
-      setGlobalState,
-      { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
-    );
-  };
 
   const getDynamicPreparedValues = (): Promise<object> => {
     const { preparedValues } = formSettings;

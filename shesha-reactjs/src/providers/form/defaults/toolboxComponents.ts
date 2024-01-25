@@ -17,7 +17,6 @@ import DynamicView from '@/components/formDesigner/components/dynamicView';
 import EditableTagGroup from '@/components/formDesigner/components/editableTagGroup';
 import EndpointsAutocompleteComponent from '@/components/formDesigner/components/endpointsAutocomplete/endpointsAutocomplete';
 import EntityPickerComponent from '@/components/formDesigner/components/entityPicker';
-import EventNames from '@/components/formDesigner/components/eventNamesList';
 import FormAutocompleteComponent from '@/components/formDesigner/components/formAutocomplete';
 import IconPicker from '@/components/formDesigner/components/iconPicker';
 import Image from '@/components/formDesigner/components/image';
@@ -109,7 +108,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       EndpointsAutocompleteComponent,
       EntityPickerComponent,
       EntityReferenceComponent,
-      EventNames,
       FileUpload,
       Filter,
       FormAutocompleteComponent,
