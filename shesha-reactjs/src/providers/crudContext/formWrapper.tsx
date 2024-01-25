@@ -2,7 +2,6 @@ import { Form, FormInstance, FormProps } from 'antd';
 import React, { FC, PropsWithChildren } from 'react';
 import { useForm } from '@/providers';
 import { IFormSettings } from '@/providers/form/models';
-import { defaultFormProps } from '@/components/configurableForm/formDefaults';
 
 interface FormWrapperProps {
     initialValues: object;
@@ -23,7 +22,6 @@ export const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialVa
 
     return (
         <Form
-            {...defaultFormProps}
             component={false}
             form={form}
             initialValues={initialValues}

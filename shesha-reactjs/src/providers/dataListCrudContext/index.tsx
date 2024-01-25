@@ -26,7 +26,6 @@ import { CrudMode } from '../crudContext/models';
 import reducer from '../crudContext/reducer';
 import { useDelayedUpdate } from '../delayedUpdateProvider/index';
 import ParentProvider from '../parentProvider/index';
-import { defaultFormProps } from '@/components/configurableForm/formDefaults';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -284,7 +283,6 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   return (
     <CrudContext.Provider value={contextValue}>
       <Form 
-        {...defaultFormProps}
         key={state.mode}
         component={false} 
         form={form} 

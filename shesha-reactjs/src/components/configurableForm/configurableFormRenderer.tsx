@@ -21,7 +21,6 @@ import {
 import { axiosHttp } from '@/utils/fetchers';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import { defaultFormProps } from './formDefaults';
 import { Form, message, Spin } from 'antd';
 import { FormConfigurationDto, useFormData } from '@/providers/form/api';
 import { getQueryParams } from '@/utils/url';
@@ -428,7 +427,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   return (
     <Spin spinning={submitting}>
       <Form
-        {...defaultFormProps}
         form={form}
         labelWrap
         size={props.size}

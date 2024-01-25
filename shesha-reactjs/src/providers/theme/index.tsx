@@ -6,6 +6,7 @@ import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoade
 import { setThemeAction } from './actions';
 import { IConfigurableTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { uiReducer } from './reducer';
+import { defaultRequiredMark } from './shaRequiredMark';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -83,6 +84,10 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
           prefixCls={prefixCls}
           iconPrefixCls={iconPrefixCls}
           theme={themeConfig}
+          form={{
+            // override required mark position
+            requiredMark: defaultRequiredMark
+          }}
         >
           {children}
         </ConfigProvider>
