@@ -22,10 +22,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
       overflow-x: hidden;
+
+      .${sidebarContainerMainAreaBody}{
+        height: 85vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
     
       .${sidebarContainerHeader} {
         padding: ${sheshaStyles.paddingLG}px;
         background-color: white;
+     
       }
     
       .${sidebarContainerBody} {
@@ -33,6 +40,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         display: flex;
         position: relative;
         width: 100%;
+   
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
@@ -42,10 +50,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
           &.open {
             display: block;
+
             .${sidebarHeader} {
               .sidebar-header-title {
                 display: flex;
               }
+            
             }
           }
     
@@ -102,6 +112,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
               &.open {
                 display: block;
+                height: 85vh;
+                overflow-y: auto;
               }
             }
     
