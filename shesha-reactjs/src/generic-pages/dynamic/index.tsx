@@ -183,12 +183,7 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   };
 
   //#region Error messages
-  useEffect(() => {
-    if (formWithData.loadingState === 'failed') {
-      displayNotificationError(formWithData.error);
-    }
-  }, [formWithData.loadingState]);
-
+  
   const displayNotificationError = (error: IErrorInfo) => {
     notification.error({
       message: 'Sorry! An error occurred.',
@@ -196,6 +191,13 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
       description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
     });
   };
+  
+  useEffect(() => {
+    if (formWithData.loadingState === 'failed') {
+      displayNotificationError(formWithData.error);
+    }
+  }, [formWithData.loadingState]);
+
   //#endregion
 
   //#region On Data Loaded handler

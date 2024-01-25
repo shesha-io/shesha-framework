@@ -184,6 +184,15 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const { mutate: deleteFileHttp } = useDeleteFileById();
 
   //#region delete file
+  
+  const deleteFileSuccess = (fileIdToDelete: string) => {
+    dispatch(deleteFileSuccessAction(fileIdToDelete));
+  };
+
+  const deleteFileError = () => {
+    dispatch(deleteFileErrorAction());
+  };
+
   const deleteFile = (fileIdToDelete: string) => {
     dispatch(deleteFileRequestAction(fileIdToDelete));
 
@@ -195,13 +204,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       .catch(() => deleteFileError());
   };
 
-  const deleteFileSuccess = (fileIdToDelete: string) => {
-    dispatch(deleteFileSuccessAction(fileIdToDelete));
-  };
-
-  const deleteFileError = () => {
-    dispatch(deleteFileErrorAction());
-  };
   //#endregion
 
   const downloadZipFile = (payload: IDownloadZipPayload = null) => {

@@ -50,20 +50,6 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     form: props.form,
   });
 
-  useEffect(() => {
-    load();
-  }, [state.id]);
-
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
-
-  const changeModelId = (id: string) => {
-    dispatch(changeModelIdAction(id));
-  };
-
-  const createNew = (model: ModelConfigurationDto) => {
-    dispatch(createNewAction(model));
-  };
-
   const load = () => {
     if (state.id) {
       dispatch(loadRequestAction());
@@ -81,6 +67,20 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     } /*
     else
       console.error("Failed to fetch a model configuraiton by Id - Id not specified");*/
+  };
+    
+  useEffect(() => {
+    load();
+  }, [state.id]);
+
+  /* NEW_ACTION_DECLARATION_GOES_HERE */
+
+  const changeModelId = (id: string) => {
+    dispatch(changeModelIdAction(id));
+  };
+
+  const createNew = (model: ModelConfigurationDto) => {
+    dispatch(createNewAction(model));
   };
 
   const submit = () => {

@@ -74,41 +74,6 @@ const StaticMetadata: IObjectMetadata = {
   ]
 };
 
-const BaseTemplate: Story<IQueryBuilderStoryArgs> = () => {
-  return (
-    <StoryApp>
-      <TestQB />
-    </StoryApp>
-  );
-};
-
-export const CustomFields = addStory(BaseTemplate, {
-
-});
-
-export interface ISimpleQueryBuilderProps {
-  value?: object;
-  onChange: (newValue?: object) => void;
-  metadata: IModelMetadata;
-}
-
-const TestQB = () => {
-
-  const [value, setValue] = useState<object>(undefined);
-
-  const onChange = (newValue: object) => {
-    setValue(newValue);
-  };
-
-  return (
-    <SimpleQueryBuilder
-      value={value}
-      onChange={onChange}
-      metadata={StaticMetadata}
-    />
-  );
-};
-
 const SimpleQueryBuilder = ({ value, onChange, metadata }) => {
   const lastResult = useRef<JsonLogicResult>();
 
@@ -156,6 +121,43 @@ const SimpleQueryBuilder = ({ value, onChange, metadata }) => {
   );
 };
 
+
+export interface ISimpleQueryBuilderProps {
+  value?: object;
+  onChange: (newValue?: object) => void;
+  metadata: IModelMetadata;
+}
+
+const TestQB = () => {
+
+  const [value, setValue] = useState<object>(undefined);
+
+  const onChange = (newValue: object) => {
+    setValue(newValue);
+  };
+
+  return (
+    <SimpleQueryBuilder
+      value={value}
+      onChange={onChange}
+      metadata={StaticMetadata}
+    />
+  );
+};
+
+const BaseTemplate: Story<IQueryBuilderStoryArgs> = () => {
+  return (
+    <StoryApp>
+      <TestQB />
+    </StoryApp>
+  );
+};
+
+export const CustomFields = addStory(BaseTemplate, {
+
+});
+
+
 //const { Option } = Select;
 // const onExpandClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
 //   event?.preventDefault();
@@ -167,14 +169,6 @@ const SimpleQueryBuilder = ({ value, onChange, metadata }) => {
         <Option value="1" label="item 1">Item 1</Option>
         <Option value="2" label="item 2">Item 2 <Button onClick={onExpandClick} shape="circle" size='small' title='Click to expand'><NodeExpandOutlined /></Button></Option>
       </Select> */}
-
-const ModalTemplate: Story<IQueryBuilderStoryArgs> = () => {
-  return (
-    <StoryApp>
-      <TestQBModal metadata={StaticMetadata} />
-    </StoryApp>
-  );
-};
 
 interface ITestQBModalProps {
   metadata: IModelMetadata;
@@ -192,9 +186,26 @@ const TestQBModal: FC<ITestQBModalProps> = ({ metadata }) => {
     </QueryBuilderProvider>
   );
 };
+
+const ModalTemplate: Story<IQueryBuilderStoryArgs> = () => {
+  return (
+    <StoryApp>
+      <TestQBModal metadata={StaticMetadata} />
+    </StoryApp>
+  );
+};
+
 export const InsideModal = addStory(ModalTemplate, {
 
 });
+
+const TestQBModalWrapper = () => {
+  const meta = useMetadata(true);
+
+  return meta.metadata
+    ? <TestQBModal metadata={meta.metadata} />
+    : null;
+};
 
 const ModalTemplateWithMetaProvider: Story<IQueryBuilderStoryArgs> = () => {
   return (
@@ -204,14 +215,6 @@ const ModalTemplateWithMetaProvider: Story<IQueryBuilderStoryArgs> = () => {
       </MetadataProvider>
     </StoryApp>
   );
-};
-
-const TestQBModalWrapper = () => {
-  const meta = useMetadata(true);
-
-  return meta.metadata
-    ? <TestQBModal metadata={meta.metadata} />
-    : null;
 };
 
 export const InsideModalWithMetaProvider = addStory(ModalTemplateWithMetaProvider, {

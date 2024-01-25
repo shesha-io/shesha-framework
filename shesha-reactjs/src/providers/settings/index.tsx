@@ -59,13 +59,13 @@ function useSettings(require: boolean = true) {
   return context;
 }
 
+export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
+
 export interface SettingValueLoadingState<TValue = any> {
   loadingState: LoadingState;
   value?: TValue;
   error?: IErrorInfo;
 }
-
-export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
 
 const useSettingValue = <TValue = any,>(settingId: ISettingIdentifier): SettingValueLoadingState<TValue> => {
   const settings = useSettings();

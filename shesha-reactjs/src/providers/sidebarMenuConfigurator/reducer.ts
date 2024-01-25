@@ -10,6 +10,16 @@ import {
 } from './contexts';
 import { getItemPositionById } from './utils';
 
+function removeIdDeep(list: ISidebarMenuItem[], idToRemove: string) {
+  const filtered = list.filter((entry) => entry.id !== idToRemove);
+  return filtered.map((entry) => {
+    const childItems = isSidebarGroup(entry) ? entry.childItems : undefined;
+    if (!childItems) 
+      return entry;
+    return { ...entry, childItems: removeIdDeep(childItems, idToRemove) };
+  });
+}
+
 const sidebarMenuReducer = handleActions<ISidebarMenuConfiguratorStateContext, any>(
   {
     [SidebarMenuActionEnums.AddItem]: (state: ISidebarMenuConfiguratorStateContext) => {
@@ -155,13 +165,3 @@ const sidebarMenuReducer = handleActions<ISidebarMenuConfiguratorStateContext, a
 );
 
 export default sidebarMenuReducer;
-
-function removeIdDeep(list: ISidebarMenuItem[], idToRemove: string) {
-  const filtered = list.filter((entry) => entry.id !== idToRemove);
-  return filtered.map((entry) => {
-    const childItems = isSidebarGroup(entry) ? entry.childItems : undefined;
-    if (!childItems) 
-      return entry;
-    return { ...entry, childItems: removeIdDeep(childItems, idToRemove) };
-  });
-}

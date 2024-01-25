@@ -1,14 +1,21 @@
-import { Modal, Progress } from 'antd';
 import React, { FC, PropsWithChildren, useState } from 'react';
+import {
+  getPercentage,
+  getStatus,
+  getTimeFormat,
+  MIN_TIME,
+  ONE_SECOND,
+  SIXTY
+  } from './util';
 import { IdleTimerComponent } from 'react-idle-timer';
-import { useInterval } from 'react-use';
-import { useAuth } from '@/providers/auth';
-import { useSettingValue } from '@/providers/settings';
 import { ISettingIdentifier } from '@/providers/settings/models';
-import { getPercentage, getStatus, getTimeFormat, MIN_TIME, ONE_SECOND, SIXTY } from './util';
+import { Modal, Progress } from 'antd';
+import { useAuth } from '@/providers/auth';
+import { useInterval } from 'react-use';
+import { useSettingValue } from '@/providers/settings';
 import { useStyles } from './styles/styles';
 
-export interface IIdleTimerRendererProps {}
+export interface IIdleTimerRendererProps { }
 
 interface IIdleTimerState {
   readonly isIdle: boolean;
@@ -36,12 +43,6 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
   const timeout = getTimeFormat(timeoutSeconds);
   const visible = isIdle && isTimeoutSet;
 
-  useInterval(() => {
-    if (isIdle) {
-      doCountdown();
-    }
-  }, ONE_SECOND);
-
   const onAction = (_event: Event) => {
     /*nop*/
   };
@@ -61,6 +62,12 @@ export const IdleTimerRenderer: FC<PropsWithChildren<IIdleTimerRendererProps>> =
       setState(({ remainingTime: r, ...s }) => ({ ...s, remainingTime: r - 1 }));
     }
   };
+
+  useInterval(() => {
+    if (isIdle) {
+      doCountdown();
+    }
+  }, ONE_SECOND);
 
   const onOk = () => logout();
 

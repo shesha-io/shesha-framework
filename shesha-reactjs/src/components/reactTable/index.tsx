@@ -94,6 +94,23 @@ export const ReactTable: FC<IReactTableProps> = ({
     []
   );
 
+  const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
+    callback(e);
+
+    if (onMultiRowSelect) {
+      const isSelected = !!(e.target as any)?.checked;
+      let selectedRows: Row<any>[] | Row;
+
+      if (Array.isArray(rows)) {
+        selectedRows = getPlainValue(rows).map(i => ({ ...i, isSelected }));
+      } else {
+        selectedRows = { ...getPlainValue(rows), isSelected };
+      }
+
+      onMultiRowSelect(selectedRows);
+    }
+  };
+
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
 
@@ -167,23 +184,6 @@ export const ReactTable: FC<IReactTableProps> = ({
   useEffect(() => {
     allRowsRef.current = allRows;
   }, [allRows]);
-
-  const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
-    callback(e);
-
-    if (onMultiRowSelect) {
-      const isSelected = !!(e.target as any)?.checked;
-      let selectedRows: Row<any>[] | Row;
-
-      if (Array.isArray(rows)) {
-        selectedRows = getPlainValue(rows).map(i => ({ ...i, isSelected }));
-      } else {
-        selectedRows = { ...getPlainValue(rows), isSelected };
-      }
-
-      onMultiRowSelect(selectedRows);
-    }
-  };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state, columns: tableColumns } = useTable(
     {

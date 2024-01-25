@@ -5,7 +5,7 @@ import {
   FormInstance,
   Result,
   Skeleton
-  } from 'antd';
+} from 'antd';
 import { FormDesignerProvider, useFormDesigner } from '@/providers/formDesigner';
 import { FormIdentifier } from '@/providers/form/models';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter';
@@ -18,6 +18,33 @@ import { ResultStatusType } from 'antd/lib/result';
 export interface IFormProviderWrapperProps extends PropsWithChildren {
   formId: FormIdentifier;
 }
+
+const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
+  const { allComponents, componentRelations, formSettings } = useFormDesigner();
+
+  return (
+    <FormProvider
+      needDebug
+      name="Designer Form"
+      mode="designer"
+      allComponents={allComponents}
+      componentRelations={componentRelations}
+      formSettings={formSettings}
+      isActionsOwner={true}
+      form={form}
+    >
+      <>
+        {formSettings.modelType ? (
+          <MetadataProvider id="designer" modelType={formSettings.modelType}>
+            {children}
+          </MetadataProvider>
+        ) : (
+          <>{children}</>
+        )}
+      </>
+    </FormProvider>
+  );
+};
 
 export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, children }) => {
   const [form] = Form.useForm();
@@ -59,33 +86,5 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
         }}
       </FormPersisterStateConsumer>
     </FormPersisterProvider>
-  );
-};
-
-const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
-  const { allComponents, componentRelations, formSettings } = useFormDesigner();
-
-  return (
-
-    <FormProvider
-      needDebug
-      name="Designer Form"
-      mode="designer"
-      allComponents={allComponents}
-      componentRelations={componentRelations}
-      formSettings={formSettings}
-      isActionsOwner={true}
-      form={form}
-    >
-      <>
-        {formSettings.modelType ? (
-          <MetadataProvider id="designer" modelType={formSettings.modelType}>
-            {children}
-          </MetadataProvider>
-        ) : (
-          <>{ children }</>
-        )}
-      </>
-    </FormProvider>
   );
 };

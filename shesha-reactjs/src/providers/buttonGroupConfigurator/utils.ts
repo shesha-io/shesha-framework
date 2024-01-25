@@ -1,10 +1,5 @@
 import { ButtonGroupItemProps, IButtonGroup } from './models';
 
-export const getItemById = (items: ButtonGroupItemProps[], id: string): ButtonGroupItemProps => {
-  const position = getItemPositionById(items, id);
-  return position ? position.ownerArray[position.index] : null;
-};
-
 export interface IItemPosition {
   ownerArray: ButtonGroupItemProps[];
   index: number;
@@ -28,4 +23,9 @@ export const getItemPositionById = (items: ButtonGroupItemProps[], id: string): 
   }
 
   return null;
+};
+
+export const getItemById = (items: ButtonGroupItemProps[], id: string): ButtonGroupItemProps => {
+  const position = getItemPositionById(items, id);
+  return position ? position.ownerArray[position.index] : null;
 };

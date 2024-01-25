@@ -146,30 +146,6 @@ interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
   entityType: string;
 }
 
-type IDataTableProviderProps = IDataTableProviderBaseProps &
-  IHasDataSourceType &
-  (IHasFormDataSourceConfig | IUrlDataSourceConfig | IHasEntityDataSourceConfig) & {};
-const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTableProviderBaseProps> => {
-  const { sourceType } = props;
-  switch (sourceType) {
-    case 'Entity': {
-      const { entityType, getDataPath } = props as IHasEntityDataSourceConfig;
-      return withBackendRepository(DataTableProviderWithRepository, { entityType, getListUrl: getDataPath });
-    }
-    case 'Form': {
-      const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
-
-      return withFormFieldRepository(DataTableProviderWithRepository, { propertyName, getFieldValue, onChange });
-    };
-    case 'Url':
-      const { getDataPath } = props as IHasEntityDataSourceConfig;
-      return withUrlRepository(DataTableProviderWithRepository, { getListUrl: getDataPath });
-    default: {
-      return withNullRepository(DataTableProviderWithRepository, {});
-    }
-  }
-};
-
 const getFilter = (state: IDataTableStateContext): string => {
   const allFilters = state.predefinedFilters ?? [];
 
@@ -235,25 +211,6 @@ const DataTableWithMetadataProvider: FC<PropsWithChildren<IDataTableProviderProp
     : <>{props.children}</>;
 };
 
-const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
-  const component = useMemo(() => {
-    return getTableProviderComponent(props);
-  }, [props.sourceType]);
-
-  return (
-    <DataContextProvider
-      id={'ctx_' + props.userConfigId}
-      name={props.actionOwnerName}
-      description={`Table context for ${props.actionOwnerName}`}
-      type='table'
-    >
-      <DataTableWithMetadataProvider {...props}>
-        {component(props)}
-      </DataTableWithMetadataProvider>
-    </DataContextProvider>
-  );
-};
-
 const sortingItems2ColumnSorting = (items: ISortingItem[]): IColumnSorting[] => {
   return items
     ? items.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }))
@@ -297,12 +254,22 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     permanentFilter,
   });
 
+  const changePageSize = (val: number) => {
+    dispatch(changePageSizeAction(val));
+  };
+
   useEffect(() => {
     // sync page size on settings change
     if (state.selectedPageSize !== initialPageSize) {
       changePageSize(initialPageSize);
     }
   }, [initialPageSize]);
+
+  const setPermanentFilter = (filter: FilterExpression) => {
+    const currentFilter = state.permanentFilter;
+    if (!isEqual(currentFilter, filter))
+      dispatch(setPermanentFilterAction({ filter }));
+  };
 
   useEffect(() => {
     setPermanentFilter(permanentFilter);
@@ -359,32 +326,11 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     if (modelType !== state.modelType) dispatch(setModelTypeAction(modelType));
   }, [modelType]);
 
-  // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
-  useEffect(() => {
-    fetchDataIfReady();
-  }, [
-    state.tableFilter,
-    state.currentPage,
-    state.selectedStoredFilterIds,
-    state.selectedPageSize,
-    state.dataFetchingMode,
-    state.columns?.length,
-    state.standardSorting,
-    state.grouping,
-    state.userSorting,
-    state.permanentFilter,
-    state.predefinedFilters,
-    repository,
-    state.groupingColumns,
-    state.sortMode,
-    state.strictSortBy,
-    state.strictSortOrder,
-  ]);
-
   const requireColumnRef = useRef<Boolean>(false);
   const requireColumns = () => {
     requireColumnRef.current = true;
   };
+
   const dataFetchDependencies = useRef<DataFetchDependencies>({});
   const registerDataFetchDependency = (ownerId: string, dependency: DataFetchDependency) => {
     dataFetchDependencies.current[ownerId] = dependency;
@@ -400,28 +346,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         return false;
     }
     return true;
-  };
-
-  // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
-  const fetchDataIfReady = () => {
-    const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
-    const groupingIsReady = !groupingSupported || (grouping ?? []).length === (state.groupingColumns ?? []).length;
-    const columnsAreReady = !(requireColumnRef.current) || Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length;
-    const depsReady = isDataDependenciesReady();
-
-    const readyToFetch = repository && groupingIsReady && columnsAreReady && depsReady;
-
-    if (readyToFetch) {
-      // fecth using entity type
-      tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
-      refreshTable();
-    }
-  };
-
-  const refreshTable = () => {
-    if (tableIsReady.current === true) {
-      fetchTableData(state);
-    }
   };
 
   const debouncedFetchInternal = useDebouncedCallback(
@@ -459,6 +383,14 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     debouncedFetchInternal(payload);
   };
 
+  const fetchTableDataInternal = (payload: IGetListDataPayload) => {
+    dispatch(fetchTableDataAction(payload));
+
+    if (tableIsReady.current === true) {
+      debouncedFetch(payload);
+    }
+  };
+
   const getColumnsUserSettings = (column: ITableColumn): ITableColumnUserSettings => {
     return {
       id: column.id,
@@ -483,6 +415,58 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
     setUserConfig(settings);
   };
+    
+  const fetchTableData = (providedState: IDataTableStateContext) => {
+    // save user settings before fetch
+    saveUserSettings(providedState);
+
+    const payload = getFetchListDataPayload(providedState, repository);
+    fetchTableDataInternal(payload);
+  };
+
+  const refreshTable = () => {
+    if (tableIsReady.current === true) {
+      fetchTableData(state);
+    }
+  };
+
+  // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
+  const fetchDataIfReady = () => {
+    const groupingSupported = repository.supportsGrouping && repository.supportsGrouping({ sortMode: state.sortMode });
+    const groupingIsReady = !groupingSupported || (grouping ?? []).length === (state.groupingColumns ?? []).length;
+    const columnsAreReady = !(requireColumnRef.current) || Boolean(state.configurableColumns) && state.columns.length === state.configurableColumns.length;
+    const depsReady = isDataDependenciesReady();
+
+    const readyToFetch = repository && groupingIsReady && columnsAreReady && depsReady;
+
+    if (readyToFetch) {
+      // fecth using entity type
+      tableIsReady.current = true; // is used to prevent unneeded data fetch by the ReactTable. Any data fetch requests before this line should be skipped
+      refreshTable();
+    }
+  };
+
+  // fetch table data when config is ready or something changed (selected filter, changed current page etc.)
+  useEffect(() => {
+    fetchDataIfReady();
+  }, [
+    state.tableFilter,
+    state.currentPage,
+    state.selectedStoredFilterIds,
+    state.selectedPageSize,
+    state.dataFetchingMode,
+    state.columns?.length,
+    state.standardSorting,
+    state.grouping,
+    state.userSorting,
+    state.permanentFilter,
+    state.predefinedFilters,
+    repository,
+    state.groupingColumns,
+    state.sortMode,
+    state.strictSortBy,
+    state.strictSortOrder,
+  ]);
 
   const setColumnWidths = (widths: IColumnWidth[]) => {
     if (!userConfig)
@@ -496,28 +480,8 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     setUserConfig(userConfig);    
   };
 
-  const fetchTableDataInternal = (payload: IGetListDataPayload) => {
-    dispatch(fetchTableDataAction(payload));
-
-    if (tableIsReady.current === true) {
-      debouncedFetch(payload);
-    }
-  };
-
-  const fetchTableData = (providedState: IDataTableStateContext) => {
-    // save user settings before fetch
-    saveUserSettings(providedState);
-
-    const payload = getFetchListDataPayload(providedState, repository);
-    fetchTableDataInternal(payload);
-  };
-
   const setCurrentPage = (val: number) => {
     dispatch(setCurrentPageAction(val));
-  };
-
-  const changePageSize = (val: number) => {
-    dispatch(changePageSizeAction(val));
   };
 
   const toggleColumnVisibility = (columnId: string) => {
@@ -589,12 +553,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     if (filtersChanged || !tableIsReady.current) {
       dispatch(setPredefinedFiltersAction({ predefinedFilters, userConfig }));
     }
-  };
-
-  const setPermanentFilter = (filter: FilterExpression) => {
-    const currentFilter = state.permanentFilter;
-    if (!isEqual(currentFilter, filter))
-      dispatch(setPermanentFilterAction({ filter }));
   };
 
   const changeSelectedIds = (selectedIds: string[]) => {
@@ -846,6 +804,49 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
         {children}
       </DataTableActionsContext.Provider>
     </DataTableStateContext.Provider>
+  );
+};
+
+type IDataTableProviderProps = IDataTableProviderBaseProps &
+  IHasDataSourceType &
+  (IHasFormDataSourceConfig | IUrlDataSourceConfig | IHasEntityDataSourceConfig) & {};
+const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTableProviderBaseProps> => {
+  const { sourceType } = props;
+  switch (sourceType) {
+    case 'Entity': {
+      const { entityType, getDataPath } = props as IHasEntityDataSourceConfig;
+      return withBackendRepository(DataTableProviderWithRepository, { entityType, getListUrl: getDataPath });
+    }
+    case 'Form': {
+      const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
+
+      return withFormFieldRepository(DataTableProviderWithRepository, { propertyName, getFieldValue, onChange });
+    };
+    case 'Url':
+      const { getDataPath } = props as IHasEntityDataSourceConfig;
+      return withUrlRepository(DataTableProviderWithRepository, { getListUrl: getDataPath });
+    default: {
+      return withNullRepository(DataTableProviderWithRepository, {});
+    }
+  }
+};
+
+const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
+  const component = useMemo(() => {
+    return getTableProviderComponent(props);
+  }, [props.sourceType]);
+
+  return (
+    <DataContextProvider
+      id={'ctx_' + props.userConfigId}
+      name={props.actionOwnerName}
+      description={`Table context for ${props.actionOwnerName}`}
+      type='table'
+    >
+      <DataTableWithMetadataProvider {...props}>
+        {component(props)}
+      </DataTableWithMetadataProvider>
+    </DataContextProvider>
   );
 };
 

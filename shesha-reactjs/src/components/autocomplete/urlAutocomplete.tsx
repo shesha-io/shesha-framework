@@ -88,8 +88,6 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
     }
   }, [value]);
 
-  useSubscribe(subscribedEventNames, () => debouncedClear(autocompleteText));
-
   const getFetchedItems = (): AutocompleteItemDto[] => {
     return urlFetcher.data?.result;
   };
@@ -117,6 +115,8 @@ export const UrlAutocomplete = <TValue,>(props: IUrlAutocompleteProps<TValue>) =
 
     if (onChange) onChange(null);
   }, 300);
+
+  useSubscribe(subscribedEventNames, () => debouncedClear(autocompleteText));
 
   const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
     if (!Boolean(localValue)) return undefined;

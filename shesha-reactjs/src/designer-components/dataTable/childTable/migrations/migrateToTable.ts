@@ -26,6 +26,19 @@ export interface IPanelComponentProps extends IConfigurableFormComponent {
     className?: string;
 }
 
+const getClosestComponent = (flatStructure: IFlatComponentsStructure, id: string, predicate: (component: IConfigurableFormComponent) => boolean): IConfigurableFormComponent => {
+    const current = flatStructure.allComponents[id];
+    if (!current)
+        return null;
+    
+    if (predicate(current))
+        return current;
+
+    return current.parentId
+        ? getClosestComponent(flatStructure, current.parentId, predicate)
+        : null;
+};
+
 export const migrateToTable = (
     props: IChildTableComponentProps,
     context: SettingsMigrationContext
@@ -117,17 +130,4 @@ export const migrateToTable = (
     }
 
     return result;
-};
-
-const getClosestComponent = (flatStructure: IFlatComponentsStructure, id: string, predicate: (component: IConfigurableFormComponent) => boolean): IConfigurableFormComponent => {
-    const current = flatStructure.allComponents[id];
-    if (!current)
-        return null;
-    
-    if (predicate(current))
-        return current;
-
-    return current.parentId
-        ? getClosestComponent(flatStructure, current.parentId, predicate)
-        : null;
 };

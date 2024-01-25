@@ -34,16 +34,16 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
         const internalProps = model?.components?.length > 0 ? model?.components[0] : model;
         const props = Boolean(model?.label) ? model : internalProps;
 
-        const switchMode = () => {
-            modeRef.current?.onChange(mode === 'code' ? 'value' : 'code');
-        };
-
         const components = useMemo(() => {
             return model?.components?.map(c => ({ ...c, hideLabel: true, readOnly: model?.readOnly, context: model.id }));
         }, [model?.components, model?.readOnly, model?.id]);
 
         const ctxRef = useRef<IContextSettingsRef>();
         const modeRef = useRef<ISwitchModeSettingsRef>();
+
+        const switchMode = () => {
+            modeRef.current?.onChange(mode === 'code' ? 'value' : 'code');
+        };
 
         if (model.hidden) return null;
 
@@ -54,50 +54,50 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                 {(value, onChange) => {
                     const localValue = getValueFromPropertySettings(value);
                     return (
-                    <div className={ mode === 'code' ? styles.contentCode : styles.contentJs}>
-                        <Button
-                            disabled={model.readOnly}
-                            shape="round"
-                            className={styles.jsSwitch}
-                            type='primary'
-                            danger={mode === 'value' && !!code }
-                            ghost
-                            size='small'
-                            onClick={switchMode}
-                        >
-                            {mode === 'code' ? 'Value' : 'JS'}
-                        </Button>
-                        <div className={styles.jsContent}>
-                            <DataContextProvider id={model.id} name={props.propertyName} description={props.propertyName} type={'settings'}
-                                initialData={new Promise((resolve) => {
-                                    resolve(setValueByPropertyName({}, internalProps?.propertyName, localValue));
-                                })}
-                                dynamicData={
-                                    internalProps?.propertyName && localValue
-                                        ? setValueByPropertyName({}, internalProps?.propertyName, localValue)
-                                        : null
-                                }
-                                onChangeData={(v) => {
-                                    if (v && ctxRef.current?.onChange)
-                                        ctxRef.current?.onChange(getValueByPropertyName(v, internalProps?.propertyName));
-                                }}
+                        <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
+                            <Button
+                                disabled={model.readOnly}
+                                shape="round"
+                                className={styles.jsSwitch}
+                                type='primary'
+                                danger={mode === 'value' && !!code}
+                                ghost
+                                size='small'
+                                onClick={switchMode}
                             >
-                                <SettingsControl 
-                                    id={model.id}
-                                    propertyName={internalProps?.propertyName}
-                                    mode={mode}
-                                    value={value}
-                                    onChange={onChange}
-                                    contextRef={ctxRef}
-                                    modeRef={modeRef}
-                                >
-                                    {() =>
-                                        <ComponentsContainer containerId={props.id} dynamicComponents={components} />
+                                {mode === 'code' ? 'Value' : 'JS'}
+                            </Button>
+                            <div className={styles.jsContent}>
+                                <DataContextProvider id={model.id} name={props.propertyName} description={props.propertyName} type={'settings'}
+                                    initialData={new Promise((resolve) => {
+                                        resolve(setValueByPropertyName({}, internalProps?.propertyName, localValue));
+                                    })}
+                                    dynamicData={
+                                        internalProps?.propertyName && localValue
+                                            ? setValueByPropertyName({}, internalProps?.propertyName, localValue)
+                                            : null
                                     }
-                                </SettingsControl>
-                            </DataContextProvider>
+                                    onChangeData={(v) => {
+                                        if (v && ctxRef.current?.onChange)
+                                            ctxRef.current?.onChange(getValueByPropertyName(v, internalProps?.propertyName));
+                                    }}
+                                >
+                                    <SettingsControl
+                                        id={model.id}
+                                        propertyName={internalProps?.propertyName}
+                                        mode={mode}
+                                        value={value}
+                                        onChange={onChange}
+                                        contextRef={ctxRef}
+                                        modeRef={modeRef}
+                                    >
+                                        {() =>
+                                            <ComponentsContainer containerId={props.id} dynamicComponents={components} />
+                                        }
+                                    </SettingsControl>
+                                </DataContextProvider>
+                            </div>
                         </div>
-                    </div>
                     );
                 }}
             </ConfigurableFormItem>
@@ -106,7 +106,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     settingsFormMarkup: getSettings(),
     migrator: (m) => m
         .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev))
-  ,    
+    ,
 };
 
 export default SettingsComponent;

@@ -78,14 +78,6 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         setState({...state, lastUpdate: new Date().toJSON() });
     };
 
-    const getDataContextsData =(topId?: string) => {
-        const res = {lastUpdate: state.lastUpdate};
-        getDataContexts(topId).forEach(item => {
-            res[item.name] = getDataContextData(item.id);
-        });
-        return res;
-    };
-
     const getDataContexts = (topId: string) => {
         const ctxs: IDataContextDescriptor[] = [];
         
@@ -127,6 +119,14 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         if (ctx.api)
             ctxd.api = ctx.api;
         return ctxd;
+    };
+
+    const getDataContextsData =(topId?: string) => {
+        const res = {lastUpdate: state.lastUpdate};
+        getDataContexts(topId).forEach(item => {
+            res[item.name] = getDataContextData(item.id);
+        });
+        return res;
     };
 
     const onChangeContext = (payload: IDataContextDescriptor) => {

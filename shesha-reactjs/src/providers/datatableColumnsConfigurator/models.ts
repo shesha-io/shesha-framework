@@ -3,8 +3,6 @@ import { DatatableColumnType, IActionColumnProps } from '@/providers/dataTable/i
 
 type ColumnsItemType = 'item' | 'group';
 
-export type ColumnsItemProps = IConfigurableColumnsProps | IConfigurableColumnGroup;
-
 export interface IColumnEditorProps extends IConfigurableFormComponent {}
 
 export interface IFieldComponentProps {
@@ -62,6 +60,8 @@ export interface IConfigurableActionColumnsProps extends IConfigurableColumnsPro
 export interface IConfigurableColumnGroup extends IConfigurableColumnsBase {
   childItems?: ColumnsItemProps[];
 }
+
+export type ColumnsItemProps = IConfigurableColumnsProps | IConfigurableColumnGroup;
 
 export const standardCellComponentTypes = {
   defaultDisplay: '[default]',

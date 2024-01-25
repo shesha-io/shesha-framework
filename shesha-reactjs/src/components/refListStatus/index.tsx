@@ -1,10 +1,10 @@
-import React, { CSSProperties, FC } from 'react';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
+import React, { CSSProperties, FC } from 'react';
+import RefTag from './tag';
 import { Alert, Skeleton } from 'antd';
 import { DescriptionTooltip } from './tooltip';
-import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
-import RefTag from './tag';
+import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { useStyles } from './styles/styles';
 
 export interface IRefListStatusProps {
@@ -15,6 +15,12 @@ export interface IRefListStatusProps {
   style?: CSSProperties;
   value?: any;
 }
+
+const Icon = ({ type, ...rest }) => {
+  const icons = require(`@ant-design/icons`);
+  const Component = icons[type];
+  return <Component {...rest} />;
+};
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
   const { styles } = useStyles();
@@ -54,10 +60,4 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
       </DescriptionTooltip>
     </div>
   );
-};
-
-const Icon = ({ type, ...rest }) => {
-  const icons = require(`@ant-design/icons`);
-  const Component = icons[type];
-  return <Component {...rest} />;
 };

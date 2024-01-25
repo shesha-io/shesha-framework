@@ -1,12 +1,25 @@
-import React, { CSSProperties, FC, useEffect, useMemo, useRef, useState } from 'react';
-import { Select, Tooltip } from 'antd';
-import { useQueryBuilder } from '@/providers';
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IModelMetadata, IPropertyMetadata, isEntityMetadata, ISpecification, metadataHasNestedProperties } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
-import { getIconByPropertyMetadata } from '@/utils/metadata';
+import React, {
+  CSSProperties,
+  FC,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { BulbOutlined, BulbTwoTone } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
+import { getIconByPropertyMetadata } from '@/utils/metadata';
+import {
+  IModelMetadata,
+  IPropertyMetadata,
+  isEntityMetadata,
+  ISpecification,
+  metadataHasNestedProperties
+} from '@/interfaces/metadata';
+import { Select, Tooltip } from 'antd';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { useQueryBuilder } from '@/providers';
 
 export interface IPropertySelectProps {
   id?: string;
@@ -39,6 +52,20 @@ const getFullPath = (path: string, prefix: string) => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
 };
 
+export interface IHasPropertyType {
+  itemType: 'property' | 'specification';
+}
+
+export type IPropertyItem = (IPropertyMetadata | ISpecification) & IHasPropertyType;
+
+const isPropertyMetadata = (item: IPropertyItem): item is IPropertyMetadata & IHasPropertyType => {
+  return item.itemType === 'property';
+};
+
+const isSpecification = (item: IPropertyItem): item is ISpecification & IHasPropertyType => {
+  return item.itemType === 'specification';
+};
+
 export const getPropertyItemIdentifier = (item: IPropertyItem, prefix: string): string => {
   if (isPropertyMetadata(item))
     return getFullPath(item.path, prefix);
@@ -64,7 +91,7 @@ const propertyItem2option = (item: IPropertyItem, prefix: string): IOption => {
       label: label
     };
   }
-  
+
   if (isPropertyMetadata(item)) {
     const property = item as IPropertyMetadata;
     const value = getPropertyItemIdentifier(item, prefix);
@@ -82,20 +109,6 @@ const propertyItem2option = (item: IPropertyItem, prefix: string): IOption => {
 
 const propertyItems2options = (properties: IPropertyItem[], prefix: string): IOption[] => {
   return properties.filter(p => !(p.itemType === 'property' && (p as IPropertyMetadata).dataType === DataTypes.array)).map(p => propertyItem2option(p, prefix));
-};
-
-export interface IHasPropertyType {
-  itemType: 'property' | 'specification';
-}
-
-export type IPropertyItem = (IPropertyMetadata | ISpecification) & IHasPropertyType;
-
-const isPropertyMetadata = (item: IPropertyItem): item is IPropertyMetadata & IHasPropertyType => {
-  return item.itemType === 'property';
-};
-
-const isSpecification = (item: IPropertyItem): item is ISpecification & IHasPropertyType => {
-  return item.itemType === 'specification';
 };
 
 const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem[] => {

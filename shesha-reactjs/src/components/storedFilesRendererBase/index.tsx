@@ -1,10 +1,17 @@
-import React, { FC, useEffect } from 'react';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import { InboxOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
-import { message, Button, notification, Alert, Upload, ButtonProps } from 'antd';
-import { UploadChangeParam, RcFile } from 'antd/lib/upload/interface';
-import { IUploadFilePayload, IStoredFile, IDownloadFilePayload } from '@/providers/storedFiles/contexts';
+import React, { FC, useEffect } from 'react';
+import {
+  Alert,
+  Button,
+  ButtonProps,
+  message,
+  notification,
+  Upload
+  } from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
+import { FileZipOutlined, InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
+import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
 
 interface IUploaderFileTypes {
@@ -62,6 +69,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 }) => {
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
+
+  const openFilesZipNotification = () =>
+    notification.success({
+      message: `Download success!`,
+      description: 'Your files have been downloaded successfully. Please check your download folder.',
+      placement: 'topRight',
+    });
 
   useEffect(() => {
     if (isDownloadZipSucceeded) {
@@ -122,13 +136,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       downloadFile({ fileId: uid, fileName: name });
     },
   };
-
-  const openFilesZipNotification = () =>
-    notification.success({
-      message: `Download success!`,
-      description: 'Your files have been downloaded successfully. Please check your download folder.',
-      placement: 'topRight',
-    });
 
   const renderDraggerContent = () => {
     return (

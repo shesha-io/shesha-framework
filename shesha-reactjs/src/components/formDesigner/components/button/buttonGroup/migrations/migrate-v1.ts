@@ -7,27 +7,6 @@ import { IShowModalActionArguments as IShowModalActionArguments } from "@/provid
 import { getClosestTableId } from "@/providers/form/utils";
 import { getDispatchEventReplacement } from "../../../_common-migrations/migrate-events";
 
-export const migrateV0toV1 = (props: IButtonGroupComponentProps, context: SettingsMigrationContext): IButtonGroupComponentProps => {
-    const { items } = props;
-
-    const newItems = items.map(item => {
-        if (item.itemType !== "item")
-            return item;
-
-        const button = item as IButtonGroupButtonV0;
-        const newItem: IButtonItem = { 
-            ...button, 
-            buttonType: button.buttonType === 'ghost' ? 'default' : button.buttonType,
-            ghost: button.buttonType === 'ghost',
-        };
-        newItem.actionConfiguration = getActionConfiguration(button, context);
-
-        return newItem;
-    });
-
-    return { ...props, items: newItems };
-};
-
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments'>): IConfigurableActionConfiguration => {
     return {
         _type: undefined,
@@ -67,7 +46,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
         }
         case "dialogue": {
             const actionConfig = makeAction({ actionOwner: 'Common', actionName: 'Show Dialog' });
-            
+
             const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
             const modalArguments: IShowModalActionArguments = {
@@ -295,4 +274,25 @@ interface IModalPropsV0 {
 
     onCancel?: () => void;
 }
-  //#endregion
+//#endregion
+
+export const migrateV0toV1 = (props: IButtonGroupComponentProps, context: SettingsMigrationContext): IButtonGroupComponentProps => {
+    const { items } = props;
+
+    const newItems = items.map(item => {
+        if (item.itemType !== "item")
+            return item;
+
+        const button = item as IButtonGroupButtonV0;
+        const newItem: IButtonItem = {
+            ...button,
+            buttonType: button.buttonType === 'ghost' ? 'default' : button.buttonType,
+            ghost: button.buttonType === 'ghost',
+        };
+        newItem.actionConfiguration = getActionConfiguration(button, context);
+
+        return newItem;
+    });
+
+    return { ...props, items: newItems };
+};

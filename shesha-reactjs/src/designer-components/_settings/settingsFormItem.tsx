@@ -1,11 +1,17 @@
-import React, { cloneElement, FC, ReactElement, useEffect, useRef } from 'react';
-import { Button, Form, FormItemProps } from "antd";
+import React, {
+    cloneElement,
+    FC,
+    ReactElement,
+    useEffect,
+    useRef
+    } from 'react';
 import SettingsControl, { ISwitchModeSettingsRef, SettingsControlChildrenType } from './settingsControl';
+import { Button, Form, FormItemProps } from 'antd';
+import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
+import { getPropertySettingsFromData } from './utils';
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
-import { getPropertySettingsFromData } from './utils';
 import { useStyles } from './styles/styles';
-import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
@@ -18,21 +24,6 @@ interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model
     tooltip?: string;
     hidden?: boolean;
 }
-
-const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
-    const settingsPanel = useSettingsPanel(false);
-
-    useEffect(() => {
-        if (settingsPanel && props.name) {
-            settingsPanel.registerField(props.name.toString());
-        }
-    }, [settingsPanel, props.name]);
-
-    const { propertyFilter } = useSettingsForm<any>();
-    return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
-        ? <SettingsFormComponent {...props} />
-        : null;
-};
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const { styles } = useStyles();
@@ -69,64 +60,79 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     const valuePropName = props.valuePropName ?? 'value';
     const children = props.children as ReactElement;
     return (
-        <ConfigurableFormItem 
-            model={{ 
+        <ConfigurableFormItem
+            model={{
                 propertyName: props.name,
                 label: props.label,
                 type: '',
                 id: '',
                 description: props.tooltip,
-                validate: {required: props.required},
+                validate: { required: props.required },
                 hidden: props.hidden
-            }} 
+            }}
             className='sha-js-label'
         >
             {(value, onChange) => {
                 return (
-                <div className={ mode === 'code' ? styles.contentCode : styles.contentJs}>
-                    <Button
-                        disabled={props.readOnly}
-                        shape="round"
-                        className={styles.jsSwitch}
-                        type={'primary'}
-                        danger={mode === 'value' && !!code }
-                        ghost
-                        size='small'
-                        onClick={switchMode}
-                    >
-                        {mode === 'code' ? 'Value' : 'JS'}
-                    </Button>
-
-                    <div className={styles.jsContent}>
-                        <SettingsControl 
-                            id={props.name.toString()} 
-                            propertyName={props.name.toString()}
-                            mode={mode}
-                            value={value}
-                            onChange={onChange}
-                            modeRef={modeRef}
+                    <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
+                        <Button
+                            disabled={props.readOnly}
+                            shape="round"
+                            className={styles.jsSwitch}
+                            type={'primary'}
+                            danger={mode === 'value' && !!code}
+                            ghost
+                            size='small'
+                            onClick={switchMode}
                         >
-                            {(value, onChange) => {
-                                return cloneElement(
-                                    children,
-                                    {
-                                        ...children?.props,
-                                        onChange: (...args: any[]) => {
-                                            const event = args[0];
-                                            const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
-                                                ? (event.target as HTMLInputElement)[valuePropName]
-                                                : event;
-                                            onChange(data);
-                                        },
-                                        [valuePropName]: value
-                                    });
-                            }}
-                        </SettingsControl>
-                    </div>
-                </div>);
+                            {mode === 'code' ? 'Value' : 'JS'}
+                        </Button>
+
+                        <div className={styles.jsContent}>
+                            <SettingsControl
+                                id={props.name.toString()}
+                                propertyName={props.name.toString()}
+                                mode={mode}
+                                value={value}
+                                onChange={onChange}
+                                modeRef={modeRef}
+                            >
+                                {(value, onChange) => {
+                                    return cloneElement(
+                                        children,
+                                        {
+                                            ...children?.props,
+                                            onChange: (...args: any[]) => {
+                                                const event = args[0];
+                                                const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
+                                                    ? (event.target as HTMLInputElement)[valuePropName]
+                                                    : event;
+                                                onChange(data);
+                                            },
+                                            [valuePropName]: value
+                                        });
+                                }}
+                            </SettingsControl>
+                        </div>
+                    </div>);
             }}
         </ConfigurableFormItem>
     );
+};
+
+const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
+    const settingsPanel = useSettingsPanel(false);
+
+    useEffect(() => {
+        if (settingsPanel && props.name) {
+            settingsPanel.registerField(props.name.toString());
+        }
+    }, [settingsPanel, props.name]);
+
+    const { propertyFilter } = useSettingsForm<any>();
+    return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
+        ? <SettingsFormComponent {...props} />
+        : null;
 };
 
 export default SettingsFormItem;

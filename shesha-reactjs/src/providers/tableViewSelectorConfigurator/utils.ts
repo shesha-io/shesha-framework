@@ -1,10 +1,5 @@
 import { ITableViewProps } from './models';
 
-export const getItemById = (items: ITableViewProps[], id: string): ITableViewProps => {
-  const position = getItemPositionById(items, id);
-  return position ? position.ownerArray[position.index] : null;
-};
-
 export interface IItemPosition {
   ownerArray: ITableViewProps[];
   index: number;
@@ -19,4 +14,9 @@ export const getItemPositionById = (items: ITableViewProps[], id: string): IItem
       };
   }
   return null;
+};
+
+export const getItemById = (items: ITableViewProps[], id: string): ITableViewProps => {
+  const position = getItemPositionById(items, id);
+  return position ? position.ownerArray[position.index] : null;
 };

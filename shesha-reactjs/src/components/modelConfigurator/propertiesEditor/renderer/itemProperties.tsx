@@ -1,14 +1,20 @@
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
-import { Empty, Form } from 'antd';
-import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableForm } from '../../..';
-import { usePropertiesEditor } from '../provider';
-import { FormMarkup } from '@/providers/form/models';
-import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import propertySettingsJson from './propertySettings.json';
+import React, {
+  FC,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
+import { ConfigurableForm } from '../../..';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
+import { Empty, Form } from 'antd';
+import { FormMarkup } from '@/providers/form/models';
 import { nanoid } from '@/utils/uuid';
+import { useDebouncedCallback } from 'use-debounce';
+import { usePropertiesEditor } from '../provider';
 
-export interface IProps {}
+export interface IProps { }
 
 export const ToolbarItemProperties: FC<IProps> = () => {
   const { selectedItemId, getItem, updateItem } = usePropertiesEditor();
@@ -51,7 +57,6 @@ export const ToolbarItemProperties: FC<IProps> = () => {
           wrapperCol={{ span: 24 }}
           mode="edit"
           markup={markup}
-          onFinish={onSettingsSave}
           form={form}
           initialValues={componentModel}
           onValuesChange={debouncedSave}
@@ -71,10 +76,6 @@ export const ToolbarItemProperties: FC<IProps> = () => {
       </div>
     );
   }
-
-  const onSettingsSave = values => {
-    console.log(values);
-  };
 
   return <>{editor}</>;
 };

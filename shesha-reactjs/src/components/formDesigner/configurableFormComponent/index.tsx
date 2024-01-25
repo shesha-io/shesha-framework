@@ -1,45 +1,34 @@
-import React, { FC, MutableRefObject, useEffect, useRef } from 'react';
-import { Tooltip } from 'antd';
-import { StopOutlined, EyeInvisibleOutlined, EditOutlined, FunctionOutlined } from '@ant-design/icons';
-import FormComponent from '../formComponent';
-import { useComponentModel, useForm } from '@/providers/form';
-import DragWrapper from './dragWrapper';
-import ValidationIcon from './validationIcon';
-import { Show } from '@/components/show';
 import classNames from 'classnames';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
-import { useFormDesigner } from '@/providers/formDesigner';
-import { IConfigurableFormComponent } from '@/interfaces';
+import DragWrapper from './dragWrapper';
+import FormComponent from '../formComponent';
+import React, {
+  FC,
+  MutableRefObject,
+  useEffect,
+  useRef
+} from 'react';
+import ValidationIcon from './validationIcon';
 import { EditMode, useMetadata } from '@/providers';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
-import { useStyles } from '../styles/styles';
+import {
+  EditOutlined,
+  EyeInvisibleOutlined,
+  FunctionOutlined,
+  StopOutlined
+} from '@ant-design/icons';
 import { getActualPropertyValue, useApplicationContext } from '@/providers/form/utils';
+import { IConfigurableFormComponent } from '@/interfaces';
+import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { Show } from '@/components/show';
+import { Tooltip } from 'antd';
+import { useComponentModel, useForm } from '@/providers/form';
+import { useFormDesigner } from '@/providers/formDesigner';
+import { useStyles } from '../styles/styles';
 
 export interface IConfigurableFormComponentProps {
   id: string;
   index: number;
 }
-
-const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id }) => {
-  const { formMode } = useForm();
-  const designer = useFormDesigner(false);
-  const componentRef = useRef(null);
-
-  const componentModel = useComponentModel(id);
-
-  const isDesignMode = formMode === 'designer';
-
-  if (!designer || !isDesignMode || componentModel?.isDynamic) return (
-    <ComponentRenderer id={id} componentRef={componentRef} />
-  );
-
-  return (
-    <ConfigurableFormComponentDesigner
-      componentModel={componentModel}
-      componentRef={componentRef}
-    />
-  );
-};
 
 interface IComponentRendererProps {
   id: string;
@@ -75,8 +64,6 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
       setActiveDataSource(metadata.id);
     }
   }, []);
-
-
 
   const hiddenByCondition = allData?.form?.visibleComponentIds && !allData.form.visibleComponentIds.includes(componentModel.id);
   const disabledByCondition = allData?.form?.enabledComponentIds && !allData.form.enabledComponentIds.includes(componentModel.id);
@@ -133,6 +120,27 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
         </DragWrapper>
       </div>
     </div>
+  );
+};
+
+const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({ id }) => {
+  const { formMode } = useForm();
+  const designer = useFormDesigner(false);
+  const componentRef = useRef(null);
+
+  const componentModel = useComponentModel(id);
+
+  const isDesignMode = formMode === 'designer';
+
+  if (!designer || !isDesignMode || componentModel?.isDynamic) return (
+    <ComponentRenderer id={id} componentRef={componentRef} />
+  );
+
+  return (
+    <ConfigurableFormComponentDesigner
+      componentModel={componentModel}
+      componentRef={componentRef}
+    />
   );
 };
 

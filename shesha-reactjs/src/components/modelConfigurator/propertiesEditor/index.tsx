@@ -1,28 +1,16 @@
 import React, { FC } from 'react';
-import { PropertiesEditorRenderer } from './renderer';
-import { PropertiesEditorProvider } from './provider';
-import { IModelItem } from '@/interfaces/modelConfigurator';
 import { Form } from 'antd';
+import { IModelItem } from '@/interfaces/modelConfigurator';
+import { PropertiesEditorProvider } from './provider';
+import { PropertiesEditorRenderer } from './renderer';
 
 export interface IPropertiesEditorComponentProps {
 }
 
-export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = () => {
- return (
-    <Form.Item
-        name="properties"
-        labelCol={{ span: 0 }}
-        wrapperCol={{ span: 24 }}
-    >
-        <PropertiesEditor />
-    </Form.Item>
- );   
-};
-
 export interface IPropertiesEditorProps extends IPropertiesEditorComponentProps {
     allowAdd?: Boolean;
     value?: IModelItem[];
-    onChange?: (value: IModelItem[]) => void;    
+    onChange?: (value: IModelItem[]) => void;
 }
 
 export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
@@ -30,5 +18,17 @@ export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
         <PropertiesEditorProvider items={props.value} onChange={props.onChange}>
             <PropertiesEditorRenderer allowAdd={props.allowAdd} />
         </PropertiesEditorProvider>
+    );
+};
+
+export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = () => {
+    return (
+        <Form.Item
+            name="properties"
+            labelCol={{ span: 0 }}
+            wrapperCol={{ span: 24 }}
+        >
+            <PropertiesEditor />
+        </Form.Item>
     );
 };

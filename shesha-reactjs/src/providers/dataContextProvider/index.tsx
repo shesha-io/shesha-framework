@@ -36,6 +36,18 @@ export type DataContextType = 'root' | 'custom' | 'settings' | 'table';
 
 export type IContextOnChangeData = <T,>(data: T, changedData: any) => void;
 
+function useDataContext(require: boolean = true) {
+    const actionsContext = useContext(DataContextProviderActionsContext);
+    const stateContext = useContext(DataContextProviderStateContext);
+  
+    if ((actionsContext === undefined || stateContext === undefined) && require) {
+      throw new Error('useDataContext must be used within a DataContextProvider');
+    }
+    return actionsContext !== undefined && stateContext !== undefined
+      ? { ...actionsContext, ...stateContext } as IDataContextFullInstance
+      : undefined;
+}
+
 export interface IDataContextProviderProps { 
     id: string;
     name: string;
@@ -90,6 +102,15 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
             return undefined;
     };
 
+    const onChangeAction = (changedData: any) => {
+        if (props.onChangeAction) {
+          executeAction({
+            actionConfiguration: props.onChangeAction,
+            argumentsEvaluationContext: {...allData.current, changedData},
+          });
+        }
+    };
+        
     const setFieldValue = (name: string, value: any) => {
         const data = setValueByPropertyName({...getDataContextData(id) ?? {}}, name, value, true);
         const changedData = setValueByPropertyName({}, name, value);
@@ -107,15 +128,6 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
         onChangeContextData(id, {...data});
 
         onChangeAction(data);
-    };
-
-    const onChangeAction = (changedData: any) => {
-        if (props.onChangeAction) {
-          executeAction({
-            actionConfiguration: props.onChangeAction,
-            argumentsEvaluationContext: {...allData.current, changedData},
-          });
-        }
     };
 
     const getData = () => {
@@ -218,18 +230,6 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
 
 export interface IDataContextRegistrarProps extends IDataContextProviderProps { 
     parentDataContext?: IDataContextFullInstance;
-}
-
-function useDataContext(require: boolean = true) {
-    const actionsContext = useContext(DataContextProviderActionsContext);
-    const stateContext = useContext(DataContextProviderStateContext);
-  
-    if ((actionsContext === undefined || stateContext === undefined) && require) {
-      throw new Error('useDataContext must be used within a DataContextProvider');
-    }
-    return actionsContext !== undefined && stateContext !== undefined
-      ? { ...actionsContext, ...stateContext } as IDataContextFullInstance
-      : undefined;
 }
 
 export interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }

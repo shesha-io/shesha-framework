@@ -1,9 +1,14 @@
 import React, { PropsWithChildren, useContext, useMemo } from 'react';
-import { getListEditorActionsContext, getListEditorContextInitialState, getListEditorStateContext, IListEditorContext } from './contexts';
-import { IGenericListEditorProps } from './interfaces';
-import { ListItem } from './models';
 import { GenericListEditorProvider } from './provider';
+import {
+  getListEditorActionsContext,
+  getListEditorContextInitialState,
+  getListEditorStateContext,
+  IListEditorContext
+} from './contexts';
+import { IGenericListEditorProps } from './interfaces';
 import { ListEditorRenderer } from './renderer';
+import { ListItem } from './models';
 
 export interface IListStateProps<TItem = any> {
   value: TItem[];
@@ -21,34 +26,6 @@ export interface IListEditorProps<TItem = any> extends IGenericListEditorProps<T
   children: ListEditorChildrenFn<TItem>;
   initNewItem: (items: TItem[]) => TItem;
 }
-
-export const ListEditor = <TItem extends ListItem>({
-  children,
-  value,
-  onChange,
-  initNewItem,
-  readOnly = false,
-}: IListEditorProps<TItem>) => {
-  const component = useMemo(() => {
-    return createListEditorComponent<TItem>();
-  }, []);
-  const { ListEditorProvider, useListEditorComponent } = component;
-
-  return (
-    <ListEditorProvider
-      value={value}
-      onChange={onChange}
-      initNewItem={initNewItem}
-      readOnly={readOnly}
-    >
-      <ListEditorRenderer
-        contextAccessor={useListEditorComponent}
-      >
-        {children}
-      </ListEditorRenderer>
-    </ListEditorProvider>
-  );
-};
 
 export interface IListEditorProviderProps {
 
@@ -99,3 +76,30 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
   return { ListEditorProvider, useListEditorComponent };
 };
 
+export const ListEditor = <TItem extends ListItem>({
+  children,
+  value,
+  onChange,
+  initNewItem,
+  readOnly = false,
+}: IListEditorProps<TItem>) => {
+  const component = useMemo(() => {
+    return createListEditorComponent<TItem>();
+  }, []);
+  const { ListEditorProvider, useListEditorComponent } = component;
+
+  return (
+    <ListEditorProvider
+      value={value}
+      onChange={onChange}
+      initNewItem={initNewItem}
+      readOnly={readOnly}
+    >
+      <ListEditorRenderer
+        contextAccessor={useListEditorComponent}
+      >
+        {children}
+      </ListEditorRenderer>
+    </ListEditorProvider>
+  );
+};
