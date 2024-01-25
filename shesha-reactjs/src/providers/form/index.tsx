@@ -39,6 +39,7 @@ import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } f
 import formReducer from './reducer';
 import { convertActions, convertSectionsToList, getEnabledComponentIds, getFilteredComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useDeepCompareMemo } from '@/index';
 
 export interface IFormProviderProps {
   needDebug?: boolean;
@@ -107,29 +108,14 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const formProviderContext = useFormProviderContext();
 
-  const filteredComponents = useRef<string[]>(
-    getFilteredComponentIds(
-      allComponents,
-      {
-        ...formProviderContext,
-        data: state.formData,
-        formMode: state.formMode
-      },
-      propertyFilter
-    )
-  );
+  const filteredComponents = useRef<string[]>();
 
-  useEffect(() => {
-    filteredComponents.current = getFilteredComponentIds(
+  filteredComponents.current = useDeepCompareMemo(() => {
+    return getFilteredComponentIds(
       allComponents,
-      {
-        ...formProviderContext,
-        data: state.formData,
-        formMode: state.formMode
-      },
       propertyFilter
     );
-  }, [allComponents, propertyFilter, formProviderContext, state.formData, state.formMode]);
+  }, [allComponents, propertyFilter]);
 
   const isComponentFiltered = (component: IConfigurableFormComponent): boolean => {
     return filteredComponents.current?.includes(component.id);
