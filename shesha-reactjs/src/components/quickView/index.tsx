@@ -15,18 +15,13 @@ import {
   Spin
   } from 'antd';
 import { ConfigurableForm } from '@/components/';
-import { entitiesGet } from '@/apis/entities';
-import { FormIdentifier } from '@/providers/form/models';
-import {
-  FormItemProvider,
-  FormMarkupWithSettings,
-  useSheshaApplication,
-  useUi
-  } from '@/providers';
-import { get } from '@/utils/fetchers';
-import { getQuickViewInitialValues } from './utils';
+import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication, useUi } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useFormConfiguration } from '@/providers/form/api';
+import { entitiesGet } from '@/apis/entities';
+import { FormIdentifier } from '@/providers/form/models';
+import { get } from '@/utils/fetchers';
+import { getQuickViewInitialValues } from './utils';
 import { useStyles } from '../entityReference/styles/styles';
 
 export interface IQuickViewProps extends PropsWithChildren {
@@ -69,7 +64,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
-  const [formSettings, setFormSettings] = useState<FormMarkupWithSettings>(null);
+  const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings>(null);
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const [form] = Form.useForm();
   const { formItemLayout } = useUi();
@@ -79,14 +74,14 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   useEffect(() => {
     if (formIdentifier) {
       fetchForm().then((response) => {
-        setFormSettings(response);
+        setFormMarkup(response);
       });
     }
   }, [formIdentifier]);
 
   useEffect(() => {
-    if (!formData && entityId && formSettings) {
-      const getUrl = getEntityUrl ?? formSettings?.formSettings?.getUrl;
+    if (!formData && entityId && formMarkup) {
+      const getUrl = getEntityUrl ?? formMarkup?.formSettings?.getUrl;
       const fetcher = getUrl
         ? get(getUrl, { id: entityId }, { base: backendUrl, headers: httpHeaders })
         : entitiesGet({ id: entityId, entityType: className }, { base: backendUrl, headers: httpHeaders });
@@ -99,24 +94,26 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
           notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
         });
     }
-  }, [entityId, getEntityUrl, formSettings]);
+  }, [entityId, getEntityUrl, formMarkup]);
 
   const formContent = useMemo(() => {
-    return formSettings && formData ? (
+    return formMarkup && formData ? (
       <FormItemProvider namePrefix={undefined}>
-        <ConfigurableForm
-          mode="readonly"
-          {...formItemLayout}
-          markup={formSettings}
-          form={form}
-          initialValues={getQuickViewInitialValues(formData, dataProperties)}
-          skipFetchData={true}
-        />
+        <MetadataProvider id="dynamic" modelType={formMarkup?.formSettings.modelType}>
+          <ConfigurableForm
+            mode="readonly"
+            {...formItemLayout}
+            markup={formMarkup}
+            form={form}
+            initialValues={getQuickViewInitialValues(formData, dataProperties)}
+            skipFetchData={true}
+          />
+        </MetadataProvider>
       </FormItemProvider>
     ) : (
       <></>
     );
-  }, [formSettings, formData, dataProperties]);
+  }, [formMarkup, formData, dataProperties]);
 
   const render = () => {
     if (children) {
