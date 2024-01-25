@@ -67,9 +67,9 @@ namespace Shesha.Metadata
             var entities = isPreselection
                 ? models.Where(e => e.ClassName == selectedValue || e.Alias == selectedValue).ToList()
                 : models
-                .Where(e => string.IsNullOrWhiteSpace(term) ||
+                .Where(e => (string.IsNullOrWhiteSpace(term) ||
                     !string.IsNullOrWhiteSpace(e.Alias) && e.Alias.Contains(term, StringComparison.InvariantCultureIgnoreCase) ||
-                    e.ClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase))
+                    e.ClassName.Contains(term, StringComparison.InvariantCultureIgnoreCase))  && !e.ClassName.Contains("AspNetCore"))
                 .OrderBy(e => e.ClassName)
                 .Take(10)
                 .ToList();
@@ -77,9 +77,7 @@ namespace Shesha.Metadata
             var result = entities
                 .Select(e => new AutocompleteItemDto
                 {
-                    DisplayText = !string.IsNullOrWhiteSpace(e.Alias)
-                        ? $"{e.ClassName} ({e.Alias})"
-                        : e.ClassName,
+                    DisplayText = e.ClassName,
                     Value = !string.IsNullOrWhiteSpace(e.Alias)
                         ? e.Alias
                         : e.ClassName
