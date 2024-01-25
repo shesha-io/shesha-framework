@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import Search from 'antd/lib/input/Search';
 import { SearchProps } from 'antd/lib/input';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { useStyles } from './styles/styles';
 
 export interface IGlobalTableFilterBaseProps {
   searchProps?: SearchProps;
@@ -18,6 +19,7 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
   quickSearch,
   size = 'small',
 }) => {
+  const { styles } = useStyles();
   const srcProps: SearchProps = {
     size,
     allowClear: true,
@@ -38,7 +40,7 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
   };
 
   return (
-    <div className="sha-global-table-filter">
+    <div className={styles.shaGlobalTableFilter}>
       <Search
         value={quickSearch}
         onKeyPress={event => event?.stopPropagation()}

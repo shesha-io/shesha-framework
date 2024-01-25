@@ -1,26 +1,20 @@
-import { Checkbox, Input, Select } from 'antd';
-import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
+import CodeEditor from '../codeEditor/codeEditor';
+import FormAutocomplete from '@/components/formAutocomplete';
+import React, { FC } from 'react';
+import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import { Checkbox, Input, Select } from 'antd';
+import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
+import { IChildEntitiesTagGroupProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
-import React, { FC } from 'react';
-import FormAutocomplete from '@/components/formAutocomplete';
-import CodeEditor from '../codeEditor/codeEditor';
-import { IChildEntitiesTagGroupProps } from './models';
-import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 
 const { Option } = Select;
 
-export const ChildEntitiesTagGroupSettingsForm: FC<ISettingsFormFactoryArgs<IChildEntitiesTagGroupProps>> = (props) => {
-  return (
-    SettingsForm<IChildEntitiesTagGroupProps>({...props, children: <ChildEntitiesTagGroupSettings {...props}/>})
-  );
-};
-
-const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesTagGroupProps>> = ({readOnly}) => {
+const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesTagGroupProps>> = ({ readOnly }) => {
   const { getFieldsValue, onValuesChange } = useSettingsForm<IChildEntitiesTagGroupProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
@@ -30,9 +24,9 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
 
   return (
     <>
-    <SettingsCollapsiblePanel header='Display'>
+      <SettingsCollapsiblePanel header='Display'>
         <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
-          readOnly={readOnly} 
+          readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
           formData={formData}
           onValuesChange={onValuesChange}
@@ -86,7 +80,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
           <Select mode="tags" />
   </SettingsFormItem>*/}
 
-        <SettingsFormItem name="formId" label="Form Path"  jsSetting>
+        <SettingsFormItem name="formId" label="Form Path" jsSetting>
           <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
         </SettingsFormItem>
 
@@ -117,5 +111,11 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
+  );
+};
+
+export const ChildEntitiesTagGroupSettingsForm: FC<ISettingsFormFactoryArgs<IChildEntitiesTagGroupProps>> = (props) => {
+  return (
+    SettingsForm<IChildEntitiesTagGroupProps>({ ...props, children: <ChildEntitiesTagGroupSettings {...props} /> })
   );
 };

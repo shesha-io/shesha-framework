@@ -16,7 +16,7 @@ export const isPropertySettings = (data: any) => {
 };
 
 export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {
-    if (!propName) 
+    if (!propName || !data) 
         return { _mode: 'value', _code: undefined, _value: undefined };
 
     const propNames = propName.split('.');
@@ -39,31 +39,10 @@ export const getValueFromPropertySettings = (value: any): any => {
 };
 
 export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
-    if (isPropertySettings(value))
-        return value;
-    else
+    if (!isPropertySettings(value) || !value)
         return { _mode: 'value', _code: undefined, _value: value };
-};
-
-export const updateSettingsComponentsDict = ( 
-    toolboxComponents: IToolboxComponents,
-    components: IComponentsDictionary) => {
-        const comps: IConfigurableFormComponent[] = [];
-
-        for (const key in components) {
-            if (components.hasOwnProperty(key)) {
-                comps.push(components[key]);
-            }
-        }
-
-        const updComps = updateSettingsComponents(toolboxComponents, comps);
-
-        const res: IComponentsDictionary = {};
-        updComps.forEach((comp) => {
-            res[comp.id] = comp;
-        });
-
-        return res;
+    else
+        return value;
 };
 
 /**
@@ -133,4 +112,25 @@ export const updateSettingsComponents = (
     return components.map(c => {
         return processComponent(c);
     });
+};
+
+export const updateSettingsComponentsDict = ( 
+    toolboxComponents: IToolboxComponents,
+    components: IComponentsDictionary) => {
+        const comps: IConfigurableFormComponent[] = [];
+
+        for (const key in components) {
+            if (components.hasOwnProperty(key)) {
+                comps.push(components[key]);
+            }
+        }
+
+        const updComps = updateSettingsComponents(toolboxComponents, comps);
+
+        const res: IComponentsDictionary = {};
+        updComps.forEach((comp) => {
+            res[comp.id] = comp;
+        });
+
+        return res;
 };

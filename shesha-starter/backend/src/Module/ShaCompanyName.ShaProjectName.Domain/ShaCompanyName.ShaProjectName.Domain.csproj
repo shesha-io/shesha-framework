@@ -20,7 +20,7 @@
     <PackageReference Include="Shesha.Framework" Version="0.29.0-beta" />
     <PackageReference Include="Shesha.NHibernate" Version="0.29.0-beta" />
     <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.29.0-beta" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
   </ItemGroup>
 
   <ItemGroup>

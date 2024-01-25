@@ -2,7 +2,7 @@ import { Rule, RuleObject } from 'antd/lib/form';
 import Schema, { Rules, ValidateSource } from 'async-validator';
 import camelcase from 'camelcase';
 import Mustache from 'mustache';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import nestedProperty from 'nested-property';
 import { CSSProperties } from 'react';
 import {
@@ -71,7 +71,7 @@ import {
 } from '@/providers';
 import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance } from 'axios';
-import { MessageApi } from 'antd/lib/message/index';
+import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
@@ -100,7 +100,7 @@ export interface IApplicationContext {
   /** Axios Http */
   http: AxiosInstance;
   /** Message API */
-  message: MessageApi;
+  message: MessageInstance;
   /** Other data */
   [key: string]: any;
 }
@@ -151,11 +151,13 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
     if (Array.isArray(value)) {
       return value;
       // ToDo: infinity loop
+      /*
       if (value.length === 0) return value;
       const v = value.map((x) => {
         return getActualModel(x, allData);
       });
       return v;
+      */
     }
 
     // update setting value to actual
@@ -170,6 +172,7 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
     }
 
     // update nested objects
+    /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
     return getActualModel(value, allData);
   }
   return value;
@@ -214,7 +217,7 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
-export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolean = undefined): T => {
+ export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolean = undefined): T => {
   const m = {} as T;
   for (var propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
@@ -227,6 +230,25 @@ export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolea
   if (m.hasOwnProperty('editMode')) m['readOnly'] = getReadOnlyBool(m['editMode'], readOnly);
 
   return m;
+};
+
+export const isCommonContext = (name: string): boolean => (Object.values(SheshaCommonContexts).filter(i => i === name)?.length > 0);
+
+const updateConfigurableActionParent = (model: any, parentId: string) => {
+  for (const key in model) {
+    if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
+      const config = model[key] as IConfigurableActionConfiguration;
+  
+      if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
+        // skip SheshaActionOwners actions since they are common
+        if (Object.values(SheshaActionOwners).filter(i => i === config.actionOwner)?.length > 0)
+          continue;
+        model[key] = { ...config, actionOwner: `${parentId}.${config.actionOwner}` };
+      } else {
+        updateConfigurableActionParent(config, parentId);
+      }
+    }
+  }
 };
 
 export const getActualModelWithParent = <T extends IConfigurableFormComponent>(
@@ -254,26 +276,6 @@ export const getActualModelWithParent = <T extends IConfigurableFormComponent>(
     updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
   }
   return actualModel;
-};
-
-export const isCommonContext = (name: string): boolean => (Object.values(SheshaCommonContexts).filter(i => i === name)?.length > 0);
-
-
-const updateConfigurableActionParent = (model: any, parentId: string) => {
-  for (const key in model) {
-    if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
-      const config = model[key] as IConfigurableActionConfiguration;
-  
-      if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
-        // skip SheshaActionOwners actions since they are common
-        if (Object.values(SheshaActionOwners).filter(i => i === config.actionOwner)?.length > 0)
-          continue;
-        model[key] = { ...config, actionOwner: `${parentId}.${config.actionOwner}` };
-      } else {
-        updateConfigurableActionParent(config, parentId);
-      }
-    }
-  }
 };
 
 export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
@@ -343,34 +345,6 @@ export const componentsTreeToFlatStructure = (
   return result;
 };
 
-export const upgradeComponents = (
-  toolboxComponents: IToolboxComponents,
-  formSettings: IFormSettings,
-  flatStructure: IFlatComponentsStructure
-) => {
-  const { allComponents } = flatStructure;
-  for (const key in allComponents) {
-    if (allComponents.hasOwnProperty(key)) {
-      const component = allComponents[key] as IConfigurableFormComponent;
-
-      const componentDefinition = toolboxComponents[component.type];
-      if (componentDefinition) {
-        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure);
-      }
-    }
-  }
-};
-
-export const upgradeComponentsTree = (
-  toolboxComponents: IToolboxComponents,
-  formSettings: IFormSettings,
-  components: IConfigurableFormComponent[]
-): IConfigurableFormComponent[] => {
-  const flatStructure = componentsTreeToFlatStructure(toolboxComponents, components);
-  upgradeComponents(toolboxComponents, formSettings, flatStructure);
-  return componentsFlatStructureToTree(toolboxComponents, flatStructure);
-};
-
 export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
@@ -388,6 +362,24 @@ export const upgradeComponent = (
     componentId: componentModel.id,
   });
   return model;
+};
+
+export const upgradeComponents = (
+  toolboxComponents: IToolboxComponents,
+  formSettings: IFormSettings,
+  flatStructure: IFlatComponentsStructure
+) => {
+  const { allComponents } = flatStructure;
+  for (const key in allComponents) {
+    if (allComponents.hasOwnProperty(key)) {
+      const component = allComponents[key] as IConfigurableFormComponent;
+
+      const componentDefinition = toolboxComponents[component.type];
+      if (componentDefinition) {
+        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure);
+      }
+    }
+  }
 };
 
 //#region Migration utils
@@ -459,6 +451,16 @@ export const componentsFlatStructureToTree = (
   processComponent(tree, ROOT_COMPONENT_KEY);
 
   return tree;
+};
+
+export const upgradeComponentsTree = (
+  toolboxComponents: IToolboxComponents,
+  formSettings: IFormSettings,
+  components: IConfigurableFormComponent[]
+): IConfigurableFormComponent[] => {
+  const flatStructure = componentsTreeToFlatStructure(toolboxComponents, components);
+  upgradeComponents(toolboxComponents, formSettings, flatStructure);
+  return componentsFlatStructureToTree(toolboxComponents, flatStructure);
 };
 
 /**
@@ -724,19 +726,6 @@ export function executeScript<TResult = any>(
   });
 }
 
-export const getExecutorScriptSync = (context: any) => {
-  /*let argsDefinition = '';
-  const argList: any[] = [];
-  for (const argumentName in context) {
-    if (context.hasOwnProperty(argumentName)) {
-      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-      argList.push(context[argumentName]);
-    }
-  }*/
-
-  return <T>(jscode: string) => executeScriptSync<T>(jscode, context);
-};
-
 export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
   if (!expression) throw new Error('Expression must be defined');
 
@@ -754,6 +743,19 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
   }
 }
 
+export const getExecutorScriptSync = (context: any) => {
+  /*let argsDefinition = '';
+  const argList: any[] = [];
+  for (const argumentName in context) {
+    if (context.hasOwnProperty(argumentName)) {
+      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+      argList.push(context[argumentName]);
+    }
+  }*/
+
+  return <T>(jscode: string) => executeScriptSync<T>(jscode, context);
+};
+
 /**
  * Return ids of visible components according to the custom visibility
  */
@@ -768,27 +770,8 @@ export const getVisibleComponentIds = (
       const component = components[key] as IConfigurableFormComponent;
 
       if (filteredComponents?.includes(component.id)
-        && !getActualPropertyValue(component, allData, 'hidden')?.hidden)
-        visibleComponents.push(key);
-    }
-  }
-  return visibleComponents;
-};
-
-/**
- * Return ids of filtered components according to the custom visibility
- */
-export const getFilteredComponentIds = (
-  components: IComponentsDictionary,
-  allData: IApplicationContext,
-  propertyFilter?: (name: string) => boolean
-): string[] => {
-  const visibleComponents: string[] = [];
-  for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      const component = components[key] as IConfigurableFormComponent;
-
-      if (isComponentFiltered(component, allData, propertyFilter))
+        && !getActualPropertyValue(component, allData, 'hidden')?.hidden
+        && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode)))
         visibleComponents.push(key);
     }
   }
@@ -797,15 +780,32 @@ export const getFilteredComponentIds = (
 
 const isComponentFiltered = (
   component: IConfigurableFormComponent,
-  allData: IApplicationContext,
   propertyFilter?: (name: string) => boolean
 ): boolean => {
   if (propertyFilter && component.propertyName) {
     const filteredOut = propertyFilter(component.propertyName);
     if (filteredOut === false) return false;
   }
+  return true;
+};
 
-  return (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode));
+/**
+ * Return ids of filtered components according to the custom visibility
+ */
+export const getFilteredComponentIds = (
+  components: IComponentsDictionary,
+  propertyFilter?: (name: string) => boolean
+): string[] => {
+  const visibleComponents: string[] = [];
+  for (const key in components) {
+    if (components.hasOwnProperty(key)) {
+      const component = components[key] as IConfigurableFormComponent;
+
+      if (isComponentFiltered(component, propertyFilter))
+        visibleComponents.push(key);
+    }
+  }
+  return visibleComponents;
 };
 
 /**
@@ -937,10 +937,6 @@ export const evaluateStringLiteralExpression = (expression: string, data: any) =
   return expression.replace(/\$\{(.*?)\}/g, (_, token) => nestedProperty.get(data, token));
 };
 
-export const evaluateValue = (value: string, dictionary: any) => {
-  return evaluateValueInternal(value, dictionary, true);
-};
-
 /**
  * Evaluates an string expression and returns the evaluated value.
  *
@@ -1005,6 +1001,10 @@ const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean) 
   }
 };
 
+export const evaluateValue = (value: string, dictionary: any) => {
+  return evaluateValueInternal(value, dictionary, true);
+};
+
 const TAGS_REGEX = /{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}/;
 
 export const replaceTags = (value: string, dictionary: any) => {
@@ -1067,14 +1067,6 @@ export const findToolboxComponent = (
   return null;
 };
 
-/** backward compatibility */
-export const getComponentsAndSettings = (markup: FormMarkup): FormMarkupWithSettings => {
-  return {
-    components: getComponentsFromMarkup(markup),
-    formSettings: getFromSettingsFromMarkup(markup),
-  };
-};
-
 export const getComponentsFromMarkup = (markup: FormMarkup): IConfigurableFormComponent[] => {
   if (!markup) return [];
   return Array.isArray(markup)
@@ -1086,6 +1078,14 @@ export const getFromSettingsFromMarkup = (markup: FormMarkup): IFormSettings => 
   return Array.isArray(markup) || !Boolean(markup)
     ? DEFAULT_FORM_SETTINGS
     : (markup as FormMarkupWithSettings).formSettings;
+};
+
+/** backward compatibility */
+export const getComponentsAndSettings = (markup: FormMarkup): FormMarkupWithSettings => {
+  return {
+    components: getComponentsFromMarkup(markup),
+    formSettings: getFromSettingsFromMarkup(markup),
+  };
 };
 
 export const validateForm = (rules: Rules, values: ValidateSource): Promise<void> => {

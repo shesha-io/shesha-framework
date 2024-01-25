@@ -1,10 +1,10 @@
-import { Form, FormInstance, FormProps } from 'antd';
+import { Form } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { FormProvider, useForm } from '@/providers';
+import { FormProvider } from '@/providers';
 import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,
@@ -24,6 +24,7 @@ import {
 import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from './contexts';
 import { CrudMode } from './models';
 import reducer from './reducer';
+import { FormWrapper } from './formWrapper';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -84,7 +85,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   }, [autoSave]);
 
   useEffect(() => {
-    const modeToUse = allowChangeMode ? state.mode : mode;
+    //to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one) 
+    const modeToUse = mode ==='read'?mode:allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
@@ -290,29 +292,5 @@ function useCrud(require: boolean = true) {
 
   return context;
 }
-
-interface FormWrapperProps {
-  initialValues: object;
-  onValuesChange: FormProps['onValuesChange'];
-  form: FormInstance;
-  formSettings?: IFormSettings;
-}
-
-const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, formSettings, children }) => {
-  const { updateStateFormData: setFormData } = useForm();
-
-  const onValuesChangeInternal = (changedValues: any, values: any) => {
-    // recalculate components visibility
-    setFormData({ values, mergeValues: true });
-
-    if (onValuesChange) onValuesChange(changedValues, values);
-  };
-
-  return (
-    <Form component={false} form={form} initialValues={initialValues} onValuesChange={onValuesChangeInternal} {...formSettings}>
-      {children}
-    </Form>
-  );
-};
 
 export { CrudProvider, useCrud };

@@ -133,7 +133,8 @@
       "propertyName": "stylingBox",
       "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
       "validate": {},
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "jsSetting": false
     }
   ],
   "formSettings": {

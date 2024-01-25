@@ -10,6 +10,7 @@ import {
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 import { getActualModel, useApplicationContext } from '@/utils/publicUtils';
 import { useDeepCompareMemo } from '@/hooks';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IButtonGroupItemsContainerProps {
   index?: number[];
@@ -18,6 +19,7 @@ export interface IButtonGroupItemsContainerProps {
 }
 
 export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = props => {
+  const { styles } = useStyles();
   const { updateChildItems, readOnly } = useButtonGroupConfigurator();
   const allData = useApplicationContext();
   
@@ -69,11 +71,11 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
         name: 'buttonGroupItems',
       }}
       sort={true}
-      draggable=".sha-button-group-item"
+      draggable={`.${styles.shaToolbarItem}`}
       animation={75}
-      ghostClass="sha-button-group-item-ghost"
+      ghostClass={styles.shaToolbarItemGhost}
       emptyInsertThreshold={20}
-      handle=".sha-button-group-item-drag-handle"
+      handle={`.${styles.shaToolbarItemDragHandle}`}
       scroll={true}
       bubbleScroll={true}
     >

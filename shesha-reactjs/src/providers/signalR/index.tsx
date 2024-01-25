@@ -33,6 +33,10 @@ function SignalRProvider({
 
   const previousBaseUrl = usePrevious(baseUrl);
 
+  const setConnection = (connection?: ISignalRConnection) => {
+    dispatch(setConnectionAction(connection));
+  };
+
   useEffect(() => {
     if (state.connection || (previousBaseUrl && previousBaseUrl === baseUrl)) {
       return undefined;
@@ -64,9 +68,6 @@ function SignalRProvider({
     };
   }, [baseUrl, config]);
 
-  const setConnection = (connection?: ISignalRConnection) => {
-    dispatch(setConnectionAction(connection));
-  };
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   return (

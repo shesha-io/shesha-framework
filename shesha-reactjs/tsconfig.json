@@ -2,7 +2,6 @@
   "compilerOptions": {
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
-    "declaration": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -17,7 +16,7 @@
       "es2017",
       "esnext"
     ],
-    "module": "esnext",
+    "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "noEmit": true,
     "noImplicitAny": false, // todo: change to true after first successfull build
@@ -38,7 +37,7 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    }    
   },
   "exclude": [
     "node_modules",

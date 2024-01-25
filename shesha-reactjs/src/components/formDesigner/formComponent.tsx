@@ -1,7 +1,7 @@
 import { useDeepCompareMemo } from '@/hooks';
 import React, { FC, MutableRefObject } from 'react';
 import { getActualModelWithParent, useApplicationContext } from '@/utils/publicUtils';
-import { IConfigurableFormComponent } from '@/index';
+import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 
 export interface IFormComponentProps {
@@ -32,7 +32,7 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
     <toolboxComponent.Factory 
       model={actualModel} 
       componentRef={componentRef} 
-      form={form} context={allData}
+      form={form}
     />
   );
 };

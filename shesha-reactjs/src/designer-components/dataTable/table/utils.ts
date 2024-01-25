@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IExpressionExecuterArguments, executeScriptSync } from '@/utils/publicUtils';
 

@@ -1,10 +1,10 @@
 import { IConfigurableFormComponent, SettingsMigrationContext } from '@/interfaces/formDesigner';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { IChildTableComponentProps } from '../index';
 import { migrateFunctionToProp } from '@/designer-components/_common-migrations/migrateSettings';
-import { IFlatComponentsStructure } from '@/index';
+import { IFlatComponentsStructure } from '@/interfaces';
 
 export interface IPanelContent {
     id: string;
@@ -25,6 +25,19 @@ export interface IPanelComponentProps extends IConfigurableFormComponent {
     hideWhenEmpty?: boolean;
     className?: string;
 }
+
+const getClosestComponent = (flatStructure: IFlatComponentsStructure, id: string, predicate: (component: IConfigurableFormComponent) => boolean): IConfigurableFormComponent => {
+    const current = flatStructure.allComponents[id];
+    if (!current)
+        return null;
+    
+    if (predicate(current))
+        return current;
+
+    return current.parentId
+        ? getClosestComponent(flatStructure, current.parentId, predicate)
+        : null;
+};
 
 export const migrateToTable = (
     props: IChildTableComponentProps,
@@ -117,17 +130,4 @@ export const migrateToTable = (
     }
 
     return result;
-};
-
-const getClosestComponent = (flatStructure: IFlatComponentsStructure, id: string, predicate: (component: IConfigurableFormComponent) => boolean): IConfigurableFormComponent => {
-    const current = flatStructure.allComponents[id];
-    if (!current)
-        return null;
-    
-    if (predicate(current))
-        return current;
-
-    return current.parentId
-        ? getClosestComponent(flatStructure, current.parentId, predicate)
-        : null;
 };

@@ -26,7 +26,7 @@ module.exports = {
     '/.storybook/**',
     '.eslintrc.js',
     'rollup.config.mjs',
-    'less-bundle.js',
+    'next.config.js',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -103,7 +103,7 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
-    '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/no-use-before-define': ['error', { "ignoreTypeReferences": true, "classes": false }],
     /*error*/
     '@typescript-eslint/quotes': ['off' /*error*/, 'double'],
     '@typescript-eslint/semi': ['error', 'always'],
@@ -266,5 +266,5 @@ module.exports = {
     'import/core-modules': [],
     'import/ignore': ['node_modules', '\\.(coffee|scss|css|less|hbs|svg|json)$'],
   },
-  extends: ['plugin:storybook/recommended', 'plugin:react-hooks/recommended'],
+  extends: ['plugin:storybook/recommended', 'plugin:react-hooks/recommended', 'plugin:@next/next/recommended'],
 };

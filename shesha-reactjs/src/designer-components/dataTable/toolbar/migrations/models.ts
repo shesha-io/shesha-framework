@@ -1,4 +1,4 @@
-import { IConfigurableActionConfiguration } from "@/index";
+import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
 import { IConfigurableFormComponent } from "@/interfaces/index";
 import { ButtonType } from "antd/lib/button";
 

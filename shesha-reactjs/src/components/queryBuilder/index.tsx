@@ -1,49 +1,22 @@
-import React, { FC, useEffect, useMemo, useRef } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
+import { config as InitialConfig } from './config';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { extractVars } from '@/utils/jsonLogic';
+import { FieldAutocomplete } from './fieldAutocomplete';
+import { FuncSelect } from './funcSelect/index';
+import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
+import { IQueryBuilderProps } from './interfaces';
+import { QueryBuilderContent } from './queryBuilderContent';
+import { Skeleton } from 'antd';
+import { useQueryBuilder } from '@/providers';
 import {
-  Query,
-  Builder,
-  Utils as QbUtils,
-  ImmutableTree,
   Config,
-  BuilderProps,
-  JsonLogicResult,
-  FieldSettings,
-  Widgets,
   Fields,
   FieldOrGroup,
   Settings,
 } from '@react-awesome-query-builder/antd';
-import classNames from 'classnames';
-import { ITableColumn } from '@/interfaces';
-import { hasCustomQBSettings, IProperty, propertyHasQBConfig } from '@/providers/queryBuilder/models';
-import { DataTypes } from '@/interfaces/dataTypes';
-import { config as InitialConfig } from './config';
-import { FieldAutocomplete } from './fieldAutocomplete';
-import { extractVars } from '@/utils/jsonLogic';
-import { Skeleton } from 'antd';
-import { useQueryBuilder } from '@/providers';
-import { usePrevious } from 'react-use';
-import { FuncSelect } from './funcSelect/index';
 
-export interface IQueryBuilderColumn extends ITableColumn {
-  fieldSettings?: FieldSettings;
-  preferWidgets?: Widgets[];
-}
-
-export interface IQueryFieldsSource {
-  requireFields: (fields: string[]) => Promise<IProperty[]>;
-  fields: IProperty[];
-}
-
-export interface IQueryBuilderProps {
-  value?: object;
-  onChange?: (result: JsonLogicResult) => void;
-  columns?: IQueryBuilderColumn[];
-  showActionBtnOnHover?: boolean;
-  readOnly?: boolean;
-}
-
-export const QueryBuilder: FC<IQueryBuilderProps> = props => {
+const QueryBuilder: FC<IQueryBuilderProps> = props => {
   const { value } = props;
   const { fields, fetchFields, customWidgets } = useQueryBuilder();
 
@@ -70,7 +43,6 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
     fieldSources: ["field", "func"],
     renderFunc: (props) => (<FuncSelect {...props} />),
     renderField: (props) => (<FieldAutocomplete {...props} /*fields={fields}*/ />),
-    renderOperator: (props, {RCE, W: {FieldSelect}}) => RCE(FieldSelect, { ...props, customProps: { dropdownMatchSelectWidth: false } }), // todo: remove after migration to antd 5
   };
 
   const convertFields = (fields: IProperty[]): Fields => {
@@ -158,7 +130,7 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
       const converted = hasCustomQBSettings(property)
         ? property.toQueryBuilderField(() => convertField(property))
         : convertField(property);
-      
+
       if (converted)
         confFields[property.propertyName] = converted;
     });
@@ -187,72 +159,4 @@ export const QueryBuilder: FC<IQueryBuilderProps> = props => {
   return missingFields.length > 0 ? <Skeleton></Skeleton> : <QueryBuilderContent {...props} qbConfig={qbConfig} />;
 };
 
-interface IQueryBuilderContentProps extends IQueryBuilderProps {
-  qbConfig: Config;
-}
-
-const loadJsonLogic = (jlValue: object, config: Config) => {
-  try {
-    return QbUtils.loadFromJsonLogic(jlValue, config);
-  } catch (error) {
-    console.error('failed to parse JsonLogic expression', { error, jlValue, config });
-    return null;
-  }
-};
-
-const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
-  showActionBtnOnHover = true,
-  onChange,
-  value,
-  qbConfig,
-}) => {
-  const lastLocallyChangedValue = useRef(value);
-  const changedOutside = value !== lastLocallyChangedValue.current;
-  const prevValue = usePrevious(value);
-  const prevTree = useRef<ImmutableTree>(null);
-
-  const tree = useMemo(() => {
-    const needRebuildTree = value !== prevValue && changedOutside;
-
-    if (!needRebuildTree && prevTree.current)
-      return prevTree.current;
-
-    const loadedTree = value
-      ? loadJsonLogic(value, qbConfig)
-      : QbUtils.loadTree({ id: QbUtils.uuid(), type: 'group' });
-
-    const checkedTree = QbUtils.checkTree(loadedTree, qbConfig);
-
-    prevTree.current = checkedTree;
-    lastLocallyChangedValue.current = value;
-
-    return checkedTree;
-  }, [value]);
-
-  const renderBuilder = (props: BuilderProps) => {
-    return (
-      <div className="query-builder-container">
-        <div className={classNames('query-builder', { 'qb-lite': showActionBtnOnHover })}>
-          <Builder {...props} />
-        </div>
-      </div>
-    );
-  };
-
-  const handleChange = (_tree: ImmutableTree, _config: Config) => {
-    if (onChange) {
-      const jsonLogicResult = QbUtils.jsonLogicFormat(_tree, _config);
-      
-      lastLocallyChangedValue.current = jsonLogicResult.logic;
-      onChange(jsonLogicResult);
-    }
-  };
-
-  return (
-    <div className="sha-query-builder">
-      {tree && qbConfig && <Query {...qbConfig} value={tree} onChange={handleChange} renderBuilder={renderBuilder} />}
-    </div>
-  );
-};
-
-export default QueryBuilder;
+export { QueryBuilder, type IQueryBuilderProps };

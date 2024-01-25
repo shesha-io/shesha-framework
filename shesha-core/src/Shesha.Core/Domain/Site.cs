@@ -3,6 +3,7 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,5 +42,8 @@ namespace Shesha.Domain
         public virtual RefListSiteSubType? SiteSubType { get; set; }
 
         public virtual Single? Area { get; set; }
+
+		[StringLength(20)]
+		public virtual string ContactNumber { get; set; }
     }
 }

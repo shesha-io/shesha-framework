@@ -4,7 +4,7 @@ import camelCaseKeys from 'camelcase-keys';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
 import React, { Key } from 'react';
-import { Autocomplete, ISelectOption } from '@/components/autocomplete';
+import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/autocomplete';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
@@ -167,7 +167,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const defaultValue = getDefaultValue();
 
-    const autocompleteProps = {
+    const autocompleteProps: IAutocompleteProps = {
       className: 'sha-autocomplete',
       typeShortAlias: model.entityTypeShortAlias,
       entityDisplayProperty: model.entityDisplayProperty,

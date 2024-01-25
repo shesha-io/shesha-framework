@@ -19,7 +19,7 @@ import {
 import { getItemById } from './utils';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { Action } from 'redux-actions';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 
 export interface IPropertiesEditorProviderProps {
   id?: string;

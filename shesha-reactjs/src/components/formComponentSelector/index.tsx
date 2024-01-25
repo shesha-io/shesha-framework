@@ -2,7 +2,7 @@ import { Button, Input, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { upgradeComponent } from '@/providers/form/utils';
 import React, { FC, useMemo, useState } from 'react';

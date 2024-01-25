@@ -6,6 +6,7 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import { useItemListConfigurator } from '@/providers';
 import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import classNames from 'classnames';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IListItemProps extends IConfigurableItemBase {
   index: number[];
@@ -13,27 +14,28 @@ export interface IListItemProps extends IConfigurableItemBase {
 
 export const ListItem: FC<IListItemProps> = ({ id, label, title, name, tooltip, icon }) => {
   const { deleteItem, selectedItemId } = useItemListConfigurator();
+  const { styles } = useStyles();
 
   const onDeleteClick = () => {
     deleteItem(id);
   };
 
   return (
-    <div className={classNames('sha-button-group-item', { selected: selectedItemId === id })}>
-      <div className="sha-button-group-item-header">
+    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === id })}>
+      <div className={styles.shaToolbarItemHeader}>
         <DragHandle id={id} />
 
         {icon && <ShaIcon iconName={icon as IconType} />}
 
-        <span className="sha-button-group-item-name">{title || label || name}</span>
+        <span className={styles.shaToolbarItemName}>{title || label || name}</span>
 
         {tooltip && (
           <Tooltip title={tooltip}>
-            <QuestionCircleOutlined className="sha-help-icon" />
+            <QuestionCircleOutlined className={styles.shaTooltipIcon} />
           </Tooltip>
         )}
 
-        <div className="sha-button-group-item-controls">
+        <div className={styles.shaToolbarItemControls}>
           <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
         </div>
       </div>

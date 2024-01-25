@@ -7,7 +7,7 @@ import { DataListSettingsForm } from './dataListSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
 import DataListControl, { NotConfiguredWarning } from './dataListControl';
-import { useDataTableStore } from '@/index';
+import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {

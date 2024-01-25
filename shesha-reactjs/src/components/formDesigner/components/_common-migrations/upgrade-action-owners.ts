@@ -1,20 +1,6 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { SettingsMigrationContext } from '@/interfaces';
 
-export const upgradeActionConfig = (config: IConfigurableActionConfiguration, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
-    if (!config)
-        return config;
-
-    const newOwner = getActionOwner(config.actionOwner, context);
-
-    return {
-        ...config,
-        actionOwner: newOwner,
-        onFail: upgradeActionConfig(config.onFail, context),
-        onSuccess: upgradeActionConfig(config.onSuccess, context),
-    };
-};
-
 const actionOwnerTypes = ['datatableContext', 'subForm', 'list', 'wizard'];
 const getActionOwner = (value: string, context: SettingsMigrationContext) => {
     if (!value)
@@ -45,4 +31,18 @@ const getActionOwner = (value: string, context: SettingsMigrationContext) => {
     }
 
     return value;
+};
+
+export const upgradeActionConfig = (config: IConfigurableActionConfiguration, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
+    if (!config)
+        return config;
+
+    const newOwner = getActionOwner(config.actionOwner, context);
+
+    return {
+        ...config,
+        actionOwner: newOwner,
+        onFail: upgradeActionConfig(config.onFail, context),
+        onSuccess: upgradeActionConfig(config.onSuccess, context),
+    };
 };

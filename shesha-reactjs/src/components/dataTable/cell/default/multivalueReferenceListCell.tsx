@@ -1,17 +1,8 @@
 import React, { useMemo } from 'react';
-import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { IDataCellProps } from '../interfaces';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
 
-export interface IMultivalueReferenceListCellProps<D extends object = {}, V = any> extends IDataCellProps<D, V> {}
-
-export const MultivalueReferenceListCell = <D extends object = {}, V = any>(
-  props: IMultivalueReferenceListCellProps<D, V>
-) => {
-  const { value } = props;
-  if (!value || !props.columnConfig) return null;
-
-  return (<MultivalueReferenceListCellInternal {...props}/>);
-};
+export interface IMultivalueReferenceListCellProps<D extends object = {}, V = any> extends IDataCellProps<D, V> { }
 
 const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
   props: IMultivalueReferenceListCellProps<D, V>
@@ -30,4 +21,13 @@ const MultivalueReferenceListCellInternal = <D extends object = {}, V = any>(
   }, [refListItems, value]);
 
   return <>{mapped}</>;
+};
+
+export const MultivalueReferenceListCell = <D extends object = {}, V = any>(
+  props: IMultivalueReferenceListCellProps<D, V>
+) => {
+  const { value } = props;
+  if (!value || !props.columnConfig) return null;
+
+  return (<MultivalueReferenceListCellInternal {...props} />);
 };

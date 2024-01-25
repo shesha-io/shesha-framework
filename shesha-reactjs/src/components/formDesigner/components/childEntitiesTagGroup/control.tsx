@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useState
-  } from 'react';
+} from 'react';
 import { addChildEntitiesTagGroupOption } from './utils';
 import {
   Button,
@@ -13,16 +13,16 @@ import {
   Modal,
   Select,
   Tag
-  } from 'antd';
+} from 'antd';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { executeScriptSync, useApplicationContext } from '@/providers/form/utils';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { SubFormProvider } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormConfiguration } from '@/providers/form/api';
-import './styles/index.less';
+import { useStyles } from './styles/styles';
 
 const { confirm } = Modal;
 
@@ -44,6 +44,7 @@ const CONFIRM_DELETE_TITLE = 'Are you sure you want to delete this item?';
 const WARNING_BIND_FORM = 'Please bind an appropriate form to this component.';
 
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) => {
+  const { styles } = useStyles();
   const [state, setState] = useState<IState>(INIT_STATE);
   const { activeValue, open, options } = state;
   const { deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName } = model;
@@ -61,7 +62,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   });
 
   const calculateLabel = (value: any, func: string) => {
-    return executeScriptSync(func, {...allData, item: value});
+    return executeScriptSync(func, { ...allData, item: value });
   };
 
   useEffect(() => {
@@ -86,6 +87,13 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
 
   const setOpen = (open: boolean) => setState((s) => ({ ...s, open, activeValue: null }));
 
+  const setOption = (option: IChildEntitiesTagGroupSelectOptions) => {
+    const opts = addChildEntitiesTagGroupOption(state.options, option);
+    setState((s) => ({ ...s, options: opts }));
+
+    onChange(opts.map(item => item.data));
+  };
+
   const onModalChange = (value: any) => {
     setOption(
       {
@@ -95,13 +103,6 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       }
     );
     setState((s) => ({ ...s, activeValue: null }));
-  };
-
-  const setOption = (option: IChildEntitiesTagGroupSelectOptions) => {
-    const opts = addChildEntitiesTagGroupOption(state.options, option);
-    setState((s) => ({ ...s, options:  opts}));
-
-    onChange(opts.map(item => item.data));
   };
 
   const onClickTag = (val: IChildEntitiesTagGroupSelectOptions) => () => {
@@ -120,7 +121,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
       cancelText: 'No',
       onOk: () => {
         const opts = options.filter(({ value }) => value !== item);
-        setState((s) => ({ ...s, options: opts}));
+        setState((s) => ({ ...s, options: opts }));
         onChange(opts.map(item => item.data));
       },
     });
@@ -134,6 +135,8 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     }
   };
 
+  const isEditable = !model?.readOnly;
+
   const tagRender = ({ label, value }) => {
     const val = options.find(x => x.value === value);
     return <Tag closable={isEditable} onClick={onClickTag(val)} onClose={onCloseTag(value)}>
@@ -141,25 +144,24 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     </Tag>;
   };
 
-  const isEditable = !model?.readOnly;
-  const inputGroupProps = isEditable ? {} : { className: 'child-entity-tag-full-width' };
+  const inputGroupProps = isEditable ? {} : { className: styles.childEntityTagFullWidth };
 
   const error = formConfigurationError;
   const loading = isFetchingFormConfiguration;
 
   const markup = useMemo(() => {
-    return { components: formConfiguration?.markup, formSettings: formConfiguration?.settings};
+    return { components: formConfiguration?.markup, formSettings: formConfiguration?.settings };
   }, [formConfiguration]);
 
   return (
-    <div className="child-entity-tag-container">
+    <div className={styles.childEntityTagContainer}>
       {open && (
-        <DataContextProvider 
-          id={propertyName} 
-          name={propertyName} 
-          description={propertyName} 
-          type={'childEntitiesTagGroup'} 
-          initialData={new Promise<any>(resolve => resolve({[propertyName]: activeValue?.data}))}
+        <DataContextProvider
+          id={propertyName}
+          name={propertyName}
+          description={propertyName}
+          type={'childEntitiesTagGroup'}
+          initialData={new Promise<any>(resolve => resolve({ [propertyName]: activeValue?.data }))}
         >
           <SubFormProvider id={model.id} context={propertyName} propertyName={propertyName} markup={markup} readOnly={model.readOnly}>
             <ChildEntitiesTagGroupModal
@@ -177,7 +179,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
 
       <Input.Group {...inputGroupProps}>
         <Select mode="tags" value={options} tagRender={tagRender} dropdownStyle={{ display: 'none' }} searchValue='' />
-        {isEditable && <Button onClick={onOpenModal} className="child-entity-tag-add" icon={<PlusOutlined />} />}
+        {isEditable && <Button onClick={onOpenModal} className={styles.childEntityTagAdd} icon={<PlusOutlined />} />}
       </Input.Group>
     </div>
   );

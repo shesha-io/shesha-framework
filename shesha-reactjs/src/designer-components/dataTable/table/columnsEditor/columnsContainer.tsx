@@ -8,6 +8,7 @@ import {
 } from '@/providers/datatableColumnsConfigurator/models';
 import { Column } from './column';
 import { ColumnsGroup } from './columnsGroup';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IColumnsContainerProps {
   index?: number[];
@@ -16,6 +17,7 @@ export interface IColumnsContainerProps {
 
 export const ColumnsContainer: FC<IColumnsContainerProps> = (props) => {
   const { updateChildItems, readOnly } = useColumnsConfigurator();
+  const { styles } = useStyles();
 
   const renderItem = (item: IConfigurableColumnsBase, index: number) => {
     switch (item.itemType) {
@@ -58,11 +60,11 @@ export const ColumnsContainer: FC<IColumnsContainerProps> = (props) => {
         name: 'toolbarItems',
       }}
       sort={true}
-      draggable=".sha-toolbar-item"
+      draggable={`.${styles.shaToolbarItem}`}
       animation={75}
-      ghostClass="sha-toolbar-item-ghost"
+      ghostClass={styles.shaToolbarItemGhost}
       emptyInsertThreshold={20}
-      handle=".sha-toolbar-item-drag-handle"
+      handle={`.${styles.shaToolbarItemDragHandle}`}
       scroll={true}
       bubbleScroll={true}
     >

@@ -5,6 +5,8 @@ import { ButtonGroupItemProps, IButtonGroup } from '@/providers/buttonGroupConfi
 import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
 import DragHandle from './dragHandle';
 import ShaIcon, { IconType } from '@/components/shaIcon';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
+import classNames from 'classnames';
 
 export interface IContainerRenderArgs {
   index?: number[];
@@ -18,28 +20,26 @@ export interface IButtonGroupItemsGroupProps extends IButtonGroup {
 }
 
 export const ButtonGroupItemsGroup: FC<IButtonGroupItemsGroupProps> = props => {
+  const { styles } = useStyles();
   const { deleteGroup, selectedItemId, readOnly } = useButtonGroupConfigurator();
 
   const onDeleteClick = () => {
     deleteGroup(props.id);
   };
 
-  const classes = ['sha-button-group-item'];
-  if (selectedItemId === props.id) classes.push('selected');
-
   return (
-    <div className={classes.reduce((a, c) => a + ' ' + c)}>
-      <div className="sha-button-group-group-header">
+    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })}>
+      <div className={styles.shaToolbarGroupHeader}>
         <DragHandle id={props.id} />
         {props.icon && <ShaIcon iconName={props.icon as IconType} />}
-        <span className="sha-button-group-item-name">{props.label || props.name}</span>
+        <span className={styles.shaToolbarItemName}>{props.label || props.name}</span>
         {!readOnly && (
-          <div className="sha-button-group-item-controls">
+          <div className={styles.shaToolbarItemControls}>
             <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
           </div>
         )}
       </div>
-      <div className="sha-button-group-group-container">
+      <div className={styles.shaToolbarGroupContainer}>
         {props.containerRendering({ index: props.index, items: props.childItems || [], id: props.id })}
       </div>
     </div>

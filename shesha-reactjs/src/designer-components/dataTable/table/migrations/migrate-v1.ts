@@ -6,41 +6,6 @@ import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable
 import { ITableComponentProps } from '../models';
 import { SettingsMigrationContext } from '@/interfaces';
 
-export const migrateV0toV1 = (props: ITableComponentProps, context: SettingsMigrationContext): ITableComponentProps => {
-    const { items } = props;
-    const newItems = items.map(item => {
-        if (item.itemType === "item") {
-            const col = item as IConfigurableColumnsProps;
-            if (col.columnType === "action") {
-                const actonColumn = col as IConfigurableActionColumnsProps;
-                if (!actonColumn.actionConfiguration) {
-                    const oldColumn = actonColumn as IConfigurableActionColumnsPropsV0;
-                    switch (oldColumn.action) {
-                        case "navigate": {
-                            actonColumn.actionConfiguration = getNavigateActionConfig(oldColumn);
-                            break;
-                        }
-                        case "dialogue": {
-                            actonColumn.actionConfiguration = getShowDialogActionConfig(oldColumn);
-                            break;
-                        }
-                        case "deleteRow": {
-                            actonColumn.actionConfiguration = getDeleteRowActionConfig(oldColumn, context);
-                            break;
-                        }
-                        case "executeScript": {
-                            actonColumn.actionConfiguration = getExecuteScriptActionConfig(oldColumn);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return item;
-    });
-    return { ...props, items: newItems };
-};
-
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
         _type: undefined,
@@ -205,3 +170,38 @@ interface IConfigurableActionColumnsPropsV0 {
     showConfirmDialogBeforeSubmit?: boolean;
     modalConfirmDialogMessage?: string;
 } 
+
+export const migrateV0toV1 = (props: ITableComponentProps, context: SettingsMigrationContext): ITableComponentProps => {
+    const { items } = props;
+    const newItems = items.map(item => {
+        if (item.itemType === "item") {
+            const col = item as IConfigurableColumnsProps;
+            if (col.columnType === "action") {
+                const actonColumn = col as IConfigurableActionColumnsProps;
+                if (!actonColumn.actionConfiguration) {
+                    const oldColumn = actonColumn as IConfigurableActionColumnsPropsV0;
+                    switch (oldColumn.action) {
+                        case "navigate": {
+                            actonColumn.actionConfiguration = getNavigateActionConfig(oldColumn);
+                            break;
+                        }
+                        case "dialogue": {
+                            actonColumn.actionConfiguration = getShowDialogActionConfig(oldColumn);
+                            break;
+                        }
+                        case "deleteRow": {
+                            actonColumn.actionConfiguration = getDeleteRowActionConfig(oldColumn, context);
+                            break;
+                        }
+                        case "executeScript": {
+                            actonColumn.actionConfiguration = getExecuteScriptActionConfig(oldColumn);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return item;
+    });
+    return { ...props, items: newItems };
+};

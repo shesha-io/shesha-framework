@@ -14,7 +14,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Empty, Spin } from 'antd';
 import _ from 'lodash';
 import { IReactTableProps, OnRowsReorderedArgs } from './interfaces';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { useDeepCompareEffect, usePrevious } from 'react-use';
 import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '@/components/conditionalWrapper';
@@ -23,6 +23,7 @@ import { getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useDataTableStore } from '@/providers/index';
+import { useStyles } from './styles/styles';
 
 interface IReactTableState {
   allRows: any[];
@@ -77,6 +78,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     allRows: data,
     allColumns: columns,
   });
+  const { styles } = useStyles();
 
   const { setDragState } = useDataTableStore();
 
@@ -91,6 +93,23 @@ export const ReactTable: FC<IReactTableProps> = ({
     }),
     []
   );
+
+  const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
+    callback(e);
+
+    if (onMultiRowSelect) {
+      const isSelected = !!(e.target as any)?.checked;
+      let selectedRows: Row<any>[] | Row;
+
+      if (Array.isArray(rows)) {
+        selectedRows = getPlainValue(rows).map(i => ({ ...i, isSelected }));
+      } else {
+        selectedRows = { ...getPlainValue(rows), isSelected };
+      }
+
+      onMultiRowSelect(selectedRows);
+    }
+  };
 
   const preparedColumns = useMemo(() => {
     const localColumns = [...allColumns];
@@ -134,7 +153,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         maxWidth: 35,
         disableSortBy: true,
         disableResizing: true,
-        Cell: ({ row }) => <RowDragHandle row={row}/>,
+        Cell: ({ row }) => <RowDragHandle row={row} />,
       });
     }
 
@@ -165,23 +184,6 @@ export const ReactTable: FC<IReactTableProps> = ({
   useEffect(() => {
     allRowsRef.current = allRows;
   }, [allRows]);
-
-  const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
-    callback(e);
-
-    if (onMultiRowSelect) {
-      const isSelected = !!(e.target as any)?.checked;
-      let selectedRows: Row<any>[] | Row;
-
-      if (Array.isArray(rows)) {
-        selectedRows = getPlainValue(rows).map(i => ({ ...i, isSelected }));
-      } else {
-        selectedRows = { ...getPlainValue(rows), isSelected };
-      }
-
-      onMultiRowSelect(selectedRows);
-    }
-  };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state, columns: tableColumns } = useTable(
     {
@@ -372,45 +374,48 @@ export const ReactTable: FC<IReactTableProps> = ({
         </span>
       }
     >
-      <div className="sha-react-table" style={containerStyleFinal}>
-        <div {...getTableProps()} className="sha-table" style={tableStyle}>
+      <div className={styles.shaReactTable} style={containerStyleFinal}>
+        <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>
           {columns?.length > 0 &&
-            headerGroups.map(headerGroup => (
-              <div
-                {...headerGroup.getHeaderGroupProps({
-                  // style: { paddingRight: '15px' },
-                })}
-                className={classNames('tr tr-head')}
-              >
-                {headerGroup?.headers?.map((column, index) => {
-                  return (
-                    <div
-                      key={index}
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                      className={classNames('th', {
-                        'sorted-asc': !column.disableSortBy && column.isSorted && column.isSortedDesc,
-                        'sorted-desc': !column.disableSortBy && column.isSorted && !column.isSortedDesc,
-                      })}
-                    >
-                      {column.render('Header')}
+            headerGroups.map(headerGroup => {
+              const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
+              return (
+                <div
+                  key={key}
+                  {...headerGroupProps}
+                  className={classNames(styles.tr, styles.trHead)}
+                >
+                  {headerGroup?.headers?.map((column) => {
+                    const { key, ...headerProps } = column.getHeaderProps(column.getSortByToggleProps());
+                    return (
+                      <div
+                        key={key}
+                        {...headerProps}
+                        className={classNames(styles.th, {
+                          [styles.sortedAsc]: !column.disableSortBy && column.isSorted && column.isSortedDesc,
+                          [styles.sortedDesc]: !column.disableSortBy && column.isSorted && !column.isSortedDesc,
+                        })}
+                      >
+                        {column.render('Header')}
 
-                      {/* Use column.getResizerProps to hook up the events correctly */}
-                      {column.canResize && (
-                        <div
-                          {...column.getResizerProps()}
-                          className={classNames('resizer', { isResizing: column.isResizing })}
-                          onClick={onResizeClick}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+                        {/* Use column.getResizerProps to hook up the events correctly */}
+                        {column.canResize && (
+                          <div
+                            {...column.getResizerProps()}
+                            className={classNames('resizer', { isResizing: column.isResizing })}
+                            onClick={onResizeClick}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           {canAddInline && newRowCapturePosition === 'top' && (renderNewRowEditor())}
 
           <div
-            className="tbody"
+            className={styles.tbody}
             style={{
               height: scrollBodyHorizontally ? height || 250 : 'unset',
               overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
@@ -418,7 +423,7 @@ export const ReactTable: FC<IReactTableProps> = ({
             {...getTableBodyProps()}
           >
             {rows?.length === 0 && !loading && (
-              <div className="sha-table-empty">
+              <div className={styles.shaTableEmpty}>
                 <Empty description="There is no data for this table" />
               </div>
             )}
@@ -445,7 +450,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                   handle=".row-handle"
                   scroll={true}
                   bubbleScroll={true}
-                  className="sha-sortable"
+                  className={styles.shaSortable}
                 >
                   {children}
                 </ReactSortable>

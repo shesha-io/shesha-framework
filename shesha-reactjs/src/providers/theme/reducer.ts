@@ -1,26 +1,21 @@
+import { handleActions } from 'redux-actions';
 import { ThemeActionEnums } from './actions';
-import { IThemeStateContext } from './contexts';
+import { IConfigurableTheme, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE } from './contexts';
 
-export function uiReducer(
-  state: IThemeStateContext,
-  action: ReduxActions.Action<IThemeStateContext>
-): IThemeStateContext {
-  //#region Register flags reducer
-
-  const { type, payload } = action;
-  //#endregion
-
-  switch (type) {
-    case ThemeActionEnums.SetTheme:
-      /* NEW_ACTION_ENUM_GOES_HERE */
+export const uiReducer = handleActions<IThemeStateContext, any>(
+  {
+    [ThemeActionEnums.SetTheme]: (
+      state: IThemeStateContext,
+      action: ReduxActions.Action<IConfigurableTheme>
+    ) => {
+      const { payload } = action;
 
       return {
         ...state,
-        ...payload,
+        theme: payload,
       };
+    },
+  },
 
-    default: {
-      return state;
-    }
-  }
-}
+  THEME_CONTEXT_INITIAL_STATE
+);

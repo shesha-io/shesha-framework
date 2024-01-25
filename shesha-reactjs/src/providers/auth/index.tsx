@@ -116,7 +116,61 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   const setters = getFlagSetters(dispatch);
 
+  const redirect = (url: string) => {
+    router?.push(url);
+  };
+
   //#region Fetch user login info
+
+  const cacheHomeUrl = (url: string) => {
+    if (url && url !== URL_HOME_PAGE) localStorage.setItem(HOME_CACHE_URL, url);
+  };
+
+  const getHttpHeadersFromState = (providedState: IAuthStateContext): IHttpHeaders => {
+    const headers: IHttpHeaders = { ...httpHeaders };
+
+    if (providedState.token) headers['Authorization'] = `Bearer ${providedState.token}`;
+
+    // todo: move culture and tenant to state and restore from localStorage on start
+    headers[ASPNET_CORE_CULTURE] = getLocalizationOrDefault();
+
+    const tenantId = getTenantId();
+
+    if (tenantId) {
+      headers['Abp.TenantId'] = getTenantId().toString();
+    }
+
+    const additionalHeaders = getCustomHeaders();
+
+    additionalHeaders.forEach(([key, value]) => {
+      if (key && value) {
+        headers[key] = value?.toString();
+      }
+    });
+
+    return headers;
+  };
+
+  const fireHttpHeadersChanged = (providedState: IAuthStateContext = state) => {
+    if (onSetRequestHeaders) {
+      const headers = getHttpHeadersFromState(providedState);
+      onSetRequestHeaders(headers);
+    }
+  };
+
+  const clearAccessToken = () => {
+    removeTokenFromStorage(tokenName);
+
+    dispatch((dispatchThunk, getState) => {
+      dispatchThunk(setAccessTokenAction(null));
+      fireHttpHeadersChanged(getState());
+    });
+  };
+
+  const redirectToUnauthorized = () => {
+    const redirectUrl = getLoginUrlWithReturn(homePageUrl, unauthorizedRedirectUrl);
+    redirect(redirectUrl);
+  };
 
   const fetchUserInfo = (headers: IHttpHeaders) => {
     if (state.isFetchingUserInfo || Boolean(state.loginInfo)) return;
@@ -168,17 +222,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
       });
   };
 
-  const cacheHomeUrl = (url: string) => {
-    if (url && url !== URL_HOME_PAGE) localStorage.setItem(HOME_CACHE_URL, url);
-  };
-
-  const redirect = (url: string) => {
-    router?.push(url);
-  };
-
-  const redirectToUnauthorized = () => {
-    const redirectUrl = getLoginUrlWithReturn(homePageUrl, unauthorizedRedirectUrl);
-    redirect(redirectUrl);
+  const getHttpHeaders = (): IHttpHeaders => {
+    return getHttpHeadersFromState(state);
   };
 
   //#region `checkAuth`
@@ -198,31 +243,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   };
   //#endregion
 
-  const getHttpHeadersFromState = (providedState: IAuthStateContext): IHttpHeaders => {
-    const headers: IHttpHeaders = { ...httpHeaders };
-
-    if (providedState.token) headers['Authorization'] = `Bearer ${providedState.token}`;
-
-    // todo: move culture and tenant to state and restore from localStorage on start
-    headers[ASPNET_CORE_CULTURE] = getLocalizationOrDefault();
-
-    const tenantId = getTenantId();
-
-    if (tenantId) {
-      headers['Abp.TenantId'] = getTenantId().toString();
-    }
-
-    const additionalHeaders = getCustomHeaders();
-
-    additionalHeaders.forEach(([key, value]) => {
-      if (key && value) {
-        headers[key] = value?.toString();
-      }
-    });
-
-    return headers;
-  };
-
   const getCleanedInitHeaders = <T,>(headers: T) => {
     const propName = Object.getOwnPropertyNames(headers || {});
     if (propName.length === 1 && propName[0] === ASPNET_CORE_CULTURE) {
@@ -230,26 +250,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     }
 
     return headers;
-  };
-
-  const getHttpHeaders = (): IHttpHeaders => {
-    return getHttpHeadersFromState(state);
-  };
-
-  const fireHttpHeadersChanged = (providedState: IAuthStateContext = state) => {
-    if (onSetRequestHeaders) {
-      const headers = getHttpHeadersFromState(providedState);
-      onSetRequestHeaders(headers);
-    }
-  };
-
-  const clearAccessToken = () => {
-    removeTokenFromStorage(tokenName);
-
-    dispatch((dispatchThunk, getState) => {
-      dispatchThunk(setAccessTokenAction(null));
-      fireHttpHeadersChanged(getState());
-    });
   };
 
   useEffect(() => {

@@ -4,14 +4,16 @@ import ColumnFilters from '@/components/columnFilters';
 import ColumnsFilterSelect from '@/components/columnsFilterSelect';
 import ColumnFiltersButtons from '@/components/columnFiltersButtons';
 import { useDataTableStore } from '@/providers';
+import { useStyles } from './styles/styles';
 
 export interface IDatatableAdvancedFilterProps {}
 
 export const DatatableAdvancedFilter: FC<IDatatableAdvancedFilterProps> = () => {
   const { getCurrentFilter } = useDataTableStore();
+  const { styles } = useStyles();
 
   return (
-    <div className="sha-index-table-column-filters">
+    <div className={styles.shaIndexTableColumnFilters}>
       <ColumnsFilterSelect />
 
       {getCurrentFilter().length > 0 && <Divider />}

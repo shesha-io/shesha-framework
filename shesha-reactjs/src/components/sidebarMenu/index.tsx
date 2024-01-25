@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useMemo, useRef, useState } from 'react';
 import { normalizeUrl } from '@/utils/url';
 import { isSidebarButton } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
@@ -8,6 +8,8 @@ import { renderSidebarMenuItem } from './utils';
 import { useApplicationContext } from '@/utils/publicUtils';
 import { useLocalStorage } from '@/hooks';
 import { useSidebarMenu } from '@/providers/sidebarMenu';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 export interface ISidebarMenuProps {
   isCollapsed?: boolean;
@@ -20,6 +22,7 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
   const executionContext = useApplicationContext();
+  const { styles } = useStyles();
 
   const currentUrl = normalizeUrl(router?.asPath);
 
@@ -27,8 +30,6 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const items = getItems();
   const initialSelection = useRef<string>(undefined);
-
-  if ((items ?? []).length === 0) return null;
 
   const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => {
     setSelectedKey(itemId);
@@ -38,25 +39,30 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     });
   };
 
-  const menuItems = items.map((item) =>
-    renderSidebarMenuItem({
-      item,
-      isItemVisible,
-      onButtonClick,
-      isRootItem: true,
-      onItemEvaluation: (nestedItem) => {
-        if (initialSelection.current === undefined && isSidebarButton(nestedItem) && isNavigationActionConfiguration(nestedItem.actionConfiguration)){
-          const url = getUrlFromNavigationRequest(nestedItem.actionConfiguration.actionArguments);
 
-          if (url && normalizeUrl(url) === currentUrl){
-            initialSelection.current = nestedItem.id;
-            if (!selectedKey)
-              setSelectedKey(nestedItem.id);
+  const menuItems = useMemo(() => {
+    return (items ?? []).map((item) =>
+      renderSidebarMenuItem({
+        item,
+        isItemVisible,
+        onButtonClick,
+        isRootItem: true,
+        onItemEvaluation: (nestedItem) => {
+          if (initialSelection.current === undefined && isSidebarButton(nestedItem) && isNavigationActionConfiguration(nestedItem.actionConfiguration)) {
+            const url = getUrlFromNavigationRequest(nestedItem.actionConfiguration.actionArguments);
+
+            if (url && normalizeUrl(url) === currentUrl) {
+              initialSelection.current = nestedItem.id;
+              if (!selectedKey)
+                setSelectedKey(nestedItem.id);
+            }
           }
-        }
-      },
-    })
-  );
+        },
+      })
+    );
+  }, [items]);
+
+  if (menuItems.length === 0) return null;
 
   const onOpenChange = (openKeys: React.Key[]) => {
     setOpenedKeys(openKeys);
@@ -67,7 +73,7 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   return (
     <Menu
       mode="inline"
-      className="nav-links-renderer sha-sidebar-menu"
+      className={classNames(styles.shaSidebarMenu, "nav-links-renderer")}
       defaultOpenKeys={keys}
       selectedKeys={selectedKey ? [selectedKey] : undefined}
       onOpenChange={onOpenChange}

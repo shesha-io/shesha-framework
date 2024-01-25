@@ -1,11 +1,11 @@
-import React, { CSSProperties, FC } from 'react';
-import './styles/index.less';
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
+import React, { CSSProperties, FC } from 'react';
+import RefTag from './tag';
 import { Alert, Skeleton } from 'antd';
 import { DescriptionTooltip } from './tooltip';
-import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
-import RefTag from './tag';
+import { useReferenceListItem } from '@/providers/referenceListDispatcher';
+import { useStyles } from './styles/styles';
 
 export interface IRefListStatusProps {
   referenceListId: IReferenceListIdentifier;
@@ -16,7 +16,14 @@ export interface IRefListStatusProps {
   value?: any;
 }
 
+const Icon = ({ type, ...rest }) => {
+  const icons = require(`@ant-design/icons`);
+  const Component = icons[type];
+  return <Component {...rest} />;
+};
+
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
+  const { styles } = useStyles();
   const { value, referenceListId, showIcon, solidBackground, style, showReflistName } = props;
 
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
@@ -45,7 +52,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
   return listItem?.loading ? (
     <Skeleton.Button />
   ) : (
-    <div className="sha-status-tag-container">
+    <div className={styles.shaStatusTagContainer}>
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
         <RefTag color={memoizedColor} style={style} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}>
           {showReflistName && itemData?.item}
@@ -53,10 +60,4 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
       </DescriptionTooltip>
     </div>
   );
-};
-
-const Icon = ({ type, ...rest }) => {
-  const icons = require(`@ant-design/icons`);
-  const Component = icons[type];
-  return <Component {...rest} />;
 };

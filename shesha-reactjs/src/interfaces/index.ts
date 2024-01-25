@@ -25,7 +25,6 @@ export { type IAnyObject } from './anyObject';
 export { type IToolbarItem } from './toolbar';
 export { DesignerToolbarSettings } from './toolbarSettings';
 export { type IShaDataTableProps } from '../components/dataTable/interfaces';
-export { type IChildTableProps } from '../components/childTable';
 export { type IValuable } from './valuable';
 export { type IChangeable } from './changeable';
 export { type IFormItem } from './formItem';

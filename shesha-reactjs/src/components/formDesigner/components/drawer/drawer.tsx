@@ -1,19 +1,26 @@
-import { Alert, Button, Drawer, DrawerProps, message, Space } from 'antd';
+import ComponentsContainer from '../../containers/componentsContainer';
 import moment from 'moment';
+import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, Fragment, useState } from 'react';
+import {
+  Alert,
+  Button,
+  Drawer,
+  DrawerProps,
+  message,
+  Space
+  } from 'antd';
 import { axiosHttp } from '@/utils/fetchers';
+import { executeScriptSync } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IDrawerProps } from './models';
 import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
 import {
   useConfigurableAction,
   useConfigurableActionDispatcher,
 } from '@/providers/configurableActionsDispatcher';
-import { executeScriptSync } from '@/providers/form/utils';
-import ComponentsContainer from '../../containers/componentsContainer';
-import { IDrawerProps } from './models';
-import ParentProvider from '@/providers/parentProvider/index';
 
-export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, Omit<DrawerProps, 'id'> {}
+export interface IShaDrawerProps extends Omit<IDrawerProps, 'style' | 'size'>, Omit<DrawerProps, 'id'> { }
 
 interface IShaDrawerState {
   open?: boolean;
@@ -58,14 +65,6 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     moment: moment,
   };
 
-  const onOkHandler = () => {
-    executeActionIfConfigured(onOkAction);
-  };
-
-  const onCancelHandler = () => {
-    executeActionIfConfigured(onCancelAction);
-  };
-
   /// NAVIGATION
   const executeActionIfConfigured = (actionConfiguration: IConfigurableActionConfiguration) => {
     if (!actionConfiguration) {
@@ -77,6 +76,14 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: actionEvaluationContext,
     });
+  };
+
+  const onOkHandler = () => {
+    executeActionIfConfigured(onOkAction);
+  };
+
+  const onCancelHandler = () => {
+    executeActionIfConfigured(onCancelAction);
   };
 
   useConfigurableAction(

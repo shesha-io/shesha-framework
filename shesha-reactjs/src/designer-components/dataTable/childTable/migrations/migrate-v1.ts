@@ -6,23 +6,6 @@ import { IButtonItem } from "@/providers/buttonGroupConfigurator/models";
 import { IShowModalActionArguments as IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
 import { getClosestTableId } from "@/providers/form/utils";
 
-export const migrateV0toV1 = (props: IChildTableComponentProps, context: SettingsMigrationContext): IChildTableComponentProps => {
-    const { toolbarItems } = props;
-
-    const newToolbarItems = toolbarItems?.map(item => {
-        if (item.itemType !== "item")
-            return item;
-
-        const button = item as IButtonGroupButtonV0;
-        const newItem: IButtonItem = { ...button };
-        newItem.actionConfiguration = getActionConfiguration(button, context);
-
-        return newItem;
-    });
-
-    return { ...props, toolbarItems: newToolbarItems ?? [] };
-};
-
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
         _type: undefined,
@@ -118,7 +101,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
             });
         }
         case "executeFormAction": {
-            if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL'){
+            if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL') {
                 return makeAction({
                     actionOwner: getClosestTableId(context),
                     actionName: 'Export to Excel',
@@ -297,4 +280,25 @@ interface IModalPropsV0 {
 
     onCancel?: () => void;
 }
-  //#endregion
+//#endregion
+
+export const migrateV0toV1 = (props: IChildTableComponentProps, context: SettingsMigrationContext): IChildTableComponentProps => {
+    const { toolbarItems } = props;
+
+    const newToolbarItems = toolbarItems?.map(item => {
+        if (item.itemType !== "item")
+            return item;
+
+        const button = item as IButtonGroupButtonV0;
+        const newItem: IButtonItem = {
+            ...button,
+            buttonType: button.buttonType === 'ghost' ? 'default' : button.buttonType,
+            ghost: button.buttonType === 'ghost',
+        };
+        newItem.actionConfiguration = getActionConfiguration(button, context);
+
+        return newItem;
+    });
+
+    return { ...props, toolbarItems: newToolbarItems ?? [] };
+};

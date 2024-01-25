@@ -1,9 +1,9 @@
-import { FormItemProps, FormProps } from 'antd';
 import classNames from 'classnames';
+import { FormItemProps, FormProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/formDesignerUtils';
+import { getStyle } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { IFormSettings, SILENT_KEY } from '@/providers/form/models';
-import { getStyle } from '@/providers/form/utils';
 
 export interface IFormPropOptions {
   hidden: boolean;
@@ -37,20 +37,6 @@ export const getConfigModel = ({ id, propertyName: name, type }: IPasswordCompon
   type,
   hideLabel: true,
 });
-
-export const getDefaultModel = (m: IPasswordComponentProps) => {
-  try {
-    const model = { ...m };
-
-    if (!model.confirmLabel && model.label) {
-      model.confirmLabel = incrementLastChar(m.label as string);
-    }
-
-    return model;
-  } catch (_e) {
-    return m;
-  }
-};
 
 export const getFormProps = (formSettings: IFormSettings): FormProps => ({
   layout: formSettings?.layout,
@@ -97,5 +83,19 @@ export const incrementLastChar = (value: string): string => {
     return value;
   } catch (_e) {
     return null;
+  }
+};
+
+export const getDefaultModel = (m: IPasswordComponentProps) => {
+  try {
+    const model = { ...m };
+
+    if (!model.confirmLabel && model.label) {
+      model.confirmLabel = incrementLastChar(m.label as string);
+    }
+
+    return model;
+  } catch (_e) {
+    return m;
   }
 };

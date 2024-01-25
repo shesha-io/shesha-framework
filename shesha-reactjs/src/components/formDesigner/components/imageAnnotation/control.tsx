@@ -1,13 +1,19 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { ReactPictureAnnotation } from 'react-picture-annotation';
-import { usePrevious } from '@/hooks';
-import { useFormData, useGlobalState } from '@/providers';
-import { getString, getStyle } from '@/providers/form/utils';
 import CustomInput from './components/customAnnotationInput';
 import DescriptionsList from './components/descriptionList';
+import React, {
+  FC,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import WarningMessage from './components/warningMessage';
+import { getString, getStyle } from '@/providers/form/utils';
 import { IAnnotation, IImageAnnotationData, IImageProps } from './model';
-import './styles/index.less';
+import { ReactPictureAnnotation } from 'react-picture-annotation';
+import { useFormData, useGlobalState } from '@/providers';
+import { usePrevious } from '@/hooks';
+import { useStyles } from './styles/styles';
 import {
   canSubmit,
   getImageBits,
@@ -34,6 +40,7 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
     style,
   } = model;
 
+  const { styles } = useStyles();
   const { data: formData } = useFormData();
 
   const { globalState } = useGlobalState();
@@ -55,6 +62,13 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
   const [urlBits, setBits] = useState<string>(value?.bit64Url);
 
   const isReadOnly = readOnly;
+
+  const onResize = () => {
+    setPageSize({
+      width: parseIntOrDefault(imageFrameRef?.current?.offsetWidth),
+      height: parseIntOrDefault(imageFrameRef?.current?.offsetHeight),
+    });
+  };
 
   useEffect(() => {
     window.addEventListener('resize', onResize);
@@ -81,13 +95,6 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
   }, [height, width]);
 
   const url: string = getString(model?.url, formData, globalState) || formData?.[model.propertyName];
-
-  const onResize = () => {
-    setPageSize({
-      width: parseIntOrDefault(imageFrameRef?.current?.offsetWidth),
-      height: parseIntOrDefault(imageFrameRef?.current?.offsetHeight),
-    });
-  };
 
   const setIsRequired = (required: boolean) => {
     model.validate.required = required;
@@ -162,9 +169,9 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
         notFoundUrl={!newUrl}
         url={newUrl}
       />
-      <div className="annotation-conatainer">
+      <div className={styles.annotationConatainer}>
         <div
-          className="container-image"
+          className={styles.containerImage}
           ref={imageFrameRef}
           style={{ ...pageSize, ...getStyle(style, formData, globalState) }}
         >
@@ -189,11 +196,11 @@ const ImageAnnotationControl: FC<IProps> = ({ model, onChange: onChangeForm, val
             marginWithInput={2}
           />
         </div>
-        {isReadOnly && <div className="container-image-Cover" style={{ ...pageSize }} />}
+        {isReadOnly && <div className={styles.containerImageCover} style={{ ...pageSize }} />}
 
         {!isOnImage && allowAddingNotes && (
           <div
-            className="description-container"
+            className={styles.descriptionContainer}
             style={{
               height: pageSize.height,
             }}

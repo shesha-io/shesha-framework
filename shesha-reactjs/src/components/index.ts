@@ -8,7 +8,6 @@ export {
   type IMultiReadCheckBoxRefListProps,
   binaryToList,
 } from './multiReadCheckBoxrefList';
-export { default as PageBtnContainer, type IPageBtnContainerProps } from './pageBtnContainer';
 export { ReactTable } from './reactTable';
 export { type IReactTableProps } from './reactTable/interfaces';
 export {
@@ -17,18 +16,14 @@ export {
 } from './formDesigner/configurableFormComponent';
 export { default as ConfigurableFormItem, type IConfigurableFormItemProps } from './formDesigner/components/formItem';
 export { default as BooleanDropDown } from './booleanDropDown';
-export { default as SidebarContainer } from './sidebarContainer';
+export { SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
 export { default as EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
 export { default as FormAutocomplete } from './formAutocomplete';
 export { default as CustomFile } from './customFile';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
 export { default as CustomErrorBoundary } from './customErrorBoundary';
-export { default as DetailsViewHeaderControls } from './detailsViewHeaderControls';
-export { default as AppliedCustomFilters, type IAppliedCustomFiltersProps } from './appliedCustomFilters';
-export { default as CancelButton, type ICancelButtonProps } from './cancelButton';
 export { default as CollapsiblePanel, type ICollapsiblePanelProps } from './panel';
-export { default as CollapsibleSidebarContainer, type ICollapsibleSidebarProps } from './collapsibleSidebarContainer';
 export { default as ColumnFilters, type IColumnFiltersProps } from './columnFilters';
 export { default as ColumnFiltersBase, type IColumnFiltersBaseProps } from './columnFiltersBase';
 export { default as ColumnFiltersButtons, type IColumnFiltersButtonsProps } from './columnFiltersButtons';
@@ -46,7 +41,6 @@ export { default as GlobalTableFilterBase, type IGlobalTableFilterBaseProps } fr
 export { default as GooglePlacesAutocomplete, type IGooglePlacesAutocompleteProps } from './googlePlacesAutocomplete';
 export { default as HtmlHead, type IHtmlHeadProps } from './htmlHead';
 export { default as IdleTimerRenderer, type IIdleTimerRendererProps } from './idleTimerRenderer';
-export { default as ChildTable, type IChildTableProps } from './childTable';
 export { DataTable, type IIndexTableProps, type IExtendedModalProps } from './dataTable';
 export {
   default as DatatableAdvancedFilter,
@@ -56,8 +50,6 @@ export {
   default as DatatableColumnsSelector,
   type IDatatableColumnsSelectorProps as IIndexTableColumnVisibilityToggleProps,
 } from './dataTable/columnsSelector';
-export { default as IndexTableControls, type IIndexTableControlsProps } from './indexTableControls';
-export { default as IndexTableFull, type IIndexTableFullProps } from './indexTableFull';
 export { default as IndexToolbar, type IIndexToolbarProps } from './indexToolbar';
 export { default as LayoutHeading, type ILayoutHeadingProps } from './layoutHeading';
 export { default as MainLayout, type IMainLayoutProps } from './mainLayout';
@@ -67,10 +59,7 @@ export { default as NotesRenderer, type INotesRendererProps } from './notesRende
 export { default as NotesRendererBase, type INotesRendererBaseProps } from './notesRendererBase';
 export { default as OverlayLoader, type IOverlayLoaderProps } from './overlayLoader';
 export { default as ProtectedContent, type IProtectedContentProps } from './protectedContent';
-export { default as QuickFilters, type IQuickFiltersProps } from './quickFilters';
 export { default as RefListRadioButtons, type IRefListRadioButtonsProps } from './refListRadioButtons';
-export { type ISaveFilterModalProps, default as SaveFilterModal } from './saveFilterModal';
-export { default as Scroll, type IScrollProps } from './scroll';
 export { default as SectionSeparator, type ISectionSeparatorProps } from './sectionSeparator';
 export { default as ShaDivider } from './shaDivider';
 export { default as ShaLink, type IShaLinkProps } from './shaLink';
@@ -78,7 +67,6 @@ export { default as ShaSpin, type IShaSpin } from './shaSpin';
 export { SidebarMenu, type ISidebarMenuProps } from './sidebarMenu';
 export { default as StoredFilesRenderer, type IStoredFilesRendererProps } from './storedFilesRenderer';
 export { default as StoredFilesRendererBase, type IStoredFilesRendererBaseProps } from './storedFilesRendererBase';
-export { default as TableControls } from './tableControls';
 export { default as TablePager, type ITablePagerProps } from './tablePager';
 export { default as TablePaging, type ITablePagerBaseProps } from './tablePager/tablePaging';
 export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
@@ -91,7 +79,7 @@ export {
 } from './appConfigurator/editModeToggler'; // todo: convert to subtype
 export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // todo: convert to subtype
 export { FormDesigner, type IFormDesignerProps } from './formDesigner/index';
-export { default as QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
+export { QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
 export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 
 export { default as ConfigurableForm } from './configurableForm';
@@ -117,14 +105,12 @@ export {
   type IAutocompleteProps,
 } from './autocomplete';
 
-export { default as Page } from './page';
+export { Page } from './page';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
 
 export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
-export { QueryBuilderComponentRenderer } from '../designer-components/queryBuilder/queryBuilderComponent';
-export { QueryBuilderWithModelType } from '../designer-components/queryBuilder/queryBuilderWithModelType';
 export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { default as ButtonGroupConfigurator } from './formDesigner/components/button/buttonGroup/configurator';
 export { default as CodeEditorModal } from './formDesigner/components/codeEditor/codeEditor';

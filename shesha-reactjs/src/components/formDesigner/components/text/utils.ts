@@ -23,19 +23,8 @@ export interface IContent {
   dataFormat?: string;
 }
 
-export const getContent = (content: string, { dataType = 'string', dateFormat, numberFormat }: IContent = {}) => {
-  switch (dataType) {
-    case 'boolean':
-      return !!content ? 'Yes' : 'No';
-    case 'date-time':
-      return formatDateStringAndPrefix(content, dateFormat);
-
-    case 'number':
-      return getNumberFormat(content, numberFormat || 'round');
-
-    default:
-      return content;
-  }
+const formatDate = (dateText: string, dateFormat: string) => {
+  return moment(dateText).isValid() ? moment(dateText).format(dateFormat || 'DD/MM/YYYY HH:mm') : dateText;
 };
 
 export const formatDateStringAndPrefix = (content: string, dateFormat: string) => {
@@ -52,6 +41,17 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string) =
   }
 };
 
-const formatDate = (dateText: string, dateFormat: string) => {
-  return moment(dateText).isValid() ? moment(dateText).format(dateFormat || 'DD/MM/YYYY HH:mm') : dateText;
+export const getContent = (content: string, { dataType = 'string', dateFormat, numberFormat }: IContent = {}) => {
+  switch (dataType) {
+    case 'boolean':
+      return !!content ? 'Yes' : 'No';
+    case 'date-time':
+      return formatDateStringAndPrefix(content, dateFormat);
+
+    case 'number':
+      return getNumberFormat(content, numberFormat || 'round');
+
+    default:
+      return content;
+  }
 };

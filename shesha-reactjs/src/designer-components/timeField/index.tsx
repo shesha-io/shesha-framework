@@ -1,76 +1,22 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { TimePicker, message } from 'antd';
-import moment, { Moment, isMoment } from 'moment';
+import { message } from 'antd';
+import moment from 'moment';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { FormMarkup } from '@/providers/form/models';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
-import { getNumericValue } from '@/utils/string';
 import settingsFormJson from './settingsForm.json';
-import './styles/index.less';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-
-type RangeValue = [moment.Moment, moment.Moment];
+import { ITimePickerProps } from './models';
+import { TimePickerWrapper } from './timePickerWrapper';
 
 const DATE_TIME_FORMAT = 'HH:mm';
-
-type TimePickerChangeEvent = (value: number | null, timeString: string) => void;
-type RangePickerChangeEvent = (values: number[] | null, timeString: [string, string]) => void;
-
-export interface ITimePickerProps extends IConfigurableFormComponent {
-  className?: string;
-  defaultValue?: string | [string, string];
-  format?: string;
-  value?: string | [string, string];
-  placeholder?: string;
-  popupClassName?: string;
-  hourStep?: number;
-  minuteStep?: number;
-  secondStep?: number;
-  disabled?: boolean; // Use
-  range?: boolean; // Use
-  allowClear?: boolean;
-  autoFocus?: boolean;
-  inputReadOnly?: boolean;
-  showNow?: boolean;
-  hideDisabledOptions?: boolean;
-  use12Hours?: boolean;
-  hideBorder?: boolean;
-  onChange?: TimePickerChangeEvent | RangePickerChangeEvent;
-}
-
-const getMoment = (value: any, dateFormat: string): Moment => {
-  if (value === null || value === undefined) return undefined;
-  const values = [
-    isMoment(value) ? value : null,
-    typeof(value) === 'number' ? moment.utc(value * 1000) : null, // time in millis
-    typeof(value) === 'string' ? moment(value as string, dateFormat) : null, 
-    typeof(value) === 'string' ? moment(value as string) : null
-  ];
-
-  const parsed = values.find((i) => isMoment(i) && i.isValid());
-
-  return parsed;
-};
-
-const getTotalSeconds = (value: Moment): number => {
-  if (!isMoment(value) || !value.isValid())
-    return undefined;
-
-  const timeOnly = moment.duration({
-    hours: value.hours(),
-    minutes: value.minutes(),
-    seconds: value.seconds()
-  });
-  return timeOnly.asSeconds();
-};
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -129,102 +75,4 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
     .add<ITimePickerProps>(1, (prev) => migrateVisibility(prev))
     .add<ITimePickerProps>(2, (prev) => migrateReadOnly(prev))
   ,
-};
-
-const TimePickerWrapper: FC<ITimePickerProps> = ({
-  onChange,
-  range,
-  value,
-  defaultValue,
-  placeholder,
-  format = DATE_TIME_FORMAT,
-  readOnly,
-  style,
-  hourStep,
-  minuteStep,
-  secondStep,
-  disabled,
-  hideBorder,
-  ...rest
-}) => {
-  const { data: formData } = useFormData();
-
-  const evaluatedValue = getMoment(value, format);
-
-  const hourStepLocal = getNumericValue(hourStep);
-  const minuteStepLocal = getNumericValue(minuteStep);
-  const secondStepLocal = getNumericValue(secondStep);
-
-  const steps = {
-    hourStep: 24 % hourStepLocal === 0 ? hourStepLocal : 1, // It should be a factor of 24.
-    minuteStep: 60 % minuteStepLocal === 0 ? minuteStepLocal : 1, // It should be a factor of 60.
-    secondStep: 60 % secondStepLocal === 0 ? secondStepLocal : 1, // It should be a factor of 60.
-  };
-
-  
-  const getDefaultRangePickerValues = () =>
-    Array.isArray(defaultValue) && defaultValue?.length === 2
-      ? defaultValue?.map((v) => moment(new Date(v), format))
-      : [null, null];
-
-  const handleTimePickerChange = (newValue: Moment, timeString: string) => {
-    if (onChange){
-      const seconds = getTotalSeconds(newValue);
-      (onChange as TimePickerChangeEvent)(seconds, timeString);
-    }
-  };
-  const handleTimePickerSelect = (newValue: Moment) => {
-    if (onChange){
-      const seconds = getTotalSeconds(newValue);
-      const timeString = seconds
-        ? moment(seconds * 1000).format(format)
-        : undefined;
-      (onChange as TimePickerChangeEvent)(seconds, timeString);
-    }
-  };  
-
-  const handleRangePicker = (values: Moment[], timeString: [string, string]) => {
-    if (onChange){
-      const seconds = values?.map(value => getTotalSeconds(value));
-
-      (onChange as RangePickerChangeEvent)(seconds, timeString);
-    }
-  };
-
-  if (readOnly) {
-    return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} />;
-  }
-
-  if (range) {
-    return (
-      <TimePicker.RangePicker
-        bordered={!hideBorder}
-        onChange={handleRangePicker}
-        format={format}
-        value={getDefaultRangePickerValues() as RangeValue}
-        {...steps}
-        style={getStyle(style, formData)}
-        className="sha-timepicker"
-        
-        {...rest}
-        placeholder={[placeholder, placeholder]}
-     
-      />
-    );
-  }
-
-  return (
-    <TimePicker
-      bordered={!hideBorder}
-      onChange={handleTimePickerChange}
-      onSelect={handleTimePickerSelect}
-      format={format}
-      value={evaluatedValue|| (defaultValue && moment(defaultValue))}
-      {...steps}
-      style={getStyle(style, formData)}
-      className="sha-timepicker"
-      placeholder={placeholder}
-      {...rest}
-    />
-  );
 };

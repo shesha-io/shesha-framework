@@ -7,6 +7,7 @@ import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '@/providers/form/models';
 import { IToolboxComponentGroup } from '@/interfaces';
 import { SearchBox } from './toolboxSearchBox';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { useStyles } from './styles/styles';
 
 const { Panel } = Collapse;
 
@@ -15,6 +16,7 @@ export interface IToolboxComponentsProps {}
 export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.components.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.components.search', '');
+  const { styles }  = useStyles();
 
   const { toolboxComponentGroups, startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
 
@@ -76,8 +78,8 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
                       put: false,
                     }}
                     sort={false}
-                    draggable=".sha-toolbox-component"
-                    ghostClass="sha-component-ghost"
+                    draggable={`.${styles.shaToolboxComponent}`}
+                    ghostClass={styles.shaComponentGhost}
                     onStart={onDragStart}
                     onEnd={onDragEnd}
                   >

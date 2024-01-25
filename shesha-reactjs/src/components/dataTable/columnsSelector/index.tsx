@@ -1,13 +1,15 @@
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import Search from 'antd/lib/input/Search';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useDataTable } from '@/providers';
 import { getSafelyTrimmedString } from '@/utils';
+import { useStyles } from './styles/styles';
 
 export interface IDatatableColumnsSelectorProps {}
 
 export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () => {
+  const { styles } = useStyles();
   const { columns, toggleColumnVisibility } = useDataTable();
 
   const visibleColumns = columns.filter((c) => c.isVisible === true && c.allowShowHide === true);
@@ -19,10 +21,10 @@ export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () =
   };
 
   return (
-    <div className="sha-index-table-column-visibility-toggle">
+    <div className={styles.shaIndexTableColumnVisibilityToggle}>
       <Search placeholder="Search columns" allowClear onChange={onColumnSearch} size="small" />
 
-      <div className="column-names">
+      <div className={styles.columnNames}>
         {(columnFilter
           ? visibleColumns.filter(
               ({ header }) =>
@@ -33,7 +35,7 @@ export const DatatableColumnsSelector: FC<IDatatableColumnsSelectorProps> = () =
           : visibleColumns
         ).map(({ header, show, id }) => {
           return (
-            <div key={nanoid()} className="column-name" onClick={() => toggleColumnVisibility(id)}>
+            <div key={nanoid()} className={styles.columnName} onClick={() => toggleColumnVisibility(id)}>
               <Checkbox checked={show}>{header}</Checkbox>
             </div>
           );

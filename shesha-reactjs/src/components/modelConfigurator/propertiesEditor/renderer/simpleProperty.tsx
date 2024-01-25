@@ -8,6 +8,7 @@ import { IModelItem } from '@/interfaces/modelConfigurator';
 import { getIconByDataType } from '@/utils/metadata';
 import { ShaIcon } from '../../..';
 import { MetadataSourceType } from '@/interfaces/metadata';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IProps extends IModelItem {
   index: number[];
@@ -15,6 +16,7 @@ export interface IProps extends IModelItem {
 
 export const SimpleProperty: FC<IProps> = props => {
   const { deleteItem, selectedItemId, selectedItemRef } = usePropertiesEditor();
+  const { styles } = useStyles();
 
   const icon = getIconByDataType(props.dataType);
 
@@ -23,20 +25,20 @@ export const SimpleProperty: FC<IProps> = props => {
   };
 
   return (
-    <div className={classNames('sha-sidebar-item', { selected: selectedItemId === props.id })} ref={selectedItemId === props.id ? selectedItemRef : undefined}>
-      <div className="sha-sidebar-item-header">
+    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })} ref={selectedItemId === props.id ? selectedItemRef : undefined}>
+      <div className={styles.shaToolbarItemHeader}>
         <DragHandle id={props.id} />
         {props.suppress && <span><EyeInvisibleOutlined /> </span>}
         {icon && <ShaIcon iconName={icon} />}
         
-        <span className="sha-sidebar-item-name">{props.name} {props.label && <>({props.label})</>}</span>
+        <span className={styles.shaToolbarItemName}>{props.name} {props.label && <>({props.label})</>}</span>
 
         {props.description && (
           <Tooltip title={props.description}>
-            <QuestionCircleOutlined className="sha-help-icon" />
+            <QuestionCircleOutlined className={styles.shaHelpIcon} />
           </Tooltip>
         )}
-        <div className="sha-sidebar-item-controls">
+        <div className={styles.shaToolbarItemControls}>
           {
             props.source === MetadataSourceType.UserDefined 
               ? <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />

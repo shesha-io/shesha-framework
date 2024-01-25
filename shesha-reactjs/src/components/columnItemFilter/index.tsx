@@ -1,26 +1,42 @@
-import React, { FC, ChangeEvent, useState, Fragment, useEffect, useMemo } from 'react';
-import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
-import { Input, DatePicker, TimePicker, InputNumber, Checkbox, Dropdown, Select, Spin, MenuProps } from 'antd';
+import React, {
+  ChangeEvent,
+  FC,
+  Fragment,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
+import {
+  Checkbox,
+  Dropdown,
+  Input,
+  InputNumber,
+  MenuProps,
+  Select,
+  Spin
+} from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { Moment } from 'moment';
 import { ColumnFilter, IndexColumnFilterOption } from '@/providers/dataTable/interfaces';
+import { DatePicker, TimePicker, TimeRangePicker } from '@/components/antd';
+import { DeleteOutlined, DownOutlined } from '@ant-design/icons';
+import { EntityData } from '@/interfaces/gql';
 import { humanizeString } from '@/utils/string';
+import { IDictionary } from '@/interfaces';
+import { Moment } from 'moment';
+import { ProperyDataType } from '@/interfaces/metadata';
+import { useEntityAutocomplete } from '@/utils/autocomplete';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { useStyles } from './styles/styles';
 import {
   ADVANCEDFILTER_DATE_FORMAT,
   ADVANCEDFILTER_DATETIME_FORMAT,
   getMoment,
   ADVANCEDFILTER_TIME_FORMAT,
 } from '@/providers/dataTable/utils';
-import { useReferenceList } from '@/providers/referenceListDispatcher';
-import { useEntityAutocomplete } from '@/utils/autocomplete';
-import { EntityData } from '@/interfaces/gql';
-import { ProperyDataType } from '@/interfaces/metadata';
-import { IDictionary } from '@/interfaces';
 
 type MenuItem = MenuProps['items'][number];
 
 const { RangePicker: DateRangePicker } = DatePicker;
-const { RangePicker: TimeRangePicker } = TimePicker;
 
 const allOptions: IDictionary<IndexColumnFilterOption[]> = {
   date: ['equals', 'between', 'before', 'after'],
@@ -32,188 +48,6 @@ const allOptions: IDictionary<IndexColumnFilterOption[]> = {
 
 export const getFilterOptions = (dataType: string): IndexColumnFilterOption[] => {
   return allOptions[dataType] || [];
-};
-
-export interface IColumnItemFilterProps {
-  id: string;
-  filterName: string;
-  accessor: string;
-  referenceListName: string;
-  referenceListModule: string;
-  entityReferenceTypeShortAlias: string;
-  autocompleteUrl?: string;
-  dataType: ProperyDataType;
-  filter: ColumnFilter;
-  filterOption: IndexColumnFilterOption;
-  onRemoveFilter?: (id: string) => void;
-  onChangeFilterOption?: (filterId: string, filterOption: IndexColumnFilterOption) => void;
-  onChangeFilter?: (filterId: string, filter: ColumnFilter) => void;
-  applyFilters?: () => void;
-}
-
-export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
-  id,
-  filterName,
-  dataType = 'string',
-  filterOption,
-  onRemoveFilter,
-  onChangeFilterOption,
-  onChangeFilter,
-  filter,
-  applyFilters,
-  referenceListName,
-  referenceListModule,
-  entityReferenceTypeShortAlias,
-  autocompleteUrl,
-}) => {
-  const options = useMemo(() => {
-    return allOptions[dataType] || [];
-  }, [dataType]);
-
-  const filterOptions = useMemo<MenuItem[]>(() => {
-    return options
-      .filter((opt) => opt !== filterOption)
-      .map<MenuItem>((opt) => ({ label: humanizeString(opt), key: opt }));
-  }, [options, filterOption]);
-
-  const [showDeleteIcon, setShowIconVisibility] = useState<boolean>(true);
-
-  const toggleShowIconVisibility = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    event.stopPropagation();
-    setShowIconVisibility(!showDeleteIcon);
-  };
-
-  const handleFilterOptionChange: MenuProps['onClick'] = ({ key }) => {
-    onChangeFilterOption(id, key as IndexColumnFilterOption);
-  };
-
-  // Make sue that you initialize the `IndexColumnFilterOption` once when the component gets rendered
-  useEffect(() => {
-    if (!filter) {
-      onChangeFilterOption(id, options[0]);
-    }
-  }, []);
-
-  const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>) => {
-    const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
-    onChangeFilter(id, value);
-  };
-
-  const handleRawFilter = (changeValue: ColumnFilter) => {
-    onChangeFilter(id, changeValue);
-  };
-
-  const handlePressEnter = () => {
-    if (applyFilters) applyFilters();
-  };
-
-  const handleDeleteFilter = () => {
-    onRemoveFilter(id);
-  };
-
-  const renderBooleanInput = () => {
-    const onChange = (e: CheckboxChangeEvent) => {
-      onChangeFilter(id, e.target.checked);
-    };
-    return (
-      <Checkbox checked={typeof filter === 'boolean' ? filter : false} onChange={onChange}>
-        Yes
-      </Checkbox>
-    );
-  };
-
-  const hideFilterOptions = () => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
-
-  const baseProps: BaseFilterProps = {
-    id,
-    filter,
-    filterOption,
-    onChangeFilter
-  };
-
-  return (
-    <div
-      className="sha-column-item-filter"
-      onMouseOver={toggleShowIconVisibility}
-      onMouseLeave={toggleShowIconVisibility}
-    >
-      <div className="filter-heading">
-        <div className="filter-heading-left">
-          <span className="label">{filterName || 'Something'}</span>
-          {!hideFilterOptions() && (
-            <Dropdown
-              trigger={['click']}
-              menu={{ items: filterOptions, onClick: handleFilterOptionChange }}
-            >
-              <a className="ant-dropdown-link" href="#">
-                {humanizeString(filterOption || '')} <DownOutlined />
-              </a>
-            </Dropdown>
-          )}
-        </div>
-        <div className="filter-heading-right" onMouseOver={(e) => e.stopPropagation()}>
-          <DeleteOutlined onClick={handleDeleteFilter} />
-        </div>
-      </div>
-      <div className="filter-input">
-        {dataType === 'string' && (
-          <StringFilter
-            onChange={handleStringFilter}
-            onPressEnter={handlePressEnter}
-            placeholder={`Filter ${filterName}`}
-            value={filter as string}
-          />
-        )}
-
-        {dataType === 'number' && filterOption === 'between' && (
-          <NumberRangeFilter
-            onChange={handleRawFilter}
-            onPressEnter={handlePressEnter}
-            placeholder={`Filter ${filterName}`}
-            value={filter instanceof Array && filter.length === 2 ? (filter as number[]) : [null, null]}
-          />
-        )}
-
-        {dataType === 'number' && filterOption !== 'between' && (
-          <NumberFilter
-            onChange={handleRawFilter}
-            onPressEnter={handlePressEnter}
-            placeholder={`Filter ${filterName}`}
-            value={filter as number}
-          />
-        )}
-
-        {dataType === 'date' && (<DateTimeFilter {...baseProps} format={ADVANCEDFILTER_DATE_FORMAT} showTime={false} />)}
-
-        {dataType === 'date-time' && (<DateTimeFilter {...baseProps} format={ADVANCEDFILTER_DATETIME_FORMAT} showTime={true} />)}
-
-        {dataType === 'time' && (<TimeFilter {...baseProps} format={ADVANCEDFILTER_TIME_FORMAT} />)}
-
-        {dataType === 'boolean' && renderBooleanInput()}
-
-        {dataType === 'entity' && (
-          <EntityFilter
-            onChange={handleRawFilter}
-            onPressEnter={handlePressEnter}
-            value={filter as string}
-            entityType={entityReferenceTypeShortAlias}
-            autocompleteUrl={autocompleteUrl}
-          />
-        )}
-
-        {['reference-list-item', 'multiValueRefList'].includes(dataType) && (
-          <RefListFilter
-            onChange={handleRawFilter}
-            onPressEnter={handlePressEnter}
-            placeholder={`Filter ${filterName}`}
-            value={(filter as number[]) || []}
-            referenceListName={referenceListName}
-            referenceListModule={referenceListModule}
-          />
-        )}
-      </div>
-    </div>
-  );
 };
 
 interface IFilterBaseProps {
@@ -444,6 +278,189 @@ const TimeFilter: FC<TimeFilterProps> = ({ id, filter, filterOption, onChangeFil
     <TimeRangePicker size="small" onChange={onChange} value={memoizedRange} format={ADVANCEDFILTER_TIME_FORMAT} />
   ) : (
     <TimePicker size="small" onChange={onChange} value={memoizedMoment} format={ADVANCEDFILTER_TIME_FORMAT} />
+  );
+};
+
+export interface IColumnItemFilterProps {
+  id: string;
+  filterName: string;
+  accessor: string;
+  referenceListName: string;
+  referenceListModule: string;
+  entityReferenceTypeShortAlias: string;
+  autocompleteUrl?: string;
+  dataType: ProperyDataType;
+  filter: ColumnFilter;
+  filterOption: IndexColumnFilterOption;
+  onRemoveFilter?: (id: string) => void;
+  onChangeFilterOption?: (filterId: string, filterOption: IndexColumnFilterOption) => void;
+  onChangeFilter?: (filterId: string, filter: ColumnFilter) => void;
+  applyFilters?: () => void;
+}
+
+export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
+  id,
+  filterName,
+  dataType = 'string',
+  filterOption,
+  onRemoveFilter,
+  onChangeFilterOption,
+  onChangeFilter,
+  filter,
+  applyFilters,
+  referenceListName,
+  referenceListModule,
+  entityReferenceTypeShortAlias,
+  autocompleteUrl,
+}) => {
+  const { styles } = useStyles();
+  const options = useMemo(() => {
+    return allOptions[dataType] || [];
+  }, [dataType]);
+
+  const filterOptions = useMemo<MenuItem[]>(() => {
+    return options
+      .filter((opt) => opt !== filterOption)
+      .map<MenuItem>((opt) => ({ label: humanizeString(opt), key: opt }));
+  }, [options, filterOption]);
+
+  const [showDeleteIcon, setShowIconVisibility] = useState<boolean>(true);
+
+  const toggleShowIconVisibility = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
+    setShowIconVisibility(!showDeleteIcon);
+  };
+
+  const handleFilterOptionChange: MenuProps['onClick'] = ({ key }) => {
+    onChangeFilterOption(id, key as IndexColumnFilterOption);
+  };
+
+  // Make sue that you initialize the `IndexColumnFilterOption` once when the component gets rendered
+  useEffect(() => {
+    if (!filter) {
+      onChangeFilterOption(id, options[0]);
+    }
+  }, []);
+
+  const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>) => {
+    const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
+    onChangeFilter(id, value);
+  };
+
+  const handleRawFilter = (changeValue: ColumnFilter) => {
+    onChangeFilter(id, changeValue);
+  };
+
+  const handlePressEnter = () => {
+    if (applyFilters) applyFilters();
+  };
+
+  const handleDeleteFilter = () => {
+    onRemoveFilter(id);
+  };
+
+  const renderBooleanInput = () => {
+    const onChange = (e: CheckboxChangeEvent) => {
+      onChangeFilter(id, e.target.checked);
+    };
+    return (
+      <Checkbox checked={typeof filter === 'boolean' ? filter : false} onChange={onChange}>
+        Yes
+      </Checkbox>
+    );
+  };
+
+  const hideFilterOptions = () => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
+
+  const baseProps: BaseFilterProps = {
+    id,
+    filter,
+    filterOption,
+    onChangeFilter
+  };
+
+  return (
+    <div
+      className={styles.shaColumnItemFilter}
+      onMouseOver={toggleShowIconVisibility}
+      onMouseLeave={toggleShowIconVisibility}
+    >
+      <div className={styles.filterHeading}>
+        <div className="filter-heading-left">
+          <span className="label">{filterName || 'Something'}</span>
+          {!hideFilterOptions() && (
+            <Dropdown
+              trigger={['click']}
+              menu={{ items: filterOptions, onClick: handleFilterOptionChange }}
+            >
+              <a className="ant-dropdown-link" href="#">
+                {humanizeString(filterOption || '')} <DownOutlined />
+              </a>
+            </Dropdown>
+          )}
+        </div>
+        <div className="filter-heading-right" onMouseOver={(e) => e.stopPropagation()}>
+          <DeleteOutlined onClick={handleDeleteFilter} />
+        </div>
+      </div>
+      <div className={styles.filterInput}>
+        {dataType === 'string' && (
+          <StringFilter
+            onChange={handleStringFilter}
+            onPressEnter={handlePressEnter}
+            placeholder={`Filter ${filterName}`}
+            value={filter as string}
+          />
+        )}
+
+        {dataType === 'number' && filterOption === 'between' && (
+          <NumberRangeFilter
+            onChange={handleRawFilter}
+            onPressEnter={handlePressEnter}
+            placeholder={`Filter ${filterName}`}
+            value={filter instanceof Array && filter.length === 2 ? (filter as number[]) : [null, null]}
+          />
+        )}
+
+        {dataType === 'number' && filterOption !== 'between' && (
+          <NumberFilter
+            onChange={handleRawFilter}
+            onPressEnter={handlePressEnter}
+            placeholder={`Filter ${filterName}`}
+            value={filter as number}
+          />
+        )}
+
+        {dataType === 'date' && (<DateTimeFilter {...baseProps} format={ADVANCEDFILTER_DATE_FORMAT} showTime={false} />)}
+
+        {dataType === 'date-time' && (<DateTimeFilter {...baseProps} format={ADVANCEDFILTER_DATETIME_FORMAT} showTime={true} />)}
+
+        {dataType === 'time' && (<TimeFilter {...baseProps} format={ADVANCEDFILTER_TIME_FORMAT} />)}
+
+        {dataType === 'boolean' && renderBooleanInput()}
+
+        {dataType === 'entity' && (
+          <EntityFilter
+            onChange={handleRawFilter}
+            onPressEnter={handlePressEnter}
+            value={filter as string}
+            entityType={entityReferenceTypeShortAlias}
+            autocompleteUrl={autocompleteUrl}
+          />
+        )}
+
+        {['reference-list-item', 'multiValueRefList'].includes(dataType) && (
+          <RefListFilter
+            onChange={handleRawFilter}
+            onPressEnter={handlePressEnter}
+            placeholder={`Filter ${filterName}`}
+            value={(filter as number[]) || []}
+            referenceListName={referenceListName}
+            referenceListModule={referenceListModule}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 

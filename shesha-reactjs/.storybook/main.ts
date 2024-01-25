@@ -57,28 +57,7 @@ const config: StorybookConfig = {
     if (rules) {
       rules.push({
         test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      });
-
-      rules.push({
-        test: /\.less$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          {
-            loader: 'less-loader',
-            options: {
-              lessOptions: {
-                javascriptEnabled: true,
-                strictMath: false,
-                noIeCompat: true,
-                modifyVars: {
-                  'form-item-margin-bottom': '8px',
-                },
-              },
-            },
-          },
-        ],
+        use: ['style-loader', 'css-loader'],
       });
     }
 

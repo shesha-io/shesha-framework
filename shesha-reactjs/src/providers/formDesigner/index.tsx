@@ -55,6 +55,7 @@ import {
 import formReducer from './reducer';
 import { useDataContextManager } from '@/providers/dataContextManager';
 import { IDataContextFullInstance } from '@/providers/dataContextProvider';
+import { useCallback } from 'react';
 
 export interface IFormDesignerProviderProps {
   flatComponents: IFlatComponentsStructure;
@@ -92,6 +93,13 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const statePresent = state.present;
 
+  const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
+    dispatch((dispatchThunk, _getState) => {
+      dispatchThunk(setFlatComponentsAction(flatComponents));
+      dispatchThunk(UndoableActionCreators.clearHistory());
+    });
+  };
+
   useEffect(() => {
     if (
       flatComponents &&
@@ -102,9 +110,17 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     }
   }, [flatComponents]);
 
+  const setReadOnly = (value: boolean) => {
+    dispatch(setReadOnlyAction(value));
+  };
+
   useEffect(() => {
     setReadOnly(readOnly);
   }, [readOnly]);
+
+  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
+    dispatch(updateToolboxComponentGroupsAction(payload));
+  };
 
   useDeepCompareEffect(() => {
     if (toolboxComponentGroups?.length !== 0) {
@@ -112,23 +128,13 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     }
   }, [toolboxComponentGroups]);
 
-  /* NEW_ACTION_DECLARATION_GOES_HERE */
-
-  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
-    dispatch(updateToolboxComponentGroupsAction(payload));
-  };
-
-  const setReadOnly = (value: boolean) => {
-    dispatch(setReadOnlyAction(value));
-  };
-
-  const addDataProperty = (payload: IAddDataPropertyPayload) => {
+  const addDataProperty = useCallback((payload: IAddDataPropertyPayload) => {
     dispatch(dataPropertyAddAction(payload));
-  };
+  }, [dispatch]);
 
-  const addComponent = (payload: IComponentAddPayload) => {
+  const addComponent = useCallback((payload: IComponentAddPayload) => {
     dispatch(componentAddAction(payload));
-  };
+  }, [dispatch]);
 
   const addComponentsFromTemplate = (payload: IComponentAddFromTemplatePayload) => {
     dispatch(componentAddFromTemplateAction(payload));
@@ -142,9 +148,9 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(componentDuplicateAction(payload));
   };
 
-  const getComponentModel = (componentId) => {
+  const getComponentModel = useCallback((componentId) => {
     return statePresent.allComponents[componentId];
-  };
+  }, [statePresent?.allComponents]);
 
   const updateComponent = (payload: IComponentUpdatePayload) => {
     dispatch(componentUpdateAction(payload));
@@ -180,7 +186,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 
   const getParentComponent = (componentId: string, type: string) => {
     let component = statePresent.allComponents[componentId];
-    
+
     while (!!component) {
       component = statePresent.allComponents[component.parentId];
       if (component?.type === type)
@@ -190,41 +196,33 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     return null;
   };
 
-
-  const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
-    dispatch((dispatchThunk, _getState) => {
-      dispatchThunk(setFlatComponentsAction(flatComponents));
-      dispatchThunk(UndoableActionCreators.clearHistory());
-    });
-  };
-
   const setDebugMode = (isDebug: boolean) => {
     dispatch(setDebugModeAction(isDebug));
   };
 
-  const startDraggingNewItem = () => {
+  const startDraggingNewItem = useCallback(() => {
     dispatch(startDraggingNewItemAction());
-  };
+  }, [dispatch]);
 
-  const endDraggingNewItem = () => {
+  const endDraggingNewItem = useCallback(() => {
     dispatch(endDraggingNewItemAction());
-  };
+  }, [dispatch]);
 
-  const startDragging = () => {
+  const startDragging = useCallback(() => {
     dispatch(startDraggingAction());
-  };
+  }, [dispatch]);
 
-  const endDragging = () => {
+  const endDragging = useCallback(() => {
     dispatch(endDraggingAction());
-  };
+  }, [dispatch]);
 
-  const setValidationErrors = (payload: IFormValidationErrors) => {
+  const setValidationErrors = useCallback((payload: IFormValidationErrors) => {
     dispatch(setValidationErrorsAction(payload));
-  };
+  }, [dispatch]);
 
-  const updateChildComponents = (payload: IUpdateChildComponentsPayload) => {
+  const updateChildComponents = useCallback((payload: IUpdateChildComponentsPayload) => {
     dispatch(updateChildComponentsAction(payload));
-  };
+  }, [dispatch]);
 
   const undo = () => {
     dispatch(UndoableActionCreators.undo());
@@ -237,7 +235,11 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const setSelectedComponent = (componentId: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => {
     if (activateProvider) activateProvider(dataSourceId);
     if (setActiveContext) setActiveContext(dataContext.id);
-    dispatch(setSelectedComponentAction({ id: componentId, dataSourceId, componentRef }));
+
+    if (componentId !== state.present.selectedComponentId ||
+      dataSourceId !== state.present.activeDataSourceId ||
+      componentRef !== state.present.selectedComponentRef)
+      dispatch(setSelectedComponentAction({ id: componentId, dataSourceId, componentRef }));
   };
 
   const updateFormSettings = (settings: IFormSettings) => {

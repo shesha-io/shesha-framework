@@ -6,7 +6,7 @@ import { useFormData, useGlobalState } from '@/providers';
 import Split from 'react-split';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { getLayoutStyle } from '@/utils/publicUtils';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import ParentProvider from '@/providers/parentProvider/index';
@@ -24,11 +24,11 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     if (model.hidden) return null;
 
     return (
-      <Split cursor="col-resize" style={style}>
-        <ParentProvider model={model}>
+      <ParentProvider model={model}>
+        <Split cursor="col-resize" style={style}>
           {columns &&
             columns.map((col) => (
-              <Fragment>
+              <Fragment key={col.id}>
                 <ComponentsContainer
                   containerId={col.id}
                   dynamicComponents={
@@ -36,9 +36,9 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
                   }
                 />
               </Fragment>
-          ))}
-        </ParentProvider>
-      </Split>
+            ))}
+        </Split>
+      </ParentProvider>
     );
   },
   initModel: (model) => {

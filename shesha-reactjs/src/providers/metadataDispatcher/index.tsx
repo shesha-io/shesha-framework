@@ -184,7 +184,8 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const activateProvider = (providerId: string) => {
-    dispatch(activateProviderAction(providerId));
+    if (state.activeProvider !== providerId)
+      dispatch(activateProviderAction(providerId));
   };
 
   const getActiveProvider = () => {
@@ -217,10 +218,6 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     return Promise.reject(`data type '${propMeta.dataType}' doesn't support nested properties`);
   };
 
-  const getContainerProperties = (payload: IGetNestedPropertiesPayload) => {
-    return getContainerMetadata(payload).then((m) => m.properties);
-  };
-
   const getContainerMetadata = (payload: IGetNestedPropertiesPayload) => {
     const { metadata, containerPath } = payload;
     if (!metadata?.properties) return Promise.reject();
@@ -236,6 +233,10 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     } else {
       return Promise.resolve(metadata);
     }
+  };
+
+  const getContainerProperties = (payload: IGetNestedPropertiesPayload) => {
+    return getContainerMetadata(payload).then((m) => m.properties);
   };
 
   const isEntityType = (modelType: string): Promise<boolean> => {

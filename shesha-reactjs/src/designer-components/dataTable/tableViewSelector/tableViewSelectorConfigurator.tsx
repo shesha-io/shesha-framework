@@ -1,16 +1,22 @@
-import { Alert, Tabs } from 'antd';
-import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
-import { SidebarContainer } from '@/components';
-import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import QueryBuilderExpressionViewer from '@/designer-components/queryBuilder/queryBuilderExpressionViewer';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useState
+  } from 'react';
+import { Alert, Tabs } from 'antd';
+import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/queryBuilderFieldPlain';
 import { QueryBuilderProvider, useMetadata } from '@/providers';
-import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
+import { SidebarContainer } from '@/components';
 import { TableViewProperties } from './tableViewProperties';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
+import { useTableViewSelectorConfigurator } from '@/providers/tableViewSelectorConfigurator';
 
 const { TabPane } = Tabs;
 
-export interface ITableViewSelectorConfiguratorProps {}
+export interface ITableViewSelectorConfiguratorProps { }
 
 export interface ITableViewSelectorConfiguratorHandles {
   saveFilters: () => void;
@@ -19,12 +25,8 @@ export interface ITableViewSelectorConfiguratorHandles {
 export const TableViewSelectorConfigurator = forwardRef<
   ITableViewSelectorConfiguratorHandles,
   ITableViewSelectorConfiguratorProps
->(({}, forwardedRef) => {
-  useImperativeHandle(forwardedRef, () => ({
-    saveFilters() {
-      onQueryBuilderValueChange();
-    },
-  }));
+>(({ }, forwardedRef) => {
+  const { styles } = useStyles();
 
   const metadata = useMetadata(false);
 
@@ -43,13 +45,18 @@ export const TableViewSelectorConfigurator = forwardRef<
       settings: { ...selectedItem, expression: localQueryExpression },
     });
   };
+  useImperativeHandle(forwardedRef, () => ({
+    saveFilters() {
+      onQueryBuilderValueChange();
+    },
+  }));
 
   const queryBuilderValue = useMemo(() => {
     return selectedItem?.expression;
   }, [selectedItem, selectedItemId, items]);
 
   return (
-    <div className="sha-toolbar-configurator">
+    <div className={styles.shaToolbarConfigurator}>
       <SidebarContainer
         rightSidebarProps={{
           open: true,
@@ -58,13 +65,13 @@ export const TableViewSelectorConfigurator = forwardRef<
         }}
       >
         {!readOnly && (
-          <Alert message="Here you can adjust filter settings" className="sha-toolbar-configurator-alert" />
+          <Alert message="Here you can adjust filter settings" className={styles.shaToolbarConfiguratorAlert} />
         )}
 
         <QueryBuilderProvider metadata={metadata?.metadata}>
           <Tabs
             defaultActiveKey="queryBuilderConfigureTab"
-            className="sha-toolbar-configurator-body-tabs"
+            className={styles.shaToolbarConfiguratorBodyTabs}
             destroyInactiveTabPane
             onChange={onQueryBuilderValueChange}
           >

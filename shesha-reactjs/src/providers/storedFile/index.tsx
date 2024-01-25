@@ -138,7 +138,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
             //id: value.uid,
             uid: value.uid,
             url: null,
-            status: 'success',
+            status: 'done',
             name: value.name,
             size: value.size,
             type: value.type,
@@ -162,7 +162,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
             id: fetchedFile.id,
             uid: fetchedFile.id,
             url: fetchedFile.url,
-            status: 'success',
+            status: 'done',
             name: fetchedFile.name,
             size: fetchedFile.size,
             type: fetchedFile.type,
@@ -294,6 +294,14 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   const { mutate: deleteFileHttp } = useMutate();
 
   //#region delete file
+  const deleteFileSuccess = () => {
+    dispatch(deleteFileSuccessAction());
+  };
+
+  const deleteFileError = () => {
+    dispatch(deleteFileErrorAction());
+  };
+
   const deleteFileAsync = () => {
     dispatch(deleteFileRequestAction());
 
@@ -322,13 +330,6 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     else deleteFileSync();
   };
 
-  const deleteFileSuccess = () => {
-    dispatch(deleteFileSuccessAction());
-  };
-
-  const deleteFileError = () => {
-    dispatch(deleteFileErrorAction());
-  };
   //#endregion
 
   const fetchFileInfo = () => {

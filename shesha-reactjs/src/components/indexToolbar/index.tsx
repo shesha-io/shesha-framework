@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
 import { IToolbarItem } from '@/interfaces';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';

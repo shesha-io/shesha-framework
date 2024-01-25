@@ -1,25 +1,22 @@
-import React, { FC } from 'react';
-import { IStylable, IToolboxComponent } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import ConfigurableFormItem from '../formItem';
+import React from 'react';
 import { FormOutlined } from '@ant-design/icons';
-import {
-  getStyle
-} from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
+import { IConfigurableFormComponent } from '@/providers/form/models';
+import { ISubFormProviderProps } from '@/providers/subForm/interfaces';
+import { IToolboxComponent } from '@/interfaces';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { SubFormSettingsForm } from './settings';
 import {
   useForm,
-  SubFormProvider,
   useFormItem,
   useFormData,
 } from '@/providers';
-import SubForm from './subForm';
-import ConfigurableFormItem from '../formItem';
-import { SubFormSettingsForm } from './settings';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { ISubFormProviderProps } from '@/providers/subForm/interfaces';
+import { SubFormWrapper } from './subFormWrapper';
 
 export interface ISubFormComponentProps
   extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,
-    IConfigurableFormComponent {
+  IConfigurableFormComponent {
   labelCol?: number;
   wrapperCol?: number;
 }
@@ -56,7 +53,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     .add<ISubFormComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISubFormComponentProps>(2, (prev) => migrateReadOnly(prev))
   ,
-  settingsFormFactory: (props) => <SubFormSettingsForm {...props}/>,
+  settingsFormFactory: (props) => <SubFormSettingsForm {...props} />,
   initModel: model => {
     const customProps: ISubFormComponentProps = {
       ...model,
@@ -67,20 +64,6 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     };
     return customProps;
   },
-};
-
-interface ISubFormWrapperProps
-  extends Omit<ISubFormComponentProps, 'id' | 'type' | 'style' | 'labelCol' | 'wrapperCol'>,
-    IStylable {
-  id: string;
-}
-
-const SubFormWrapper: FC<ISubFormWrapperProps> = ({ style, ...props }) => {
-  return (
-    <SubFormProvider {...props} key={props.id}>
-      <SubForm style={style} readOnly={props.readOnly} />
-    </SubFormProvider>
-  );
 };
 
 export default SubFormComponent;

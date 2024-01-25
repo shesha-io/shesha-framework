@@ -7,6 +7,7 @@ import { CrudProvider } from '@/providers/crudContext';
 import { InlineSaveMode } from './interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import { useDataTableStore } from '@/providers/index';
+import { useStyles } from './styles/styles';
 
 export type RowEditMode = 'read' | 'edit';
 
@@ -27,11 +28,6 @@ export interface ISortableRowProps {
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
 }
-
-export const SortableRow: FC<ISortableRowProps> = (props) => {
-  return <TableRow {...props} />;
-};
-
 
 interface RowDragHandleProps {
   row: Row<any>;
@@ -70,6 +66,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineDisplayComponents,
   } = props;
 
+  const { styles } = useStyles();
   const { hoverRowId, setHoverRowId, dragState: draggingRowId, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
   const [selected, setSelected] = useState<Number>(selectedRowIndex);
@@ -115,7 +112,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       displayComponents={inlineDisplayComponents}
     >
       <div
-        key={rowId}
+        //key={rowId}
         onMouseEnter={() => {
           if (!draggingRowId){
             if (hoverRowId !== rowId)
@@ -133,11 +130,13 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         onDoubleClick={handleRowDoubleClick}
         {...row.getRowProps()}
         className={classNames(
-          'tr tr-body',
-          { 'tr-odd': index % 2 === 0 },
-          { 'sha-tr-selected': selected === row?.index },
-          { 'sha-hover': hoverRowId === rowId },
+          styles.tr,
+          styles.trBody,
+          { [styles.trOdd]: index % 2 === 0 },
+          { [styles.trSelected]: selected === row?.index },
+          { [styles.shaHover]: hoverRowId === rowId },
         )}
+        key={rowId}
       >
         {row.cells.map((cell, index) => {
           return <RowCell cell={cell} key={index} />;
@@ -145,4 +144,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
       </div>
     </CrudProvider>
   );
+};
+
+export const SortableRow: FC<ISortableRowProps> = (props) => {
+  return <TableRow {...props} />;
 };

@@ -1,11 +1,19 @@
-import React, { FC, useState, Fragment } from 'react';
-import { ILabelValueEditorPropsBase } from './interfaces';
-import { Button, Modal, Alert, Tabs, Input, Col, Row } from 'antd';
-import { BorderlessTableOutlined } from '@ant-design/icons';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import React, { FC, Fragment, useState } from 'react';
 import Show from '@/components/show';
+import {
+  Alert,
+  Button,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Tabs
+  } from 'antd';
+import { BorderlessTableOutlined } from '@ant-design/icons';
 import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { ListEditor } from '@/index';
+import { ILabelValueEditorPropsBase } from './interfaces';
+import { ListEditor } from '@/components';
 
 export interface ILabelValueItem {
   [key: string]: string;
@@ -30,6 +38,27 @@ export interface ILabelValueEditorProps extends ILabelValueEditorPropsBase {
 
   readOnly?: boolean;
 }
+
+interface InputPropertyEditorProps<TItem> {
+  item: TItem;
+  itemOnChange: (newValue: TItem) => void;
+  readOnly: boolean;
+  placeholder?: string;
+  propertyName: string;
+}
+const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>) => {
+  const { item, propertyName, itemOnChange, placeholder } = props;
+  return (
+    <Input
+      placeholder={placeholder}
+      title={placeholder}
+      value={item[propertyName]}
+      onChange={(e) => {
+        itemOnChange({ ...item, [propertyName]: e.target.value });
+      }}
+    />
+  );
+};
 
 const LabelValueEditor: FC<ILabelValueEditorProps> = ({
   value,
@@ -104,27 +133,6 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
         }}
       </ListEditor>
     </ConditionalWrap>
-  );
-};
-
-interface InputPropertyEditorProps<TItem> {
-  item: TItem;
-  itemOnChange: (newValue: TItem) => void;
-  readOnly: boolean;
-  placeholder?: string;
-  propertyName: string;
-}
-const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>) => {
-  const { item, propertyName, itemOnChange, placeholder } = props;
-  return (
-    <Input
-      placeholder={placeholder}
-      title={placeholder}
-      value={item[propertyName]}
-      onChange={(e) => {
-        itemOnChange({ ...item, [propertyName]: e.target.value });
-      }}
-    />
   );
 };
 

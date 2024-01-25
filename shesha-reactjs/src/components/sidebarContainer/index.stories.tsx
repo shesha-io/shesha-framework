@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Story } from '@storybook/react';
-import SidebarContainer, { ISidebarContainerProps } from './';
+import { SidebarContainer, ISidebarContainerProps } from './';
 import { CollapsiblePanel } from '..';
 import { Button } from 'antd';
-import './styles/story.less';
 import StoryApp from '@/components/storyBookApp';
 
 export default {

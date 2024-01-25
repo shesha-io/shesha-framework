@@ -5,6 +5,8 @@ import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { JsonOutlined } from '@/icons/jsonOutlined';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
+import classNames from 'classnames';
 
 export interface IProps extends IModelItem {
   index: number[];
@@ -12,25 +14,21 @@ export interface IProps extends IModelItem {
 
 export const JsonProperty: FC<IProps> = props => {
   const { selectedItemId, selectedItemRef } = usePropertiesEditor();
-
-  const classes = ['sha-sidebar-item'];
-  if (selectedItemId === props.id) {
-    classes.push('selected');
-  }
+  const { styles } = useStyles();
 
   return (
-    <div className={classes.reduce((a, c) => a + ' ' + c)} ref={selectedItemId === props.id ? selectedItemRef : undefined}>
-      <div className="sha-sidebar-item-header">
+    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })} ref={selectedItemId === props.id ? selectedItemRef : undefined}>
+      <div className={styles.shaToolbarItemHeader}>
         <DragHandle id={props.id} />
         {props.suppress && <span><EyeInvisibleOutlined /> </span>}
         <JsonOutlined />
-        <span className="sha-sidebar-item-name">{props.name} : <i>{props.entityType ?? 'udefined' }</i></span>
+        <span className={styles.shaToolbarItemName}>{props.name} : <i>{props.entityType ?? 'udefined' }</i></span>
         {props.description && (
           <Tooltip title={props.description}>
-            <QuestionCircleOutlined className="sha-help-icon" />
+            <QuestionCircleOutlined className={styles.shaHelpIcon} />
           </Tooltip>
         )}
-        <div className="sha-sidebar-item-controls">
+        <div className={styles.shaToolbarItemControls}>
           <Tag>Json</Tag>
         </div>
       </div>

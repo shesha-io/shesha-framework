@@ -7,6 +7,7 @@ import { getMoment } from '@/utils/date';
 import { IDtoType, ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
 import { IReadOnlyDisplayFormItemProps } from './models';
+import { useStyles } from './styles/styles';
 
 type AutocompleteType = ISelectOption<IDtoType>;
 
@@ -25,9 +26,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
   quickviewGetEntityUrl,
   quickviewWidth,
 }) => {
- 
-
-
+  const { styles } = useStyles();
   const renderValue = () => {
     if (render) {
       return typeof render === 'function' ? render() : render;
@@ -112,7 +111,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
 
 
   return (
-    <span className="read-only-display-form-item">
+    <span className={styles.readOnlyDisplayFormItem}>
       {renderValue()}
     </span>
   );

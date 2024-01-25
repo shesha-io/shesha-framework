@@ -1,37 +1,9 @@
-import { ConfigurableFormComponent, joinStringValues, useForm } from '@/index';
+import { useForm } from '@/providers';
+import { ConfigurableFormComponent } from '@/components';
+import { joinStringValues } from '@/utils';
 import { useParent } from '@/providers/parentProvider/index';
 import React, { CSSProperties, FC, PropsWithChildren } from 'react';
 import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';
-
-export const ItemContainerForm: FC<PropsWithChildren <IComponentsContainerProps>> = (props) => {
-  const form = useForm();
-  const parent = useParent();
-
-  const components = form.getChildComponents(props.containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
-
-  const renderComponents = () => {
-    const renderedComponents = components.map((c, index) => (
-      <ConfigurableFormComponent id={c.id} index={index} key={c.id} />
-    ));
-
-    return typeof props.render === 'function' ? props.render(renderedComponents) : renderedComponents;
-  };
-
-  const style = { ...getAlignmentStyle(props), ...props.style };
-
-  return props.noDefaultStyling ? (
-    <div style={{ ...style, textJustify: 'auto' }}>{renderComponents()}</div>
-  ) : (
-    <div className={joinStringValues(['sha-components-container', props.direction, props.className])} style={props.wrapperStyle}>
-      <div className="sha-components-container-inner" style={style}>
-        {renderComponents()}
-      </div>
-      {props.children}
-    </div>
-  );
-};
-
-ItemContainerForm.displayName = 'ItemContainer(DataList)';
 
 type AlignmentProps = Pick<
   IComponentsContainerProps,
@@ -95,3 +67,33 @@ export const getAlignmentStyle = ({
   }
   return style;
 };
+
+export const ItemContainerForm: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
+  const form = useForm();
+  const parent = useParent();
+
+  const components = form.getChildComponents(props.containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+
+  const renderComponents = () => {
+    const renderedComponents = components.map((c, index) => (
+      <ConfigurableFormComponent id={c.id} index={index} key={c.id} />
+    ));
+
+    return typeof props.render === 'function' ? props.render(renderedComponents) : renderedComponents;
+  };
+
+  const style = { ...getAlignmentStyle(props), ...props.style };
+
+  return props.noDefaultStyling ? (
+    <div style={{ ...style, textJustify: 'auto' }}>{renderComponents()}</div>
+  ) : (
+    <div className={joinStringValues(['sha-components-container', props.direction, props.className])} style={props.wrapperStyle}>
+      <div className="sha-components-container-inner" style={style}>
+        {renderComponents()}
+      </div>
+      {props.children}
+    </div>
+  );
+};
+
+ItemContainerForm.displayName = 'ItemContainer(DataList)';

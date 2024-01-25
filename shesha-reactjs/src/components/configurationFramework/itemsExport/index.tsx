@@ -10,7 +10,7 @@ import {
   Skeleton,
   Spin,
   Switch
-  } from 'antd';
+} from 'antd';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
 import { getFileNameFromResponse } from '@/utils/fetchers';
 import { getIndexesList } from '../treeUtils';
@@ -46,7 +46,7 @@ type VerionSelectionMode = 'live' | 'ready' | 'latest';
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const [versionsMode, setVersionsMode] = useState<VerionSelectionMode>('live');
-  const [exportDependencies, setExportDependencies] = useState<boolean>(true);  
+  const [exportDependencies, setExportDependencies] = useState<boolean>(true);
 
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [exportInProgress, setExportInProgress] = useState(false);
@@ -105,18 +105,6 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     };
   };
 
-  useEffect(() => {
-    setIsLoading(true);
-    RestfulShesha.get<IAbpWrappedGetEntityListResponse<ConfigurationItemDto>, any, IGenericGetAllPayload, void>(
-      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-      getListFetcherQueryParams(versionsMode),
-      { base: backendUrl, headers: httpHeaders }
-    ).then((response) => {
-      applyItems(response.result.items);
-      setIsLoading(false);
-    });
-  }, [versionsMode]);
-
   const applyItems = (allItems: ConfigurationItemDto[]) => {
     if (!allItems) {
       setTreeState(null);
@@ -126,15 +114,15 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     const modules: ModulesDictionary = {};
     allItems.forEach((item) => {
       const itemModule = item.module ?? { id: null, name: LEGACY_ITEMS_MODULE_NAME };
-      let module: IModule = modules[itemModule.id];
-      if (!module) {
-        module = { id: itemModule.id, name: itemModule.name, description: itemModule.description, itemTypes: {} };
-        modules[itemModule.id] = module;
+      let moduleContainer: IModule = modules[itemModule.id];
+      if (!moduleContainer) {
+        moduleContainer = { id: itemModule.id, name: itemModule.name, description: itemModule.description, itemTypes: {} };
+        modules[itemModule.id] = moduleContainer;
       }
-      let itemType = module.itemTypes[item.itemType];
+      let itemType = moduleContainer.itemTypes[item.itemType];
       if (!itemType) {
         itemType = { name: item.itemType, items: [], applications: {} };
-        module.itemTypes[itemType.name] = itemType;
+        moduleContainer.itemTypes[itemType.name] = itemType;
       }
 
       const configurationItem: IConfigurationItem = {
@@ -165,21 +153,21 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     for (const moduleName in modules) {
       if (!modules.hasOwnProperty(moduleName)) continue;
-      const module = modules[moduleName];
+      const moduleContainer = modules[moduleName];
       const moduleNode: ConfigItemDataNode = {
-        key: module.id ?? '-',
-        title: module.name,
+        key: moduleContainer.id ?? '-',
+        title: moduleContainer.name,
         children: [],
         isLeaf: false,
       };
       treeNodes.push(moduleNode);
 
-      for (const itName in module.itemTypes) {
-        if (!module.itemTypes.hasOwnProperty(itName)) continue;
-        const itemType = module.itemTypes[itName];
+      for (const itName in moduleContainer.itemTypes) {
+        if (!moduleContainer.itemTypes.hasOwnProperty(itName)) continue;
+        const itemType = moduleContainer.itemTypes[itName];
         if (itemType) {
           const itemTypeNode: ConfigItemDataNode = {
-            key: `${module.id}/${itemType.name}`,
+            key: `${moduleContainer.id}/${itemType.name}`,
             title: itemType.name,
             children: [],
             isLeaf: false,
@@ -191,7 +179,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
             const application = itemType.applications[appKey];
 
             const appNode: ConfigItemDataNode = {
-              key: `${module.id}/${itemType.name}/${application.appKey}`,
+              key: `${moduleContainer.id}/${itemType.name}/${application.appKey}`,
               title: application.appKey,
               isLeaf: false,
               children: application.items.map<ConfigItemDataNode>((item) => ({
@@ -221,6 +209,18 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     setTreeState({ treeNodes: treeNodes, indexes: dataIndexes, itemsCount: allItems.length });
   };
+
+  useEffect(() => {
+    setIsLoading(true);
+    RestfulShesha.get<IAbpWrappedGetEntityListResponse<ConfigurationItemDto>, any, IGenericGetAllPayload, void>(
+      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
+      getListFetcherQueryParams(versionsMode),
+      { base: backendUrl, headers: httpHeaders }
+    ).then((response) => {
+      applyItems(response.result.items);
+      setIsLoading(false);
+    });
+  }, [versionsMode]);
 
   const getExportFilter = () => {
     return { in: [{ var: 'id' }, checkedIds] };

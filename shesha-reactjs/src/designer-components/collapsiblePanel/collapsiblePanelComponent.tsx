@@ -9,7 +9,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { ExpandIconPosition } from 'antd/lib/collapse/Collapse';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import React from 'react';
 import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } from './interfaces';
 import settingsFormJson from './settingsForm.json';

@@ -5,7 +5,8 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { ListItem } from './listItem';
 import { ListItemsGroup } from './listItemsGroup';
 import { useItemListConfigurator } from '@/providers';
- import { useDeepCompareMemo } from '@/hooks';
+import { useDeepCompareMemo } from '@/hooks';
+import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IItemListContainerProps {
   index?: number[];
@@ -15,27 +16,28 @@ export interface IItemListContainerProps {
 
 export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, items }) => {
   const { updateChildItems } = useItemListConfigurator();
+  const { styles } = useStyles();
   const allData = useApplicationContext();
 
   const actualItems = useDeepCompareMemo(() =>
     items.map((item) => getActualModel(item, allData))
-  , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+    , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
 
   const renderItem = (item: IConfigurableItemBase, localIndex: number) => {
     switch (item?.itemType) {
       case 'item':
         const itemProps = item as IConfigurableItemBase;
-        return <ListItem title={''} key={localIndex} index={[...index, localIndex]} {...itemProps} />;
+        return <ListItem title={''} index={[...index, localIndex]} {...itemProps} key={localIndex}/>;
 
       case 'group':
         const groupProps = item as IConfigurableItemGroup;
         return (
-          <ListItemsGroup 
-            key={localIndex} 
-            {...groupProps} 
-            index={[...index, localIndex]} 
-            containerRendering={(args) => (<ItemListContainer {...args}/>)}
+          <ListItemsGroup
+            {...groupProps}
+            index={[...index, localIndex]}
+            containerRendering={(args) => (<ItemListContainer {...args} />)}
+            key={localIndex}
           />);
       default:
         return null;
@@ -65,11 +67,11 @@ export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, item
         name: 'buttonGroupItems',
       }}
       sort={true}
-      draggable=".sha-button-group-item"
+      draggable={`.${styles.shaToolbarItem}`}
       animation={75}
-      ghostClass="sha-button-group-item-ghost"
+      ghostClass={styles.shaToolbarItemGhost}
       emptyInsertThreshold={20}
-      handle=".sha-button-group-item-drag-handle"
+      handle={`.${styles.shaToolbarItemDragHandle}`}
       scroll={true}
       bubbleScroll={true}
     >

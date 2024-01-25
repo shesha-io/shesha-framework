@@ -26,7 +26,7 @@ import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from '@/interf
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
 import { IToolboxComponents } from '@/interfaces';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { removeNullUndefined } from '@/providers/utils';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
@@ -190,6 +190,18 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
     IGetFormByIdPayload | IGetFormByNamePayload
   >(requestParams?.url ?? '', { queryParams: requestParams?.queryParams, lazy: args.lazy || !canFetch });
 
+  const reFetch = () => {
+    return fetcher.refetch({ path: requestParams.url, queryParams: requestParams.queryParams });
+  };
+
+  const reFetcher = () => {
+    return canFetch
+      ? reFetch().then((response) => {
+          return getMarkupFromResponse(response);
+        })
+      : Promise.reject('Can`t fetch form due to internal state');
+  };
+
   useEffect(() => {
     if (fetcher.data && canFetch) reFetcher();
   }, [configurationItemMode]);
@@ -204,18 +216,6 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
       };
     } else return null;
   }, [args.formId, fetcher?.data]);
-
-  const reFetch = () => {
-    return fetcher.refetch({ path: requestParams.url, queryParams: requestParams.queryParams });
-  };
-
-  const reFetcher = () => {
-    return canFetch
-      ? reFetch().then((response) => {
-          return getMarkupFromResponse(response);
-        })
-      : Promise.reject('Can`t fetch form due to internal state');
-  };
 
   const result: IFormMarkupResponse = {
     formConfiguration: formConfiguration,
@@ -234,6 +234,9 @@ export interface UseFormWitgDataArgs {
   onFormLoaded?: (form: IFormDto) => void;
   onDataLoaded?: (data: any) => void;
 }
+
+export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
+
 export interface FormWithDataResponse {
   form?: IFormDto;
   fetchedData?: IEntity;
@@ -254,7 +257,151 @@ export interface FormWithDataState {
   dataFetcher?: () => Promise<EntityAjaxResponse | void>;
 }
 
-export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
+interface GetFormFieldsPayload {
+  formMarkup: FormRawMarkup;
+  formSettings: IFormSettings;
+  toolboxComponents: IToolboxComponents;
+}
+
+// just for intrenal use
+interface IFieldData {
+  name: string;
+  child: IFieldData[];
+  property: IPropertyMetadata;
+}
+
+const getFieldsFromCustomEvents = (code: string) => {
+  if (!code) return [];
+  const reg = new RegExp('(?<![_a-zA-Z0-9.])data.[_a-zA-Z0-9.]+', 'g');
+  const matchAll = code.matchAll(reg);
+  if (!matchAll) return [];
+  const match = Array.from(matchAll);
+  return match.map((item) => item[0].replace('data.', ''));
+};
+
+export const gqlFieldsToString = (fields: IFieldData[]): string => {
+  const resf = (items: IFieldData[]) => {
+    let s = '';
+    items.forEach((item) => {
+      if (!item.property) return;
+      s += s ? ',' + item.name : item.name;
+      if (item.child.length > 0) {
+        s += '{' + resf(item.child) + '}';
+      }
+    });
+
+    return s;
+  };
+
+  return resf(fields);
+};
+
+const getFormFields = (payload: GetFormFieldsPayload): string[] => {
+  const { formMarkup, formSettings, toolboxComponents } = payload;
+  if (!formMarkup) return null;
+
+  const components = componentsTreeToFlatStructure(
+    toolboxComponents,
+    getComponentsFromMarkup(formMarkup)
+  ).allComponents;
+  let fieldNames = [];
+  for (const key in components) {
+    if (components.hasOwnProperty(key)) {
+      fieldNames.push(components[key].propertyName);
+    }
+  }
+
+  fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
+
+  formMarkup.forEach((item) => {
+    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.customEnabled));
+    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.customVisibility));
+    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onBlurCustom));
+    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onChangeCustom));
+    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onFocusCustom));
+  });
+  fieldNames.push('id');
+
+  fieldNames = [...new Set(fieldNames)];
+  fieldNames = fieldNames.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+
+  return fieldNames;
+};
+
+interface GetGqlFieldsPayload extends GetFormFieldsPayload {
+  getContainerProperties: IMetadataDispatcherActionsContext['getContainerProperties'];
+  getMetadata: IMetadataDispatcherActionsContext['getMetadata'];
+}
+export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]> => {
+  const { formMarkup, formSettings, getMetadata, getContainerProperties } = payload;
+
+  if (!formMarkup || !formSettings.modelType) return Promise.resolve([]);
+
+  return getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType }).then((metadata) => {
+    let fields: IFieldData[] = [];
+
+    const fieldNames = getFormFields(payload);
+
+    // create list of promises
+    const promises: Promise<any>[] = [];
+
+    fieldNames.forEach((item) => {
+      if (item) {
+        item = item.trim();
+        const pathParts = item.split('.');
+
+        if (pathParts.length === 1) {
+          fields.push({
+            name: item,
+            child: [],
+            property: metadata.properties.find((p) => p.path.toLowerCase() === pathParts[0].toLowerCase()),
+          });
+          return;
+        }
+
+        let parent: IFieldData = null;
+        let containerPath = '';
+        pathParts.forEach((part, idx) => {
+          let levelChilds = parent?.child ?? fields;
+          let field = levelChilds.find((f) => f.name === part);
+          if (!field) {
+            field = {
+              name: part,
+              child: [],
+              property:
+                idx === 0
+                  ? metadata.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                  : parent?.property?.dataType === 'object'
+                  ? parent.property.properties?.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                  : null,
+            };
+            // If property metadata is not set - fetch it using dispatcher.
+            // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests
+            if (!field.property) {
+              const metaPromise = getContainerProperties({ metadata: metadata, containerPath: containerPath }).then(
+                (response) => {
+                  field.property = response.find((p) => p.path.toLowerCase() === field.name.toLowerCase());
+                }
+              );
+              // add promise to list
+              promises.push(metaPromise);
+            }
+
+            levelChilds.push(field);
+          }
+          containerPath += (Boolean(containerPath) ? '.' : '') + part;
+          parent = field;
+        });
+      }
+    });
+
+    return new Promise<IFieldData[]>((resolve) => {
+      Promise.allSettled(promises).then(() => {
+        resolve(fields);
+      });
+    });
+  });
+};
 
 export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse => {
   const { formId, dataId, configurationItemMode } = args;
@@ -430,158 +577,17 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
   return result;
 };
 
-// just for intrenal use
-interface IFieldData {
-  name: string;
-  child: IFieldData[];
-  property: IPropertyMetadata;
-}
-
-const getFieldsFromCustomEvents = (code: string) => {
-  if (!code) return [];
-  const reg = new RegExp('(?<![_a-zA-Z0-9.])data.[_a-zA-Z0-9.]+', 'g');
-  const matchAll = code.matchAll(reg);
-  if (!matchAll) return [];
-  const match = Array.from(matchAll);
-  return match.map((item) => item[0].replace('data.', ''));
-};
-
-export const gqlFieldsToString = (fields: IFieldData[]): string => {
-  const resf = (items: IFieldData[]) => {
-    let s = '';
-    items.forEach((item) => {
-      if (!item.property) return;
-      s += s ? ',' + item.name : item.name;
-      if (item.child.length > 0) {
-        s += '{' + resf(item.child) + '}';
-      }
-    });
-
-    return s;
-  };
-
-  return resf(fields);
-};
-
-interface GetFormFieldsPayload {
-  formMarkup: FormRawMarkup;
-  formSettings: IFormSettings;
-  toolboxComponents: IToolboxComponents;
-}
-
-const getFormFields = (payload: GetFormFieldsPayload): string[] => {
-  const { formMarkup, formSettings, toolboxComponents } = payload;
-  if (!formMarkup) return null;
-
-  const components = componentsTreeToFlatStructure(
-    toolboxComponents,
-    getComponentsFromMarkup(formMarkup)
-  ).allComponents;
-  let fieldNames = [];
-  for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      fieldNames.push(components[key].propertyName);
-    }
-  }
-
-  fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
-
-  formMarkup.forEach((item) => {
-    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.customEnabled));
-    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.customVisibility));
-    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onBlurCustom));
-    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onChangeCustom));
-    fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onFocusCustom));
-  });
-  fieldNames.push('id');
-
-  fieldNames = [...new Set(fieldNames)];
-  fieldNames = fieldNames.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
-
-  return fieldNames;
-};
-
-interface GetGqlFieldsPayload extends GetFormFieldsPayload {
-  getContainerProperties: IMetadataDispatcherActionsContext['getContainerProperties'];
-  getMetadata: IMetadataDispatcherActionsContext['getMetadata'];
-}
-export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]> => {
-  const { formMarkup, formSettings, getMetadata, getContainerProperties } = payload;
-
-  if (!formMarkup || !formSettings.modelType) return Promise.resolve([]);
-
-  return getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType }).then((metadata) => {
-    let fields: IFieldData[] = [];
-
-    const fieldNames = getFormFields(payload);
-
-    // create list of promises
-    const promises: Promise<any>[] = [];
-
-    fieldNames.forEach((item) => {
-      if (item) {
-        item = item.trim();
-        const pathParts = item.split('.');
-
-        if (pathParts.length === 1) {
-          fields.push({
-            name: item,
-            child: [],
-            property: metadata.properties.find((p) => p.path.toLowerCase() === pathParts[0].toLowerCase()),
-          });
-          return;
-        }
-
-        let parent: IFieldData = null;
-        let containerPath = '';
-        pathParts.forEach((part, idx) => {
-          let levelChilds = parent?.child ?? fields;
-          let field = levelChilds.find((f) => f.name === part);
-          if (!field) {
-            field = {
-              name: part,
-              child: [],
-              property:
-                idx === 0
-                  ? metadata.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                  : parent?.property?.dataType === 'object'
-                  ? parent.property.properties?.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                  : null,
-            };
-            // If property metadata is not set - fetch it using dispatcher.
-            // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests
-            if (!field.property) {
-              const metaPromise = getContainerProperties({ metadata: metadata, containerPath: containerPath }).then(
-                (response) => {
-                  field.property = response.find((p) => p.path.toLowerCase() === field.name.toLowerCase());
-                }
-              );
-              // add promise to list
-              promises.push(metaPromise);
-            }
-
-            levelChilds.push(field);
-          }
-          containerPath += (Boolean(containerPath) ? '.' : '') + part;
-          parent = field;
-        });
-      }
-    });
-
-    return new Promise<IFieldData[]>((resolve) => {
-      Promise.allSettled(promises).then(() => {
-        resolve(fields);
-      });
-    });
-  });
-};
-
 export interface UseFormDataArguments {
   formSettings: IFormSettings;
   formMarkup: FormRawMarkup;
   urlEvaluationData: IMatchData[];
   lazy: boolean;
 }
+
+const getCorrectGetUrl = (endpoint: IApiEndpoint): string => {
+  return endpoint && endpoint.httpVerb?.toLowerCase() === 'get' ? endpoint.url : null;
+};
+
 export type EntityFetcher = () => Promise<EntityAjaxResponse>;
 export interface UseFormDataResult {
   //form?: IFormDto;
@@ -714,8 +720,4 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
   };
 
   return result;
-};
-
-const getCorrectGetUrl = (endpoint: IApiEndpoint): string => {
-  return endpoint && endpoint.httpVerb?.toLowerCase() === 'get' ? endpoint.url : null;
 };

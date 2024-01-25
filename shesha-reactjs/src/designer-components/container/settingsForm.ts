@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import {
   ALIGN_ITEMS,
@@ -314,5 +314,6 @@ export const getSettings = (data: any) =>
       parentId: 'root',
       validate: {},
       settingsValidationErrors: [],
+      jsSetting: false,
     })
     .toJson();

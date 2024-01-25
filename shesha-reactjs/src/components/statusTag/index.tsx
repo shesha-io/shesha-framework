@@ -1,6 +1,7 @@
 import React, { CSSProperties, FC, useMemo } from 'react';
 import { Tag } from 'antd';
 import { isNumeric } from '@/utils/string';
+import { useStyles } from './styles/styles';
 
 export interface IStatusMap {
   code?: number;
@@ -39,6 +40,7 @@ export const StatusTag: FC<IStatusTagProps> = ({
   mappings = DEFAULT_STATUS_TAG_MAPPINGS,
   style,
 }) => {
+  const { styles } = useStyles();
   const memoized = useMemo(() => {
     if (!override && !value && !color) {
       return {};
@@ -82,7 +84,7 @@ export const StatusTag: FC<IStatusTagProps> = ({
   }
 
   return (
-    <Tag className="sha-status-tag" color={memoized?.color} style={style}>
+    <Tag className={styles.shaStatusTag} color={memoized?.color} style={style}>
       {memoized?.text}
     </Tag>
   );

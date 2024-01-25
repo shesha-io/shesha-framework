@@ -12,7 +12,7 @@ import {
 import { ISizableColumnProps } from './interfaces';
 import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal } from 'antd';
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 
 export interface IProps {
   readOnly: boolean;

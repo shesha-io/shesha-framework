@@ -1,22 +1,14 @@
 import React, { FC, memo } from 'react';
-import { Modal } from 'antd';
+import SidebarConfigurator from './configurator';
 import { ISettingsEditorProps } from '@/components/configurableComponent';
 import { ISideBarMenuProps } from '.';
+import { Modal } from 'antd';
 import { SidebarMenuConfiguratorProvider, useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
-import SidebarConfigurator from './configurator';
 import { useMedia } from 'react-use';
 
 export interface IProps extends ISettingsEditorProps<ISideBarMenuProps> {
   title?: string;
 }
-
-export const ComponentSettingsModal: FC<IProps> = props => {
-  return (
-    <SidebarMenuConfiguratorProvider items={props.settings.items}>
-      <ComponentSettingsModalInner {...props} />
-    </SidebarMenuConfiguratorProvider>
-  );
-};
 
 export const ComponentSettingsModalInner: FC<IProps> = memo(({ title, onSave, onCancel }) => {
   const { items } = useSidebarMenuConfigurator();
@@ -32,5 +24,13 @@ export const ComponentSettingsModalInner: FC<IProps> = memo(({ title, onSave, on
     </Modal>
   );
 });
+
+export const ComponentSettingsModal: FC<IProps> = props => {
+  return (
+    <SidebarMenuConfiguratorProvider items={props.settings.items}>
+      <ComponentSettingsModalInner {...props} />
+    </SidebarMenuConfiguratorProvider>
+  );
+};
 
 export default ComponentSettingsModal;

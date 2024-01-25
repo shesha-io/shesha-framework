@@ -1,15 +1,21 @@
-import { Empty, Form } from 'antd';
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
+import columnSettingsJson from './columnSettings.json';
+import React, {
+  FC,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState
+  } from 'react';
 import { ConfigurableForm } from '@/components';
+import { ConfigurableFormInstance } from '@/providers/form/contexts';
+import { Empty, Form } from 'antd';
+import { FormMarkup } from '@/providers/form/models';
+import { IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator';
-import { IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
-import { ConfigurableFormInstance } from '@/providers/form/contexts';
-import { FormMarkup } from '@/providers/form/models';
-import columnSettingsJson from './columnSettings.json';
+import { useDebouncedCallback } from 'use-debounce';
 
-export interface IProps {}
+export interface IProps { }
 
 export const ColumnProperties: FC<IProps> = () => {
   const { selectedItemId, getItem, updateItem } = useColumnsConfigurator();
@@ -62,7 +68,6 @@ export const ColumnProperties: FC<IProps> = () => {
         wrapperCol={{ span: 24 }}
         mode="edit"
         markup={columnSettingsJson as FormMarkup}
-        onFinish={onSettingsSave}
         form={form}
         initialValues={componentModel}
         onValuesChange={debouncedSave}
@@ -85,10 +90,6 @@ export const ColumnProperties: FC<IProps> = () => {
       </div>
     );
   }
-
-  const onSettingsSave = (values) => {
-    console.log(values);
-  };
 
   return <>{editor}</>;
 };

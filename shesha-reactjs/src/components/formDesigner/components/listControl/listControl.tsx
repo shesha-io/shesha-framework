@@ -50,6 +50,7 @@ import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramewor
 import FormInfo from '../../../configurableForm/formInfo';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from '@/utils';
+import { useStyles } from './styles/styles';
 
 /** @deprecated: Use DataList instead */
 const ListControl: FC<IListControlProps> = (props) => {
@@ -92,6 +93,7 @@ const ListControl: FC<IListControlProps> = (props) => {
     customListItemWidth,
     customApiUrl,
   } = props;
+  const { styles } = useStyles();
 
   const { formInfoBlockVisible } = useAppConfigurator();
 
@@ -288,49 +290,6 @@ const ListControl: FC<IListControlProps> = (props) => {
     }
   }, [value]);
 
-  const actionOwnerName = `List (${name})`;
-  useConfigurableAction(
-    {
-      name: 'Refresh list items',
-      owner: actionOwnerName,
-      ownerUid: containerId,
-      hasArguments: false,
-      executer: () => {
-        debouncedRefresh(); // todo: return real promise
-        return Promise.resolve();
-      },
-    },
-    [state]
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Save list items',
-      owner: actionOwnerName,
-      ownerUid: containerId,
-      hasArguments: false,
-      executer: () => {
-        submitListItems(submitUrl); // todo: return real promise
-        return Promise.resolve();
-      },
-    },
-    [state]
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Add list items',
-      owner: actionOwnerName,
-      ownerUid: containerId,
-      hasArguments: false,
-      executer: () => {
-        debouncedAddItems(state); // todo: return real promise
-        return Promise.resolve();
-      },
-    },
-    [state]
-  );
-
   const debouncedAddItems = useDebouncedCallback((data) => {
     onChange(Array.isArray(value) ? [...value, data] : [data]);
   }, 300);
@@ -476,6 +435,49 @@ const ListControl: FC<IListControlProps> = (props) => {
     [state, selectionMode]
   );
 
+  const actionOwnerName = `List (${name})`;
+  useConfigurableAction(
+    {
+      name: 'Refresh list items',
+      owner: actionOwnerName,
+      ownerUid: containerId,
+      hasArguments: false,
+      executer: () => {
+        debouncedRefresh(); // todo: return real promise
+        return Promise.resolve();
+      },
+    },
+    [state]
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Save list items',
+      owner: actionOwnerName,
+      ownerUid: containerId,
+      hasArguments: false,
+      executer: () => {
+        submitListItems(submitUrl); // todo: return real promise
+        return Promise.resolve();
+      },
+    },
+    [state]
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Add list items',
+      owner: actionOwnerName,
+      ownerUid: containerId,
+      hasArguments: false,
+      executer: () => {
+        debouncedAddItems(state); // todo: return real promise
+        return Promise.resolve();
+      },
+    },
+    [state]
+  );
+
   const isHidden = useMemo(() => {
     if (!customVisibility) return false;
 
@@ -556,10 +558,10 @@ const ListControl: FC<IListControlProps> = (props) => {
   return (
     <CollapsiblePanel
       header={title}
-      extraClassName="sha-list-component-extra"
-      className="sha-list-component-panel"
+      extraClassName={styles.shaListComponentExtra}
+      className={styles.shaListComponentPanel}
       extra={
-        <div className="sha-list-component-extra-space">
+        <div className={styles.shaListComponentExtraSpace}>
           <Space size="small">
             {renderPagination()}
 
@@ -576,7 +578,6 @@ const ListControl: FC<IListControlProps> = (props) => {
             </Show>
 
             <ButtonGroup
-              type={''}
               items={buttons || []}
               id={containerId}
               size="small"
@@ -621,7 +622,7 @@ const ListControl: FC<IListControlProps> = (props) => {
             <div
               ref={ref}
               // ref={containerBodyRef}
-              className={classNames('sha-list-component-body', {
+              className={classNames(styles.shaListComponentBody, {
                 loading: isFetchingEntities && value?.length === 0,
                 horizontal: orientation === 'horizontal',
               })}
@@ -633,7 +634,7 @@ const ListControl: FC<IListControlProps> = (props) => {
                     <ConditionalWrap
                       condition={orientation === 'horizontal'}
                       wrap={(c) => (
-                        <Space size={'middle'} className="sha-list-space-horizontal" direction="horizontal">
+                        <Space size={'middle'} direction="horizontal">
                           {c}
                         </Space>
                       )}
@@ -646,7 +647,7 @@ const ListControl: FC<IListControlProps> = (props) => {
                             condition={selectionMode !== 'none'}
                             wrap={(children) => (
                               <Checkbox
-                                className={classNames('sha-list-component-item-checkbox', {
+                                className={classNames(styles.shaListComponentItemCheckbox, {
                                   selected: state?.selectedItemIndexes?.includes(index),
                                 })}
                                 checked={state?.selectedItemIndexes?.includes(index)}
@@ -659,7 +660,7 @@ const ListControl: FC<IListControlProps> = (props) => {
                             )}
                           >
                             <div
-                              className={classNames('sha-list-component-item', {
+                              className={classNames(styles.shaListComponentItem, {
                                 selected: state?.selectedItemIndexes?.includes(index),
                               })}
                               onClick={() => {
@@ -695,12 +696,12 @@ const ListControl: FC<IListControlProps> = (props) => {
                               </Show>
 
                               <Show when={allowDeleteItems}>
-                                <div className="sha-list-component-add-item-btn">
+                                <div className={styles.shaListComponentAddItemBtn}>
                                   <Button
                                     danger
-                                    type="ghost"
+                                    type="default"
+                                    ghost={true}
                                     size="small"
-                                    className="dynamic-delete-button"
                                     onClick={() => {
                                       deleteItem(field.name, remove);
                                     }}
@@ -709,7 +710,7 @@ const ListControl: FC<IListControlProps> = (props) => {
                                 </div>
                               </Show>
 
-                              {!isLastItem && <Divider className="sha-list-component-divider" />}
+                              {!isLastItem && <Divider className={styles.shaListComponentDivider} />}
                             </div>
                           </ConditionalWrap>
                         );

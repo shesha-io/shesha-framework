@@ -3,6 +3,8 @@ import { AutoCompletePlaces } from '@/components/';
 import { EditOutlined } from '@ant-design/icons';
 import { Input, Button } from 'antd';
 import FormItem, { FormItemProps } from 'antd/lib/form/FormItem';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 type PropType = 'default' | 'edit' | 'autocomplete';
 
@@ -23,6 +25,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
   ...rest
 }) => {
   const [state, setState] = useState({ isEdit: false });
+  const { styles } = useStyles();
 
   const onSave = () => {
     if (Boolean(value?.trim())) {
@@ -43,8 +46,7 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
 
   return (
     <FormItem
-      className={`display-form-item ${mode === 'autocomplete' ? 'autocomplete-form-item' : ''} ${className ? className : ''
-        }`}
+      className={classNames(styles.displayFormItem, className, { [styles.autocompleteFormItem]: mode === 'autocomplete' })}
       {...rest}
     >
       <>
@@ -67,7 +69,8 @@ export const DisplayFormItem: FC<IDisplayFormItemProps> = ({
               <Button
                 className="ant-blend-btn"
                 icon={<EditOutlined />}
-                type="ghost"
+                type="default"
+                ghost={true}
                 onClick={() => setState({ ...state, isEdit: true })}
               />
             )}

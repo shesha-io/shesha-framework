@@ -1,4 +1,4 @@
-import { EditMode } from '@/index';
+import { EditMode } from '@/interfaces';
 import { Select } from 'antd';
 import React, { FC } from 'react';
 

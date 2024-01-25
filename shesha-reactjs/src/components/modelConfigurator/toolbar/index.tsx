@@ -8,10 +8,12 @@ import {
 } from '@ant-design/icons';
 import { useShaRouting } from '@/providers/shaRouting';
 import { useModelConfigurator } from '@/providers';
+import { useStyles } from '../styles/styles';
 
 export interface IProps { }
 
 export const ModelConfiguratorToolbar: FC<IProps> = () => {
+  const { styles } = useStyles();
   const { load, submit, id } = useModelConfigurator();
   const { router } = useShaRouting();
 
@@ -28,8 +30,8 @@ export const ModelConfiguratorToolbar: FC<IProps> = () => {
   };
 
   return (
-    <div className="sha-model-configurator-toolbar">
-      <div className="sha-model-configurator-toolbar-right">
+    <div className={styles.shaModelConfiguratorToolbar}>
+      <div className={styles.shaModelConfiguratorToolbarRight}>
         {false && (
           <Button onClick={onCancelClick} type="primary" danger>
             <CloseCircleOutlined /> Cancel

@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = (data: { readOnly?: boolean }) =>
@@ -224,6 +224,7 @@ export const getSettings = (data: { readOnly?: boolean }) =>
               parentId: 'root',
               validate: {},
               settingsValidationErrors: [],
+              jsSetting: false,
             })
             .toJson(),
         ],

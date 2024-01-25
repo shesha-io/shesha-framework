@@ -1,6 +1,6 @@
 import { OrderedListOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import React from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
@@ -14,7 +14,7 @@ import { migrateV1toV2 } from './migrations/migrate-v2';
 import { IListComponentProps, IListItemsProps } from './models';
 import { listSettingsForm } from './settings';
 import { ListControlSettings } from './settingsv2';
-import './styles/index.less';
+import { useStyles } from './styles/styles';
 
 /** @deprecated: Use DataListComponent instead */
 const ListComponent: IToolboxComponent<IListComponentProps> = {
@@ -25,6 +25,7 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const { namePrefix } = useFormItem();
+    const { styles } = useStyles();
 
     if (model.hidden) return null;
 
@@ -32,7 +33,7 @@ const ListComponent: IToolboxComponent<IListComponentProps> = {
       <ConfigurableFormItem
         model={{ ...model }}
         className={classNames(
-          'sha-list-component',
+          styles.shaListComponent,
           { horizontal: model?.orientation === 'horizontal' && formMode !== 'designer' } //
         )}
         labelCol={{ span: model?.hideLabel ? 0 : model?.labelCol }}

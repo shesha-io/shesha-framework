@@ -3,7 +3,7 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import EditModeSelector from '@/components/editModeSelector/index';
-import { ConfigurableFormItem } from '@/index';
+import { ConfigurableFormItem } from '@/components';
 
 const EditModeSelectorComponent: IToolboxComponent<IConfigurableFormComponent> = {
   type: 'editModeSelector',

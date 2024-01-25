@@ -15,9 +15,6 @@ export const getStyleChangeValue = (
   });
 };
 
-export const getStyleClassName = (type: keyof IValue, direction: keyof IInputDirection) =>
-  `${type.substring(0, 4)}-${direction}`;
-
 export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string) => {
   const v = JSON.parse(value || '{}') as IValue;
   return (v || {})[`${type}${capitalizeFirstLetter(direction)}`] || 0;

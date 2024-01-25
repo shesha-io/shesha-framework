@@ -1,16 +1,22 @@
-import React, { FC, useState } from 'react';
-import { Select, AutoComplete, InputNumber, Input, Checkbox } from 'antd';
 import CodeEditor from '../codeEditor/codeEditor';
 import FormAutocomplete from '@/components/formAutocomplete';
-import Show from '@/components/show';
-import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
+import React, { FC, useState } from 'react';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import Show from '@/components/show';
+import {
+  AutoComplete,
+  Checkbox,
+  Input,
+  InputNumber,
+  Select
+} from 'antd';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 import { IDataListComponentProps } from './model';
 import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
-import { nanoid } from 'nanoid';
-import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
+import { nanoid } from '@/utils/uuid';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -147,13 +153,7 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
   }
 ];
 
-export const DataListSettingsForm: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = (props) => {
-  return (
-    SettingsForm<IDataListComponentProps>({...props, children: <DataListSettings {...props}/>})
-  );
-};
-
-const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = ({readOnly}) => {
+const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = ({ readOnly }) => {
   const { model } = useSettingsForm<IDataListComponentProps>();
 
   /*const dataSourcesDict = useDataSources()?.getDataSources() ?? {};
@@ -172,7 +172,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
   return (
     <>
       <SettingsFormItem name="componentName" label="Component name" required>
-        <Input readOnly={readOnly}/>
+        <Input readOnly={readOnly} />
       </SettingsFormItem>
 
       {/*<SettingsFormItem name="dataSource" label="Data Source">
@@ -221,9 +221,9 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
 
         {model.formSelectionMode === 'name' &&
-        <SettingsFormItem name="formId" label="Form">
-          <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
-        </SettingsFormItem>
+          <SettingsFormItem name="formId" label="Form">
+            <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
+          </SettingsFormItem>
         }
 
         {model.formSelectionMode === 'view' &&
@@ -235,8 +235,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                 setFormTypesOptions(
                   (t
                     ? formTypes.filter(f => {
-                        return f.toLowerCase().includes(t.toLowerCase());
-                      })
+                      return f.toLowerCase().includes(t.toLowerCase());
+                    })
                     : formTypes
                   ).map(i => {
                     return { value: i };
@@ -247,7 +247,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           </SettingsFormItem>
         }
 
-        {model.formSelectionMode === 'expression' && 
+        {model.formSelectionMode === 'expression' &&
           <SettingsFormItem name="formIdExpression" label="Form identifer expression">
             <CodeEditor
               readOnly={readOnly}
@@ -270,7 +270,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                 { name: "moment", description: "moment", type: "object" },
                 { name: "http", description: "axiosHttp", type: "object" },
                 { name: "message", description: "message framework", type: "object" },
-            ]}
+              ]}
             />
           </SettingsFormItem>
         }
@@ -295,13 +295,13 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
 
           <Show when={model?.listItemWidth === 'custom'}>
             <SettingsFormItem name="customListItemWidth" label="Custom List Item Width (px)">
-              <InputNumber readOnly={readOnly}/>
+              <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
           </Show>
         </Show>
-    
+
         <SettingsFormItem name="hidden" label="Hidden" valuePropName='checked' jsSetting>
-            <Checkbox disabled={readOnly} />
+          <Checkbox disabled={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
@@ -324,9 +324,9 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
 
         {model.formSelectionMode !== 'view' && model.canAddInline === 'yes' &&
-        <SettingsFormItem name="createFormId" label="Create form" jsSetting >
-          <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
-        </SettingsFormItem>
+          <SettingsFormItem name="createFormId" label="Create form" jsSetting >
+            <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
+          </SettingsFormItem>
         }
 
         {model.formSelectionMode === 'view' && model.canAddInline === 'yes' &&
@@ -338,8 +338,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                 setFormTypesOptions(
                   (t
                     ? formTypes.filter(f => {
-                        return f.toLowerCase().includes(t.toLowerCase());
-                      })
+                      return f.toLowerCase().includes(t.toLowerCase());
+                    })
                     : formTypes
                   ).map(i => {
                     return { value: i };
@@ -369,13 +369,13 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         }
         {model.canAddInline === 'yes' && model.modalWidth === 'custom' && !!model.widthUnits &&
           <SettingsFormItem name="customWidth" label="Enter Custom Width">
-            <InputNumber disabled={readOnly}/>
+            <InputNumber disabled={readOnly} />
           </SettingsFormItem>
         }
         {
-        //<SettingsFormItem name="newListItemInsertPosition" label="New list item insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
-        //  <Select disabled={readOnly} options={rowCapturePositions} />
-        //</SettingsFormItem>
+          //<SettingsFormItem name="newListItemInsertPosition" label="New list item insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
+          //  <Select disabled={readOnly} options={rowCapturePositions} />
+          //</SettingsFormItem>
         }
         <SettingsFormItem name="customCreateUrl" label="Custom create url" hidden={model.canAddInline === 'no'}>
           <Input readOnly={readOnly} />
@@ -412,7 +412,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
-        <SettingsFormItem 
+        <SettingsFormItem
           name="onListItemSaveSuccessAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}
           hidden={model.canAddInline === 'no' && model.canEditInline === 'no'}
         >
@@ -434,27 +434,33 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
 
       <SettingsCollapsiblePanel header="Grouping">
         <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
-            <Checkbox disabled={readOnly} />
+          <Checkbox disabled={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="collapseByDefault" label="Collapse by default" valuePropName='checked' jsSetting>
-            <Checkbox disabled={readOnly} />
+          <Checkbox disabled={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="groupStyle" label="Style of group headers">
-            <CodeEditor
-              readOnly={readOnly}
-              mode="dialog"
-              setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
-              propertyName="groupStyle"
-              label="Style of group headers"
-              //description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-              exposedVariables={[
-                { name: "data", description: "Selected form values", type: "object" },
-              ]}
-            />
+          <CodeEditor
+            readOnly={readOnly}
+            mode="dialog"
+            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
+            propertyName="groupStyle"
+            label="Style of group headers"
+            //description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+            exposedVariables={[
+              { name: "data", description: "Selected form values", type: "object" },
+            ]}
+          />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
+  );
+};
+
+export const DataListSettingsForm: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = (props) => {
+  return (
+    SettingsForm<IDataListComponentProps>({ ...props, children: <DataListSettings {...props} /> })
   );
 };

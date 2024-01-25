@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { Tag } from 'antd';
 import invertColor from 'invert-color';
+import { css, cx } from 'antd-style';
 
 const COLORS = {
   red: '#FF0000',
@@ -55,8 +56,14 @@ export interface IStatusLabelProps {
 export const StatusLabel: FC<IStatusLabelProps> = ({ text, color }) => {
   const hexColor = (COLORS as any)[color];
 
+  const className = cx("sha-status-label", css`
+    text-transform: uppercase;
+    text-align: center;
+    margin: 3px 0;
+  `);
+
   return (
-    <Tag className="sha-status-label" style={{ color: invertColor(hexColor, true), background: hexColor }}>
+    <Tag className={className} style={{ color: invertColor(hexColor, true), background: hexColor }}>
       {text}
     </Tag>
   );

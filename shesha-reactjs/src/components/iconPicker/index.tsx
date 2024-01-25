@@ -10,6 +10,7 @@ import SectionSeparator from '@/components/sectionSeparator';
 import { TwoToneIconTypes, TWO_FACED_ICON_GROUPS } from './iconNamesTwoTone';
 import { humanizeString } from '@/utils/string';
 import classNames from 'classnames';
+import { useStyles } from './styles/styles';
 
 export type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
 type IconModes = 'outlined' | 'filled' | 'twoFaced';
@@ -63,6 +64,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   readOnly = false,
   ...props
 }) => {
+  const { styles } = useStyles();
   const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes>(value);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -126,12 +128,12 @@ const IconPicker: FC<IIconPickerProps> = ({
   }, [searchQuery, searchOption?.group]);
 
   return (
-    <div className="sha-icon-picker">
+    <div className={styles.shaIconPicker}>
       <div>
         {localSelectedIcon ? (
           <span
             onClick={toggleModalVisibility}
-            className={classNames('sha-icon-picker-selected-icon', readOnly ? 'sha-readonly' : '')}
+            className={classNames(styles.shaIconPickerSelectedIcon, { "sha-readonly": readOnly })}
           >
             <ShaIcon
               iconName={localSelectedIcon}
@@ -163,9 +165,9 @@ const IconPicker: FC<IIconPickerProps> = ({
             <Button onClick={toggleModalVisibility}>Cancel</Button>
           </div>
         }
-        className="sha-icon-picker-modal"
+        className={styles.shaIconPickerModal}
       >
-        <div className="sha-icon-picker-search">
+        <div className={styles.shaIconPickerSearch}>
           <Radio.Group
             options={ICON_MODE_OPTIONS}
             value={searchOption?.mode}
@@ -173,28 +175,28 @@ const IconPicker: FC<IIconPickerProps> = ({
             optionType="button"
           />
 
-          <div className="sha-icon-picker-search-input-container">
+          <div className={styles.shaIconPickerSearchInputContainer}>
             <Input.Search allowClear onChange={onSearchChange} value={searchQuery} />
           </div>
         </div>
-        <div className="sha-icon-picker-icon-list">
+        <div className={styles.shaIconPickerIconList}>
           {Object.keys(memoizedActiveGroup).map(groupKey => (
-            <div className="sha-icon-picker-icon-list-group" key={groupKey}>
+            <div className={styles.shaIconPickerIconListGroup} key={groupKey}>
               {memoizedActiveGroup[groupKey]?.length ? (
-                <div className="sha-icon-picker-icon-list-group-header">
+                <div className={styles.shaIconPickerIconListGroupHeader}>
                   <SectionSeparator title={humanizeString(groupKey)} />
                 </div>
               ) : null}
 
-              <div className="sha-icon-picker-icon-list-group-body">
+              <div className={styles.shaIconPickerIconListGroupBody}>
                 {memoizedActiveGroup[groupKey].map((item: ShaIconTypes, index) => (
                   <span
-                    className="sha-icon-picker-icon-list-icon"
+                    className={styles.shaIconPickerIconListIcon}
                     onClick={() => handleIconSelection(item)}
                     key={index}
                   >
                     <ShaIcon iconName={item as any} style={{ fontSize: 30, transform: 'scale(.83)' }} />
-                    <span className="sha-icon-picker-icon-list-icon-name">{item}</span>
+                    <span className={styles.shaIconPickerIconListIconName}>{item}</span>
                   </span>
                 ))}
               </div>

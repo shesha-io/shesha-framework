@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
 import { Select } from 'antd';
 import { ITableColumn } from '@/providers/dataTable/interfaces';
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
+import { useStyles } from './styles/styles';
 
 const { Option } = Select;
 
@@ -16,6 +17,7 @@ export const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
   appliedFiltersColumnIds,
   toggleColumnFilter,
 }) => {
+  const { styles } = useStyles();
   const handleToggleColumnFilter = (values: string[]) => {
     toggleColumnFilter(values); // There will always be one new element
   };
@@ -24,7 +26,7 @@ export const ColumnsFilterSelectBase: FC<IColumnsFilterSelectBaseProps> = ({
     (option.props.children as string).toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
 
   return (
-    <div className="columns-filter-select">
+    <div className={styles.columnsFilterSelect}>
       <span className="label">Filter by</span>
       <Select
         allowClear

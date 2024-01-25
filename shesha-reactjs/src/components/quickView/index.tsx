@@ -1,14 +1,28 @@
-import { Button, Form, Popover, PopoverProps, Spin, notification } from 'antd';
-import { entitiesGet } from '@/apis/entities';
-import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, {
+  FC,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useState
+  } from 'react';
+import ValidationErrors from '@/components/validationErrors';
+import {
+  Button,
+  Form,
+  notification,
+  Popover,
+  PopoverProps,
+  Spin
+  } from 'antd';
 import { ConfigurableForm } from '@/components/';
 import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication, useUi } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useFormConfiguration } from '@/providers/form/api';
+import { entitiesGet } from '@/apis/entities';
 import { FormIdentifier } from '@/providers/form/models';
 import { get } from '@/utils/fetchers';
-import ValidationErrors from '@/components/validationErrors';
 import { getQuickViewInitialValues } from './utils';
+import { useStyles } from '../entityReference/styles/styles';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -35,28 +49,6 @@ export interface IQuickViewProps extends PropsWithChildren {
   popoverProps?: PopoverProps;
 }
 
-export const GenericQuickView: FC<IQuickViewProps> = (props) => {
-  const { getEntityFormId } = useConfigurationItemsLoader();
-  const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier);
-
-  useEffect(() => {
-    if (props.className && !formConfig)
-      getEntityFormId(props.className, props.formType ?? 'Quickview').then((f) => {
-        setFormConfig(f);
-      });
-  }, [props.className, props.formType, formConfig]);
-
-  return formConfig ? (
-    <QuickView {...props} formIdentifier={formConfig} />
-  ) : (
-    <Button type="link">
-      <span>
-        <Spin size="small" /> Loading...
-      </span>
-    </Button>
-  );
-};
-
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   children,
   entityId,
@@ -77,6 +69,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const [form] = Form.useForm();
   const { formItemLayout } = useUi();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
+  const { styles } = useStyles();
 
   useEffect(() => {
     if (formIdentifier) {
@@ -128,7 +121,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     }
 
     return (
-      <Button className="entity-reference-btn" type="link">
+      <Button className={styles.entityReferenceBtn} type="link">
         {formTitle ?? (
           <span>
             <Spin size="small" /> Loading...
@@ -146,6 +139,28 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     >
       {render()}
     </Popover>
+  );
+};
+
+export const GenericQuickView: FC<IQuickViewProps> = (props) => {
+  const { getEntityFormId } = useConfigurationItemsLoader();
+  const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier);
+
+  useEffect(() => {
+    if (props.className && !formConfig)
+      getEntityFormId(props.className, props.formType ?? 'Quickview').then((f) => {
+        setFormConfig(f);
+      });
+  }, [props.className, props.formType, formConfig]);
+
+  return formConfig ? (
+    <QuickView {...props} formIdentifier={formConfig} />
+  ) : (
+    <Button type="link">
+      <span>
+        <Spin size="small" /> Loading...
+      </span>
+    </Button>
   );
 };
 

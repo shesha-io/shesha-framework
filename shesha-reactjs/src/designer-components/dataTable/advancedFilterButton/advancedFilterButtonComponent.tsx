@@ -1,26 +1,25 @@
-import { FilterOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import React, { FC } from 'react';
-import { validateConfigurableComponentSettings } from '@/utils/publicUtils';
-import { IToolboxComponent } from '@/interfaces';
-import { useDataTableStore } from '@/providers';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import React from 'react';
 import settingsFormJson from './settingsForm.json';
+import { FilterOutlined } from '@ant-design/icons';
+import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { validateConfigurableComponentSettings } from '@/utils/publicUtils';
+import { AdvancedFilterButton } from './advancedFilterButton';
 
-export interface IPagerComponentProps extends IConfigurableFormComponent {}
+export interface IAdvancedFilterButtonComponentProps extends IConfigurableFormComponent { }
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const AdvancedFilterButtonComponent: IToolboxComponent<IPagerComponentProps> = {
+const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
   type: 'datatable.advancedFilterButton',
   name: 'Table Advanced Filter Button',
   icon: <FilterOutlined />,
   Factory: ({ model }) => {
     if (model.hidden) return null;
 
-    return <AdvancedFilterButton {...model} />;
+    return <AdvancedFilterButton />;
   },
-  initModel: (model: IPagerComponentProps) => {
+  initModel: (model: IAdvancedFilterButtonComponentProps) => {
     return {
       ...model,
       items: [],
@@ -29,26 +28,6 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IPagerComponentProps> = {
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   isHidden: true, // note: to be removed, now is used only for backward compatibility
-};
-
-export const AdvancedFilterButton: FC<IPagerComponentProps> = ({}) => {
-  const {
-    isInProgress: { isFiltering },
-    setIsInProgressFlag,
-  } = useDataTableStore();
-
-  const startFilteringColumns = () => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
-
-  return (
-    <Button
-      type="link"
-      disabled={!!isFiltering}
-      onClick={startFilteringColumns}
-      className="extra-btn filter"
-      icon={<FilterOutlined />}
-      size="small"
-    />
-  );
 };
 
 export default AdvancedFilterButtonComponent;

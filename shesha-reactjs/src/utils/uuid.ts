@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from 'nanoid';
 
 /**
  * Returns a nanoid with the lenth of 30
@@ -9,4 +9,5 @@ import { nanoid } from 'nanoid/non-secure';
  * @returns string
  */
 
-export const getNanoId = () => nanoid(30);
+const getNanoId = () => nanoid(30);
+export { getNanoId, getNanoId as nanoid };

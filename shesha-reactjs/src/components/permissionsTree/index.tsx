@@ -12,7 +12,7 @@ import {
   Tag,
   Tooltip,
   Tree
-  } from 'antd';
+} from 'antd';
 import { useConfigurableAction, useForm } from '@/providers';
 import { useLocalStorage } from 'react-use';
 import {
@@ -31,7 +31,7 @@ export interface IDataNode {
 }
 
 // note: antd types were changed, CustomEventDataNode was added to fix build, to be reviewed later
-interface CustomEventDataNode extends EventDataNode<{}>{}
+interface CustomEventDataNode extends EventDataNode<{}> { }
 
 export interface ICheckInfo {
   event: 'check';
@@ -161,16 +161,18 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     );
   };
 
-  useEffect(() => {
-    if (doSelect !== null) {
-      if (doSelect === '') {
-        onSelect([]);
-      } else {
-        onSelect([doSelect]);
+  const findItem = (items: PermissionDto[], key: string): PermissionDto => {
+    let res = null;
+    let i = 0;
+    while (items !== null && res === null && i < items.length) {
+      res = items[i]?.id === key ? items[i] : null;
+      if (res === null) {
+        res = findItem(items[i].child, key);
       }
-      setDoSelect(null);
+      i++;
     }
-  }, [doSelect]);
+    return res;
+  };
 
   const onSelect = (keys: Key[]) => {
     if (!keys || keys.length === 0) {
@@ -207,18 +209,16 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     setSelected(ids);
   };
 
-  const findItem = (items: PermissionDto[], key: string): PermissionDto => {
-    let res = null;
-    let i = 0;
-    while (items !== null && res === null && i < items.length) {
-      res = items[i]?.id === key ? items[i] : null;
-      if (res === null) {
-        res = findItem(items[i].child, key);
+  useEffect(() => {
+    if (doSelect !== null) {
+      if (doSelect === '') {
+        onSelect([]);
+      } else {
+        onSelect([doSelect]);
       }
-      i++;
+      setDoSelect(null);
     }
-    return res;
-  };
+  }, [doSelect]);
 
   const addPermission = (parent: PermissionDto, list: PermissionDto[]) => {
     const o = {
@@ -257,8 +257,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       const parent = findItem(items, item.parentName);
       if (parent !== null) {
         if (expanded.length === 0 || expanded.find(x => {
-            return x === parent.id;
-          }) === null
+          return x === parent.id;
+        }) === null
         ) {
           setExpanded(prev => {
             return [...prev, parent.id];
@@ -288,7 +288,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
           setSelected([item.id]);
           setSearchText('');
         }
-  
+
         return Promise.resolve();
       },
     }
@@ -315,7 +315,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         setDoSelect(emptyId);
         setSearchText('');
         setFormMode('edit');
-  
+
         return Promise.resolve();
       },
     }
@@ -345,7 +345,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         setDoSelect(emptyId);
         setSearchText('');
         setFormMode('edit');
-  
+
         return Promise.resolve();
       },
     }
@@ -372,7 +372,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
           }
         }
         setSearchText('');
-  
+
         return Promise.resolve();
       },
     }
@@ -447,10 +447,6 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name });
   };
 
-  useEffect(() => {
-    setVisibleNodes(getVisible(allItems, searchText).map(mapItem));
-  }, [allItems, searchText]);
-
   const getVisible = (items: PermissionDto[], searchText: string): PermissionDto[] => {
     const result: PermissionDto[] = [];
     if (!items) return result;
@@ -491,6 +487,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       children: item.child?.map(mapItem),
     } as IDataNode;
   };
+
+  useEffect(() => {
+    setVisibleNodes(getVisible(allItems, searchText).map(mapItem));
+  }, [allItems, searchText]);
 
   const getLoadingHint = () => {
     switch (true) {

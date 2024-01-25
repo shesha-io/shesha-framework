@@ -1,18 +1,14 @@
-import { Checkbox, Input } from 'antd';
-import { ISizableColumnComponentProps } from './interfaces';
-import React, { FC } from 'react';
-import SizableColumnsList from './sizableColumnList';
-import SectionSeparator from '@/components/sectionSeparator';
 import CodeEditor from '../codeEditor/codeEditor';
-import { EXPOSED_VARIABLES } from './exposedVariables';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
+import React, { FC } from 'react';
+import SectionSeparator from '@/components/sectionSeparator';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import SizableColumnsList from './sizableColumnList';
 import StyleBox from '../styleBox/components/box';
-
-export const SizableColumnsSettingsForm: FC<ISettingsFormFactoryArgs<ISizableColumnComponentProps>> = (props) => {
-  return SettingsForm<ISizableColumnComponentProps>({ ...props, children: <SizableColumnsSettings {...props} /> });
-};
+import { Checkbox, Input } from 'antd';
+import { EXPOSED_VARIABLES } from './exposedVariables';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { ISizableColumnComponentProps } from './interfaces';
 
 const SizableColumnsSettings = ({ readOnly }: ISettingsFormFactoryArgs<ISizableColumnComponentProps>) => {
   return (
@@ -50,4 +46,6 @@ const SizableColumnsSettings = ({ readOnly }: ISettingsFormFactoryArgs<ISizableC
   );
 };
 
-export default SizableColumnsSettings;
+export const SizableColumnsSettingsForm: FC<ISettingsFormFactoryArgs<ISizableColumnComponentProps>> = (props) => {
+  return SettingsForm<ISizableColumnComponentProps>({ ...props, children: <SizableColumnsSettings {...props} /> });
+};

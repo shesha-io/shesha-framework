@@ -5,9 +5,13 @@ import ConfigurableFormItem from '../formItem';
 import classNames from 'classnames';
 import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
-import { useApplicationContext, useConfigurableAction, useConfigurableActionDispatcher, useDeepCompareMemo, YesNoInherit } from '@/index';
+import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useParent } from '@/providers/parentProvider/index';
+import { useStyles } from '@/components/dataList/styles/styles';
+import { useApplicationContext } from '@/providers/form/utils';
+import { useDeepCompareMemo } from '@/hooks';
+import { YesNoInherit } from '@/interfaces';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -46,6 +50,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     groupingColumns,
     setRowData
   } = dataSource;
+  const { styles } = useStyles();
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
   const parent = useParent(false);
@@ -197,7 +202,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     <ConfigurableFormItem
       model={{ ...props, hideLabel: true }}
       className={classNames(
-        'sha-datalist-component',
+        styles.shaDatalistComponent,
         { horizontal: props?.orientation === 'horizontal' && allData.formMode !== 'designer' } //
       )}
       wrapperCol={{  md: 24 }}

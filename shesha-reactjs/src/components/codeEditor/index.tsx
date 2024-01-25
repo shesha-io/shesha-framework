@@ -39,8 +39,14 @@ const AceEditorLazy = React.lazy<typeof ReactAce>(() => new Promise(async resolv
     langTools.addCompleter(metadataCodeCompleter);
     langTools.addCompleter(contextCodeCompleter);
 
-    resolve(reactAce);
+    resolve(reactAce as any);
 }));
+
+const CodeEditorFallback: FC = () => {
+    return (
+        <Skeleton.Input active={true} />
+    );
+};
 
 export const CodeEditor: FC<ICodeEditorProps> = (props) => {
     const isSSR = typeof window === 'undefined';
@@ -59,12 +65,6 @@ export const CodeEditor: FC<ICodeEditorProps> = (props) => {
                 value={restProps.value ? restProps.value : ""} // note: have to change null/undefined to empty string to force re-rendering of the editor
             />
         </React.Suspense>
-    );
-};
-
-const CodeEditorFallback: FC = () => {
-    return (
-        <Skeleton.Input active={true} />
     );
 };
 

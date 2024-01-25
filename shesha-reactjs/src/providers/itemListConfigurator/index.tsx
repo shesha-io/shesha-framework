@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
+import { nanoid } from '@/utils/uuid';
 import React, { FC, PropsWithChildren, useContext, useMemo, useReducer } from 'react';
 import { usePrevious } from 'react-use';
 import { InsertMode } from '@/interfaces';

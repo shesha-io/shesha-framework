@@ -1,6 +1,6 @@
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
-import { nanoid } from 'nanoid';
+import { nanoid } from '@/utils/uuid';
 import { useSheshaApplication } from '@/providers';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';

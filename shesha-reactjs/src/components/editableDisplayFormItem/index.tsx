@@ -1,12 +1,15 @@
 import React, { FC, Fragment } from 'react';
 import FormItem from 'antd/lib/form/FormItem';
-import { InputNumber, Input, Checkbox, Tooltip, DatePicker } from 'antd';
+import { InputNumber, Input, Checkbox, Tooltip } from 'antd';
+import { DatePicker } from '@/components/antd';
 import { InputNumberProps } from 'antd/lib/input-number';
 import { PickerProps } from 'antd/lib/date-picker/generatePicker';
 import { CheckboxProps, CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { InfoCircleTwoTone, EditOutlined, LockOutlined } from '@ant-design/icons';
 import { ColProps } from 'antd/lib/col';
 import moment, { Moment } from 'moment';
+import { useStyles } from './styles/styles';
+import classNames from 'classnames';
 
 const LAYOUT = {
   labelCol: {
@@ -60,6 +63,7 @@ export const EditableDisplayFormItem: FC<IEditableDisplayLabelProps> = ({
   dateFormat = 'DD/MM/YYYY',
   labelIconPlacement = 'default',
 }) => {
+  const { styles } = useStyles();
   const handleDateChange = (_: any, dateString: string) => {
     onChange(dateString);
   };
@@ -121,7 +125,7 @@ export const EditableDisplayFormItem: FC<IEditableDisplayLabelProps> = ({
       <span>
         {label}{' '}
         <span>
-          <InfoCircleTwoTone className="sha-editable-display-form-item-info" />
+          <InfoCircleTwoTone className={styles.shaEditableDisplayFormItemInfo} />
         </span>
       </span>
     </Tooltip>
@@ -131,7 +135,7 @@ export const EditableDisplayFormItem: FC<IEditableDisplayLabelProps> = ({
 
   return (
     <FormItem
-      className={`sha-editable-display-form-item${className ? ` ${className}` : ''}`}
+      className={classNames(styles.shaEditableDisplayFormItem, className)}
       label={displayLabel}
       {...{ labelCol, wrapperCol }}
     >

@@ -47,32 +47,6 @@ export interface ICrudProviderProps {
   itemListId?: string;
 }
 
-const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
-  const {
-    children,
-    mode = 'read',
-    formSettings,
-  } = props;
-  const [form] = Form.useForm();
-
-
-  return (
-      <FormProvider
-        form={form}
-        name={''}
-        allComponents={props.flatComponents.allComponents}
-        componentRelations={props.flatComponents.componentRelations}
-        formSettings={formSettings}
-        mode={mode === 'read' ? 'readonly' : 'edit'}
-        isActionsOwner={false}
-      >
-        <CrudProvider {...props}>
-          {children}
-        </CrudProvider>
-      </FormProvider>
-  );
-};
-
 const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const {
     id,
@@ -310,13 +284,43 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     <CrudContext.Provider value={contextValue}>
       <Form 
         key={state.mode}
-        component={false} form={form} initialValues={state.initialValues} onValuesChange={onValuesChangeInternal} {...props.formSettings}
+        component={false} 
+        form={form} 
+        initialValues={state.initialValues} 
+        onValuesChange={onValuesChangeInternal} 
+        {...props.formSettings}
       >
         <ParentProvider model={{componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read"}} subFormIdPrefix={itemListId}>
           {children}
         </ParentProvider>
       </Form>
     </CrudContext.Provider>
+  );
+};
+
+const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
+  const {
+    children,
+    mode = 'read',
+    formSettings,
+  } = props;
+  const [form] = Form.useForm();
+
+
+  return (
+      <FormProvider
+        form={form}
+        name={''}
+        allComponents={props.flatComponents.allComponents}
+        componentRelations={props.flatComponents.componentRelations}
+        formSettings={formSettings}
+        mode={mode === 'read' ? 'readonly' : 'edit'}
+        isActionsOwner={false}
+      >
+        <CrudProvider {...props}>
+          {children}
+        </CrudProvider>
+      </FormProvider>
   );
 };
 

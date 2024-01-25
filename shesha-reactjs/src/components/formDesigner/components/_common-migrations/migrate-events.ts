@@ -16,6 +16,17 @@ const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' |
     };
 };
 
+const SUB_FORM_EVENT_NAMES = {
+    getFormData: 'getFormData',
+    postFormData: 'postFormData',
+    updateFormData: 'updateFormData',
+};
+const ListControlEvents = {
+    refreshListItems: 'refreshListItems',
+    saveListItems: 'saveListItems',
+    addListItems: 'addListItems',
+};
+
 export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent): IConfigurableActionConfiguration => {
     const eventName = eventCallerProps?.eventName === 'CUSTOM_EVENT' && eventCallerProps?.customEventNameToDispatch
         ? eventCallerProps?.customEventNameToDispatch
@@ -43,15 +54,4 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
     }
 
     return null;
-};
-
-const SUB_FORM_EVENT_NAMES = {
-    getFormData: 'getFormData',
-    postFormData: 'postFormData',
-    updateFormData: 'updateFormData',
-};
-const ListControlEvents = {
-    refreshListItems: 'refreshListItems',
-    saveListItems: 'saveListItems',
-    addListItems: 'addListItems',
 };
