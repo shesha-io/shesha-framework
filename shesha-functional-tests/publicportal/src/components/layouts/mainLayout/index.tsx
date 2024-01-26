@@ -2,11 +2,12 @@ import {
   ConfigurableApplicationComponent,
   CustomErrorBoundary,
   ISidebarMenuItem,
+  SidebarMenuProvider,
   SIDEBAR_MENU_NAME,
-} from "@shesha/reactjs";
+} from "@shesha-io/reactjs";
 import { Divider, Image, ImageProps, Layout, Space } from "antd";
 import React, { FC, PropsWithChildren } from "react";
-import ShaMenuItem from "../unAuthedAccountPageLayout/menuItem";
+import { LayoutMenu } from "../unAuthedAccountPageLayout/menu/index";
 import ShaUserIcon from "../unAuthedAccountPageLayout/userIcon";
 import { MainLayoutStyle } from "./styles";
 
@@ -19,14 +20,12 @@ export interface ISideBarMenuProps {
 interface IProps extends PropsWithChildren {
   className?: string;
   imageProps: ImageProps;
-  username: string;
 }
 
 const PortalLayout: FC<IProps> = ({
   children,
   className,
   imageProps,
-  username,
 }) => {
   return (
     <MainLayoutStyle className={className}>
@@ -47,9 +46,11 @@ const PortalLayout: FC<IProps> = ({
                 className="sha-login-space"
                 split={<Divider type="vertical" />}
               >
-                <ShaMenuItem items={componentState?.settings?.items} />
+                <SidebarMenuProvider items={componentState.settings?.items || []}>
+                  <LayoutMenu />
+                </SidebarMenuProvider>
 
-                <ShaUserIcon username={username} />
+                <ShaUserIcon />
               </Space>
             )}
           </ConfigurableApplicationComponent>

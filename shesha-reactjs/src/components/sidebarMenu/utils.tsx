@@ -54,14 +54,13 @@ export interface IProps {
   onItemEvaluation?: (item: ISidebarMenuItem) => void;
 }
 
-// Note: Have to use function instead of react control. It's a known issue, you can only pass MenuItem or MenuGroup as Menu's children. See https://github.com/ant-design/ant-design/issues/4853
-export const renderSidebarMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation }: IProps) => {
+export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation }: IProps): MenuItem => {
   const { id, title, icon, itemType } = item;
 
   if (typeof isItemVisible === 'function' && !isItemVisible(item)) return null;
 
   const children = isSidebarGroup(item)
-    ? item.childItems?.map((item) => renderSidebarMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation }))
+    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation }))
     : null;
   const hasChildren = Array.isArray(children) && children.length > 0;
   
@@ -81,5 +80,3 @@ export const renderSidebarMenuItem = ({ item, isItemVisible, onButtonClick, isRo
 
   return getItem(itemEvaluationArguments);
 };
-
-export default renderSidebarMenuItem;

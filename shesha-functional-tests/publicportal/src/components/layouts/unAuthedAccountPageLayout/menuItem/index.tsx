@@ -1,4 +1,4 @@
-import { ISidebarMenuItem, IconType, ShaIcon } from "@shesha/reactjs";
+import { ISidebarMenuItem, IconType, ShaIcon } from "@shesha-io/reactjs";
 import React, { FC, Fragment, useState } from "react";
 import ShaMenuDrawer from "../menuDrawer";
 import { ShaMenuItemStyledWrapper } from "./styles";
@@ -10,12 +10,16 @@ interface IProps {
   items: ISidebarMenuItem[];
 }
 
-const ShaMenuItem: FC<IProps> = ({ items = [] }) => {
+const ShaMenuItem: FC<IProps> = ({ items: providedItems = [] }) => {
   const [{ open }, setState] = useState({ open: false });
 
   const onClick = () => setState((s) => ({ ...s, open: true }));
 
   const onClose = () => setState((s) => ({ ...s, open: false }));
+
+  const items = providedItems.length > 3
+    ? providedItems.slice(0, 3)
+    : providedItems;
 
   return (
     <Fragment>

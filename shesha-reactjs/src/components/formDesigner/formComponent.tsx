@@ -1,6 +1,6 @@
 import { useDeepCompareMemo } from '@/hooks';
 import React, { FC, MutableRefObject } from 'react';
-import { getActualModelWithParent, useApplicationContext } from '@/utils/publicUtils';
+import { getActualModelWithParent, useApplicationContext } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 

@@ -1,7 +1,7 @@
 import { IStoredFilter } from '@/providers/dataTable/interfaces';
 import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
 import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
-import { IMatchData, executeExpression } from './publicUtils';
+import { IMatchData, executeExpression } from '@/providers/form/utils';
 
 export type NumberOrString = number | string;
 /**

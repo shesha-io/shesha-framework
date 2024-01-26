@@ -1,17 +1,24 @@
-import { DownOutlined, UserOutlined } from "@ant-design/icons";
-import { Menu } from "antd";
+import { DownOutlined, LoginOutlined, UserOutlined } from "@ant-design/icons";
 import { FC } from "react";
 import { ShaUserIconStyledWrapper } from "./styles";
+import { useAuth } from '@shesha-io/reactjs';
 
 interface IProps {
-  username: string;
 }
 
-const ShaUserIcon: FC<IProps> = ({ username }) => {
+const ShaUserIcon: FC<IProps> = () => {
+  const { loginInfo, logoutUser } = useAuth();
+
   return (
-    <ShaUserIconStyledWrapper arrow overlay={<Menu>Hello</Menu>}>
+    <ShaUserIconStyledWrapper arrow menu={{
+      items: [{
+        key: 'logout',
+        onClick: logoutUser,
+        label: (<>{<LoginOutlined />} Logout</>)
+      }]
+    }}>
       <div className="sha-user">
-        <span className="sha-user-name"> Hi {username}!</span>
+        <span className="sha-user-name"> Hi {loginInfo?.fullName}!</span>
 
         <span className="sha-arrow-down">
           <DownOutlined />

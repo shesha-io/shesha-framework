@@ -9,13 +9,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     noStore();
-    const BACKEND_URL = process.env.BACKEND_URL ?? 'http://localhost:21021';
+    const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
 
     return (
         <html lang="en">
             <body>
                 <Suspense>
-                    <AppProvider backendUrl={BACKEND_URL}>
+                    <AppProvider backendUrl={backendUrl}>
                         {children}
                     </AppProvider>
                 </Suspense>

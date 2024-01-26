@@ -1,9 +1,9 @@
 import { useDeepCompareMemo } from '@/hooks';
 import React, { FC, useRef } from 'react';
-import { getActualModelWithParent, useApplicationContext } from '@/utils/publicUtils';
 import { CustomErrorBoundary } from '../../..';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
+import { getActualModelWithParent, useApplicationContext } from '@/providers/form/utils';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;

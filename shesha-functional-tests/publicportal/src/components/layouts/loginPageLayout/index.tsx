@@ -1,4 +1,4 @@
-import { IConfigurableTheme } from "@shesha/reactjs/dist/providers/theme/contexts";
+import { IConfigurableTheme } from "@shesha-io/reactjs";
 import { Col, Image, Row } from "antd";
 import { FC, ReactNode } from "react";
 import { useMediaQuery } from "react-responsive";

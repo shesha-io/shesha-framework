@@ -1,6 +1,6 @@
 import DynamicComponent from '../dynamicView/dynamicComponent';
 import React, { FC, useCallback } from 'react';
-import { executeScriptSync } from '@/utils/publicUtils';
+import { executeScriptSync } from '@/providers/form/utils';
 import { getAlignmentStyle } from '../../containers/util';
 import { ICommonContainerProps } from '@/designer-components/container/interfaces';
 import { IComponentsContainerBaseProps } from '@/interfaces';

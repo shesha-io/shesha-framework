@@ -5,7 +5,8 @@ import { useDataContextManager, useDataContextRegister } from "@/providers/dataC
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 import { setValueByPropertyName } from "@/utils/object";
-import { getFieldNameFromExpression, IApplicationContext, useApplicationContext } from "@/utils/publicUtils";
+import { useApplicationContext } from '@/providers/form/utils';
+import { getFieldNameFromExpression, IApplicationContext } from '@/providers/form/utils';
 
 export interface IDataContextProviderStateContext {
     id: string;

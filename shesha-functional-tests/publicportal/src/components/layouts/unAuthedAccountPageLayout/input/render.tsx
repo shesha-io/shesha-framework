@@ -15,18 +15,6 @@ const ShaInputRender: FC<IProps> = ({
 }) => {
   const ref = useRef<InputRef>();
 
-  const onBlur = () => {
-    setRequired();
-  };
-
-  const onRenderChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChange(event);
-
-    onBlur();
-  };
-
-  const properties = { ...props, onBlur, onChange: onRenderChange };
-
   const setRequired = () => {
     const { value } = ref.current.input;
 
@@ -38,6 +26,18 @@ const ShaInputRender: FC<IProps> = ({
       }
     }
   };
+
+  const onBlur = () => {
+    setRequired();
+  };
+
+  const onRenderChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onChange(event);
+
+    onBlur();
+  };
+
+  const properties = { ...props, onBlur, onChange: onRenderChange };
 
   if (type === "password") {
     return <Input.Password ref={ref} {...properties} />;

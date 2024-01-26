@@ -1,4 +1,4 @@
-import { IComponentSettings } from "@shesha/reactjs/dist/providers/appConfigurator/models";
+import { IComponentSettings } from "@shesha-io/reactjs";
 import { useState } from "react";
 
 interface IIndexedDBParams<S> {
@@ -23,6 +23,25 @@ export const useIndexedDB = <T = unknown>(
 
   const [{ item }, setState] = useState({ item: defaultValue });
 
+  const getIndexItem = (event: Event, name?: string) => {
+    const result = (event.target as { [key in string]: any })
+      ?.result as IComponentSettings[];
+
+    if (name) {
+      return (result || []).find((i) => i?.name === recordName)?.settings;
+    }
+
+    if (result?.length) {
+      return result[0]?.settings;
+    }
+
+    if (result && typeof result === "object") {
+      return result;
+    }
+
+    return {};
+  };
+
   const getAll = () => {
     const request = indexedDB.open(dbName, version);
 
@@ -44,25 +63,6 @@ export const useIndexedDB = <T = unknown>(
     request.onerror = function (e) {
       if (onError) onError(e);
     };
-  };
-
-  const getIndexItem = (event: Event, name?: string) => {
-    const result = (event.target as { [key in string]: any })
-      ?.result as IComponentSettings[];
-
-    if (name) {
-      return (result || []).find((i) => i?.name === recordName)?.settings;
-    }
-
-    if (result?.length) {
-      return result[0]?.settings;
-    }
-
-    if (result && typeof result === "object") {
-      return result;
-    }
-
-    return {};
   };
 
   return { getAll, item };

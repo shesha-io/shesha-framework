@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
-import { useApplicationContext } from '@/utils/publicUtils';
+import { useApplicationContext } from '@/providers/form/utils';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   disabled?: boolean;

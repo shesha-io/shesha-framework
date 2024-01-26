@@ -1,5 +1,5 @@
 import { DataTypes } from '@/interfaces/dataTypes';
-import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from './publicUtils';
+import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from '@/providers/form/utils';
 import { executeFunction } from '@/utils';
 
 export type EvaluationType = 'mustache' | 'javascript';
