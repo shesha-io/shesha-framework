@@ -213,6 +213,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 
   const onAddNew = () => {
     if (addNewRecordsProps.modalFormId) {
+      hidePickerDialog();
       dynamicModal.open();
     } else console.warn('Modal Form is not specified');
   };
