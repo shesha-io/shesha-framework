@@ -15,19 +15,6 @@ const EntityTestItems: ButtonGroupItemProps[] = [
     { id: '2', name: 'btn2', label: 'entity action 2', itemType: 'item', itemSubType: 'button', sortOrder: 1 },
 ];
 
-export const EntityCrudActions: FC<PropsWithChildren<IEntityCrudActionsProps>> = ({ children }) => {
-    return (
-        <DynamicActionsProvider
-            id='entity-crud'
-            name='CRUD Actions'
-            renderingHoc={entityActionsHoc}
-            useEvaluator={useEntityCrudActions}
-        >
-            {children}
-        </DynamicActionsProvider>
-    );
-};
-
 const useEntityCrudActions: DynamicItemsEvaluationHook = (args) => {
     const { metadata } = useMetadata(false) ?? {};
 
@@ -103,4 +90,17 @@ const entityActionsHoc: DynamicRenderingHoc = (WrappedComponent) => {
 
         return (<WrappedComponent {...props} items={testItems} />);
     };
+};
+
+export const EntityCrudActions: FC<PropsWithChildren<IEntityCrudActionsProps>> = ({ children }) => {
+    return (
+        <DynamicActionsProvider
+            id='entity-crud'
+            name='CRUD Actions'
+            renderingHoc={entityActionsHoc}
+            useEvaluator={useEntityCrudActions}
+        >
+            {children}
+        </DynamicActionsProvider>
+    );
 };

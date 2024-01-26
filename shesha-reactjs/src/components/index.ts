@@ -79,7 +79,7 @@ export {
 } from './appConfigurator/editModeToggler'; // todo: convert to subtype
 export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // todo: convert to subtype
 export { FormDesigner, type IFormDesignerProps } from './formDesigner/index';
-export { default as QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
+export { QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
 export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 
 export { default as ConfigurableForm } from './configurableForm';
@@ -111,8 +111,6 @@ export { default as EditableTagGroup, type IEditableTagGroupProps } from './edit
 export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
-export { QueryBuilderComponentRenderer } from '../designer-components/queryBuilder/queryBuilderComponent';
-export { QueryBuilderWithModelType } from '../designer-components/queryBuilder/queryBuilderWithModelType';
 export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { default as ButtonGroupConfigurator } from './formDesigner/components/button/buttonGroup/configurator';
 export { default as CodeEditorModal } from './formDesigner/components/codeEditor/codeEditor';

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { FC } from 'react';
-import { FormIdentifier, DynamicPage } from '@shesha/reactjs';
+import { FormIdentifier, DynamicPage } from '@shesha-io/reactjs';
 import { notFound } from 'next/navigation';
 
 interface PageProps {

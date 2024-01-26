@@ -1,17 +1,14 @@
-import React, { FC } from 'react';
-import { Checkbox, Input, InputNumber } from 'antd';
-import { IColumnsComponentProps } from './interfaces';
-import ColumnsList from './columnsList';
-import { EXPOSED_VARIABLES } from './exposedVariables';
 import CodeEditor from '../codeEditor/codeEditor';
+import ColumnsList from './columnsList';
+import React, { FC } from 'react';
 import SectionSeparator from '@/components/sectionSeparator';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import StyleBox from '../styleBox/components/box';
-
-export const ColumnsSettingsForm: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) =>
-  SettingsForm<IColumnsComponentProps>({ ...props, children: <ColumnsSettings {...props} /> });
+import { Checkbox, Input, InputNumber } from 'antd';
+import { EXPOSED_VARIABLES } from './exposedVariables';
+import { IColumnsComponentProps } from './interfaces';
+import { ISettingsFormFactoryArgs } from '@/interfaces';
 
 const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({ readOnly }) => {
   return (
@@ -56,3 +53,6 @@ const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({
     </>
   );
 };
+
+export const ColumnsSettingsForm: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) =>
+  SettingsForm<IColumnsComponentProps>({ ...props, children: <ColumnsSettings {...props} /> });

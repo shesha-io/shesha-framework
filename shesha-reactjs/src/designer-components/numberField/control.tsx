@@ -48,6 +48,7 @@ const NumberFieldControl: FC<IProps> = ({ disabled, form, model, onChange, value
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
     ...customInputNumberEventHandler(eventProps, onChange),
     defaultValue: model?.defaultValue,
+    wheel: false,
   };
 
   return <InputNumber value={value} {...inputProps} stringMode={model?.highPrecision} />;

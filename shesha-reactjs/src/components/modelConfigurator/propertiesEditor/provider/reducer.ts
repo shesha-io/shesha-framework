@@ -1,3 +1,9 @@
+import { getItemPositionById } from './utils';
+import { handleActions } from 'redux-actions';
+import { IModelItem } from '@/interfaces/modelConfigurator';
+import { MetadataSourceType } from '@/interfaces/metadata';
+import { ModelActionEnums } from './actions';
+import { nanoid } from '@/utils/uuid';
 import {
   IAddItemPayload,
   IPropertiesEditorStateContext,
@@ -5,12 +11,6 @@ import {
   IUpdateItemSettingsPayload,
   PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { ModelActionEnums } from './actions';
-import { handleActions } from 'redux-actions';
-import { getItemPositionById } from './utils';
-import { IModelItem } from '@/interfaces/modelConfigurator';
-import { nanoid } from '@/utils/uuid';
-import { MetadataSourceType } from '@/interfaces/metadata';
 
 const findItemById = (items: IModelItem[], id: string): IModelItem => {
   for (const item of items) {
@@ -25,6 +25,14 @@ const findItemById = (items: IModelItem[], id: string): IModelItem => {
 
   return null;
 };
+
+function removeIdDeep(list: IModelItem[], idToRemove: string) {
+  const filtered = list.filter(entry => entry.id !== idToRemove);
+  return filtered.map(entry => {
+    if (!entry.properties) return entry;
+    return { ...entry, properties: removeIdDeep(entry.properties, idToRemove) };
+  });
+}
 
 const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
   {
@@ -146,11 +154,3 @@ const modelReducer = handleActions<IPropertiesEditorStateContext, any>(
 );
 
 export default modelReducer;
-
-function removeIdDeep(list: IModelItem[], idToRemove: string) {
-  const filtered = list.filter(entry => entry.id !== idToRemove);
-  return filtered.map(entry => {
-    if (!entry.properties) return entry;
-    return { ...entry, properties: removeIdDeep(entry.properties, idToRemove) };
-  });
-}

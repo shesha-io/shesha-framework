@@ -57,12 +57,6 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
     settings: initialSettings,
   });
 
-  useEffect(() => {
-    if (!Boolean(name) || Boolean(state.settings)) return;
-
-    fetchInternal(getComponent({ name, isApplicationSpecific, skipCache: false }));
-  }, []);
-
   const upgradeSettings = (value: TSettings): TSettings => {
     if (!isObject(value))
       return value;
@@ -93,6 +87,12 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
         dispatch(loadErrorAction({ error: error?.['message'] || 'Failed to load component' }));
       });
   };
+
+  useEffect(() => {
+    if (!Boolean(name) || Boolean(state.settings)) return;
+
+    fetchInternal(getComponent({ name, isApplicationSpecific, skipCache: false }));
+  }, []);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 

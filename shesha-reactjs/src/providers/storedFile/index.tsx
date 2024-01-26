@@ -294,6 +294,14 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
   const { mutate: deleteFileHttp } = useMutate();
 
   //#region delete file
+  const deleteFileSuccess = () => {
+    dispatch(deleteFileSuccessAction());
+  };
+
+  const deleteFileError = () => {
+    dispatch(deleteFileErrorAction());
+  };
+
   const deleteFileAsync = () => {
     dispatch(deleteFileRequestAction());
 
@@ -322,13 +330,6 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     else deleteFileSync();
   };
 
-  const deleteFileSuccess = () => {
-    dispatch(deleteFileSuccessAction());
-  };
-
-  const deleteFileError = () => {
-    dispatch(deleteFileErrorAction());
-  };
   //#endregion
 
   const fetchFileInfo = () => {

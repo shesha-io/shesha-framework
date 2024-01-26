@@ -21,12 +21,6 @@ import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
-export const EntityReferenceSettingsForm: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
-  return (
-    SettingsForm<IEntityReferenceControlProps>({...props, children: <EntityReferenceSettings {...props}/>})
-  );
-};
-
 const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({readOnly}) => {
   const { model: state, getFieldsValue, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
 
@@ -270,5 +264,11 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
       </SettingsFormItem>
     </SettingsCollapsiblePanel>
     </>
+  );
+};
+
+export const EntityReferenceSettingsForm: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
+  return (
+    SettingsForm<IEntityReferenceControlProps>({...props, children: <EntityReferenceSettings {...props}/>})
   );
 };

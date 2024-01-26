@@ -119,11 +119,6 @@ export interface IComponentMetadata {
   injectedDefaultValue?: any;
 }
 
-export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
-  /** Whether the component is read-only */
-  readOnly?: boolean;
-}
-
 /**
  * Base model of the configurable component
  */
@@ -175,6 +170,11 @@ export interface IConfigurableFormComponent
   stylingBox?: string;
 }
 
+export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
+  /** Whether the component is read-only */
+  readOnly?: boolean;
+}
+
 export interface IComponentsContainer {
   id: string;
   components: IConfigurableFormComponent[];
@@ -191,6 +191,33 @@ export interface IComponentRelations {
 export interface IFlatComponentsStructure {
   allComponents: IComponentsDictionary;
   componentRelations: IComponentRelations;
+}
+
+export interface IFormSettings {
+  modelType?: string;
+
+  postUrl?: string;
+  putUrl?: string;
+  deleteUrl?: string;
+  getUrl?: string;
+
+  layout: FormLayout;
+  colon: boolean;
+  labelCol: ColProps;
+  wrapperCol: ColProps;
+  preparedValues?: string;
+  size?: SizeType;
+  formKeysToPersist?: string[];
+  fieldsToFetch?: string[];
+  excludeFormFieldsInPayload?: string;
+  uniqueFormId?: string;
+  onDataLoaded?: string;
+  onInitialized?: string;
+  onUpdate?: string;
+  initialValues?: IKeyValue[];
+
+  /** if true then need to update components structure for using Setting component */
+  isSettingsForm?: boolean;
 }
 
 export interface IFormProps extends IFlatComponentsStructure {
@@ -338,33 +365,6 @@ export interface IFormDto extends Omit<FormDto, 'markup'> {
 
 export interface IFormValidationRulesOptions {
   formData?: any;
-}
-
-export interface IFormSettings {
-  modelType?: string;
-
-  postUrl?: string;
-  putUrl?: string;
-  deleteUrl?: string;
-  getUrl?: string;
-
-  layout: FormLayout;
-  colon: boolean;
-  labelCol: ColProps;
-  wrapperCol: ColProps;
-  preparedValues?: string;
-  size?: SizeType;
-  formKeysToPersist?: string[];
-  fieldsToFetch?: string[];
-  excludeFormFieldsInPayload?: string;
-  uniqueFormId?: string;
-  onDataLoaded?: string;
-  onInitialized?: string;
-  onUpdate?: string;
-  initialValues?: IKeyValue[];
-
-  /** if true then need to update components structure for using Setting component */
-  isSettingsForm?: boolean;
 }
 
 /** Default form settings */

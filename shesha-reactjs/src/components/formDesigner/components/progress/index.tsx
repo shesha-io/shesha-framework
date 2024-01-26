@@ -1,17 +1,18 @@
-import React, { FC } from 'react';
-import { IToolboxComponent, IValuable } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
-import { LineOutlined } from '@ant-design/icons';
-import { Progress, ProgressProps } from 'antd';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { alertSettingsForm } from './settings';
-import { ProgressType } from 'antd/lib/progress/progress';
 import ConfigurableFormItem from '../formItem';
+import React from 'react';
+import { alertSettingsForm } from './settings';
+import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IToolboxComponent } from '@/interfaces';
+import { LineOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { ProgressProps } from 'antd';
+import { ProgressType } from 'antd/lib/progress/progress';
+import { ProgressWrapper } from './progressWrapper';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 
 interface IProgressProps
   extends Omit<ProgressProps, 'style' | 'type' | 'size' | 'format' | 'success' | 'strokeColor'>,
-    IConfigurableFormComponent {
+  IConfigurableFormComponent {
   format?: string;
   progressType?: ProgressType;
   success?: string;
@@ -108,10 +109,6 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,
-};
-
-const ProgressWrapper: FC<IValuable & ProgressProps> = ({ percent, value, ...props }) => {
-  return <Progress {...props} percent={percent || value} />;
 };
 
 export default ProgressComponent;

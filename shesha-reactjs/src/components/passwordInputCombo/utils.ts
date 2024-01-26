@@ -37,6 +37,12 @@ export const getPasswordValidations = (password: string, passwordLength: number 
   };
 };
 
+export const isStrongPassword = (password: string, length: number) => {
+  const passwordRegex = new RegExp(`^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{${length},})`);
+
+  return passwordRegex.test(password);
+};
+
 export const isSamePassword = (initialPassword: string, confirmPassword: string, passwordLength: number = 4) => {
   if (initialPassword) {
     if (isStrongPassword(initialPassword, passwordLength)) {
@@ -45,12 +51,6 @@ export const isSamePassword = (initialPassword: string, confirmPassword: string,
   }
 
   return false;
-};
-
-export const isStrongPassword = (password: string, length: number) => {
-  const passwordRegex = new RegExp(`^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{${length},})`);
-
-  return passwordRegex.test(password);
 };
 
 export const passwordValidations = (

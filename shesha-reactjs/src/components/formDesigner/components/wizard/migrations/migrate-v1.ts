@@ -7,84 +7,6 @@ import { getDispatchEventReplacement } from '../../_common-migrations/migrate-ev
 import { upgradeActionConfig } from '../../_common-migrations/upgrade-action-owners';
 import { IWizardSequence, IWizardStepProps } from '../models';
 
-export const migrateV0toV1 = (
-  props: IWizardComponentPropsV0,
-  context: SettingsMigrationContext
-): IWizardComponentPropsV1 => {
-  const { tabs, ...restProps } = props;
-
-  const steps = tabs?.map<IWizardStepProps>(tab => {
-    const {
-      cancelButtonAction,
-      nextButtonAction,
-      backButtonAction,
-      doneButtonAction,
-
-      cancelButtonActionScript,
-      nextButtonActionScript,
-      backButtonActionScript,
-      doneButtonActionScript,
-
-      cancelEventName,
-      nextEventName,
-      backEventName,
-      doneEventName,
-
-      cancelCustomEventNameToDispatch,
-      nextCustomEventNameToDispatch,
-      backCustomEventNameToDispatch,
-      doneCustomEventNameToDispatch,
-
-      cancelUniqueStateId,
-      nextUniqueStateId,
-      backUniqueStateId,
-      doneUniqueStateId,
-      ...restTabProps
-    } = tab;
-
-    const step: IWizardStepProps = {
-      ...restTabProps,
-      cancelButtonActionConfiguration: getActionConfig(
-        cancelButtonAction,
-        cancelButtonActionScript,
-        cancelEventName,
-        cancelCustomEventNameToDispatch,
-        cancelUniqueStateId,
-        context
-      ),
-      nextButtonActionConfiguration: getActionConfig(
-        nextButtonAction,
-        nextButtonActionScript,
-        nextEventName,
-        nextCustomEventNameToDispatch,
-        nextUniqueStateId,
-        context
-      ),
-      backButtonActionConfiguration: getActionConfig(
-        backButtonAction,
-        backButtonActionScript,
-        backEventName,
-        backCustomEventNameToDispatch,
-        backUniqueStateId,
-        context
-      ),
-      doneButtonActionConfiguration: getActionConfig(
-        doneButtonAction,
-        doneButtonActionScript,
-        doneEventName,
-        doneCustomEventNameToDispatch,
-        doneUniqueStateId,
-        context
-      ),
-    };
-    return step;
-  });
-
-  // TODO: Fix tslint issue caused by incompatible size property
-  // @ts-ignore
-  return { ...restProps, steps: steps ?? [] };
-};
-
 const getActionConfig = (
   action: ButtonActionTypeV0,
   actionScript: string,
@@ -232,3 +154,81 @@ export interface IWizardComponentPropsV1 extends Omit<IConfigurableFormComponent
 }
 
 //#endregion
+
+export const migrateV0toV1 = (
+  props: IWizardComponentPropsV0,
+  context: SettingsMigrationContext
+): IWizardComponentPropsV1 => {
+  const { tabs, ...restProps } = props;
+
+  const steps = tabs?.map<IWizardStepProps>(tab => {
+    const {
+      cancelButtonAction,
+      nextButtonAction,
+      backButtonAction,
+      doneButtonAction,
+
+      cancelButtonActionScript,
+      nextButtonActionScript,
+      backButtonActionScript,
+      doneButtonActionScript,
+
+      cancelEventName,
+      nextEventName,
+      backEventName,
+      doneEventName,
+
+      cancelCustomEventNameToDispatch,
+      nextCustomEventNameToDispatch,
+      backCustomEventNameToDispatch,
+      doneCustomEventNameToDispatch,
+
+      cancelUniqueStateId,
+      nextUniqueStateId,
+      backUniqueStateId,
+      doneUniqueStateId,
+      ...restTabProps
+    } = tab;
+
+    const step: IWizardStepProps = {
+      ...restTabProps,
+      cancelButtonActionConfiguration: getActionConfig(
+        cancelButtonAction,
+        cancelButtonActionScript,
+        cancelEventName,
+        cancelCustomEventNameToDispatch,
+        cancelUniqueStateId,
+        context
+      ),
+      nextButtonActionConfiguration: getActionConfig(
+        nextButtonAction,
+        nextButtonActionScript,
+        nextEventName,
+        nextCustomEventNameToDispatch,
+        nextUniqueStateId,
+        context
+      ),
+      backButtonActionConfiguration: getActionConfig(
+        backButtonAction,
+        backButtonActionScript,
+        backEventName,
+        backCustomEventNameToDispatch,
+        backUniqueStateId,
+        context
+      ),
+      doneButtonActionConfiguration: getActionConfig(
+        doneButtonAction,
+        doneButtonActionScript,
+        doneEventName,
+        doneCustomEventNameToDispatch,
+        doneUniqueStateId,
+        context
+      ),
+    };
+    return step;
+  });
+
+  // TODO: Fix tslint issue caused by incompatible size property
+  // @ts-ignore
+  return { ...restProps, steps: steps ?? [] };
+};

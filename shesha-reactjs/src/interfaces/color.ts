@@ -1,12 +1,3 @@
-export interface IColor {
-  hsl: IHsl;
-  hex: string;
-  rgb: IRgb;
-  hsv: IHsv;
-  oldHue: number;
-  source: string;
-}
-
 export interface IHsl {
   h: number;
   s: number;
@@ -26,4 +17,13 @@ export interface IHsv {
   s: number;
   v: number;
   a: number;
+}
+
+export interface IColor {
+  hsl: IHsl;
+  hex: string;
+  rgb: IRgb;
+  hsv: IHsv;
+  oldHue: number;
+  source: string;
 }

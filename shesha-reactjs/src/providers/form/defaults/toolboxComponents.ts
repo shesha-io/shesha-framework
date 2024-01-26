@@ -17,7 +17,6 @@ import DynamicView from '@/components/formDesigner/components/dynamicView';
 import EditableTagGroup from '@/components/formDesigner/components/editableTagGroup';
 import EndpointsAutocompleteComponent from '@/components/formDesigner/components/endpointsAutocomplete/endpointsAutocomplete';
 import EntityPickerComponent from '@/components/formDesigner/components/entityPicker';
-import EventNames from '@/components/formDesigner/components/eventNamesList';
 import FormAutocompleteComponent from '@/components/formDesigner/components/formAutocomplete';
 import IconPicker from '@/components/formDesigner/components/iconPicker';
 import Image from '@/components/formDesigner/components/image';
@@ -69,15 +68,15 @@ import Filter from '@/designer-components/dataTable/filter/filterComponent';
 import Pager from '@/designer-components/dataTable/pager/pagerComponent';
 import QuickSearch from '@/designer-components/dataTable/quickSearch/quickSearchComponent';
 import SelectColumnsButton from '@/designer-components/dataTable/selectColumnsButton/selectColumnsButtonComponent';
-import ColumnsEditor from '@/designer-components/dataTable/table/columnsEditor/columnsEditorComponent';
-import EntityPickerColumnsEditor from '@/designer-components/dataTable/table/entityPickerColumnsEditor/entityPickerColumnsEditorComponent';
+import ColumnsEditor from '@/designer-components/dataTable/table/columnsEditor';
+import EntityPickerColumnsEditor from '@/designer-components/dataTable/table/entityPickerColumnsEditor';
 import DataTable from '@/designer-components/dataTable/table/tableComponent';
 import TableTemplate from '@/designer-components/dataTable/table/tableTemplateComponent';
 import TableContext from '@/designer-components/dataTable/tableContext/tableContextComponent';
 import TableViewSelector from '@/designer-components/dataTable/tableViewSelector/tableViewSelectorComponent';
 import Toolbar from '@/designer-components/dataTable/toolbar/toolbarComponent';
 import DateField from '@/designer-components/dateField/dateField';
-import Dropdown from '@/designer-components/dropdown/dropdown';
+import Dropdown from '@/designer-components/dropdown';
 import { DynamicActionsConfiguratorComponent } from '@/designer-components/dynamicActionsConfigurator/index';
 import EntityReferenceComponent from '@/designer-components/entityReference/entityReference';
 import FileUpload from '@/designer-components/fileUpload';
@@ -109,7 +108,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       EndpointsAutocompleteComponent,
       EntityPickerComponent,
       EntityReferenceComponent,
-      EventNames,
       FileUpload,
       Filter,
       FormAutocompleteComponent,

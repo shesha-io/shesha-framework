@@ -2,6 +2,7 @@
 using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using JetBrains.Annotations;
 using NetTopologySuite.Geometries;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
@@ -11,6 +12,7 @@ using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -135,14 +137,14 @@ namespace Shesha.Metadata
                 IsFilterable = epc != null && epc.IsMapped,
                 IsSortable = epc != null && epc.IsMapped,
             };
-            if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
-            {
-                result.Properties = GetProperties(property.PropertyType, context);
-            }
             if (dataType.DataType == DataTypes.Array)
             {
                 result.ItemsType = GetItemsType(property, context);
-            }
+            } else
+                if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
+                {
+                    result.Properties = GetProperties(property.PropertyType, context);
+                }
 
             context.ProcessedTypes.Add(property.PropertyType);
 
@@ -161,14 +163,30 @@ namespace Shesha.Metadata
                 };
             }
 
-            if (property.PropertyType.IsNotAnyEntityAndSystemType())
+            var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
+            if (IsList(propType))
             {
-                return new PropertyMetadataDto
+                var paramType = propType.GetGenericArguments()[0];
+                var dataType = GetDataTypeByPropertyType(paramType, null);
+
+                if (dataType == null)
+                    return null; // skip unsupported types
+
+                if (dataType.DataType == DataTypes.Object && property.PropertyType.IsNotAnyEntityAndSystemType())
                 {
-                    Path = property.Name,
-                    DataType = DataTypes.Object,
-                    Properties = GetProperties(property.PropertyType, context)
-                };
+                    return new PropertyMetadataDto
+                    {
+                        Path = property.Name,
+                        DataType = DataTypes.Object,
+                        Properties = GetProperties(property.PropertyType, context)
+                    };
+                } else 
+                    return new PropertyMetadataDto
+                    {
+                        Path = property.Name,
+                        DataType = dataType.DataType,
+                        DataFormat = dataType.DataFormat,
+                    };
             }
 
             return null;
@@ -210,8 +228,11 @@ namespace Shesha.Metadata
                 : property.DeclaringType.GetInterfaces().Contains(@interface);
         }
 
-        private string GetStringFormat(PropertyInfo propInfo) 
+        private string GetStringFormat([CanBeNull]MemberInfo propInfo) 
         {
+            if (propInfo == null)
+                return null;
+
             var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
 
             switch (dataTypeAtt?.DataType)
@@ -240,16 +261,21 @@ namespace Shesha.Metadata
         {
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(propInfo.PropertyType);
 
-            if (propType == typeof(Guid)) 
+            return GetDataTypeByPropertyType(propType, propInfo) ?? throw new NotSupportedException($"Data type not supported: {propType.FullName}");
+        }
+
+        public DataTypeInfo GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo propInfo)
+        {
+            if (propType == typeof(Guid))
                 return new DataTypeInfo(DataTypes.Guid);
 
-            var dataTypeAtt = propInfo.GetAttribute<DataTypeAttribute>();
+            var dataTypeAtt = propInfo?.GetAttribute<DataTypeAttribute>();
 
             // for enums - use underlaying type
             if (propType.IsEnum)
                 propType = propType.GetEnumUnderlyingType();
 
-            if (propType == typeof(string)) 
+            if (propType == typeof(string))
             {
                 return new DataTypeInfo(DataTypes.String, GetStringFormat(propInfo));
             }
@@ -267,17 +293,17 @@ namespace Shesha.Metadata
             if (propType == typeof(bool))
                 return new DataTypeInfo(DataTypes.Boolean);
 
-            if (propInfo.IsMultiValueReferenceListProperty())
+            if (propInfo != null && propInfo.IsMultiValueReferenceListProperty())
                 return new DataTypeInfo(DataTypes.Array, ArrayFormats.ReferenceListItem);
 
-            if (propInfo.IsReferenceListProperty())
+            if (propInfo != null && propInfo.IsReferenceListProperty())
                 return new DataTypeInfo(DataTypes.ReferenceListItem);
 
             if (propType.IsEntityType() || propType.IsEntityReferenceType())
                 return new DataTypeInfo(DataTypes.EntityReference);
 
             // note: numeric datatypes mapping is based on the OpenApi 3
-            if (propType  == typeof(int) || propType == typeof(byte) || propType == typeof(short))
+            if (propType == typeof(int) || propType == typeof(byte) || propType == typeof(short))
                 return new DataTypeInfo(DataTypes.Number, NumberFormats.Int32);
 
             if (propType == typeof(Int64))
@@ -292,10 +318,7 @@ namespace Shesha.Metadata
             if (propType == typeof(double) || propType == typeof(decimal))
                 return new DataTypeInfo(DataTypes.Number, NumberFormats.Double);
 
-            if (propType.IsSubtypeOfGeneric(typeof(IList<>)) || propType.IsSubtypeOfGeneric(typeof(ICollection<>)) ||
-                propType.IsSubtypeOfGeneric(typeof(List<>)) || propType.IsSubtypeOfGeneric(typeof(Collection<>)) ||
-                propType.IsSubtypeOfGeneric(typeof(IEnumerable<>))
-                )
+            if (IsList(propType))
             {
                 var paramType = propType.GetGenericArguments()[0];
                 var format = paramType.IsClass
@@ -306,67 +329,22 @@ namespace Shesha.Metadata
                             : ArrayFormats.Object
                     : null;
                 return new DataTypeInfo(DataTypes.Array, format, format != null ? paramType.FullName : null);
-            }
-
-            if (propType.IsClass)
-            {
-                if (propType.IsJsonEntityType())
-                    return new DataTypeInfo(DataTypes.ObjectReference);
-                else
-                    return new DataTypeInfo(DataTypes.Object);
-            }
-
-            throw new NotSupportedException($"Data type not supported: {propType.FullName}");
-        }
-
-        /*
-        /// <summary>
-        /// Returns .Net type that is used to store data for the specified <paramref name="dataType"/> and <paramref name="dataFormat"/>
-        /// </summary>
-        /// <param name="dataType"></param>
-        /// <param name="dataFormat"></param>
-        /// <returns></returns>
-        public static Type GetType(string dataType, string dataFormat)
-        {
-            switch (dataType) 
-            {
-                case DataTypes.Guid:
-                    return typeof(Guid);
-                case DataTypes.String:
-                    return typeof(string);
-                case DataTypes.Date:
-                case DataTypes.DateTime:
-                    return typeof(DateTime);
-                case DataTypes.Time:
-                    return typeof(TimeSpan);
-                case DataTypes.Boolean:
-                    return typeof(bool);
-                case DataTypes.ReferenceListItem:
-                    return typeof(Int64);
-
-                case DataTypes.Number:
+            } else
+                if (propType.IsClass)
                 {
-                    switch (dataFormat) 
-                    {
-                        case NumberFormats.Int32:
-                            return typeof(int);
-                        case NumberFormats.Int64:
-                            return typeof(Int64);
-                        case NumberFormats.Float:
-                            return typeof(float);
-                        case NumberFormats.Double:
-                            return typeof(decimal);
-                        default: 
-                            return typeof(decimal);
-                    }
+                    if (propType.IsJsonEntityType())
+                        return new DataTypeInfo(DataTypes.ObjectReference);
+                    else
+                        return new DataTypeInfo(DataTypes.Object);
                 }
-
-                case DataTypes.EntityReference:
-                case DataTypes.Array:
-                default:
-                    throw new NotSupportedException($"Data type not supported: {dataType}");
-            }
+            return null;
         }
-        */
+
+        private bool IsList(Type type) 
+        {
+            return type.ImplementsGenericInterface(typeof(IList<>)) ||
+                type.ImplementsGenericInterface(typeof(ICollection<>)) ||
+                type.ImplementsGenericInterface(typeof(IEnumerable<>));
+        }
     }
 }

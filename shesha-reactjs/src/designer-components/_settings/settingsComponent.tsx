@@ -1,17 +1,13 @@
 import React, { useMemo } from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { SettingOutlined } from '@ant-design/icons';
-import { IConfigurableFormComponent, useForm } from '@/providers';
-import { ComponentsContainer, ConfigurableFormItem } from '@/components';
-import { DataContextProvider } from '@/providers/dataContextProvider';
-import { Button } from 'antd';
-import { getPropertySettingsFromData, getValueFromPropertySettings } from './utils';
-import { IContextSettingsRef, ISwitchModeSettingsRef, SettingsControl } from './settingsControl';
+import SettingsControl from './settingsControl';
+import { ConfigurableFormItem } from '@/components';
 import { getSettings } from './settings';
-import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
-import { useStyles } from './styles/styles';
-import { useRef } from 'react';
+import { IConfigurableFormComponent } from '@/providers';
+import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
+import { SettingOutlined } from '@ant-design/icons';
+import { SettingsControlRenderer } from './settingsControlRenderer';
+import { useDeepCompareMemo } from '@/index';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     components?: IConfigurableFormComponent[];
@@ -25,88 +21,53 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     isHidden: true,
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
-
-        const { formData } = useForm();
-        const { styles } = useStyles();
-
-        const { _mode: mode, _code: code } = getPropertySettingsFromData(formData, model.propertyName);
-
-        const internalProps = model?.components?.length > 0 ? model?.components[0] : model;
-        const props = Boolean(model?.label) ? model : internalProps;
-
-        const switchMode = () => {
-            modeRef.current?.onChange(mode === 'code' ? 'value' : 'code');
-        };
-
-        const components = useMemo(() => {
-            return model?.components?.map(c => ({ ...c, hideLabel: true, readOnly: model?.readOnly, context: model.id }));
+        const components: IConfigurableFormComponent[] = useDeepCompareMemo(() => {
+            return model?.components?.map(c => ({
+                ...c,
+                hideLabel: true,
+                readOnly: model?.readOnly,
+                editMode: model.editMode,
+                hidden: model.hidden
+            }));
         }, [model?.components, model?.readOnly, model?.id]);
 
-        const ctxRef = useRef<IContextSettingsRef>();
-        const modeRef = useRef<ISwitchModeSettingsRef>();
+        const props = useMemo(() => {
+            const internalProps =
+                Boolean(model?.label) || !(model?.components?.length > 0)
+                    ? model
+                    : model?.components[0];
+            return { ...internalProps };
+        }, [model?.label, model?.components?.length]);
 
         if (model.hidden) return null;
 
-        const label = <span>{props.label}</span>;
-
         return (
-            <ConfigurableFormItem model={{ ...props, label }} className='sha-js-label' >
-                {(value, onChange) => {
-                    const localValue = getValueFromPropertySettings(value);
-                    return (
-                    <div className={ mode === 'code' ? styles.contentCode : styles.contentJs}>
-                        <Button
-                            disabled={model.readOnly}
-                            shape="round"
-                            className={styles.jsSwitch}
-                            type='primary'
-                            danger={mode === 'value' && !!code }
-                            ghost
-                            size='small'
-                            onClick={switchMode}
-                        >
-                            {mode === 'code' ? 'Value' : 'JS'}
-                        </Button>
-                        <div className={styles.jsContent}>
-                            <DataContextProvider id={model.id} name={props.propertyName} description={props.propertyName} type={'settings'}
-                                initialData={new Promise((resolve) => {
-                                    resolve(setValueByPropertyName({}, internalProps?.propertyName, localValue));
-                                })}
-                                dynamicData={
-                                    internalProps?.propertyName && localValue
-                                        ? setValueByPropertyName({}, internalProps?.propertyName, localValue)
-                                        : null
-                                }
-                                onChangeData={(v) => {
-                                    if (v && ctxRef.current?.onChange)
-                                        ctxRef.current?.onChange(getValueByPropertyName(v, internalProps?.propertyName));
-                                }}
-                            >
-                                <SettingsControl 
-                                    id={model.id}
-                                    propertyName={internalProps?.propertyName}
-                                    mode={mode}
-                                    value={value}
-                                    onChange={onChange}
-                                    contextRef={ctxRef}
-                                    modeRef={modeRef}
-                                >
-                                    {() =>
-                                        <ComponentsContainer containerId={props.id} dynamicComponents={components} />
-                                    }
-                                </SettingsControl>
-                            </DataContextProvider>
-                        </div>
-                    </div>
-                    );
-                }}
+            <ConfigurableFormItem model={props} className='sha-js-label' >
+                {(value, onChange) => (
+                    <SettingsControl
+                        propertyName={model.propertyName}
+                        mode={'value'}
+                        onChange={onChange}
+                        value={value}
+                    >
+                        {(_valueValue, _onChangeValue, propertyName) => {
+                            return (
+                                <SettingsControlRenderer
+                                    id={props.id}
+                                    components={components}
+                                    propertyName={propertyName}
+                                />
+                            );
+                        }}
+                    </SettingsControl>
+                )}
             </ConfigurableFormItem>
         );
     },
     settingsFormMarkup: getSettings(),
     migrator: (m) => m
         .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev))
-  ,    
+    ,
 };
 
 export default SettingsComponent;

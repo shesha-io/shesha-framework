@@ -16,8 +16,9 @@ import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/f
 import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
 import { IConfigurableFormProps } from './models';
 import { Result } from 'antd';
-import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
+import { MetadataProvider, useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
+import ConditionalWrap from '../conditionalWrapper/index';
 
 interface RenderWithMarkupArgs {
   providedMarkup: FormRawMarkup;
@@ -137,14 +138,24 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
                           />
                         )}
                         {persister.loaded &&
-                          renderWithMarkup({
-                            providedMarkup: persister.markup,
-                            formSettings: persister.formSettings,
-                            persistedFormProps: persister.formProps,
-                            onMarkupUpdated: () => {
-                              persisterActions.loadForm({ skipCache: true });
-                            }
-                          })}
+                          <ConditionalWrap
+                            condition={!!persister.formSettings?.modelType}
+                            wrap={(children) => (
+                              <MetadataProvider modelType={persister.formSettings?.modelType}>
+                                {children}
+                              </MetadataProvider>
+                            )}
+                          >
+                            {renderWithMarkup({
+                              providedMarkup: persister.markup,
+                              formSettings: persister.formSettings,
+                              persistedFormProps: persister.formProps,
+                              onMarkupUpdated: () => {
+                                persisterActions.loadForm({ skipCache: true });
+                              }
+                            })}
+                          </ConditionalWrap>
+                        }
                       </>
                     )}
                   </FormPersisterConsumer>

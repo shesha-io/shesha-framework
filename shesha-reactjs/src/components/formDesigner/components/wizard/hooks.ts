@@ -39,7 +39,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const getDefaultStepIndex = (i) => {
     if (i) {
-      const t = tabs[i] 
+      const t = tabs[i]
         ?? tabs?.find((item) => item?.id === i); // for backward compatibility
       return !!t ? tabs.indexOf(t) : 0;
     }
@@ -56,13 +56,13 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const visibleSteps = useMemo(
     () =>
       tabs
-      .filter(({ customVisibility, permissions }) => {
-        const granted = anyOfPermissionsGranted(permissions || []);
-        const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
+        .filter(({ customVisibility, permissions }) => {
+          const granted = anyOfPermissionsGranted(permissions || []);
+          const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-        return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
-      })
-      .map(item => getActualModel(item, allData) as IWizardStepProps),
+          return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
+        })
+        .map(item => getActualModel(item, allData) as IWizardStepProps),
     [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
   );
 
@@ -82,66 +82,6 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       });
     }
   }, [current]);
-
-  const actionDependencies = [actionOwnerName, actionsOwnerId, current];
-
-  // #region configurable actions
-  useConfigurableAction(
-    {
-      name: 'Back',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        back();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Next',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        next();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Cancel',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        cancel();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Done',
-      owner: actionOwnerName,
-      ownerUid: actionsOwnerId,
-      hasArguments: false,
-      executer: () => {
-        done();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-  //#endregion
 
   const onAfterCallback = (callback: () => void, after?: (step: IWizardStepProps) => void) => {
     try {
@@ -172,7 +112,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
     const successFunc = (response: any) => {
       onAfterCallback(
-        () => { 
+        () => {
           if (success) success(response);
         },
         () => {
@@ -233,6 +173,66 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       throw `Step with index ${stepIndex} is not available`;
     setCurrent(stepIndex);
   };
+
+  // #region configurable actions
+  const actionDependencies = [actionOwnerName, actionsOwnerId, current];
+
+  useConfigurableAction(
+    {
+      name: 'Back',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: () => {
+        back();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Next',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: () => {
+        next();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Cancel',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: () => {
+        cancel();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Done',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: () => {
+        done();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+  //#endregion
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 

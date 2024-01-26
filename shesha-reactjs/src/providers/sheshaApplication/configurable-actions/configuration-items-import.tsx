@@ -17,6 +17,44 @@ import { ValidationErrors } from '@/components';
 
 const actionsOwner = 'Configuration Framework';
 
+interface IConfigurationItemsExportFooterProps {
+  hideModal: () => void;
+  importerRef: MutableRefObject<IImportInterface>;
+}
+
+const displayNotificationError = (message: string, error: IErrorInfo) => {
+  notification.error({
+      message: message,
+      icon: null,
+      description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+  });
+};
+
+export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
+  const [inProgress, setInProgress] = useState(false);
+  const { hideModal, importerRef: exporterRef } = props;
+
+  const onImport = () => {
+    setInProgress(true);
+
+    exporterRef.current.importExecuter().then(() => {
+      message.info('Items imported successfully');
+      hideModal();
+    }).catch((e) => {
+      console.log('catch in footer');
+      displayNotificationError('Failed to import package', e);
+      setInProgress(false);
+    });
+  };
+
+  return (
+    <>
+      <Button type='default' onClick={hideModal}>Cancel</Button>
+      <Button type='primary' icon={<ImportOutlined />} onClick={onImport} loading={inProgress}>Import</Button>
+    </>
+  );
+};
+
 export const useConfigurationItemsImportAction = () => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
@@ -55,43 +93,4 @@ export const useConfigurationItemsImportAction = () => {
       });
     },
   }, [appConfigState]);
-};
-
-
-interface IConfigurationItemsExportFooterProps {
-  hideModal: () => void;
-  importerRef: MutableRefObject<IImportInterface>;
-}
-
-const displayNotificationError = (message: string, error: IErrorInfo) => {
-  notification.error({
-      message: message,
-      icon: null,
-      description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
-  });
-};
-
-export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
-  const [inProgress, setInProgress] = useState(false);
-  const { hideModal, importerRef: exporterRef } = props;
-
-  const onImport = () => {
-    setInProgress(true);
-
-    exporterRef.current.importExecuter().then(() => {
-      message.info('Items imported successfully');
-      hideModal();
-    }).catch((e) => {
-      console.log('catch in footer');
-      displayNotificationError('Failed to import package', e);
-      setInProgress(false);
-    });
-  };
-
-  return (
-    <>
-      <Button type='default' onClick={hideModal}>Cancel</Button>
-      <Button type='primary' icon={<ImportOutlined />} onClick={onImport} loading={inProgress}>Import</Button>
-    </>
-  );
 };

@@ -10,7 +10,7 @@ import {
   Skeleton,
   Spin,
   Switch
-  } from 'antd';
+} from 'antd';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_ITEMS_MODULE_NAME } from '@/shesha-constants';
 import { getFileNameFromResponse } from '@/utils/fetchers';
 import { getIndexesList } from '../treeUtils';
@@ -46,7 +46,7 @@ type VerionSelectionMode = 'live' | 'ready' | 'latest';
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const [versionsMode, setVersionsMode] = useState<VerionSelectionMode>('live');
-  const [exportDependencies, setExportDependencies] = useState<boolean>(true);  
+  const [exportDependencies, setExportDependencies] = useState<boolean>(true);
 
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
   const [exportInProgress, setExportInProgress] = useState(false);
@@ -104,18 +104,6 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       sorting: 'module.name, name',
     };
   };
-
-  useEffect(() => {
-    setIsLoading(true);
-    RestfulShesha.get<IAbpWrappedGetEntityListResponse<ConfigurationItemDto>, any, IGenericGetAllPayload, void>(
-      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
-      getListFetcherQueryParams(versionsMode),
-      { base: backendUrl, headers: httpHeaders }
-    ).then((response) => {
-      applyItems(response.result.items);
-      setIsLoading(false);
-    });
-  }, [versionsMode]);
 
   const applyItems = (allItems: ConfigurationItemDto[]) => {
     if (!allItems) {
@@ -221,6 +209,18 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
     setTreeState({ treeNodes: treeNodes, indexes: dataIndexes, itemsCount: allItems.length });
   };
+
+  useEffect(() => {
+    setIsLoading(true);
+    RestfulShesha.get<IAbpWrappedGetEntityListResponse<ConfigurationItemDto>, any, IGenericGetAllPayload, void>(
+      `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
+      getListFetcherQueryParams(versionsMode),
+      { base: backendUrl, headers: httpHeaders }
+    ).then((response) => {
+      applyItems(response.result.items);
+      setIsLoading(false);
+    });
+  }, [versionsMode]);
 
   const getExportFilter = () => {
     return { in: [{ var: 'id' }, checkedIds] };

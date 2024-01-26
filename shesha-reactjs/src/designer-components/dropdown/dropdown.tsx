@@ -1,211 +1,116 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import moment from 'moment';
 import React, { FC } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import RefListDropDown from '@/components/refListDropDown';
-import settingsFormJson from './settingsForm.json';
-import { axiosHttp } from '@/utils/fetchers';
-import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
-import { DataTypes } from '@/interfaces/dataTypes';
-import { DownSquareOutlined } from '@ant-design/icons';
 import { evaluateString } from '@/providers/form/utils';
-import { FormMarkup } from '@/providers/form/models';
-import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { IDropdownComponentProps, ILabelValue } from './interfaces';
-import { IToolboxComponent } from '@/interfaces';
-import { message, Select } from 'antd';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { Select } from 'antd';
 import {
-  useForm,
-  useFormData,
-  useGlobalState,
-  useSheshaApplication
-  } from '@/providers';
-
-const settingsForm = settingsFormJson as FormMarkup;
-
-const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
-  type: 'dropdown',
-  isInput: true,
-  isOutput: true,
-  canBeJsSetting: true,
-  name: 'Dropdown',
-  icon: <DownSquareOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
-    const { data: formData } = useFormData();
-    const eventProps = {
-      model,
-      form,
-      formData,
-      formMode,
-      globalState,
-      http: axiosHttp(backendUrl),
-      message,
-      moment,
-      setFormData,
-      setGlobalState,
-    };
-
-    const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
-
-    return (
-      <ConfigurableFormItem model={model} {...initialValue}>
-        {(value, onChange) => {
-          const customEvent =  customDropDownEventHandler(eventProps);
-          const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function') 
-              onChange(...args);
-          };
-          
-          return <Dropdown {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
-        }}
-      </ConfigurableFormItem>
-    );
-  },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: (m) => m
-    .add<IDropdownComponentProps>(0, (prev) => ({
-      ...prev,
-      dataSourceType: prev['dataSourceType'] ?? 'values',
-      useRawValues: prev['useRawValues'] ?? false,
-    }))
-    .add<IDropdownComponentProps>(1, (prev) => {
-      return {
-        ...prev,
-        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
-      };
-    })
-    .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
-    .add<IDropdownComponentProps>(4, (prev) => migrateReadOnly(prev))
-  ,
-  linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
-    const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
-    const isMultipleRefList = metadata.dataType === 'array' && metadata.dataFormat === 'reference-list-item';
-    
-    return {
-      ...model,
-      dataSourceType: isSingleRefList || isMultipleRefList ? 'referenceList' : 'values',
-      referenceListId: {
-        module: metadata.referenceListModule,
-        name: metadata.referenceListName,
-      },
-      mode: isMultipleRefList ? 'multiple' : 'single',
-      useRawValues: true,
-    };
-  },
-};
+    useForm,
+    useFormData,
+    useGlobalState,
+} from '@/providers';
 
 export const Dropdown: FC<IDropdownComponentProps> = ({
-  dataSourceType,
-  values,
-  onChange,
-  value: val,
-  hideBorder,
-  referenceListId,
-  mode,
-  defaultValue: defaultVal,
-  ignoredValues = [],
-  placeholder,
-  useRawValues,
-  readOnly,
-  style,
-  size,
-  allowClear = true,
+    dataSourceType,
+    values,
+    onChange,
+    value: val,
+    hideBorder,
+    referenceListId,
+    mode,
+    defaultValue: defaultVal,
+    ignoredValues = [],
+    placeholder,
+    useRawValues,
+    readOnly,
+    style,
+    size,
+    allowClear = true,
 }) => {
-  const { formMode } = useForm();
-  const { data: formData } = useFormData();
-  const { globalState } = useGlobalState();
+    const { formMode } = useForm();
+    const { data: formData } = useFormData();
+    const { globalState } = useGlobalState();
 
-  const getOptions = (): ILabelValue[] => {
-    return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
-  };
+    const selectedMode = mode === 'single' ? undefined : mode;
 
-  const selectedMode = mode === 'single' ? undefined : mode;
+    const localStyle = getStyle(style, formData);
 
-  const localStyle = getStyle(style, formData);
+    //quick fix not to default to empty string or null while working with multi-mode
+    const defaultValue = evaluateString(defaultVal, { formData, formMode, globalState }) || undefined;
 
-  //quick fix not to default to empty string or null while working with multi-mode
-  const defaultValue = evaluateString(defaultVal, { formData, formMode, globalState }) || undefined;
+    const value = (evaluateString(val, { formData, formMode, globalState }) || undefined) as any;
 
-  const value = (evaluateString(val, { formData, formMode, globalState }) || undefined) as any;
+    const getOptions = (): ILabelValue[] => {
+        return value && typeof value === 'number' ? values?.map((i) => ({ ...i, value: parseInt(i.value, 10) })) : values;
+    };
 
-  if (dataSourceType === 'referenceList') {
-    return useRawValues ? (
-      <RefListDropDown.Raw
-        onChange={onChange}
-        referenceListId={referenceListId}
-        value={value}
-        variant={hideBorder ? 'borderless' : undefined }
-        defaultValue={defaultValue}
-        mode={selectedMode}
-        filters={ignoredValues}
-        includeFilters={false}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        size={size}
-        style={localStyle}
-        allowClear={allowClear}
-      />
-    ) : (
-      <RefListDropDown.Dto
-        onChange={onChange}
-        referenceListId={referenceListId}
-        value={value}
-        variant={hideBorder ? 'borderless' : undefined }
-        defaultValue={defaultValue}
-        mode={selectedMode}
-        filters={ignoredValues}
-        includeFilters={false}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        size={size}
-        style={localStyle}
-        allowClear={allowClear}
-      />
+    if (dataSourceType === 'referenceList') {
+        return useRawValues ? (
+            <RefListDropDown.Raw
+                onChange={onChange}
+                referenceListId={referenceListId}
+                value={value}
+                variant={hideBorder ? 'borderless' : undefined}
+                defaultValue={defaultValue}
+                mode={selectedMode}
+                filters={ignoredValues}
+                includeFilters={false}
+                placeholder={placeholder}
+                readOnly={readOnly}
+                size={size}
+                style={localStyle}
+                allowClear={allowClear}
+            />
+        ) : (
+            <RefListDropDown.Dto
+                onChange={onChange}
+                referenceListId={referenceListId}
+                value={value}
+                variant={hideBorder ? 'borderless' : undefined}
+                defaultValue={defaultValue}
+                mode={selectedMode}
+                filters={ignoredValues}
+                includeFilters={false}
+                placeholder={placeholder}
+                readOnly={readOnly}
+                size={size}
+                style={localStyle}
+                allowClear={allowClear}
+            />
+        );
+    }
+
+    const options = getOptions() || [];
+
+    const selectedValue = options.length > 0 ? value || defaultValue : null;
+
+    const getSelectValue = () => {
+        return options?.find(({ value: currentValue }) => currentValue === selectedValue)?.label;
+    };
+
+    if (readOnly) {
+        return <ReadOnlyDisplayFormItem type="string" value={getSelectValue()} />;
+    }
+
+    return (
+        <Select
+            allowClear={allowClear}
+            onChange={onChange}
+            value={options.length > 0 ? value || defaultValue : undefined}
+            defaultValue={defaultValue}
+            variant={hideBorder ? 'borderless' : undefined}
+            disabled={readOnly}
+            mode={selectedMode}
+            placeholder={placeholder}
+            showSearch
+            size={size}
+        >
+            {options.map((option, index) => (
+                <Select.Option key={index} value={option.value}>
+                    {option.label}
+                </Select.Option>
+            ))}
+        </Select>
     );
-  }
-
-  const options = getOptions() || [];
-
-  const selectedValue = options.length > 0 ? value || defaultValue : null;
-
-  const getSelectValue = () => {
-    return options?.find(({ value: currentValue }) => currentValue === selectedValue)?.label;
-  };
-
-  if (readOnly) {
-    return <ReadOnlyDisplayFormItem type="string" value={getSelectValue()} />;
-  }
-
-  return (
-    <Select
-      allowClear={allowClear}
-      onChange={onChange}
-      value={options.length > 0 ? value || defaultValue : undefined}
-      defaultValue={defaultValue}
-      variant={hideBorder ? 'borderless' : undefined }
-      disabled={readOnly}
-      mode={selectedMode}
-      placeholder={placeholder}
-      showSearch
-      size={size}
-    >
-      {options.map((option, index) => (
-        <Select.Option key={index} value={option.value}>
-          {option.label}
-        </Select.Option>
-      ))}
-    </Select>
-  );
-};
-
-export default DropdownComponent;
+}; 

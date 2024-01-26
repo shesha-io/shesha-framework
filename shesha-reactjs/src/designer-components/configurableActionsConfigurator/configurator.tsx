@@ -1,15 +1,31 @@
-import React, { FC, ReactNode, useMemo } from 'react';
-import { Collapse, Form, Switch, TreeSelect } from 'antd';
+import React, { FC, useMemo } from 'react';
+import { Collapse, Form, Switch } from 'antd';
 import { useForm, useConfigurableActionDispatcher } from '@/providers';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IConfigurableActionGroupDictionary } from '@/providers/configurableActionsDispatcher/models';
 import ActionArgumentsEditor from './actionArgumensEditor';
-import HelpTextPopover from '@/components/helpTextPopover';
 import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
+import { ActionSelect } from './actionSelect';
 
 const { Panel } = Collapse;
+
+const getActionFullName = (actionOwner: string, actionName: string): string => {
+  return actionName
+    ? `${actionOwner}:${actionName}`
+    : null;
+};
+
+interface IActionIdentifier {
+  actionName: string;
+  actionOwner: string;
+}
+const parseActionFullName = (fullName: string): IActionIdentifier => {
+  const parts = fullName?.split(':') ?? [];
+  return parts && parts.length === 2
+    ? { actionOwner: parts[0], actionName: parts[1] }
+    : null;
+};
 
 export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorProps> = props => {
   const [form] = Form.useForm();
@@ -130,103 +146,3 @@ interface IConfigurableActionConfiguratorProps {
 interface IActionFormModel extends Omit<IConfigurableActionConfiguration, 'actionOwner' | 'actionName'> {
   actionFullName: string;
 }
-
-const getActionFullName = (actionOwner: string, actionName: string): string => {
-  return actionName
-    ? `${actionOwner}:${actionName}`
-    : null;
-};
-interface IActionIdentifier {
-  actionName: string;
-  actionOwner: string;
-}
-const parseActionFullName = (fullName: string): IActionIdentifier => {
-  const parts = fullName?.split(':') ?? [];
-  return parts && parts.length === 2
-    ? { actionOwner: parts[0], actionName: parts[1] }
-    : null;
-};
-
-const getConfigurableActionFullName = (owner: string, name: string) => {
-  return owner
-    ? `${owner}:${name}`
-    : name;
-};
-
-interface IActionSelectProps {
-  actions: IConfigurableActionGroupDictionary;
-  value?: string;
-  onChange?: () => void;
-  readOnly?: boolean;
-}
-interface IActionSelectItem {
-  title: string | ReactNode;
-  value: string;
-  displayText: string;
-  children: IActionSelectItem[];
-  selectable: boolean;
-}
-const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOnly = false }) => {
-
-  const treeData = useMemo<IActionSelectItem[]>(() => {
-    const result: IActionSelectItem[] = [];
-
-    //console.log('build actions', actions)
-
-    for (const owner in actions) {
-      if (!actions.hasOwnProperty(owner))
-        continue;
-      const ownerActions = actions[owner];
-      const ownerNodes: IActionSelectItem[] = [];
-
-      ownerActions.actions.forEach(action => {
-        const displayName = action.label ?? action.name;
-
-        ownerNodes.push({
-          title: (
-            <div>
-              <HelpTextPopover content={action.description}>
-                {displayName}
-              </HelpTextPopover>
-            </div>
-          ),
-          displayText: `${ownerActions.ownerName}: ${displayName}`,
-          value: getConfigurableActionFullName(owner, action.name),
-          children: null,
-          selectable: true,
-        });
-      });
-
-      result.push({
-        title: ownerActions.ownerName,
-        value: owner,
-        displayText: owner,
-        children: ownerNodes,
-        selectable: false,
-      });
-    }
-    return result;
-  }, [actions]);
-
-  return (
-    <TreeSelect
-      disabled={readOnly}
-      showSearch
-      style={{
-        width: '100%',
-      }}
-      value={value}
-      dropdownStyle={{
-        maxHeight: 400,
-        overflow: 'auto',
-      }}
-      placeholder="Please select"
-      allowClear
-      //treeDefaultExpandAll
-      onChange={onChange}
-      treeNodeLabelProp='displayText'
-      treeData={treeData}
-    >
-    </TreeSelect>
-  );
-};

@@ -8,42 +8,11 @@ export interface IDynamicActionsEvaluatorProps {
     children: (items: ButtonGroupItemProps[]) => React.ReactElement;
 }
 
-interface DynamicItemsEvaluationStore {
-    dynamicItems: IResolvedDynamicItem[];
-    items: ButtonGroupItemProps[];
-}
-export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ items, children }) => {
-    const [numResolved, setNumResolved] = useState(0);
-
-    const evaluation = useMemo<DynamicItemsEvaluationStore>(() => {
-        const dynamicItems: IResolvedDynamicItem[] = [];
-        const preparedItems = getItemsLevel(items,
-            (dynamicItem) => {
-                dynamicItems.push(dynamicItem);
-            }
-        );
-        return {
-            dynamicItems,
-            items: preparedItems,
-        };
-    }, [items]);
-
-    // build a resulting tree that includes all resolved items but excludes non resolved ones
-    const finalItems = useMemo(() => {
-        return getItemsWithResolved(evaluation.items);
-    }, [evaluation.items, numResolved]);
-
-
-    const onDynamicItemEvaluated = () => {
-        setNumResolved(prev => prev + 1);
-    };
-
-    return (
-        <>
-            {evaluation.dynamicItems.map(item => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={item.id} />))}
-            {children(finalItems)}
-        </>
-    );
+const isResolvedDynamicItem = (item: IButtonGroupItemBase): item is IResolvedDynamicItem => {
+    if (!isDynamicItem(item))
+        return false;
+    const typed = item as IResolvedDynamicItem;
+    return typeof (typed.isResolved) === 'boolean' && Array.isArray(typed.resolvedItems);
 };
 
 const getItemsWithResolved = (items: ButtonGroupItemProps[]): ButtonGroupItemProps[] => {
@@ -93,6 +62,13 @@ interface SingleDynamicItemEvaluatorProps {
     item: IResolvedDynamicItem;
     onEvaluated: (response: ButtonGroupItemProps[]) => void;
 }
+
+const EMPTY_ITEMS = [];
+const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
+    ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
+    useEvaluator: () => (EMPTY_ITEMS), // note: it's important to use constant to prevent infinite re-calculation ([] !== [])
+};
+
 /**
  * Pseudo-component with no UI, is used as a proxy for evaluation of the dynamic items
  */
@@ -119,20 +95,45 @@ const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = ({ item,
     return null;
 };
 
-const EMPTY_ITEMS = [];
-const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
-    ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
-    useEvaluator: () => (EMPTY_ITEMS), // note: it's important to use constant to prevent infinite re-calculation ([] !== [])
-};
-
 interface IResolvedDynamicItem extends IDynamicItem {
     isResolved: boolean;
     resolvedItems: ButtonGroupItemProps[];
 }
 
-const isResolvedDynamicItem = (item: IButtonGroupItemBase): item is IResolvedDynamicItem => {
-    if (!isDynamicItem(item))
-        return false;
-    const typed = item as IResolvedDynamicItem;
-    return typeof (typed.isResolved) === 'boolean' && Array.isArray(typed.resolvedItems);
+interface DynamicItemsEvaluationStore {
+    dynamicItems: IResolvedDynamicItem[];
+    items: ButtonGroupItemProps[];
+}
+export const DynamicActionsEvaluator: FC<IDynamicActionsEvaluatorProps> = ({ items, children }) => {
+    const [numResolved, setNumResolved] = useState(0);
+
+    const evaluation = useMemo<DynamicItemsEvaluationStore>(() => {
+        const dynamicItems: IResolvedDynamicItem[] = [];
+        const preparedItems = getItemsLevel(items,
+            (dynamicItem) => {
+                dynamicItems.push(dynamicItem);
+            }
+        );
+        return {
+            dynamicItems,
+            items: preparedItems,
+        };
+    }, [items]);
+
+    // build a resulting tree that includes all resolved items but excludes non resolved ones
+    const finalItems = useMemo(() => {
+        return getItemsWithResolved(evaluation.items);
+    }, [evaluation.items, numResolved]);
+
+
+    const onDynamicItemEvaluated = () => {
+        setNumResolved(prev => prev + 1);
+    };
+
+    return (
+        <>
+            {evaluation.dynamicItems.map(item => (<SingleDynamicItemEvaluator item={item} onEvaluated={onDynamicItemEvaluated} key={item.id} />))}
+            {children(finalItems)}
+        </>
+    );
 };

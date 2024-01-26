@@ -39,18 +39,6 @@ export const columnSorting2SortDirection = (value?: ColumnSorting): SortDirectio
   }
 };
 
-const convertFilterValue = (value: any, column: ITableDataColumn): any => {
-  switch (column?.dataType) {
-    case 'date':
-      return getMoment(value, ADVANCEDFILTER_DATE_FORMAT)?.format();
-    case 'date-time':
-      return getMoment(value, ADVANCEDFILTER_DATETIME_FORMAT)?.format();
-    case 'time':
-      return getDuration(value)?.asSeconds();
-  }
-  return value;
-};
-
 export const ADVANCEDFILTER_DATE_FORMAT = 'DD/MM/YYYY';
 export const ADVANCEDFILTER_DATETIME_FORMAT = 'DD/MM/YYYY HH:mm';
 export const ADVANCEDFILTER_TIME_FORMAT = 'HH:mm';
@@ -70,6 +58,18 @@ export const getDuration = (value: any): Duration => {
 
   const durationValue = moment.duration(value as string);
   return durationValue.isValid() ? durationValue : undefined;
+};
+
+const convertFilterValue = (value: any, column: ITableDataColumn): any => {
+  switch (column?.dataType) {
+    case 'date':
+      return getMoment(value, ADVANCEDFILTER_DATE_FORMAT)?.format();
+    case 'date-time':
+      return getMoment(value, ADVANCEDFILTER_DATETIME_FORMAT)?.format();
+    case 'time':
+      return getDuration(value)?.asSeconds();
+  }
+  return value;
 };
 
 export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): object[] => {
@@ -262,6 +262,23 @@ export const isStandardSortingUsed = (state: IDataTableStateContext): Boolean =>
   return state.sortMode === 'standard' && (!state.grouping || state.grouping.length === 0);
 };
 
+/**
+ * Get effective user sorting. Note: saved user sorting may be restricted by the datasource configuration
+ * @param state Data table state
+ * @returns Array of sorting column or null
+ */
+const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] => {
+  if (!state.userSorting)
+    return null;
+
+  return state.userSorting.filter(s => {
+    if (!s.id)
+      return false;
+    const column = state.columns.find(c => c.id === s.id);
+    return column && column.isSortable;
+  });
+};
+
 export const getCurrentSorting = (state: IDataTableStateContext, groupingSupported: boolean): IColumnSorting[] => {
   switch (state.sortMode) {
     case 'standard': {
@@ -284,21 +301,4 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
     }
   }
   return [];
-};
-
-/**
- * Get effective user sorting. Note: saved user sorting may be restricted by the datasource configuration
- * @param state Data table state
- * @returns Array of sorting column or null
- */
-const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] => {
-  if (!state.userSorting)
-    return null;
-
-  return state.userSorting.filter(s => {
-    if (!s.id)
-      return false;
-    const column = state.columns.find(c => c.id === s.id);
-    return column && column.isSortable;
-  });
 };

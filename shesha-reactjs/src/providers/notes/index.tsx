@@ -70,6 +70,19 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     lazy: true,
   });
 
+  const fetchNotesRequest = () => {
+    dispatch(fetchNotesRequestAction());
+    refetchNotesHttp();
+  };
+
+  const fetchNotesSuccess = (notes: INote[]) => {
+    dispatch(fetchNotesSuccessAction(notes));
+  };
+
+  const fetchNotesError = () => {
+    dispatch(fetchNotesErrorAction(fetchNotesResError?.data));
+  };
+
   // Refetch notes when the main parameters change
   useEffect(() => {
     if (ownerId && ownerType) {
@@ -90,24 +103,21 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     }
   }, [fetchingNotes]);
 
-  const fetchNotesRequest = () => {
-    dispatch(fetchNotesRequestAction());
-    refetchNotesHttp();
-  };
-
-  const fetchNotesSuccess = (notes: INote[]) => {
-    dispatch(fetchNotesSuccessAction(notes));
-  };
-
-  const fetchNotesError = () => {
-    dispatch(fetchNotesErrorAction(fetchNotesResError?.data));
-  };
-
   const refreshNotes = () => refetchNotesHttp();
   //#endregion
 
   //#region Save notes
+
+  const postNotesSuccess = (newNotes: INote) => {
+    dispatch(postNotesSuccessAction(newNotes));
+  };
+
   const { mutate: saveNotesHttp, error: saveNotesResError } = useNoteCreate();
+
+  const postNotesError = () => {
+    dispatch(postNotesErrorAction(saveNotesResError?.data));
+  };
+
   const postNotesRequest = (newNotes: ICreateNotePayload) => {
     if (newNotes) {
       dispatch(postNotesRequestAction(newNotes));
@@ -136,13 +146,6 @@ const NotesProvider: FC<PropsWithChildren<INoteSettings>> = ({
     }
   };
 
-  const postNotesSuccess = (newNotes: INote) => {
-    dispatch(postNotesSuccessAction(newNotes));
-  };
-
-  const postNotesError = () => {
-    dispatch(postNotesErrorAction(saveNotesResError?.data));
-  };
   //#endregion
 
   //#region Delete notes

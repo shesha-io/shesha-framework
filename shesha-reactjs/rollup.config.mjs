@@ -9,6 +9,7 @@ import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json' assert { type: 'json' };
+import eslint from '@rollup/plugin-eslint';
 
 export default {
   input: ['src/index.tsx', 'src/providers/index.ts'],
@@ -57,6 +58,7 @@ export default {
     'react-syntax-highlighter',
   ],
   plugins: [
+    eslint({ throwOnError: true, include: 'src/**/*.ts{,x}' }),
     multi(),
     peerDepsExternal({
       includeDependencies: true,

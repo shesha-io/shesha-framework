@@ -1,129 +1,219 @@
-import moment from 'moment';
-import React, { FC, Fragment } from 'react';
-import { Alert, Menu, Space } from 'antd';
+import React, { FC } from 'react';
+import ShaIcon, { IconType } from '@/components/shaIcon/index';
+import {
+    Alert,
+    Button,
+    Divider,
+    Dropdown,
+    Menu,
+    Space
+} from 'antd';
+import {
+    ButtonGroupItemProps,
+    IButtonGroup,
+    IButtonGroupItem,
+    isGroup,
+    isItem
+} from '@/providers/buttonGroupConfigurator/models';
 import { ConfigurableButton } from '../configurableButton';
-import { executeExpression, getStyle } from '@/providers/form/utils';
+import { DownOutlined } from '@ant-design/icons';
+import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
+import {
+    getActualModel,
+    getStyle,
+    IApplicationContext,
+    useApplicationContext
+} from '@/providers/form/utils';
 import { getButtonGroupMenuItem } from './utils';
-import { IButtonGroupComponentProps } from './models';
-import { useDataTable, useGlobalState, useSheshaApplication } from '@/providers';
-import { useForm } from '@/providers/form';
-import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { IButtonGroupProps } from './models';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { useDeepCompareMemo } from '@/hooks';
+import { useSheshaApplication } from '@/providers';
+import type { MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 
+type MenuItem = MenuProps['items'][number];
+
+type PrepareItemFunc = (item: ButtonGroupItemProps) => ButtonGroupItemProps;
+
 type MenuButton = ButtonGroupItemProps & {
-  childItems?: MenuButton[];
+    childItems?: MenuButton[];
 };
 
-export const ButtonGroup: FC<IButtonGroupComponentProps> = ({ items, id, size, spaceSize = 'middle', isInline, noStyles }) => {
-  const { styles } = useStyles();
-  const { formMode, formData, form } = useForm();
-  const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { globalState } = useGlobalState();
-  const { selectedRow } = useDataTable(false) ?? {}; // todo: move to a generic context provider
+const renderButton = (props: ButtonGroupItemProps, uuid: string, size: SizeType, appContext: IApplicationContext) => {
+    return (
+        <ConfigurableButton
+            key={uuid}
+            {...props}
+            size={size}
+            style={getStyle(props?.style, appContext.data)}
+            disabled={props.disabled}
+            buttonType={props.buttonType}
+        />
+    );
+};
 
-  const isDesignMode = formMode === 'designer';
-
-  const localexecuteExpression = (expression: string) => {
-    const expressionArgs = {
-      data: formData ?? {},
-      form: form,
-      formMode: formMode,
-      globalState: globalState,
-      moment: moment,
-      context: { selectedRow },
-    };
-    return executeExpression<boolean>(expression, expressionArgs, true, (error) => {
-      console.error('Expression evaluation failed', error);
-      return true;
-    });
-  };
-
-  /**
-   * Return the visibility state of a button. A button is visible is it's not hidden and the user is permitted to view it
-   *
-   * @param item
-   * @returns
-   */
-  const getIsVisible = (item: ButtonGroupItemProps) => {
-    const { permissions, hidden } = item;
-
-    const isVisibleByCondition = localexecuteExpression(item.customVisibility);
-
-    const granted = anyOfPermissionsGranted(permissions || []);
-
-    return isVisibleByCondition && !hidden && granted;
-  };
-
-  const renderMenuButton = (props: MenuButton, isChild = false) => {
-    const hasChildren = props?.childItems?.length > 0;
-
-    const disabled = !localexecuteExpression(props.customEnabled);
-
-    const buttonProps = props.itemType === 'item' ? (props as any/*IButtonGroupButton*/) : null;
+const createMenuItem = (props: MenuButton, size: SizeType, getIsVisible: VisibilityEvaluator, appContext: IApplicationContext, prepareItem: PrepareItemFunc): MenuItem => {
+    const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
     const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
 
+    const childItems = props.childItems && props.childItems.length > 0
+        ? props.childItems.map(prepareItem).filter(getIsVisible)?.map((props) => createMenuItem(props, size, getIsVisible, appContext, prepareItem))
+        : null;
+
     return isDivider
-      ? { type: 'divider' }
-      : getButtonGroupMenuItem(
-          renderButtonItem(props, props?.id, disabled),
-          props.id,
-          disabled,
-          hasChildren ? props?.childItems?.filter(getIsVisible)?.map((props) => renderMenuButton(props, isChild)) : null
+        ? { type: 'divider' }
+        : getButtonGroupMenuItem(
+            renderButton(props, props?.id, size, appContext),
+            props.id,
+            props.disabled,
+            childItems
         );
-  };
-
-  const renderButtonItem = (item: ButtonGroupItemProps, uuid: string, disabled = false, isChild = false) => {
-    const itemProps = item as any;//IButtonGroupButton;
-
-    return (
-      <ConfigurableButton
-        formComponentId={id}
-        key={uuid}
-        {...itemProps}
-        size={size}
-        style={getStyle(item?.style, formData)}
-        disabled={disabled}
-        buttonType={isChild ? 'link' : item.buttonType}
-      />
-    );
-  };
-
-  const filteredItems = items?.filter(getIsVisible);
-
-  if (items.length === 0 && isDesignMode)
-    return (
-      <Alert
-        className="sha-designer-warning"
-        message="Button group is empty. Press 'Customize Button Group' button to add items"
-        type="warning"
-      />
-    );
-
-  return (
-    <Fragment>
-      {isInline && (
-        <div className={noStyles ? null : styles.shaResponsiveButtonGroupInlineContainer}>
-          <Space>
-            {filteredItems?.map((props) =>
-              renderButtonItem(props, props?.id, !localexecuteExpression(props.customEnabled))
-            )}
-          </Space>
-        </div>
-      )}
-
-      {!isInline && (
-        <div className={styles.shaResponsiveButtonGroupContainer}>
-          <Menu
-            mode="horizontal"
-            items={filteredItems?.map((props) => renderMenuButton(props))}
-            className={classNames(styles.shaResponsiveButtonGroup, `space-${spaceSize}`)}
-            style={{ width: '30px' }}
-          />
-        </div>
-      )}
-    </Fragment>
-  );
 };
 
-export default ButtonGroup;
+type VisibilityEvaluator = (item: ButtonGroupItemProps) => boolean;
+
+interface InlineItemBaseProps {
+    uuid: string;
+    size: SizeType;
+    getIsVisible: VisibilityEvaluator;
+    appContext: IApplicationContext;
+}
+
+interface InlineItemProps extends InlineItemBaseProps {
+    item: ButtonGroupItemProps;
+    prepareItem: PrepareItemFunc;
+}
+const InlineItem: FC<InlineItemProps> = (props) => {
+    const { item, uuid, size, getIsVisible, appContext, prepareItem } = props;
+
+    const itemProps = prepareItem(item) as ButtonGroupItemProps;
+    if (isGroup(itemProps)) {
+        const menuItems = itemProps.childItems.map(prepareItem).filter(item => (getIsVisible(item))).map(childItem => (createMenuItem({ ...childItem, buttonType: 'link' }, size, getIsVisible, appContext, prepareItem)));
+        return (
+            <Dropdown
+                key={uuid}
+                menu={{ items: menuItems }}
+            >
+                <Button
+                    icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
+                    type={itemProps.buttonType}
+                    title={itemProps.tooltip}
+                >
+                    {item.label}
+                    <DownOutlined />
+                </Button>
+            </Dropdown>
+        );
+    }
+
+    if (isItem(itemProps)) {
+        switch (itemProps.itemSubType) {
+            case 'button':
+                return renderButton(itemProps, uuid, size, appContext);
+            case 'separator':
+            case 'line':
+                return <Divider type='vertical' key={uuid} />;
+            default:
+                return null;
+        }
+    }
+
+    return null;
+};
+
+type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
+
+export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles, disabled }) => {
+    const { styles } = useStyles();
+    const allData = useApplicationContext();
+    const { anyOfPermissionsGranted } = useSheshaApplication();
+
+    const isDesignMode = allData.formMode === 'designer';
+
+    const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
+        const { permissions, hidden } = item;
+        if (hidden)
+            return false;
+
+        const granted = anyOfPermissionsGranted(permissions || []);
+        return granted;
+    };
+
+    const isGroupVisible = (group: IButtonGroup, itemVibilityFunc: ItemVisibilityFunc): boolean => {
+        if (!isVisibleBase(group))
+            return false;
+
+        if (group.hideWhenEmpty) {
+            const firstVisibleItem = group.childItems.find(item => {
+                // analyze buttons and groups only
+                return (isItem(item) && item.itemSubType === 'button' || isGroup(item)) && itemVibilityFunc(item);
+            });
+            if (!firstVisibleItem)
+                return false;
+        }
+
+        return true;
+    };
+
+    // Return the visibility state of a button. A button is visible is it's not hidden and the user is permitted to view it
+    const getIsVisible = (item: ButtonGroupItemProps) => {
+        if (isDesignMode)
+            return true; // show visibility indicator
+
+        return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
+    };
+
+    const prepareItem: PrepareItemFunc = (item) => {
+        const result = getActualModel(item, allData);
+        return { ...result, disabled: result.disabled || disabled };
+    };
+
+    const actualItems = useDeepCompareMemo(() =>
+        items?.map((item) => prepareItem(item))
+        , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+
+    const filteredItems = actualItems?.filter(getIsVisible);
+
+    if (actualItems.length === 0 && isDesignMode)
+        return (
+            <Alert
+                className="sha-designer-warning"
+                message="Button group is empty. Press 'Customize Button Group' button to add items"
+                type="warning"
+            />
+        );
+
+    if (isInline) {
+        return (
+            <div className={noStyles ? null : styles.shaResponsiveButtonGroupInlineContainer}>
+                <Space>
+                    {filteredItems?.map((item) =>
+                        (<InlineItem item={item} uuid={item.id} size={size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} />)
+                    )}
+                </Space>
+            </div>
+        );
+    } else {
+        const menuItems = filteredItems?.map((props) => createMenuItem(props, size, getIsVisible, allData, prepareItem));
+        return (
+            <div className={styles.shaResponsiveButtonGroupContainer}>
+                <Menu
+                    mode="horizontal"
+                    items={menuItems}
+                    className={classNames(styles.shaResponsiveButtonGroup, `space-${spaceSize}`)}
+                    style={{ width: '30px' }}
+                />
+            </div>
+        );
+    }
+};
+
+export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
+    return (
+        <DynamicActionsEvaluator items={props.items}>
+            {(items) => (<ButtonGroupInner {...props} items={items} />)}
+        </DynamicActionsEvaluator>
+    );
+};

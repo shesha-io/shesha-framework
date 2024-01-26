@@ -9,15 +9,6 @@ export default {
     argTypes: {}
 };
 
-// create a master template
-const Template: Story<IMetadataDispatcherProviderProps> = args => {
-    return (
-        <MetadataDispatcherProvider {...args}>
-            <MetadataConsumer />
-        </MetadataDispatcherProvider>
-    );
-};
-
 const MetadataConsumer = () => {
     const { getActiveProvider } = useMetadataDispatcher(false) ?? {};
     const provider = Boolean(getActiveProvider) ? getActiveProvider() : null;
@@ -37,6 +28,15 @@ const MetadataConsumer = () => {
             filterOption={(inputValue, option) => option?.value?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
             placeholder="input here"
         />
+    );
+};
+
+// create a master template
+const Template: Story<IMetadataDispatcherProviderProps> = args => {
+    return (
+        <MetadataDispatcherProvider {...args}>
+            <MetadataConsumer />
+        </MetadataDispatcherProvider>
     );
 };
 

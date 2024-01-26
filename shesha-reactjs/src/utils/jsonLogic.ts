@@ -2,6 +2,20 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from './publicUtils';
 import { executeFunction } from '@/utils';
 
+export type EvaluationType = 'mustache' | 'javascript';
+export interface IEvaluateNodeArgs {
+  expression: string;
+  type: EvaluationType;
+  [key: string]: any;
+}
+export interface IEvaluateNode {
+  evaluate: IEvaluateNodeArgs;
+}
+
+export interface IEvaluateJsonLogicNode {
+  evaluate: IEvaluateNodeArgs[];
+}
+
 type NodeCallback = (operator: string, args: object[]) => void;
 const processRecursive = (jsonLogic: object, callback: NodeCallback) => {
   if (!jsonLogic) return;
@@ -133,6 +147,24 @@ const evaluateMustacheAsync = async (evaluationNode: IEvaluateNode, allArgs: any
   };
 };
 
+export const getEvaluationNodeFromJsonLogicNode = (node: any): IEvaluateNode => {
+  const { evaluate } = node ?? {};
+  const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
+    ? evaluate[0]
+    : undefined;
+
+  const typedArgs = args as IEvaluateNodeArgs;
+  const result: IEvaluateNode = typeof(typedArgs?.expression) === 'string'
+    ? {
+      evaluate: {
+        ...typedArgs,
+        type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
+      }
+    }
+    : undefined;
+  return result;
+};
+
 export const convertJsonLogicNode = async (
   jsonLogic: object,
   options: IJsonLogicConversionOptions
@@ -230,36 +262,4 @@ export const isLegacyMustacheEvaluationNode = (node: any): node is IMustacheEval
   const expressionType = (evaluate as IEvaluateNodeArgs)?.type;
 
   return evaluate && !expressionType;
-};
-
-export type EvaluationType = 'mustache' | 'javascript';
-export interface IEvaluateNodeArgs {
-  expression: string;
-  type: EvaluationType;
-  [key: string]: any;
-}
-export interface IEvaluateNode {
-  evaluate: IEvaluateNodeArgs;
-}
-
-export interface IEvaluateJsonLogicNode {
-  evaluate: IEvaluateNodeArgs[];
-}
-
-export const getEvaluationNodeFromJsonLogicNode = (node: any): IEvaluateNode => {
-  const { evaluate } = node ?? {};
-  const args = evaluate && Array.isArray(evaluate) && evaluate.length === 1
-    ? evaluate[0]
-    : undefined;
-
-  const typedArgs = args as IEvaluateNodeArgs;
-  const result: IEvaluateNode = typeof(typedArgs?.expression) === 'string'
-    ? {
-      evaluate: {
-        ...typedArgs,
-        type: (args as IEvaluateNodeArgs).type ?? 'mustache' /* fallback to legacy */,
-      }
-    }
-    : undefined;
-  return result;
 };

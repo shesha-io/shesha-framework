@@ -164,12 +164,6 @@ interface IColumnsSettingsState {
   rowDroppedMode?: RowDroppedMode;
 }
 
-const TableSettingsForm: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
-  return (
-    SettingsForm<ITableComponentProps>({...props, children: <TableSettings {...props}/>})
-  );
-};
-
 const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({readOnly}) => {
   const { model } = useSettingsForm<ITableComponentProps>();
   
@@ -362,6 +356,12 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         />
       </SettingsFormItem>
     </>
+  );
+};
+
+const TableSettingsForm: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
+  return (
+    SettingsForm<ITableComponentProps>({...props, children: <TableSettings {...props}/>})
   );
 };
 

@@ -1,14 +1,43 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import { Form, message, Spin } from 'antd';
+import _ from 'lodash';
+import axios, { AxiosResponse } from 'axios';
+import classNames from 'classnames';
+import cleanDeep from 'clean-deep';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
-import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
-import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { useForm } from '@/providers/form';
-import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
-import { IAnyObject, ValidateErrorEntity } from '@/interfaces';
-import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from '@/utils/form';
-import { useGlobalState, useSheshaApplication } from '@/providers';
 import moment from 'moment';
+import qs from 'qs';
+import React, {
+  FC,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useState
+  } from 'react';
+import {
+  addFormFieldsList,
+  hasFiles,
+  jsonToFormData,
+  removeGhostKeys
+  } from '@/utils/form';
+import { axiosHttp } from '@/utils/fetchers';
+import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
+import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
+import { Form, message, Spin } from 'antd';
+import { FormConfigurationDto, useFormData } from '@/providers/form/api';
+import { getQueryParams } from '@/utils/url';
+import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
+import { IAnyObject, ValidateErrorEntity } from '@/interfaces';
+import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
+import { nanoid } from '@/utils/uuid';
+import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
+import { StandardEntityActions } from '@/interfaces/metadata';
+import { useDataContextManager } from '@/providers/dataContextManager/index';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { useForm } from '@/providers/form';
+import { useFormDesigner } from '@/providers/formDesigner';
+import { useGlobalState, useSheshaApplication } from '@/providers';
+import { useModelApiEndpoint } from './useActionEndpoint';
+import { useMutate } from '@/hooks/useMutate';
+import { useStyles } from './styles/styles';
 import {
   evaluateComplexString,
   evaluateKeyValuesToObjectMatchedData,
@@ -18,25 +47,6 @@ import {
   getObjectWithOnlyIncludedKeys,
   IMatchData,
 } from '@/providers/form/utils';
-import cleanDeep from 'clean-deep';
-import { getQueryParams } from '@/utils/url';
-import _ from 'lodash';
-import { axiosHttp } from '@/utils/fetchers';
-import qs from 'qs';
-import axios, { AxiosResponse } from 'axios';
-import { FormConfigurationDto, useFormData } from '@/providers/form/api';
-import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
-import { nanoid } from '@/utils/uuid';
-import { useFormDesigner } from '@/providers/formDesigner';
-import { useModelApiEndpoint } from './useActionEndpoint';
-import { StandardEntityActions } from '@/interfaces/metadata';
-import { useMutate } from '@/hooks/useMutate';
-import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
-import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import { useDataContextManager } from '@/providers/dataContextManager/index';
-import { useStyles } from './styles/styles';
-import classNames from 'classnames';
-import { defaultFormProps } from './formDefaults';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -50,7 +60,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   ...props
 }) => {
 
-  const formInstance =  useForm();
+  const formInstance = useForm();
   const { styles } = useStyles();
   //const contextManager = useDataContextManager(false);
   //if (contextManager)
@@ -105,130 +115,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const queryParamsFromAddressBar = useMemo(() => getQueryParams(), []);
 
-  // Execute onInitialized if provided
-  useEffect(() => {
-    if (onInitialized) {
-      try {
-        executeExpression(onInitialized);
-      } catch (error) {
-        console.warn('onInitialized error', error);
-      }
-    }
-  }, [onInitialized]);
-
-  //#region PERSISTED FORM VALUES
-  // I decided to do the persisting manually since the hook way fails in prod. Only works perfectly, but on Storybook
-  // TODO: Revisit this
-  useEffect(() => {
-    if (window && uniqueFormId) {
-      const itemFromStorage = window?.localStorage?.getItem(uniqueFormId);
-      setLastTruthyPersistedValue(_.isEmpty(itemFromStorage) ? null : JSON.parse(itemFromStorage));
-    }
-  }, [uniqueFormId]);
-
-  useEffect(() => {
-    if (uniqueFormId && formKeysToPersist?.length && !_.isEmpty(formData)) {
-      localStorage.setItem(uniqueFormId, JSON.stringify(getObjectWithOnlyIncludedKeys(formData, formKeysToPersist)));
-    } else {
-      localStorage.removeItem(uniqueFormId);
-    }
-  }, [formData]);
-  //#endregion
-
-  const onValuesChangeInternal = (changedValues: any, values: any) => {
-    if (props.onValuesChange) props.onValuesChange(changedValues, values);
-
-    // recalculate components visibility
-    updateStateFormData({ values, mergeValues: true });
-  };
-
-  const initialValuesFromSettings = useMemo(() => {
-    const computedInitialValues = {} as object;
-
-    formSettings?.initialValues?.forEach(({ key, value }) => {
-      const evaluatedValue = value?.includes('{{')
-        ? evaluateComplexString(value, [
-            { match: 'data', data: formData },
-            { match: 'parentFormValues', data: parentFormValues },
-            { match: 'globalState', data: globalState },
-            { match: 'query', data: queryParamsFromAddressBar },
-            { match: 'initialValues', data: initialValues },
-          ])
-        : value?.includes('{')
-        ? evaluateValue(value, {
-            data: formData,
-            parentFormValues: parentFormValues,
-            globalState: globalState,
-            query: queryParamsFromAddressBar,
-            initialValues: initialValues,
-          })
-        : value;
-      _.set(computedInitialValues, key, evaluatedValue);
-    });
-
-    return computedInitialValues;
-  }, [formSettings?.initialValues]);
-
-  const fetchedFormEntity = dataFetcher.fetchedData as object;
-
-  useEffect(() => {
-    if (fetchedFormEntity && onDataLoaded) {
-      executeExpression(onDataLoaded, true, true, true, true, fetchedFormEntity); // On Initialize
-    }
-  }, [onDataLoaded, fetchedFormEntity]);
-
-  useEffect(() => {
-    if (onUpdate) {
-      executeExpression(onUpdate); // On Update
-    }
-  }, [formData, onUpdate]);
-
-  // reset form to initial data on any change of components or initialData
-  // only if data is not fetched or form is not in designer mode
-  const isMountedRef = useRef<boolean>(false);
-  useEffect(() => {
-    // skip reset if component is not yet monted
-    if (!isMountedRef.current){
-      isMountedRef.current = true;
-    } else {
-      if (!fetchedFormEntity && !designerMode)
-        setFormData({ values: initialValues, mergeValues: false });
-    }
-  }, [allComponents, initialValues]);
-
-  useEffect(() => {
-    let incomingInitialValues = null;
-
-    // By default the `initialValuesFromSettings` are merged with `fetchedFormEntity`
-    // If you want only `initialValuesFromSettings`, then pass skipFetchData
-    // If you want only `fetchedFormEntity`, don't pass `initialValuesFromSettings`
-    if (!_.isEmpty(initialValuesFromSettings)) {
-      incomingInitialValues = fetchedFormEntity
-        ? Object.assign(fetchedFormEntity, initialValuesFromSettings)
-        : initialValuesFromSettings;
-    } else if (!_.isEmpty(fetchedFormEntity) || !_.isEmpty(lastTruthyPersistedValue)) {
-      // `fetchedFormEntity` will always be merged with persisted values from local storage
-      // To override this, to not persist values or pass skipFetchData
-      let computedInitialValues = fetchedFormEntity
-        ? prepareInitialValues
-          ? prepareInitialValues(fetchedFormEntity)
-          : fetchedFormEntity
-        : initialValues;
-
-      if (!_.isEmpty(lastTruthyPersistedValue)) {
-        computedInitialValues = { ...computedInitialValues, ...lastTruthyPersistedValue };
-      }
-      incomingInitialValues = computedInitialValues;
-    }
-    // }
-
-    if (incomingInitialValues) {
-      setFormData({ values: incomingInitialValues, mergeValues: true });
-    }
-  }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
-
-  const { mutate: doSubmit, loading: submitting } = useMutate();
-
   const sheshaUtils = {
     prepareTemplate: (templateId: string, replacements: object): Promise<string> => {
       if (!templateId) return Promise.resolve(null);
@@ -281,9 +167,128 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       form,
       setFormData,
       setGlobalState,
-      {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
+      { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
     );
   };
+
+
+  // Execute onInitialized if provided
+  useEffect(() => {
+    if (onInitialized) {
+      try {
+        executeExpression(onInitialized);
+      } catch (error) {
+        console.warn('onInitialized error', error);
+      }
+    }
+  }, [onInitialized]);
+
+  //#region PERSISTED FORM VALUES
+  // I decided to do the persisting manually since the hook way fails in prod. Only works perfectly, but on Storybook
+  // TODO: Revisit this
+  useEffect(() => {
+    if (window && uniqueFormId) {
+      const itemFromStorage = window?.localStorage?.getItem(uniqueFormId);
+      setLastTruthyPersistedValue(_.isEmpty(itemFromStorage) ? null : JSON.parse(itemFromStorage));
+    }
+  }, [uniqueFormId]);
+
+  useEffect(() => {
+    if (uniqueFormId && formKeysToPersist?.length && !_.isEmpty(formData)) {
+      localStorage.setItem(uniqueFormId, JSON.stringify(getObjectWithOnlyIncludedKeys(formData, formKeysToPersist)));
+    } else {
+      localStorage.removeItem(uniqueFormId);
+    }
+  }, [formData]);
+  //#endregion
+
+  const onValuesChangeInternal = (changedValues: any, values: any) => {
+    if (props.onValuesChange) props.onValuesChange(changedValues, values);
+
+    // recalculate components visibility
+    updateStateFormData({ values, mergeValues: true });
+  };
+
+  const initialValuesFromSettings = useMemo(() => {
+    const computedInitialValues = {} as object;
+
+    formSettings?.initialValues?.forEach(({ key, value }) => {
+      const evaluatedValue = value?.includes('{{')
+        ? evaluateComplexString(value, [
+          { match: 'data', data: formData },
+          { match: 'parentFormValues', data: parentFormValues },
+          { match: 'globalState', data: globalState },
+          { match: 'query', data: queryParamsFromAddressBar },
+          { match: 'initialValues', data: initialValues },
+        ])
+        : value?.includes('{')
+          ? evaluateValue(value, {
+            data: formData,
+            parentFormValues: parentFormValues,
+            globalState: globalState,
+            query: queryParamsFromAddressBar,
+            initialValues: initialValues,
+          })
+          : value;
+      _.set(computedInitialValues, key, evaluatedValue);
+    });
+
+    return computedInitialValues;
+  }, [formSettings?.initialValues]);
+
+  const fetchedFormEntity = dataFetcher.fetchedData as object;
+
+  useEffect(() => {
+    if (fetchedFormEntity && onDataLoaded) {
+      executeExpression(onDataLoaded, true, true, true, true, fetchedFormEntity); // On Initialize
+    }
+  }, [onDataLoaded, fetchedFormEntity]);
+
+  useEffect(() => {
+    if (onUpdate) {
+      executeExpression(onUpdate); // On Update
+    }
+  }, [formData, onUpdate]);
+
+  // reset form to initial data on any change of components or initialData
+  // only if data is not fetched or form is not in designer mode
+  useEffect(() => {
+    if (!fetchedFormEntity && !designerMode)
+      setFormData({ values: initialValues, mergeValues: false });
+  }, [allComponents, initialValues]);
+
+  useEffect(() => {
+    let incomingInitialValues = null;
+
+    // By default the `initialValuesFromSettings` are merged with `fetchedFormEntity`
+    // If you want only `initialValuesFromSettings`, then pass skipFetchData
+    // If you want only `fetchedFormEntity`, don't pass `initialValuesFromSettings`
+    if (!_.isEmpty(initialValuesFromSettings)) {
+      incomingInitialValues = fetchedFormEntity
+        ? Object.assign(fetchedFormEntity, initialValuesFromSettings)
+        : initialValuesFromSettings;
+    } else if (!_.isEmpty(fetchedFormEntity) || !_.isEmpty(lastTruthyPersistedValue)) {
+      // `fetchedFormEntity` will always be merged with persisted values from local storage
+      // To override this, to not persist values or pass skipFetchData
+      let computedInitialValues = fetchedFormEntity
+        ? prepareInitialValues
+          ? prepareInitialValues(fetchedFormEntity)
+          : fetchedFormEntity
+        : initialValues;
+
+      if (!_.isEmpty(lastTruthyPersistedValue)) {
+        computedInitialValues = { ...computedInitialValues, ...lastTruthyPersistedValue };
+      }
+      incomingInitialValues = computedInitialValues;
+    }
+    // }
+
+    if (incomingInitialValues) {
+      setFormData({ values: incomingInitialValues, mergeValues: true });
+    }
+  }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
+
+  const { mutate: doSubmit, loading: submitting } = useMutate();
 
   const getDynamicPreparedValues = (): Promise<object> => {
     const { preparedValues } = formSettings;
@@ -422,7 +427,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   return (
     <Spin spinning={submitting}>
       <Form
-        {...defaultFormProps}
         form={form}
         labelWrap
         size={props.size}
