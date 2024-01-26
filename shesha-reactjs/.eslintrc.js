@@ -34,7 +34,7 @@ module.exports = {
     sourceType: 'module',
     tsconfigRootDir: __dirname,
   },
-  plugins: ['eslint-plugin-jsdoc', '@typescript-eslint', '@typescript-eslint/tslint'],
+  plugins: ['eslint-plugin-jsdoc', '@typescript-eslint'],
   root: true,
   rules: {
     'sort-imports': [
@@ -186,23 +186,6 @@ module.exports = {
       'always',
       {
         markers: ['/'],
-      },
-    ],
-    '@typescript-eslint/tslint/config': [
-      'error',
-      {
-        rules: {
-          ban: [true, ['_', 'extend'], ['_', 'isNull'], ['_', 'isDefined']] /*,
-                                                                            "label-undefined": true,
-                                                                            "no-duplicate-key": true,
-                                                                            "no-trailing-comma": true,
-                                                                            "no-unreachable": true,
-                                                                            "use-strict": [
-                                                                               true,
-                                                                               "check-module",
-                                                                               "check-function"
-                                                                            ]*/,
-        },
       },
     ],
   },
