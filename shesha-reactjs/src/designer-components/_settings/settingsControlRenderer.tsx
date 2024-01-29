@@ -4,12 +4,12 @@ import { useForm } from '@/index';
 
 interface SettingsControlRendererProps {
     id: string;
-    components: IConfigurableFormComponent[];
+    component: IConfigurableFormComponent;
     propertyName: string;
 }
 
 export const SettingsControlRenderer: FC<SettingsControlRendererProps> = (props) => {
-    const model = { ...props.components[0], propertyName: props.propertyName };
+    const model = { ...props.component, propertyName: props.propertyName };
 
     const form = useForm();
     const componentRef = useRef();
