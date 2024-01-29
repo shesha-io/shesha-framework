@@ -94,18 +94,18 @@ export const updateSettingsComponents = (
             
                 // Add source component as a child of Setting component
                 if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {
-                    newComponent['components'] = [{
+                    newComponent['sourceComponent'] = {
                         ...oldComponent,
                         components: oldComponent['components'].map(c => {
                             return processComponent(c);
                         }),
                         parentId: newComponent.id
-                    }] as IContainerComponentProps[];
+                    } as IContainerComponentProps;
                 } else {
-                    newComponent['components'] = [{
+                    newComponent['sourceComponent'] = {
                         ...oldComponent,
                         parentId: newComponent.id
-                    }] as IConfigurableFormComponent[];
+                    } as IConfigurableFormComponent;
                 }
                 return newComponent;
             } else {

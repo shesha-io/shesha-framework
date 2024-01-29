@@ -1,4 +1,3 @@
-import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, MetadataProvider, useConfigurableActionDispatcher, useMetadataDispatcher } from "@/providers";
 import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
@@ -6,6 +5,7 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState }
 import { createContext } from 'react';
 import { setValueByPropertyName } from "@/utils/object";
 import { getFieldNameFromExpression, IApplicationContext, useApplicationContext } from "@/utils/publicUtils";
+import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 
 export interface IDataContextProviderStateContext {
     id: string;
@@ -42,7 +42,6 @@ export interface IDataContextProviderProps {
     description?: string;
     type: DataContextType | string;
     initialData?: Promise<object>;
-    dynamicData?: any;
     metadata?: Promise<IModelMetadata>;
     onChangeData?: IContextOnChangeData;
     onChangeAction?: IConfigurableActionConfiguration;
@@ -50,7 +49,12 @@ export interface IDataContextProviderProps {
 
 const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({ children, id, ...props }) => {
     
-    const { name, description, type = 'custom', initialData, metadata, dynamicData } = props;
+    const { 
+        name, 
+        description, 
+        type = 'custom', 
+        initialData
+    } = props;
 
     const { onChangeContext, onUpdateContextApi, getDataContextData, onChangeContextData } = useDataContextManager();
     const metadataDispatcher = useMetadataDispatcher();
@@ -68,8 +72,10 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
         description,
         type,
         parentDataContext: parentContext,
-        metadata
+        metadata: props.metadata ?? Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name, properties: []} as IModelMetadata) // set default metadata if empty
     });
+
+    const metadata = props.metadata ?? state.metadata;
 
     const getFieldValue = (name: string) => {
         const data = getDataContextData(id);
@@ -148,14 +154,6 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
         initialData: {},
         ...actionContext,
     }, []);
-
-    useDeepCompareEffect(() => {
-        if (dynamicData) {
-            if (onChangeData.current)
-                onChangeData.current(dynamicData, dynamicData);
-            onChangeContextData(id, dynamicData);
-        }
-    }, [dynamicData]);
 
     useEffect(() => {
         initialData?.then(res => {
