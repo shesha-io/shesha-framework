@@ -11,8 +11,9 @@ import {
 } from './contexts';
 import { signalRReducer } from './reducer';
 //@ts-ignore
-import { useApplicationConfiguration, usePrevious } from '@/hooks';
+import { usePrevious } from '@/hooks';
 import { setConnectionAction } from './actions';
+import { useSheshaApplication } from '../sheshaApplication';
 
 export interface ISignalRProvider {
   hubUrl: string;
@@ -29,7 +30,7 @@ function SignalRProvider({
   onDisconnected,
 }: PropsWithChildren<ISignalRProvider>) {
   const [state, dispatch] = useReducer(signalRReducer, { ...SIGNAL_R_CONTEXT_INITIAL_STATE });
-  const { config } = useApplicationConfiguration();
+  const { backendUrl } = useSheshaApplication();
 
   const previousBaseUrl = usePrevious(baseUrl);
 
@@ -43,7 +44,7 @@ function SignalRProvider({
     }
 
     const connection: ISignalRConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl ?? config?.baseUrl}${hubUrl}`)
+      .withUrl(`${baseUrl ?? backendUrl}${hubUrl}`)
       .build();
 
     connection.start().then(() => {
@@ -66,7 +67,7 @@ function SignalRProvider({
 
       setConnection();
     };
-  }, [baseUrl, config]);
+  }, [baseUrl, backendUrl, hubUrl]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 

@@ -1,7 +1,7 @@
 import React, { ComponentType, FC, Fragment, useEffect } from 'react';
 import { /*IdleTimerRenderer,*/ OverlayLoader } from '@/components';
 import { useAuth, useShaRouting } from '@/providers';
-import { getLoginUrlWithReturn } from '@/utils/url';
+import { useLoginUrl } from '@/hooks/useLoginUrl';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
@@ -14,6 +14,8 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
 
   const { goingToRoute, router } = useShaRouting();
 
+  const loginUrl = useLoginUrl({ homePageUrl: landingPage, unauthorizedRedirectUrl });
+
   useEffect(() => {
     const token = getAccessToken();
 
@@ -21,7 +23,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
       if (token) {
         checkAuth();
       } else {
-        goingToRoute(getLoginUrlWithReturn(landingPage, unauthorizedRedirectUrl));
+        goingToRoute(loginUrl);
       }
     }
   }, [isCheckingAuth]);

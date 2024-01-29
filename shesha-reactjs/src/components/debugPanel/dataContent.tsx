@@ -4,7 +4,7 @@ import { useDataContextManager } from "@/providers/dataContextManager";
 import { useGlobalState, useMetadataDispatcher } from "@/providers";
 import { useFormDesigner } from "@/providers/formDesigner";
 import { IModelMetadata } from "@/interfaces/metadata";
-import { getFieldNameFromExpression } from "@/utils/publicUtils";
+import { getFieldNameFromExpression } from "@/providers/form/utils";
 
 const DebugPanelDataContent: FC = () => {
     const globalState = useGlobalState();

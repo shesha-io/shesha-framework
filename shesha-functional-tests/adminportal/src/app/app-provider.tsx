@@ -5,35 +5,22 @@ import {
     GlobalStateProvider,
     ShaApplicationProvider,
     StoredFilesProvider,
-    MainLayout    
+    MainLayout,
+    useNextRouter,
 } from '@shesha-io/reactjs';
-import { ReadonlyURLSearchParams, usePathname, useSearchParams } from 'next/navigation';
-import { AppProgressBar, useRouter } from 'next-nprogress-bar';
+import { AppProgressBar } from 'next-nprogress-bar';
 import { useTheme } from 'antd-style';
 
 export interface IAppProviderProps {
     backendUrl: string;
 }
 
-
-const convertSearchParamsToDictionary = (params: ReadonlyURLSearchParams): NodeJS.Dict<string | string[]> => {
-    const entries = params.entries();
-    const result: NodeJS.Dict<string | string[]> = {};
-    for (const [key, value] of entries) { // each 'entry' is a [key, value] tupple
-        result[key] = value;
-    }
-    return result;
-};
-
 export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl }) => {
-    const router = useRouter();
-    const query = useSearchParams();
-    const queryParams = convertSearchParamsToDictionary(query);
-    const pathname = usePathname();
+    const nextRouter = useNextRouter();
     const theme = useTheme();
     
     const noAuthRoutes = ['/no-auth', '/login', '/account/forgot-password', '/account/reset-password'];
-    const noAuth = Boolean(noAuthRoutes.find(r => pathname?.includes(r)));
+    const noAuth = Boolean(noAuthRoutes.find(r => nextRouter.path?.includes(r)));
 
     return (
         <GlobalStateProvider>
@@ -44,12 +31,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
             />
             <ShaApplicationProvider
                 backendUrl={backendUrl}
-                router={{
-                    push: router.push,
-                    back: router.back,
-                    query: queryParams,
-                    asPath: pathname,
-                }}
+                router={nextRouter}
                 noAuth={false}
             >
                 <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>

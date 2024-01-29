@@ -2,8 +2,8 @@ import React, { FC } from 'react';
 import { FallbackProps } from 'react-error-boundary';
 import { FrownTwoTone } from '@ant-design/icons';
 import { Button, Space } from 'antd';
-import Router from 'next/router';
 import { useStyles } from './styles/styles';
+import { useShaRouting } from '@/providers';
 
 const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>) => {
   // Do something with the error
@@ -21,6 +21,7 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
   resetErrorBoundary,
 }) => {
   const { styles } = useStyles();
+  const { router } = useShaRouting();
   errorBoundaryErrorHandler({ error });
 
   if (fullScreen) {
@@ -34,7 +35,7 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
         </p>
 
         <Space size="middle">
-          <Button type="primary" onClick={() => Router.push('/')} className={styles.takeMeHome}>
+          <Button type="primary" onClick={() => router.push('/')} className={styles.takeMeHome}>
             TAKE ME HOME
           </Button>
 

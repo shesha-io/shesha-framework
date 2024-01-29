@@ -5,7 +5,7 @@ import { useFormData, useGlobalState } from '@/providers';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getDataSourceList, IRadioProps } from './utils';
-import { evaluateValue } from '@/utils/publicUtils';
+import { evaluateValue } from '@/providers/form/utils';
 
 const RadioGroup: FC<IRadioProps> = (model) => {
   const { data: formData } = useFormData();

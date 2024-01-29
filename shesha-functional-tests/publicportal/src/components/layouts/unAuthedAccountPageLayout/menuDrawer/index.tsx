@@ -1,37 +1,24 @@
-import { ISidebarMenuItem, IconType, ShaIcon } from "@shesha/reactjs";
-import { nanoid } from "nanoid";
+import { Menu, MenuProps } from "antd";
 import React, { FC } from "react";
-import ShaMenuDrawerMenuItem from "./menuItem";
 import { ShaMenuDrawerStyledWrapper } from "./styles";
-import ShaMenuDrawerWrapper from "./wrapper";
+
+type MenuItem = Required<MenuProps>['items'][number];
 
 interface IProps {
-  items: ISidebarMenuItem[];
+  items: MenuItem[];
   open: boolean;
   onClose: (e: React.MouseEvent<Element, MouseEvent>) => void;
 }
 
 const ShaMenuDrawer: FC<IProps> = ({ items = [], open, onClose }) => (
   <ShaMenuDrawerStyledWrapper
-    key={nanoid()}
     title="Menu List"
     placement={"left"}
     closable={false}
     onClose={onClose}
     open={open}
   >
-    {items.map(({ childItems, icon, target, title }) => (
-      <ShaMenuDrawerWrapper target={target}>
-        <span>
-          <ShaIcon className="sha-icon" iconName={icon as IconType} />
-          {title}
-        </span>
-
-        {childItems && childItems.length && (
-          <ShaMenuDrawerMenuItem childItems={childItems} />
-        )}
-      </ShaMenuDrawerWrapper>
-    ))}
+    <Menu mode="inline" items={items} />
   </ShaMenuDrawerStyledWrapper>
 );
 

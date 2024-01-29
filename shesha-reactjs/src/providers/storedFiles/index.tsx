@@ -4,7 +4,7 @@ import { IAjaxResponse } from '@/interfaces';
 import qs from 'qs';
 import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { useDeleteFileById } from '@/apis/storedFile';
-import { useApplicationConfiguration, useGet, useMutate } from '@/hooks';
+import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
@@ -76,8 +76,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   });
 
   const { connection } = useSignalR(false) ?? {};
-  const { httpHeaders: headers } = useSheshaApplication();
-  const { config } = useApplicationConfiguration();
+  const { httpHeaders: headers, backendUrl } = useSheshaApplication();
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const {
@@ -209,7 +208,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   const downloadZipFile = (payload: IDownloadZipPayload = null) => {
     dispatch(downloadZipRequestAction());
     axios({
-      url: `${baseUrl ?? config?.baseUrl}/api/StoredFile/DownloadZip?${qs.stringify(
+      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(
         payload || { ownerId: state.ownerId, ownerType: state.ownerType }
       )}`,
       method: 'GET',

@@ -1,6 +1,6 @@
 import { nanoid } from '@/utils/uuid';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
-import { IExpressionExecuterArguments, executeScriptSync } from '@/utils/publicUtils';
+import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/form/utils';
 
 const NEW_KEY = ['{{NEW_KEY}}', '{{GEN_KEY}}'];
 

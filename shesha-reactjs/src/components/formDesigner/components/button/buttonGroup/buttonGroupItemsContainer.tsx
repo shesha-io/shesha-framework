@@ -8,7 +8,7 @@ import {
   ButtonGroupItemProps,
 } from '@/providers/buttonGroupConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getActualModel, useApplicationContext } from '@/utils/publicUtils';
+import { getActualModel, useApplicationContext } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 

@@ -8,17 +8,17 @@ import {
   Form,
   Input
   } from 'antd';
-import { ForgotPasswordPage, VerifyOtpModal } from '../../../components/pages/account/forgot-password/styles';
+import { ForgotPasswordPage, VerifyOtpModal } from './styles';
 import { IdcardOutlined } from '@ant-design/icons';
 import {
   ResetPasswordVerifyOtpInput,
   useResetPasswordSendOtp,
   useResetPasswordVerifyOtp,
   UserResetPasswordSendOtpQueryParams
-  } from 'api/user';
+  } from '@/api/user';
 import { useRouter } from 'next/navigation';
 import { useAuth, ValidationErrors, PageWithLayout } from '@shesha-io/reactjs';
-import { URL_LOGIN_PAGE } from 'routes';
+import { URL_LOGIN_PAGE } from '@/routes';
 
 
 interface IProps { }

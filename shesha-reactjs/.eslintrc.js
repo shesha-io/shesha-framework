@@ -37,6 +37,9 @@ module.exports = {
   plugins: ['eslint-plugin-jsdoc', '@typescript-eslint'],
   root: true,
   rules: {
+    'no-restricted-imports': [
+      "error", { "paths": ["@/utils/publicUtils"] }
+    ],
     'sort-imports': [
       'off',
       {

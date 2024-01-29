@@ -119,4 +119,4 @@ function useTheme() {
   return { ...useThemeState(), ...useThemeActions() };
 }
 
-export { ThemeProvider, useTheme, useThemeActions, useThemeState };
+export { ThemeProvider, useTheme, useThemeActions, useThemeState, type IConfigurableTheme };

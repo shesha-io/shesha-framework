@@ -8,7 +8,7 @@ import { useForm, useFormData, useGlobalState } from '@/providers';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { IRefListStatusProps } from './models';
 import { RefListStatusSettingsForm } from './settings';
-import { executeCustomExpression, getStyle } from '@/utils/publicUtils';
+import { executeCustomExpression, getStyle } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';

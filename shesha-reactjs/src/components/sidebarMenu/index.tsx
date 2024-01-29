@@ -4,8 +4,8 @@ import { isSidebarButton } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
 import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
-import { renderSidebarMenuItem } from './utils';
-import { useApplicationContext } from '@/utils/publicUtils';
+import { sidebarMenuItemToMenuItem } from './utils';
+import { useApplicationContext } from '@/providers/form/utils';
 import { useLocalStorage } from '@/hooks';
 import { useSidebarMenu } from '@/providers/sidebarMenu';
 import { useStyles } from './styles/styles';
@@ -16,7 +16,7 @@ export interface ISidebarMenuProps {
   theme?: MenuTheme;
 }
 
-export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
+const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('openedSidebarKeys', null);
   const { getItems, isItemVisible } = useSidebarMenu();
   const { executeAction } = useConfigurableActionDispatcher();
@@ -24,7 +24,7 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const executionContext = useApplicationContext();
   const { styles } = useStyles();
 
-  const currentUrl = normalizeUrl(router?.asPath);
+  const currentUrl = normalizeUrl(router?.fullPath);
 
   const [selectedKey, setSelectedKey] = useState<string>();
 
@@ -42,7 +42,7 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const menuItems = useMemo(() => {
     return (items ?? []).map((item) =>
-      renderSidebarMenuItem({
+    sidebarMenuItemToMenuItem({
         item,
         isItemVisible,
         onButtonClick,
@@ -82,3 +82,13 @@ export const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     />
   );
 };
+
+type InternalSidebarMenuType = typeof SidebarMenu;
+interface IInternalSidebarMenuType extends InternalSidebarMenuType {
+  sidebarItemToMenuItem: typeof sidebarMenuItemToMenuItem;
+}
+
+const SidebarMenuInterface = SidebarMenu as IInternalSidebarMenuType;
+SidebarMenuInterface.sidebarItemToMenuItem = sidebarMenuItemToMenuItem;
+
+export { SidebarMenuInterface as SidebarMenu };

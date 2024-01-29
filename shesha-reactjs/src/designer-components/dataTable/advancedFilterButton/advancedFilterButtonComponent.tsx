@@ -3,7 +3,7 @@ import settingsFormJson from './settingsForm.json';
 import { FilterOutlined } from '@ant-design/icons';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
-import { validateConfigurableComponentSettings } from '@/utils/publicUtils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { AdvancedFilterButton } from './advancedFilterButton';
 
 export interface IAdvancedFilterButtonComponentProps extends IConfigurableFormComponent { }

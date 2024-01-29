@@ -20,7 +20,7 @@ import {
 } from '@/utils/auth';
 import { getLocalizationOrDefault } from '@/utils/localization';
 import { getCustomHeaders, getTenantId } from '@/utils/multitenancy';
-import { getCurrentUrl, getLoginUrlWithReturn, getQueryParam, isSameUrls } from '@/utils/url';
+import { isSameUrls } from '@/utils/url';
 import { useShaRouting } from '@/providers/shaRouting';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -46,6 +46,7 @@ import {
   ILoginForm,
 } from './contexts';
 import { authReducer } from './reducer';
+import { useLoginUrl } from '@/hooks/useLoginUrl';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -167,9 +168,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     });
   };
 
+  const loginUrl = useLoginUrl({ homePageUrl, unauthorizedRedirectUrl });
   const redirectToUnauthorized = () => {
-    const redirectUrl = getLoginUrlWithReturn(homePageUrl, unauthorizedRedirectUrl);
-    redirect(redirectUrl);
+    redirect(loginUrl);
   };
 
   const fetchUserInfo = (headers: IHttpHeaders) => {
@@ -188,11 +189,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           if (state.requireChangePassword && Boolean(changePasswordUrl)) {
             redirect(changePasswordUrl);
           } else {
-            const currentUrl = getCurrentUrl();
-
             // if we are on the login page - redirect to the returnUrl or home page
-            if (isSameUrls(currentUrl, unauthorizedRedirectUrl)) {
-              const returnUrl = getQueryParam('returnUrl')?.toString();
+            if (isSameUrls(router.path, unauthorizedRedirectUrl)) {
+              const returnUrl = (router.query['returnUrl'])?.toString();
 
               cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
 
@@ -255,7 +254,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   useEffect(() => {
     const httpHeaders = getCleanedInitHeaders(getHttpHeaders());
 
-    const currentUrl = getCurrentUrl();
+    const currentUrl = router.fullPath;
 
     if (!httpHeaders) {
       if (currentUrl !== unauthorizedRedirectUrl) {
@@ -373,7 +372,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     return !!(
       (state.isFetchingUserInfo || (!state.isFetchingUserInfo && !state.loginInfo && state.token)) // Done fetching user info but the state is not yet updated
     );
-  }, [state.isFetchingUserInfo, state]);
+  }, [state.isFetchingUserInfo, state.loginInfo, state.token]);
 
   //#endregion
 

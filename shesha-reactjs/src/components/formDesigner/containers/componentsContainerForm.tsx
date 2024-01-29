@@ -4,7 +4,7 @@ import React, {
   useCallback,
 } from 'react';
 import { ComponentsContainerDesigner } from './componentsContainerDesigner';
-import { executeScriptSync } from '@/utils/publicUtils';
+import { executeScriptSync } from '@/providers/form/utils';
 import { getAlignmentStyle } from './util';
 import { IComponentsContainerProps } from './componentsContainer';
 import { useForm } from '@/providers/form';

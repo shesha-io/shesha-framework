@@ -6,7 +6,7 @@ import ComponentsContainer from '../../containers/componentsContainer';
 import { useFormData, useGlobalState } from '@/providers';
 import { nanoid } from '@/utils/uuid';
 import { IColumnsComponentProps } from './interfaces';
-import { getLayoutStyle } from '@/utils/publicUtils';
+import { getLayoutStyle } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { ColumnsSettingsForm } from './columnsSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
