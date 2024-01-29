@@ -24,7 +24,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const executionContext = useApplicationContext();
   const { styles } = useStyles();
 
-  const currentUrl = normalizeUrl(router?.asPath);
+  const currentUrl = normalizeUrl(router?.fullPath);
 
   const [selectedKey, setSelectedKey] = useState<string>();
 

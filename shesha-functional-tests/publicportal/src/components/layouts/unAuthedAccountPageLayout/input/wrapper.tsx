@@ -6,7 +6,7 @@ interface IProps
   label?: string;
   placeholder?: string;
   required?: boolean;
-  type?: "text" | "password";
+  type?: "text" | "password"  | "current-password";
 }
 
 const ShaInputWrapper: FC<IProps> = ({ label, ...props }) => {

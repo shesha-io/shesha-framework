@@ -4,13 +4,13 @@ import { FacebookFilled, GoogleOutlined } from "@ant-design/icons";
 import { ValidationErrors, useAuth, useTheme } from "@shesha-io/reactjs";
 import { Checkbox, Form } from "antd";
 import FormItem from "antd/lib/form/FormItem";
-import { ShaButton, ShaTitle, ShaInput } from "components";
-import { ILoginForm } from "models";
+import { ShaButton, ShaTitle, ShaInput } from "@/components";
+import { ILoginForm } from "@/models";
 import Link from "next/link";
 import { FC } from "react";
-import { URL_FORGOT_PASSWORD } from "routes";
-import { LoginPageWrapper } from "../../components/pages/login/styles";
-import { LOGO } from "src/app-constants/application";
+import { URL_FORGOT_PASSWORD } from "@/routes";
+import { LoginPageWrapper } from "./styles";
+import { LOGO } from "@/app-constants/application";
 
 const Login: FC = () => {
   const { theme } = useTheme();
@@ -52,7 +52,7 @@ const Login: FC = () => {
           name="password"
           label="Password"
           placeholder="Placeholder"
-          type="password"
+          type="current-password"
         />
 
         <div className="sha-space-inline">

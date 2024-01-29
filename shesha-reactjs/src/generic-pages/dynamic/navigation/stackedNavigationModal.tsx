@@ -49,7 +49,7 @@ const StackedNavigationModal: FC<IStackedNavigationModalProps> = ({
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>
-              <Link href={`${removeURLParameter(router?.asPath, 'navMode')}`}>
+              <Link href={`${removeURLParameter(router?.fullPath, 'navMode')}`}>
                 {title}
               </Link>
             </span>

@@ -1,4 +1,4 @@
-import { UnAuthedAccountPageLayout } from 'components';
+import { UnAuthedAccountPageLayout } from '@/components';
 import styled from 'styled-components';
 
 export const LoginPageWrapper = styled(UnAuthedAccountPageLayout)`

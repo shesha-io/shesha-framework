@@ -1,15 +1,7 @@
 import qs, { ParsedQs } from 'qs';
 
-export const getCurrentUrl = (): string => {
-  return typeof window !== 'undefined' ? window.location?.pathname ?? '' : '';
-};
-
-export const getCurrentQueryString = (): string => {
+const getCurrentQueryString = (): string => {
   return typeof window !== 'undefined' ? window.location?.search ?? '' : '';
-};
-
-export const getCurrentUrlWithQueryString = (): string => {
-  return getCurrentUrl() + getCurrentQueryString();
 };
 
 export const normalizeUrl = (url: string): string => {
@@ -18,17 +10,6 @@ export const normalizeUrl = (url: string): string => {
 
 export const isSameUrls = (url1: string, url2: string): boolean => {
   return normalizeUrl(url1) === normalizeUrl(url2);
-};
-
-export const getLoginUrlWithReturn = (landingPage: string, unauthorizedRedirectUrl: string) => {
-  const currentPath = getCurrentUrl();
-
-  const redirectUrl =
-    isSameUrls(currentPath, landingPage) || isSameUrls(currentPath, unauthorizedRedirectUrl)
-      ? ''
-      : `/?returnUrl=${encodeURIComponent(getCurrentUrlWithQueryString())}`;
-
-  return `${unauthorizedRedirectUrl}${redirectUrl}`;
 };
 
 export const getUrlWithoutQueryParams = (url: string): string => {

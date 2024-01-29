@@ -58,6 +58,8 @@ const nextConfig = () => {
     env,
     publicRuntimeConfig: env,
     compiler: {
+      styledComponents: true,
+      
       // Remove `console.*` output except `console.error`
       removeConsole: isProd
         ? {

@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import { UnAuthedAccountPageLayout } from 'components';
+import { UnAuthedAccountPageLayout } from '@/components';
 import styled from 'styled-components';
 
 export const ForgotPasswordPage = styled(UnAuthedAccountPageLayout)`

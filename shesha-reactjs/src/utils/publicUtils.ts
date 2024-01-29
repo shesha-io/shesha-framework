@@ -10,10 +10,6 @@ export { axiosHttp } from './fetchers';
 export { requestHeaders } from './requestHeaders';
 
 export {
-  getCurrentQueryString,
-  getCurrentUrl,
-  getCurrentUrlWithQueryString,
-  getLoginUrlWithReturn,
   getQueryParam,
   getQueryParams,
   getUrlWithoutQueryParams,

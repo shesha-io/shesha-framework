@@ -21,77 +21,8 @@
     "moduleResolution": "node",
     "noEmit": true,
     "paths": {
-      "api": [
-        "src/api"
-      ],
-      "api/*": [
-        "src/api/*"
-      ],
-      "app-constants": [
-        "src/app-constants"
-      ],
-      "components": [
-        "src/components"
-      ],
-      "definitions": [
-        "src/definitions"
-      ],
-      "enums": [
-        "src/enums"
-      ],
-      "hocs": [
-        "src/hocs"
-      ],
-      "hooks": [
-        "src/hooks"
-      ],
-      "i18n": [
-        "./i18n.json"
-      ],
-      "interfaces": [
-        "src/interfaces"
-      ],
-      "models": [
-        "src/models"
-      ],
-      "models/*": [
-        "src/models/*"
-      ],
-      "providers": [
-        "src/providers"
-      ],
-      "providers/*": [
-        "src/providers/*"
-      ],
-      "public": [
-        "public"
-      ],
-      "roots": [
-        "src/roots"
-      ],
-      "routes": [
-        "src/routes"
-      ],
-      "routes/*": [
-        "src/routes/*"
-      ],
-      "routes/settingsRoutes": [
-        "src/routes/settingsRoutes"
-      ],
-      "styles": [
-        "src/styles"
-      ],
-      "test": [
-        "test"
-      ],
-      "theme": [
-        "src/theme"
-      ],
-      "theme/*": [
-        "src/theme/*"
-      ],
-      "utils": [
-        "src/utils"
+      "@/*": [
+        "./src/*"
       ]
     },
     "resolveJsonModule": true,

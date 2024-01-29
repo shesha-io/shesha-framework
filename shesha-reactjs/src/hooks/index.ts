@@ -1,4 +1,3 @@
-export { useApplicationConfiguration } from './useApplicationConfiguration';
 export { useBoolean } from './useBoolean';
 export { useDataTableFluentColumns } from './useDataTableFluentColumns';
 export { useDeepCompareMemo, useDeepCompareMemoKeepReference } from './useDeepCompareMemo';
@@ -16,3 +15,4 @@ export { useSessionStorage } from './useSessionStorage';
 export { useToggle } from './useToggle';
 export { useWebStorage } from './useWebStorage';
 export { useFormExpression } from './useFormExpression';
+export { useNextRouter } from './useNextRouter';

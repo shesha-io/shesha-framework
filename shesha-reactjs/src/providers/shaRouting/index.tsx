@@ -28,7 +28,9 @@ interface IRouter {
    */
   back(): void;
   query: NodeJS.Dict<string | string[]>;
-  asPath: string;
+  fullPath: string;
+  queryString: string;
+  path: string;
 }
 
 export interface INavigateActoinArguments {

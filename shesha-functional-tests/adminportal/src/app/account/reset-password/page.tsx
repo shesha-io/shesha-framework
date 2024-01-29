@@ -9,13 +9,13 @@ import {
   notification,
   Result
   } from 'antd';
-import PasswordConfirmPasswordInputs, { IPasswordConfirmPassword } from '../../../components/global/passwordConfirmPasswordInputs/index';
-import { ResetPasswordContainer } from '../../../components/pages/account/reset-password/styles';
+import PasswordConfirmPasswordInputs, { IPasswordConfirmPassword } from '@/components/global/passwordConfirmPasswordInputs/index';
+import { ResetPasswordContainer } from './styles';
 import { SmileOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
-import { useUserResetPasswordUsingToken } from 'api/user';
+import { useUserResetPasswordUsingToken } from '@/api/user';
 import { useAuth, PageWithLayout, ValidationErrors } from '@shesha-io/reactjs';
-import { URL_LOGIN_PAGE } from 'routes';
+import { URL_LOGIN_PAGE } from '@/routes';
 
 const ResetPassword: PageWithLayout<{}> = () => {
   const { verifyOtpResPayload, resetPasswordSuccess } = useAuth();

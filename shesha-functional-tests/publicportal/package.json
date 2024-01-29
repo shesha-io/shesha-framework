@@ -16,6 +16,10 @@
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
     "test": "jest -c test/jest.config.js"
   },
+  "resolutions": {
+    "@emotion/react": "11.11.3",
+    "@emotion/styled": "11.11.3"
+  },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@microsoft/applicationinsights-react-js": "^3.1.2",
