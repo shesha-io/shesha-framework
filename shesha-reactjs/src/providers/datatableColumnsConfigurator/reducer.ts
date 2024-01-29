@@ -107,6 +107,8 @@ const toolbarReducer = handleActions<IColumnsConfiguratorStateContext, any>(
       action: ReduxActions.Action<IUpdateItemSettingsPayload>
     ) => {
       const { payload } = action;
+      if (!payload.id)
+        return state;
 
       const {
         settings: { columnType },
