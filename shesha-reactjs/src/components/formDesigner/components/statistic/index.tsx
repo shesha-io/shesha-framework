@@ -45,7 +45,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
-    .add<IStatisticComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IStatisticComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IStatisticComponentProps)
   ,
 };
 
