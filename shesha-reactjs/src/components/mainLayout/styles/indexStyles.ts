@@ -1,7 +1,7 @@
-import { sheshaStyles } from "@/styles";
-import { createGlobalStyle } from "antd-style";
+import { sheshaStyles } from '@/styles';
+import { createGlobalStyle } from 'antd-style';
 
-const shaBorder = "1px solid #d3d3d3"; // @sha-border
+const shaBorder = '1px solid #d3d3d3'; // @sha-border
 
 export const GlobalSheshaStyles = createGlobalStyle`
   .sha-index-table-full {
@@ -105,5 +105,14 @@ export const GlobalSheshaStyles = createGlobalStyle`
     color: ${(p) => p.theme.colorErrorText};
     font-family: ${(p) => p.theme.fontFamily};
     line-height: 1;
+  }
+
+  .ant-btn-link, .sha-link {
+    color: ${(p) => p.theme.colorPrimary} !important;
+
+    &:hover {
+      color: ${(p) => p.theme.colorPrimary} !important;
+      filter: brightness(105%);
+    }
   }
 `;
