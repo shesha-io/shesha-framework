@@ -45,7 +45,7 @@ const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorCompon
       return (
         <ConfigurableFormItem model={{...model}}>
           {(value, onChange) => {
-            return <DataContextSelector {...model} value={value} onChange={onChange}/>
+            return <DataContextSelector {...model} value={value} onChange={onChange}/>;
           }}
         </ConfigurableFormItem>
       );
