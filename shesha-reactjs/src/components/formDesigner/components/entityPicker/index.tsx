@@ -21,7 +21,6 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent 
   placeholder?: string;
   items: IConfigurableColumnsProps[];
   hideBorder?: boolean;
-  disabled?: boolean;
   useRawValues?: boolean;
   mode?: 'single' | 'multiple' | 'tags';
   entityType: string;

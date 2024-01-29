@@ -11,10 +11,14 @@ export interface ICodeEditorProps extends IAceEditorProps {
     aceBaseUrl?: string;
 }
 
-const AceEditorLazy = React.lazy<typeof ReactAce>(() => new Promise(async resolve => {
-    const reactAce = await import("react-ace");
+let ace = null;
+export const AceEditorInitialize = async ()  => {
+    if (!!ace)
+        return;
 
-    // prevent warning in console about misspelled props name.
+    ace = require("ace-builds/src-noconflict/ace");
+
+        // prevent warning in console about misspelled props name.
     await import("ace-builds/src-noconflict/ext-language_tools");
 
     // import your theme/mode here. <AceEditor mode="javascript" theme="monokai" />
@@ -22,8 +26,7 @@ const AceEditorLazy = React.lazy<typeof ReactAce>(() => new Promise(async resolv
     await import("ace-builds/src-noconflict/mode-typescript");
     await import("ace-builds/src-noconflict/mode-json");
     await import("ace-builds/src-noconflict/theme-monokai");
-
-    const ace = require("ace-builds/src-noconflict/ace");
+    
     ace.config.set(
         "basePath",
         DEFAULT_ACE_URL
@@ -38,6 +41,12 @@ const AceEditorLazy = React.lazy<typeof ReactAce>(() => new Promise(async resolv
 
     langTools.addCompleter(metadataCodeCompleter);
     langTools.addCompleter(contextCodeCompleter);
+};
+
+const AceEditorLazy = React.lazy<typeof ReactAce>(() => new Promise(async resolve => {
+    const reactAce = await import("react-ace");
+
+    await AceEditorInitialize();
 
     resolve(reactAce as any);
 }));

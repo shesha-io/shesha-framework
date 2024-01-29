@@ -10,14 +10,11 @@ import { useDataContextManager } from '@/providers/dataContextManager';
 interface IDataContextSelectorComponentProps extends IConfigurableFormComponent {}
 
 const DataContextSelector: FC<any> = (model) => {
-  const { getActiveContext, getDataContext } = useDataContextManager();
-  const dataContexts = [];
-  let dataContext = getActiveContext();
-  while (!!dataContext) {
-    dataContexts.push(dataContext);
-    dataContext = getDataContext(dataContext.parentId);
-  }
-
+  const { getActiveContext, getDataContexts } = useDataContextManager();
+  
+  const dataContext = getActiveContext();
+  const dataContexts = getDataContexts(dataContext.id);
+  
   const metadataDispatcher = useMetadataDispatcher();
 
   const onChange = (value: any) => {
@@ -47,7 +44,9 @@ const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorCompon
     Factory: ({ model }) => {
       return (
         <ConfigurableFormItem model={{...model}}>
-          <DataContextSelector {...model}/>
+          {(value, onChange) => {
+            return <DataContextSelector {...model} value={value} onChange={onChange}/>;
+          }}
         </ConfigurableFormItem>
       );
     },

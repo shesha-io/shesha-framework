@@ -7,10 +7,9 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import { SettingOutlined } from '@ant-design/icons';
 import { SettingsControlRenderer } from './settingsControlRenderer';
-import { useDeepCompareMemo } from '@/index';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
-    components?: IConfigurableFormComponent[];
+    sourceComponent?: IConfigurableFormComponent;
 }
 
 const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
@@ -21,23 +20,17 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     isHidden: true,
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
-        const components: IConfigurableFormComponent[] = useDeepCompareMemo(() => {
-            return model?.components?.map(c => ({
-                ...c,
+        const component: IConfigurableFormComponent = useMemo(() => {
+            return {
+                ...model?.sourceComponent,
                 hideLabel: true,
                 readOnly: model?.readOnly,
                 editMode: model.editMode,
                 hidden: model.hidden
-            }));
-        }, [model?.components, model?.readOnly, model?.id]);
+            };
+        }, [model.hidden, model?.readOnly, model?.id]);
 
-        const props = useMemo(() => {
-            const internalProps =
-                Boolean(model?.label) || !(model?.components?.length > 0)
-                    ? model
-                    : model?.components[0];
-            return { ...internalProps };
-        }, [model?.label, model?.components?.length]);
+        const props = {...(!!model?.label ? model : model?.sourceComponent)};
 
         if (model.hidden) return null;
 
@@ -54,7 +47,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                             return (
                                 <SettingsControlRenderer
                                     id={props.id}
-                                    components={components}
+                                    component={component}
                                     propertyName={propertyName}
                                 />
                             );

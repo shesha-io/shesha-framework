@@ -1,3 +1,4 @@
+import { DataTypes } from "@/index";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IDataContextProviderActionsContext } from "@/providers/dataContextProvider";
 
@@ -22,3 +23,11 @@ export interface IRegisterDataContextPayload extends IDataContextDescriptor {
 export enum SheshaCommonContexts {
   ApplicationContext = 'appContext'
 }
+
+export const DEFAULT_CONTEXT_METADATA = {
+  name: '',
+  dataType: DataTypes.context,
+  apiEndpoints: {},
+  specifications: {},
+  properties: []
+} as IModelMetadata;
