@@ -16,14 +16,14 @@ export default function RootLayout({
             <body>
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" />
-                {/* <link
+                <link
                     href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
                     rel="stylesheet"
                 />
                 <link
                     href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
                     rel="stylesheet"
-                /> */}
+                />
                 <Suspense>
                     <AppProvider backendUrl={backendUrl}>
                         <StyledComponentsRegistry>

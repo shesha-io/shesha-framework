@@ -52,7 +52,7 @@ const Login: FC = () => {
           name="password"
           label="Password"
           placeholder="Placeholder"
-          type="current-password"
+          type="password"
         />
 
         <div className="sha-space-inline">

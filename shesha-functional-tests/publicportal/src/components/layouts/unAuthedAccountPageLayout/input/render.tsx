@@ -3,7 +3,7 @@ import { ChangeEvent, FC, useRef } from "react";
 
 interface IProps extends InputProps {
   setError: (value: boolean) => void;
-  type?: "text" | "password"  | "current-password";
+  type?: "text" | "password";
 }
 
 const ShaInputRender: FC<IProps> = ({
