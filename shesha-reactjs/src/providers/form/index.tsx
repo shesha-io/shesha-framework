@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef, useTransition } from 'react';
+import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -174,8 +174,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     formSettings: formSettings,
     formMarkup: formMarkup,
   };
-
-  const [_isPending, startTransition] = useTransition();
 
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
@@ -356,7 +354,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     // ToDo: Review on next version of Antd
     const values = form?.getFieldValue([]);
     if (!state.formData && !!values) {
-      dispatch(setFormDataAction({values, mergeValues: true}));
+      dispatch(setFormDataAction({ values, mergeValues: true }));
     }
   }, []);
 
@@ -365,28 +363,26 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
 
   const updateStateFormData = (payload: ISetFormDataPayload) => {
-    startTransition(() => {
-      dispatch((dispatchThunk, getState) => {
-        dispatchThunk(setFormDataAction(payload));
-        const newState = getState();
+    dispatch((dispatchThunk, getState) => {
+      dispatchThunk(setFormDataAction(payload));
+      const newState = getState();
 
-        if (typeof props.onValuesChange === 'function')
-          props.onValuesChange(payload.values, newState.formData);
+      if (typeof props.onValuesChange === 'function')
+        props.onValuesChange(payload.values, newState.formData);
 
-        // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
+      // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
 
-        if (!newState.visibleComponentIds || newState.visibleComponentIds.length === 0) {
-          updateVisibleComponents(newState);
-        } else {
-          debouncedUpdateVisibleComponents(newState);
-        }
-        // Update enabled components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
-        if (!newState.enabledComponentIds || newState.enabledComponentIds.length === 0) {
-          updateEnabledComponents(newState);
-        } else {
-          debouncedUpdateEnabledComponents(newState);
-        }
-      });
+      if (!newState.visibleComponentIds || newState.visibleComponentIds.length === 0) {
+        updateVisibleComponents(newState);
+      } else {
+        debouncedUpdateVisibleComponents(newState);
+      }
+      // Update enabled components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
+      if (!newState.enabledComponentIds || newState.enabledComponentIds.length === 0) {
+        updateEnabledComponents(newState);
+      } else {
+        debouncedUpdateEnabledComponents(newState);
+      }
     });
   };
 
@@ -475,7 +471,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   useDeepCompareEffect(() => {
     // set main form if empty
     if (needDebug)
-      formProviderContext.contextManager?.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+      formProviderContext.contextManager?.updateFormInstance({ ...state, ...configurableFormActions } as ConfigurableFormInstance);
   }, [state]);
 
   return (
