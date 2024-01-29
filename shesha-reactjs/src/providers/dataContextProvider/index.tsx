@@ -7,7 +7,6 @@ import { setValueByPropertyName } from "@/utils/object";
 import { useApplicationContext } from '@/providers/form/utils';
 import { getFieldNameFromExpression, IApplicationContext } from '@/providers/form/utils';
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
-import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 
 export interface IDataContextProviderStateContext {
     id: string;
