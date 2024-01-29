@@ -77,13 +77,6 @@
         "label":"Hide Label"
      },
      {
-        "id":"24a8be15-98eb-40f7-99ea-ebb602693e9c",
-        "type":"checkbox",
-        "propertyName":"disabled",
-        "parentId":"root",
-        "label":"Disabled"
-     },
-     {
         "id":"7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
         "type":"checkbox",
         "propertyName":"hideBorder",

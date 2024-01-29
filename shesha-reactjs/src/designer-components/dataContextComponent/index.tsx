@@ -3,11 +3,11 @@ import { CodeOutlined } from '@ant-design/icons';
 import { ComponentsContainer } from '@/components';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { DataContextSettingsForm } from './settings';
-import { DataTypes } from '@/interfaces/dataTypes';
 import { IConfigurableActionConfiguration, IConfigurableFormComponent } from '@/providers';
 import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
+import { DEFAULT_CONTEXT_METADATA } from '@/providers/dataContextManager/models';
 
 export interface IDataContextComponentProps extends IConfigurableFormComponent {
   items: IPropertyMetadata[];
@@ -25,13 +25,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     Factory: ({ model }) => {
 
       const metadata: Promise<IModelMetadata> = useMemo(() => {
-        return Promise.resolve({
-          name: model.componentName,
-          dataType: DataTypes.context,
-          apiEndpoints: {},
-          specifications: {},
-          properties: model.items ?? []
-        } as IModelMetadata);
+        return Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name: model.componentName, properties: model.items ?? []} as IModelMetadata);
       }, [model.id, model.componentName, model.items]);
 
       return (

@@ -31,6 +31,8 @@ export interface IContextPropertyAutocompleteProps extends Omit<IContextProperty
 interface IContextPropertyAutocompleteState {
   mode: 'formData' | 'context';
   context?: string;
+  propertyName?: string;
+  componentName?: string;
 }
 
 export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> = (model) => {
@@ -41,7 +43,9 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
     mode: !!formData?.context || formData?.propertyName !== formData?.componentName 
       ? 'context' 
       : 'formData',
-    context: formData?.context
+    context: formData?.context,
+    propertyName: formData?.propertyName,
+    componentName: formData?.componentName
   };
 
   const [state, setState] = useState<IContextPropertyAutocompleteState>(initialState);
@@ -68,7 +72,8 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   return (
     <>
       <Form.Item {...{label: componentlabel, readOnly}} hidden={state.mode === 'formData'} >
-        <Input readOnly={readOnly} value={formData?.componentName} onChange={(e) => {
+        <Input readOnly={readOnly} value={state.componentName} onChange={(e) => {
+          setState(prev => ({...prev, componentName: e.target.value}))
           onValuesChange({componentName: e.target.value});
         }}/>
       </Form.Item>
@@ -84,11 +89,12 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
       >
         <Form.Item {...{label: propertylabel, readOnly}} >
           <PropertyAutocomplete
-            value={formData?.propertyName}
+            value={state.propertyName}
             onChange={(value) => {
               const changedData = {propertyName: value};
               if (state.mode === 'formData')
                 changedData['componentName'] = value;
+              setState(prev => ({...prev, ...changedData} as IContextPropertyAutocompleteState))
               onValuesChange(changedData);
             }}
             id={model.id}
