@@ -277,11 +277,11 @@ stages:
     #     archiveType: 'zip'
     #     archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
     #     replaceExistingArchive: true
-    - task: 7z@1
-      inputs:
-        Folder: 'System.DefaultWorkingDirectory)/temp'
-        Archive: 'adminportal.zip'
-        ArchiveFormat: 'zip'
+    # - task: 7z@1
+    #   inputs:
+    #     Folder: 'System.DefaultWorkingDirectory)/temp'
+    #     Archive: 'adminportal.zip'
+    #     ArchiveFormat: 'zip'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
