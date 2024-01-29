@@ -30,4 +30,4 @@ export const DEFAULT_CONTEXT_METADATA = {
   apiEndpoints: {},
   specifications: {},
   properties: []
-} as IModelMetadata
+} as IModelMetadata;
