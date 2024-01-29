@@ -196,9 +196,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 20.9.0'
+      displayName: 'Use Node 18.18.1'
       inputs:
-        versionSpec: 20.9.0
+        versionSpec: 18.18.1
       retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
