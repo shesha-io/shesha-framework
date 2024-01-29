@@ -243,7 +243,7 @@ stages:
         command: custom
         workingDir: shesha-functional-tests/adminportal
         verbose: false
-        customCommand: 'install --legacy-peer-deps'
+        customCommand: 'install'
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
