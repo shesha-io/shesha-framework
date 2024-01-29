@@ -30,12 +30,12 @@ export const ColumnProperties: FC<IProps> = () => {
   useEffect(() => {
     form.resetFields();
 
-    if (formRef.current) {
+    if (selectedItemId && formRef.current) {
       const values = form.getFieldsValue();
 
       formRef.current.updateStateFormData({ values, mergeValues: false });
     }
-  }, [selectedItemId]);
+  }, [form, selectedItemId]);
 
   const getEditor = () => {
     const emptyEditor = null;
