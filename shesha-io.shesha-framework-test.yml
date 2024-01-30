@@ -196,9 +196,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 18.18.1'
+      displayName: 'Use Node 20.9.0'
       inputs:
-        versionSpec: 18.18.1
+        versionSpec: 20.9.0
       retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
@@ -243,7 +243,7 @@ stages:
         command: custom
         workingDir: shesha-functional-tests/adminportal
         verbose: false
-        customCommand: 'install'
+        customCommand: 'install --legacy-peer-deps'
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
@@ -270,36 +270,14 @@ stages:
           cp -R shesha-reactjs $(System.DefaultWorkingDirectory)/temp/shesha-reactjs
           cp -R shesha-functional-tests $(System.DefaultWorkingDirectory)/temp/shesha-functional-tests
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-    # - task: ArchiveFiles@2
-    #   inputs:
-    #     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
-    #     includeRootFolder: false
-    #     archiveType: 'tar'
-    #     archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.tar'
-    #     replaceExistingArchive: true
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
         includeRootFolder: false
-        archiveType: '7z'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.tar'
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
         replaceExistingArchive: true
-    # - task: CopyFiles@2
-    #   inputs:
-    #     SourceFolder: '$(System.DefaultWorkingDirectory)/temp'
-    #     Contents: '**'
-    #     TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    #     CleanTargetFolder: true
-    #     flattenFolders: true
-    #     delayBetweenRetries: '2000'
-
-    # - task: 7z@1
-    #   inputs:
-    #     Folder: 'System.DefaultWorkingDirectory)/temp'
-    #     Archive: 'adminportal.zip'
-    #     ArchiveFormat: 'zip'
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
         ArtifactName: adminportal-functional
-
