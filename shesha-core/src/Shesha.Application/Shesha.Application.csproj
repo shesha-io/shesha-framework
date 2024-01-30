@@ -31,6 +31,7 @@
   <ItemGroup>
     <None Remove="ConfigMigrations\package20240123_1429.shaconfig" />
     <None Remove="ConfigMigrations\package20240125_1144.shaconfig" />
+    <None Remove="ConfigMigrations\package20240130_1037.shaconfig" />
     <None Remove="Excel\template.xlsx" />
     <None Remove="ConfigMigrations\package20230324_1835.shaconfig" />
     <None Remove="ConfigMigrations\package20230411_1238.shaconfig" />
@@ -39,6 +40,7 @@
   <ItemGroup>
     <EmbeddedResource Include="ConfigMigrations\package20240123_1429.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240125_1144.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20240130_1037.shaconfig" />
     <EmbeddedResource Include="Excel\template.xlsx" />
     <EmbeddedResource Include="ConfigMigrations\package20230324_1835.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20230411_1238.shaconfig" />

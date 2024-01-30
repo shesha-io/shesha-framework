@@ -16,6 +16,7 @@ module.exports = {
       '/test/*',
       '/public/static/**',
       'server.js',
+      '/packages/*',
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -256,5 +257,4 @@ module.exports = {
       'import/ignore': ['node_modules', '\\.(coffee|scss|css|less|hbs|svg|json)$'],
     },
     extends: ['plugin:react-hooks/recommended', 'plugin:@next/next/recommended'],
-  };
-  
+  };  

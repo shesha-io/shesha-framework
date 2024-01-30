@@ -1,18 +1,18 @@
-import { useShaRouting } from "@/providers/shaRouting";
-import { isSameUrls } from "@/utils/url";
+import { useShaRouting } from '@/providers/shaRouting';
+import { isSameUrls } from '@/utils/url';
 
 export interface UseLoginUrlArgs {
-    homePageUrl: string;
-    unauthorizedRedirectUrl: string;
+  homePageUrl: string;
+  unauthorizedRedirectUrl: string;
 }
 
 export const useLoginUrl = ({ homePageUrl, unauthorizedRedirectUrl }: UseLoginUrlArgs) => {
-    const { router } = useShaRouting();
+  const { router } = useShaRouting();
 
-    const redirectUrl =
-        isSameUrls(router.path, homePageUrl) || isSameUrls(router.path, unauthorizedRedirectUrl)
-            ? ''
-            : `/?returnUrl=${encodeURIComponent(router.fullPath)}`;
+  const redirectUrl =
+    isSameUrls(router?.path, homePageUrl) || isSameUrls(router?.path, unauthorizedRedirectUrl)
+      ? ''
+      : `/?returnUrl=${encodeURIComponent(router?.fullPath)}`;
 
-    return `${unauthorizedRedirectUrl}${redirectUrl}`;
+  return `${unauthorizedRedirectUrl}${redirectUrl}`;
 };
