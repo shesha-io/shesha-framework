@@ -1,4 +1,4 @@
-import { IPasswordValidation } from 'models';
+import { IPasswordValidation } from '@/models';
 
 /**
  * Check if the password is valid and strong.
