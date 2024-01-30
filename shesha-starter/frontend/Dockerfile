@@ -1,13 +1,7 @@
-FROM node:latest
+FROM node:20
 
-# ENV NODE_VERSION 14.21.3
+ENV NODE_VERSION 20.9.0
 EXPOSE 3000
-
-# See NPM current version
-RUN npm -v
-
-# RUN apt-get update
-# RUN npm install -g npm@latest
 
 WORKDIR /app
 COPY . /app
