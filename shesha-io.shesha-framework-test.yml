@@ -270,21 +270,22 @@ stages:
           cp -R shesha-reactjs $(System.DefaultWorkingDirectory)/temp/shesha-reactjs
           cp -R shesha-functional-tests $(System.DefaultWorkingDirectory)/temp/shesha-functional-tests
         workingDirectory: '$(System.DefaultWorkingDirectory)'
-    # - task: ArchiveFiles@2
-    #   inputs:
-    #     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
-    #     includeRootFolder: false
-    #     archiveType: 'zip'
-    #     archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.zip'
-    #     replaceExistingArchive: true
-    - task: CopyFiles@2
+    - task: ArchiveFiles@2
       inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/temp'
-        Contents: '**'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-        CleanTargetFolder: true
-        flattenFolders: true
-        delayBetweenRetries: '2000'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
+        includeRootFolder: false
+        archiveType: 'tar'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.tar'
+        replaceExistingArchive: true
+    # - task: CopyFiles@2
+    #   inputs:
+    #     SourceFolder: '$(System.DefaultWorkingDirectory)/temp'
+    #     Contents: '**'
+    #     TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    #     CleanTargetFolder: true
+    #     flattenFolders: true
+    #     delayBetweenRetries: '2000'
+
     # - task: 7z@1
     #   inputs:
     #     Folder: 'System.DefaultWorkingDirectory)/temp'
