@@ -1,19 +1,19 @@
-import { sheshaStyles } from "@/styles";
-import { createStyles } from "antd-style";
+import { sheshaStyles } from '@/styles';
+import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }) => {
   // variables
-  const layoutHeaderHeight = "55px"; // @layout-header-height
+  const layoutHeaderHeight = '55px'; // @layout-header-height
   const layoutTriggerHeight = layoutHeaderHeight; // @layout-trigger-height
-  const layoutHeaderBackground = "#fff"; // @layout-header-background
-  const shaPageHeadingHeight = "45px"; // @sha-page-heading-height
-  const shaPageToolbarHeight = "33px"; // @sha-page-toolbar-height
-  const backgroundColor = "#f0f2f5"; // @background-color
-  const shaBorder = "1px solid #d3d3d3";
-  const shaSiderExpandedWidth = "250px"; // @sha-sider-expanded-width
-  const shaSiderCollapsedWidth = "60px"; // @sha-sider-collapsed-width
+  const layoutHeaderBackground = '#fff'; // @layout-header-background
+  const shaPageHeadingHeight = '45px'; // @sha-page-heading-height
+  const shaPageToolbarHeight = '33px'; // @sha-page-toolbar-height
+  const backgroundColor = '#f0f2f5'; // @background-color
+  const shaBorder = '1px solid #d3d3d3';
+  const shaSiderExpandedWidth = '250px'; // @sha-sider-expanded-width
+  const shaSiderCollapsedWidth = '60px'; // @sha-sider-collapsed-width
 
-  const shaAntTransition = "all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s"; // @sha-ant-transition
+  const shaAntTransition = 'all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s'; // @sha-ant-transition
   const antdTransition = css`
     transition: ${shaAntTransition};
   `;
@@ -23,7 +23,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
     &.collapsed {
       margin-left: ${shaSiderCollapsedWidth};
-    }  
+    }
   `;
 
   const flexCenterAligned = css`
@@ -37,13 +37,16 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     align-items: center;
   `;
 
-  const layout = cx("site-layout", css`
-        min-height: 100vh;
-    `);
+  const layout = cx(
+    'site-layout',
+    css`
+      min-height: 100vh;
+    `
+  );
   const headerPart = css`
-        display: flex;
-        align-items: center;
-    `;
+    display: flex;
+    align-items: center;
+  `;
   const antLayoutHeader = cx(css`
     border-bottom: ${shaBorder};
     position: fixed;
@@ -65,28 +68,28 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   `);
 
   const layoutHeaderLeft = css`
-        ${headerPart}
-        height: 100%;
-        .logo {
-          height: 100%;
-          img {
-            height: calc(${layoutHeaderHeight} - 8px);
-          }
-        }
+    ${headerPart}
+    height: 100%;
+    .logo {
+      height: 100%;
+      img {
+        height: calc(${layoutHeaderHeight} - 8px);
+      }
+    }
 
-        .search {
-          display: flex;
-          align-items: center;
-          margin-left: ${sheshaStyles.paddingLG}px;
-        }
+    .search {
+      display: flex;
+      align-items: center;
+      margin-left: ${sheshaStyles.paddingLG}px;
+    }
 
-        .logo,
-        .search {
-            ${responsive.tablet} {
-            display: none;
-          }
-        }
-    `;
+    .logo,
+    .search {
+      ${responsive.tablet} {
+        display: none;
+      }
+    }
+  `;
 
   const customComponents = cx(css`
     margin-right: ${sheshaStyles.paddingLG}px;
@@ -95,7 +98,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
   const layoutHeaderRight = css`
     ${headerPart}
-  
+
     .actions {
       margin-right: ${sheshaStyles.paddingLG}px;
       color: ${token.colorPrimary};
@@ -110,8 +113,9 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         }
       }
 
-      .hidden-sm-scr { // @media @phone-lg-size-query
-          ${responsive.mobile} {
+      .hidden-sm-scr {
+        // @media @phone-lg-size-query
+        ${responsive.mobile} {
           display: none;
         }
       }
@@ -142,10 +146,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     }
   `;
 
-
-  const sider = cx(css`
-        
-    `);
+  const sider = cx(css``);
   const content = cx(css`
     ${marginLeftTransition}
     margin-top: ${layoutHeaderHeight};
@@ -162,9 +163,9 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
     z-index: 2;
     flex: 0 0 ${shaSiderExpandedWidth} !important;
-    max-width: ${shaSiderExpandedWidth}  !important;
-    min-width: ${shaSiderExpandedWidth}  !important;
-    width: ${shaSiderExpandedWidth}  !important;
+    max-width: ${shaSiderExpandedWidth} !important;
+    min-width: ${shaSiderExpandedWidth} !important;
+    width: ${shaSiderExpandedWidth} !important;
 
     ::-webkit-scrollbar {
       width: 9px;
@@ -177,10 +178,10 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     }
 
     .${prefixCls}-layout-sider-children {
-      width: ${shaSiderExpandedWidth}  !important;
+      width: ${shaSiderExpandedWidth} !important;
 
       .logo {
-        margin-top: ${layoutTriggerHeight}  !important; // It should use a config
+        margin-top: ${layoutTriggerHeight} !important; // It should use a config
       }
 
       .${prefixCls}-menu-inline-collapsed {
@@ -197,7 +198,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     &.${prefixCls}-layout-sider-collapsed {
       flex: 0 0 ${shaSiderCollapsedWidth} !important;
       max-width: ${shaSiderCollapsedWidth} !important;
-      min-width: ${shaSiderCollapsedWidth}  !important;
+      min-width: ${shaSiderCollapsedWidth} !important;
       width: ${shaSiderCollapsedWidth} !important;
 
       .${prefixCls}-layout-sider-children {
@@ -210,25 +211,27 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     }
   `;
 
-  const shaLayoutHeading = cx("", css`
-    &.has-heading {
-      ${flexCenterAligned}
+  const shaLayoutHeading = cx(
+    '',
+    css`
+      &.has-heading {
+        ${flexCenterAligned}
 
-      min-height: ${shaPageHeadingHeight};
-      max-height: ${shaPageHeadingHeight};
-      border-bottom: 0.5px solid lightgrey;
-      background: white;
+        min-height: ${shaPageHeadingHeight};
+        max-height: ${shaPageHeadingHeight};
+        border-bottom: 0.5px solid lightgrey;
+        background: white;
 
-      &.fixed-heading {
-        position: sticky;
-        z-index: 1;
-        top: ${layoutHeaderHeight};
+        &.fixed-heading {
+          position: sticky;
+          z-index: 1;
+          top: ${layoutHeaderHeight};
+        }
       }
-    }
-  `);
+    `
+  );
 
-  const shaSiteLayoutBackgroundNoPadding = cx(css`
-  `);
+  const shaSiteLayoutBackgroundNoPadding = cx(css``);
 
   const shaSiteLayoutBackground = css`
     min-height: calc(100vh - 55px);
@@ -247,6 +250,16 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
       .sha-index-table-controls {
         background: white;
       }
+
+      .ant-btn-link,
+      .sha-link {
+        color: ${token.colorPrimary};
+
+        &:hover {
+          color: ${token.colorPrimary};
+          filter: brightness(105%);
+        }
+      }
     }
 
     &.fixed-heading {
@@ -255,7 +268,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
     &.${shaSiteLayoutBackgroundNoPadding} {
       padding: unset;
-    }  
+    }
   `;
 
   return {
