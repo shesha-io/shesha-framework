@@ -270,11 +270,18 @@ stages:
           cp -R shesha-reactjs $(System.DefaultWorkingDirectory)/temp/shesha-reactjs
           cp -R shesha-functional-tests $(System.DefaultWorkingDirectory)/temp/shesha-functional-tests
         workingDirectory: '$(System.DefaultWorkingDirectory)'
+    # - task: ArchiveFiles@2
+    #   inputs:
+    #     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
+    #     includeRootFolder: false
+    #     archiveType: 'tar'
+    #     archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.tar'
+    #     replaceExistingArchive: true
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/temp'
         includeRootFolder: false
-        archiveType: 'tar'
+        archiveType: '7z'
         archiveFile: '$(Build.ArtifactStagingDirectory)/adminportal.tar'
         replaceExistingArchive: true
     # - task: CopyFiles@2
