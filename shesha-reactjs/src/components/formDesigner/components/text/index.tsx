@@ -24,7 +24,6 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
     code: false,
     copyable: false,
     delete: false,
-    disabled: false,
     ellipsis: false,
     mark: false,
     italic: false,

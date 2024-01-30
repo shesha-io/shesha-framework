@@ -14,8 +14,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   style?: React.CSSProperties;
   showArrow?: boolean;
   forceRender?: boolean;
-  disabled?: boolean;
-  extra?: React.ReactNode;
+    extra?: React.ReactNode;
   noContentPadding?: boolean;
   loading?: boolean;
   collapsedByDefault?: boolean;

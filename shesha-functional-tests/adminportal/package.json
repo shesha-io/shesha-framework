@@ -15,6 +15,9 @@
     "prettier": "prettier --write **/*.{js,jsx,ts,tsx}",
     "test": "jest -c test/jest.config.js"
   },
+  "resolutions": {
+    "rc-treee": "5.8.2"
+  },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@microsoft/applicationinsights-react-js": "^3.1.2",

@@ -23,6 +23,7 @@ import { SubFormProvider } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormConfiguration } from '@/providers/form/api';
 import { useStyles } from './styles/styles';
+import { useParent } from '@/providers/parentProvider/index';
 
 const { confirm } = Modal;
 
@@ -42,6 +43,7 @@ interface IState {
 const INIT_STATE: IState = { open: false, options: [], origin: null };
 const CONFIRM_DELETE_TITLE = 'Are you sure you want to delete this item?';
 const WARNING_BIND_FORM = 'Please bind an appropriate form to this component.';
+const ERROR_LABEL = 'Please configure label configuration for this component.';
 
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) => {
   const { styles } = useStyles();
@@ -50,6 +52,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   const { deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName } = model;
 
   const allData = useApplicationContext();
+  const parent = useParent();
 
   const {
     formConfiguration,
@@ -61,8 +64,14 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     lazy: true,
   });
 
-  const calculateLabel = (value: any, func: string) => {
-    return executeScriptSync(func, { ...allData, item: value });
+  const calculateLabel = (value: any, func: string, showError: boolean = false) => {
+    try {
+      return executeScriptSync(func, { ...allData, item: value });
+    } catch {
+      if (showError)
+        message.error(ERROR_LABEL);
+      return 'Not configured';
+    }
   };
 
   useEffect(() => {
@@ -97,7 +106,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   const onModalChange = (value: any) => {
     setOption(
       {
-        label: calculateLabel(value[propertyName], labelFormat),
+        label: calculateLabel(value[propertyName], labelFormat, true),
         value: activeValue?.value ?? nanoid(),
         data: value[propertyName]
       }
@@ -153,17 +162,19 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     return { components: formConfiguration?.markup, formSettings: formConfiguration?.settings };
   }, [formConfiguration]);
 
+  const contextId = [parent?.subFormIdPrefix, propertyName].filter(x => !!x).join('.');
+
   return (
     <div className={styles.childEntityTagContainer}>
       {open && (
         <DataContextProvider
-          id={propertyName}
+          id={contextId}
           name={propertyName}
           description={propertyName}
           type={'childEntitiesTagGroup'}
           initialData={new Promise<any>(resolve => resolve({ [propertyName]: activeValue?.data }))}
         >
-          <SubFormProvider id={model.id} context={propertyName} propertyName={propertyName} markup={markup} readOnly={model.readOnly}>
+          <SubFormProvider id={model.id} context={contextId} propertyName={propertyName} markup={markup} readOnly={model.readOnly}>
             <ChildEntitiesTagGroupModal
               {...model}
               formInfo={formConfiguration}

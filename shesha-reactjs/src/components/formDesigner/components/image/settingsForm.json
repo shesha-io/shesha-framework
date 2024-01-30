@@ -23,72 +23,65 @@
       "content": {
         "id": "y9SNudmMM0Wd1Sc_YI1ng",
         "components": [
-    {
-      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bf4",
-      "type": "contextPropertyAutocomplete",
-      "propertyName": "propertyName",
-      "parentId": "root",
-      "label": "Property name",
-      "validate": {
-        "required": true
-      }
-    },
-    {
-      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
-      "type": "textField",
-      "propertyName": "label",
-      "parentId": "root",
-      "label": "Label"
-    },
-    {
-      "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
-      "type": "dropdown",
-      "propertyName": "labelAlign",
-      "parentId": "root",
-      "label": "Label align",
-      "values": [
-        {
-          "label": "left",
-          "value": "left",
-          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-        },
-        {
-          "label": "right",
-          "value": "right",
-          "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-        }
-      ],
-      "dataSourceType": "values"
-    },
-    {
-      "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
-      "type": "textArea",
-      "propertyName": "description",
-      "parentId": "root",
-      "label": "Description"
-    },
-    {
-      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-      "type": "checkbox",
-      "propertyName": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
-    },
-    {
-      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
-      "type": "checkbox",
-      "propertyName": "hideLabel",
-      "parentId": "root",
-      "label": "Hide Label"
-    },
-    {
-      "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
-      "type": "checkbox",
-      "propertyName": "disabled",
-      "parentId": "root",
-      "label": "Disabled"
-    }
-]
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bf4",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "root",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "root",
+            "label": "Label"
+          },
+          {
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            "type": "dropdown",
+            "propertyName": "labelAlign",
+            "parentId": "root",
+            "label": "Label align",
+            "values": [
+              {
+                "label": "left",
+                "value": "left",
+                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              },
+              {
+                "label": "right",
+                "value": "right",
+                "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+              }
+            ],
+            "dataSourceType": "values"
+          },
+          {
+            "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+            "type": "textArea",
+            "propertyName": "description",
+            "parentId": "root",
+            "label": "Description"
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "root",
+            "label": "Hidden"
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "propertyName": "hideLabel",
+            "parentId": "root",
+            "label": "Hide Label"
+          }
+        ]
       }
     },
     {

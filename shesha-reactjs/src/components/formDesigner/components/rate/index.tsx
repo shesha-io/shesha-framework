@@ -31,7 +31,6 @@ export interface IRateProps extends IConfigurableFormComponent {
   allowClear?: boolean;
   allowHalf?: boolean;
   icon?: string;
-  disabled?: boolean;
   count?: number;
   tooltips?: string[];
   onChange?: (value: number) => void;
@@ -48,7 +47,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const { allowClear, icon, disabled, count, tooltips, className, style, readOnly } = model;
+    const { allowClear, icon, count, tooltips, className, style, readOnly } = model;
 
     const eventProps = {
       model,
@@ -81,7 +80,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
             allowClear={allowClear}
             //allowHalf={allowHalf}
             character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-            disabled={disabled || readOnly}
+            disabled={readOnly}
             count={localCount}
             tooltips={tooltips}
             className={classNames(className, 'sha-rate')}

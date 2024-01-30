@@ -578,7 +578,7 @@
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Form Path",
             "version": 0,
-            "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
+            "hidden": {"_code": "return !getSettingValue(data?.quickviewEnabled);", "_mode": "code", "_value": false},
             "textType": "text"
           },
           {
@@ -588,7 +588,7 @@
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Get Entity Url",
             "version": 0,
-            "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
+            "hidden": {"_code": "return !getSettingValue(data?.quickviewEnabled);", "_mode": "code", "_value": false},
             "textType": "text"
           },
           {
@@ -598,7 +598,7 @@
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Display Property Name",
             "version": 0,
-            "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
+            "hidden": {"_code": "return !getSettingValue(data?.quickviewEnabled);", "_mode": "code", "_value": false},
             "textType": "text"
           },
           {
@@ -608,7 +608,7 @@
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Width",
             "version": 0,
-            "hidden": {"_code": "return getSettingValue(data?.quickviewEnabled) !== true;", "_mode": "code", "_value": false},
+            "hidden": {"_code": "return !getSettingValue(data?.quickviewEnabled);", "_mode": "code", "_value": false},
             "textType": "text"
           }
         ]

@@ -105,6 +105,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
 
   const metaProvider = getActiveProvider ? getActiveProvider() : null;
 
+  // use different ways to update content for changing of component and changing context/readonly
   useEffect(() => {
     startTransition(() => {
       const newEditor = buildEditor({
@@ -115,7 +116,17 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
       });
       setEditor(newEditor);
     });
-  }, [toolboxComponent, readOnly, metaProvider?.modelType, componentModel]);
+  }, [toolboxComponent, componentModel]);
+
+  useEffect(() => {
+    const newEditor = buildEditor({
+      ...props,
+      metaProvider,
+      onSave,
+      debouncedSave,
+    });
+    setEditor(newEditor);
+  }, [readOnly, metaProvider?.modelType]);
 
   return isPending
     ? <Skeleton loading />
