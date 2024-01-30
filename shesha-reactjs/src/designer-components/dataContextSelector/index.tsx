@@ -13,7 +13,7 @@ const DataContextSelector: FC<any> = (model) => {
   const { getActiveContext, getDataContexts } = useDataContextManager();
   
   const dataContext = getActiveContext();
-  const dataContexts = getDataContexts(dataContext.id);
+  const dataContexts = getDataContexts(dataContext?.id);
   
   const metadataDispatcher = useMetadataDispatcher();
 
