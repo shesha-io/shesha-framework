@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<class id="f89958fb-0e36-4383-afc6-9895d6c5bc77" type="Folder" typeId="3407a825-1331-4f3f-89a4-901903ed97ce">
-  <name>Swagger</name>
-  <display>Swagger</display>
+<class id="b93bbe34-dc4b-4bf5-a6f1-5931fbd87556" type="Folder" typeId="3407a825-1331-4f3f-89a4-901903ed97ce">
+  <name>Startup</name>
+  <display>Startup</display>
   <isAbstract>false</isAbstract>
   <genericTypes />
   <isMapped>false</isMapped>
-  <parentFolderId>a5ba72fa-39a9-421b-94d4-0887e80e975b</parentFolderId>
+  <parentFolderId>4686bbad-b46a-49bd-b2c8-727271bea4e5</parentFolderId>
   <packageId>3f941b57-60ee-435b-b447-f8787966b1af</packageId>
   <packageName>ShaCompanyName.ShaProjectName</packageName>
   <stereotypes>
