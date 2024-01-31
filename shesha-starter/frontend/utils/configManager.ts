@@ -2,7 +2,7 @@ import getGlobalConfig from 'next/config';
 import { camelCase } from './string';
 const { publicRuntimeConfig } = getGlobalConfig();
 
-const { shaEnv }: IShaEnvAppConfig = publicRuntimeConfig;
+const { shaEnv } = publicRuntimeConfig as IShaEnvAppConfig ?? {};
 
 type IShaEnvAppConfig = { shaEnv: IAppConfigManager };
 
@@ -16,11 +16,11 @@ export interface IAppConfigManager {
 
 const defaultConfig: IAppConfigManager = {
   baseUrl: '',
-  googleMapsApiKey: null,
+  googleMapsApiKey: 'AIzaSyAQv3UvXzYNUlwB-0LCuS7toLdl_z1j2l8',
   appInsightsInstrumentationKey: null,
 };
 
-export default class ConfigManager {
+export class ConfigManager {
   private devConfig = { ...camelCase(shaEnv) };
 
   getConfig(): IAppConfigManager {

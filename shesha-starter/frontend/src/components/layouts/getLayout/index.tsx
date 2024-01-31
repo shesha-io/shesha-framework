@@ -1,5 +1,5 @@
-import React, { ReactElement } from "react";
-import { MainLayout } from "@shesha-io/reactjs";
+import React, { ReactElement } from 'react';
+import { MainLayout } from '@shesha/reactjs';
 
 /**
  * Returns the component wrapped up in a layout
@@ -7,7 +7,7 @@ import { MainLayout } from "@shesha-io/reactjs";
  * @returns the component wrapped up in a layout
  */
 export const getLayout = (page: ReactElement): JSX.Element => {
-  return <MainLayout noPadding>{page}</MainLayout>;
+  return <MainLayout noPadding><>{page}</></MainLayout>;
 };
 
 export default getLayout;

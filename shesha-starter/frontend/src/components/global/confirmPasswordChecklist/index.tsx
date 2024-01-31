@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ValidationIcon } from '@/components';
+import { ValidationIcon } from 'components';
 
 interface IConfirmPasswordChecklistProps {
   readonly password?: string;

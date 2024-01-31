@@ -1,8 +1,7 @@
-# npm
 node_modules
-# next.js build files
+node_modules/
 .next
-# environment variables
+.next/
 .env*.local
 .env
 .vscode

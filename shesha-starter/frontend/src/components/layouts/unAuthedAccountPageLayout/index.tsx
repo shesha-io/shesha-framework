@@ -1,21 +1,14 @@
 import React, { FC, ReactNode } from "react";
 import { Row, Col } from "antd";
-import { useUi } from "@shesha-io/reactjs";
+import { useUi } from "@shesha/reactjs";
 import { UnAuthedLayoutContainer } from "./styles";
 
-interface IProps {
+export const UnAuthedAccountPageLayout: FC<{
   className?: string;
   heading?: string;
   hint?: string;
   children?: ReactNode;
-}
-
-export const UnAuthedAccountPageLayout: FC<IProps> = ({
-  className,
-  children,
-  heading,
-  hint,
-}) => {
+}> = ({ className, children, heading, hint }) => {
   const { accountFormCols } = useUi();
 
   return (

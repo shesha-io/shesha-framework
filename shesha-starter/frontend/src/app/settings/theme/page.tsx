@@ -1,7 +1,7 @@
 "use client";
 
-import React, { FC } from 'react';
-import { ConfigurableThemePage } from '@shesha-io/reactjs';
+import { ConfigurableThemePage } from "@shesha/reactjs";
+import React, { FC } from "react";
 
 const Page: FC = () => {
   return <ConfigurableThemePage />;
