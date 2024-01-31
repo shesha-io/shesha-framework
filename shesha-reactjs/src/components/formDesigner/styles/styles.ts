@@ -280,7 +280,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${designerWorkArea}{
             background-color: white;
             .${shaComponentsContainer} {
-                border: 1px dashed #ddd;
                 border-radius: 2px;
             
                 .${shaDropHint} {
@@ -311,7 +310,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         
             &.selected {
-              border: #61affe 1px dashed;
+              border: #61affe 1px solid;
               border-radius: 4px;
               background-color: #ebf3fb;
             }
@@ -343,6 +342,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: 100%;
               position: relative;
               cursor: grab;
+              border:1px dashed #61affe;
             }
         
             .${shaComponentIndicator} {

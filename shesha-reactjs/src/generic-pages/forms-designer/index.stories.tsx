@@ -80,7 +80,7 @@ export const AutoCompleteDesigner = addStory(Template, {
 });
 
 export const RefListStatus = addStory(Template, {
-  formId: '757a9c7d-0366-4b54-a751-de2e36ee6f6c',
+  formId: '8bea2253-5af3-41cf-8eab-b719323db597',
 });
 export const RichTextEditor = addStory(Template, {
   formId: 'ea560a2f-0016-4b60-9486-d9081fb060bf',
