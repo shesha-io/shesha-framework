@@ -3,8 +3,6 @@ import { ReportingActions } from '@/providers/dynamicActions/implementations/rep
 import React, { FC, PropsWithChildren } from 'react';
 import { GlobalStateProvider, ShaApplicationProvider, SidebarMenuDefaultsProvider } from '@/providers';
 import AuthContainer from '@/components/authedContainer';
-import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
-import { GlobalPageStyles } from '@/components/page/styles/styles';
 
 const DEFAULT_ROUTER = {
   route: '',
@@ -17,7 +15,7 @@ const DEFAULT_ROUTER = {
   clc: null,
   pageLoader: undefined,
   push(url: string) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (url) {
         resolve(true);
       }
@@ -38,12 +36,7 @@ export const StoryApp: FC<PropsWithChildren<{ layout?: boolean }>> = ({ children
 
   return (
     <GlobalStateProvider>
-      <ShaApplicationProvider
-        backendUrl={process.env.STORYBOOK_BASE_URL}
-        router={DEFAULT_ROUTER as any}
-      >
-        <GlobalSheshaStyles />
-        <GlobalPageStyles />
+      <ShaApplicationProvider backendUrl={process.env.STORYBOOK_BASE_URL} router={DEFAULT_ROUTER as any}>
         <EntityCrudActions>
           <ReportingActions>
             <AuthContainer layout={layout}>
