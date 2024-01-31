@@ -243,7 +243,7 @@ stages:
         command: custom
         workingDir: shesha-functional-tests/adminportal
         verbose: false
-        customCommand: 'install'
+        customCommand: 'install --legacy-peer-deps'
     # - task: Npm@1
     #   displayName: Install Latest Shesha
     #   inputs:
@@ -281,4 +281,68 @@ stages:
       displayName: 'Publish Artifact: shesha-adminportal-functional'
       inputs:
         ArtifactName: adminportal-functional
-
+  - job: Job_3
+    displayName: Prepare Release if published
+    pool:
+      vmImage: windows-latest
+    steps:
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5      
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }
+        workingDirectory: '$(System.DefaultWorkingDirectory)'        
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Delete Pipeline and Actions Yaml Files
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Write your PowerShell commands here.
+          ls
+          Remove-Item -Recurse -Force .github
+          ls
+          Remove-Item -Force Starter-and-Functional-BP.yaml          
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: 'ChangeLog.md'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        OverWrite: true
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-framework-$(version).zip'
+        replaceExistingArchive: true
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        includeRootFolder: false
+        archiveType: 'tar'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/shesha-framework-$(version).tar.gz'
+        replaceExistingArchive: true        
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: Release Version'
+      inputs:
+        ArtifactName: release-version        
