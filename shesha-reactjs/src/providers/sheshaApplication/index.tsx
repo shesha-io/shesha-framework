@@ -2,13 +2,7 @@ import appConfiguratorReducer from './reducer';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import DebugPanel from '@/components/debugPanel';
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import React, {
-  FC,
-  PropsWithChildren,
-  useContext,
-  useReducer,
-  useRef
-} from 'react';
+import React, { FC, PropsWithChildren, useContext, useReducer, useRef } from 'react';
 import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
 import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
@@ -99,15 +93,15 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
 
   const authRef = useRef<IAuthProviderRefProps>();
 
+  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
+    dispatch(updateToolboxComponentGroupsAction(payload));
+  };
+
   useDeepCompareEffect(() => {
     if (toolboxComponentGroups?.length !== 0) {
       updateToolboxComponentGroups(toolboxComponentGroups);
     }
   }, [toolboxComponentGroups]);
-
-  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
-    dispatch(updateToolboxComponentGroupsAction(payload));
-  };
 
   const setRequestHeaders = (headers: IRequestHeaders) => {
     dispatch(setHeadersAction(headers));
@@ -139,8 +133,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
           setGlobalVariables,
         }}
       >
-        <GlobalSheshaStyles />
-        <GlobalPageStyles />
         <SettingsProvider>
           <ConfigurableActionDispatcherProvider>
             <UiProvider>
@@ -162,11 +154,19 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                   >
                     <ConfigurationItemsLoaderProvider>
                       <ThemeProvider {...(themeProps || {})}>
+                        <GlobalSheshaStyles />
+                        <GlobalPageStyles />
+
                         <AppConfiguratorProvider>
                           <ReferenceListDispatcherProvider>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
-                                <DataContextProvider id={SheshaCommonContexts.ApplicationContext} name={SheshaCommonContexts.ApplicationContext} description={'Application context'} type={'root'}>
+                                <DataContextProvider
+                                  id={SheshaCommonContexts.ApplicationContext}
+                                  name={SheshaCommonContexts.ApplicationContext}
+                                  description={'Application context'}
+                                  type={'root'}
+                                >
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
