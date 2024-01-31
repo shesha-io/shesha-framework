@@ -1,5 +1,6 @@
 import EditableTagGroup from '@/components/editableTagGroup';
 import React, { FC } from 'react';
+import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
@@ -37,6 +38,10 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
             <Option value="middle">Middle</Option>
             <Option value="large">Large</Option>
           </Select>
+        </SettingsFormItem>
+
+        <SettingsFormItem name="editMode" label="Edit mode" jsSetting>
+          <ReadOnlyModeSelector readOnly={readOnly} />
         </SettingsFormItem>
 
         <SettingsFormItem name="isInline" label="Is Button Inline" valuePropName="checked" jsSetting>

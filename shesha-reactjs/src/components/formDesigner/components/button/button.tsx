@@ -43,7 +43,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       <ConfigurableFormItem model={fieldModel}>
         <ConfigurableButton
           {...restProps}
-          disabled={model.readOnly}
+          readOnly={model.readOnly}
           block={restProps?.block}
           style={getStyle(style, data)}
         />

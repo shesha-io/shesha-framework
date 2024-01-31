@@ -8,8 +8,6 @@ import { useConfigurableActionDispatcher } from '@/providers/configurableActions
 import { useApplicationContext } from '@/providers/form/utils';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
-  disabled?: boolean;
-  hidden?: boolean;
   style?: CSSProperties;
 }
 
@@ -38,7 +36,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
       size={props?.size}
-      disabled={props?.disabled}
+      disabled={props?.readOnly}
       style={props?.style}
     >
       {props.label}

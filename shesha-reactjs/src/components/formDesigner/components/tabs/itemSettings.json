@@ -76,14 +76,11 @@
       "validate": {}
     },
     {
-      "id": "d1e06550-826c-4db9-9b9f-ce05e565f111",
-      "type": "checkbox",
-      "propertyName": "disabled",
-      "label": "Disabled",
-      "labelAlign": "right",
+      "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+      "type": "editModeSelector",
+      "propertyName": "editMode",
       "parentId": "root",
-      "hidden": false,
-      "validate": {}
+      "label": "Edit mode"
     },
     {
       "id": "a8b12318-65a5-4b98-bcce-834b6a40b2fd",

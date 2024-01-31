@@ -6,7 +6,7 @@ import { GroupOutlined } from '@ant-design/icons';
 import { IButtonGroupComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateButtonsNavigateAction } from './migrations/migrateButtonsNavigateAction';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -24,8 +24,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
 
     if ((model.hidden || !granted) && formMode !== 'designer') return null;
 
-    // TODO: Wrap this component within ConfigurableFormItem so that it will be the one handling the hidden state. Currently, it's failing. Always hide the component
-    return <ButtonGroup {...model} />;
+    return <ButtonGroup {...model} disabled={model.readOnly} />;
   },
   migrator: (m) => m
     .add<IButtonGroupComponentProps>(0, (prev) => {
@@ -65,6 +64,19 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     })
     .add<IButtonGroupComponentProps>(6, (prev) => migrateVisibility(prev))
     .add<IButtonGroupComponentProps>(7, (prev) => migrateButtonsNavigateAction(prev))
+    .add<IButtonGroupComponentProps>(8, (prev) => {
+      const newModel = {...prev, editMode: 'editable'} as IButtonGroupComponentProps;
+
+      const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
+        const newItem = migrateReadOnly(item, 'inherited');
+        if (Array.isArray(newItem['childItems']))
+          newItem['childItems'] = newItem['childItems'].map(updateItems);
+        return newItem;
+      };
+
+      newModel.items = newModel.items.map(updateItems);
+      return newModel ;
+    })
   ,
   settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),
 };

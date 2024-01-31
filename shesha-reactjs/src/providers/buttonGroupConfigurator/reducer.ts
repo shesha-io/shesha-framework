@@ -7,7 +7,7 @@ import {
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
 } from './contexts';
-import { IButtonGroupItem, IButtonGroup } from './models';
+import { IButtonGroupItem, IButtonGroup, ButtonGroupItemProps } from './models';
 import { getItemById, getItemPositionById } from './utils';
 
 const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, any>(
@@ -22,6 +22,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
         label: `Button ${buttonsCount + 1}`,
         itemSubType: 'button',
         buttonType: 'link',
+        editMode: 'inherited'
       };
 
       const newItems = [...state.items];
@@ -43,7 +44,18 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter((item) => item.id !== payload);
+      const updateItems = (items: ButtonGroupItemProps[]) => {
+        return items.filter((item) => {
+          if (item.id === payload)
+            return false;
+          if (Array.isArray(item['childItems'])){
+            item['childItems'] = updateItems(item['childItems']);
+          }
+          return true;
+        });
+      };
+
+      const newItems = updateItems(state.items);
 
       return {
         ...state,
@@ -63,6 +75,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
         buttonType: 'link',
         hideWhenEmpty: true,
         childItems: [],
+        editMode: 'inherited'
       };
       return {
         ...state,
@@ -77,7 +90,18 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
     ) => {
       const { payload } = action;
 
-      const newItems = state.items.filter((item) => item.id !== payload);
+      const updateItems = (items: ButtonGroupItemProps[]) => {
+        return items.filter((item) => {
+          if (item.id === payload)
+            return false;
+          if (Array.isArray(item['childItems'])){
+            item['childItems'] = updateItems(item['childItems']);
+          }
+          return true;
+        });
+      };
+
+      const newItems = updateItems(state.items);
 
       return {
         ...state,

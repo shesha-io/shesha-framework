@@ -35,7 +35,7 @@ import classNames from 'classnames';
 
 type MenuItem = MenuProps['items'][number];
 
-type PrepareItemFunc = (item: ButtonGroupItemProps) => ButtonGroupItemProps;
+type PrepareItemFunc = (item: ButtonGroupItemProps, parentReadOnly: boolean) => ButtonGroupItemProps;
 
 type MenuButton = ButtonGroupItemProps & {
     childItems?: MenuButton[];
@@ -48,18 +48,24 @@ const renderButton = (props: ButtonGroupItemProps, uuid: string, size: SizeType,
             {...props}
             size={size}
             style={getStyle(props?.style, appContext.data)}
-            disabled={props.disabled}
+            readOnly={props.readOnly}
             buttonType={props.buttonType}
         />
     );
 };
 
-const createMenuItem = (props: MenuButton, size: SizeType, getIsVisible: VisibilityEvaluator, appContext: IApplicationContext, prepareItem: PrepareItemFunc): MenuItem => {
+const createMenuItem = (
+    props: MenuButton,
+    size: SizeType,
+    getIsVisible: VisibilityEvaluator,
+    appContext: IApplicationContext,
+    prepareItem: PrepareItemFunc,
+): MenuItem => {
     const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
     const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
 
     const childItems = props.childItems && props.childItems.length > 0
-        ? props.childItems.map(prepareItem).filter(getIsVisible)?.map((props) => createMenuItem(props, size, getIsVisible, appContext, prepareItem))
+        ? props.childItems.map(x => prepareItem(x, props.readOnly)).filter(getIsVisible)?.map((props) => createMenuItem(props, size, getIsVisible, appContext, prepareItem))
         : null;
 
     return isDivider
@@ -67,7 +73,7 @@ const createMenuItem = (props: MenuButton, size: SizeType, getIsVisible: Visibil
         : getButtonGroupMenuItem(
             renderButton(props, props?.id, size, appContext),
             props.id,
-            props.disabled,
+            props.readOnly,
             childItems
         );
 };
@@ -88,18 +94,22 @@ interface InlineItemProps extends InlineItemBaseProps {
 const InlineItem: FC<InlineItemProps> = (props) => {
     const { item, uuid, size, getIsVisible, appContext, prepareItem } = props;
 
-    const itemProps = prepareItem(item) as ButtonGroupItemProps;
-    if (isGroup(itemProps)) {
-        const menuItems = itemProps.childItems.map(prepareItem).filter(item => (getIsVisible(item))).map(childItem => (createMenuItem({ ...childItem, buttonType: 'link' }, size, getIsVisible, appContext, prepareItem)));
+    //const itemProps = prepareItem(item) as ButtonGroupItemProps;
+    if (isGroup(item)) {
+        const menuItems = item.childItems.map(x => prepareItem(x, item.readOnly))
+            .filter(item => (getIsVisible(item)))
+            .map(childItem => (createMenuItem({ ...childItem, buttonType: 'link' }, size, getIsVisible, appContext, prepareItem)));
         return (
             <Dropdown
                 key={uuid}
                 menu={{ items: menuItems }}
+                disabled={item.readOnly}
             >
                 <Button
                     icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
-                    type={itemProps.buttonType}
-                    title={itemProps.tooltip}
+                    type={item.buttonType}
+                    title={item.tooltip}
+                    disabled={item.readOnly}
                 >
                     {item.label}
                     <DownOutlined />
@@ -108,10 +118,10 @@ const InlineItem: FC<InlineItemProps> = (props) => {
         );
     }
 
-    if (isItem(itemProps)) {
-        switch (itemProps.itemSubType) {
+    if (isItem(item)) {
+        switch (item.itemSubType) {
             case 'button':
-                return renderButton(itemProps, uuid, size, appContext);
+                return renderButton(item, uuid, size, appContext);
             case 'separator':
             case 'line':
                 return <Divider type='vertical' key={uuid} />;
@@ -165,14 +175,16 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
         return isItem(item) && isVisibleBase(item) || isGroup(item) && isGroupVisible(item, getIsVisible);
     };
 
-    const prepareItem: PrepareItemFunc = (item) => {
-        const result = getActualModel(item, allData);
-        return { ...result, disabled: result.disabled || disabled };
+    const prepareItem: PrepareItemFunc = (item, parentReadOnly) => {
+        if (item.editMode === undefined)
+            item.editMode = 'inherited'; // prepare editMode property if not exist for updating inside getActualModel
+        const result = getActualModel(item, allData, parentReadOnly);
+        return { ...result};
     };
 
     const actualItems = useDeepCompareMemo(() =>
-        items?.map((item) => prepareItem(item))
-        , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+        items?.map((item) => prepareItem(item, disabled))
+    , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
     const filteredItems = actualItems?.filter(getIsVisible);
 

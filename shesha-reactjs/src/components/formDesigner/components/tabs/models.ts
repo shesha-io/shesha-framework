@@ -1,11 +1,11 @@
 import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IConfigurableFormComponent } from '@/interfaces';
+import { EditMode, IConfigurableFormComponent } from '@/interfaces';
 
 export interface ITabPaneProps
   extends IConfigurableItemBase,
-    Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey'> {
+    Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
   id: string;
   icon?: string;
   key: string;
@@ -14,6 +14,8 @@ export interface ITabPaneProps
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: ITabPaneProps[];
+  editMode?: EditMode;
+  readOnly?: boolean;
 }
 
 export interface ITabsComponentProps extends IConfigurableFormComponent {

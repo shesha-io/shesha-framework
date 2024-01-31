@@ -2,17 +2,17 @@ import ComponentsContainer from '../../containers/componentsContainer';
 import React, { Fragment } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { getActualModel, getLayoutStyle, useApplicationContext } from '@/providers/form/utils';
+import { getActualModelWithParent, getLayoutStyle, useApplicationContext } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
 import { Tabs, TabsProps } from 'antd';
 import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import ParentProvider from '@/providers/parentProvider/index';
+import ParentProvider, { useParent } from '@/providers/parentProvider/index';
 
 type TabItem = TabsProps['items'][number];
 
@@ -25,6 +25,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const allData = useApplicationContext();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
+    const parent = useParent(false);
 
     const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model;
 
@@ -34,7 +35,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const tabItems: TabItem[] = [];
 
       (tabs ?? [])?.forEach((item) => {
-        const tabModel = getActualModel(item, allData);
+        const tabModel = getActualModelWithParent(item, allData, parent);
         const {
           id,
           key,
@@ -48,7 +49,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           closeIcon,
           permissions,
           hidden,
-          disabled,
+          readOnly,
           components,
         } = tabModel;
 
@@ -72,7 +73,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           animated: animated,
           destroyInactiveTabPane: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
-          disabled: disabled,
+          disabled: readOnly,
           style: getLayoutStyle(model, { data, globalState }),
           children: (
             <ComponentsContainer
@@ -101,12 +102,18 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     };
     return tabsModel;
   },
-  migrator: (m) =>
-    m.add<ITabsComponentProps>(0, (prev) => {
+  migrator: (m) => m
+    .add<ITabsComponentProps>(0, (prev) => {
       const newModel = { ...prev };
       newModel['tabs'] = prev['tabs']?.map((item) => migrateCustomFunctions(item as any));
       return migratePropertyName(migrateCustomFunctions(newModel)) as ITabsComponentProps;
-    }),
+    })
+    .add<ITabsComponentProps>(1, (prev) => {
+      const newModel = {...prev};
+      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'editable'));
+      return newModel ;
+    })
+  ,
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
