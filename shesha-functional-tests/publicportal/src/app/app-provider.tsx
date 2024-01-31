@@ -28,8 +28,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
             <ShaApplicationProvider
                 backendUrl={backendUrl}
                 router={nextRouter}
-                noAuth={false}
-            //app='123'
+                noAuth={nextRouter.path?.includes('/no-auth')}
             >
                 <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
                     {children}

@@ -5,7 +5,6 @@ import {
     GlobalStateProvider,
     ShaApplicationProvider,
     StoredFilesProvider,
-    MainLayout,
     useNextRouter,
 } from '@shesha-io/reactjs';
 import { AppProgressBar } from 'next-nprogress-bar';
@@ -19,9 +18,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
     const nextRouter = useNextRouter();
     const theme = useTheme();
     
-    const noAuthRoutes = ['/no-auth', '/login', '/account/forgot-password', '/account/reset-password'];
-    const noAuth = Boolean(noAuthRoutes.find(r => nextRouter.path?.includes(r)));
-
     return (
         <GlobalStateProvider>
             <AppProgressBar
@@ -32,10 +28,10 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
             <ShaApplicationProvider
                 backendUrl={backendUrl}
                 router={nextRouter}
-                noAuth={false}
+                noAuth={nextRouter.path?.includes('/no-auth')}
             >
                 <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
-                    { noAuth ? (<>{children}</>) : (<MainLayout noPadding>{children}</MainLayout>)  }
+                    {children}
                 </StoredFilesProvider>
             </ShaApplicationProvider>
         </GlobalStateProvider>

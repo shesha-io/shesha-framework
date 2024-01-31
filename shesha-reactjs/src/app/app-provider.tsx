@@ -6,8 +6,6 @@ import {
     ShaApplicationProvider,
     StoredFilesProvider,
 } from '@/providers';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import { MainLayout } from '@/components';
 import { AppProgressBar } from 'next-nprogress-bar';
 import { useTheme } from 'antd-style';
 import { useNextRouter } from '@/hooks/useNextRouter';
@@ -21,9 +19,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
 
     const theme = useTheme();
 
-    const noAuthRoutes = ['/no-auth', '/login', '/account/forgot-password', '/account/reset-password'];
-    const noAuth = Boolean(noAuthRoutes.find(r => nextRouter.path?.includes(r)));
-
     return (
         <GlobalStateProvider>
             <AppProgressBar
@@ -34,12 +29,10 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
             <ShaApplicationProvider
                 backendUrl={backendUrl}
                 router={nextRouter}
-                noAuth={false}
+                noAuth={nextRouter.path?.includes('/no-auth')}
             >
                 <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
-                    <ConditionalWrap condition={!noAuth} wrap={cnt => <MainLayout noPadding>{cnt}</MainLayout>}>
                         {children}
-                    </ConditionalWrap>
                 </StoredFilesProvider>
             </ShaApplicationProvider>
         </GlobalStateProvider>

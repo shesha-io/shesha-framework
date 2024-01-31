@@ -29,9 +29,7 @@ export default function RootLayout({
                     <AntdRegistry>
                         <StyledComponentsRegistry>
                             <AppProvider backendUrl={backendUrl}>
-
                                 {children}
-
                             </AppProvider>
                         </StyledComponentsRegistry>
                     </AntdRegistry>
