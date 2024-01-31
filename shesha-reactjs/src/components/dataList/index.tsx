@@ -256,7 +256,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       className = entityType ?? '$createFormName$';
       fType = !!createFormType ? createFormType : null;
     }
-    isReady = getEntityForm(className, fId, fType, createFormInfo) && isReady;
+    if (!!fId || !!fType)
+      isReady = getEntityForm(className, fId, fType, createFormInfo) && isReady;
 
     records.forEach((item) => {
       let fId = null;
@@ -273,7 +274,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       if (formSelectionMode === 'expression') {
         fId = getFormIdFromExpression(item);
       }
-      isReady = getEntityForm(className, fId, fType, entityFormInfo) && isReady;
+      if (!!fId || !!fType)
+        isReady = getEntityForm(className, fId, fType, entityFormInfo) && isReady;
     });
 
     // we don't need to wait form requests if all form is ready
