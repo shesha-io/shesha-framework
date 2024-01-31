@@ -9,7 +9,7 @@ export default function RootLayout({
 }) {
   noStore();
   const BACKEND_URL =
-    process.env.BACKEND_URL ?? "https://function-api-test.shesha.dev";
+    process.env.BACKEND_URL ?? "http://localhost:21021";
 
   return (
     <html lang="en">
