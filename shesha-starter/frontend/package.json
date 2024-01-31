@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@ant-design/nextjs-registry": "^1.0.0",
     "@microsoft/applicationinsights-react-js": "^3.1.2",
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",

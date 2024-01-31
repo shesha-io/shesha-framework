@@ -1,6 +1,6 @@
 import { LoginPageLayout } from "@/components";
-import { lgSpace, mdSpace, smSpace } from "src/styles/global";
-import { getPrimaryColor } from "src/styles/global/utils";
+import { lgSpace, mdSpace, smSpace } from "@/styles/variables";
+import { getPrimaryColor } from "@/styles/utils";
 import styled from "styled-components";
 
 export const LoginPageWrapper = styled(LoginPageLayout)`

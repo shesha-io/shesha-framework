@@ -2,7 +2,7 @@ import { IConfigurableTheme } from "@shesha-io/reactjs";
 import { Col, Image, Row } from "antd";
 import { FC, ReactNode } from "react";
 import { useMediaQuery } from "react-responsive";
-import { screenSize } from "src/styles/global";
+import { screenSize } from "@/styles/variables";
 import { LoginLayoutContainer } from "./styles";
 
 interface IProps {
