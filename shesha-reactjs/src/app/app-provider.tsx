@@ -7,8 +7,6 @@ import {
     StoredFilesProvider,
 } from '@/providers';
 import { ReadonlyURLSearchParams, usePathname, useSearchParams } from 'next/navigation';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import { MainLayout } from '@/components';
 import { AppProgressBar, useRouter } from 'next-nprogress-bar';
 import { useTheme } from 'antd-style';
 
@@ -33,9 +31,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
     const pathname = usePathname();
     const theme = useTheme();
     
-    const noAuthRoutes = ['/no-auth', '/login', '/account/forgot-password', '/account/reset-password'];
-    const noAuth = Boolean(noAuthRoutes.find(r => pathname?.includes(r)));
-
     return (
         <GlobalStateProvider>
             <AppProgressBar
@@ -51,12 +46,10 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                     query: queryParams,
                     asPath: pathname,
                 }}
-                noAuth={false}
+                noAuth={pathname?.includes('/no-auth')}
             >
                 <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
-                    <ConditionalWrap condition={!noAuth} wrap={cnt => <MainLayout noPadding>{cnt}</MainLayout>}>
-                        {children}
-                    </ConditionalWrap>
+                    {children}
                 </StoredFilesProvider>
             </ShaApplicationProvider>
         </GlobalStateProvider>
