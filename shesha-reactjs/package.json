@@ -61,6 +61,7 @@
   "devDependencies": {
     "@ant-design/cssinjs": "^1.18.2",
     "@ant-design/icons": "^5.2.6",
+    "@ant-design/nextjs-registry": "^1.0.0",
     "@babel/preset-env": "^7.21.4",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.21.4",

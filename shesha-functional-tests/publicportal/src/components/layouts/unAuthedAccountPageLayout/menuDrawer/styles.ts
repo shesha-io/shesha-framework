@@ -1,5 +1,5 @@
 import { Drawer } from "antd";
-import { smSpace } from "src/styles/global";
+import { smSpace } from "@/styles/variables";
 import styled from "styled-components";
 
 export const ShaMenuDrawerStyledWrapper = styled(Drawer)`

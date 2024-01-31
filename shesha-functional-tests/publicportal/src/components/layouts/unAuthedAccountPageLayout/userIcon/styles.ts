@@ -1,5 +1,5 @@
 import { Dropdown } from "antd";
-import { smSpace } from "src/styles/global";
+import { smSpace } from "@/styles/variables";
 import styled from "styled-components";
 
 export const ShaUserIconStyledWrapper = styled(Dropdown)`

@@ -1,5 +1,5 @@
 import { Form } from "antd";
-import { lgSpace } from "src/styles/global";
+import { lgSpace } from "@/styles/variables";
 import styled from "styled-components";
 
 export const ShaInputStyledWrapper = styled(Form.Item)`
