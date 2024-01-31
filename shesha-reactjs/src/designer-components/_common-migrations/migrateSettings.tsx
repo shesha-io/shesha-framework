@@ -51,11 +51,11 @@ export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev:
     return { ...prev } as T;
 };
 
-export const migrateReadOnly = <T extends IConfigurableFormComponent,>(prev: T, defaultValue?: EditMode) => {
+export const migrateReadOnly = <T,>(prev: T, defaultValue?: EditMode) => {
   const disabled = prev['disabled'];
   const model = {
     ...prev, editMode:
-      prev.readOnly === true
+      prev['readOnly'] === true
         ? !!disabled && disabled['_mode'] === 'code'
           ? { _value: true, _mode: 'value', _code: disabled['_code'] }
           : false
@@ -64,17 +64,17 @@ export const migrateReadOnly = <T extends IConfigurableFormComponent,>(prev: T, 
           : undefined
   } as T;
 
-  if (isPropertySettings(model.editMode)) {
+  if (isPropertySettings(model['editMode'])) {
     const func = `// Automatically updated from 'disabled' property, please review\n\n` +
       'return !(() => {\n    // Source code\n\n' +
-      model.editMode['_code'] +
+      model['editMode']['_code'] +
       '\n\n})();';
 
-    model.editMode = { ...model.editMode as any, _code: func };
+    model['editMode'] = { ...model['editMode'] as any, _code: func };
   }
 
-  if (!model.editMode && !!defaultValue)
-    model.editMode = defaultValue;
+  if (!model['editMode'] && !!defaultValue)
+    model['editMode'] = defaultValue;
 
   //delete model.disabled;
   return model;

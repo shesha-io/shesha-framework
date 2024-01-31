@@ -2,6 +2,7 @@ import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
+import { EditMode } from '@/index';
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -30,17 +31,16 @@ export interface IButtonGroupItemBase {
   sortOrder: number;
   danger?: boolean;
   hidden?: boolean;
-  disabled?: boolean;
   isDynamic?: boolean;
   itemType: ButtonGroupItemType;
   icon?: string;
   buttonType?: ButtonType;
   ghost?: boolean;
-  customVisibility?: string;
-  customEnabled?: string;
   permissions?: string[];
   style?: string;
   size?: SizeType;
+  editMode?: EditMode;
+  readOnly?: boolean;
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase {

@@ -9,7 +9,6 @@ import {
 } from '@/providers/buttonGroupConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
 import { getActualModel, useApplicationContext } from '@/providers/form/utils';
-import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IButtonGroupItemsContainerProps {
@@ -23,9 +22,10 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
   const { updateChildItems, readOnly } = useButtonGroupConfigurator();
   const allData = useApplicationContext();
   
-  const actualItems = useDeepCompareMemo(() =>
-    props.items.map((item) => getActualModel(item, allData))
-  , [props.items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+  // ToDo: AS temporary remove memo because it doesn't work properly with array data
+  //const actualItems = useDeepCompareMemo(() =>
+  const actualItems = props.items.map((item) => getActualModel(item, allData));
+  //, [props.items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
   const renderItem = (item: ButtonGroupItemProps, index: number) => {
     switch (item.itemType) {

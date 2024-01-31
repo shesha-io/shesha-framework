@@ -77,6 +77,7 @@ import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { SheshaCommonContexts } from '../dataContextManager/models';
+import { IParentProviderStateContext } from '../parentProvider/index';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -251,28 +252,28 @@ const updateConfigurableActionParent = (model: any, parentId: string) => {
   }
 };
 
-export const getActualModelWithParent = <T extends IConfigurableFormComponent>(
+export const getActualModelWithParent = <T>(
   model: T,
   allData: any,
-  parent: any
+  parent: IParentProviderStateContext
 ): T => {
   const parentReadOnly =
     allData.formMode !== 'designer' && (parent?.model?.readOnly ?? allData.formMode === 'readonly');
   const actualModel = getActualModel(model, allData, parentReadOnly);
   // update Id for complex containers (SubForm, DataList item, etc)
   if (!!parent?.subFormIdPrefix) {
-    actualModel.id = `${parent?.subFormIdPrefix}.${actualModel.id}`;
-    actualModel.parentId = `${parent?.subFormIdPrefix}.${actualModel.parentId}`;
-    actualModel.componentName = !!parent?.model?.componentName
-      ? `${parent?.model?.componentName}.${actualModel.componentName}`
-      : actualModel.componentName;
+    actualModel['id'] = `${parent?.subFormIdPrefix}.${actualModel['id']}`;
+    actualModel['parentId'] = `${parent?.subFormIdPrefix}.${actualModel['parentId']}`;
+    actualModel['componentName'] = !!parent?.model?.componentName
+      ? `${parent?.model?.componentName}.${actualModel['componentName']}`
+      : actualModel['componentName'];
 
-    actualModel.context = 
-      !!actualModel.context 
-      && parent?.context !== actualModel.context // If the subForm has the same context then don't update context name
-      && !isCommonContext(actualModel.context) // If a common context then don't update context name
-      ? `${parent?.subFormIdPrefix}.${actualModel.context}`
-      : actualModel.context;
+    actualModel['context'] = 
+      !!actualModel['context']
+      && parent?.context !== actualModel['context'] // If the subForm has the same context then don't update context name
+      && !isCommonContext(actualModel['context']) // If a common context then don't update context name
+      ? `${parent?.subFormIdPrefix}.${actualModel['context']}`
+      : actualModel['context'];
     updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
   }
   return actualModel;

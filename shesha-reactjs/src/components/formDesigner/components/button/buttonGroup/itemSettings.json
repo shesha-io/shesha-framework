@@ -150,6 +150,13 @@
           "validate": {}
         },
         {
+          "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+          "type": "editModeSelector",
+          "propertyName": "editMode",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "label": "Edit mode"
+        },
+        {
           "id": "oW5driq-fQt8oyUTeB8rX",
           "type": "checkbox",
           "propertyName": "hidden",
