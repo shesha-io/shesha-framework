@@ -35,20 +35,20 @@ steps:
       Write-Host "Completed"      
     workingDirectory: '$(System.DefaultWorkingDirectory)/shesha-starter/'
 
-# - task: ArchiveFiles@2
-#   displayName: Zip Starter Directory
-#   inputs:
-#     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-starter/'
-#     includeRootFolder: false
-#     archiveType: 'zip'
-#     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-#     replaceExistingArchive: true
-- task: 7z@1
+- task: ArchiveFiles@2
   displayName: Zip Starter Directory
   inputs:
-    Folder: '$(System.DefaultWorkingDirectory)/shesha-starter/'
-    Archive: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    ArchiveFormat: 'zip'
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-starter/'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+# - task: 7z@1
+#   displayName: Zip Starter Directory
+#   inputs:
+#     Folder: '$(System.DefaultWorkingDirectory)/shesha-starter/'
+#     Archive: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+#     ArchiveFormat: 'zip'
 - task: Bash@3
   displayName: Curl Starter zip file to DemoShesha
   inputs:
@@ -62,7 +62,7 @@ steps:
         -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6IjM3NzZiODQyLTc1NmUtN2YzZi00YmNlLTM5ZjBlNmFlYThhOSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwic3ViIjoiMSIsImp0aSI6IjQ3NmY0ZWM4LTI0MjAtNGIxYi05NzAyLTU1YzJmN2ZlNjQwZSIsImlhdCI6MTcwMTkzNDg5MCwibmJmIjoxNzAxOTM0ODkwLCJleHAiOjE3MDIzNjY4OTAsImlzcyI6IlNoZXNoYSIsImF1ZCI6IlNoZXNoYSJ9.mh1gvClMpzFFMFZO2LCIJmLSDFa6sUogmVhTYnd2Dvg' \
         -F 'zipFile=@$(Build.BuildId).zip;type=application/x-zip-compressed' \
         -F 'name=shesha-starter-template-08/12/2023' \
-        -F 'description=A shesha starter template with Intent Architect Integration' \
+        -F 'description=A shesha starter template using the pipeline' \
         -F 'version=0.0.1' \
         -F 'isPublished=true'
       echo 'Completed'
