@@ -34,15 +34,20 @@ steps:
       Write-Host "Completed"      
     workingDirectory: '$(System.DefaultWorkingDirectory)/shesha-starter/'
 
-- task: ArchiveFiles@2
+# - task: ArchiveFiles@2
+#   displayName: Zip Starter Directory
+#   inputs:
+#     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-starter/'
+#     includeRootFolder: false
+#     archiveType: 'zip'
+#     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+#     replaceExistingArchive: true
+- task: 7z@1
   displayName: Zip Starter Directory
   inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)/shesha-starter/'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    replaceExistingArchive: true
-
+    Folder: '$(System.DefaultWorkingDirectory)/shesha-starter/'
+    Archive: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    ArchiveFormat: 'zip'
 - task: Bash@3
   displayName: Curl Starter zip file to DemoShesha
   inputs:
