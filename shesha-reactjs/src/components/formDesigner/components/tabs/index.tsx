@@ -12,7 +12,7 @@ import { Tabs, TabsProps } from 'antd';
 import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import ParentProvider, { useParent } from '@/providers/parentProvider/index';
+import ParentProvider from '@/providers/parentProvider/index';
 
 type TabItem = TabsProps['items'][number];
 
@@ -25,7 +25,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const allData = useApplicationContext();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const parent = useParent(false);
 
     const { tabs, defaultActiveKey, tabType = 'card', size, position = 'top' } = model;
 
@@ -35,7 +34,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const tabItems: TabItem[] = [];
 
       (tabs ?? [])?.forEach((item) => {
-        const tabModel = getActualModelWithParent(item, allData, parent);
+        const tabModel = getActualModelWithParent(item, allData, {model: {readOnly: model.readOnly}});
         const {
           id,
           key,
@@ -76,22 +75,19 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           disabled: readOnly,
           style: getLayoutStyle(model, { data, globalState }),
           children: (
-            <ComponentsContainer
-              containerId={id}
-              dynamicComponents={model?.isDynamic ? components : []}
-            />
+            <ParentProvider model={tabModel}>
+              <ComponentsContainer containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
+            </ParentProvider>
           ),
         };
         tabItems.push(tab);
       });
 
       return tabItems;
-    }, [tabs, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
     return model.hidden ? null : (
-      <ParentProvider model={model}>
-        <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
-      </ParentProvider>
+      <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
     );
   },
   initModel: (model) => {

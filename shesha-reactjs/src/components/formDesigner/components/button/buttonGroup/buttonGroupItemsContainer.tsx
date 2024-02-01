@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { ButtonGroupItem } from './buttonGroupItem';
 import { ButtonGroupItemsGroup } from './buttonGroupItemsGroup';
 import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
@@ -22,10 +22,9 @@ export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = pr
   const { updateChildItems, readOnly } = useButtonGroupConfigurator();
   const allData = useApplicationContext();
   
-  // ToDo: AS temporary remove memo because it doesn't work properly with array data
-  //const actualItems = useDeepCompareMemo(() =>
-  const actualItems = props.items.map((item) => getActualModel(item, allData));
-  //, [props.items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+  const actualItems = useMemo(() => {
+    return props.items.map((item) => getActualModel(item, allData));
+  }, [props.items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
 
   const renderItem = (item: ButtonGroupItemProps, index: number) => {
     switch (item.itemType) {
