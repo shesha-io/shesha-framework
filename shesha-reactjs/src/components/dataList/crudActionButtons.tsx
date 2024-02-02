@@ -126,7 +126,7 @@ export const CrudActionButtons = () => {
   return (
     <div className={styles.shaDatalistComponentItemCheckbox}>
       {buttons.map((btn, idx) => (
-        <ActionButton {...btn} key={idx} />
+        <ActionButton {...btn} key={idx} type='default' shape='circle' />
       ))}
     </div>
   );
