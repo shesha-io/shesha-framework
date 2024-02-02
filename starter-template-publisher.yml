@@ -20,7 +20,7 @@ steps:
     script: |
       Write-Host "Renaming frontend to adminportal and delete Intent"
       Rename-Item -Path "frontend" -NewName "adminportal"
-      Remove-Item -LiteralPath "intent" -Force -Recurse
+      Remove-Item -LiteralPath "intent/.intent" -Force -Recurse
       Write-Host "Completed"
       Write-Host "Copy database to root and delete database folder"
       Copy-Item 'database/*' -Destination '.' -Recurse
