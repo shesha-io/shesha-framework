@@ -7,7 +7,7 @@
 # - main
 
 pool:
-  vmImage: windows-latest
+  vmImage: ubuntu-latest
 
 steps:
 - script: echo ProjectTemplate Process Starting...
