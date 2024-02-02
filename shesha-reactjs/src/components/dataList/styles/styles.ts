@@ -103,6 +103,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             top: 5px;
         }
     
+        .${shaDatalistActions} {
+            display: none;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
         .${shaDatalistComponentItem} {
             position: relative;
             padding-top: 5px;
@@ -115,6 +122,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
                 &>.${shaDatalistComponentAddItemBtn} {
                     display: block;
                 }
+            }
+        }
+
+        .${shaDatalistCell}:hover {
+            &>.${shaDatalistActions} {
+                display: block;
             }
         }
     `);

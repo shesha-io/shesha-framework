@@ -1,8 +1,11 @@
 import { Button, Popconfirm, Popover } from 'antd';
 import React, { FC } from 'react';
 import { IErrorInfo } from '@/interfaces/errorInfo';
+import { ButtonShape, ButtonType } from 'antd/es/button/buttonHelpers';
 
 export interface IActionButtonProps {
+  type?: ButtonType;
+  shape?: ButtonShape;
   title: string;
   icon?: React.ReactNode;
   executer: () => void;
@@ -10,14 +13,23 @@ export interface IActionButtonProps {
   isVisible: boolean;
   loading?: boolean;
   error?: IErrorInfo;
-}
+  }
   
-const ActionButton: FC<IActionButtonProps> = ({ icon, title, executer, confirmationText, loading, error }) => {
+const ActionButton: FC<IActionButtonProps> = ({ 
+  icon,
+  title,
+  executer,
+  confirmationText,
+  loading,
+  error,
+  type = 'link',
+  shape = 'circle'
+}) => {
   const mustConfirm = Boolean(confirmationText);
   const button = (
     <Button
-      type='link'
-      shape="circle"
+      type={type}
+      shape={shape}
       icon={icon}
       onClick={
         mustConfirm

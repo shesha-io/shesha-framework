@@ -70,16 +70,16 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
               flatComponents={flatComponents}
             formSettings={formSettings}
           >
-            <div className={styles.shaDatalistActions}>
-              <CrudActionButtons />
-            </div>
             <div className={styles.shaDatalistCell}>
-                <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-                  {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
-                  <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-                    <ComponentsContainer containerId={'root'}/>
-                  </FormItemProvider>
-                </ComponentsContainerProvider>
+              <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+                {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
+                <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+                  <ComponentsContainer containerId={'root'}/>
+                </FormItemProvider>
+              </ComponentsContainerProvider>
+              <div className={styles.shaDatalistActions}>
+                <CrudActionButtons />
+              </div>
             </div>
           </DataListCrudProvider>
           );
