@@ -501,7 +501,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         <FormInfo formProps={{...(persistedFormProps as IPersistedFormProps)}} />
       </Show>
       <div>
-        <Show when={selectionMode === 'multiple'}>
+        <Show when={selectionMode === 'multiple'} >
           <Checkbox
             onChange={(e) => {
               onSelectAllRowsLocal(e.target.checked);
@@ -511,6 +511,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           >
             Select All
           </Checkbox>
+          <Divider />
         </Show>
         {// Use Configurable Action
         /*<Show when={canAddInline}>
@@ -525,7 +526,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             Add new item...
           </Button>
         </Show>*/}
-        <Divider />
       </div>
       <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
         <div
@@ -536,7 +536,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             horizontal: orientation === 'horizontal',
           })}
         >
-          <Show when={Boolean(records) /*&& Boolean(formConfiguration?.markup)*/}>
+          <Show when={records?.length > 0}>
             { content }
           </Show>
         </div>
