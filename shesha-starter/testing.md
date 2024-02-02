@@ -1,1 +1,0 @@
-Test 1 - Removed existing db to pipeline can complete sucessfully
