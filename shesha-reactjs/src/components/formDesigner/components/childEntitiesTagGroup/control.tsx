@@ -1,19 +1,6 @@
 import ChildEntitiesTagGroupModal from './modal';
-import React, {
-  FC,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
-import { addChildEntitiesTagGroupOption } from './utils';
-import {
-  Button,
-  Input,
-  message,
-  Modal,
-  Select,
-  Tag
-} from 'antd';
+import React, { FC, useMemo, useState } from 'react';
+import { Button, Input, message, Modal, Select, Tag } from 'antd';
 import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { executeScriptSync, useApplicationContext } from '@/providers/form/utils';
@@ -24,6 +11,7 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormConfiguration } from '@/providers/form/api';
 import { useStyles } from './styles/styles';
 import { useParent } from '@/providers/parentProvider/index';
+import { useDeepCompareMemo } from '@/index';
 
 const { confirm } = Modal;
 
@@ -36,11 +24,9 @@ interface IProps {
 interface IState {
   activeValue?: IChildEntitiesTagGroupSelectOptions;
   open: boolean;
-  options: IChildEntitiesTagGroupSelectOptions[];
-  origin: object[] | object | null;
 }
 
-const INIT_STATE: IState = { open: false, options: [], origin: null };
+const INIT_STATE: IState = { open: false };
 const CONFIRM_DELETE_TITLE = 'Are you sure you want to delete this item?';
 const WARNING_BIND_FORM = 'Please bind an appropriate form to this component.';
 const ERROR_LABEL = 'Please configure label configuration for this component.';
@@ -48,7 +34,7 @@ const ERROR_LABEL = 'Please configure label configuration for this component.';
 const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) => {
   const { styles } = useStyles();
   const [state, setState] = useState<IState>(INIT_STATE);
-  const { activeValue, open, options } = state;
+  const { activeValue, open } = state;
   const { deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName } = model;
 
   const allData = useApplicationContext();
@@ -64,6 +50,12 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     lazy: true,
   });
 
+  useDeepCompareEffect(() => {
+    if (formId) {
+      refetchFormConfig();
+    }
+  }, [formId]);
+
   const calculateLabel = (value: any, func: string, showError: boolean = false) => {
     try {
       return executeScriptSync(func, { ...allData, item: value });
@@ -74,7 +66,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
     }
   };
 
-  useEffect(() => {
+  const options = useDeepCompareMemo(() => {
     if (Array.isArray(value)) {
       const opts: IChildEntitiesTagGroupSelectOptions[] = [];
       value.forEach(item => {
@@ -84,34 +76,18 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
           data: item
         });
       });
-      setState((s) => ({ ...s, options: opts }));
+      return opts;
     }
+    return [];
   }, [value]);
 
-  useDeepCompareEffect(() => {
-    if (formId) {
-      refetchFormConfig();
-    }
-  }, [formId]);
-
-  const setOpen = (open: boolean) => setState((s) => ({ ...s, open, activeValue: null }));
-
-  const setOption = (option: IChildEntitiesTagGroupSelectOptions) => {
-    const opts = addChildEntitiesTagGroupOption(state.options, option);
-    setState((s) => ({ ...s, options: opts }));
-
-    onChange(opts.map(item => item.data));
-  };
-
   const onModalChange = (value: any) => {
-    setOption(
-      {
-        label: calculateLabel(value[propertyName], labelFormat, true),
-        value: activeValue?.value ?? nanoid(),
-        data: value[propertyName]
-      }
-    );
-    setState((s) => ({ ...s, activeValue: null }));
+    const data = !!value ? value[propertyName] : undefined;
+    if (activeValue) {
+      onChange(options.map(item => item.value === activeValue.value ? data : item.data));
+    } else {
+      onChange([...options.map(item => item.data), data]);
+    }
   };
 
   const onClickTag = (val: IChildEntitiesTagGroupSelectOptions) => () => {
@@ -138,7 +114,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
 
   const onOpenModal = () => {
     if (formConfiguration) {
-      setOpen(true);
+      setState((s) => ({ ...s, open: true, activeValue: null }));
     } else {
       message.warning(WARNING_BIND_FORM);
     }
@@ -180,7 +156,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
               formInfo={formConfiguration}
               error={error}
               open={open}
-              onToggle={setOpen}
+              onToggle={() => setState((s) => ({...s, open: false}))}
               loading={loading}
               onChange={onModalChange}
             />

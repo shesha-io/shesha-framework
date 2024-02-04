@@ -7,6 +7,7 @@ import { useConfigurableAction } from '@/providers/configurableActionsDispatcher
 import { useDataContext } from '@/providers/dataContextProvider/index';
 import { useEffect, useMemo, useState } from 'react';
 import { useFormExpression } from '@/hooks';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 interface IWizardComponent {
   back: () => void;
@@ -238,12 +239,12 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   /* Data Context section */
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     dataContext.setData({ current, visibleSteps });
   }, [current, visibleSteps]);
 
   dataContext.updateApi({ back, cancel, done, content, next, setStep }); // update context api to use relevant State
-
+  
   /* Data Context section */
 
   return { back, components, current, currentStep, cancel, done, content, next, visibleSteps };

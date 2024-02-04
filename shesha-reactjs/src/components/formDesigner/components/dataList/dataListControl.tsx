@@ -37,7 +37,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     customDeleteUrl,
     canAddInline,
     canEditInline,
-    canDeleteInline
+    canDeleteInline,
+    readOnly
   } = props;
   const {
     tableData,
@@ -183,7 +184,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       case 'no':
         return false;
       case 'inherit':
-        return allData.formMode === 'edit';
+        return !readOnly;
     }
     return false;
   };

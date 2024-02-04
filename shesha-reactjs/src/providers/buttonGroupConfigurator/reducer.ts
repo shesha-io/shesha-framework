@@ -8,7 +8,7 @@ import {
   IUpdateItemSettingsPayload,
 } from './contexts';
 import { IButtonGroupItem, IButtonGroup, ButtonGroupItemProps } from './models';
-import { getItemById, getItemPositionById } from './utils';
+import { getItemById, updateBranch } from './utils';
 
 const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, any>(
   {
@@ -128,16 +128,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
     ) => {
       const { payload } = action;
 
-      const newItems = [...state.items];
-
-      const position = getItemPositionById(newItems, payload.id);
-      if (!position) return state;
-
-      const newArray = position.ownerArray;
-      newArray[position.index] = {
-        ...newArray[position.index],
-        ...payload.settings,
-      };
+      const newItems = updateBranch(state.items, payload);
 
       return {
         ...state,
@@ -150,7 +141,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       action: ReduxActions.Action<IUpdateChildItemsPayload>
     ) => {
       const {
-        payload: { index, children },
+        payload: { id, index, children },
       } = action;
       if (!Boolean(index) || index.length === 0) {
         return {
@@ -173,7 +164,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
 
       return {
         ...state,
-        items: newItems,
+        items: updateBranch(newItems, {id, settings: {}}),
       };
     },
   },
