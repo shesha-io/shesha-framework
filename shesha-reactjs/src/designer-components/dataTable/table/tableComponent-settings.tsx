@@ -3,7 +3,6 @@ import { Button, Select, Input, InputNumber } from 'antd';
 import { ITableComponentProps, RowDroppedMode } from './models';
 import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
-import SectionSeparator from '@/components/sectionSeparator';
 import CodeEditor from '@/components/formDesigner/components/codeEditor/codeEditor';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator/configurator';
 import { YesNoInheritJs } from '@/components/dataTable/interfaces';
@@ -12,6 +11,7 @@ import { nanoid } from '@/utils/uuid';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -193,8 +193,8 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
 
-      <SectionSeparator title="CRUD" />
-
+     
+ <SettingsCollapsiblePanel header='CRUD'>
       <SettingsFormItem 
         name="canEditInline"
         label="Can edit inline"
@@ -319,9 +319,8 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
       <SettingsFormItem name="rowDroppedActionConfiguration" hidden={model.allowReordering === 'no'}>
         <ConfigurableActionConfigurator editorConfig={null} level={1} label="On Row Dropped Action" />
       </SettingsFormItem> */}
-
-      <SectionSeparator title="Layout" />
-
+ </SettingsCollapsiblePanel>
+     <SettingsCollapsiblePanel header="Layout">
       <SettingsFormItem  jsSetting
         name="minHeight" label="Min Height" tooltip="The minimum height of the table (e.g. even when 0 rows). If blank then minimum height is 0.">
         <InputNumber />
@@ -355,6 +354,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           exposedVariables={[]}
         />
       </SettingsFormItem>
+      </SettingsCollapsiblePanel>
     </>
   );
 };

@@ -271,12 +271,19 @@ export const getSettings = (data: any) =>
         ],
       },
     })
-    .addSectionSeparator({
-      id: 'db6e32f3-7a8b-4686-a0db-81b2e36796ef',
-      propertyName: 'separatorStyle',
+    .addCollapsiblePanel({
+      id: 'db6e32f3-7a8b-4686-a0eb-81b2e36796ef',
+      propertyName: 'pnlStyle',
       parentId: 'root',
       label: 'Style',
-    })
+      labelAlign: 'left',
+      expandIconPosition: 'start',
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl64664-cbc9-4cef-bdbc-6fbea44cd0ca',
+        components: [
+          ...new DesignerToolbarSettings()
     .addTextField({
       textType: 'text',
       id: '648fea09-e548-44b3-9c90-2187ad63fd07',
@@ -315,5 +322,8 @@ export const getSettings = (data: any) =>
       validate: {},
       settingsValidationErrors: [],
       jsSetting: false,
-    })
-    .toJson();
+    }).toJson(),
+    ],
+  },
+})
+.toJson();

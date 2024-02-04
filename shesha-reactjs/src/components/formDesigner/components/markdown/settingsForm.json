@@ -1,13 +1,28 @@
 {
   "components": [
     {
-      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
-      "type": "sectionSeparator",
-      "propertyName": "separator1",
+      "id": "b8954bf6-f76d-4139-a850-c99bf06d8b69",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Display"
-    },
-    {
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
+     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
       "type": "contextPropertyAutocomplete",
       "propertyName": "propertyName",
@@ -37,7 +52,33 @@
       "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
-    },
+    }
+  ]
+}
+    } 
+,
+{
+  "id": "b8954bf6-f76d-4139-a850-c11bf06d8b69",
+  "type": "collapsiblePanel",
+  "propertyName": "pnlStyle",
+  "label": "Style",
+  "labelAlign": "right",
+  "parentId": "root",
+  "hidden": false,
+
+  "isDynamic": false,
+  "version": 1,
+  "expandIconPosition": "start",
+  "collapsible": "header",
+  "collapsedByDefault": false,
+  "ghost": true,
+  "header": {
+    "id": "2JkE1UV7XdEQgLAcKGSq3",
+    "components": []
+  },
+  "content": {
+    "id": "pnl54bf6-f55d-4139-a850-c99bf06c8b69",
+    "components": [
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
       "type": "codeEditor",
@@ -49,6 +90,9 @@
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
       "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     }
+  ]
+}
+}
   ],
   "formSettings": {
     "layout": "horizontal",

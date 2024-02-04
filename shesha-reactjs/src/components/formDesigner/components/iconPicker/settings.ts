@@ -2,12 +2,19 @@ import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const iconPickerFormSettings = new DesignerToolbarSettings()
-  .addSectionSeparator({
-    id: 'b8954bf6-f76d-4139-a850-c99bf06c8b69',
-    propertyName: 'separator1',
-    parentId: 'root',
-    label: 'Display',
-  })
+.addCollapsiblePanel({
+  id: '11164664-cbc9-4cef-babc-6fbea44cd0ca',
+  propertyName: 'pnlDisplay',
+  parentId: 'root',
+  label: 'Display',
+  labelAlign: 'left',
+  expandIconPosition: 'start',
+  ghost: true,
+  collapsible: 'header',
+  content: {
+    id: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+    components: [
+      ...new DesignerToolbarSettings()
   .addContextPropertyAutocomplete({
     id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
     propertyName: 'propertyName',
@@ -70,12 +77,23 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       { id: nanoid(), name: 'globalState', description: 'The global state', type: 'object' },
     ],
   })
-  .addSectionSeparator({
-    id: nanoid(),
+  .toJson(),
+],
+},
+})
+  .addCollapsiblePanel({
+    id: '11164664-cbc9-4cef-babc-6fbea55cd0ca',
     propertyName: 'separatorColor',
     parentId: 'root',
     label: 'Color',
-  })
+    labelAlign: 'left',
+    expandIconPosition: 'start',
+    ghost: true,
+    collapsible: 'header',
+    content: {
+      id: 'pnl64664-cbc9-4cdf-babc-6fbea44cd0ca',
+      components: [
+        ...new DesignerToolbarSettings()
   .addColorPicker({
     id: nanoid(),
     propertyName: 'color',
@@ -115,4 +133,9 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
     label: "Edit mode",
   })
-  .toJson();
+  .toJson(),
+],
+},
+})
+.toJson();
+

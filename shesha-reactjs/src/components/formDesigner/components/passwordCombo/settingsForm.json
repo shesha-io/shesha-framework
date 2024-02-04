@@ -1,13 +1,30 @@
 {
+  
   "components": [
-    {
-      "id": "f1bb5008-6538-4507-9c06-ed7854e3ed06",
-      "type": "sectionSeparator",
-      "propertyName": "separator1",
-      "parentId": "root",
-      "label": "Display"
-    },
-    {
+      {
+        "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+        "type": "collapsiblePanel",
+        "propertyName": "pnlDisplay",
+        "label": "Display",
+        "labelAlign": "right",
+        "parentId": "root",
+        "hidden": false,
+  
+        "isDynamic": false,
+        "version": 1,
+        "expandIconPosition": "start",
+        "collapsible": "header",
+        "collapsedByDefault": false,
+        "ghost": true,
+        "header": {
+          "id": "2JkE1UV7XdEQgLMcKGSq3",
+          "components": []
+        },
+        "content": {
+          "id": "pnl54bf6-f76d-4139-a850-c89bf06c8b69",
+          "components": [
+            {
+
       "id": "f67bf678-f667-4620-8eba-b0fd1cdd3271",
       "type": "propertyAutocomplete",
       "propertyName": "propertyName",
@@ -108,15 +125,32 @@
       "parentId": "root",
       "hidden": false,
       "validate": {}
-    },
+    }]
+        }
+      },
     {
       "id": "07356df9-8bb9-4d8b-bc8f-6919b316a060",
-      "type": "sectionSeparator",
-      "propertyName": "separator2",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlValidation",
+      "label": "Validation",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Validation"
-    },
-    {
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
+          {
       "id": "c8ac6cea-17ed-4ba4-abeb-11148d7c8144",
       "type": "checkbox",
       "propertyName": "validate.required",
@@ -161,15 +195,35 @@
         { "propertyName": "callback", "description": "Callback called by component", "type": "function" },
         { "propertyName": "data", "description": "Form values", "type": "object" }
       ]
+    }
+  ]
+}
     },
+
     {
       "id": "b8c06332-2e5e-40ad-a5f0-770de616ee3e",
-      "type": "sectionSeparator",
-      "propertyName": "sectionStyle",
+      "type": "collapsiblePanel",
+      "propertyName": "pnStyle",
+      "label": "Style",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Style"
-    },
-    {
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
+          {
+
       "id": "77711f71-809f-40d3-bdb1-d5fcd9c9cdef",
       "type": "codeEditor",
       "propertyName": "style",
@@ -206,6 +260,10 @@
       ],
       "dataSourceType": "values"
     }
+  ]
+}
+    }
+  
   ],
   "formSettings": {
     "layout": "horizontal",
