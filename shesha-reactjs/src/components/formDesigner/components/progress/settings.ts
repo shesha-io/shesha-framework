@@ -224,4 +224,4 @@ export const alertSettingsForm = new DesignerToolbarSettings()
   })
   .toJson()
 }
-  }) .toJson()
+  }).toJson()
