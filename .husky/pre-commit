@@ -1,0 +1,19 @@
+echo 'Install tools'
+npm install
+
+echo 'Lint staged files at `shesha-reactjs`'
+cd ./shesha-reactjs
+npx lint-staged
+cd ..
+
+echo 'Lint staged files at `shesha-functional-tests/adminportal`'
+cd ./shesha-functional-tests/adminportal
+npx lint-staged
+cd ../..
+
+echo 'Lint staged files at `shesha-functional-tests/publicportal`'
+cd ./shesha-functional-tests/publicportal
+npx lint-staged
+cd ../..
+
+echo 'Linting is done'

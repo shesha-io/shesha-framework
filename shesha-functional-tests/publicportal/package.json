@@ -64,10 +64,10 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jsdoc": "^48.0.4",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "husky": "^4.3.7",
+    "husky": "^9.0.10",
     "isomorphic-unfetch": "^3.1.0",
     "jest": "^29.5.0",
-    "lint-staged": "^15.2.0",
+    "lint-staged": "^15.2.1",
     "nock": "^13.0.6",
     "redux-actions": "^2.6.5",
     "shx": "^0.3.4",
@@ -78,10 +78,5 @@
     "*.{js,jsx,ts,tsx}": [
       "npm run lint -- --quiet --fix"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }
