@@ -2,7 +2,6 @@ import EditableTagGroup from '@/components/editableTagGroup';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import itemSettings from './itemSettings.json';
 import React, { FC } from 'react';
-import SectionSeparator from '@/components/sectionSeparator';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import StyleBox from '../styleBox/components/box';
@@ -12,6 +11,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITabPaneProps, ITabsComponentProps } from './models';
 import { nanoid } from '@/utils/uuid';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 
 const { Option } = Select;
 
@@ -38,7 +38,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
 
   return (
     <>
-      <SectionSeparator title="Display" />
+      <SettingsCollapsiblePanel header='Display'>
       <SettingsFormItem name="componentName" label="Component name" required={true}>
         <Input />
       </SettingsFormItem>
@@ -74,9 +74,8 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
       <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
-
-      <SectionSeparator title="Configure Tab Panes" />
-
+      </SettingsCollapsiblePanel>
+      <SettingsCollapsiblePanel header="Configure Tab Panes">
       <SettingsFormItem name="tabs">
         <ItemListSettingsModal
           options={{ onAddNewItem }}
@@ -89,9 +88,10 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
           value={tabs}
         />
       </SettingsFormItem>
+      </SettingsCollapsiblePanel>
 
-      <SectionSeparator title="Security" />
-
+    
+     <SettingsCollapsiblePanel header="Security">
       <SettingsFormItem
         label="Permissions"
         name="permissions"
@@ -100,8 +100,9 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
       >
         <EditableTagGroup />
       </SettingsFormItem>
+      </SettingsCollapsiblePanel>
 
-      <SectionSeparator title="Style" />
+      <SettingsCollapsiblePanel header="Style" >
       <SettingsFormItem
         label="Style"
         name="style"
@@ -134,6 +135,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
       <SettingsFormItem name="stylingBox">
         <StyleBox />
       </SettingsFormItem>
+      </SettingsCollapsiblePanel>
     </>
   );
 };

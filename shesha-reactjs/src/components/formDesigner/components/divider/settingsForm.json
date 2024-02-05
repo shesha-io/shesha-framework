@@ -2,11 +2,26 @@
   "components": [
     {
       "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
-      "type": "sectionSeparator",
-      "propertyName": "separator1",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Display"
-    },
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq4",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c98bf06c8b69",
+        "components": [
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
@@ -91,14 +106,31 @@
       "propertyName": "plain",
       "parentId": "root",
       "label": "Plain"
-    },
+    }]
+      }
+      },
     {
-      "id": "2046da88-f37d-430f-9bda-120a6325a794",
-      "type": "sectionSeparator",
-      "propertyName": "separator2",
+      "id": "2046da88-f36d-430f-9bda-120a6325a794",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlStyle",
+      "label": "Style",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Style"
-    },
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
     {
       "id": "dd8a6939-3071-4dd7-a630-17fba0f3451b",
       "type": "codeEditor",
@@ -136,6 +168,9 @@
       "settingsValidationErrors": [],
       "jsSetting": false
     }
+      ]
+      }
+      }
   ],
   "formSettings": {
     "layout": "horizontal",

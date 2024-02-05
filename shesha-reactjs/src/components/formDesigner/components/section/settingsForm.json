@@ -1,12 +1,27 @@
 {
   "components": [
     {
-      "id": "9b6d94a9-5ed3-4317-a3e9-8a8d0df07b1b",
-      "type": "sectionSeparator",
-      "propertyName": "separator1",
+      "id": "b8954bf6-f76d-4139-a850-c99bf06d8b69",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Display"
-    },
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
     {
       "id": "ffe19365-2292-48b6-bbf4-90247d2f81bd",
       "type": "propertyAutocomplete",
@@ -23,6 +38,9 @@
       "propertyName": "hidden",
       "parentId": "root",
       "label": "Hidden"
+    }
+        ]
+      }
     }
   ],
   "formSettings": {
@@ -41,4 +59,5 @@
       "props": {}
     }
   }
+
 }

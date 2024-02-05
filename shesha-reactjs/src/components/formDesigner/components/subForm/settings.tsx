@@ -104,9 +104,8 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </SettingsFormItem>
         )}
-
-        <SectionSeparator title="Data" />
-
+      </SettingsCollapsiblePanel>
+        <SettingsCollapsiblePanel header='Data source'>
         <SettingsFormItem
           name="dataSource"
           initialValue={'form'}
@@ -338,9 +337,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           </SettingsFormItem>
         </Show>
       </SettingsCollapsiblePanel>
-
-      <SectionSeparator title="Actions" />
-
+   <SettingsCollapsiblePanel header="Actions">
       <SettingsFormItem
         label="On Submit"
         name="beforeGet"
@@ -476,8 +473,8 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           ]}
         />
       </SettingsFormItem>
-
-      <SectionSeparator title="Layout" />
+</SettingsCollapsiblePanel>
+      <SettingsCollapsiblePanel header="Layout">
 
       <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
         <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
@@ -505,6 +502,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           ]}
         />
       </SettingsFormItem>
+      </SettingsCollapsiblePanel>
     </>
   );
 };

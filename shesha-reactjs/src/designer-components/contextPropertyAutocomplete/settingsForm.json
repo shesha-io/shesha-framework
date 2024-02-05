@@ -1,12 +1,28 @@
 {
   "components":[
+   
      {
-        "id":"b8954bf6-f76d-4139-a850-c99bf06c8b69",
-        "type":"sectionSeparator",
-        "propertyName":"separator1",
-        "parentId":"root",
-        "label":"Display"
-     },
+      "id": "b8954bf6-f76d-4139-a850-c99bf06d8b69",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
      {
         "id":"5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
         "type":"propertyAutocomplete",
@@ -86,14 +102,32 @@
         "validate":{
            
         }
+     }
+   ]
+}
      },
      {
-        "id":"6b9bb7f7-eadb-450e-bea4-4c1d691a4091",
-        "type":"sectionSeparator",
-        "propertyName":"separator3",
-        "parentId":"root",
-        "label":"Data"
-     },
+      "id": "6b9bb7f7-eadb-450e-bea4-4c1d691a4091",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlData",
+      "label": "Data",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
      {
         "textType":"text",
         "id":"IcJf6tgl3N6HbQ2Wmnuzd",
@@ -138,14 +172,31 @@
         "settingsValidationErrors":[
            
         ]
-     },
+     }
+   ]
+}},
      {
-        "id":"d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
-        "type":"sectionSeparator",
-        "propertyName":"separator2",
-        "parentId":"root",
-        "label":"Validation"
-     },
+      "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlValidation",
+      "label": "Validation",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
      {
         "id":"3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
         "type":"checkbox",
@@ -206,14 +257,36 @@
            }
         ],
         "dataSourceType":"values"
-     },
-     {
-        "id":"6befdd49-41aa-41d6-a29e-76fa00590b74",
-        "type":"sectionSeparator",
-        "propertyName":"sectionVisibility",
-        "parentId":"root",
-        "label":"Visibility"
      }
+   ]
+}},
+     {
+      "id": "6befdd49-41aa-41d6-a29e-76fa00590b74",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlVisibility",
+      "label": "Visibility",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 1,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "components": [
+          {
+          }
+         ]
+      }
+   }
   ],
   "formSettings":{
      "layout":"horizontal",

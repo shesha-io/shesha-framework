@@ -13,7 +13,7 @@ import {
 import { IDataSourceComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { MetadataProvider } from '@/providers/metadata';
-import { SectionSeparator } from '@/components';
+import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 
 const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = ({ readOnly }) => {
   const { model: state } = useSettingsForm<IDataSourceComponentProps>();
@@ -40,7 +40,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
           <EndpointsAutocomplete />
         </SettingsFormItem>
       }
-      <SectionSeparator title="Filters" />
+      <SettingsCollapsiblePanel header='Filters'>
       <SettingsFormItem name="maxResultCount" label='Max result count' tooltip='Leave empty to get all records' jsSetting>
         <InputNumber min={0} />
       </SettingsFormItem>
@@ -48,6 +48,7 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
       <SettingsFormItem name="filters">
         <TableViewSelectorSettingsModal readOnly={readOnly} />
       </SettingsFormItem>
+      </SettingsCollapsiblePanel>
     </>
   );
 
