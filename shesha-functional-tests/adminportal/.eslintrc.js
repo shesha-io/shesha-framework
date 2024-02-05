@@ -92,7 +92,7 @@ module.exports = {
           ignoreRestSiblings: true,
         },
       ],
-      '@typescript-eslint/no-use-before-define': 'off',
+      '@typescript-eslint/no-use-before-define': ['error', { "ignoreTypeReferences": true, "classes": false }],
       /*error*/
       '@typescript-eslint/quotes': ['off' /*error*/, 'double'],
       '@typescript-eslint/semi': ['error', 'always'],

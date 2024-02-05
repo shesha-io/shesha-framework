@@ -31,6 +31,7 @@ export default {
     '@ant-design/icons',
     '@microsoft/signalr',
     'antd',
+    'antd-style',
     'assert',
     'axios',
     'camelcase',
