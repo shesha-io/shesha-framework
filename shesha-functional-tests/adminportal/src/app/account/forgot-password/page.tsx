@@ -44,6 +44,8 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
 
   const { mutate: verifyOtpHttp, loading: isVerifyingOtp, error: verifyOtpError } = useResetPasswordVerifyOtp();
 
+  const toggleVerifyOtpModalVisibility = () => setIsVerifyOtpModalVisible((visible) => !visible);
+
   const handleSendOtpFormFinish = ({ mobileNo }: UserResetPasswordSendOtpQueryParams) => {
     if (mobileNo) {
       sendOtpHttp({ mobileNo })
@@ -68,8 +70,6 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
         verifyOtpSuccess(response?.result);
       });
   };
-
-  const toggleVerifyOtpModalVisibility = () => setIsVerifyOtpModalVisible((visible) => !visible);
 
   return (
     <ForgotPasswordPage

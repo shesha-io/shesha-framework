@@ -37,11 +37,10 @@ export const useStyles = createStyles(({ css, cx }) => {
             position: relative;
             height: auto;
             width: 100%;
-            //padding: 5px;
-            //border: 1px dashed #ddd;
             border: 1px solid #ddd;
             border-radius: 2px;
             margin-bottom: 4px;
+            box-sizing: border-box;
 
             .${shaToolbarItemName} {
                 margin-left: 10px;

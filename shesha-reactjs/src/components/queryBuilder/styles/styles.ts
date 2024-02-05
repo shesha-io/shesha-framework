@@ -1,12 +1,10 @@
 import { createStyles } from "antd-style";
 import { sheshaStyles } from '@/styles';
-import qb_styles from './css/styles.css';
 import qb_compact_styles from './css/compact_styles.css';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     const shaQueryBuilderBtns = "sha-query-builder-btns";
     const shaQueryBuilder = cx("sha-query-builder", css`
-        ${qb_styles}
         ${qb_compact_styles}
 
         background-image: white !important;
