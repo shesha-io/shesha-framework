@@ -317,7 +317,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             : undefined;
         const width = strictWidth ?? columnItem.width;
 
-        const cellRenderer = getCellRenderer(columnItem, metadata);
+        const cellRenderer = getCellRenderer(columnItem, columnItem.metadata);
         const column: DataTableColumn = {
           ...columnItem,
           accessor: camelcaseDotNotation(columnItem.accessor),
