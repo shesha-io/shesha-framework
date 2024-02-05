@@ -135,8 +135,14 @@ export const SingleMode = addStory(Template, {
   entityType: 'Shesha.Core.Person',
   configurableColumns: columns,
   onSelect: null,
-  initialValue: '25da1b6a-1111-4741-b881-122fbbb3e160', // Sipho
-  testValue: 'ad4224a7-37ae-40c5-b25a-21cf955c4057', // Thulane
+  initialValue: '25da1b6a-1111-4741-b881-122fbbb3e160',
+  testValue: 'ad4224a7-37ae-40c5-b25a-21cf955c4057',
+  incomeValueFunc: function (): string {
+    throw new Error('Function not implemented.');
+  },
+  outcomeValueFunc: function () {
+    throw new Error('Function not implemented.');
+  }
 });
 
 export const MultipleMode = addStory(Template, {
@@ -145,14 +151,20 @@ export const MultipleMode = addStory(Template, {
   onSelect: null,
   mode: 'multiple',
   initialValue: [
-    '25da1b6a-1111-4741-b881-122fbbb3e160', 
+    '25da1b6a-1111-4741-b881-122fbbb3e160',
     'ad4224a7-37ae-40c5-b25a-21cf955c4057'
-  ], // Sipho + Thulane
-  testValue:  [
-    "7c4ecc68-dc55-4628-bb27-20ef0f278572",  
+  ],
+  testValue: [
+    "7c4ecc68-dc55-4628-bb27-20ef0f278572",
     "a8776bd6-cf56-4f35-8100-2240512b2336",
     "25ba7e3a-d802-466f-8d92-22e7b2ab0a93"
-  ], // 
+  ],
+  incomeValueFunc: function (): string {
+    throw new Error('Function not implemented.');
+  },
+  outcomeValueFunc: function () {
+    throw new Error('Function not implemented.');
+  }
 });
 
 export const MultipleReadonlyMode = addStory(Template, {
@@ -162,12 +174,18 @@ export const MultipleReadonlyMode = addStory(Template, {
   mode: 'multiple',
   readOnly: true,
   initialValue: [
-    '25da1b6a-1111-4741-b881-122fbbb3e160', 
+    '25da1b6a-1111-4741-b881-122fbbb3e160',
     'ad4224a7-37ae-40c5-b25a-21cf955c4057'
-  ], // Sipho + Thulane
-  testValue:  [
-    "7c4ecc68-dc55-4628-bb27-20ef0f278572",  
+  ],
+  testValue: [
+    "7c4ecc68-dc55-4628-bb27-20ef0f278572",
     "a8776bd6-cf56-4f35-8100-2240512b2336",
     "25ba7e3a-d802-466f-8d92-22e7b2ab0a93"
-  ], // 
+  ],
+  incomeValueFunc: function (): string {
+    throw new Error('Function not implemented.');
+  },
+  outcomeValueFunc: function () {
+    throw new Error('Function not implemented.');
+  }
 });

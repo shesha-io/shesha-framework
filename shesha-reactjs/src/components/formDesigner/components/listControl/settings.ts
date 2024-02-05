@@ -80,7 +80,6 @@ export const listSettingsForm = new DesignerToolbarSettings()
     hidden: false,
     description: 'The list data to be used can be the data that comes with the form of can be fetched from the API',
     label: 'Data source',
-    useRawValues: false,
     dataSourceType: 'values',
     values: [
       { id: 'e98bd235-04c9-4acf-b4e2-d45ee7f64195', label: 'form', value: 'form' },
@@ -129,7 +128,6 @@ export const listSettingsForm = new DesignerToolbarSettings()
     description:
       'Which form should be used to render the data? If current form, you can drag items, else specify form path',
     label: 'Render Strategy',
-    useRawValues: false,
     dataSourceType: 'values',
     defaultValue: 'dragAndDrop',
     values: [
@@ -198,7 +196,6 @@ export const listSettingsForm = new DesignerToolbarSettings()
         parentId: '6a528a62-537a-4a89-a2f1-fc2ea6f5caf7',
         hidden: false,
         label: 'Submit verb',
-        useRawValues: false,
         defaultValue: 'POST',
         dataSourceType: 'values',
         description: 'Write  a code that returns the string that represent the url to be used to save the items',

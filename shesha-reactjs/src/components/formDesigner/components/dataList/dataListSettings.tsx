@@ -323,13 +323,13 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <Select disabled={readOnly} options={yesNoInheritOptions} />
         </SettingsFormItem>
 
-        {model.formSelectionMode !== 'view' && model.canAddInline === 'yes' &&
+        {model.formSelectionMode !== 'view' && model.canAddInline !== 'no' &&
           <SettingsFormItem name="createFormId" label="Create form" jsSetting >
             <FormAutocomplete convertToFullId={true} readOnly={readOnly} />
           </SettingsFormItem>
         }
 
-        {model.formSelectionMode === 'view' && model.canAddInline === 'yes' &&
+        {model.formSelectionMode === 'view' && model.canAddInline !== 'no' &&
           <SettingsFormItem name="createFormType" label="Create form type" jsSetting>
             <AutoComplete
               disabled={readOnly}
@@ -349,7 +349,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             />
           </SettingsFormItem>
         }
-        {model.canAddInline === 'yes' &&
+        {model.canAddInline !== 'no' &&
           <SettingsFormItem name="modalWidth" label="Dialog Width (%)">
             <Select disabled={readOnly} allowClear>
               <Select.Option key={1} value='40%'>Small</Select.Option>
@@ -359,7 +359,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             </Select>
           </SettingsFormItem>
         }
-        {model.canAddInline === 'yes' && model.modalWidth === 'custom' &&
+        {model.canAddInline !== 'no' && model.modalWidth === 'custom' &&
           <SettingsFormItem name="widthUnits" label="Units">
             <Select disabled={readOnly} allowClear>
               <Select.Option key={1} value='%'>Percentage (%)</Select.Option>
@@ -367,7 +367,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             </Select>
           </SettingsFormItem>
         }
-        {model.canAddInline === 'yes' && model.modalWidth === 'custom' && !!model.widthUnits &&
+        {model.canAddInline !== 'no' && model.modalWidth === 'custom' && !!model.widthUnits &&
           <SettingsFormItem name="customWidth" label="Enter Custom Width">
             <InputNumber disabled={readOnly} />
           </SettingsFormItem>
