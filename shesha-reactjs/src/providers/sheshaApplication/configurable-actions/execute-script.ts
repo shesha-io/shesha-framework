@@ -1,17 +1,21 @@
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { FormMarkupFactory } from '@/interfaces/configurableAction';
+import { FormMarkupFactoryWithExpressionName } from '@/interfaces/configurableAction';
 import { nanoid } from '@/utils/uuid';
 import { useSheshaApplication } from '@/providers';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
-import { executeScript } from '../../form/utils';
+import { executeScript, executeScriptAsync } from '../../form/utils';
 
 export interface IExecuteScriptArguments {
   expression: string;
+  expressionAsync: string;
 }
 
-const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
+const executeScriptArgumentsForm: FormMarkupFactoryWithExpressionName<keyof IExecuteScriptArguments> = (
+  props,
+  propertyName = 'expression'
+) => {
   const standardVariables: ICodeExposedVariable[] = [
     {
       id: '3b19a708-e81a-4625-bcbb-3fe8451d0491',
@@ -85,7 +89,7 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
   return new DesignerToolbarSettings()
     .addCodeEditor({
       id: nanoid(),
-      propertyName: 'expression',
+      propertyName,
       label: 'Expression',
       mode: 'dialog',
       exposedVariables: variables,
@@ -107,6 +111,23 @@ export const useExecuteScriptAction = () => {
           return Promise.reject('Expected expression to be defined but it was found to be empty.');
 
         return executeScript(actionArgs.expression, context);
+      },
+    },
+    [backendUrl, httpHeaders]
+  );
+
+  useConfigurableAction<IExecuteScriptArguments>(
+    {
+      owner: 'Common',
+      ownerUid: SheshaActionOwners.Common,
+      name: 'Execute Script Async',
+      hasArguments: true,
+      argumentsFormMarkup: (formArgs) => executeScriptArgumentsForm(formArgs, 'expressionAsync'),
+      executer: (actionArgs, context) => {
+        if (!actionArgs.expressionAsync)
+          return Promise.reject('Expected expression to be defined but it was found to be empty.');
+
+        return executeScriptAsync(actionArgs.expressionAsync, context);
       },
     },
     [backendUrl, httpHeaders]

@@ -26,6 +26,10 @@ export interface FormMarkupFactoryArgs {
   exposedVariables?: ICodeExposedVariable[];
 }
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
+export type FormMarkupFactoryWithExpressionName<T = string> = (
+  factoryArgs: FormMarkupFactoryArgs,
+  expressionName?: T
+) => FormMarkup;
 
 export type IConfigurableActionArgumentsFormFactory<TModel = IConfigurableActionArguments> = (
   props: ISettingsFormFactoryArgs<TModel>

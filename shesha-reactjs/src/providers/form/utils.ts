@@ -218,7 +218,7 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
- export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolean = undefined): T => {
+export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolean = undefined): T => {
   const m = {} as T;
   for (var propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
@@ -239,7 +239,7 @@ const updateConfigurableActionParent = (model: any, parentId: string) => {
   for (const key in model) {
     if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
       const config = model[key] as IConfigurableActionConfiguration;
-  
+
       if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
         // skip SheshaActionOwners actions since they are common
         if (Object.values(SheshaActionOwners).filter(i => i === config.actionOwner)?.length > 0)
@@ -268,12 +268,12 @@ export const getActualModelWithParent = <T>(
       ? `${parent?.model?.componentName}.${actualModel['componentName']}`
       : actualModel['componentName'];
 
-    actualModel['context'] = 
+    actualModel['context'] =
       !!actualModel['context']
-      && parent?.context !== actualModel['context'] // If the subForm has the same context then don't update context name
-      && !isCommonContext(actualModel['context']) // If a common context then don't update context name
-      ? `${parent?.subFormIdPrefix}.${actualModel['context']}`
-      : actualModel['context'];
+        && parent?.context !== actualModel['context'] // If the subForm has the same context then don't update context name
+        && !isCommonContext(actualModel['context']) // If a common context then don't update context name
+        ? `${parent?.subFormIdPrefix}.${actualModel['context']}`
+        : actualModel['context'];
     updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
   }
   return actualModel;
@@ -725,6 +725,26 @@ export function executeScript<TResult = any>(
     const result = expressionExecuter.apply(null, argList);
     resolve(result);
   });
+}
+
+export function executeScriptAsync<TResult = any>(
+  expression: string,
+  expressionArgs: IExpressionExecuterArguments
+): Promise<TResult> {
+  if (!expression) Promise.reject('Expression must be defined');
+
+  let argsDefinition = '';
+  const argList: any[] = [];
+  for (const argumentName in expressionArgs) {
+    if (expressionArgs.hasOwnProperty(argumentName)) {
+      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+      argList.push(expressionArgs[argumentName]);
+    }
+  }
+
+  const expressionExecuter = new Function(argsDefinition, expression);
+
+  return expressionExecuter.apply(null, argList);
 }
 
 export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
