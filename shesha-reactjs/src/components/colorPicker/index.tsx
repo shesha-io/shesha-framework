@@ -1,74 +1,73 @@
-import React, { FC, useMemo, useState } from 'react';
-import { Popover } from 'antd';
-import { ColorResult, SketchPicker, SketchPickerProps } from 'react-color';
-import { useDeepCompareEffect } from 'react-use';
-import classNames from 'classnames';
-import { useStyles } from './styles/styles';
+import React, { FC, useState } from 'react';
+import { ColorPicker as AntdColorPicker } from 'antd';
+import { ColorValueType } from 'antd/es/color-picker/interface';
+import { Color } from 'antd/es/color-picker/color';
+import type { ColorPickerProps } from 'antd';
 
-interface IColorPickerProps extends Omit<SketchPickerProps, 'color'> {
+type Preset = Required<ColorPickerProps>['presets'][number];
+type ColorFormat = ColorPickerProps['format'];
+
+export interface IColorPickerProps {
+  value?: ColorValueType;
+  onChange?: (color: ColorValueType) => void;
   title?: string;
-  color?: ColorResult;
-  readOnly?: boolean;
+  presets?: Preset[];
+  showText?: boolean;
+  allowClear?: boolean;
 }
 
-interface IColorPickerState {
-  color?: ColorResult;
-  visible?: boolean;
-}
+const formatColor = (color: Color, format: ColorFormat) => {
+  if (!color)
+    return null;
 
-const ColorPicker: FC<IColorPickerProps> = ({ title, color, onChange, onChangeComplete, ...props }) => {
-  const [state, setState] = useState<IColorPickerState>({ color, visible: false });
-  const { styles } = useStyles();
-
-  useDeepCompareEffect(() => {
-    setState(prev => ({ ...prev, color }));
-  }, [color]);
-
-  const handleVisibleChange = (visible: boolean) => {
-    setState(prev => ({ ...prev, visible }));
-  };
-
-  const handleColorChange = (localColor: ColorResult, event: React.ChangeEvent<HTMLInputElement>) => {
-    setState(prev => ({ ...prev, color: localColor }));
-
-    if (onChange) {
-      onChange(localColor, event);
-    }
-  };
-
-  const handleChangeComplete = (localColor: ColorResult, event: React.ChangeEvent<HTMLInputElement>) => {
-    setState(prev => ({ ...prev, color: localColor }));
-
-    if (onChange) {
-      onChange(localColor, event);
-    }
-  };
-
-  const backgroundColor = useMemo(() => {
-    return typeof state?.color === 'string' ? state?.color : state?.color?.hex;
-  }, [state?.color]);
-
-  if (props.readOnly)
-    return <span className={classNames(styles['color-picker-selector'])} style={{ background: backgroundColor }} />;
-
-  return (
-    <Popover
-      open={state?.visible}
-      title={title || 'Pick color'}
-      trigger="click"
-      onOpenChange={handleVisibleChange}
-      content={
-        <SketchPicker
-          onChange={handleColorChange}
-          onChangeComplete={handleChangeComplete}
-          {...props}
-          color={state?.color?.hex}
-        />
-      }
-    >
-      <span className={classNames(styles.colorPickerSelector, styles.editable)} style={{ background: backgroundColor }} />
-    </Popover>
-  );
+  switch(format) {
+    case 'hex': return color.toHexString();
+    case 'hsb': return color.toHsbString();
+    case 'rgb': return color.toRgbString();
+  }
 };
 
-export default ColorPicker;
+export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear }) => {
+  const [format, setFormat] = useState<ColorFormat>('hex');
+  
+  const handleChange = (value: Color) => {
+    const formattedValue = formatColor(value, format);
+    onChange(formattedValue);
+  };
+
+  const handleClear = () => {
+    onChange(null);
+  };
+
+  return (
+    <AntdColorPicker
+      format={format}
+      onFormatChange={setFormat}
+      showText={value && showText}
+      disabledAlpha /*note: temporary disabled alpha, there is abug in the antd*/
+      allowClear={allowClear}
+      onClear={handleClear}
+      value={value ?? ""}
+      onChangeComplete={handleChange}
+      presets={presets}
+      panelRender={title
+        ? (panel) => (
+          <div>
+            <div
+              style={{
+                fontSize: 12,
+                color: 'rgba(0, 0, 0, 0.88)',
+                lineHeight: '20px',
+                marginBottom: 8,
+              }}
+            >
+              {title}
+            </div>
+            {panel}
+          </div>
+        )
+        : undefined
+      }
+    />
+  );
+};

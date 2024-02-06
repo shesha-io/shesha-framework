@@ -5,7 +5,6 @@ import React, {
     ReactNode,
     useMemo
     } from 'react';
-import { ColorResult } from 'react-color';
 import { executeScriptSync, IApplicationContext } from '@/providers/form/utils';
 
 interface IconPickerWrapperProps {
@@ -15,16 +14,16 @@ interface IconPickerWrapperProps {
     onChange: (...args: any[]) => void;
     readOnly?: boolean;
     fontSize?: number;
-    color?: ColorResult;
+    color?: string;
     customIcon?: string;
     customColor?: string;
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange } = props;
     const computedColor = useMemo(() => {
-        if (customColor) return executeScriptSync<string>(customColor, applicationContext);
-
-        return color?.hex;
+        return customColor
+        ? executeScriptSync<string>(customColor, applicationContext)
+        : color;
     }, [applicationContext, customColor, color]);
 
     const computedIcon = useMemo(() => {

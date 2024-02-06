@@ -9,6 +9,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useApplicationContext } from '@/providers/form/utils';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',
@@ -30,6 +31,7 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   migrator: (m) => m
     .add<IIconPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IIconPickerComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<IIconPickerComponentProps>(2, (prev) => ({ ...prev, color: legacyColor2Hex(prev.color) }))
   ,
 };
 

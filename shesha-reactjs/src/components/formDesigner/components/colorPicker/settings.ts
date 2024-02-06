@@ -1,4 +1,3 @@
-import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const iconPickerFormSettings = new DesignerToolbarSettings()
@@ -54,12 +53,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Title',
         })
-        .addNumberField({
-          id: nanoid(),
-          propertyName: 'fontSize',
-          label: 'Size',
-          min: 10,
-        })
         .addCheckbox({
           id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
           propertyName: 'hidden',
@@ -77,6 +70,18 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           propertyName: 'editMode',
           parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
           label: "Edit mode",
+        })
+        .addCheckbox({
+          id: 'cuw7Y3d33A',
+          propertyName: 'allowClear',
+          parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+          label: 'Allow clear',
+        })
+        .addCheckbox({
+          id: '3nzgZETY-T',
+          propertyName: 'showText',
+          parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+          label: 'Show text',
         })
         .toJson()
       ]

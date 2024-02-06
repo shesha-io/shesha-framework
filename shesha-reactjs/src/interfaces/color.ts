@@ -2,14 +2,14 @@ export interface IHsl {
   h: number;
   s: number;
   l: number;
-  a: number;
+  a?: number | undefined;
 }
 
 export interface IRgb {
   r: number;
   g: number;
   b: number;
-  a: number;
+  a?: number | undefined;
 }
 
 export interface IHsv {

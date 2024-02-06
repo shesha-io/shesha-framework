@@ -1,6 +1,5 @@
 import ConfigurableFormItem from '../formItem';
 import React from 'react';
-import { ColorPickerWrapper } from './colorPickerWrapper';
 import { FormatPainterOutlined } from '@ant-design/icons';
 import { IColorPickerComponentProps } from './interfaces';
 import { iconPickerFormSettings } from './settings';
@@ -8,6 +7,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { ColorPicker } from '@/components';
 
 const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',
@@ -16,7 +16,15 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<ColorPickerWrapper {...model} value={value} onChange={onChange} />)}
+        {(value, onChange) => (
+          <ColorPicker
+            value={value}
+            onChange={onChange}
+            title={model.title}
+            allowClear={model.allowClear}
+            showText={model.showText}
+          />
+        )}
       </ConfigurableFormItem>
     );
   },
@@ -24,6 +32,7 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   migrator: (m) => m
     .add<IColorPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IColorPickerComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<IColorPickerComponentProps>(2, (prev) => ({ ...prev, allowClear: false, showText: false }))
   ,
   validateSettings: model => validateConfigurableComponentSettings(iconPickerFormSettings, model),
 };

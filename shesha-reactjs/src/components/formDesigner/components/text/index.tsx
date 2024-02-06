@@ -7,6 +7,7 @@ import ConfigurableFormItem from '../formItem';
 import { ITextTypographyProps } from './models';
 import { settingsFormMarkup } from './settings';
 import TypographyComponent from './typography';
+import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 
 const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
@@ -15,7 +16,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
   Factory: ({ model }) => (
     <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-      {(value) => <TypographyComponent {...model} value={model?.contentDisplay === 'name' ? value : model?.content}/>}
+      {(value) => <TypographyComponent {...model} value={model?.contentDisplay === 'name' ? value : model?.content} />}
     </ConfigurableFormItem>
   ),
   settingsFormMarkup,
@@ -34,6 +35,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   }),
   migrator: (m) => m
     .add<ITextTypographyProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ITextTypographyProps)
+    .add<ITextTypographyProps>(1, (prev) => ({ ...prev, color: legacyColor2Hex(prev.color), backgroundColor: legacyColor2Hex(prev.backgroundColor)}))
   ,
 };
 
