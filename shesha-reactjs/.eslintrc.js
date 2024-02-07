@@ -38,7 +38,16 @@ module.exports = {
   root: true,
   rules: {
     'no-restricted-imports': [
-      "error", { "paths": ["@/utils/publicUtils"] }
+      "error", { "paths": [
+        "@/utils/publicUtils", 
+        {
+          "name": "nanoid/non-secure",
+          "message": "Please import nanoid from `@/utils/uuid` instead."
+        },        
+        {
+          "name": "nanoid",
+          "message": "Please import nanoid from `@/utils/uuid` instead."
+        }] }
     ],
     'sort-imports': [
       'off',

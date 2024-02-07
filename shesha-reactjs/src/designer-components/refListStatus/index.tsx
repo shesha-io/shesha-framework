@@ -3,7 +3,7 @@ import { Alert } from 'antd';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
-import { DataTypes, IToolboxComponent } from '@/interfaces';
+import { IToolboxComponent } from '@/interfaces';
 import { useForm, useFormData, useGlobalState } from '@/providers';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { IRefListStatusProps } from './models';
@@ -18,7 +18,6 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   isInput: true,
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   Factory: ({ model }) => {
     const { formMode, formData: data } = useForm();
     const { solidBackground = true, referenceListId, showReflistName = true } = model;

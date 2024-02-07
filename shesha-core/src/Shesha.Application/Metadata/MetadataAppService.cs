@@ -276,22 +276,5 @@ namespace Shesha.Metadata
             }
             return null;
         }
-
-        /*
-         * back-end:
-         * todo: Cache current level of hierarchy (properties of Person)
-         * todo: support nested objects Person.AreaLevel1.Name
-         
-         * front-end:
-         * todo: create new component - property autocomplete that uses MetadataProvider
-        
-        * designer:
-        * todo: separate providers for designer and form
-        * on the designer level add a new property - data context
-        
-        Add property - isContainer
-        PropertiesLoaded
-
-         */
     }
 }
