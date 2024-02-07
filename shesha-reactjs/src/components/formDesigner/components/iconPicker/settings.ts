@@ -99,6 +99,8 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     propertyName: 'color',
     label: 'Color',
     title: 'Choose Icon color',
+    allowClear: true,
+    showText: true,
   })
   .addCodeEditor({
     id: nanoid(),

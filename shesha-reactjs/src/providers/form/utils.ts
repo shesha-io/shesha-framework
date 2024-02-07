@@ -218,7 +218,7 @@ export const getReadOnlyBool = (editMode: EditMode, parentReadOnly: boolean) => 
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
- export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolean = undefined): T => {
+export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolean = undefined): T => {
   const m = {} as T;
   for (var propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
@@ -239,7 +239,7 @@ const updateConfigurableActionParent = (model: any, parentId: string) => {
   for (const key in model) {
     if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
       const config = model[key] as IConfigurableActionConfiguration;
-  
+
       if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
         // skip SheshaActionOwners actions since they are common
         if (Object.values(SheshaActionOwners).filter(i => i === config.actionOwner)?.length > 0)
@@ -268,12 +268,12 @@ export const getActualModelWithParent = <T>(
       ? `${parent?.model?.componentName}.${actualModel['componentName']}`
       : actualModel['componentName'];
 
-    actualModel['context'] = 
+    actualModel['context'] =
       !!actualModel['context']
-      && parent?.context !== actualModel['context'] // If the subForm has the same context then don't update context name
-      && !isCommonContext(actualModel['context']) // If a common context then don't update context name
-      ? `${parent?.subFormIdPrefix}.${actualModel['context']}`
-      : actualModel['context'];
+        && parent?.context !== actualModel['context'] // If the subForm has the same context then don't update context name
+        && !isCommonContext(actualModel['context']) // If a common context then don't update context name
+        ? `${parent?.subFormIdPrefix}.${actualModel['context']}`
+        : actualModel['context'];
     updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
   }
   return actualModel;
@@ -704,6 +704,31 @@ export function executeExpression<TResult>(
   } else return defaultValue;
 }
 
+export const isPropertySetting = <Value = any>(value: any): value is IPropertySetting<Value> => {
+  const typed = value as IPropertySetting<Value>;
+  return typed && typeof(typed) === 'object' 
+    && typed._mode 
+    && typeof(typed._mode) === 'string' 
+    && (typed._mode === 'code' || typed._mode === 'value');
+};
+
+interface FunctionArgument {
+  name: string;
+  description?: string;
+}
+export type FunctionExecutor<TResult = any> = (...args: any) => TResult;
+export const getFunctionExecutor = <TResult = any>(
+  expression: string,
+  expressionArguments: FunctionArgument[]): FunctionExecutor<TResult> => {
+  
+  if (!expression) throw new Error('Expression must be defined');
+  
+  const argumentsList = (expressionArguments ?? []).map(a => a.name).join(", ");
+  
+  const expressionExecuter = new Function(argumentsList, expression);
+  return expressionExecuter as FunctionExecutor<TResult>;
+};
+
 export function executeScript<TResult = any>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments
@@ -743,19 +768,6 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
     return null;
   }
 }
-
-export const getExecutorScriptSync = (context: any) => {
-  /*let argsDefinition = '';
-  const argList: any[] = [];
-  for (const argumentName in context) {
-    if (context.hasOwnProperty(argumentName)) {
-      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-      argList.push(context[argumentName]);
-    }
-  }*/
-
-  return <T>(jscode: string) => executeScriptSync<T>(jscode, context);
-};
 
 /**
  * Return ids of visible components according to the custom visibility

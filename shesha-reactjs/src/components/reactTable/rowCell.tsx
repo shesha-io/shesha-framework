@@ -1,6 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import { Cell, CellPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
 import { useStyles } from './styles/styles';
+import { isStyledColumn } from '../dataTable/interfaces';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,
@@ -22,11 +23,17 @@ export interface IRowCellProps {
 
 export const RowCell: FC<IRowCellProps> = ({ cell, preContent }) => {
   const { styles } = useStyles();
-  const { key, ...restProps } = cell.getCellProps(cellProps);
+  const { key, style, ...restProps } = cell.getCellProps(cellProps);
+
+  const cellStyle = isStyledColumn(cell.column)
+    ? cell.column.cellStyleAccessor({ row: cell.row.original, value: cell.value })
+    : undefined;
+  
   return (
     <div 
-      key={key} 
+      key={key}
       {...restProps}
+      style={style || cellStyle ? { ...style, ...cellStyle } : undefined}
       className={styles.td}
     >
       {preContent}

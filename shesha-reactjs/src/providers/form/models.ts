@@ -18,10 +18,15 @@ export type ViewType = 'details' | 'table' | 'form' | 'blank' | 'masterDetails' 
 export type LabelAlign = 'left' | 'right';
 
 export type PropertySettingMode = 'value' | 'code';
-
-export interface IPropertySetting {
+/*
+export enum PropertySettingMode {
+  Value = 'value',
+  Code = 'code'
+}
+*/
+export interface IPropertySetting<Value = any> {
   _mode?: PropertySettingMode;
-  _value?: any;
+  _value?: Value;
   _code?: string;
 }
 

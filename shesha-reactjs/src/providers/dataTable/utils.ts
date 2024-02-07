@@ -184,6 +184,7 @@ export const prepareColumn = (
     isFilterable: false,
     isSortable: false,
     allowShowHide: false,
+    backgroundColor: column.backgroundColor,
   };
 
   if (isDataColumnProps(column)) {

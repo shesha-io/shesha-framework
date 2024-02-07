@@ -30,6 +30,7 @@ export interface IConfigurableColumnsBase {
   maxWidth?: number;
   isVisible: boolean;
   permissions?: string[];
+  backgroundColor?: string;// IPropertySetting<string>;
 }
 
 /**

@@ -42,14 +42,15 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
     </div>
   );
 
-  const onClick = (e) => {
-    e.stopPropagation();
-    setSelectedComponent(
-      selectedComponentId === props.componentId ? null : props.componentId,
-      metadata?.id,
-      dataContext,
-      props.componentRef
-    );
+  const onClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    if (selectedComponentId !== props.componentId)
+      setSelectedComponent(
+        props.componentId,
+        metadata?.id,
+        dataContext,
+        props.componentRef
+      );
   };
 
   const onMouseOver = (e) => {

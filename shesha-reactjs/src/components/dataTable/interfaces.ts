@@ -2,9 +2,9 @@ import { MutableRefObject, ReactNode } from 'react';
 import { CellProps, Column, Row } from 'react-table';
 import { IAnyObject } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { ProperyDataType } from '@/interfaces/metadata';
+import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { DataTableFullInstance } from '@/providers/dataTable/contexts';
-import { IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
+import { CellStyleFunc, IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
 
 export interface ITableActionColumns {
@@ -21,6 +21,17 @@ export interface ITableCustomTypeEditor {
 export type DataTableColumn<D extends object = {}> = Column<D> & {
   resizable?: boolean;
   originalConfig?: ITableColumn;
+  metadata?: IPropertyMetadata;
+  cellStyleAccessor?: CellStyleFunc;
+};
+
+export type IStyledColumn<D extends object = {}> = DataTableColumn<D> & {
+  cellStyleAccessor: CellStyleFunc;
+};
+
+export const isStyledColumn = <D extends object = {}>(column: DataTableColumn<D>): column is IStyledColumn<D> => {
+  const typed = column as IStyledColumn<D>;
+  return typed && typed.cellStyleAccessor && typeof(typed.cellStyleAccessor) === 'function';
 };
 
 export interface IColumnEditFieldProps {

@@ -119,7 +119,7 @@ export { default as RichTextEditor, type IRichTextEditorProps } from './richText
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
 export { FormComponentSelector, type IFormComponentSelectorProps } from './formComponentSelector';
 export { default as PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
-export { default as ColorPicker } from '@/components/colorPicker';
+export { ColorPicker } from '@/components/colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
 export { default as Properties } from '@/components/properties';
 export { HelpTextPopover } from './helpTextPopover';

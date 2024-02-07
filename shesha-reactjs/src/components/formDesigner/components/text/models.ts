@@ -1,6 +1,5 @@
 import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
-import { ColorResult } from 'react-color';
 import { IConfigurableFormComponent } from '@/providers';
 
 declare const TITLE_ELE_LIST: [1, 2, 3, 4, 5];
@@ -66,8 +65,8 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   content: string;
   contentType?: ContentType;
   contentDisplay: ContentDisplay;
-  color?: ColorResult;
-  backgroundColor?: ColorResult;
+  color?: string;
+  backgroundColor?: string;
   level?: LevelType | TypographyFontSize;
   fontSize?: TypographyFontSize;
   padding?: TypographyPaddingSize;

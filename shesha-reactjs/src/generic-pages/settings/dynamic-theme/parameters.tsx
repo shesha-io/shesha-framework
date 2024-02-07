@@ -1,9 +1,8 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Divider, Form, Radio, Space, Tooltip } from 'antd';
 import React, { FC, Fragment, useCallback } from 'react';
-import { ColorResult } from 'react-color';
 import { SectionSeparator, Show } from '@/components';
-import ColorPicker from '@/components/colorPicker';
+import { ColorPicker } from '@/components/colorPicker';
 import { useTheme } from '@/providers';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
@@ -40,19 +39,18 @@ const ThemeParameters: FC = () => {
       key: string,
       colorName: string,
       initialColor: string,
-      onChange: (color: ColorResult) => void,
+      onChange: (color: string) => void,
       presetColors?: string[],
       hint?: string
     ) => (
       <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-        <ColorPicker
-          title={humanizeString(colorName)}
-          presetColors={presetColors ?? PRESET_COLORS}
-          // @ts-ignore
-          color={{ hex: initialColor }}
-          onChange={onChange}
-        />
         <Space>
+          <ColorPicker
+            title={humanizeString(colorName)}
+            presets={[{ label: "Presets", defaultOpen: true, colors: presetColors ?? PRESET_COLORS }]}
+            value={initialColor}
+            onChange={onChange}
+          />
           <span>{humanizeString(colorName)} </span>
           <Show when={Boolean(hint)}>
             <Tooltip title={hint}>
@@ -86,7 +84,7 @@ const ThemeParameters: FC = () => {
 
       <Space direction="vertical" align="start">
         {colorConfigs.map((config, index) =>
-          renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], ({ hex }) => config.onChange(hex))
+          renderColor(`theme_${index}`, config.name, theme?.application?.[config.name], (hex) => config.onChange(hex))
         )}
 
         <Divider />
@@ -96,7 +94,7 @@ const ThemeParameters: FC = () => {
           'layoutBackground',
           'layoutBackground',
           theme?.layoutBackground,
-          ({ hex }) => changeTheme({ ...theme, layoutBackground: hex }),
+          (hex) => changeTheme({ ...theme, layoutBackground: hex }),
           BACKGROUND_PRESET_COLORS
         )}
       </Space>
@@ -108,10 +106,10 @@ const ThemeParameters: FC = () => {
       <Space direction="vertical" align="start">
         {textConfigs.map((config, index) =>
           renderColor(
-            `text_${index}`, 
+            `text_${index}`,
             config.name,
             theme?.text?.[config.name],
-            ({ hex }) => config.onChange(hex),
+            (hex) => config.onChange(hex),
             TEXT_PRESET_COLORS,
             config?.hint
           )

@@ -57,7 +57,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
         if (contentType === 'secondary') return theme?.text?.secondary;
 
-        if (contentType === 'custom' && color) return color.hex;
+        if (contentType === 'custom' && color) return color;
 
         return null;
     }, [color, contentType, theme?.text]);
@@ -77,7 +77,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
             ...fontSizeStyle,
             ...paddingStyle,
             ...(style ?? {}),
-            backgroundColor: backgroundColor?.hex,
+            backgroundColor: backgroundColor,
             color: textColor,
         },
     };

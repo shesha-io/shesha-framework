@@ -4,6 +4,7 @@ import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -14,7 +15,23 @@ export interface ISettingsControlProps {
   mode: PropertySettingMode;
   onChange?: (value: IPropertySetting) => void;
   readonly children?: SettingsControlChildrenType;
+  exposedVariables?: ICodeExposedVariable[];
 }
+
+const defaultExposedVariables: ICodeExposedVariable[] = [
+  { name: "data", description: "Selected form values", type: "object" },
+  { name: "contexts", description: "Contexts data", type: "object" },
+  { name: "globalState", description: "Global state", type: "object" },
+  { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+  { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
+  { name: "staticValue", description: "Static value of this setting", type: "any" },
+  { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
+  { name: "form", description: "Form instance", type: "object" },
+  { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
+  { name: "moment", description: "moment", type: "object" },
+  { name: "http", description: "axiosHttp", type: "object" },
+  { name: "message", description: "message framework", type: "object" },
+];
 
 export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
@@ -72,20 +89,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
             mode='dialog'
             language='typescript'
             propertyName={props.propertyName + 'Code'}
-            exposedVariables={[
-              { name: "data", description: "Selected form values", type: "object" },
-              { name: "contexts", description: "Contexts data", type: "object" },
-              { name: "globalState", description: "Global state", type: "object" },
-              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-              { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-              { name: "staticValue", description: "Static value of this setting", type: "any" },
-              { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
-              { name: "form", description: "Form instance", type: "object" },
-              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-              { name: "moment", description: "moment", type: "object" },
-              { name: "http", description: "axiosHttp", type: "object" },
-              { name: "message", description: "message framework", type: "object" },
-            ]}
+            exposedVariables={props.exposedVariables !== undefined ? props.exposedVariables : defaultExposedVariables}
           />
         }
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}

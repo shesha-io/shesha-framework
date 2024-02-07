@@ -250,6 +250,8 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           label: 'Custom Color',
           title: 'Pick Content Color',
           hidden: {_code: 'return  getSettingValue(data?.contentType) !== "custom";', _mode: 'code', _value: false} as any,
+          allowClear: true,
+          showText: true,
         })
         .addColorPicker({
           id: nanoid(),
@@ -257,6 +259,8 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           propertyName: 'backgroundColor',
           label: 'Background Color',
           title: 'Pick Content Color',
+          allowClear: true,
+          showText: true,
         }).toJson()
       ]
     }
