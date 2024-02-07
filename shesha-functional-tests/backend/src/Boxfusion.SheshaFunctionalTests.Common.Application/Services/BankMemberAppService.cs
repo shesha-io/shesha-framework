@@ -3,11 +3,6 @@ using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Shesha;
 using Shesha.DynamicEntities.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {

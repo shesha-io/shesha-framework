@@ -47,7 +47,7 @@ namespace Shesha.Metadata
             {
                 models.AddRange(await provider.GetModelsAsync());
             }
-            return models.Where(x => !x.Suppress).ToList();
+            return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
         }
 
         [HttpGet]
@@ -276,5 +276,19 @@ namespace Shesha.Metadata
             }
             return null;
         }
+
+        private class ModelDtoTypeComparer : IEqualityComparer<ModelDto>
+        {
+            bool IEqualityComparer<ModelDto>.Equals(ModelDto x, ModelDto y)
+            {
+                return x.ClassName == y.ClassName;
+            }
+
+            int IEqualityComparer<ModelDto>.GetHashCode(ModelDto obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
+
     }
 }
