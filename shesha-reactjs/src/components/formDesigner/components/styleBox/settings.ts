@@ -1,5 +1,5 @@
-import { nanoid } from 'nanoid/non-secure';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { nanoid } from '@/utils/uuid';
 
 export const getSettings = () =>
   new DesignerToolbarSettings()

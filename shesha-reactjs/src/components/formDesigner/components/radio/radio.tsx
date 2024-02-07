@@ -55,6 +55,25 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
     .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
   ,
+  linkToModelMetadata: (model, metadata): IEnhancedRadioProps => {
+    const isRefList = metadata.dataType === DataTypes.referenceListItem;
+    
+    console.log('LOG: link', { 
+      isRefList, 
+      refList : { module: metadata.referenceListModule, name: metadata.referenceListName } }
+    );
+
+    return {
+      ...model,
+      dataSourceType: isRefList ? 'referenceList' : 'values',
+      referenceListId: isRefList
+        ? {
+          module: metadata.referenceListModule,
+          name: metadata.referenceListName,
+        }
+        : null,
+    };
+  },
 };
 
 export default Radio;

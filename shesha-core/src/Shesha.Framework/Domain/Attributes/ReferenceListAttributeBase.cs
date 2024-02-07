@@ -78,7 +78,7 @@ namespace Shesha.Domain.Attributes
 
         protected string GetModuleName(Assembly assembly)
         {
-            return IsLegacy || !string.IsNullOrWhiteSpace(_module)
+            return !string.IsNullOrWhiteSpace(_module)
                 ? _module 
                 : assembly?.GetConfigurableModuleName();
         }
