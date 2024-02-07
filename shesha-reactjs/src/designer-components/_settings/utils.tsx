@@ -70,6 +70,10 @@ export const updateSettingsComponents = (
                 // If should be wrapped as Setting
                 newComponent.type = 'setting';
                 newComponent.id = oldComponent.id + '_setting';
+
+                // copy `exposedVariables`. NOTE: it's a temporary solution, will be removed later
+                if (oldComponent['exposedVariables'])
+                    newComponent['exposedVariables'] = oldComponent['exposedVariables'];
             
                 // Add source component as a child of Setting component
                 if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {

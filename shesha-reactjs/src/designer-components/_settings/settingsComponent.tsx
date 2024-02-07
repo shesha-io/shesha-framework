@@ -7,9 +7,11 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import { SettingOutlined } from '@ant-design/icons';
 import { SettingsControlRenderer } from './settingsControlRenderer';
+import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
     sourceComponent?: IConfigurableFormComponent;
+    exposedVariables?: ICodeExposedVariable[];
 }
 
 const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
@@ -17,7 +19,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     isInput: true,
     isOutput: true,
     name: 'Setting',
-    isHidden: false,
+    isHidden: true,
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
         const component: IConfigurableFormComponent = useMemo(() => {
@@ -42,6 +44,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                         mode={'value'}
                         onChange={onChange}
                         value={value}
+                        exposedVariables={model.exposedVariables}
                     >
                         {(_valueValue, _onChangeValue, propertyName) => {
                             return (

@@ -23,7 +23,7 @@ import { getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useDataTableStore } from '@/providers/index';
-import { useStyles } from './styles/styles';
+import { useStyles, useMainStyles } from './styles/styles';
 
 interface IReactTableState {
   allRows: any[];
@@ -79,6 +79,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     allColumns: columns,
   });
   const { styles } = useStyles();
+  const { styles: mainStyles } = useMainStyles();
 
   const { setDragState } = useDataTableStore();
 
@@ -374,7 +375,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         </span>
       }
     >
-      <div className={styles.shaReactTable} style={containerStyleFinal}>
+      <div className={mainStyles.shaReactTable} style={containerStyleFinal}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>
           {columns?.length > 0 &&
             headerGroups.map(headerGroup => {

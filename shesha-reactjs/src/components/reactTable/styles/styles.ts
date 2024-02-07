@@ -1,53 +1,67 @@
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
-    const genClass = (className: string): string => cx(`${className}`);
+const tableClassNames = {
+  shaTable: "sha-table",
+  thead: "thead",
+  tbody: "tbody",
+  tr: "tr",
+  th: "th",
+  td: "td",
+  trHead: "tr-head",
+  trBody: "tr-body",
+  shaCrudCell: "sha-crud-cell",
+  shaNewRow: "sha-new-row",
+  trBodyGhost: "tr-body-ghost",
+  trOdd: "tr-odd",
+  sortedAsc: "sorted-asc",
+  sortedDesc: "sorted-desc",
+  trSelected: "sha-tr-selected",
+  shaTableEmpty: "sha-table-empty",
+  shaSortable: "sha-sortable",
+  shaDragging: "sha-dragging",
+  shaHover: "sha-hover",
+};
+const tableStyles = {
+  styles: tableClassNames
+};
 
-    const shaTable = genClass("sha-table");
-    const thead = genClass("thead");
-    const tbody = genClass("tbody");
-    const tr = genClass("tr");
-    const th = genClass("th");
-    const td = genClass("td");
-    // .tr-head
-    const trHead = genClass("tr-head");
-    const trBody = genClass("tr-body");
+export const useStyles = () => {
+  return tableStyles;
+};
 
-    // .sha-crud-cell
-    const shaCrudCell = genClass("sha-crud-cell");
-    // .sha-new-row
-    const shaNewRow = genClass("sha-new-row");
-    // .tr-body-ghost
-    const trBodyGhost = genClass("tr-body-ghost");
-    // .tr-odd
-    const trOdd = genClass("tr-odd");
+export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
+  const {
+    shaTable,
+    thead,
+    tbody,
+    tr,
+    th,
+    td,
+    trHead,
+    trBody,
+    shaCrudCell,
+    shaNewRow,
+    trBodyGhost,
+    trOdd,
+    sortedAsc,
+    sortedDesc,
+    trSelected,
+    shaTableEmpty,
+    shaSortable,
+    shaDragging,
+    shaHover,
+  } = tableClassNames;
 
-    // .sorted-asc
-    const sortedAsc = genClass("sorted-asc");
-    const sortedDesc = genClass("sorted-desc");
-
-    // .sha-tr-selected
-    const trSelected = genClass("sha-tr-selected");
-    // .sha-table-empty
-    const shaTableEmpty = genClass("sha-table-empty");
-
-    // var(--ant-primary-3)
-    const hoverableRow = `
+  // var(--ant-primary-3)
+  const hoverableRow = `
         &:not(.${trSelected}) {
             background: ${token.colorPrimaryBgHover} !important;
         }
     `;
-    
-    // .sha-sortable
-    const shaSortable = genClass("sha-sortable");
-    // .sha-dragging
-    const shaDragging = genClass("sha-dragging");
-    // .sha-hover
-    const shaHover = genClass("sha-hover");
 
-    const groupBorder = "1px solid lightgray";
-    const nestedPaddings = (indexStart: number, index: number) => {
-      return indexStart < index 
+  const groupBorder = "1px solid lightgray";
+  const nestedPaddings = (indexStart: number, index: number) => {
+    return indexStart < index
       ? css`
         &.sha-group-level-${indexStart} {
           >.${prefixCls}-collapse-item {
@@ -64,10 +78,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         ${nestedPaddings(indexStart + 1, index)}
       `
       : null;
-    };
+  };
 
-    // .sha-react-table
-    const shaReactTable = cx("sha-react-table", css`
+  // .sha-react-table
+  const shaReactTable = cx("sha-react-table", css`
         margin: 0 12px;
         background: white;
         /* These styles are suggested for the table fill all available space in its containing element */
@@ -262,22 +276,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
         }
     `);
-    return {
-        shaReactTable,
-        shaTable,
-        shaTableEmpty,
-        thead,
-        tbody,
-        tr,
-        trHead,
-        trBody,
-        th,
-        td,
-        sortedAsc,
-        sortedDesc,
-        shaSortable,
-        trOdd,
-        trSelected,
-        shaHover,
-    };
+  return {
+    shaReactTable,
+  };
 });

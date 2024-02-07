@@ -351,7 +351,21 @@
             "title": "",
             "fontSize": "",
             "allowClear": true,
-            "showText": true
+            "showText": true,
+            "exposedVariables": [
+                {
+                    "id": "RyCiFg3TwQ",
+                    "name": "value",
+                    "description": "Component cell value",
+                    "type": "string | any"
+                },
+                {
+                    "id": "m5URdpeB7x",
+                    "name": "row",
+                    "description": "Current row value",
+                    "type": "object"
+                }
+            ]
         }
     ],
     "formSettings": {
