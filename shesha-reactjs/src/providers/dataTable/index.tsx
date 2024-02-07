@@ -564,6 +564,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       dispatchThunk(registerConfigurableColumnsAction({ ownerId, columns: configurableColumns }));
 
       repository.prepareColumns(configurableColumns).then((preparedColumns) => {
+        // backgroundColor
         dispatchThunk(fetchColumnsSuccessSuccessAction({ configurableColumns, columns: preparedColumns, userConfig }));
       });
     });

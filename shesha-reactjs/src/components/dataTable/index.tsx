@@ -36,6 +36,7 @@ import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
 import { useStyles } from './styles/styles';
 import { adjustWidth, getCruadActionConditions } from './cell/utils';
+import { getCellStyleAccessor } from './utils';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -280,62 +281,65 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ...result,
       enabled: result.canAdd || result.canDelete || result.canEdit,
     };
-  }, [props.canDeleteInline,inlineEditMode, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
+  }, [props.canDeleteInline, inlineEditMode, props.canEditInline, props.canAddInline, formMode, formData, globalState]);
 
   const widthOptions = useMemo(() => {
     return getCruadActionConditions(crudOptions, prevCrudOptions);
   }, [crudOptions, prevCrudOptions]);
 
-  const preparedColumns = useMemo(() => {
+  const preparedColumns = useMemo<Column<any>[]>(() => {
     const localPreparedColumns = columns
-    .map((column) => {
-      if (column.columnType === 'crud-operations') {
-        const { maxWidth, minWidth } = adjustWidth(
-          {
-            maxWidth: column.maxWidth,
-            minWidth: column.minWidth,
-          },
-          {
-            canDivideWidth: widthOptions.canDivideWidth,
-            canDoubleWidth: widthOptions.canDoubleWidth,
-            canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
-            canTripleWidth: widthOptions.canTripleWidth,
-          }
-        );
-        column.minWidth = minWidth;
-        column.maxWidth = maxWidth;
-      }
-      return column;
-    })
-    .filter((column) => {
-      return column.show && !(column.columnType === 'crud-operations' && !crudOptions.enabled);
-    })
-      .map<DataTableColumn>((columnItem) => {
+      .map((column) => {
+        if (column.columnType === 'crud-operations') {
+          const { maxWidth, minWidth } = adjustWidth(
+            {
+              maxWidth: column.maxWidth,
+              minWidth: column.minWidth,
+            },
+            {
+              canDivideWidth: widthOptions.canDivideWidth,
+              canDoubleWidth: widthOptions.canDoubleWidth,
+              canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
+              canTripleWidth: widthOptions.canTripleWidth,
+            }
+          );
+          column.minWidth = minWidth;
+          column.maxWidth = maxWidth;
+        }
+        return column;
+      })
+      .filter((column) => {
+        return column.show && !(column.columnType === 'crud-operations' && !crudOptions.enabled);
+      })
+      .map<Column<any>>((columnItem) => {
         const strictWidth =
           columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
             ? columnItem.minWidth
             : undefined;
         const width = strictWidth ?? columnItem.width;
 
+        const cellStyleAccessor = getCellStyleAccessor(columnItem);
         const cellRenderer = getCellRenderer(columnItem, columnItem.metadata);
-        const column: DataTableColumn = {
+        const column: DataTableColumn<any> = {
           ...columnItem,
           accessor: camelcaseDotNotation(columnItem.accessor),
           Header: columnItem.header,
           minWidth: Boolean(columnItem.minWidth) ? columnItem.minWidth : undefined,
           maxWidth: Boolean(columnItem.maxWidth) ? columnItem.maxWidth : undefined,
           width: width,
-          resizable: !strictWidth,
           disableSortBy: Boolean(!columnItem.isSortable || sortMode === 'strict'),
           disableResizing: Boolean(strictWidth),
           Cell: cellRenderer,
+          // custom props
+          resizable: !strictWidth,
           originalConfig: columnItem,
+          cellStyleAccessor: cellStyleAccessor,
         };
-        return removeUndefinedProperties(column) as DataTableColumn;
+        return removeUndefinedProperties(column) as DataTableColumn<any>;
       });
 
     return localPreparedColumns;
-  },[
+  }, [
     columns,
     crudOptions.enabled,
     crudOptions.canAdd,
@@ -611,20 +615,20 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       return Promise.reject('Repository is not specified');
 
     const supported = repository.supportsReordering && repository.supportsReordering({ sortMode, strictSortBy });
-    if (supported === true){
+    if (supported === true) {
       const reorderPayload: RowsReorderPayload = {
         ...payload,
         propertyName: strictSortBy,
       };
-  
+
       return repository.reorder(reorderPayload);
     } else
-      return Promise.reject(typeof(supported) === 'string' ? supported : 'Reordering is not supported');
+      return Promise.reject(typeof (supported) === 'string' ? supported : 'Reordering is not supported');
   };
 
   const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing) => {
-    const widths = columns.map<IColumnWidth>(c => ({ id: c.id, width: typeof(c.width) === 'number' ? c.width : undefined }));
-    
+    const widths = columns.map<IColumnWidth>(c => ({ id: c.id, width: typeof (c.width) === 'number' ? c.width : undefined }));
+
     setColumnWidths(widths);
   };
 
@@ -638,7 +642,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onSelectedIdsChanged: changeSelectedIds,
     onMultiRowSelect,
     onSort, // Update it so that you can pass it as param. Quick fix for now
-    columns: preparedColumns as Column<any>[], // todo: make ReactTable generic and remove this cast
+    columns: preparedColumns,
     selectedRowIndex,
     loading: isFetchingTableData,
     pageCount: totalPages,
@@ -663,14 +667,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     newRowCapturePosition: props.newRowCapturePosition,
     createAction: creater,
     newRowInitData: crudOptions.onNewRowInitialize,
-    inlineEditMode ,
+    inlineEditMode,
     inlineSaveMode: props.inlineSaveMode,
     inlineEditorComponents,
     inlineCreatorComponents,
     inlineDisplayComponents,
     minHeight: props.minHeight,
     maxHeight: props.maxHeight,
-    
+
     allowReordering: allowReordering && reorderingAvailable,
     onRowsReordered: handleRowsReordered,
 

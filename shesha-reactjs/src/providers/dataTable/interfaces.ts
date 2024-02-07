@@ -2,7 +2,8 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
-import { IDictionary } from '@/interfaces';
+import { IDictionary, IPropertySetting } from '@/interfaces';
+import { CSSProperties } from 'react';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
 
@@ -48,7 +49,21 @@ export interface ITableColumn {
   name?: string;
   allowShowHide?: boolean;
   metadata?: IPropertyMetadata;
+  backgroundColor?: string | IPropertySetting<string>;
 }
+
+export interface CellStyleFuncArgs {
+  /**
+   * Row values
+   */
+  row: any;
+  /**
+   * Cell value
+   */
+  value: any;
+};
+export type CellStyleFunc = (args: CellStyleFuncArgs) => CSSProperties;
+export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
 
 export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
   propertyName?: string;

@@ -14,22 +14,24 @@ export interface IColorPickerProps {
   presets?: Preset[];
   showText?: boolean;
   allowClear?: boolean;
+  disabledAlpha?: boolean;
+  readOnly?: boolean;
 }
 
 const formatColor = (color: Color, format: ColorFormat) => {
   if (!color)
     return null;
 
-  switch(format) {
+  switch (format) {
     case 'hex': return color.toHexString();
     case 'hsb': return color.toHsbString();
     case 'rgb': return color.toRgbString();
   }
 };
 
-export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear }) => {
+export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly }) => {
   const [format, setFormat] = useState<ColorFormat>('hex');
-  
+
   const handleChange = (value: Color) => {
     const formattedValue = formatColor(value, format);
     onChange(formattedValue);
@@ -39,20 +41,25 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
     onChange(null);
   };
 
+  const onPanelClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+  };
+
   return (
     <AntdColorPicker
       format={format}
       onFormatChange={setFormat}
+      disabledAlpha={disabledAlpha}
       showText={value && showText}
-      disabledAlpha /*note: temporary disabled alpha, there is abug in the antd*/
       allowClear={allowClear}
+      disabled={readOnly}
       onClear={handleClear}
       value={value ?? ""}
-      onChangeComplete={handleChange}
+      onChange={handleChange}
       presets={presets}
-      panelRender={title
-        ? (panel) => (
-          <div>
+      panelRender={(panel) => (
+        <div onClick={onPanelClick}>
+          {title && (
             <div
               style={{
                 fontSize: 12,
@@ -63,11 +70,11 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
             >
               {title}
             </div>
-            {panel}
-          </div>
-        )
-        : undefined
-      }
+
+          )}
+          {panel}
+        </div>
+      )}
     />
   );
 };

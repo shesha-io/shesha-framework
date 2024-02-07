@@ -342,7 +342,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: 100%;
               position: relative;
               cursor: grab;
-              border:1px dashed #61affe;
+              border: 1px dashed #61affe;
+              box-sizing: border-box;
             }
         
             .${shaComponentIndicator} {

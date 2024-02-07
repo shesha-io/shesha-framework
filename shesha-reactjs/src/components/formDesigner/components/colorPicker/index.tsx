@@ -12,6 +12,7 @@ import { ColorPicker } from '@/components';
 const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',
   name: 'Color Picker',
+  canBeJsSetting: true,
   icon: <FormatPainterOutlined />,
   Factory: ({ model }) => {
     return (
@@ -23,6 +24,8 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
             title={model.title}
             allowClear={model.allowClear}
             showText={model.showText}
+            disabledAlpha={model.disabledAlpha}
+            readOnly={model.readOnly}
           />
         )}
       </ConfigurableFormItem>

@@ -47,7 +47,7 @@ const ThemeParameters: FC = () => {
         <Space>
           <ColorPicker
             title={humanizeString(colorName)}
-            presets={[{ label: "Standard colors", defaultOpen: true, colors: presetColors ?? PRESET_COLORS }]}
+            presets={[{ label: "Presets", defaultOpen: true, colors: presetColors ?? PRESET_COLORS }]}
             value={initialColor}
             onChange={onChange}
           />

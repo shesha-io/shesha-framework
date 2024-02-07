@@ -17,7 +17,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     isInput: true,
     isOutput: true,
     name: 'Setting',
-    isHidden: true,
+    isHidden: false,
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
         const component: IConfigurableFormComponent = useMemo(() => {
@@ -30,7 +30,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
             };
         }, [model.hidden, model?.readOnly, model?.id]);
 
-        const props = {...(!!model?.label ? model : model?.sourceComponent)};
+        const props = { ...(!!model?.label ? model : model?.sourceComponent) };
 
         if (model.hidden) return null;
 

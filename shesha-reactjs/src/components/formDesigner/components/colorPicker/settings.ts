@@ -83,6 +83,12 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Show text',
         })
+        .addCheckbox({
+          id: 'qZfWuwLk9Q',
+          propertyName: 'disabledAlpha',
+          parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+          label: 'Disable Alpha',
+        })
         .toJson()
       ]
     }
