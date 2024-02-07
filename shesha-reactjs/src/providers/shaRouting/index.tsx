@@ -1,10 +1,5 @@
 import qs from 'qs';
-import React, {
-  FC,
-  PropsWithChildren,
-  useContext,
-  useReducer
-} from 'react';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { asFormFullName } from '../form/utils';
 import { FormIdentifier } from '@/interfaces';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -28,7 +23,10 @@ interface IRouter {
    */
   back(): void;
   query: NodeJS.Dict<string | string[]>;
-  asPath: string;
+  asPath?: string;
+  fullPath?: string;
+  queryString?: string;
+  path?: string;
 }
 
 export interface INavigateActoinArguments {
@@ -71,8 +69,7 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     if (window) {
       window.location.href = url;
       return Promise.resolve(true);
-    } else
-      return Promise.reject("Both router and windows are not defined");
+    } else return Promise.reject('Both router and windows are not defined');
   };
 
   const prepareUrl = (url: string, queryParameters?: IKeyValue[]) => {
@@ -83,20 +80,20 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
     const queryStringData = { ...urlQueryPatams, ...queryParams };
 
     const queryString = qs.stringify(queryStringData);
-    const preparedUrl = queryString
-      ? `${urlWithoutQuery}?${queryString}`
-      : urlWithoutQuery;
+    const preparedUrl = queryString ? `${urlWithoutQuery}?${queryString}` : urlWithoutQuery;
     return preparedUrl;
   };
 
   const getUrlFromNavigationRequest = (request: INavigateActoinArguments): string => {
     switch (request?.navigationType) {
-      case 'url': return prepareUrl(request.url, request.queryParameters);
+      case 'url':
+        return prepareUrl(request.url, request.queryParameters);
       case 'form': {
         const formUrl = getFormUrl(request.formId);
         return prepareUrl(formUrl, request.queryParameters);
-      };
-      default: return undefined;
+      }
+      default:
+        return undefined;
     }
   };
 
@@ -109,12 +106,12 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       hasArguments: true,
       executer: (request) => {
         if (request.navigationType !== 'form' && request.navigationType !== 'url')
-          return Promise.reject(`Common:Navigate: 'navigationType' is not configured properly, current value is '${request.navigationType}'`);
+          return Promise.reject(
+            `Common:Navigate: 'navigationType' is not configured properly, current value is '${request.navigationType}'`
+          );
 
         const url = getUrlFromNavigationRequest(request);
-        return Boolean(url)
-          ? navigateToRawUrl(url)
-          : Promise.reject('Common:Navigate: url is empty');
+        return Boolean(url) ? navigateToRawUrl(url) : Promise.reject('Common:Navigate: url is empty');
       },
       argumentsFormMarkup: navigateArgumentsForm,
     },
@@ -169,8 +166,21 @@ function useShaRouting(require: boolean = true) {
     : undefined;
 }
 
-const isNavigationActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<INavigateActoinArguments> => {
-  return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === NAVIGATE_ACTION_NAME;
+const isNavigationActionConfiguration = (
+  actionConfig: IConfigurableActionConfiguration
+): actionConfig is IConfigurableActionConfiguration<INavigateActoinArguments> => {
+  return (
+    actionConfig &&
+    actionConfig.actionOwner === SheshaActionOwners.Common &&
+    actionConfig.actionName === NAVIGATE_ACTION_NAME
+  );
 };
 
-export { ShaRoutingProvider, useShaRouting, useShaRoutingActions, useShaRoutingState, isNavigationActionConfiguration, type IRouter };
+export {
+  ShaRoutingProvider,
+  useShaRouting,
+  useShaRoutingActions,
+  useShaRoutingState,
+  isNavigationActionConfiguration,
+  type IRouter,
+};
