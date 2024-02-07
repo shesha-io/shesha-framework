@@ -63,7 +63,7 @@ steps:
         -F 'zipFile=@$(Build.BuildId).zip;type=application/x-zip-compressed' \
         -F 'name=shesha-starter-template-@$(Build.BuildId)' \
         -F 'description=A shesha starter template using the pipeline' \
-        -F 'version=0.0.1' \
+        -F 'version=$(Build.SourceBranch)' \
         -F 'isPublished=true'
       echo 'Completed'
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
