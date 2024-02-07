@@ -72,7 +72,6 @@
       ],
       "dataSourceType": "values",
       "version": 3,
-      "useRawValues": false,
       "referenceListId": null,
       "validate": {},
       "settingsValidationErrors": []
@@ -132,7 +131,6 @@
       "isDynamic": false,
       "version": 3,
       "dataSourceType": "values",
-      "useRawValues": false,
       "referenceListId": null,
       "placeholder": "",
       "description": "",
@@ -209,7 +207,6 @@
         "required": true
       },
       "version": 3,
-      "useRawValues": false,
       "referenceListId": null,
       "placeholder": "",
       "description": "",
@@ -277,7 +274,6 @@
           "isDynamic": false,
           "version": 3,
           "dataSourceType": "values",
-          "useRawValues": false,
           "referenceListId": null,
           "values": [
             {
@@ -348,7 +344,6 @@
               "isDynamic": false,
               "version": 3,
               "dataSourceType": "values",
-              "useRawValues": false,
               "referenceListId": null,
               "validate": {
                 "required": {
@@ -413,7 +408,6 @@
       "isDynamic": false,
       "version": 3,
       "dataSourceType": "values",
-      "useRawValues": false,
       "referenceListId": null,
       "values": [
         {

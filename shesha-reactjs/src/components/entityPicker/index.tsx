@@ -5,7 +5,7 @@ import _, { isEmpty } from 'lodash';
 import { nanoid } from '@/utils/uuid';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useMedia } from 'react-use';
-import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
+import { IAnyObject } from '@/interfaces';
 import { useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/providers';
 import DataTableProvider, { useDataTable } from '@/providers/dataTable';
 import { hasDynamicFilter } from '@/providers/dataTable/utils';
@@ -23,25 +23,15 @@ import { useStyles } from './styles/styles';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 
-const getIdFromValue = (value: string | IEntityReferenceDto) => {
-  return (value as IEntityReferenceDto)?.id ?? (value as string);
-};
-
-const getSelectionFromValue = (value: string | string[] | IEntityReferenceDto | IEntityReferenceDto[]) => {
-  return Array.isArray(value)
-    ? value.map<string>(item => {
-      return getIdFromValue(item);
-    })
-    : getIdFromValue(value);
-};
-
 export const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, value } = props;
 
   const selection = useEntitySelectionData({
     entityType: entityType,
     propertyName: displayEntityKey,
-    selection: getSelectionFromValue(value),
+    selection: Array.isArray(value)
+      ? value.map(x => props.incomeValueFunc(x, {}))
+      : props.incomeValueFunc(value, {}),
   });
   const selectedItems = selection?.rows;
 
@@ -61,7 +51,6 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     disabled,
     loading,
     value,
-    useRawValues,
     mode,
     size,
     useButtonPicker,
@@ -72,6 +61,8 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     addNewRecordsProps,
     configurableColumns,
     width,
+    outcomeValueFunc,
+    incomeValueFunc
   } = props;
 
   const { styles } = useStyles();
@@ -99,10 +90,14 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
 
   const hidePickerDialog = () => setState(prev => ({ ...prev, showModal: false }));
 
+  const valueId = Array.isArray(value)
+    ? value.map(x => props.incomeValueFunc(x, {}))
+    : props.incomeValueFunc(value, {});
+
   const selection = useEntitySelectionData({
     entityType: entityType,
     propertyName: displayEntityKey,
-    selection: getSelectionFromValue(value),
+    selection: valueId,
   });
   const selectedItems = selection?.rows;
 
@@ -116,18 +111,13 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
       onSelect(row);
     } else {
       if (isMultiple) {
-        const selectedItems = value && Array.isArray(value) ? value : [];
-        if (!selectedItems.includes(row.id))
-          selectedItems.push(
-            useRawValues ? row.id : { id: row.id, _displayName: row[displayEntityKey], _className: props.entityType }
-          );
-
-        onChange(selectedItems, null);
+        const values = !!valueId ? (Array.isArray(valueId) ? valueId : [valueId]): [];
+        if (!values.includes(row.id)) {
+          const vs = !!value ? (Array.isArray(value) ? value : [value]): [];
+          onChange([...vs, props.outcomeValueFunc(row, {})], null);
+        }
       } else {
-        onChange(
-          useRawValues ? row.id : { id: row.id, _displayName: row[displayEntityKey], _className: props.entityType },
-          null
-        );
+        onChange(props.outcomeValueFunc(row, {}),null);
       }
     }
 
@@ -231,6 +221,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
   const handleMultiChange = selectedValues => {
     if (onChange) onChange(selectedValues, null);
   };
+
   const onModalOk = () => {
     if (onSelect && state?.selectedRow) {
       onSelect(state?.selectedRow);
@@ -252,11 +243,13 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
   const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
     let result: DefaultOptionType[] = null;
     if (selection.loading) {
-      const items = value ? (Array.isArray(value) ? value : [value]) : [];
-
-      result = items.map(item => ({ label: 'loading...', value: getIdFromValue(item), key: item }));
+      const items = valueId ? (Array.isArray(valueId) ? valueId : [valueId]) : [];
+      result = items.map(item => ({ label: 'loading...', value: item, key: item }));
     } else {
-      result = (selectedItems ?? []).map(ent => ({ label: ent[displayEntityKey], value: ent.id, key: ent.id }));
+      result = (selectedItems ?? []).map(ent => {
+        const key = incomeValueFunc(outcomeValueFunc(ent, {}), {});
+        return { label: ent[displayEntityKey], value: key, key };
+      });
     }
 
     return result;
@@ -294,7 +287,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
                 selectRef.current.blur();
                 showPickerDialog();
               }}
-              value={selection.loading ? undefined : getSelectionFromValue(value)}
+              value={selection.loading ? undefined : valueId}
               placeholder={selection.loading ? 'Loading...' : undefined}
               notFoundContent={''}
               defaultValue={defaultValue}

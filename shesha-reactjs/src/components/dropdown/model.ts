@@ -1,5 +1,5 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
 
 export type DataSourceType = 'values' | 'referenceList' | 'url';
 
@@ -9,7 +9,7 @@ export interface ILabelValue<TValue = any> {
   value: TValue;
 }
 
-export interface IDropdownComponentProps extends IConfigurableFormComponent {
+export interface IDropdownProps {
   dataSourceType: DataSourceType;
   values?: ILabelValue[];
   /**
@@ -28,5 +28,14 @@ export interface IDropdownComponentProps extends IConfigurableFormComponent {
   mode?: 'single' | 'multiple' | 'tags';
   ignoredValues?: number[];
   placeholder?: string;
-  useRawValues?: boolean;
+
+  valueFormat?: 'simple' | 'listItem' | 'custom';
+  incomeCustomJs?: string;
+  outcomeCustomJs?: string;
+  labelCustomJs?: string;
+
+  defaultValue?: any;
+  size?: SizeType;
+  style?: React.CSSProperties;
+  readOnly?: boolean;
 }

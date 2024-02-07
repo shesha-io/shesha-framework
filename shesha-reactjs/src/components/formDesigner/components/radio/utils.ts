@@ -4,7 +4,7 @@ import { nanoid } from '@/utils/uuid';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { CSSProperties } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
-import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/interfaces';
+import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 
 export interface IRadioProps extends Omit<IConfigurableFormComponent, 'style'> {
   items?: ILabelValue[];

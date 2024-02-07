@@ -88,7 +88,6 @@ export const dialogArgumentsForm = new DesignerToolbarSettings()
     dataSourceType: 'values',
     hidden: {_code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default" || !getSettingValue(data?.footerButtons));', _mode: 'code', _value: false},
     defaultValue: 'POST',
-    useRawValues: true,
   })
   .addButtons({
     id: nanoid(),

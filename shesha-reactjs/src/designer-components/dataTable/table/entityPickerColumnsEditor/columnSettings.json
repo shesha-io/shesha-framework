@@ -176,7 +176,6 @@
       "hidden": {"_code": "return  getSettingValue(data?.columnType) !== 'data';", "_mode": "code", "_value": false},
       "isDynamic": false,
       "dataSourceType": "values",
-      "useRawValues": false,
       "placeholder": "",
       "description": "",
       "defaultValue": "",

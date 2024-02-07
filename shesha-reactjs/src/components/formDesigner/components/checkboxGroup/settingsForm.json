@@ -61,7 +61,6 @@
             ],
             "dataSourceType": "values",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -142,7 +141,6 @@
               }
             ],
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -237,7 +235,6 @@
               }
             ],
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -263,7 +260,6 @@
               "single"
             ],
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           }
         ]

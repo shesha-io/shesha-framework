@@ -82,7 +82,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
             { id: 'b028311f-c97a-40e2-81b3-e6b29f377165', label: 'active', value: 'active' },
           ],
           dataSourceType: 'values',
-          useRawValues: false,
         })
         .addTextField({
           id: '6e316ddf-183d-4477-a21d-22919292e6df',
@@ -97,7 +96,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
           label: 'Stroke Linecap',
           parentId: 'root',
           hidden: false,
-          useRawValues: false,
           dataSourceType: 'values',
           defaultValue: 'round',
           values: [
@@ -127,7 +125,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
           parentId: 'root',
           hidden: false,
           label: 'Type',
-          useRawValues: false,
           dataSourceType: 'values',
           values: [
             { id: '17a865b3-8e28-41de-ab40-1fc49a56b31d', label: 'Line', value: 'line' },
@@ -196,7 +193,6 @@ export const alertSettingsForm = new DesignerToolbarSettings()
               parentId: 'root',
               hidden: false,
               label: 'Gap Position',
-              useRawValues: false,
               dataSourceType: 'values',
               values: [
                 { id: '2e9bde7b-1a0d-4438-879e-5dd7bb5fdb8e', label: 'top', value: 'top' },

@@ -27,6 +27,9 @@ interface IAddNewRecordProps {
   modalWidth?: number | string;
 }
 
+export type IncomeValueFunc = (value: any, args: any) => string;
+export type OutcomeValueFunc = (value: any, args: any) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
+
 export interface IEntityPickerState {
   showModal?: boolean;
   selectedRowIndex?: number;
@@ -40,13 +43,12 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
 
   onChange?: (value: string | string[] | IEntityReferenceDto | IEntityReferenceDto[], data: IAnyObject) => void;
   onSelect?: (data: IAnyObject) => void;
-  value?: string | string[] | IEntityReferenceDto | IEntityReferenceDto[];
+  value?: string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
   displayEntityKey?: string;
   width?: number | string;
   disabled?: boolean;
   loading?: boolean;
   name?: string;
-  useRawValues?: boolean;
   mode?: 'single' | 'multiple' | 'tags';
   size?: SizeType;
   title?: string;
@@ -58,4 +60,7 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
   addNewRecordsProps?: IAddNewRecordProps;
   style?: CSSProperties;
   readOnly?: boolean;
+
+  incomeValueFunc: IncomeValueFunc;
+  outcomeValueFunc: OutcomeValueFunc;
 }

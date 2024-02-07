@@ -73,7 +73,6 @@
             ],
             "dataSourceType": "values",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -112,7 +111,6 @@
             "dataSourceType": "values",
             "value": "date",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null,
             "placeholder": "",
             "description": "",
@@ -329,7 +327,6 @@
             ],
             "dataSourceType": "values",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           }
         ]
@@ -421,7 +418,6 @@
             ],
             "description": "",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null,
             "jsSetting": false
           },
@@ -448,7 +444,6 @@
             ],
             "description": "",
             "version": 1,
-            "useRawValues": false,
             "jsSetting": false,
             "referenceListId": null
           },
