@@ -125,8 +125,11 @@ namespace Shesha.StoredFiles
                 // single file upload (stored as a property of an entity)
                 var property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
                 if (property == null || property.PropertyType != typeof(StoredFile))
-                    throw new Exception(
+                    throw new AbpValidationException(
                         $"Property '{input.PropertyName}' not found in class '{owner.GetType().FullName}'");
+                if (property != null && !typeof(StoredFile).IsAssignableFrom(property.PropertyType))
+                    throw new AbpValidationException(
+                        $"Wrong type of '{owner.GetType().Name}.{input.PropertyName}' property (actual: '{property.PropertyType.FullName}', expected: '{nameof(StoredFile)}')");
 
                 if (property.GetValue(owner, null) is StoredFile storedFile)
                 {
@@ -418,19 +421,54 @@ namespace Shesha.StoredFiles
         /// Download zip archive of all files linked to a specified entity
         /// </summary>
         [HttpGet, Route("DownloadZip")]
-        public async Task<FileStreamResult> DownloadZipAsync([FromQuery] DownloadZipInput input)
+        public async Task<FileStreamResult> DownloadZipAsync([FromQuery] FilesListInput input)
         {
-            var files = input.AllCategories
-                ? await _fileService.GetAttachmentsAsync(input.OwnerId, input.OwnerType)
-                : await _fileService.GetAttachmentsOfCategoryAsync(input.OwnerId, input.OwnerType, input.FilesCategory.ToCamelCase());
+            IList<StoredFile> files = new List<StoredFile>();
+            if (input.OwnerId.IsNullOrEmpty())
+            {
+                if (input.FilesId?.Count > 0)
+                {
+                    foreach (var fileId in input.FilesId)
+                    {
+                        files.Add(_fileService.GetOrNull(fileId));
+                    }
+                    files = files.Where(x => x != null).ToList();
+                }
+            }
+            else
+            {
+                var ownerId = input.OwnerId;
+                var ownerType = input.OwnerType;
+                if (!input.OwnerName.IsNullOrEmpty())
+                {
+                    var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+                    var prop = ReflectionHelper.GetProperty(owner, input.OwnerName, out owner);
+                    if (prop == null)
+                        throw new AbpValidationException($"Property '{input.OwnerName}' not found in class '{owner.GetType().FullName}'");
+                    owner = prop.GetValue(owner);
+                    if (owner == null)
+                        throw new AbpValidationException($"Owner '{input.OwnerName}' is empty");
+                    ownerId = owner.GetType().GetProperty("Id")?.GetValue(owner, null).ToString();
+                    ownerType = owner.GetType().StripCastleProxyType().FullName;
+                }
 
-            // todo: move zip support to the FileService, current implementation doesn't support Azure
-            var list = _fileService.MakeUniqueFileNames(files);
+                files = input.FilesCategory.IsNullOrEmpty()
+                    ? await _fileService.GetAttachmentsAsync(ownerId, ownerType)
+                    : await _fileService.GetAttachmentsOfCategoryAsync(ownerId, ownerType, input.FilesCategory.ToCamelCase());
+            }
 
-            var compressedStream = await CompressionService.CompressFiles(list);
+            if (files?.Count > 0)
+            {
+                // todo: move zip support to the FileService, current implementation doesn't support Azure
+                var list = _fileService.MakeUniqueFileNames(files);
 
-            // note: compressedStream will be disposed automatically in the FileStreamResult
-            return File(compressedStream, "multipart/x-zip", "files.zip");
+                var compressedStream = await CompressionService.CompressFiles(list);
+
+                // note: compressedStream will be disposed automatically in the FileStreamResult
+                return File(compressedStream, "multipart/x-zip", "files.zip");
+            }
+
+            throw new AbpValidationException("Files not found");
         }
 
         /// <summary>
@@ -451,7 +489,7 @@ namespace Shesha.StoredFiles
 
             if (!input.OwnerName.IsNullOrEmpty())
             {
-                var prop = ReflectionHelper.GetProperty(owner, input.OwnerName);
+                var prop = ReflectionHelper.GetProperty(owner, input.OwnerName, out owner);
                 owner = prop.GetValue(owner);
                 if (owner == null)
                     return new List<StoredFileDto>();
@@ -459,7 +497,7 @@ namespace Shesha.StoredFiles
 
             var id = owner.GetId();
             var type = owner.GetType().StripCastleProxyType().FullName;
-            var files = input.AllCategories
+            var files = input.FilesCategory.IsNullOrEmpty()
                 ? await _fileService.GetAttachmentsAsync(id, type)
                 : await _fileService.GetAttachmentsOfCategoryAsync(id, type, input.FilesCategory.ToCamelCase());
 

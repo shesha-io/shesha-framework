@@ -76,7 +76,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           }
           ownerName={model.ownerName}
           filesCategory={model.filesCategory}
-          allCategories={!Boolean(model.filesCategory)}
           baseUrl={backendUrl}
         >
           <CustomFile

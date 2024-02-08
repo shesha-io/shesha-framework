@@ -181,7 +181,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
       )}
 
-      {false && hasFiles && !!downloadZipFile && (
+      {hasFiles && !!downloadZipFile && (
         <div className={styles.storedFilesRendererBtnContainer}>
           <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
             {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
