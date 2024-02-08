@@ -1,12 +1,18 @@
 "use client";
 
-import { EyeInvisibleOutlined, EyeTwoTone, LockOutlined, MailOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Form, Input } from 'antd';
-import FormItem from 'antd/lib/form/FormItem';
-import Link from 'next/link';
-import React from 'react';
-import { URL_FORGOT_PASSWORD, useAuth, ValidationErrors } from '@shesha-io/reactjs';
-import { LoginPageWrapper } from './wrapper';
+import {
+  EyeInvisibleOutlined,
+  EyeTwoTone,
+  LockOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
+import { Button, Checkbox, Form, Input } from "antd";
+import FormItem from "antd/lib/form/FormItem";
+import Link from "next/link";
+import React from "react";
+import { useAuth, ValidationErrors } from "@shesha-io/reactjs";
+import { URL_FORGOT_PASSWORD } from "@/routes";
+import { LoginPageWrapper } from "./wrapper";
 
 interface ILoginForm {
   readonly userNameOrEmailAddress: string;
@@ -36,15 +42,25 @@ const Login = () => {
       <Form form={form} onFinish={handleLogin}>
         <ValidationErrors error={errorInfo} />
 
-        <FormItem name="userNameOrEmailAddress" help="This field is required" rules={[{ required: true }]}>
+        <FormItem
+          name="userNameOrEmailAddress"
+          help="This field is required"
+          rules={[{ required: true }]}
+        >
           <Input prefix={<MailOutlined />} placeholder="Username" />
         </FormItem>
 
-        <FormItem name="password" help="This field is required" rules={[{ required: true }]}>
+        <FormItem
+          name="password"
+          help="This field is required"
+          rules={[{ required: true }]}
+        >
           <Input.Password
             autoComplete="on"
             prefix={<LockOutlined />}
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+            iconRender={(visible) =>
+              visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+            }
             placeholder="Password"
           />
         </FormItem>
@@ -58,7 +74,7 @@ const Login = () => {
             loading={isLoggingInUser}
             size="large"
           >
-            {isLoggingInUser ? 'Signing in....' : 'Sign In'}
+            {isLoggingInUser ? "Signing in...." : "Sign In"}
           </Button>
         </FormItem>
 

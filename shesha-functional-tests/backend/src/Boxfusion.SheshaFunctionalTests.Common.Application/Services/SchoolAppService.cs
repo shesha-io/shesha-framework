@@ -1,4 +1,6 @@
-﻿using Abp.Runtime.Validation;
+﻿using Abp.Domain.Repositories;
+using Abp.Runtime.Validation;
+using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Shesha;
 using Shesha.DynamicEntities.Dtos;
@@ -8,6 +10,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
     public class SchoolsAppService: SheshaAppServiceBase
     {
+        private readonly IRepository<School, Guid> _schoolRepo;
+        private readonly IRepository<Subject, Guid> _subjectRepo;
+
+        public SchoolsAppService(IRepository<School, Guid> schoolRepo, IRepository<Subject, Guid> subjectRepo)
+        {
+            _schoolRepo = schoolRepo;
+            _subjectRepo = subjectRepo;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -78,6 +88,28 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                 if (!result) throw new AbpValidationException("Please correct the errors and try again", validationResults);
             });
             return await MapToDynamicDtoAsync<Subject, Guid>(subject);
+        }
+
+        public async Task<SchoolDto> GetSchool(Guid schoolId)
+        {
+            var school = _schoolRepo.GetAll().Where(n => n.Id == schoolId).Select(x => new SchoolDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                ContactNumber = x.ContactNumber,
+            }).FirstOrDefault();
+            return ObjectMapper.Map<SchoolDto>(school);
+        }
+
+        public async Task<List<SubjectDto>> GetSchoolSubjects(Guid schoolId)
+        {
+            var school = _subjectRepo.GetAll().Where(n => n.School.Id == schoolId).Select(x => new SubjectDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+            }).FirstOrDefault();
+            return ObjectMapper.Map<List<SubjectDto>>(school);
         }
     }
 }
