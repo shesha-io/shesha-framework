@@ -49,6 +49,8 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
 
     const valuePropName = props.valuePropName ?? 'value';
     const children = props.children as ReactElement;
+    const readOnly = props.readOnly || children.props.readOnly || children.props.disabled;
+
     return (
         <ConfigurableFormItem
             model={{
@@ -69,12 +71,15 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         mode={'value'}
                         onChange={onChange}
                         value={value}
+                        readOnly={readOnly}
                     >
                         {(value, onChange) => {
                             return cloneElement(
                                 children,
                                 {
                                     ...children?.props,
+                                    readOnly: readOnly,
+                                    disabled: readOnly,
                                     onChange: (...args: any[]) => {
                                         const event = args[0];
                                         const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
