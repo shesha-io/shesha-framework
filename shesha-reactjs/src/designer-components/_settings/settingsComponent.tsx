@@ -40,6 +40,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
             <ConfigurableFormItem model={props} className='sha-js-label' >
                 {(value, onChange) => (
                     <SettingsControl
+                        readOnly={model.readOnly}
                         propertyName={model.propertyName}
                         mode={'value'}
                         onChange={onChange}

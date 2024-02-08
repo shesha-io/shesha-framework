@@ -3,6 +3,7 @@ import { useForm } from '@/providers/form';
 import { Empty } from 'antd';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { ComponentPropertiesEditor } from './componentPropertiesPanel';
+import ParentProvider from '@/providers/parentProvider/index';
 
 export interface IProps {}
 
@@ -32,14 +33,16 @@ export const ComponentPropertiesPanel: FC<IProps> = () => {
     );
 
   return (
-    <ComponentPropertiesEditor
-      key={id}
-      componentModel={componentModel}
-      readOnly={readOnly}
-      onSave={onSave}
-      autoSave={true}
-      toolboxComponent={toolboxComponent}      
-    />
+    <ParentProvider model={{readOnly: readOnly}}>
+      <ComponentPropertiesEditor
+        key={id}
+        componentModel={componentModel}
+        readOnly={readOnly}
+        onSave={onSave}
+        autoSave={true}
+        toolboxComponent={toolboxComponent}      
+      />
+    </ParentProvider>
   );
 };
 

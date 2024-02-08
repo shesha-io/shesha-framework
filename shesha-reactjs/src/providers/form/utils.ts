@@ -1269,6 +1269,7 @@ export const createComponentModelForDataProperty = (
     id: nanoid(),
     type: toolboxComponent.type,
     propertyName: fullName,
+    componentName: fullName,
     label: propertyMetadata.label,
     labelAlign: 'right',
     //parentId: containerId,
