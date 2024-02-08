@@ -83,7 +83,7 @@ The easiest way to get started is by downloading a starter template and by follo
 Issues are inevitable. When you have one, our entire team and our active developer community are around to help.<br>
 
 💬 Talk to us on [Discord](https://discord.gg/pdDh7JRNGp)<br>
-📄 Find a solution in our [Documentation](https://shesha-documentation.readthedocs.io/)<br>
+📄 Find a solution in our [Documentation](https://docs.shesha.io/docs/get-started/Introduction)<br>
 ⚠️ Open an issue right here on [GitHub](https://github.com/shesha-io/shesha-framework/issues)<br>
 💡Use our learning resources: [Videos](https://www.youtube.com/@Shesha01)<br>
 
