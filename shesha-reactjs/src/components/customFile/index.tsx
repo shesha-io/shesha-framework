@@ -14,6 +14,7 @@ export interface ICustomFileProps {
   allowedFileTypes?: string[];
   maxHeight?: string;
   isDragger?: boolean;
+  downloadZip?: boolean;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -46,6 +47,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         deleteFile={deleteFile}
         uploadFile={props.uploadFile ?? uploadFile}
         downloadZipFile={downloadZipFile}
+        downloadZip={props.downloadZip}
         downloadFile={downloadFile}
         isDownloadingFileListZip={downloadZip}
         isDownloadZipSucceeded={downloadZipSuccess}
