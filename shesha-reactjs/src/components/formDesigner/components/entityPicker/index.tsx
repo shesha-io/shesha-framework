@@ -173,7 +173,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     return {
       ...model,
       entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
-      valueFormat: 'simple'
     };
   },
 };

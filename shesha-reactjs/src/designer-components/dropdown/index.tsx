@@ -101,7 +101,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         name: metadata.referenceListName,
       },
       mode: isMultipleRefList ? 'multiple' : 'single',
-      valueFormat: 'simple',
     };
   },
 };
