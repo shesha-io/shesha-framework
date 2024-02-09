@@ -76,7 +76,7 @@ namespace Shesha.DynamicEntities
 
             var hardCodedDtoProperties = type.GetProperties().Select(p => p.Name.ToLower()).ToList();
 
-            var configuredProperties = await GetEntityPropertiesAsync(entityType);
+            var configuredProperties = (await GetEntityPropertiesAsync(entityType)).Where(p => !p.Suppress);
             foreach (var property in configuredProperties)
             {
                 // skip property if already included into the DTO (hardcoded)
