@@ -90,9 +90,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             return await MapToDynamicDtoAsync<Subject, Guid>(subject);
         }
 
-        public async Task<SchoolDto> GetSchool(Guid schoolId)
+        public async Task<SchoolDto> GetSchool(Guid id)
         {
-            var school = _schoolRepo.GetAll().Where(n => n.Id == schoolId).Select(x => new SchoolDto
+            var school = _schoolRepo.GetAll().Where(n => n.Id == id).Select(x => new SchoolDto
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -101,14 +101,14 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             return ObjectMapper.Map<SchoolDto>(school);
         }
 
-        public async Task<List<SubjectDto>> GetSchoolSubjects(Guid schoolId)
+        public async Task<List<SubjectDto>> GetSchoolSubjects(Guid id)
         {
-            var school = _subjectRepo.GetAll().Where(n => n.School.Id == schoolId).Select(x => new SubjectDto
+            var school = _subjectRepo.GetAll().Where(n => n.School.Id == id).Select(x => new SubjectDto
             {
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
-            }).FirstOrDefault();
+            }).ToList();
             return ObjectMapper.Map<List<SubjectDto>>(school);
         }
     }
