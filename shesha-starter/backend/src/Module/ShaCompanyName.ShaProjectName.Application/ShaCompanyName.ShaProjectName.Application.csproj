@@ -13,10 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Application" Version="0.29.0-beta" />
-    <PackageReference Include="Shesha.Core" Version="0.29.0-beta" />
-    <PackageReference Include="Shesha.Framework" Version="0.29.0-beta" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.29.0-beta" />
+    <PackageReference Include="Shesha.Application" Version="0.30.2-beta.62509" />
+    <PackageReference Include="Shesha.Core" Version="0.30.2-beta.62509" />
+    <PackageReference Include="Shesha.Framework" Version="0.30.2-beta.62509" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.30.2-beta.62509" />
     <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
   </ItemGroup>
 
