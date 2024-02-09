@@ -103,6 +103,13 @@ export const getSettings = () =>
             validate: {},
             hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
           })
+          .addCheckbox({
+            id: '332d298a-0e82-4420-ae3c-38bf5a2246d4',
+            propertyName: 'downloadZip',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            label: 'Download Zip',
+            validate: {},
+          })
           .addCodeEditor({
             id: '48ff91b3-5fb1-4e1b-a17f-ff86bce22e0b',
             propertyName: 'onFileChanged',
