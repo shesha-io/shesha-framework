@@ -192,6 +192,19 @@
             "version": 2
         },
         {
+            "id": "77ceb915-f4f9-4957-b62f-7a4e4ba11846",
+            "type": "checkbox",
+            "jsSetting": false,
+            "propertyName": "isFixed",
+            "label": "Is Fixed",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "validate": {},
+            "settingsValidationErrors": [],
+            "version": 2
+       },
+        {
             "id": "EhERYkBRv066KGKNaRA7j",
             "type": "container",
             "propertyName": "container3",

@@ -50,6 +50,7 @@ export interface ITableColumn {
   allowShowHide?: boolean;
   metadata?: IPropertyMetadata;
   backgroundColor?: string | IPropertySetting<string>;
+  isFixed?: boolean;
 }
 
 export interface CellStyleFuncArgs {

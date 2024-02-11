@@ -38,6 +38,7 @@ export interface IConfigurableColumnsBase {
  */
 export interface IConfigurableColumnsProps extends IConfigurableColumnsBase {
   columnType: DatatableColumnType;
+  isFixed?: boolean;
   customVisibility?: string;
   customEnabled?: string;
 }

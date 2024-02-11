@@ -69,6 +69,7 @@ export interface IShaDataTableInlineEditableProps {
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
   useMultiselect?: boolean;
+  freezeHeaders?:boolean;
   disableCustomFilters?: boolean;
   /**
    * @deprecated pass this on an `IndexTableProvider` level

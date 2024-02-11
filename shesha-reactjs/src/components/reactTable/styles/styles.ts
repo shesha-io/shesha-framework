@@ -15,6 +15,9 @@ const tableClassNames = {
   trOdd: "tr-odd",
   sortedAsc: "sorted-asc",
   sortedDesc: "sorted-desc",
+  fixedColumn: "fixed-column",
+  relativeColumn: "relative-column",
+  boxShadow: "box-shadow",
   trSelected: "sha-tr-selected",
   shaTableEmpty: "sha-table-empty",
   shaSortable: "sha-sortable",
@@ -44,6 +47,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     trBodyGhost,
     trOdd,
     sortedAsc,
+    fixedColumn,
+    relativeColumn,
+    boxShadow,
     sortedDesc,
     trSelected,
     shaTableEmpty,
@@ -205,7 +211,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
 
                 &.${trOdd} {
-                    background: rgba(0, 0, 0, 0.03);
+                    background: #f0f0f0;
                 }
 
                 &.${trSelected} {
@@ -240,8 +246,26 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 &.${sortedDesc} {
                     border-bottom: 3px solid ${token.colorPrimary};
                 }
-            }
+                &.${fixedColumn} {
+                  display: inline-block;
+                  background:white;
+                  position: sticky;
+                  z-index: 10;
+                  opacity: 1;
 
+                }
+                &.${relativeColumn} {
+                  display: inline-block;
+                  background:white;
+                  position: relative;
+                  z-index: 0;
+
+                }
+                &.${boxShadow} {
+                  box-shadow: 5px 0 3px -2px #ccc;
+                }
+            }
+          
             .${th}, .${td} {
                 white-space: nowrap;
                 overflow: hidden;
@@ -272,6 +296,24 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     right: -0.5px;
                     cursor: col-resize;
                     z-index: 10;
+                }
+                &.${fixedColumn} {
+                  display: inline-block;
+                  background:white;
+                  position: sticky;
+                  z-index: 10;
+                  opacity: 1;
+
+                }
+                &.${relativeColumn} {
+                  display: inline-block;
+                  background:white;
+                  position: relative;
+                  z-index: 0;
+
+                }
+                &.${boxShadow} {
+                  box-shadow: 5px 0 3px -2px #ccc;
                 }
             }
         }

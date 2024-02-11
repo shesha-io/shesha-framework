@@ -71,6 +71,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   inlineEditorComponents,
   inlineCreatorComponents,
   inlineDisplayComponents,
+  freezeHeaders,
   onRowsRendering,
   onRowsReordered,
 }) => {
@@ -103,7 +104,7 @@ export const ReactTable: FC<IReactTableProps> = ({
       let selectedRows: Row<any>[] | Row;
 
       if (Array.isArray(rows)) {
-        selectedRows = getPlainValue(rows).map(i => ({ ...i, isSelected }));
+        selectedRows = getPlainValue(rows).map((i) => ({ ...i, isSelected }));
       } else {
         selectedRows = { ...getPlainValue(rows), isSelected };
       }
@@ -161,23 +162,23 @@ export const ReactTable: FC<IReactTableProps> = ({
     return localColumns;
   }, [allColumns, allowReordering, useMultiSelect]);
 
-  const getColumnAccessor = cid => {
-    const column = columns.find(c => c.id === cid);
+  const getColumnAccessor = (cid) => {
+    const column = columns.find((c) => c.id === cid);
     return column ? column.accessor.toString() : '';
   };
 
   const initialSorting = useMemo(() => {
     if (!defaultSorting) return [];
-    const result = defaultSorting.map(s => ({ ...s, id: getColumnAccessor(s.id) })).filter(s => (Boolean(s.id)));
+    const result = defaultSorting.map((s) => ({ ...s, id: getColumnAccessor(s.id) })).filter((s) => Boolean(s.id));
     return result;
   }, [defaultSorting]);
 
   useDeepCompareEffect(() => {
-    setComponentState(prev => ({ ...prev, allRows: data }));
+    setComponentState((prev) => ({ ...prev, allRows: data }));
   }, [data]);
 
   useDeepCompareEffect(() => {
-    setComponentState(prev => ({ ...prev, allColumns: columns }));
+    setComponentState((prev) => ({ ...prev, allColumns: columns }));
   }, [columns]);
 
   const allRowsRef = useRef(allRows);
@@ -186,7 +187,15 @@ export const ReactTable: FC<IReactTableProps> = ({
     allRowsRef.current = allRows;
   }, [allRows]);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state, columns: tableColumns } = useTable(
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    state,
+    columns: tableColumns,
+  } = useTable(
     {
       columns: preparedColumns,
       data: allRows,
@@ -259,9 +268,8 @@ export const ReactTable: FC<IReactTableProps> = ({
       return;
     }
 
-    const chosen = newState.some(item => item.chosen === true);
-    if (chosen)
-      return;
+    const chosen = newState.some((item) => item.chosen === true);
+    if (chosen) return;
 
     if (rows.length === newState.length) {
       const changedIndex = newState.find((item, index) => {
@@ -270,17 +278,16 @@ export const ReactTable: FC<IReactTableProps> = ({
       });
       if (changedIndex) {
         const payload: OnRowsReorderedArgs = {
-          getOld: () => rows.map(row => row.original),
-          getNew: () => newState.map(row => row.original),
+          getOld: () => rows.map((row) => row.original),
+          getNew: () => newState.map((row) => row.original),
           applyOrder: (orderedItems) => {
-            setComponentState(prev => ({ ...prev, allRows: orderedItems }));
-          }
+            setComponentState((prev) => ({ ...prev, allRows: orderedItems }));
+          },
         };
         onRowsReordered(payload);
-      };
-    };
+      }
+    }
   };
-
 
   // Listen for changes in pagination and use the state to fetch our new data
   useEffect(() => {
@@ -323,12 +330,16 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const containerStyleFinal = useMemo<CSSProperties>(() => {
     const result = containerStyle ?? {};
-    if (minHeight)
-      result.minHeight = `${minHeight}px`;
-    if (maxHeight)
-      result.maxHeight = `${maxHeight}px`;
+    if (minHeight) result.minHeight = `${minHeight}px`;
+    if (maxHeight) result.maxHeight = `${maxHeight}px`;
+
+    // to allow the table to overflow the container on y-axis
+    if(freezeHeaders && !result.maxHeight){
+      result.maxHeight = '80vh';
+    }
 
     return result;
+
   }, [containerStyle, minHeight, maxHeight]);
 
   const renderRow = (row: Row<any>, rowIndex: number) => {
@@ -342,13 +353,10 @@ export const ReactTable: FC<IReactTableProps> = ({
         row={row}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
-
         allowEdit={canEditInline}
         updater={(rowData) => updateAction(rowIndex, rowData)}
-
         allowDelete={canDeleteInline}
         deleter={() => deleteAction(rowIndex, row.original)}
-
         allowChangeEditMode={inlineEditMode === 'one-by-one'}
         editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'edit' : undefined}
         inlineSaveMode={inlineSaveMode}
@@ -359,11 +367,13 @@ export const ReactTable: FC<IReactTableProps> = ({
   };
 
   const renderRows = () => {
-
     return onRowsRendering
-      ? (onRowsRendering({ rows: rows, defaultRender: renderRow }))
-      : rows.map((row, rowIndex) => (renderRow(row, rowIndex)));
+      ? onRowsRendering({ rows: rows, defaultRender: renderRow })
+      : rows.map((row, rowIndex) => renderRow(row, rowIndex));
   };
+  const fixedHeadersStyle: React.CSSProperties = freezeHeaders
+    ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
+    : null;
 
   return (
     <Spin
@@ -378,16 +388,39 @@ export const ReactTable: FC<IReactTableProps> = ({
       <div className={mainStyles.shaReactTable} style={containerStyleFinal}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>
           {columns?.length > 0 &&
-            headerGroups.map(headerGroup => {
+            headerGroups.map((headerGroup) => {
               const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
               return (
                 <div
                   key={key}
                   {...headerGroupProps}
                   className={classNames(styles.tr, styles.trHead)}
+                  style={{ ...fixedHeadersStyle, display: 'flex' }} // Make the header row sticky
                 >
-                  {headerGroup?.headers?.map((column) => {
-                    const { key, ...headerProps } = column.getHeaderProps(column.getSortByToggleProps());
+                  {headerGroup?.headers?.map((column, index) => {
+                    const isFixed = (column as any)?.isFixed;
+
+                    let leftShift = 0;
+
+                    if (isFixed && index > 0) {
+                      // use first row cell values to calculate the left shift
+                      leftShift = (
+                        rows[0]?.cells?.slice(0, index)?.map((col) => {
+                          const isLessThanMinWidth = (col?.column?.width as number) < col?.column?.minWidth;
+
+                          return isLessThanMinWidth ? col?.column?.minWidth : col?.column?.width;
+                        }) as Array<number>
+                      )?.reduce((acc, curr) => (acc as number) + curr, 0);
+                    }
+
+                    const { key, ...headerProps } = { ...column.getHeaderProps(column.getSortByToggleProps()) };
+
+                    const columnIndex = headerGroup?.headers?.indexOf(column);
+
+                    const numOfFixed = headerGroup?.headers?.filter((col: any) => col?.isFixed).length - 1;
+
+                    delete headerProps.style.position;
+
                     return (
                       <div
                         key={key}
@@ -395,7 +428,13 @@ export const ReactTable: FC<IReactTableProps> = ({
                         className={classNames(styles.th, {
                           [styles.sortedAsc]: !column.disableSortBy && column.isSorted && column.isSortedDesc,
                           [styles.sortedDesc]: !column.disableSortBy && column.isSorted && !column.isSortedDesc,
+                          [isFixed ? styles.fixedColumn : styles.relativeColumn]: true,
+                          [styles.boxShadow]: numOfFixed === columnIndex,
                         })}
+                        style={{
+                          ...headerProps?.style,
+                          left: leftShift,
+                        }}
                       >
                         {column.render('Header')}
 
@@ -413,13 +452,14 @@ export const ReactTable: FC<IReactTableProps> = ({
                 </div>
               );
             })}
-          {canAddInline && newRowCapturePosition === 'top' && (renderNewRowEditor())}
+          {canAddInline && newRowCapturePosition === 'top' && renderNewRowEditor()}
 
           <div
             className={styles.tbody}
             style={{
               height: scrollBodyHorizontally ? height || 250 : 'unset',
               overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
+              overflowX: 'unset',
             }}
             {...getTableBodyProps()}
           >
@@ -431,7 +471,7 @@ export const ReactTable: FC<IReactTableProps> = ({
 
             <ConditionalWrap
               condition={allowReordering}
-              wrap={children => (
+              wrap={(children) => (
                 <ReactSortable
                   onUnchoose={(_evt) => {
                     setDragState('finished');
@@ -460,7 +500,7 @@ export const ReactTable: FC<IReactTableProps> = ({
               {renderRows()}
             </ConditionalWrap>
           </div>
-          {canAddInline && newRowCapturePosition === 'bottom' && (renderNewRowEditor())}
+          {canAddInline && newRowCapturePosition === 'bottom' && renderNewRowEditor()}
         </div>
       </div>
     </Spin>

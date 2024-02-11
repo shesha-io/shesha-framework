@@ -77,6 +77,11 @@ export interface IReactTableProps extends ITableRowDragProps {
    */
   useMultiSelect?: boolean;
 
+    /**
+   * Whether the table's headers should be frozen and you scroll under them
+   */
+  freezeHeaders?:boolean;
+
   /**
    * The default column object for every column passed to React Table.
    *

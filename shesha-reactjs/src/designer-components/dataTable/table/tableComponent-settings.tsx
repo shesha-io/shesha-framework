@@ -192,6 +192,9 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
       <SettingsFormItem name="useMultiselect" label="Use Multi-select" valuePropName="checked" jsSetting>
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
+      <SettingsFormItem name="freezeHeaders" label="Freeze Headers" valuePropName="checked" jsSetting>
+        <Checkbox disabled={readOnly} />
+      </SettingsFormItem>
 
      
  <SettingsCollapsiblePanel header='CRUD'>
