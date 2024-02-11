@@ -1,7 +1,7 @@
 import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';
-import RefListDropDown from '@/components/refListDropDown';
 import React from 'react';
+import { Dropdown } from '@/components/dropdown/dropdown';
 
 export type RefListDropdownWidgetType = BaseWidget & SelectFieldSettings;
 const RefListDropdownWidget: RefListDropdownWidgetType = {
@@ -17,7 +17,8 @@ const RefListDropdownWidget: RefListDropdownWidgetType = {
     };
 
     return (
-      <RefListDropDown.Raw
+      <Dropdown
+        dataSourceType='referenceList'
         referenceListId={{ module: customSettings.referenceListModule, name: customSettings.referenceListName }}
         value={value}
         onChange={onChange}

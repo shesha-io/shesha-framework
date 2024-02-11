@@ -33,6 +33,7 @@ export interface IStoredFilesRendererBaseProps {
   deleteFile: (fileIdToDelete: string) => void;
   uploadFile: (payload: IUploadFilePayload) => void;
   downloadZipFile?: () => void;
+  downloadZip?: boolean;
   downloadFile: (payload: IDownloadFilePayload) => void;
   validFileTypes?: IUploaderFileTypes[];
   maxFileLength?: number;
@@ -66,6 +67,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   isStub = false,
   allowedFileTypes = [],
   maxHeight,
+  downloadZip
 }) => {
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
@@ -181,7 +183,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         <Alert message="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
       )}
 
-      {false && hasFiles && !!downloadZipFile && (
+      {downloadZip && hasFiles && !!downloadZipFile && (
         <div className={styles.storedFilesRendererBtnContainer}>
           <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
             {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip

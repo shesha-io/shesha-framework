@@ -48,7 +48,6 @@ export const getSettings = (data: any) =>
       id: nanoid(),
       propertyName: 'componentType',
       label: 'Component type',
-      useRawValues: true,
       dataSourceType: 'values',
       values: [
         { id: 'input', label: 'input', value: 'input' },

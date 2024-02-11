@@ -31,6 +31,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   isDragger?: boolean;
   maxHeight?: string;
   onFileChanged?: string;
+  downloadZip?: boolean;
 }
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
@@ -76,7 +77,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           }
           ownerName={model.ownerName}
           filesCategory={model.filesCategory}
-          allCategories={!Boolean(model.filesCategory)}
           baseUrl={backendUrl}
         >
           <CustomFile
@@ -89,6 +89,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             maxHeight={model.maxHeight}
             isDragger={model?.isDragger}
             onFileListChanged={onFileListChanged}
+            downloadZip={model.downloadZip}
           />
         </StoredFilesProvider>
       </ConfigurableFormItem>
@@ -113,6 +114,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     .add<IAttachmentsEditorProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAttachmentsEditorProps>(2, (prev) => migrateVisibility(prev))
     .add<IAttachmentsEditorProps>(3, (prev) => migrateReadOnly(prev))
+    .add<IAttachmentsEditorProps>(4, (prev) => ({...prev, downloadZip: true}))
   ,
 };
 

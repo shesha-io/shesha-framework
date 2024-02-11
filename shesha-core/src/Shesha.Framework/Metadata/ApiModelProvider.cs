@@ -9,7 +9,6 @@ using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Metadata
@@ -47,31 +46,84 @@ namespace Shesha.Metadata
                     return types;
                 })
                 .ToList();
+            Func<IEnumerable<Type>, List<Type>> getTypes = null;
 
-            var parameterTypes = allTypes
-                .Distinct()
-                .Where(t => t.IsClass &&
-                    !t.IsGenericType &&
-                    !t.IsAbstract &&
-                    !t.IsArray &&
-                    t != typeof(string) &&
-                    t != typeof(object) &&
-                    !t.Namespace.StartsWith("Abp") &&
-                    // skip entity types, they shouldn't be returned by the application service at all
-                    !t.IsEntityType())
-                .OrderBy(t => t.Name)
-                .ToList();
-
-            var dtos = parameterTypes.Select(p => new ModelDto
+            getTypes = (IEnumerable<Type> types) =>
             {
-                ClassName = p.FullName,
-                Type = p,
-                Description = ReflectionHelper.GetDescription(p),
-                Alias = null
-            })
-                .ToList();
+                // Paremeters types
+                var parameterTypes = types
+                    .Where(t => t.IsClass &&
+                        !t.IsGenericType &&
+                        !t.IsAbstract &&
+                        !t.IsArray &&
+                        t != typeof(string) &&
+                        t != typeof(object) &&
+                        !t.Namespace.StartsWith("Abp") &&
+                        // skip entity types, they shouldn't be returned by the application service at all
+                        !t.IsEntityType())
+                    .ToList();
+
+                // List parameters types
+                var listTypes = types
+                    .Where(t => t.IsClass &&
+                        t.IsGenericType &&
+                        t.IsListType() &&
+                        !t.IsAbstract &&
+                        t != typeof(string) &&
+                        t != typeof(object) &&
+                        !t.Namespace.StartsWith("Abp"))
+                    .SelectMany(t => t.GenericTypeArguments);
+
+                if (listTypes?.Count() > 0)
+                {
+                    parameterTypes.AddRange(getTypes(listTypes));
+                }
+
+                // Array parameters types
+                var arrayTypes = types
+                    .Where(t => t.IsClass &&
+                        t.IsArray &&
+                        !t.IsAbstract &&
+                        t != typeof(string) &&
+                        t != typeof(object) &&
+                        !t.Namespace.StartsWith("Abp"))
+                    .Select(t => t.GetElementType());
+
+                if (arrayTypes?.Count() > 0)
+                {
+                    parameterTypes.AddRange(getTypes(arrayTypes));
+                }
+
+                return parameterTypes;
+            };
+
+            var parameterTypes = getTypes(allTypes.Distinct());
+
+            var dtos = parameterTypes
+                .Distinct(new ParameterTypeComparer())
+                .OrderBy(x => x.Name)
+                .Select(p => new ModelDto
+                {
+                    ClassName = p.FullName,
+                    Type = p,
+                    Description = ReflectionHelper.GetDescription(p),
+                    Alias = null
+                }).ToList();
 
             return Task.FromResult(dtos);
+        }
+
+        private class ParameterTypeComparer : IEqualityComparer<Type>
+        {
+            bool IEqualityComparer<Type>.Equals(Type x, Type y)
+            {
+                return x.FullName == y.FullName;
+            }
+
+            int IEqualityComparer<Type>.GetHashCode(Type obj)
+            {
+                return obj.GetHashCode();
+            }
         }
     }
 }

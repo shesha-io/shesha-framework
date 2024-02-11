@@ -699,9 +699,11 @@ export function executeExpression<TResult>(
 
       return expressionExecuter.apply(null, argList);
     } catch (e) {
-      return onFail(e);
+      if (!!onFail)
+        return onFail(e);
     }
-  } else return defaultValue;
+  }
+  return defaultValue;
 }
 
 export const isPropertySetting = <Value = any>(value: any): value is IPropertySetting<Value> => {
@@ -1267,6 +1269,7 @@ export const createComponentModelForDataProperty = (
     id: nanoid(),
     type: toolboxComponent.type,
     propertyName: fullName,
+    componentName: fullName,
     label: propertyMetadata.label,
     labelAlign: 'right',
     //parentId: containerId,

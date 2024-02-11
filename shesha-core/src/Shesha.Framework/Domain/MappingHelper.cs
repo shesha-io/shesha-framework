@@ -338,7 +338,11 @@ namespace Shesha.Domain
         /// </summary>
         public static bool IsListType(Type type)
         {
-            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableTo(typeof(IList<>));
+            return type.IsGenericType 
+                && (
+                    type.GetGenericTypeDefinition().IsAssignableTo(typeof(IList<>))
+                    || type.GetGenericTypeDefinition().IsAssignableTo(typeof(List<>))
+                );
         }
 
         /// <summary>

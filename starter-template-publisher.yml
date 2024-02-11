@@ -63,9 +63,28 @@ steps:
         -F 'zipFile=@$(Build.BuildId).zip;type=application/x-zip-compressed' \
         -F 'name=shesha-starter-template-@$(Build.BuildId)' \
         -F 'description=A shesha starter template using the pipeline' \
-        -F 'version=0.0.1' \
+        -F 'version=$(Build.SourceBranch)' \
         -F 'isPublished=true'
       echo 'Completed'
+
+      # Obtain the token
+      response=$(curl -X POST "https://demoshesha.azurewebsites.net/swagger/index.html" \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        -d "grant_type=client_credentials&client_id=admin&client_secret=123qwe")
+      token=$(echo $response | jq -r '.access_token')
+
+      # Use the token in the API request
+      curl -X 'POST' \
+        'https://demoshesha.azurewebsites.net/api/services/SheshaAspnetCoreDemo/ProjectTemplate/Create' \
+        -H "accept: application/json" \
+        -H "Content-Type: multipart/form-data" \
+        -H "Authorization: Bearer $token" \
+        -F 'zipFile=@$(Build.BuildId).zip;type=application/x-zip-compressed' \
+        -F 'name=shesha-starter-template-@$(Build.BuildId)' \
+        -F 'description=A shesha starter template using the pipeline' \
+        -F 'version=$(Build.SourceBranch)' \
+        -F 'isPublished=true'
+      echo 'Completed'      
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
 

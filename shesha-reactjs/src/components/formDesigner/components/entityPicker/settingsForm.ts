@@ -131,13 +131,53 @@ export const entityPickerSettings = new DesignerToolbarSettings()
               modelType: '{{data.entityType}}',
               fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
             })
-            .addCheckbox({
-              id: '11148a94-a16a-4e89-a514-7713348b560e',
-              propertyName: 'useRawValues',
-              label: 'Use Raw Values',
-              parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
+            .addDropdown({
+              id: 'acb2d566-fe48-43bd-84e0-28b7103354c1',
+              propertyName: 'valueFormat',
+              parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+              label: 'Value format',
               hidden: false,
+              values: [
+                {
+                  label: 'Simple Id',
+                  value: 'simple',
+                  id: '329a001c-3c42-44b2-8616-a8fde0959323',
+                },
+                {
+                  label: 'Entity reference',
+                  value: 'entityReference',
+                  id: '722eb4ea-9e00-4f4e-addb-e7300fa0c74c',
+                },
+                {
+                  label: 'Custom',
+                  value: 'custom',
+                  id: 'faaeb4ea-9e00-4f4e-addb-e7300fa0c74c',
+                },
+              ],
+              dataSourceType: 'values',
+              defaultValue: ['simple'],
+            })
+            .addCodeEditor({
+              id: '405b0599-914d-4d2d-875c-765a495472f8',
+              propertyName: 'incomeCustomJs',
+              label: 'Id value',
+              parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
               validate: {},
+              settingsValidationErrors: [],
+              description: "Return string value of Id",
+              hidden: {_code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false} as any,
+              exposedVariables: [{name: 'value', type: 'object', description: 'Field value'}],
+            })
+            .addCodeEditor({
+              id: '81fb0599-914d-4d2d-875c-765a495472f8',
+              propertyName: 'outcomeCustomJs',
+              label: 'Custom value',
+              parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+              validate: {},
+              settingsValidationErrors: [],
+              description: "Return value that will be stored as field value",
+              hidden: {_code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false} as any,
+              exposedVariables: [{name: 'value', type: 'object', description: 'Selected value'}],
             })
             .addEntityPickerColumnsEditor({
               id: '2a6ee3b0-15f1-4521-cc6e-6a1c9d192ce2',

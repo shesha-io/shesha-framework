@@ -42,7 +42,6 @@ export interface IStoredFilesProviderProps {
   ownerName?: string;
   filesCategory?: string;
   propertyName?: string;
-  allCategories?: boolean;
   baseUrl?: string;
 }
 
@@ -63,7 +62,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   filesCategory,
   propertyName,
   baseUrl,
-  allCategories = true,
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -72,7 +70,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     ownerName,
     filesCategory,
     propertyName,
-    allCategories,
   });
 
   const { connection } = useSignalR(false) ?? {};
@@ -91,7 +88,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
       ownerName,
       filesCategory,
       propertyName,
-      allCategories,
     },
     lazy: true,
   });
@@ -102,7 +98,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
       fetchFileListHttp();
     }
-  }, [ownerId, ownerType, filesCategory, propertyName, allCategories]);
+  }, [ownerId, ownerType, filesCategory, propertyName]);
 
   useEffect(() => {
     if (!isFetchingFileList) {
@@ -207,10 +203,20 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   const downloadZipFile = (payload: IDownloadZipPayload = null) => {
     dispatch(downloadZipRequestAction());
+    const query = !!payload
+      ? payload
+      : !!state.ownerId
+        ? { 
+          ownerId: state.ownerId,
+          ownerType: state.ownerType,
+          filesCategory: state.filesCategory,
+          ownerName: state.ownerName,
+        }
+        : {
+          filesId: state.fileList?.map(x => x.id).filter(x => !!x),
+        };
     axios({
-      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(
-        payload || { ownerId: state.ownerId, ownerType: state.ownerType }
-      )}`,
+      url: `${baseUrl ?? backendUrl}/api/StoredFile/DownloadZip?${qs.stringify(query)}`,
       method: 'GET',
       responseType: 'blob',
       headers,

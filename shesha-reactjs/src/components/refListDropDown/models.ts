@@ -5,6 +5,10 @@ import { CSSProperties, Key } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { IReadOnly } from '@/interfaces/readOnly';
 
+export type IncomeValueFunc = (value: any, args: any) => string;
+export type OutcomeValueFunc = (value: any, args: any) => string | string[] | any;
+export type ItemFunc = (value: any, args: any) => ISelectOption<any>;
+
 export interface IGenericRefListDropDownProps<TValue = any> extends IRefListDropDownProps<TValue> {
   /**
    * Get CustomLabeledValue from value
@@ -14,7 +18,11 @@ export interface IGenericRefListDropDownProps<TValue = any> extends IRefListDrop
   /**
    * Get option from an item fetched from the back-end
    */
-  getOptionFromFetchedItem: (fetchedItem: ReferenceListItemDto) => ISelectOption<TValue>;
+  getOptionFromFetchedItem: (fetchedItem: ReferenceListItemDto, args?: any) => ISelectOption<TValue>;
+
+  incomeValueFunc: IncomeValueFunc;
+  outcomeValueFunc: OutcomeValueFunc;
+
 }
 
 export interface IRefListDropDownProps<TValue = any> extends Omit<SelectProps<any>, 'onChange'>, IReadOnly {

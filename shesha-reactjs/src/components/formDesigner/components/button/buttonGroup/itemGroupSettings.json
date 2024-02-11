@@ -55,7 +55,6 @@
       "parentId": "root",
       "hidden": false,
       "dataSourceType": "values",
-      "useRawValues": false,
       "validate": {},
       "values": [
         {

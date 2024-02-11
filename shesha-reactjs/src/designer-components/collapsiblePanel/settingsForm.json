@@ -67,7 +67,6 @@
             "dataSourceType": "values",
             "validate": {},
             "version": 3,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -96,7 +95,6 @@
             "dataSourceType": "values",
             "validate": {},
             "version": 3,
-            "useRawValues": false,
             "referenceListId": null
           },
           {

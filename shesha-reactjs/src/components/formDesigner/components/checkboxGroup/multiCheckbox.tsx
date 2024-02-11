@@ -5,6 +5,7 @@ import { useFormData, useGlobalState } from '@/providers';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { getDataSourceList } from '../radio/utils';
 import { getSpan, ICheckboxGroupProps } from './utils';
+import { nanoid } from '@/utils/uuid';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { data: formData } = useFormData();
@@ -42,7 +43,10 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   //#endregion
 
   const options = useMemo(
-    () => getDataSourceList(model?.dataSourceType, items, refList?.items, reducedData) || [],
+    () => {
+      const list = getDataSourceList(model?.dataSourceType, items, refList?.items, reducedData) || [];
+      return list.map(item => item.id ? item : { ...item, id: nanoid() });
+    },
     [model?.dataSourceType, items, refList?.items, reducedData]
   );
 

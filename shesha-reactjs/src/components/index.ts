@@ -91,14 +91,6 @@ export { default as ModelConfigurator } from './modelConfigurator';
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
 
 export {
-  //default as GenericRefListDropDown,
-  DtoRefListDropDown,
-  DtoRefListDropDown as RefListDropDown,
-  RawRefListDropDown,
-  type IRefListDropDownProps,
-} from './refListDropDown';
-
-export {
   EntityDtoAutocomplete as Autocomplete,
   EntityDtoAutocomplete,
   RawAutocomplete,

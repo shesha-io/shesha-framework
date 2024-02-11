@@ -18,12 +18,14 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     base,
     mode,
     onChange,
-    getLabeledValue,
-    getOptionFromFetchedItem,
     readOnly,
     disabled,
     style,
     allowClear = true,
+    getLabeledValue,
+    getOptionFromFetchedItem,
+    incomeValueFunc,
+    outcomeValueFunc,
     ...rest
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
@@ -71,7 +73,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
 
     const result = [...fetchedItems, ...selectedItems];
     return result;
-  }, [refList]);
+  }, [refList, getLabeledValue, getOptionFromFetchedItem, incomeValueFunc, outcomeValueFunc]);
 
   const handleChange = (_: CustomLabeledValue<TValue>, option: any) => {
     if (!Boolean(onChange)) return;

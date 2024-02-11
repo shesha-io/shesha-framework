@@ -8,8 +8,8 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IDropdownComponentProps } from './interfaces';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IDropdownComponentProps } from './model';
 import { IToolboxComponent } from '@/interfaces';
 import { message } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -20,7 +20,7 @@ import {
   useGlobalState,
   useSheshaApplication
 } from '@/providers';
-import { Dropdown } from './dropdown';
+import { Dropdown } from '@/components/dropdown/dropdown';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -50,6 +50,8 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
       setGlobalState,
     };
 
+    const localStyle = getStyle(model.style, formData);
+
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
 
     return (
@@ -62,7 +64,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
               onChange(...args);
           };
 
-          return <Dropdown {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
+          return <Dropdown {...model} style={localStyle} {...customEvent} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
     );
@@ -84,6 +86,8 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
     .add<IDropdownComponentProps>(4, (prev) => migrateReadOnly(prev))
+    .add<IDropdownComponentProps>(5, (prev) => ({...prev, valueFormat: !!prev['useRawValue'] ? 'simple' : 'listItem'}))
+
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
@@ -97,7 +101,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         name: metadata.referenceListName,
       },
       mode: isMultipleRefList ? 'multiple' : 'single',
-      useRawValues: true,
     };
   },
 };

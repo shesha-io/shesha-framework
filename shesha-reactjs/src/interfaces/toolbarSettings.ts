@@ -17,7 +17,7 @@ import { IConfigurableActionConfiguratorComponentProps } from '@/designer-compon
 import { IContainerComponentProps } from '@/designer-components/container/interfaces';
 import { ICustomFilterComponentProps } from '@/designer-components/dataTable/filter/interfaces';
 import { IColumnsEditorComponentProps } from '@/designer-components/dataTable/table/columnsEditor/interfaces';
-import { IDropdownComponentProps } from '@/designer-components/dropdown/interfaces';
+import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
 import { INumberFieldComponentProps } from '@/designer-components/numberField/interfaces';
 import { IQueryBuilderComponentProps } from '@/designer-components/queryBuilder/interfaces';
 import { ITextFieldComponentProps } from '@/designer-components/textField/interfaces';

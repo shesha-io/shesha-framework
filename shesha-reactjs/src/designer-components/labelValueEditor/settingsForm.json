@@ -61,7 +61,6 @@
             ],
             "dataSourceType": "values",
             "version": 3,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -107,7 +106,6 @@
             "isDynamic": false,
             "version": 3,
             "dataSourceType": "values",
-            "useRawValues": false,
             "referenceListId": null,
             "values": [
               {

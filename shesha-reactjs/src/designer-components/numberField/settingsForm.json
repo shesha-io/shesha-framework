@@ -58,7 +58,6 @@
             ],
             "dataSourceType": "values",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -382,7 +381,6 @@
             ],
             "dataSourceType": "values",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           }
         ]

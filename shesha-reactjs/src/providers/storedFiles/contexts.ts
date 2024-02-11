@@ -30,7 +30,7 @@ export interface IStoredFile extends UploadFile {
   id?: string | null;
   fileCategory?: string | null;
   url?: string | null;
-  temporary?: boolean | null;
+  temporary?: boolean;
 }
 
 export interface IRequestFilePayload {
@@ -57,7 +57,6 @@ export interface IStoredFilesStateContext
   ownerName?: string;
   filesCategory?: string;
   propertyName?: string;
-  allCategories?: boolean;
   fileList?: IStoredFile[];
   newFile?: IStoredFile;
   fileIdToDelete?: string;

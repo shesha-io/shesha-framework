@@ -85,7 +85,6 @@
 
             "isDynamic": false,
             "dataSourceType": "values",
-            "useRawValues": false,
             "placeholder": "",
             "description": "",
             "defaultValue": "",

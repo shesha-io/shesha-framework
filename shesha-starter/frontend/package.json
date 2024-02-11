@@ -5,7 +5,7 @@
   "postinstall": "next",
   "workspaces": [
     "packages/*"
-  ],  
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -26,7 +26,7 @@
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^5.0.6",
     "@next/bundle-analyzer": "^14.1.0",
-    "@shesha-io/reactjs": "0.30.1-beta.62092",
+    "@shesha-io/reactjs": "0.30.2-beta.62509",
     "@types/react-dom": "^18.2.4",
     "antd": "^5.13.3",
     "antd-style": "^3.6.1",

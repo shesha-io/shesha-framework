@@ -34,7 +34,6 @@ export const apiCallArgumentsForm = new DesignerToolbarSettings()
     id: nanoid(),
     propertyName: 'verb',
     label: 'Http Verb',
-    useRawValues: true,
     dataSourceType: 'values',
     values: HttpVerbs.map(v => ({ id: v, label: v, value: v })),
     defaultValue: 'post',

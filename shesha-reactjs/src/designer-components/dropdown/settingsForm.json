@@ -59,7 +59,6 @@
             ],
             "dataSourceType": "values",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -183,7 +182,6 @@
               "single"
             ],
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -206,7 +204,6 @@
             ],
             "dataSourceType": "values",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           },
           {
@@ -254,15 +251,85 @@
                 "modelType": "Shesha.Framework.ReferenceListItem"
               },
               {
-                "id": "9JXKnC0XHz9xIvoxfQ-AK",
-                "type": "checkbox",
-                "propertyName": "useRawValues",
-                "label": "Use raw values",
-                "labelAlign": "right",
+                "id": "aad660d5-cae0-4df9-99f2-cbaf941ae7c7",
+                "type": "dropdown",
+                "propertyName": "valueFormat",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
-                "hidden": false,
+                "label": "Value format",
+                "values": [
+                  {
+                    "id": "ce8f93c6-e43e-42fe-969e-53a50c05cb49",
+                    "label": "Simple item value",
+                    "value": "simple"
+                  },
+                  {
+                    "id": "55400fd2-99eb-4bf8-ae0b-a969b326a4e3",
+                    "label": "Reference List item",
+                    "value": "listItem"
+                  },
+                  {
+                    "id": "14620fd2-99eb-4bf8-ae0b-a969b326a4e3",
+                    "label": "Custom",
+                    "value": "custom"
+                  }
+                ],
+                "dataSourceType": "values",
+                "defaultValue": "simple",
+                "version": 1,
+                "referenceListId": null
+              },
+              {
+                "id": "16ab0599-914d-4d2d-875c-765a495472f8", 
+                "type": "codeEditor",
+                "propertyName": "incomeCustomJs",
+                "label": "Key value",
+                "parentId": "ELxx5jarWvInJXJF5xHN2",
                 "validate": {},
-                "settingsValidationErrors": []
+                "hidden": {"_code": "return  getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false},
+                "settingsValidationErrors": [],
+                "description": "Return key from the value",
+                "exposedVariables": [
+                  {
+                    "name": "value",
+                    "description": "Field value",
+                    "type": "object"
+                  }
+                ]
+              },
+              {
+                "id": "26ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "outcomeCustomJs",
+                "label": "Custom value",
+                "parentId": "ELxx5jarWvInJXJF5xHN2",
+                "validate": {},
+                "hidden": {"_code": "return  getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false},
+                "settingsValidationErrors": [],
+                "description": "Return value that will be stored as field value",
+                "exposedVariables": [
+                  {
+                    "name": "value",
+                    "description": "Fetched item",
+                    "type": "ReferenceListItemDto"
+                  }
+                ]
+              },
+              {
+                "id": "36ab0599-914d-4d2d-875c-765a495472f8",
+                "type": "codeEditor",
+                "propertyName": "labelCustomJs",
+                "label": "Item custom label",
+                "parentId": "ELxx5jarWvInJXJF5xHN2",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "description": "Return label value",
+                "exposedVariables": [
+                  {
+                    "name": "value",
+                    "description": "Fetched item",
+                    "type": "ReferenceListItemDto"
+                  }
+                ]
               },
               {
                 "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
@@ -466,7 +533,7 @@
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "Form values",
                 "type": "object"
               }
@@ -498,7 +565,6 @@
             ],
             "dataSourceType": "values",
             "version": 1,
-            "useRawValues": false,
             "referenceListId": null
           }
         ]
