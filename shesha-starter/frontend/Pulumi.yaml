@@ -57,6 +57,9 @@ resources:
         containers:
           - image: ${containerAppRevisionImage}
             name: #{projectName}#-#{role}#-#{env}#
+            env:
+              - name: BACKEND_URL
+                value: https://#{projectName}#-api-test.shesha.dev            
             resources:
               cpu: 1.0
               memory: "2Gi"
