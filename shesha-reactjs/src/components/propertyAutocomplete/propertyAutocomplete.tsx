@@ -98,6 +98,8 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   useEffect(() => {
     getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then(properties => {
       setProperties(properties, containerPath ?? containerPathMultiple);
+    }).catch(() => {
+      setProperties([], '');
     });
   }, [metadata?.properties, containerPath, containerPathMultiple]);
 

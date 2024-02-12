@@ -842,7 +842,7 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props
       id={'ctx_' + props.userConfigId}
       name={props.actionOwnerName}
       description={`Table context for ${props.actionOwnerName}`}
-      type='table'
+      type='control'
     >
       <DataTableWithMetadataProvider {...props}>
         {component(props)}
