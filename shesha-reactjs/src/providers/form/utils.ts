@@ -350,7 +350,8 @@ export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
   formSettings: IFormSettings,
-  flatStructure: IFlatComponentsStructure
+  flatStructure: IFlatComponentsStructure,
+  isNew?: boolean
 ) => {
   if (!definition.migrator) return componentModel;
 
@@ -358,6 +359,7 @@ export const upgradeComponent = (
   const fluent = definition.migrator(migrator);
   if (componentModel.version === undefined) componentModel.version = -1;
   const model = fluent.migrator.upgrade(componentModel, {
+    isNew,
     formSettings,
     flatStructure,
     componentId: componentModel.id,
@@ -368,7 +370,8 @@ export const upgradeComponent = (
 export const upgradeComponents = (
   toolboxComponents: IToolboxComponents,
   formSettings: IFormSettings,
-  flatStructure: IFlatComponentsStructure
+  flatStructure: IFlatComponentsStructure,
+  isNew?: boolean
 ) => {
   const { allComponents } = flatStructure;
   for (const key in allComponents) {
@@ -377,7 +380,7 @@ export const upgradeComponents = (
 
       const componentDefinition = toolboxComponents[component.type];
       if (componentDefinition) {
-        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure);
+        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure, isNew);
       }
     }
   }
