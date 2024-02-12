@@ -31,7 +31,7 @@ export type IStyledColumn<D extends object = {}> = DataTableColumn<D> & {
 
 export const isStyledColumn = <D extends object = {}>(column: DataTableColumn<D>): column is IStyledColumn<D> => {
   const typed = column as IStyledColumn<D>;
-  return typed && typed.cellStyleAccessor && typeof(typed.cellStyleAccessor) === 'function';
+  return typed && typed.cellStyleAccessor && typeof typed.cellStyleAccessor === 'function';
 };
 
 export interface IColumnEditFieldProps {
@@ -69,7 +69,7 @@ export interface IShaDataTableInlineEditableProps {
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
   useMultiselect?: boolean;
-  freezeHeaders?:boolean;
+  freezeHeaders?: boolean;
   disableCustomFilters?: boolean;
   /**
    * @deprecated pass this on an `IndexTableProvider` level

@@ -64,7 +64,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex }) 
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
-        [styles.boxShadow]: numOfFixed == index,
+        [styles.boxShadow]: numOfFixed === index,
       })}
     >
       {preContent}
