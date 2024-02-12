@@ -139,6 +139,7 @@ export interface SettingsMigrationContext {
   formSettings?: IFormSettings;
   flatStructure: IFlatComponentsStructure;
   componentId: string;
+  isNew?: boolean;
 }
 
 /**
