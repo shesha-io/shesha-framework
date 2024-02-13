@@ -106,13 +106,4 @@ export const GlobalSheshaStyles = createGlobalStyle`
     font-family: ${(p) => p.theme.fontFamily};
     line-height: 1;
   }
-
-  .ant-btn-link, .sha-link {
-    color: ${(p) => p.theme.colorPrimary} !important;
-
-    &:hover {
-      color: ${(p) => p.theme.colorPrimary} !important;
-      filter: brightness(105%);
-    }
-  }
 `;
