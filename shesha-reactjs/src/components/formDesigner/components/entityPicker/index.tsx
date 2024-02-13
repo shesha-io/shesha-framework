@@ -171,7 +171,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         ? 'simple'
         : prev['useRawValue'] === true 
           ? 'simple' 
-          : 'entityReference'
+          : 'entityReference',
     }))
   ,
   settingsFormMarkup: entityPickerSettings,
@@ -180,6 +180,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     return {
       ...model,
       entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
+      valueFormat: 'simple',
     };
   },
 };

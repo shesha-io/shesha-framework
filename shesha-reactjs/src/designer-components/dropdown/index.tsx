@@ -92,7 +92,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         ? 'simple'
         : prev['useRawValue'] === true 
           ? 'simple' 
-          : 'listItem'
+          : 'listItem',
     }))
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
@@ -107,6 +107,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         name: metadata.referenceListName,
       },
       mode: isMultipleRefList ? 'multiple' : 'single',
+      valueFormat: 'simple',
     };
   },
 };
