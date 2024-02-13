@@ -2,7 +2,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { CodeOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React, { FC } from 'react';
-import { IConfigurableFormComponent, useMetadataDispatcher } from '@/providers';
+import { IConfigurableFormComponent } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { Select } from 'antd';
 import { useDataContextManager } from '@/providers/dataContextManager';
@@ -15,12 +15,7 @@ const DataContextSelector: FC<any> = (model) => {
   const dataContext = getActiveContext();
   const dataContexts = getDataContexts(dataContext?.id);
   
-  const metadataDispatcher = useMetadataDispatcher();
-
   const onChange = (value: any) => {
-    if (value) {
-      metadataDispatcher.activateProvider(value);
-    }
     model.onChange(value);
   };
 

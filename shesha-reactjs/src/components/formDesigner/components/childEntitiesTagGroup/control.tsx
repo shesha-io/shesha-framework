@@ -147,7 +147,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
           id={contextId}
           name={propertyName}
           description={propertyName}
-          type={'childEntitiesTagGroup'}
+          type='control'
           initialData={new Promise<any>(resolve => resolve({ [propertyName]: activeValue?.data }))}
         >
           <SubFormProvider id={model.id} context={contextId} propertyName={propertyName} markup={markup} readOnly={model.readOnly}>

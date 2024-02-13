@@ -33,7 +33,7 @@ export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderSt
 export const DataContextProviderStateContext = createContext<IDataContextProviderStateContext>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE);
 export const DataContextProviderActionsContext = createContext<IDataContextProviderActionsContext>(undefined);
 
-export type DataContextType = 'root' | 'custom' | 'settings' | 'table';
+export type DataContextType = 'root' | 'form' | 'control' | 'settings';
 
 export type IContextOnChangeData = <T,>(data: T, changedData: any) => void;
 
@@ -53,7 +53,7 @@ export interface IDataContextProviderProps {
     id: string;
     name: string;
     description?: string;
-    type: DataContextType | string;
+    type: DataContextType;
     initialData?: Promise<object>;
     metadata?: Promise<IModelMetadata>;
     onChangeData?: IContextOnChangeData;
@@ -65,7 +65,7 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = ({
     const { 
         name, 
         description, 
-        type = 'custom', 
+        type, 
         initialData
     } = props;
 

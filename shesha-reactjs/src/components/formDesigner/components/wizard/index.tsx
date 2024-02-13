@@ -25,7 +25,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         id={'ctx_' + model.id}
         name={model.componentName}
         description={`Wizard context for ${model.componentName}`}
-        type="wizard"
+        type='control'
       >
         <Tabs {...model} />
       </DataContextProvider>
