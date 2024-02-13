@@ -20,9 +20,9 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   prefixCls = 'ant',
 }) => {
   const [state, dispatch] = useReducer(uiReducer, {
-    ...THEME_CONTEXT_INITIAL_STATE, 
-    prefixCls: prefixCls, 
-    iconPrefixCls: iconPrefixCls
+    ...THEME_CONTEXT_INITIAL_STATE,
+    prefixCls: prefixCls,
+    iconPrefixCls: iconPrefixCls,
   });
 
   const { getComponent, updateComponent } = useConfigurationItemsLoader();
@@ -50,25 +50,25 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme?.application;
-    const themeDefaults: ThemeConfig['token'] = {
-    };
+    const themeDefaults: ThemeConfig['token'] = {};
     // paddingSM: 4,
     // paddingMD: 8,
     // paddingLG: 12,
 
     const theme: ThemeConfig['token'] = appTheme
       ? {
-        colorPrimary: appTheme.primaryColor,
-        colorInfo: appTheme.infoColor,
-        colorSuccess: appTheme.successColor,
-        colorError: appTheme.errorColor,
-        colorWarning: appTheme.warningColor,
-      }
+          colorPrimary: appTheme.primaryColor,
+          colorLink: appTheme.primaryColor,
+          colorInfo: appTheme.infoColor,
+          colorSuccess: appTheme.successColor,
+          colorError: appTheme.errorColor,
+          colorWarning: appTheme.warningColor,
+        }
       : {};
 
     const result: ThemeConfig = {
       cssVar: true,
-      token: { ...themeDefaults, ...theme},
+      token: { ...themeDefaults, ...theme },
     };
     return result;
   }, [state.theme]);
@@ -86,7 +86,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
           theme={themeConfig}
           form={{
             // override required mark position
-            requiredMark: defaultRequiredMark
+            requiredMark: defaultRequiredMark,
           }}
         >
           {children}
