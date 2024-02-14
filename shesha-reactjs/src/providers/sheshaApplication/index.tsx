@@ -2,7 +2,7 @@ import appConfiguratorReducer from './reducer';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import DebugPanel from '@/components/debugPanel';
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import React, { FC, PropsWithChildren, useContext, useReducer, useRef } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef, useState } from 'react';
 import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
 import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
@@ -46,6 +46,7 @@ import {
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
+import { nanoid } from '@/utils/uuid';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -65,6 +66,26 @@ export interface IShaApplicationProviderProps {
   getFormUrlFunc?: (formId: FormIdentifier) => string;
 }
 
+interface IMyCustomContext {
+  property1: string;
+  property2: number;
+}
+
+class MyCustomContext implements IMyCustomContext {
+  readonly _name: string;
+  property1: string;
+  property2: number;
+
+  constructor(name: string) {
+    console.log('LOG: constructor called', name);
+    this._name = name;
+  }
+
+  testMethod() {
+    console.log('LOG: testMethod called');
+  }
+}
+
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {
   const {
     children,
@@ -81,6 +102,14 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     getFormUrlFunc,
   } = props;
   const initialHeaders = applicationKey ? { [FRONT_END_APP_HEADER_NAME]: applicationKey } : {};
+
+  useEffect(() => {
+    console.log('LOG: app context rendered');
+  }, []);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [myContext] = useState<IMyCustomContext>(() => new MyCustomContext(nanoid()));
+
   const [state, dispatch] = useReducer(appConfiguratorReducer, {
     ...SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
     routes: routes ?? DEFAULT_SHESHA_ROUTES,
