@@ -711,9 +711,9 @@ export function executeExpression<TResult>(
 
 export const isPropertySetting = <Value = any>(value: any): value is IPropertySetting<Value> => {
   const typed = value as IPropertySetting<Value>;
-  return typed && typeof(typed) === 'object' 
-    && typed._mode 
-    && typeof(typed._mode) === 'string' 
+  return typed && typeof (typed) === 'object'
+    && typed._mode
+    && typeof (typed._mode) === 'string'
     && (typed._mode === 'code' || typed._mode === 'value');
 };
 
@@ -725,11 +725,11 @@ export type FunctionExecutor<TResult = any> = (...args: any) => TResult;
 export const getFunctionExecutor = <TResult = any>(
   expression: string,
   expressionArguments: FunctionArgument[]): FunctionExecutor<TResult> => {
-  
+
   if (!expression) throw new Error('Expression must be defined');
-  
+
   const argumentsList = (expressionArguments ?? []).map(a => a.name).join(", ");
-  
+
   const expressionExecuter = new Function(argumentsList, expression);
   return expressionExecuter as FunctionExecutor<TResult>;
 };
@@ -1524,9 +1524,18 @@ export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?:
   return { components: [], formSettings: { ...DEFAULT_FORM_SETTINGS, isSettingsForm } };
 };
 
-const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any => {
+export interface EvaluationContext {
+  contextData: GenericDictionary;
+  path: string;
+  evaluationFilter?: (context: EvaluationContext, data: any) => boolean;
+};
+const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
+  const { path, contextData, evaluationFilter } = evaluationContext;
+  if (evaluationFilter && !evaluationFilter(evaluationContext, data))
+    return data;
+
   if (typeof data === 'string') {
-    return evaluateString(data, evaluationContext);
+    return evaluateString(data, contextData);
   }
   if (Array.isArray(data)) {
     // note: `typeof` returns object for arrays too, we must to check isArray before `typeof`
@@ -1536,7 +1545,8 @@ const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any
     const evaluatedObject = {};
     for (const key in data) {
       if (data.hasOwnProperty(key)) {
-        evaluatedObject[key] = evaluateRecursive(data[key], evaluationContext);
+        const memberPath = path ? `${path}.${key}` : key;
+        evaluatedObject[key] = evaluateRecursive(data[key], { ...evaluationContext, path: memberPath });
       }
     }
     return evaluatedObject;
@@ -1544,9 +1554,9 @@ const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any
   return data;
 };
 
-export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDictionary>(
+export const recursiveEvaluator = <TArguments = ActionParametersDictionary>(
   argumentsConfiguration: TArguments,
-  evaluationContext: GenericDictionary
+  evaluationContext: EvaluationContext
 ): Promise<TArguments> => {
   if (!Boolean(argumentsConfiguration)) return Promise.resolve(null);
 
@@ -1554,6 +1564,18 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
     const evaluated = evaluateRecursive(argumentsConfiguration, evaluationContext);
     resolve(evaluated as TArguments);
   });
+};
+
+export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDictionary>(
+  argumentsConfiguration: TArguments,
+  evaluationData: GenericDictionary
+): Promise<TArguments> => {
+  const evaluationContext: EvaluationContext = {
+    contextData: evaluationData,
+    path: '',
+  };
+
+  return recursiveEvaluator(argumentsConfiguration, evaluationContext);
 };
 
 /**
