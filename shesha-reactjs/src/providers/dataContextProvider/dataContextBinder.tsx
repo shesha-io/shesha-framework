@@ -17,9 +17,9 @@ import {
   DataContextType,
   IDataContextProviderActionsContextOverride,
   IDataContextProviderStateContext,
-  RefreshContext,
   useDataContext 
 } from "./contexts";
+import ConditionalWrap from "@/components/conditionalWrapper/index";
 
 export interface IDataContextBinderProps { 
   id: string;
@@ -117,25 +117,25 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     return dataRef.current ?? {};
   };
 
-  const setFieldValue = (name: string, value: any, refreshContext?: RefreshContext) => {
+  const setFieldValue = (name: string, value: any) => {
     if (props.setFieldValue)
-      return props.setFieldValue(name, value, refreshContext ?? onChangeContextData);
+      return props.setFieldValue(name, value, onChangeContextData);
 
     const newData = setValueByPropertyName({...dataRef.current ?? {}}, name, value, true);
     const changedData = setValueByPropertyName({}, name, value);
 
     if (onChangeData.current)
-      onChangeData.current(newData, changedData, refreshContext ??onChangeContextData);
+      onChangeData.current(newData, changedData, onChangeContextData);
 
     onChangeAction(changedData);
   };
 
-  const setData = (changedData: any, refreshContext?: RefreshContext) => {
+  const setData = (changedData: any) => {
     if (props.setData)
-      return props.setData(changedData, refreshContext ?? onChangeContextData);
+      return props.setData(changedData,  onChangeContextData);
 
     if (onChangeData.current)
-      onChangeData.current({...dataRef.current, ...changedData}, {...changedData}, refreshContext ?? onChangeContextData);
+      onChangeData.current({...dataRef.current, ...changedData}, {...changedData}, onChangeContextData);
     onChangeAction(changedData);
   };
 
@@ -201,13 +201,16 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   metadataDispatcher?.registerModel(id, metadata);
 
   return (
-    <MetadataProvider id={id} modelType={id} dataType='context' > 
-        <DataContextProviderActionsContext.Provider value={{ ...actionContext }}>
-            <DataContextProviderStateContext.Provider value={state}>
-                <>{children}</> 
-            </DataContextProviderStateContext.Provider>
-        </DataContextProviderActionsContext.Provider>
-    </MetadataProvider>
+    <ConditionalWrap
+      condition={!!props.metadata}
+      wrap={children => <MetadataProvider id={id} modelType={id} dataType='context' > {children} </MetadataProvider>}
+    >
+      <DataContextProviderActionsContext.Provider value={{ ...actionContext }}>
+        <DataContextProviderStateContext.Provider value={state}>
+          <>{children}</> 
+        </DataContextProviderStateContext.Provider>
+      </DataContextProviderActionsContext.Provider>
+    </ConditionalWrap>
   );
 };
 

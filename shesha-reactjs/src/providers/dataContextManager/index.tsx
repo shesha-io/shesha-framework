@@ -4,6 +4,8 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState }
 import { createContext } from 'react';
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload } from "./models";
 
+export const RootContexts: string[] = [];
+
 export interface IDataContextManagerStateContext {
     lastUpdate: string;
 }
@@ -68,14 +70,20 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             delete ctx.initialData;
             contexts.current[payload.id] = {...ctx};
             setState({...state, lastUpdate: new Date().toJSON() });
+
+            if (payload.type === 'root')
+                RootContexts.push(payload.id);
         }
     };
 
     const unregisterDataContext = (payload: IRegisterDataContextPayload) => {
-        if (!!contexts.current[payload.id])
-            delete contexts.current[payload.id];
+      if (!!contexts.current[payload.id])
+        delete contexts.current[payload.id];
 
-        setState({...state, lastUpdate: new Date().toJSON() });
+      setState({...state, lastUpdate: new Date().toJSON() });
+
+      if (payload.type === 'root')
+        RootContexts.splice(RootContexts.indexOf(payload.id), 1);
     };
 
     const getDataContexts = (topId: string) => {
