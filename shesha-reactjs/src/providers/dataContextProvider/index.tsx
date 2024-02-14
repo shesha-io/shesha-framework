@@ -1,7 +1,8 @@
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, } from "@/providers";
 import React, { FC, PropsWithChildren, useEffect, useRef } from "react";
-import {  DataContextType, ContextOnChangeData, RefreshContext } from "./contexts";
+import { useDataContextManager } from "../dataContextManager/index";
+import {  DataContextType, ContextOnChangeData } from "./contexts";
 import DataContextBinder from "./dataContextBinder";
 
 export interface IDataContextProviderProps { 
@@ -28,12 +29,13 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (p
     onChangeAction,
   } = props;
 
-    const dataRef = useRef<any>();
+  const { onChangeContextData } = useDataContextManager();
+  const dataRef = useRef<any>();
 
-    const onChangeData = useRef<ContextOnChangeData>();
-    if (props.onChangeData) {
-      onChangeData.current = props.onChangeData;
-    }
+  const onChangeData = useRef<ContextOnChangeData>();
+  if (props.onChangeData) {
+    onChangeData.current = props.onChangeData;
+  }
   
     useEffect(() => {
       if (initialData) {
@@ -47,11 +49,13 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (p
       return {...dataRef.current};
     };
 
-    const onChangeDataInteranl = (data: any, changedData: any, refreshContext?: RefreshContext) => {
+    const onChangeDataInteranl = (data: any, changedData: any) => {
       dataRef.current = data;
 
       if (onChangeData.current)
-        onChangeData.current({...dataRef.current, ...changedData}, {...changedData}, refreshContext);
+        onChangeData.current({...dataRef.current, ...changedData}, {...changedData});
+      
+      onChangeContextData();
     };
 
     const updateOnChangeData = (func: ContextOnChangeData) => {

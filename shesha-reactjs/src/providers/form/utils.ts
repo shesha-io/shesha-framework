@@ -55,6 +55,7 @@ import { isPropertySettings } from '@/designer-components/_settings/utils';
 import {
   IDataContextManagerFullInstance,
   IDataContextsData,
+  RootContexts,
   useDataContextManager,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
@@ -76,7 +77,6 @@ import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { SheshaCommonContexts } from '../dataContextManager/models';
 import { IParentProviderStateContext } from '../parentProvider/index';
 
 /** Interface to geat all avalilable data */
@@ -233,7 +233,10 @@ export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolea
   return m;
 };
 
-export const isCommonContext = (name: string): boolean => (Object.values(SheshaCommonContexts).filter(i => i === name)?.length > 0);
+export const isCommonContext = (name: string): boolean => {
+  const r = RootContexts;
+  return r.filter(i => i === name)?.length > 0;
+};
 
 const updateConfigurableActionParent = (model: any, parentId: string) => {
   for (const key in model) {
