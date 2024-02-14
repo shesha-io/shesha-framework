@@ -1,6 +1,6 @@
 import { DataTypes } from "@/index";
 import { IModelMetadata } from "@/interfaces/metadata";
-import { DataContextType, IDataContextProviderActionsContext } from "@/providers/dataContextProvider";
+import { DataContextType, IDataContextProviderActionsContext } from "../dataContextProvider/contexts";
 
 export interface IDataContextDescriptor extends IDataContextProviderActionsContext {
   id: string;
@@ -9,7 +9,6 @@ export interface IDataContextDescriptor extends IDataContextProviderActionsConte
   type: DataContextType;
   parentId?: string;
   metadata?: IModelMetadata;
-  api?: object;
 }
 
 export interface IDataContextDictionary {

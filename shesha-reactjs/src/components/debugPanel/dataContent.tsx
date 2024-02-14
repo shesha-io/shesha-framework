@@ -58,7 +58,7 @@ const DebugPanelDataContent: FC = () => {
       formInstance?.setFormData({ values: changedData, mergeValues: true });
     };
   
-    console.log('debug rerender');
+    //console.log('debug rerender');
   
     return (
       <>
