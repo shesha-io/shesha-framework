@@ -60,7 +60,7 @@ import {
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { useDataContext } from '@/providers/dataContextProvider';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
   IConfigurableActionConfiguration,
   useDataTableStore,

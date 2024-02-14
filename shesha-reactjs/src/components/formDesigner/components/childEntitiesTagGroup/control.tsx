@@ -1,7 +1,6 @@
 import ChildEntitiesTagGroupModal from './modal';
 import React, { FC, useMemo, useState } from 'react';
 import { Button, Input, message, Modal, Select, Tag } from 'antd';
-import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { executeScriptSync, useApplicationContext } from '@/providers/form/utils';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
@@ -12,6 +11,7 @@ import { useFormConfiguration } from '@/providers/form/api';
 import { useStyles } from './styles/styles';
 import { useParent } from '@/providers/parentProvider/index';
 import { useDeepCompareMemo } from '@/index';
+import DataContextProvider from '@/providers/dataContextProvider/index';
 
 const { confirm } = Modal;
 

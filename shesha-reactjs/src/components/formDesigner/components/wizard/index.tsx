@@ -1,6 +1,6 @@
 import React from 'react';
 import WizardSettingsForm from './settings';
-import { DataContextProvider } from '@/providers/dataContextProvider/index';
+import DataContextProvider from '@/providers/dataContextProvider/index';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
