@@ -18,7 +18,7 @@ import {
   ROOT_COMPONENT_KEY,
 } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
-import { IDataContextFullInstance } from '@/providers/dataContextProvider';
+import { IDataContextFullInstance } from '@/providers/dataContextProvider/contexts';
 
 export type IFlagProgressFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
 export type IFlagSucceededFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';

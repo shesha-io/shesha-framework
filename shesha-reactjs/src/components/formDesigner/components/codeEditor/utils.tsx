@@ -108,11 +108,12 @@ export const getContextMetadata = (ctx: IDataContextDescriptor[]) => {
     };
 
     const apiToLevel = (context: IDataContextDescriptor): ICodeTreeLevel => {
-      if (!context.api)
+      const api = context?.getApi();
+      if (!api)
         return undefined;
 
-      const fs = Object.getOwnPropertyNames(context.api).filter((f => {
-        return typeof context.api[f] === 'function';
+      const fs = Object.getOwnPropertyNames(api).filter((f => {
+        return typeof api[f] === 'function';
       }));
 
       let childs: ICodeTreeLevel = undefined;

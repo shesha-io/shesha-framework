@@ -5,7 +5,7 @@ import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
 import { Alert } from 'antd';
 import { evaluateDynamicFilters } from '@/utils';
 import { ITableViewSelectorComponentProps } from './models';
-import { useDataContext } from '@/providers/dataContextProvider';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { useDataContextManager } from '@/providers/dataContextManager';
 import {
     useDataFetchDependency,

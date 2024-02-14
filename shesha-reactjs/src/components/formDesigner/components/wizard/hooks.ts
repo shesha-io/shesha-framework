@@ -4,7 +4,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IConfigurableFormComponent, useSheshaApplication } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { useDataContext } from '@/providers/dataContextProvider/index';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { useEffect, useMemo, useState } from 'react';
 import { useFormExpression } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';

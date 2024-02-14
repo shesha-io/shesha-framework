@@ -54,7 +54,7 @@ import {
 } from './contexts';
 import formReducer from './reducer';
 import { useDataContextManager } from '@/providers/dataContextManager';
-import { IDataContextFullInstance } from '@/providers/dataContextProvider';
+import { IDataContextFullInstance } from '@/providers/dataContextProvider/contexts';
 import { useCallback } from 'react';
 
 export interface IFormDesignerProviderProps {
