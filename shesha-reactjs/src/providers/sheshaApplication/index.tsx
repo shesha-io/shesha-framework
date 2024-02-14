@@ -7,7 +7,6 @@ import { ApplicationActionsProcessor } from './configurable-actions/applicationA
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
 import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
 import { DataContextManager } from '@/providers/dataContextManager';
-import { DataContextProvider } from '@/providers/dataContextProvider';
 import { DataSourcesProvider } from '@/providers/dataSourcesProvider';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import { IToolboxComponentGroup } from '@/interfaces';
@@ -47,6 +46,8 @@ import { SheshaCommonContexts } from '../dataContextManager/models';
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { nanoid } from '@/utils/uuid';
+import DataContextProvider from '../dataContextProvider/index';
+import DataContextBinder from '../dataContextProvider/dataContextBinder';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -74,7 +75,7 @@ interface IMyCustomContext {
 class MyCustomContext implements IMyCustomContext {
   readonly _name: string;
   property1: string;
-  property2: number;
+  property2: number = 0;
 
   constructor(name: string) {
     console.log('LOG: constructor called', name);
@@ -82,6 +83,7 @@ class MyCustomContext implements IMyCustomContext {
   }
 
   testMethod() {
+    this.property2++;
     console.log('LOG: testMethod called');
   }
 }
@@ -190,6 +192,18 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           <ReferenceListDispatcherProvider>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
+                                <DataContextBinder
+                                  id='dataContextBinderTest'
+                                  name='dataContextBinderTest'
+                                  description={'DataContextBinder Test'}
+                                  type={'root'}
+                                  data={myContext}
+                                  setFieldValue={(name, value, refreshContext) => {
+                                    myContext[name] = value;
+                                    if (refreshContext)
+                                      refreshContext();
+                                  }}
+                                >
                                 <DataContextProvider
                                   id={SheshaCommonContexts.ApplicationContext}
                                   name={SheshaCommonContexts.ApplicationContext}
@@ -206,6 +220,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                     </DataSourcesProvider>
                                   </StackedNavigationProvider>
                                 </DataContextProvider>
+                                </DataContextBinder>
                               </DataContextManager>
                             </MetadataDispatcherProvider>
                           </ReferenceListDispatcherProvider>
