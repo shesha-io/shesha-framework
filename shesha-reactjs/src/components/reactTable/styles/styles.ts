@@ -17,7 +17,8 @@ const tableClassNames = {
   sortedDesc: "sorted-desc",
   fixedColumn: "fixed-column",
   relativeColumn: "relative-column",
-  boxShadow: "box-shadow",
+  boxShadowLeft: "box-shadow-left",
+  boxShadowRight: "box-shadow-right",
   trSelected: "sha-tr-selected",
   shaTableEmpty: "sha-table-empty",
   shaSortable: "sha-sortable",
@@ -49,7 +50,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     sortedAsc,
     fixedColumn,
     relativeColumn,
-    boxShadow,
+    boxShadowRight,
+    boxShadowLeft,
     sortedDesc,
     trSelected,
     shaTableEmpty,
@@ -261,9 +263,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                   z-index: 0;
 
                 }
-                &.${boxShadow} {
+                &.${boxShadowLeft} {
                   box-shadow: 5px 0 3px -2px #ccc;
                 }
+                &.${boxShadowRight} {
+                  box-shadow: -5px 0 3px -2px #ccc;
+              }
             }
           
             .${th}, .${td} {
@@ -312,9 +317,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                   z-index: 0;
 
                 }
-                &.${boxShadow} {
+                &.${boxShadowLeft} {
                   box-shadow: 5px 0 3px -2px #ccc;
                 }
+                &.${boxShadowRight} {
+                  box-shadow: -5px 0 3px -2px #ccc;
+              }
             }
         }
     `);

@@ -1,3 +1,4 @@
+import { IAnchoredDirection } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
 import React, { ReactNode, CSSProperties } from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
@@ -81,6 +82,11 @@ export interface IReactTableProps extends ITableRowDragProps {
    * Whether the table's headers should be frozen and you scroll under them
    */
   freezeHeaders?:boolean;
+
+/**
+ * Whether the table's columns should be frozen and you scroll under them on the left or right
+ */
+  anchored?: IAnchoredDirection;
 
   /**
    * The default column object for every column passed to React Table.

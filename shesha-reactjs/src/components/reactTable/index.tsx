@@ -19,11 +19,12 @@ import { useDeepCompareEffect, usePrevious } from 'react-use';
 import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
-import { getPlainValue } from '@/utils';
+import { getColumnAnchored, getPlainValue } from '@/utils';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useDataTableStore } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
+import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 
 interface IReactTableState {
   allRows: any[];
@@ -334,12 +335,11 @@ export const ReactTable: FC<IReactTableProps> = ({
     if (maxHeight) result.maxHeight = `${maxHeight}px`;
 
     // to allow the table to overflow the container on y-axis
-    if(freezeHeaders && !result.maxHeight){
+    if (freezeHeaders && !result.maxHeight) {
       result.maxHeight = '80vh';
     }
 
     return result;
-
   }, [containerStyle, minHeight, maxHeight]);
 
   const renderRow = (row: Row<any>, rowIndex: number) => {
@@ -398,28 +398,63 @@ export const ReactTable: FC<IReactTableProps> = ({
                   style={{ ...fixedHeadersStyle, display: 'flex' }} // Make the header row sticky
                 >
                   {headerGroup?.headers?.map((column, index) => {
-                    const isFixed = (column as any)?.isFixed;
+                    const anchored = getColumnAnchored((column as any)?.anchored);
+                    let leftColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
+                    let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
-                    let leftShift = 0;
-
-                    if (isFixed && index > 0) {
+                    if (anchored?.isFixed && index > 0) {
                       // use first row cell values to calculate the left shift
-                      leftShift = (
-                        rows[0]?.cells?.slice(0, index)?.map((col) => {
-                          const isLessThanMinWidth = (col?.column?.width as number) < col?.column?.minWidth;
 
-                          return isLessThanMinWidth ? col?.column?.minWidth : col?.column?.width;
-                        }) as Array<number>
-                      )?.reduce((acc, curr) => (acc as number) + curr, 0);
+                      if (anchored?.direction === 'right') {
+                        const totalColumns = headerGroup?.headers?.length;
+                        rightColumn.shift = (
+                          rows[0]?.cells?.slice(index, totalColumns - 1)?.map((col) => {
+                            const isLessThanMinWidth = (col?.column?.width as number) < col?.column?.minWidth;
+
+                            return isLessThanMinWidth ? col?.column?.minWidth : col?.column?.width;
+                          }) as Array<number>
+                        )?.reduce((acc, curr) => (acc as number) + curr, 0);
+                        rightColumn.shadowPosition =
+                        headerGroup?.headers?.length -
+                        headerGroup?.headers?.filter(
+                          (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'right'
+                        ).length;
+                      } else if (anchored?.direction === 'left') {
+                        leftColumn.shift = (
+                          rows[0]?.cells?.slice(0, index)?.map((col) => {
+                            const isLessThanMinWidth = (col?.column?.width as number) < col?.column?.minWidth;
+
+                            return isLessThanMinWidth ? col?.column?.minWidth : col?.column?.width;
+                          }) as Array<number>
+                        )?.reduce((acc, curr) => (acc as number) + curr, 0);
+
+
+                        leftColumn.shadowPosition =
+                        headerGroup?.headers?.filter(
+                          (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'left'
+                        ).length - 1;
+                      }
+
+                   
+                      
                     }
+
+                    const  = anchored?.direction === 'left' ? 'left' : 'right';
+
+                    const shiftedBy = leftColumn.shift || rightColumn.shift;
 
                     const { key, ...headerProps } = { ...column.getHeaderProps(column.getSortByToggleProps()) };
 
-                    const columnIndex = headerGroup?.headers?.indexOf(column);
-
-                    const numOfFixed = headerGroup?.headers?.filter((col: any) => col?.isFixed).length - 1;
 
                     delete headerProps.style.position;
+
+            
+                    const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
+
+
+                    const hasShadow = numOfFixed === index && anchored?.isFixed;
+
+                   
 
                     return (
                       <div
@@ -428,12 +463,12 @@ export const ReactTable: FC<IReactTableProps> = ({
                         className={classNames(styles.th, {
                           [styles.sortedAsc]: !column.disableSortBy && column.isSorted && column.isSortedDesc,
                           [styles.sortedDesc]: !column.disableSortBy && column.isSorted && !column.isSortedDesc,
-                          [isFixed ? styles.fixedColumn : styles.relativeColumn]: true,
-                          [styles.boxShadow]: numOfFixed === columnIndex,
+                          [anchored?.isFixed ? styles.fixedColumn : styles.relativeColumn]: true,
+                          [anchored?.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
                         })}
                         style={{
                           ...headerProps?.style,
-                          left: leftShift,
+                          [direction]: shiftedBy,
                         }}
                       >
                         {column.render('Header')}

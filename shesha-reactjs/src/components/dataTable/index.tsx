@@ -303,8 +303,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [crudOptions, prevCrudOptions]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
-    const hasFixedColumns = columns.some((column) => column.isFixed && column?.isVisible);
-
     const localPreparedColumns = columns
       .map((column) => {
         if (column.columnType === 'crud-operations') {
@@ -335,11 +333,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             : undefined;
         const width = strictWidth ?? columnItem.width;
 
-        const isFixed =
-          (['action', 'crud-operations'].includes(columnItem.columnType) && hasFixedColumns) || columnItem?.isFixed;
-
-        columnItem = { ...columnItem, isFixed };
-
         const cellStyleAccessor = getCellStyleAccessor(columnItem);
         const cellRenderer = getCellRenderer(columnItem, columnItem.metadata);
         const column: DataTableColumn<any> = {
@@ -359,13 +352,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         };
         return removeUndefinedProperties(column) as DataTableColumn<any>;
       })
-      .sort((a: any, b: any) => {
-        if (a.isFixed && !b.isFixed) {
-          return -1;
-        }
-        if (!a.isFixed && b.isFixed) {
-          return 1;
-        }
+      .sort((a: Column<any>, b: Column<any>) => {
+        if (a.anchored === 'left') return -1;
+        if (a.anchored === 'right') return 1;
+        if (b.anchored === 'left') return 1;
+        if (b.anchored === 'right') return -1;
+
         return 0;
       });
 

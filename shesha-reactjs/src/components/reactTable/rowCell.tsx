@@ -3,6 +3,8 @@ import { Cell, CellPropGetter, TableCellProps, TableHeaderProps } from 'react-ta
 import { useStyles } from './styles/styles';
 import { isStyledColumn } from '../dataTable/interfaces';
 import classNames from 'classnames';
+import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils';
+import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,
@@ -32,29 +34,45 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex }) 
     ? cell.column.cellStyleAccessor({ row: cell.row.original, value: cell.value })
     : undefined;
 
-  const isFixed = (cell?.column as any)?.isFixed;
-
+  const anchored = getColumnAnchored((cell?.column as any)?.anchored);
   const index = row.indexOf(cell);
+  const isFixed = anchored?.isFixed;
 
-  const numOfFixed = row.filter(({ column: { isFixed } }: any) => isFixed).length - 1;
+  let leftColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
+  let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
-  let leftShift = 0;
+  if (anchored?.isFixed && index > 0) {
+    // use first row cell values to calculate the left shift
 
-  if (isFixed && index > 0) {
-    leftShift = (
-      row.slice(0, index).map(({ column: { width, minWidth } }) => {
-        const isLessThanMinWidth = (width as number) < minWidth;
-        return isLessThanMinWidth ? minWidth : width;
-      }) as Array<number>
-    ).reduce((acc, curr) => (acc as number) + curr, 0);
+    if (anchored?.direction === 'right') {
+      const totalColumns =row?.length;
+      rightColumn.shadowPosition =totalColumns- calculateTotalColumnsOnFixed(row, 'right');
+
+      rightColumn.shift = calculatePositionShift(row, index,totalColumns - 1)?.reduce(
+        (acc, curr) => (acc as number) + curr,
+        0
+      );
+    } else if (anchored?.direction === 'left') {
+      leftColumn.shadowPosition = calculateTotalColumnsOnFixed(row, 'left') - 1;
+
+      leftColumn.shift = calculatePositionShift(row, 0, index)?.reduce((acc, curr) => (acc as number) + curr, 0);
+    }
   }
 
   const background = rowIndex % 2 === 0 ? '#f0f0f0' : 'white';
 
+  const direction = anchored?.direction === 'left' ? 'left' : 'right';
+
+  const shiftedBy = leftColumn.shift || rightColumn.shift;
+
   const fixedStyled: React.CSSProperties = {
-    left: leftShift,
+    [direction]: anchored?.direction && shiftedBy,
     backgroundColor: background,
   };
+
+  const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
+
+  const hasShadow = numOfFixed === index && anchored?.isFixed;
 
   return (
     <div
@@ -64,7 +82,7 @@ export const RowCell: FC<IRowCellProps> = ({ cell, preContent, row, rowIndex }) 
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
-        [styles.boxShadow]: numOfFixed === index,
+        [anchored?.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
       })}
     >
       {preContent}

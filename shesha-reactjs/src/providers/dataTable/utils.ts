@@ -172,7 +172,7 @@ export const prepareColumn = (
     accessor: column.id,
     columnId: column.id,
     columnType: column.columnType,
-    isFixed: column.isFixed,
+    anchored: column.anchored,
     header: column.caption,
     caption: column.caption,
     minWidth: column.minWidth || MIN_COLUMN_WIDTH,
