@@ -79,9 +79,9 @@ export interface IReactTableProps extends ITableRowDragProps {
   useMultiSelect?: boolean;
 
     /**
-   * Whether the table's headers should be frozen and you scroll under them
-   */
-  freezeHeaders?:boolean;
+     * Whether the table's headers should be frozen and you scroll under them
+     */
+  freezeHeaders?: boolean;
 
 /**
  * Whether the table's columns should be frozen and you scroll under them on the left or right

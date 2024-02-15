@@ -8,7 +8,7 @@ export interface ITableComponentBaseProps extends IShaDataTableInlineEditablePro
   items: IConfigurableColumnsProps[];
 
   useMultiselect?: boolean;
-  freezeHeaders?:boolean;
+  freezeHeaders?: boolean;
   containerStyle?: string;
   tableStyle?: string;
   minHeight?: number;
