@@ -138,8 +138,8 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         )}
         key={rowId}
       >
-        {row.cells.map((cell, index) => {
-          return <RowCell cell={cell} key={index} />;
+        {row.cells.map((cell, cellIndex) => {
+          return <RowCell cell={cell} key={cellIndex} row={row.cells} rowIndex={index}/>;
         })}
       </div>
     </CrudProvider>

@@ -13,9 +13,9 @@ variables:
   sqlElasticPoolName: auto-pool
   sqlDatabaseName: #{projectName}#-shesha-#{env}#
   resourceGroupName: containerapps-shesha-#{role}#-#{env}#-rg
-  registryLoginServer: boxfusionregistry.azurecr.io
-  adminUsername: boxfusionregistry
-  adminPasswords: fKSsWcdQ8IbdmJZT3Y7udTZD/jjSQ7dhCwTa1BDgaS+ACRBwxWQ1      
+  registryLoginServer: #{repoServer}#
+  adminUsername: #{repoUsername}#
+  adminPasswords: #{repoPassword}#  
   containerAppName: #{projectName}#-#{role}#-#{env}#
   containerAppCustomerDomainName: #{projectName}#-#{role}#-#{env}#.shesha.dev
   containerAppEnvName: shesha-#{role}#-#{env}#

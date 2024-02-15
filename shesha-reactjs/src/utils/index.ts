@@ -1,7 +1,8 @@
-import { IStoredFilter } from '@/providers/dataTable/interfaces';
+import { IAnchoredDirection, IStoredFilter } from '@/providers/dataTable/interfaces';
 import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/contexts';
 import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
+import { Cell } from 'react-table';
 
 export type NumberOrString = number | string;
 /**
@@ -118,6 +119,36 @@ export const getPlainValue = <T = object | any[]>(value: T): T => {
   } catch (_e) {
     return value;
   }
+};
+
+export const getColumnAnchored = (anchored: string) => {
+  if (anchored === 'left') {
+    return {
+      isFixed: true,
+      direction: 'left',
+    };
+  } else if (anchored === 'right') {
+    return {
+      isFixed: true,
+      direction: 'right',
+    };
+  } else {
+    return {
+      isFixed: false,
+    };
+  }
+};
+
+export const calculateTotalColumnsOnFixed = (row: Cell<any, any, any>[], direction: IAnchoredDirection) => {
+  return row?.filter(({ column }: any) => getColumnAnchored(column?.originalConfig?.anchored).direction === direction)
+    ?.length;
+};
+
+export const calculatePositionShift = (row: Cell<any, any, any>[], start: number, end: number) => {
+  return row?.slice(start, end)?.map((col) => {
+    const isLessThanMinWidth = (col?.column?.width as number) < col?.column?.minWidth;
+    return isLessThanMinWidth ? col?.column?.minWidth : col?.column?.width;
+  }) as Array<number>;
 };
 
 export const getStaticExecuteExpressionParams = (params: string, dynamicParam?: { [key: string]: any }) => {

@@ -1,5 +1,5 @@
 import { Modal, Skeleton } from 'antd';
-import { useDataContext } from '@/providers/dataContextProvider/index';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import React, { FC } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { IFormMarkupResponse } from '@/providers/form/api';

@@ -3,71 +3,15 @@ import { Story } from '@storybook/react';
 import ConfigurableForm from '.';
 import { Button, Col, Form, Row } from 'antd';
 import { IConfigurableFormProps } from './models';
-import { StoredFilesProvider } from '@/providers';
-import StoredFilesRenderer from '@/components/storedFilesRenderer';
 import { addStory } from '@/stories/utils';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import StoryApp from '@/components/storyBookApp';
 
 export default {
   title: 'Components/ConfigurableForm',
-  component: ConfigurableForm
+  component: ConfigurableForm,
 };
 
-const configurableFormProps: IConfigurableFormProps = {
-  mode: 'edit',
-};
-
-// Create a master template for mapping args to render the Button component
-const BasicTemplate: Story<IConfigurableFormProps> = ({ formId, mode }) => {
-  const [form] = Form.useForm();
-
-  const onFinish = (data: any) => {
-    console.log('onFinish data: ', data);
-    console.log('onFinish data: ', JSON.stringify(data, null, 2));
-  };
-
-  return (
-    <StoryApp>
-      <Row>
-        <Col span={24}>
-          <ConfigurableForm
-            mode={mode}
-            formId={formId}
-            onFinish={onFinish}
-            form={form}
-            sections={{
-              middleSection: () => (
-                <StoredFilesProvider ownerId="0bfb4b64-3e83-4765-802d-7f98601c2453" ownerType="BursMan.PaymentPack">
-                  <StoredFilesRenderer isDragger={false} />
-                </StoredFilesProvider>
-              ),
-            }}
-            initialValues={{
-              firstName: 'Some',
-              lastName: 'One',
-              scheduleDateStart: '2021-10-30T00:40:40.317Z',
-              scheduleDateEnd: '2021-09-12T00:40:40.317Z',
-              scheduleDate: ['2021-10-30T00:40:40.317Z', '2021-09-12T00:40:40.317Z'],
-              gender: [{ itemValue: 1 }],
-              numOfStudents: 23232,
-              numOfTeachers: 131,
-              numOfClasses: 75,
-              numOfOfficers: 16,
-              numOfRepeatingStudents: 37,
-              numOfNewStudents: 200,
-              numOfMatricStudents: 102,
-            }}
-          />
-
-          <Button onClick={() => form?.submit()} type="primary">
-            Submit
-          </Button>
-        </Col>
-      </Row>
-    </StoryApp>
-  );
-};
 // Create a master template for mapping args to render the Button component
 const DualModeForm: Story<IConfigurableFormProps> = ({ formId, mode = 'readonly' }) => {
   const formRef = useRef<ConfigurableFormInstance>();
@@ -94,7 +38,7 @@ const DualModeForm: Story<IConfigurableFormProps> = ({ formId, mode = 'readonly'
             formRef={formRef}
             formId={formId}
             onFinish={onFinish}
-            onValuesChange={data => console.log('onValuesChange data: ', data)}
+            onValuesChange={(data) => console.log('onValuesChange data: ', data)}
             form={form}
             initialValues={{
               firstName: 'Some',
@@ -142,10 +86,10 @@ const DualModeForm: Story<IConfigurableFormProps> = ({ formId, mode = 'readonly'
               alerts: false,
               marketingEmails: true,
               message:
-                "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable." + 
-                "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. " + 
-                "All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. " + 
-                "It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
+                "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable." +
+                "If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. " +
+                'All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. ' +
+                'It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.',
             }}
           />
 
@@ -158,24 +102,10 @@ const DualModeForm: Story<IConfigurableFormProps> = ({ formId, mode = 'readonly'
   );
 };
 
-export const Basic = addStory(BasicTemplate, {
-  ...configurableFormProps,
-  formId: {
-    name: '/settings/forms/playground',
-  },
-});
-
 export const Notifications = addStory(DualModeForm, {
   formId: {
     name: 'notifications',
-    module: 'Shesha'
+    module: 'Shesha',
   },
   mode: 'edit',
-});
-
-export const PersonEditTest = addStory(BasicTemplate, {
-  ...configurableFormProps,
-  formId: {
-    name: 'person-form',
-  },
 });

@@ -86,8 +86,14 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDropdownComponentProps>(3, (prev) => migrateVisibility(prev))
     .add<IDropdownComponentProps>(4, (prev) => migrateReadOnly(prev))
-    .add<IDropdownComponentProps>(5, (prev) => ({...prev, valueFormat: !!prev['useRawValue'] ? 'simple' : 'listItem'}))
-
+    .add<IDropdownComponentProps>(5, (prev, context) => ({
+      ...prev,
+      valueFormat: context.isNew
+        ? 'simple'
+        : prev['useRawValue'] === true 
+          ? 'simple' 
+          : 'listItem',
+    }))
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
@@ -101,6 +107,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
         name: metadata.referenceListName,
       },
       mode: isMultipleRefList ? 'multiple' : 'single',
+      valueFormat: 'simple',
     };
   },
 };

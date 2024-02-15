@@ -25,6 +25,8 @@ export type ColumnSorting = 'asc' | 'desc';
 
 export type DataFetchingMode = 'paging' | 'fetchAll';
 
+export type IAnchoredDirection = 'left' | 'right' ;
+
 export interface ITableColumn {
   columnType: DatatableColumnType;
 
@@ -50,8 +52,14 @@ export interface ITableColumn {
   allowShowHide?: boolean;
   metadata?: IPropertyMetadata;
   backgroundColor?: string | IPropertySetting<string>;
+  anchored?: IAnchoredDirection;
 }
 
+
+export interface IAnchoredColumnProps{
+  shift?: number;
+  shadowPosition?: number;
+}
 export interface CellStyleFuncArgs {
   /**
    * Row values

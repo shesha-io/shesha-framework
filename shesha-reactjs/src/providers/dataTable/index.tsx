@@ -8,7 +8,6 @@ import React, {
   useRef
 } from 'react';
 import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns } from './utils';
-import { DataContextProvider, useDataContext } from '@/providers/dataContextProvider';
 import { dataTableReducer } from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
@@ -93,6 +92,7 @@ import {
 import {
   IConfigurableColumnsProps, IDataColumnsProps,
 } from '../datatableColumnsConfigurator/models';
+import DataContextBinder from '../dataContextProvider/dataContextBinder';
 
 interface IDataTableProviderBaseProps {
   /** Configurable columns. Is used in pair with entityType  */
@@ -306,8 +306,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       });
     }
   }, [state.grouping, sortMode]);
-
-  const ctx = useDataContext(false);
 
   // sync ordering
   useEffect(() => {
@@ -781,30 +779,25 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
-  useEffect(() => {
-    ctx.setData({
-      selectedRow: state.selectedRow,
-      selectedIds: state.selectedIds,
-      currentPage: state.currentPage,
-      tableData: state.tableData,
-      quickSearch: state.quickSearch,
-      userSorting: state.userSorting,
-      grouping: state.grouping
-    });
-  }, [state.selectedRow, state.selectedIds, state.currentPage, state.tableData, state.quickSearch, state.userSorting, state.grouping]);
-
-  ctx.updateApi(actions); // update context api to use relevant State
-  ctx.updateOnChangeData(contextOnChangeData); // update context.onChangeData function to use relevant State
-
   /* Data Context section */
 
 
   return (
-    <DataTableStateContext.Provider value={state}>
-      <DataTableActionsContext.Provider value={actions}>
-        {children}
-      </DataTableActionsContext.Provider>
-    </DataTableStateContext.Provider>
+    <DataContextBinder
+      id={'ctx_' + props.userConfigId}
+      name={props.actionOwnerName}
+      description={`Table context for ${props.actionOwnerName}`}
+      type='control'
+      data={state}
+      api={actions}
+      onChangeData={contextOnChangeData}
+    >
+      <DataTableStateContext.Provider value={state}>
+        <DataTableActionsContext.Provider value={actions}>
+          {children}
+        </DataTableActionsContext.Provider>
+      </DataTableStateContext.Provider>
+    </DataContextBinder>
   );
 };
 
@@ -838,16 +831,9 @@ const DataTableProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props
   }, [props.sourceType]);
 
   return (
-    <DataContextProvider
-      id={'ctx_' + props.userConfigId}
-      name={props.actionOwnerName}
-      description={`Table context for ${props.actionOwnerName}`}
-      type='table'
-    >
-      <DataTableWithMetadataProvider {...props}>
-        {component(props)}
-      </DataTableWithMetadataProvider>
-    </DataContextProvider>
+    <DataTableWithMetadataProvider {...props}>
+      {component(props)}
+    </DataTableWithMetadataProvider>
   );
 };
 

@@ -107,6 +107,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}
                 useMultiselect={useMultiselect}
+                freezeHeaders={props.freezeHeaders}
                 allowReordering={allowReordering}
                 tableStyle={getStyle(tableStyle, formData, globalState)}
                 containerStyle={getStyle(containerStyle, formData, globalState)}

@@ -4,7 +4,7 @@ import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { evaluateKeyValuesToObject } from '../form/utils';
+import { EvaluationContext, evaluateKeyValuesToObject, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
@@ -108,8 +108,17 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         });
       },
       argumentsFormMarkup: dialogArgumentsForm,
+      evaluateArguments: (argumentsConfiguration, evaluationData) =>  {
+        const evaluationContext: EvaluationContext = {
+          contextData: evaluationData,
+          path: '',
+          evaluationFilter: (context, _data) => context.path !== 'buttons'
+        };
+      
+        return recursiveEvaluator(argumentsConfiguration, evaluationContext);
+      }
     },
-    actionDependencies
+    actionDependencies,
   );
 
   const getLatestVisibleInstance = () => {

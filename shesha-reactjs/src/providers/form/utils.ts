@@ -55,12 +55,13 @@ import { isPropertySettings } from '@/designer-components/_settings/utils';
 import {
   IDataContextManagerFullInstance,
   IDataContextsData,
+  RootContexts,
   useDataContextManager,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { useDataContext } from '@/providers/dataContextProvider';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
   IConfigurableActionConfiguration,
   useDataTableStore,
@@ -76,7 +77,6 @@ import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { SheshaCommonContexts } from '../dataContextManager/models';
 import { IParentProviderStateContext } from '../parentProvider/index';
 
 /** Interface to geat all avalilable data */
@@ -233,7 +233,10 @@ export const getActualModel = <T>(model: T, allData: any, parentReadOnly: boolea
   return m;
 };
 
-export const isCommonContext = (name: string): boolean => (Object.values(SheshaCommonContexts).filter(i => i === name)?.length > 0);
+export const isCommonContext = (name: string): boolean => {
+  const r = RootContexts;
+  return r.filter(i => i === name)?.length > 0;
+};
 
 const updateConfigurableActionParent = (model: any, parentId: string) => {
   for (const key in model) {
@@ -350,7 +353,8 @@ export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
   formSettings: IFormSettings,
-  flatStructure: IFlatComponentsStructure
+  flatStructure: IFlatComponentsStructure,
+  isNew?: boolean
 ) => {
   if (!definition.migrator) return componentModel;
 
@@ -358,6 +362,7 @@ export const upgradeComponent = (
   const fluent = definition.migrator(migrator);
   if (componentModel.version === undefined) componentModel.version = -1;
   const model = fluent.migrator.upgrade(componentModel, {
+    isNew,
     formSettings,
     flatStructure,
     componentId: componentModel.id,
@@ -368,7 +373,8 @@ export const upgradeComponent = (
 export const upgradeComponents = (
   toolboxComponents: IToolboxComponents,
   formSettings: IFormSettings,
-  flatStructure: IFlatComponentsStructure
+  flatStructure: IFlatComponentsStructure,
+  isNew?: boolean
 ) => {
   const { allComponents } = flatStructure;
   for (const key in allComponents) {
@@ -377,7 +383,7 @@ export const upgradeComponents = (
 
       const componentDefinition = toolboxComponents[component.type];
       if (componentDefinition) {
-        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure);
+        allComponents[key] = upgradeComponent(component, componentDefinition, formSettings, flatStructure, isNew);
       }
     }
   }
@@ -708,9 +714,9 @@ export function executeExpression<TResult>(
 
 export const isPropertySetting = <Value = any>(value: any): value is IPropertySetting<Value> => {
   const typed = value as IPropertySetting<Value>;
-  return typed && typeof(typed) === 'object' 
-    && typed._mode 
-    && typeof(typed._mode) === 'string' 
+  return typed && typeof (typed) === 'object'
+    && typed._mode
+    && typeof (typed._mode) === 'string'
     && (typed._mode === 'code' || typed._mode === 'value');
 };
 
@@ -722,11 +728,11 @@ export type FunctionExecutor<TResult = any> = (...args: any) => TResult;
 export const getFunctionExecutor = <TResult = any>(
   expression: string,
   expressionArguments: FunctionArgument[]): FunctionExecutor<TResult> => {
-  
+
   if (!expression) throw new Error('Expression must be defined');
-  
+
   const argumentsList = (expressionArguments ?? []).map(a => a.name).join(", ");
-  
+
   const expressionExecuter = new Function(argumentsList, expression);
   return expressionExecuter as FunctionExecutor<TResult>;
 };
@@ -1521,9 +1527,18 @@ export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?:
   return { components: [], formSettings: { ...DEFAULT_FORM_SETTINGS, isSettingsForm } };
 };
 
-const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any => {
+export interface EvaluationContext {
+  contextData: GenericDictionary;
+  path: string;
+  evaluationFilter?: (context: EvaluationContext, data: any) => boolean;
+};
+const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
+  const { path, contextData, evaluationFilter } = evaluationContext;
+  if (evaluationFilter && !evaluationFilter(evaluationContext, data))
+    return data;
+
   if (typeof data === 'string') {
-    return evaluateString(data, evaluationContext);
+    return evaluateString(data, contextData);
   }
   if (Array.isArray(data)) {
     // note: `typeof` returns object for arrays too, we must to check isArray before `typeof`
@@ -1533,7 +1548,8 @@ const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any
     const evaluatedObject = {};
     for (const key in data) {
       if (data.hasOwnProperty(key)) {
-        evaluatedObject[key] = evaluateRecursive(data[key], evaluationContext);
+        const memberPath = path ? `${path}.${key}` : key;
+        evaluatedObject[key] = evaluateRecursive(data[key], { ...evaluationContext, path: memberPath });
       }
     }
     return evaluatedObject;
@@ -1541,9 +1557,9 @@ const evaluateRecursive = (data: any, evaluationContext: GenericDictionary): any
   return data;
 };
 
-export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDictionary>(
+export const recursiveEvaluator = <TArguments = ActionParametersDictionary>(
   argumentsConfiguration: TArguments,
-  evaluationContext: GenericDictionary
+  evaluationContext: EvaluationContext
 ): Promise<TArguments> => {
   if (!Boolean(argumentsConfiguration)) return Promise.resolve(null);
 
@@ -1551,6 +1567,18 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
     const evaluated = evaluateRecursive(argumentsConfiguration, evaluationContext);
     resolve(evaluated as TArguments);
   });
+};
+
+export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDictionary>(
+  argumentsConfiguration: TArguments,
+  evaluationData: GenericDictionary
+): Promise<TArguments> => {
+  const evaluationContext: EvaluationContext = {
+    contextData: evaluationData,
+    path: '',
+  };
+
+  return recursiveEvaluator(argumentsConfiguration, evaluationContext);
 };
 
 /**

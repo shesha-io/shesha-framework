@@ -1,6 +1,6 @@
 import React from 'react';
 import WizardSettingsForm from './settings';
-import { DataContextProvider } from '@/providers/dataContextProvider/index';
+import DataContextProvider from '@/providers/dataContextProvider/index';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
@@ -25,7 +25,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
         id={'ctx_' + model.id}
         name={model.componentName}
         description={`Wizard context for ${model.componentName}`}
-        type="wizard"
+        type='control'
       >
         <Tabs {...model} />
       </DataContextProvider>
