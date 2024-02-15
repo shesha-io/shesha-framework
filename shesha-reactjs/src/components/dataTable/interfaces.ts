@@ -4,7 +4,7 @@ import { IAnyObject } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { DataTableFullInstance } from '@/providers/dataTable/contexts';
-import { CellStyleFunc, IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
+import { CellStyleFunc, IAnchoredDirection, IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
 
 export interface ITableActionColumns {
@@ -22,6 +22,7 @@ export type DataTableColumn<D extends object = {}> = Column<D> & {
   resizable?: boolean;
   originalConfig?: ITableColumn;
   metadata?: IPropertyMetadata;
+  anchored?: IAnchoredDirection;
   cellStyleAccessor?: CellStyleFunc;
 };
 
@@ -31,7 +32,7 @@ export type IStyledColumn<D extends object = {}> = DataTableColumn<D> & {
 
 export const isStyledColumn = <D extends object = {}>(column: DataTableColumn<D>): column is IStyledColumn<D> => {
   const typed = column as IStyledColumn<D>;
-  return typed && typed.cellStyleAccessor && typeof(typed.cellStyleAccessor) === 'function';
+  return typed && typed.cellStyleAccessor && typeof typed.cellStyleAccessor === 'function';
 };
 
 export interface IColumnEditFieldProps {
@@ -69,6 +70,7 @@ export interface IShaDataTableInlineEditableProps {
 
 export interface IShaDataTableProps extends ITableRowDragProps, IShaDataTableInlineEditableProps {
   useMultiselect?: boolean;
+  freezeHeaders?: boolean;
   disableCustomFilters?: boolean;
   /**
    * @deprecated pass this on an `IndexTableProvider` level

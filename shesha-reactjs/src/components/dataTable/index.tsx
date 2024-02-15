@@ -19,11 +19,27 @@ import { DataTableFullInstance, IColumnWidth } from '@/providers/dataTable/conte
 import { removeUndefinedProperties } from '@/utils/array';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
 import { ReactTable } from '@/components/reactTable';
-import { IColumnResizing, IReactTableProps, OnRowsRendering, OnRowsReorderedArgs, RowDataInitializer, RowRenderer } from '../reactTable/interfaces';
+import {
+  IColumnResizing,
+  IReactTableProps,
+  OnRowsRendering,
+  OnRowsReorderedArgs,
+  RowDataInitializer,
+  RowRenderer,
+} from '../reactTable/interfaces';
 import { getCellRenderer } from './cell';
-import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
+import {
+  BackendRepositoryType,
+  ICreateOptions,
+  IDeleteOptions,
+  IUpdateOptions,
+} from '@/providers/dataTable/repository/backendRepository';
 import { isDataColumn, ITableDataColumn } from '@/providers/dataTable/interfaces';
-import { IColumnEditorProps, IFieldComponentProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
+import {
+  IColumnEditorProps,
+  IFieldComponentProps,
+  standardCellComponentTypes,
+} from '@/providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { executeScriptSync } from '@/providers/form/utils';
 import moment from 'moment';
@@ -31,7 +47,7 @@ import { axiosHttp } from '@/utils/fetchers';
 import { IAnyObject } from '@/interfaces';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
-import { isEqual } from "lodash";
+import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
 import { useStyles } from './styles/styles';
@@ -76,6 +92,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   customDeleteUrl,
   onRowSave,
   inlineEditMode,
+  freezeHeaders,
   onRowSaveSuccessAction: onRowSaveSuccess,
   ...props
 }) => {
@@ -121,10 +138,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     if (setSelectedRow) {
       const rowId = row?.id;
       const currentId = store.selectedRow?.id;
-      if (rowId !== currentId)
-        setSelectedRow(index, row);
-      else
-        setSelectedRow(null, null);
+      if (rowId !== currentId) setSelectedRow(index, row);
+      else setSelectedRow(null, null);
     }
   };
 
@@ -196,14 +211,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
-        // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-        //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formData ?? {}, globalState, axiosHttp(backendUrl), moment);
-        return Promise.resolve(result);
-      }
+          // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
+          //return onNewRowInitializeExecuter(formData, globalState);
+          const result = onNewRowInitializeExecuter(formData ?? {}, globalState, axiosHttp(backendUrl), moment);
+          return Promise.resolve(result);
+        }
       : () => {
-        return Promise.resolve({});
-      };
+          return Promise.resolve({});
+        };
 
     return result;
   }, [onNewRowInitializeExecuter, formData, globalState]);
@@ -336,6 +351,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           cellStyleAccessor: cellStyleAccessor,
         };
         return removeUndefinedProperties(column) as DataTableColumn<any>;
+      })
+      .sort((a: DataTableColumn<any>, b: DataTableColumn<any>) => {
+        if (a.anchored=== 'left') return -1;
+        if (a.anchored === 'right') return 1;
+        if (b.anchored === 'left') return 1;
+        if (b.anchored === 'right') return -1;
+
+        return 0;
       });
 
     return localPreparedColumns;
@@ -346,13 +369,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     crudOptions.canEdit,
     crudOptions.canDelete,
     crudOptions.inlineEditMode,
-    sortMode
+    sortMode,
   ]);
 
   // sort
-  const defaultSorting = sortMode === 'standard'
-    ? userSorting?.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc }))
-    : undefined;
+  const defaultSorting =
+    sortMode === 'standard' ? userSorting?.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc })) : undefined;
 
   // http, moment, setFormData
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
@@ -401,7 +423,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           : undefined;
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
-        setRowData(rowIndex, preparedData/*, response*/);
+        setRowData(rowIndex, preparedData /*, response*/);
         performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormData);
         return response;
       });
@@ -532,15 +554,15 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       currentGroup: null,
       propertyName: g.propertyName,
       index: index,
-      propertyPath: g.propertyName.split('.')
+      propertyPath: g.propertyName.split('.'),
     }));
 
     const getValue = (container: object, path: string[]) => {
-      return path.reduce((prev, part) => prev ? prev[part] : undefined, container);
+      return path.reduce((prev, part) => (prev ? prev[part] : undefined), container);
     };
 
     const result: RowsGroup[] = [];
-    rows.forEach(row => {
+    rows.forEach((row) => {
       let parent: RowOrGroup[] = result;
       let differenceFound = false;
       groupLevels.forEach((g, index) => {
@@ -550,7 +572,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           g.currentGroup = {
             index: index,
             value: groupValue,
-            $childs: []
+            $childs: [],
           };
           parent.push(g.currentGroup);
           differenceFound = true;
@@ -563,9 +585,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   };
 
   const renderGroupTitle = (value: any, propertyName: string) => {
-    if (!Boolean(value) && value !== false)
-      return <Typography.Text type='secondary'>(empty)</Typography.Text>;
-    const column = groupingColumns.find(c => isDataColumn(c) && c.propertyName === propertyName);
+    if (!Boolean(value) && value !== false) return <Typography.Text type="secondary">(empty)</Typography.Text>;
+    const column = groupingColumns.find((c) => isDataColumn(c) && c.propertyName === propertyName);
     const propertyMeta = isDataColumn(column) ? column.metadata : null;
 
     return <ValueRenderer value={value} meta={propertyMeta} />;
@@ -577,14 +598,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       <Collapse
         key={key}
         defaultActiveKey={['1']}
-        expandIconPosition='start'
+        expandIconPosition="start"
         className={`sha-group-level-${group.index}`}
       >
         <Collapse.Panel header={<>{title}</>} key="1">
           {group.$childs.map((child, index) => {
-            return isGroup(child)
-              ? renderGroup(child, index, rowRenderer)
-              : rowRenderer(child, index);
+            return isGroup(child) ? renderGroup(child, index, rowRenderer) : rowRenderer(child, index);
           })}
         </Collapse.Panel>
       </Collapse>
@@ -593,16 +612,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const onRowsRenderingWithGrouping: OnRowsRendering = ({ rows, defaultRender }) => {
     const groupped = convertRowsToGroups(rows);
-    return (
-      <>
-        {groupped.map((group, index) => renderGroup(group, index, defaultRender))}
-      </>
-    );
+    return <>{groupped.map((group, index) => renderGroup(group, index, defaultRender))}</>;
   };
 
   const repository = store.getRepository();
   const reorderingAvailable = useMemo<boolean>(() => {
-    return repository && repository.supportsReordering && repository.supportsReordering({ sortMode, strictSortBy }) === true;
+    return (
+      repository && repository.supportsReordering && repository.supportsReordering({ sortMode, strictSortBy }) === true
+    );
   }, [repository, sortMode, strictSortBy]);
 
   const groupingAvailable = useMemo<boolean>(() => {
@@ -611,8 +628,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const handleRowsReordered = (payload: OnRowsReorderedArgs): Promise<void> => {
     const repository = store.getRepository();
-    if (!repository)
-      return Promise.reject('Repository is not specified');
+    if (!repository) return Promise.reject('Repository is not specified');
 
     const supported = repository.supportsReordering && repository.supportsReordering({ sortMode, strictSortBy });
     if (supported === true) {
@@ -622,12 +638,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       };
 
       return repository.reorder(reorderPayload);
-    } else
-      return Promise.reject(typeof (supported) === 'string' ? supported : 'Reordering is not supported');
+    } else return Promise.reject(typeof supported === 'string' ? supported : 'Reordering is not supported');
   };
 
   const onResizedChange = (columns: ColumnInstance[], _columnSizes: IColumnResizing) => {
-    const widths = columns.map<IColumnWidth>(c => ({ id: c.id, width: typeof (c.width) === 'number' ? c.width : undefined }));
+    const widths = columns.map<IColumnWidth>((c) => ({
+      id: c.id,
+      width: typeof c.width === 'number' ? c.width : undefined,
+    }));
 
     setColumnWidths(widths);
   };
@@ -637,6 +655,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     // Disable sorting if we're in create mode so that the new row is always the first
     defaultSorting: defaultSorting,
     useMultiSelect,
+    freezeHeaders,
     onSelectRow: onSelectRowLocal,
     onRowDoubleClick: dblClickHandler,
     onSelectedIdsChanged: changeSelectedIds,

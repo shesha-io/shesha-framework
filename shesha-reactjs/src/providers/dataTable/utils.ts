@@ -172,7 +172,7 @@ export const prepareColumn = (
     accessor: column.id,
     columnId: column.id,
     columnType: column.columnType,
-
+    anchored: column.anchored,
     header: column.caption,
     caption: column.caption,
     minWidth: column.minWidth || MIN_COLUMN_WIDTH,
@@ -180,7 +180,6 @@ export const prepareColumn = (
     width: userColumn?.width,
     isVisible: column.isVisible,
     show: column.isVisible,
-
     isFilterable: false,
     isSortable: false,
     allowShowHide: false,
