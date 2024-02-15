@@ -7,7 +7,7 @@ import { ApplicationActionsProcessor } from './configurable-actions/applicationA
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
 import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
 import { DataContextManager } from '@/providers/dataContextManager';
-import { DataContextProvider } from '@/providers/dataContextProvider';
+import DataContextProvider from '@/providers/dataContextProvider';
 import { DataSourcesProvider } from '@/providers/dataSourcesProvider';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import { IToolboxComponentGroup } from '@/interfaces';

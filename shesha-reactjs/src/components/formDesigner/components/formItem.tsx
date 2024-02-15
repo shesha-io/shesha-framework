@@ -41,7 +41,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
 
-  const propName = namePrefix && !isCommonContext(model.context)
+  const propName = namePrefix && !!model.context && !isCommonContext(model.context)
     ? namePrefix + '.' + model.propertyName 
     : model.propertyName;
 

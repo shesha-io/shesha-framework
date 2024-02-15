@@ -4,6 +4,8 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState }
 import { createContext } from 'react';
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload } from "./models";
 
+export const RootContexts: string[] = [];
+
 export interface IDataContextManagerStateContext {
     lastUpdate: string;
 }
@@ -21,12 +23,11 @@ export interface IDataContextManagerActionsContext {
     getDataContext: (contextId: string) => IDataContextDescriptor;
     getDataContextData: (contextId: string) => any;
     onChangeContext: (dataContext: IDataContextDescriptor) => void;
-    onChangeContextData: (contextId: string, data: any) => void;
+    onChangeContextData: () => void;
     setActiveContext: (contextId: string) => void;
     getActiveContext: () => IDataContextDescriptor;
     updateFormInstance: (form: ConfigurableFormInstance) => void;
     getFormInstance: () => ConfigurableFormInstance;
-    onUpdateContextApi: (id: string, api: any) => void;
 }
 
 export interface IDataContextManagerFullInstance extends IDataContextManagerStateContext, IDataContextManagerActionsContext{
@@ -39,16 +40,20 @@ export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStat
 export const DataContextManagerStateContext = createContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
 export const DataContextManagerActionsContext = createContext<IDataContextManagerActionsContext>(undefined);
 
-export interface IDataContextManagerProps { }
+export interface IDataContextManagerProps {}
 
 const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ children }) => {
 
     const [state, setState] = useState<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
     const [activeContextId, setActiveContextId] = useState<string>(null);
 
-    const contextsData = useRef<{}>({});
+    //const contextsData = useRef<{}>({});
     const contexts = useRef<IDataContextDictionary>({});
     const formInstance = useRef<ConfigurableFormInstance>();
+
+    const onChangeContextData = () => {
+      setState({...state, lastUpdate: new Date().toJSON()});
+    };
 
     const updateFormInstance = (form: ConfigurableFormInstance) => {
         formInstance.current = form;
@@ -64,18 +69,21 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             const ctx = {...payload};
             delete ctx.initialData;
             contexts.current[payload.id] = {...ctx};
-        }
-        if (!contextsData.current[payload.id]) {
-            contextsData.current[payload.id] = {...payload.initialData};
             setState({...state, lastUpdate: new Date().toJSON() });
+
+            if (payload.type === 'root')
+                RootContexts.push(payload.id);
         }
     };
 
     const unregisterDataContext = (payload: IRegisterDataContextPayload) => {
-        if (!!contexts.current[payload.id])
-            delete contexts.current[payload.id];
+      if (!!contexts.current[payload.id])
+        delete contexts.current[payload.id];
 
-        setState({...state, lastUpdate: new Date().toJSON() });
+      setState({...state, lastUpdate: new Date().toJSON() });
+
+      if (payload.type === 'root')
+        RootContexts.splice(RootContexts.indexOf(payload.id), 1);
     };
 
     const getDataContexts = (topId: string) => {
@@ -114,15 +122,16 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
     const getDataContextData = (contextId: string) => {
         if (!contextId)
             return undefined;
-        const ctx =  contexts.current[contextId];
-        const ctxd = {...contextsData.current[contextId], setFieldValue: ctx.setFieldValue};
-        if (ctx.api)
-            ctxd.api = ctx.api;
-        return ctxd;
+        
+        const data = contexts.current[contextId]?.getData();
+        const api = contexts.current[contextId]?.getApi();
+        if (!!api) 
+          data.api = api;
+        return data;
     };
 
     const getDataContextsData =(topId?: string) => {
-        const res = {lastUpdate: state.lastUpdate};
+        const res = { lastUpdate: state.lastUpdate, refreshContext: onChangeContextData };
         getDataContexts(topId).forEach(item => {
             res[item.name] = getDataContextData(item.id);
         });
@@ -135,7 +144,6 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             const newCtx = {
                 ...payload,
                 metadata: payload.metadata ?? contexts.current[payload.id].metadata,
-                api: payload.api ?? contexts.current[payload.id].api
             };
             const changed = !isEqual(existingContext, newCtx);
             if (changed) {
@@ -143,22 +151,6 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
                 contexts.current[payload.id] = newCtx;
                 setState({...state, lastUpdate: new Date().toJSON() });
             }
-        }
-    };
-
-    const onUpdateContextApi = (id: string, api: any) => {
-        const existingContext = contexts.current[id];
-        if (!!existingContext) {
-            contexts.current[id].api = api;
-        }
-    };
-
-    const onChangeContextData = (contextId: string, data: any) => {
-        const changed = !isEqual(contextsData.current[contextId], data);
-        if (changed) {
-            //console.log('Update context data: ' + contexts.current[contextId]?.name);
-            contextsData.current[contextId] = {...data};
-            setState({...state, lastUpdate: new Date().toJSON()});
         }
     };
 
@@ -184,7 +176,6 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         getActiveContext,
         updateFormInstance,
         getFormInstance,
-        onUpdateContextApi
     };
 
     return (

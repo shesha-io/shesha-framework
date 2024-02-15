@@ -3,7 +3,7 @@ import { useForm } from '@/providers/form';
 import { useMetadata } from '@/providers';
 import { Button, Tooltip } from 'antd';
 import { useFormDesigner } from '@/providers/formDesigner';
-import { useDataContext } from '@/providers/dataContextProvider';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { DeleteFilled } from '@ant-design/icons';
 import { useStyles } from '../styles/styles';
 

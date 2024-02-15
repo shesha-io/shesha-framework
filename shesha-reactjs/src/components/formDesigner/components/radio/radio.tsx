@@ -58,11 +58,6 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
   linkToModelMetadata: (model, metadata): IEnhancedRadioProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
     
-    console.log('LOG: link', { 
-      isRefList, 
-      refList : { module: metadata.referenceListModule, name: metadata.referenceListName } }
-    );
-
     return {
       ...model,
       dataSourceType: isRefList ? 'referenceList' : 'values',
