@@ -352,8 +352,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         };
         return removeUndefinedProperties(column) as DataTableColumn<any>;
       })
-      .sort((a: Column<any>, b: Column<any>) => {
-        if (a.anchored === 'left') return -1;
+      .sort((a: DataTableColumn<any>, b: DataTableColumn<any>) => {
+        if (a.anchored=== 'left') return -1;
         if (a.anchored === 'right') return 1;
         if (b.anchored === 'left') return 1;
         if (b.anchored === 'right') return -1;

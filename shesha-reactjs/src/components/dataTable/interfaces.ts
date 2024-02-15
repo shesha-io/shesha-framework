@@ -4,7 +4,7 @@ import { IAnyObject } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { DataTableFullInstance } from '@/providers/dataTable/contexts';
-import { CellStyleFunc, IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
+import { CellStyleFunc, IAnchoredDirection, IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
 
 export interface ITableActionColumns {
@@ -22,6 +22,7 @@ export type DataTableColumn<D extends object = {}> = Column<D> & {
   resizable?: boolean;
   originalConfig?: ITableColumn;
   metadata?: IPropertyMetadata;
+  anchored?: IAnchoredDirection;
   cellStyleAccessor?: CellStyleFunc;
 };
 

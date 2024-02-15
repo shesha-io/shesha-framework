@@ -439,7 +439,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                       
                     }
 
-                    const  = anchored?.direction === 'left' ? 'left' : 'right';
+                    const direction = anchored?.direction === 'left' ? 'left' : 'right';
 
                     const shiftedBy = leftColumn.shift || rightColumn.shift;
 
