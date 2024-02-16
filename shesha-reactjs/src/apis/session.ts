@@ -46,7 +46,7 @@ export type sessionGetCurrentLoginInformationsProps = Omit<
 
 export const sessionGetCurrentLoginInformations = (props: sessionGetCurrentLoginInformationsProps) =>
   RestfulShesha.get<GetCurrentLoginInformationsOutputAjaxResponse, IAjaxResponseBase, void, void>(
-    `/api/services/app/Session/GetCurrentLoginInformations`,
+    `/api/services/app/Session/GetCurrentLoginInfo`,
     undefined,
     props
   );
