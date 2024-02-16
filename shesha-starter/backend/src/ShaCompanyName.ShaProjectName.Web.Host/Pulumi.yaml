@@ -122,8 +122,8 @@ resources:
           - image: ${containerAppRevisionImage}
             name: #{abbrvProjectName}#-#{role}#-#{env}#
             resources:
-              cpu: 1.0
-              memory: "2Gi"
+              cpu: 2.0
+              memory: "4Gi"
             # probes:
             #   - httpGet:
             #       port: 80
@@ -136,7 +136,7 @@ resources:
           rules:
             - custom:
                 metadata:
-                  concurrentRequests: "75"
+                  concurrentRequests: "250"
                 type: http
               name: httpscalingrule  
 outputs:
