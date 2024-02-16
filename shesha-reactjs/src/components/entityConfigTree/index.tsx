@@ -255,28 +255,26 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
                   return 'Json entities';
               }
             }
-          }
-          return name;
-        }}
-        onRenterItem={(item) => {
-          const versionStatus = ConfigurationItemVersionStatusMap[item.versionStatus];
-          return <>
-            {item.suppress
-              ? <EyeInvisibleOutlined />
-              : item.source === MetadataSourceType.UserDefined
-                ? <UserAddOutlined />
-                : item.notImplemented
-                  ? <QuestionCircleOutlined />
-                  : item.entityConfigType === EntityConfigType.Interface
-                    ? <InterfaceOutlined />
-                    : <ClassOutlined />
-            }<span>  </span>
-            <Tag color={versionStatus.color}>{versionStatus.text}</Tag>
-            <span className='sha-component-title'> {item.className}</span>
-          </>;
-        }}
-      />
-
+            return name;
+          }}
+          onRenterItem={(item) => {
+            const versionStatus = ConfigurationItemVersionStatusMap[item.versionStatus];
+            return <>
+              {item.suppress
+                ? <EyeInvisibleOutlined />
+                : item.source === MetadataSourceType.UserDefined
+                  ? <UserAddOutlined />
+                  : item.notImplemented
+                    ? <QuestionCircleOutlined />
+                    : item.entityConfigType === EntityConfigType.Interface
+                      ? <InterfaceOutlined />
+                      : <ClassOutlined />
+              }<span>  </span>
+              <Tag color={versionStatus.color}>{versionStatus.text}</Tag>
+              <span className='sha-component-title'> {item.className}</span>
+            </>;
+          }}
+        />
       </div>
     </Spin>
   );
