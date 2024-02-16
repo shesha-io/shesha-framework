@@ -1,6 +1,6 @@
 ﻿namespace Shesha.Sessions.Dto
 {
-    public class GetCurrentLoginInformationsOutput
+    public class GetCurrentLoginInfoOutput
     {
         public ApplicationInfoDto Application { get; set; }
 

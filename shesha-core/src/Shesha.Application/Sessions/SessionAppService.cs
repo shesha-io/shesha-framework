@@ -26,9 +26,9 @@ namespace Shesha.Sessions
         }
 
         //[DisableAuditing]
-        public async Task<GetCurrentLoginInformationsOutput> GetCurrentLoginInformations()
+        public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfo()
         {
-            var output = new GetCurrentLoginInformationsOutput
+            var output = new GetCurrentLoginInfoOutput
             {
                 Application = new ApplicationInfoDto
                 {
