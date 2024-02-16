@@ -30,22 +30,21 @@ export interface TenantLoginInfoDto {
   tenancyName?: string | null;
   name?: string | null;
 }
-export interface GetCurrentLoginInformationsOutput {
+export interface GetCurrentLoginInfoOutput {
   application?: ApplicationInfoDto;
   user?: UserLoginInfoDto;
   tenant?: TenantLoginInfoDto;
 }
 
-export interface GetCurrentLoginInformationsOutputAjaxResponse
-  extends IAjaxResponse<GetCurrentLoginInformationsOutput> {}
+export interface GetCurrentLoginInfoOutputAjaxResponse extends IAjaxResponse<GetCurrentLoginInfoOutput> {}
 
-export type sessionGetCurrentLoginInformationsProps = Omit<
-  RestfulShesha.GetProps<GetCurrentLoginInformationsOutputAjaxResponse, IAjaxResponseBase, void, void>,
+export type sessionGetCurrentLoginInfoProps = Omit<
+  RestfulShesha.GetProps<GetCurrentLoginInfoOutputAjaxResponse, IAjaxResponseBase, void, void>,
   'queryParams'
 >;
 
-export const sessionGetCurrentLoginInformations = (props: sessionGetCurrentLoginInformationsProps) =>
-  RestfulShesha.get<GetCurrentLoginInformationsOutputAjaxResponse, IAjaxResponseBase, void, void>(
+export const sessionGetCurrentLoginInfo = (props: sessionGetCurrentLoginInfoProps) =>
+  RestfulShesha.get<GetCurrentLoginInfoOutputAjaxResponse, IAjaxResponseBase, void, void>(
     `/api/services/app/Session/GetCurrentLoginInfo`,
     undefined,
     props
