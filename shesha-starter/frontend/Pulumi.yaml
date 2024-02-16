@@ -75,7 +75,7 @@ resources:
           rules:
             - custom:
                 metadata:
-                  concurrentRequests: "75"
+                  concurrentRequests: "250"
                 type: http
               name: httpscalingrule  
 outputs:
