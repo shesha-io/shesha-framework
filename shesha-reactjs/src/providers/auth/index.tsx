@@ -1,7 +1,7 @@
 import { useMutate } from '@/hooks';
 import useThunkReducer from '@/hooks/thunkReducer';
 import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
-import { sessionGetCurrentLoginInformations } from '@/apis/session';
+import { sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
 import { OverlayLoader } from '@/components/overlayLoader';
@@ -179,7 +179,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     if (Boolean(state.loginInfo)) return;
 
     dispatch(fetchUserDataAction());
-    sessionGetCurrentLoginInformations({ base: backendUrl, headers })
+    sessionGetCurrentLoginInfo({ base: backendUrl, headers })
       .then((response) => {
         if (response.result.user) {
           dispatch(fetchUserDataActionSuccessAction(response.result.user));
@@ -191,17 +191,12 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           } else {
             // if we are on the login page - redirect to the returnUrl or home page
             if (isSameUrls(router.path, unauthorizedRedirectUrl)) {
-              const returnUrl = (router.query['returnUrl'])?.toString();
+              const returnUrl = router.query['returnUrl']?.toString();
 
               cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
 
-              const redirects: string[] = [
-                returnUrl,
-                response.result?.user?.homeUrl,
-                homePageUrl,
-                DEFAULT_HOME_PAGE
-              ];
-              const redirectUrl = redirects.find(r => Boolean(r?.trim())); // skip all null/undefined and empty strings
+              const redirects: string[] = [returnUrl, response.result?.user?.homeUrl, homePageUrl, DEFAULT_HOME_PAGE];
+              const redirectUrl = redirects.find((r) => Boolean(r?.trim())); // skip all null/undefined and empty strings
 
               redirect(redirectUrl);
             }

@@ -6,12 +6,7 @@ import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/s
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import Show from '@/components/show';
 import TextArea from 'antd/lib/input/TextArea';
-import {
-  Checkbox,
-  Input,
-  InputNumber,
-  Select
-  } from 'antd';
+import { Checkbox, Input, InputNumber, Select } from 'antd';
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
 import { EXPOSED_VARIABLES } from './utils';
@@ -21,10 +16,9 @@ import { Option } from 'antd/lib/mentions';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 
-interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
+interface IEntityReferenceSettingsState extends IAddressCompomentProps {}
 
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
-
   const { model: state, getFieldsValue, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
@@ -34,8 +28,9 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
 
   return (
     <>
-      <SettingsCollapsiblePanel header='Display'>
-        <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
+      <SettingsCollapsiblePanel header="Display">
+        <ContextPropertyAutocomplete
+          id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
           formData={formData}
@@ -74,7 +69,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Configuration'>
+      <SettingsCollapsiblePanel header="Configuration">
         <SettingsFormItem
           name="minCharactersSearch"
           label="Min Characters Before Search"
@@ -177,7 +172,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
         </Show>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Events'>
+      <SettingsCollapsiblePanel header="Events">
         <SettingsFormItem
           label="On Change"
           name="onChangeCustom"
@@ -210,12 +205,15 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
+      <SettingsCollapsiblePanel header="Validation">
+        <SettingsFormItem name="validate.required" label="Required" valuePropName="checked" jsSetting>
+          <Checkbox disabled={readOnly} />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
     </>
   );
 };
 
 export const AddressSettingsForm: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = (props) => {
-  return (
-    SettingsForm<IEntityReferenceSettingsState>({ ...props, children: <AddressSettings {...props} /> })
-  );
+  return SettingsForm<IEntityReferenceSettingsState>({ ...props, children: <AddressSettings {...props} /> });
 };
