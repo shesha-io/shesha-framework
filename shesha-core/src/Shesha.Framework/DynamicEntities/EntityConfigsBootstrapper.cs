@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
+using Castle.Core.Logging;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
@@ -21,7 +22,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Castle.Core.Logging;
 
 namespace Shesha.DynamicEntities
 {
@@ -306,26 +306,26 @@ namespace Shesha.DynamicEntities
                             EntityConfig = entityConfig,
                             Source = Domain.Enums.MetadataSourceType.ApplicationCode,
                             SortOrder = nextSortOrder++,
-                            ParentProperty = parentProp
+                            ParentProperty = parentProp,
+                            Label = cp.Label,
+                            Description = cp.Description,
                         };
-                        MapProperty(cp, dbp, false);
+                        MapProperty(cp, dbp);
 
                         await _entityPropertyRepository.InsertAsync(dbp);
                     }
                     else
                     {
-                        if (MapProperty(cp, dbp, true) || dbp.Source != Domain.Enums.MetadataSourceType.ApplicationCode || dbp.IsDeleted)
-                        {
-                            // update hardcoded part
-                            dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
+                        MapProperty(cp, dbp);
+                        // update hardcoded part
+                        dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
                             
-                            // restore property
-                            dbp.IsDeleted = false;
-                            dbp.DeletionTime = null;
-                            dbp.DeleterUserId = null;
+                        // restore property
+                        dbp.IsDeleted = false;
+                        dbp.DeletionTime = null;
+                        dbp.DeleterUserId = null;
 
-                            await _entityPropertyRepository.UpdateAsync(dbp);
-                        }
+                        await _entityPropertyRepository.UpdateAsync(dbp);
                     }
 
                     await UpdateItemsTypeAsync(dbp, cp);
@@ -403,7 +403,10 @@ namespace Shesha.DynamicEntities
                     dbp.ItemsType = new EntityProperty();
 
                 dbp.ItemsType.EntityConfig = dbp.EntityConfig;
-                MapProperty(cp.ItemsType, dbp.ItemsType, false);
+                cp.ItemsType.Label = dbp.ItemsType.Label;
+                cp.ItemsType.Description = dbp.ItemsType.Description;
+
+                MapProperty(cp.ItemsType, dbp.ItemsType);
 
                 dbp.ItemsType.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
                 dbp.ItemsType.SortOrder = 0;
@@ -411,73 +414,40 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private bool MapProperty(PropertyMetadataDto src, EntityProperty dst, bool skipConfigurable)
+        private void MapProperty(PropertyMetadataDto src, EntityProperty dst)
         {
-            var res = false;
-            if (
-                dst.Name != src.Path ||
-                dst.DataType != src.DataType ||
-                dst.DataFormat != src.DataFormat ||
-                dst.EntityType != src.EntityTypeShortAlias ||
-                dst.ReferenceListName != src.ReferenceListName ||
-                dst.ReferenceListModule != src.ReferenceListModule ||
-                dst.IsFrameworkRelated != src.IsFrameworkRelated ||
-                dst.Min != src.Min ||
-                dst.Max != src.Max ||
-                dst.MinLength != src.MinLength ||
-                dst.MaxLength != src.MaxLength ||
-                dst.Suppress == src.IsVisible ||
-                dst.Audited != src.Audited ||
-                dst.Required != src.Required ||
-                dst.ReadOnly != src.Readonly ||
-                dst.RegExp != src.RegExp ||
-                dst.ValidationMessage != src.ValidationMessage ||
-                dst.CascadeCreate != src.CascadeCreate ||
-                dst.CascadeUpdate != src.CascadeUpdate ||
-                dst.CascadeDeleteUnreferenced != src.CascadeDeleteUnreferenced
-            )
-            {
-                dst.Name = src.Path;
-                dst.DataType = src.DataType;
-                dst.DataFormat = src.DataFormat;
-                dst.EntityType = src.EntityTypeShortAlias;
-                dst.ReferenceListName = src.ReferenceListName;
-                dst.ReferenceListModule = src.ReferenceListModule;
-                dst.IsFrameworkRelated = src.IsFrameworkRelated;
-                dst.Min = src.Min;
-                dst.Max = src.Max;
-                dst.MinLength = src.MinLength;
-                dst.MaxLength = src.MaxLength;
-                dst.Suppress = !src.IsVisible;
-                dst.Audited = src.Audited;
-                dst.Required = src.Required;
-                dst.ReadOnly = src.Readonly;
-                dst.RegExp = src.RegExp;
-                dst.ValidationMessage = src.ValidationMessage;
-                dst.CascadeCreate = src.CascadeCreate ?? dst.CascadeCreate;
-                dst.CascadeUpdate = src.CascadeUpdate ?? dst.CascadeUpdate;
-                dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced ?? dst.CascadeDeleteUnreferenced;
-                res = true;
-            }
+            dst.Name = src.Path;
+            dst.DataType = src.DataType;
+            dst.DataFormat = src.DataFormat;
+            dst.EntityType = src.EntityTypeShortAlias;
+            dst.ReferenceListName = src.ReferenceListName;
+            dst.ReferenceListModule = src.ReferenceListModule;
+            dst.IsFrameworkRelated = src.IsFrameworkRelated;
+            
+            dst.Min = src.Min.GetDefaultIfEmpty(dst.Min);
+            dst.Max = src.Max.GetDefaultIfEmpty(dst.Max);
+            dst.MinLength = src.MinLength.GetDefaultIfEmpty(dst.MinLength);
+            dst.MaxLength = src.MaxLength.GetDefaultIfEmpty(dst.MaxLength);
+            dst.Suppress = !src.IsVisible || dst.Suppress;
+            dst.Audited = src.Audited || dst.Audited;
+            dst.Required = src.Required || dst.Required;
+            dst.ReadOnly = src.Readonly || dst.ReadOnly;
+            dst.RegExp = src.RegExp.GetDefaultIfEmpty(dst.RegExp);
 
-            if (!skipConfigurable)
+            // get validation message from hardcoded property if empty
+            // To allow change validation message even it is hardcoded
+            dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
+            
+            dst.CascadeCreate = src.CascadeCreate ?? dst.CascadeCreate;
+            dst.CascadeUpdate = src.CascadeUpdate ?? dst.CascadeUpdate;
+            dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced ?? dst.CascadeDeleteUnreferenced;
+
+            // ensure that Label is not empty even when we should skip configurable properties
+            // the Entity Configurator shouldn't allow empty labels
+            if (string.IsNullOrWhiteSpace(dst.Label))
             {
                 dst.Label = src.Label;
-                dst.Description = src.Description;
-                res = true;
             }
-            else
-            {
-                // ensure that Label is not empty even when we should skip configurable properties
-                // the Entity Configurator shouldn't allow empty labels
-                if (string.IsNullOrWhiteSpace(dst.Label))
-                {
-                    dst.Label = src.Label;
-                    res = true;
-                }
-            }
-
-            return res;
         }
     }
 }

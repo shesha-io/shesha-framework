@@ -125,5 +125,21 @@ namespace Shesha.DynamicEntities.Distribution.Dto
         /// Validation message
         /// </summary>
         public string ValidationMessage { get; set; }
+
+        /// <summary>
+        /// Allows to create child/nested entity
+        /// </summary>
+        public virtual bool CascadeCreate { get; set; }
+
+        /// <summary>
+        /// Allows to update child/nested entity
+        /// </summary>
+        public virtual bool CascadeUpdate { get; set; }
+
+        /// <summary>
+        /// Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references
+        /// </summary>
+        public virtual bool CascadeDeleteUnreferenced { get; set; }
+
     }
 }
