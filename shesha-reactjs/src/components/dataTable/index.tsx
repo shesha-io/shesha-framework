@@ -351,14 +351,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           cellStyleAccessor: cellStyleAccessor,
         };
         return removeUndefinedProperties(column) as DataTableColumn<any>;
-      })
-      .sort((a: DataTableColumn<any>, b: DataTableColumn<any>) => {
-        if (a.anchored=== 'left') return -1;
-        if (a.anchored === 'right') return 1;
-        if (b.anchored === 'left') return 1;
-        if (b.anchored === 'right') return -1;
-
-        return 0;
       });
 
     return localPreparedColumns;

@@ -27,3 +27,7 @@ export const Basic = Template.bind({});
 export const DefaultDynmicPage = addStory(Template, {
   formId: { name: 'playground', module: 'Shesha' },
 });
+
+export const BackgroundDataTable = addStory(Template, {
+  formId: { name: 'colorback-table', module: 'TestModule' },
+});
