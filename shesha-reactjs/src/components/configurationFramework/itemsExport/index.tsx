@@ -90,9 +90,8 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     return null;
   };
   const getListFetcherQueryParams = (mode: VerionSelectionMode): IGetConfigItemsPayload => {
-    const tempFilter = { '!=': [{ var: 'itemType' }, 'entity'] }; // temporary filter out entity configuration
     const filterByMode = getItemFilterByMode(mode);
-    const finalFilter = { and: [tempFilter, filterByMode] };
+    const finalFilter = filterByMode;
 
     return {
       skipCount: 0,

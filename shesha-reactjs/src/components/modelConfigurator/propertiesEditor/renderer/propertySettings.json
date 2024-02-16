@@ -312,7 +312,6 @@
           "label": "Min",
           "labelAlign": "right",
           "parentId": "ipxZABhhFbnZBrO1iijxF",
-
           "customEnabled": "return !data.sizeHardcoded;",
           "placeholder": "",
           "description": "",
@@ -589,7 +588,6 @@
     },
     "wrapperCol": {
       "span": 16
-    },
-    "modelType": "Shesha.Framework.EntityProperty"
+    }
   }
 }

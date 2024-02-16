@@ -477,6 +477,9 @@ namespace Shesha.DynamicEntities
                         prop.Min = hardCodedProp.Min ?? prop.Min;
                         prop.Max = hardCodedProp.Max ?? prop.Max;
                         prop.RegExp = string.IsNullOrWhiteSpace(hardCodedProp.RegExp) ? prop.RegExp : hardCodedProp.RegExp;
+                        prop.ValidationMessage = string.IsNullOrWhiteSpace(hardCodedProp.ValidationMessage)
+                            ? prop.ValidationMessage
+                            : hardCodedProp.ValidationMessage;
 
                         prop.SuppressHardcoded = !hardCodedProp.IsVisible;
                         prop.RequiredHardcoded = hardCodedProp.Required;
@@ -487,6 +490,7 @@ namespace Shesha.DynamicEntities
                             || hardCodedProp.MinLength.HasValue
                             || hardCodedProp.MaxLength.HasValue;
                         prop.RegExpHardcoded = !string.IsNullOrWhiteSpace(hardCodedProp.RegExp);
+
                         prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate != null;
                         prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate != null;
                         prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced != null;

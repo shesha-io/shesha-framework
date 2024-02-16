@@ -12,7 +12,8 @@ import {
   Checkbox,
   Dropdown,
   MenuProps,
-  Spin
+  Spin,
+  Tag
 } from 'antd';
 import { ClassOutlined } from '@/icons/classOutlined';
 import {
@@ -28,6 +29,7 @@ import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { SectionSeparator } from '..';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 
 
 type MenuItem = MenuProps['items'][number];
@@ -224,6 +226,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           return name;
         }}
         onRenterItem={(item) => {
+          const versionStatus = ConfigurationItemVersionStatusMap[item.versionStatus];
           return <>
             {item.suppress
               ? <EyeInvisibleOutlined />
@@ -234,7 +237,8 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
                   : item.entityConfigType === EntityConfigType.Interface
                     ? <InterfaceOutlined />
                     : <ClassOutlined />
-            }
+            }<span>  </span>
+            <Tag color={versionStatus.color}>{versionStatus.text}</Tag>
             <span className='sha-component-title'> {item.className}</span>
           </>;
         }}

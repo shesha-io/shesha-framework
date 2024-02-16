@@ -106,8 +106,10 @@ namespace Shesha.Metadata
                     || (property.GetAttribute<ReadOnlyAttribute>()?.IsReadOnly ?? false),
                 Min = GetMin(property),
                 Max = GetMax(property),
-                MinLength = property.GetAttribute<StringLengthAttribute>()?.MinimumLength,
-                MaxLength = property.GetAttribute<StringLengthAttribute>()?.MaximumLength,
+                MinLength = property.GetAttribute<StringLengthAttribute>()?.MinimumLength
+                    ?? property.GetAttribute<MinLengthAttribute>()?.Length,
+                MaxLength = property.GetAttribute<StringLengthAttribute>()?.MaximumLength
+                    ?? property.GetAttribute<MaxLengthAttribute>()?.Length,
                 Audited = property.HasAttribute<AuditedAttribute>(),
                 RegExp = property.GetAttribute<RegularExpressionAttribute>()?.Pattern,
                 ValidationMessage = property.GetAttribute<RangeAttribute>()?.ErrorMessage 
