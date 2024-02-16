@@ -288,7 +288,7 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
             ]}
           />
         </Form.Item>
-        <Form.Item label="Include all depepndecies">
+        <Form.Item label="Include all dependencies">
           <Switch checked={exportDependencies} onChange={setExportDependencies}></Switch>
         </Form.Item>
         <Skeleton loading={isLoading}>
