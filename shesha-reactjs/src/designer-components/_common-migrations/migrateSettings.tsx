@@ -53,15 +53,18 @@ export const migratePropertyName = <T extends IConfigurableFormComponent,>(prev:
 
 export const migrateReadOnly = <T,>(prev: T, defaultValue?: EditMode) => {
   const disabled = prev['disabled'];
+  const readOnly = prev['readOnly'];
   const model = {
     ...prev, editMode:
-      prev['readOnly'] === true
-        ? !!disabled && disabled['_mode'] === 'code'
-          ? { _value: true, _mode: 'value', _code: disabled['_code'] }
-          : false
-        : disabled === true
-          ? 'readOnly'
-          : undefined
+      readOnly === true && disabled === true
+      || readOnly === true && !disabled 
+      || disabled === true && !readOnly
+        ? 'readOnly'
+        : readOnly === true && !!disabled && disabled['_mode'] === 'code'
+          ? { _value: 'readOnly', _mode: 'value', _code: disabled['_code'] }
+          : !readOnly && !!disabled && disabled['_mode'] === 'code'
+            ? { _value: 'inherited', _mode: 'code', _code: disabled['_code'] }
+            : undefined
   } as T;
 
   if (isPropertySettings(model['editMode'])) {

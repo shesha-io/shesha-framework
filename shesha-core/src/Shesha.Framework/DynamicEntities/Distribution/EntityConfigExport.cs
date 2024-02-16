@@ -6,6 +6,7 @@ using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
+using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,14 +19,20 @@ namespace Shesha.DynamicEntities.Distribution
     public class EntityConfigExport : IEntityConfigExport, ITransientDependency
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepo;
-        private readonly IRepository<EntityProperty, Guid> _entityPropertyRepo;        
+        private readonly IRepository<EntityProperty, Guid> _entityPropertyRepo;
+        private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         public string ItemType => EntityConfig.ItemTypeName;
 
-        public EntityConfigExport(IRepository<EntityConfig, Guid> entityConfigRepo, IRepository<EntityProperty, Guid> entityPropertyRepo)
+        public EntityConfigExport(
+            IRepository<EntityConfig, Guid> entityConfigRepo,
+            IRepository<EntityProperty, Guid> entityPropertyRepo,
+            IPermissionedObjectManager permissionedObjectManager
+        )
         {
             _entityConfigRepo = entityConfigRepo;
             _entityPropertyRepo = entityPropertyRepo;
+            _permissionedObjectManager = permissionedObjectManager;
         }
 
         /// inheritedDoc
@@ -71,22 +78,34 @@ namespace Shesha.DynamicEntities.Distribution
                 PropertiesMD5 = entityConfig.PropertiesMD5,
                
                 ViewConfigurations = MapViewConfigurations(entityConfig),
-                Properties = await MapViewPropertiesAsync(entityConfig),
+                Properties = await MapPropertiesAsync(entityConfig),
+
+                Permission = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}"),
+                PermissionGet = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Get"),
+                PermissionCreate = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Create"),
+                PermissionUpdate = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Update"),
+                PermissionDelete = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Delete"),
             };
 
             return result;
         }
         
-        private async Task<List<DistributedEntityConfigProperty>> MapViewPropertiesAsync(EntityConfig entityConfig)
+        private async Task<List<DistributedEntityConfigProperty>> MapPropertiesAsync(EntityConfig entityConfig)
         {
-            var properties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
-            return properties.Select(vc => new DistributedEntityConfigProperty { 
-                
-            }).ToList();
+            var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
+            var properties = new List<DistributedEntityConfigProperty>();
+            foreach (var dbProp in dbProperties)
+            {
+                properties.Add(await MapPropertyAsync(dbProp));
+            }
+            return properties;
         }
 
         private async Task<DistributedEntityConfigProperty> MapPropertyAsync(EntityProperty src) 
         {
+            if (src == null)
+                return null;
+            
             var property = new DistributedEntityConfigProperty();
             property.Name = src.Name;
             property.Label = src.Label;
@@ -111,6 +130,10 @@ namespace Shesha.DynamicEntities.Distribution
             property.MaxLength = src.MaxLength;
             property.RegExp = src.RegExp;
             property.ValidationMessage = src.ValidationMessage;
+
+            property.CascadeCreate = src.CascadeCreate;
+            property.CascadeUpdate = src.CascadeUpdate;
+            property.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
             foreach (var childProp in src.Properties) 
             {

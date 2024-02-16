@@ -1,7 +1,14 @@
 import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
 import React, { FC, MutableRefObject, useEffect, useMemo, useState } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
-import { Button, Checkbox, Dropdown, MenuProps, Spin } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Dropdown,
+  MenuProps,
+  Spin,
+  Tag
+} from 'antd';
 import { ClassOutlined } from '@/icons/classOutlined';
 import {
   DatabaseFilled,
@@ -16,6 +23,7 @@ import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { SectionSeparator } from '..';
+import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -247,27 +255,28 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
                   return 'Json entities';
               }
             }
-            return name;
-          }}
-          onRenterItem={(item) => {
-            return (
-              <>
-                {item.suppress ? (
-                  <EyeInvisibleOutlined />
-                ) : item.source === MetadataSourceType.UserDefined ? (
-                  <UserAddOutlined />
-                ) : item.notImplemented ? (
-                  <QuestionCircleOutlined />
-                ) : item.entityConfigType === EntityConfigType.Interface ? (
-                  <InterfaceOutlined />
-                ) : (
-                  <ClassOutlined />
-                )}
-                <span className="sha-component-title"> {item.className}</span>
-              </>
-            );
-          }}
-        />
+          }
+          return name;
+        }}
+        onRenterItem={(item) => {
+          const versionStatus = ConfigurationItemVersionStatusMap[item.versionStatus];
+          return <>
+            {item.suppress
+              ? <EyeInvisibleOutlined />
+              : item.source === MetadataSourceType.UserDefined
+                ? <UserAddOutlined />
+                : item.notImplemented
+                  ? <QuestionCircleOutlined />
+                  : item.entityConfigType === EntityConfigType.Interface
+                    ? <InterfaceOutlined />
+                    : <ClassOutlined />
+            }<span>  </span>
+            <Tag color={versionStatus.color}>{versionStatus.text}</Tag>
+            <span className='sha-component-title'> {item.className}</span>
+          </>;
+        }}
+      />
+
       </div>
     </Spin>
   );

@@ -76,7 +76,7 @@ namespace Shesha.ConfigurationItems.Distribution
             {
                 var parts = entry.FullName.Split('\\', '/');
 
-                if (parts.Length == 3 || parts.Length == 4) 
+                if (!parts.Any(x => string.IsNullOrEmpty(x)) && (parts.Length == 3 || parts.Length == 4)) 
                 {
                     var containsAppKey = parts.Length == 4;
 

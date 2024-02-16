@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Shesha.Attributes
 {
     /// <summary>
-    /// This class will be used in MetadataAppSerice
+    /// This attribute is used to mark class as available for using in configurations (Forms, etc)
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class AddToMetadataAttribute: Attribute

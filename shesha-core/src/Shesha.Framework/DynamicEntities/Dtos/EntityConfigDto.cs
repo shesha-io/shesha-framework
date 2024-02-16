@@ -47,8 +47,10 @@ namespace Shesha.DynamicEntities.Dtos
         public string Name { get; set; }
         public string Label { get; set; }
 
-        public bool NotImplemented => Source != MetadataSourceType.UserDefined
-                                        && StaticContext.IocManager.Resolve<IEntityConfigurationStore>().GetOrNull(FullClassName) == null;
+        private bool? _notImplemented;
+        public bool NotImplemented => _notImplemented ??=
+            Source != MetadataSourceType.UserDefined
+            && StaticContext.IocManager.Resolve<IEntityConfigurationStore>().GetOrNull(FullClassName) == null;
 
         [JsonIgnore]
         public virtual string FullClassName => $"{Namespace}.{ClassName}";
