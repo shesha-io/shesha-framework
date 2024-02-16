@@ -140,7 +140,7 @@ export const getColumnAnchored = (anchored: string) => {
 };
 
 export const calculateTotalColumnsOnFixed = (row: Cell<any, any, any>[], direction: IAnchoredDirection) => {
-  return row?.filter(({ column }: any) => getColumnAnchored(column?.originalConfig?.anchored).direction === direction)
+  return row?.filter(({ column }: any) => getColumnAnchored(column?.anchored).direction === direction)
     ?.length;
 };
 

@@ -1,26 +1,14 @@
 import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
-import React, {
-  FC,
-  MutableRefObject,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { FC, MutableRefObject, useEffect, useMemo, useState } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
-import {
-  Button,
-  Checkbox,
-  Dropdown,
-  MenuProps,
-  Spin
-} from 'antd';
+import { Button, Checkbox, Dropdown, MenuProps, Spin } from 'antd';
 import { ClassOutlined } from '@/icons/classOutlined';
 import {
   DatabaseFilled,
   EyeInvisibleOutlined,
   LoadingOutlined,
   QuestionCircleOutlined,
-  UserAddOutlined
+  UserAddOutlined,
 } from '@ant-design/icons';
 import { EntityConfigDto, EntityConfigDtoPagedResultDto, useEntityConfigGetMainDataList } from '@/apis/entityConfig';
 import { EntityConfigType, MetadataSourceType } from '@/interfaces/metadata';
@@ -29,14 +17,12 @@ import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { SectionSeparator } from '..';
 
-
 type MenuItem = MenuProps['items'][number];
 
 export interface IEntityConfigTreeInstance {
   refresh: (id: string) => void;
   update: (item: EntityConfigDto) => void;
 }
-
 
 export interface IEntityConfigTreeProps {
   /**
@@ -49,16 +35,21 @@ export interface IEntityConfigTreeProps {
 }
 
 export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
-
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaEntityConfig.toolbox.objects.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaEntityConfig.toolbox.objects.search', '');
   const [groupBy, setGroupBy] = useLocalStorage('shaEntityConfig.toolbox.objects.grouping', '-');
   const [showSuppress, setShowSuppress] = useLocalStorage('shaEntityConfig.toolbox.objects.showSuppress', false);
-  const [showNotImplemented, setShowNotImplemented] = useLocalStorage('shaEntityConfig.toolbox.objects.showNotImplemented', false);
+  const [showNotImplemented, setShowNotImplemented] = useLocalStorage(
+    'shaEntityConfig.toolbox.objects.showNotImplemented',
+    false
+  );
 
   const [response, setResponse] = useState<EntityConfigDtoPagedResultDto>();
 
-  const fetcher = useEntityConfigGetMainDataList({ queryParams: { maxResultCount: 10000, sorting: 'className' }, lazy: true });
+  const fetcher = useEntityConfigGetMainDataList({
+    queryParams: { maxResultCount: 10000, sorting: 'className' },
+    lazy: true,
+  });
   const { loading: isFetchingData, error: fetchingDataError, data: fetchingDataResponse } = fetcher;
 
   const [objectId, setObjectId] = useState(null);
@@ -67,8 +58,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   const form = useForm(false);
 
   useEffect(() => {
-    if (props.defaultSelected && props.defaultSelected !== objectId)
-      setObjectId(props.defaultSelected);
+    if (props.defaultSelected && props.defaultSelected !== objectId) setObjectId(props.defaultSelected);
   }, [props.defaultSelected]);
 
   useEffect(() => {
@@ -104,8 +94,8 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   const items = useMemo(() => {
     let list = response?.items ? response.items : [];
-    list = !showSuppress ? list.filter(item => !item.suppress) : list;
-    list = !showNotImplemented ? list.filter(item => !item.notImplemented) : list;
+    list = !showSuppress ? list.filter((item) => !item.suppress) : list;
+    list = !showNotImplemented ? list.filter((item) => !item.notImplemented) : list;
     return list;
   }, [response, showSuppress, showNotImplemented]);
 
@@ -118,74 +108,104 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   const update = (item: EntityConfigDto) => {
     setResponse((prev) => {
-      return { ...prev, items: prev.items.map(i => i.id === objectId ? { ...i, className: item.className, suppress: item.suppress, module: item.module } : i) };
+      return {
+        ...prev,
+        items: prev.items.map((i) =>
+          i.id === objectId ? { ...i, className: item.className, suppress: item.suppress, module: item.module } : i
+        ),
+      };
     });
   };
 
   if (props.entityConfigTreeRef) {
     props.entityConfigTreeRef.current = {
       refresh: refresh,
-      update: update
+      update: update,
     };
   }
 
   const onChangeHandler = (item: EntityConfigDto) => {
     setObjectId(item.id);
-    if (Boolean(props.onChange))
-      props.onChange(item);
+    if (Boolean(props.onChange)) props.onChange(item);
   };
 
   const groupByMenuItems: MenuItem[] = [
     {
-      key: '1', label: 'Without grouping', onClick: () => {
+      key: '1',
+      label: 'Without grouping',
+      onClick: () => {
         setGroupBy('-');
-      }
+      },
     },
     {
-      key: '2', label: 'Group by Namespace', onClick: () => {
+      key: '2',
+      label: 'Group by Namespace',
+      onClick: () => {
         setGroupBy('namespace');
-      }
+      },
     },
     {
-      key: '3', label: 'Group by Module', onClick: () => {
+      key: '3',
+      label: 'Group by Module',
+      onClick: () => {
         setGroupBy('module');
-      }
+      },
     },
     {
-      key: '4', label: 'Group by Source', onClick: () => {
+      key: '4',
+      label: 'Group by Source',
+      onClick: () => {
         setGroupBy('source');
-      }
+      },
     },
     {
-      key: '5', label: 'Group by Type', onClick: () => {
+      key: '5',
+      label: 'Group by Type',
+      onClick: () => {
         setGroupBy('entityConfigType');
-      }
-    },{
-      key:'6', label: <div>
-        <SectionSeparator />
-        <div className="sha-page-heading">
-        <div className="sha-page-heading-left">
-           <Checkbox checked={showSuppress} onChange={(e) => {
-            setShowSuppress(e.target.checked);
-          }} /> Show suppressed entities
+      },
+    },
+    {
+      key: '6',
+      label: (
+        <div>
+          <SectionSeparator />
+          <div className="sha-page-heading">
+            <div className="sha-page-heading-left">
+              <Checkbox
+                checked={showSuppress}
+                onChange={(e) => {
+                  setShowSuppress(e.target.checked);
+                }}
+              />{' '}
+              Show suppressed entities
+            </div>
+          </div>
+          <div className="sha-page-heading" style={{ borderBottom: 'unset' }}>
+            <div className="sha-page-heading-left">
+              <Checkbox
+                checked={showNotImplemented}
+                onChange={(e) => {
+                  setShowNotImplemented(e.target.checked);
+                }}
+              />{' '}
+              Show not implemented entities
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="sha-page-heading" style={{borderBottom:'unset'}}>
-        <div className="sha-page-heading-left">
-         <Checkbox checked={showNotImplemented} onChange={(e) => {
-            setShowNotImplemented(e.target.checked);
-          }} />   Show not implemented entities 
-        </div>
-      </div>
-      </div>
-  }
+      ),
+    },
   ];
 
   return (
-    <Spin spinning={isFetchingData} tip={'Fetching data...'} indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}>
-      <div className="sha-page-heading" >
-        <div className="sha-page-heading-left" >
-          <SearchBox value={searchText} onChange={setSearchText} placeholder='Search objects' />
+    <Spin
+      spinning={isFetchingData}
+      tip={'Fetching data...'}
+      indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
+    >
+      <div className="sha-page-heading">
+        <div className="sha-page-heading-left">
+          <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />
         </div>
         <div className="sha-page-heading-right">
           <Dropdown menu={{ items: groupByMenuItems }}>
@@ -195,54 +215,60 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           </Dropdown>
         </div>
       </div>
-      <div style={{height:'90vh',overflowY:'scroll'}}>
-      <GrouppedObjectsTree<EntityConfigDto>
-        items={items}
-        openedKeys={openedKeys}
-        searchText={searchText}
-        groupBy={groupBy}
-        defaultSelected={objectId}
-        isMatch={(item, searchText) => {
-          return item.className?.toLowerCase().includes(searchText?.toLowerCase())
-            || item.friendlyName?.toLowerCase().includes(searchText?.toLowerCase());
-        }}
-        setOpenedKeys={setOpenedKeys}
-        onChange={onChangeHandler}
-        onGetGroupName={(gb, name) => {
-          if (gb === 'source') {
-            switch (name.toString()) {
-              case '1': return "Application Entities";
-              case '2': return "User defined Entities";
+      <div style={{ height: '90vh', overflowY: 'scroll' }}>
+        <GrouppedObjectsTree<EntityConfigDto>
+          items={items}
+          openedKeys={openedKeys}
+          searchText={searchText}
+          groupBy={groupBy}
+          defaultSelected={objectId}
+          isMatch={(item, searchText) => {
+            return (
+              item.className?.toLowerCase().includes(searchText?.toLowerCase()) ||
+              item.friendlyName?.toLowerCase().includes(searchText?.toLowerCase())
+            );
+          }}
+          setOpenedKeys={setOpenedKeys}
+          onChange={onChangeHandler}
+          onGetGroupName={(gb, name) => {
+            if (gb === 'source') {
+              switch (name.toString()) {
+                case '1':
+                  return 'Application Entities';
+                case '2':
+                  return 'User defined Entities';
+              }
             }
-          }
-          if (gb === 'entityConfigType') {
-            switch (name.toString()) {
-              case '1': return "Entities";
-              case '2': return "Json entities";
+            if (gb === 'entityConfigType') {
+              switch (name.toString()) {
+                case '1':
+                  return 'Entities';
+                case '2':
+                  return 'Json entities';
+              }
             }
-          }
-          return name;
-        }}
-        onRenterItem={(item) => {
-          return <>
-            {item.suppress
-              ? <EyeInvisibleOutlined />
-              : item.source === MetadataSourceType.UserDefined
-                ? <UserAddOutlined />
-                : item.notImplemented
-                  ? <QuestionCircleOutlined />
-                  : item.entityConfigType === EntityConfigType.Interface
-                    ? <InterfaceOutlined />
-                    : <ClassOutlined />
-            }
-            <span className='sha-component-title'> {item.className}</span>
-          </>;
-        }}
-      />
-
+            return name;
+          }}
+          onRenterItem={(item) => {
+            return (
+              <>
+                {item.suppress ? (
+                  <EyeInvisibleOutlined />
+                ) : item.source === MetadataSourceType.UserDefined ? (
+                  <UserAddOutlined />
+                ) : item.notImplemented ? (
+                  <QuestionCircleOutlined />
+                ) : item.entityConfigType === EntityConfigType.Interface ? (
+                  <InterfaceOutlined />
+                ) : (
+                  <ClassOutlined />
+                )}
+                <span className="sha-component-title"> {item.className}</span>
+              </>
+            );
+          }}
+        />
       </div>
- 
-  
     </Spin>
   );
 };

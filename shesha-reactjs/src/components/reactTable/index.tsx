@@ -25,6 +25,7 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { useDataTableStore } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
+import { DataTableColumn } from '../dataTable/interfaces';
 
 interface IReactTableState {
   allRows: any[];
@@ -160,7 +161,14 @@ export const ReactTable: FC<IReactTableProps> = ({
       });
     }
 
-    return localColumns;
+    return localColumns.sort((a: DataTableColumn<any>, b: DataTableColumn<any>) => {
+      if (a.anchored === 'left') return -1;
+      if (a.anchored === 'right') return 1;
+      if (b.anchored === 'left') return 1;
+      if (b.anchored === 'right') return -1;
+
+      return 0;
+    });
   }, [allColumns, allowReordering, useMultiSelect]);
 
   const getColumnAccessor = (cid) => {
@@ -415,10 +423,10 @@ export const ReactTable: FC<IReactTableProps> = ({
                           }) as Array<number>
                         )?.reduce((acc, curr) => (acc as number) + curr, 0);
                         rightColumn.shadowPosition =
-                        headerGroup?.headers?.length -
-                        headerGroup?.headers?.filter(
-                          (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'right'
-                        ).length;
+                          headerGroup?.headers?.length -
+                          headerGroup?.headers?.filter(
+                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'right'
+                          ).length;
                       } else if (anchored?.direction === 'left') {
                         leftColumn.shift = (
                           rows[0]?.cells?.slice(0, index)?.map((col) => {
@@ -428,15 +436,11 @@ export const ReactTable: FC<IReactTableProps> = ({
                           }) as Array<number>
                         )?.reduce((acc, curr) => (acc as number) + curr, 0);
 
-
                         leftColumn.shadowPosition =
-                        headerGroup?.headers?.filter(
-                          (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'left'
-                        ).length - 1;
+                          headerGroup?.headers?.filter(
+                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'left'
+                          ).length - 1;
                       }
-
-                   
-                      
                     }
 
                     const direction = anchored?.direction === 'left' ? 'left' : 'right';
@@ -445,16 +449,11 @@ export const ReactTable: FC<IReactTableProps> = ({
 
                     const { key, ...headerProps } = { ...column.getHeaderProps(column.getSortByToggleProps()) };
 
-
                     delete headerProps.style.position;
 
-            
                     const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
 
-
                     const hasShadow = numOfFixed === index && anchored?.isFixed;
-
-                   
 
                     return (
                       <div
@@ -469,6 +468,8 @@ export const ReactTable: FC<IReactTableProps> = ({
                         style={{
                           ...headerProps?.style,
                           [direction]: shiftedBy,
+                          backgroundColor: 'white',
+                          borderBottom: '1px solid #f0f0f0',
                         }}
                       >
                         {column.render('Header')}
