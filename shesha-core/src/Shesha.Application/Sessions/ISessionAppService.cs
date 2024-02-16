@@ -7,7 +7,7 @@ namespace Shesha.Sessions
 {
     public interface ISessionAppService : IApplicationService
     {
-        Task<GetCurrentLoginInformationsOutput> GetCurrentLoginInformations();
+        Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfo();
 
         Task<List<string>> GetGrantedShaRoles();
     }
