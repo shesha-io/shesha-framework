@@ -220,10 +220,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .sha-link {
               color: white;
             }
-
             background: ${token.colorPrimary};
             color: white;
+            
           }
+        
 
           .${prefixCls}-form-item {
             .${prefixCls}-form-item-row {
@@ -304,6 +305,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             position: sticky;
             z-index: 10;
             opacity: 1;
+             .sha-link {
+              color: ${token.colorPrimary};
+            
+            }
           }
           &.${relativeColumn} {
             display: inline-block;
