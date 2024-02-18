@@ -162,10 +162,10 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
 
     return localColumns.sort((a: DataTableColumn<any>, b: DataTableColumn<any>) => {
-      if (a.anchored === 'left') return -1;
-      if (a.anchored === 'right') return 1;
-      if (b.anchored === 'left') return 1;
-      if (b.anchored === 'right') return -1;
+      if (a.anchored === 'left' && b.anchored !== 'left') return -1;
+      if (a.anchored === 'right' && b.anchored !== 'right') return 1;
+      if (b.anchored === 'left' && a.anchored !== 'left') return 1;
+      if (b.anchored === 'right' && a.anchored !== 'right') return -1;
 
       return 0;
     });
