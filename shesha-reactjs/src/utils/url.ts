@@ -19,11 +19,13 @@ export const getUrlWithoutQueryParams = (url: string): string => {
 };
 
 export const getQueryString = (url: string) => {
-  const idx = url?.indexOf('?') || -1;
+  try {
+    const idx = url?.indexOf('?');
 
-  return idx === -1
-    ? undefined
-    : url.substring(idx);
+    return typeof idx !== 'number' || idx === -1 ? undefined : url.substring(idx);
+  } catch (_e) {
+    return undefined;
+  }
 };
 
 export type QueryStringParams = ParsedQs;
