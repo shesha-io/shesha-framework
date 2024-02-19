@@ -1,34 +1,35 @@
 # Release Notes
 ## Enhancements
-- Introduction of a Quick Edit form builder, now opening in a large dialog box instead of a new tab.
-- Allowing users to define the width of the datalist create dialog.
-- Updating to the latest versions of Ant Design (antD) and Next.js.
+- Freezing of columns pane
+- Implementation of export/import of entity configurations
+- Allowing background color on a cell to be specified on the dataTable column
+- Updating getCurrentLoginInfo
+- Removing use of raw values on entity picker and dropdown and replacing it with value format property
+- Storybook cleanup
+- Adding a property to hide/show download zip file folder on fileList
+- Showing the dataList action icons on hover
 
 ## Bug Fixes
-- Resolving issues with the time picker range and hour properties.
-- Setting specific widths for CRUD operations column and action column.
-- Addressing the problem where the same form is displayed for creating and listing when using view type on datalist.
-- Fixing rendering issues related to custom hidden state and edit mode with if statements.
-- Correcting the edit mode behavior on the subform.
-- Resolving the issue where the ChildEntitiesTagGroup component sends null values.
-- Ensuring datalist becomes editable when rendering the component within a layout component.
-- Fixing the failure to prepopulate relevant additional fields for components requiring them upon selection.
-- Rectifying the problem where subform data comes empty when rendered on the datalist.
-- Fixing the Entity Picker component failing to update the value when rendered on the datalist.
-- Addressing the datalist form selection mode expression hiding the create form field.
+- Primary theme color not updating all required components
+- Add [AddToMetadata] attribute: This attribute can mainly be used to forcibly add a DTO that has not been utilized on any service in the application, to the list of models available to be used on the frontend.
+- Components properties within quick edit subform were always disabled
+- Formatting nested entities within a table
+- Data list inherit fails to respond when parent form enters the edit mode
+- Wizard freezing and crashing in quick edit designer
+- Removed the divider line within dataList when it's empty
+- Showing components added within the quick edit
+- ChildTagGroup fails to clear the previous captured information
+- Updating tab and buttonGroup to have editMode instead of disabled
+- Navigation handle on custom buttons after executing script
+- Logging query variable
 
 ## UX Changes
-- Addition of a new styling component on layout components.
-- Displaying the delete button only on the selected widget.
+- Showing dotted lines on hover
+- Updating section separator within all components to be collapsible
+- Independent scrollers
 
 ## Configuration Changes
-- Removed the label field from new forms.
-- Added tooltips to key fields.
-- Adjustments to the template dropdown on new forms.
-- Moved the entity field after the template.
-- Adjustments to the Entity dropdown on new forms.
-- Default Form to currently edited module.
-- Updated the label and component span
+- Added default base configuration to the key base entities
+- Updated the reset password link
 
-## Breaking Changes
-- Due to recent changes, some old forms may not render as expected, requiring reconfiguration.
+
