@@ -167,11 +167,12 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     .add<IEntityPickerComponentProps>(6, (prev) => migrateReadOnly(prev))
     .add<IEntityPickerComponentProps>(7, (prev, context) => ({
       ...prev,
-      valueFormat: context.isNew
-        ? 'simple'
-        : prev['useRawValue'] === true 
-          ? 'simple' 
-          : 'entityReference',
+      valueFormat: prev.valueFormat  ??
+        context.isNew
+          ? 'simple'
+          : prev['useRawValue'] === true 
+            ? 'simple' 
+            : 'entityReference',
     }))
   ,
   settingsFormMarkup: entityPickerSettings,
