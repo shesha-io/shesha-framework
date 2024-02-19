@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Abp.UI;
+using Boxfusion.SheshaFunctionalTests.Common.Application.Services.Dto;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
 using Microsoft.AspNetCore.Mvc;
@@ -91,6 +92,18 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                                                             return result;
                                                         }));
             return memberPayments.ToList();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DynamicDto<MembershipPayment, Guid>> CreateMemberPayment(MembershipPaymentDto input)
+        {
+            var memberPayment = ObjectMapper.Map<MembershipPayment>(input);
+            await _membershipPaymentRepo.InsertAsync(memberPayment);
+            return await MapToDynamicDtoAsync<MembershipPayment, Guid>(memberPayment);
         }
     }
 }
