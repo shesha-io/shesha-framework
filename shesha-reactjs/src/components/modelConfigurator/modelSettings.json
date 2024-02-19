@@ -95,7 +95,7 @@
               "labelAlign": "right",
               "parentId": "X932kk2zE7XZCt3PB8aeq",
               "hidden": false,
-
+              "valueFormat": "simple",
               "isDynamic": false,
               "description": "",
               "validate": {},
