@@ -18,10 +18,10 @@ export function storedFilesReducer(
     case StoredFileActionEnums.DownloadFileError:
     case StoredFileActionEnums.FetchFileInfoSuccess:
     case StoredFileActionEnums.DeleteFileRequest:
-    case StoredFileActionEnums.DeleteFileError:
     case StoredFileActionEnums.FetchFileInfoRequest:
     case StoredFileActionEnums.FetchFileInfoError:
     case StoredFileActionEnums.UploadFileRequest:
+    case StoredFileActionEnums.UploadFileError:
     case StoredFileActionEnums.UploadFileSuccess:
     case StoredFileActionEnums.UploadFileError:
     case StoredFileActionEnums.FileViewRequest:
@@ -34,13 +34,20 @@ export function storedFilesReducer(
         ...payload,
       };
 
-    case StoredFileActionEnums.DeleteFileSuccess: {
+    case StoredFileActionEnums.DeleteFileSuccess: 
       return {
         ...state,
         fileInfo: null,
       };
+    case StoredFileActionEnums.DeleteFileError: {
+      if (state.fileInfo?.status === 'error')
+        return {
+          ...state,
+          fileInfo: null,
+        };
+      
+      return state;
     }
-
     default: {
       return state;
     }

@@ -36,6 +36,7 @@ import {
   StoredFilesStateContext,
 } from './contexts';
 import { storedFilesReducer } from './reducer';
+import { message } from 'antd';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -171,6 +172,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           });
       })
       .catch((e) => {
+        message.error(`File upload failed. Propably file size it too big`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
       });
@@ -184,8 +186,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     dispatch(deleteFileSuccessAction(fileIdToDelete));
   };
 
-  const deleteFileError = () => {
-    dispatch(deleteFileErrorAction());
+  const deleteFileError = (fileIdToDelete: string) => {
+    dispatch(deleteFileErrorAction(fileIdToDelete));
   };
 
   const deleteFile = (fileIdToDelete: string) => {
@@ -196,7 +198,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         deleteFileSuccess(fileIdToDelete);
         if (typeof addDelayedUpdate === 'function') removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
       })
-      .catch(() => deleteFileError());
+      .catch(() => deleteFileError(fileIdToDelete));
   };
 
   //#endregion
