@@ -136,8 +136,16 @@
       "id": "7cYicDJe6G4QZySqcHoIN",
       "type": "textField",
       "propertyName": "dataFormat",
-      "label": "Date format",
-      "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'date' || getSettingValue(data?.dataType) === 'date-time');", "_mode": "code", "_value": false},
+      "label": {
+        "_code": "return getSettingValue(data?.dataType) === 'date' ? 'Date format' : getSettingValue(data?.dataType) === 'date-time' ? 'Date time format' : 'Time format';",
+        "_mode": "code",
+        "_value": "Date format"
+      },
+      "hidden": {
+        "_code": "return !(getSettingValue(data?.dataType) === 'date' || getSettingValue(data?.dataType) === 'date-time' || getSettingValue(data?.dataType) === 'time');",
+        "_mode": "code",
+        "_value": false
+      },
       "description": "Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/"
     },
     {

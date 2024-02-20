@@ -418,12 +418,12 @@ namespace Shesha.DynamicEntities
         {
             dst.Name = src.Path;
             dst.DataType = src.DataType;
-            dst.DataFormat = src.DataFormat;
             dst.EntityType = src.EntityTypeShortAlias;
             dst.ReferenceListName = src.ReferenceListName;
             dst.ReferenceListModule = src.ReferenceListModule;
             dst.IsFrameworkRelated = src.IsFrameworkRelated;
-            
+
+            dst.DataFormat = src.DataFormat.GetDefaultIfEmpty(dst.DataFormat);
             dst.Min = src.Min.GetDefaultIfEmpty(dst.Min);
             dst.Max = src.Max.GetDefaultIfEmpty(dst.Max);
             dst.MinLength = src.MinLength.GetDefaultIfEmpty(dst.MinLength);
