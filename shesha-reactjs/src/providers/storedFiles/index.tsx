@@ -44,6 +44,10 @@ export interface IStoredFilesProviderProps {
   filesCategory?: string;
   propertyName?: string;
   baseUrl?: string;
+  
+  // used for requered field validation
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -63,6 +67,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   filesCategory,
   propertyName,
   baseUrl,
+  
+  // used for requered field validation
+  onChange,
+  value = null
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -94,6 +102,12 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   });
 
   const { mutate: uploadFileHttp } = useMutate();
+
+  useEffect(() => {
+    const val = state.fileList?.length > 0 ? 'filled' : null;
+    if (typeof onChange === 'function' && value != val)
+      onChange(val);
+  }, [state.fileList])
 
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {

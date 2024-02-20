@@ -70,28 +70,36 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <StoredFilesProvider
-          ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-          ownerType={
-            Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
-          }
-          ownerName={model.ownerName}
-          filesCategory={model.filesCategory}
-          baseUrl={backendUrl}
-        >
-          <CustomFile
-            isStub={formMode === 'designer'}
-            allowAdd={enabled && model.allowAdd}
-            allowDelete={enabled && model.allowDelete}
-            allowReplace={enabled && model.allowReplace}
-            allowRename={enabled && model.allowRename}
-            allowedFileTypes={model.allowedFileTypes}
-            maxHeight={model.maxHeight}
-            isDragger={model?.isDragger}
-            onFileListChanged={onFileListChanged}
-            downloadZip={model.downloadZip}
-          />
-        </StoredFilesProvider>
+        {(value, onChange) => {
+          return (
+            <StoredFilesProvider
+              ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+              ownerType={
+                Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
+              }
+              ownerName={model.ownerName}
+              filesCategory={model.filesCategory}
+              baseUrl={backendUrl}
+              
+              // used for requered field validation
+              onChange={onChange}
+              value={value}
+            >
+              <CustomFile
+                isStub={formMode === 'designer'}
+                allowAdd={enabled && model.allowAdd}
+                allowDelete={enabled && model.allowDelete}
+                allowReplace={enabled && model.allowReplace}
+                allowRename={enabled && model.allowRename}
+                allowedFileTypes={model.allowedFileTypes}
+                maxHeight={model.maxHeight}
+                isDragger={model?.isDragger}
+                onFileListChanged={onFileListChanged}
+                downloadZip={model.downloadZip}
+              />
+            </StoredFilesProvider>
+          );
+        }}
       </ConfigurableFormItem>
     );
   },
