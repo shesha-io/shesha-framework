@@ -61,9 +61,9 @@ export const deleteFileSuccessAction = createAction<IStoredFilesStateContext, st
   StoredFilesActionEnums.DeleteFileSuccess,
   (fileIdToDelete) => ({ fileIdToDelete })
 );
-export const deleteFileErrorAction = createAction<IStoredFilesStateContext>(
+export const deleteFileErrorAction = createAction<IStoredFilesStateContext, string>(
   StoredFilesActionEnums.DeleteFileError,
-  () => ({})
+  (fileIdToDelete) => ({ fileIdToDelete })
 );
 
 export const dowloadZipRequestAction = createAction<IStoredFilesStateContext>(
