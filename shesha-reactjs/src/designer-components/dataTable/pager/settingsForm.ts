@@ -43,7 +43,7 @@ export const getSettings = (data: any) =>
           components: []
       },
       content: {
-          id: '1BCC52E8-FD3B-4309-FE9B-099CDB729441',
+          id: '8A3F3517-52D0-4B7F-BDC6-EFA1838A9421',
           components: new DesignerToolbarSettings()
     .addCheckbox({
       id: 'ff14eada-10f7-4470-8db2-52b543d9d03f',
