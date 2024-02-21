@@ -105,9 +105,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   useEffect(() => {
     const val = state.fileList?.length > 0 ? 'filled' : null;
-    if (typeof onChange === 'function' && value != val)
+    if (typeof onChange === 'function' && value !== val)
       onChange(val);
-  }, [state.fileList])
+  }, [state.fileList]);
 
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
