@@ -31,11 +31,11 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
     return (
       <ConfigurableFormItem model={model} valuePropName="checked" initialValue={model?.defaultValue}>
         {(value, onChange) => {
-           return model.readOnly ? (
-             <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
-           ) : (
-             <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChange} />
-           );
+          return model.readOnly ? (
+              <ReadOnlyDisplayFormItem type="switch" disabled={model.readOnly} checked={value} />
+            ) : (
+              <Switch className="sha-switch" disabled={model.readOnly} style={style} size={size as SwitchSize} checked={value} onChange={onChange} />
+            );
         }}
       </ConfigurableFormItem>
     );
