@@ -208,7 +208,7 @@ const DataTableWithMetadataProvider: FC<PropsWithChildren<IDataTableProviderProp
 
   return props.sourceType === 'Entity' && modelType
     ? <MetadataProvider id={props.userConfigId} modelType={modelType}>{props.children}</MetadataProvider>
-    : <>{props.children}</>;
+    : <MetadataProvider id={props.userConfigId} modelType={""}>{props.children}</MetadataProvider>;
 };
 
 const sortingItems2ColumnSorting = (items: ISortingItem[]): IColumnSorting[] => {
