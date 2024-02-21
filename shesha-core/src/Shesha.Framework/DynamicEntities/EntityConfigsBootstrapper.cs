@@ -418,12 +418,11 @@ namespace Shesha.DynamicEntities
         {
             dst.Name = src.Path;
             dst.DataType = src.DataType;
-            dst.DataFormat = src.DataFormat;
             dst.EntityType = src.EntityTypeShortAlias;
             dst.ReferenceListName = src.ReferenceListName;
             dst.ReferenceListModule = src.ReferenceListModule;
             dst.IsFrameworkRelated = src.IsFrameworkRelated;
-            
+
             dst.Min = src.Min.GetDefaultIfEmpty(dst.Min);
             dst.Max = src.Max.GetDefaultIfEmpty(dst.Max);
             dst.MinLength = src.MinLength.GetDefaultIfEmpty(dst.MinLength);
@@ -434,7 +433,10 @@ namespace Shesha.DynamicEntities
             dst.ReadOnly = src.Readonly || dst.ReadOnly;
             dst.RegExp = src.RegExp.GetDefaultIfEmpty(dst.RegExp);
 
-            // get validation message from hardcoded property if empty
+            // leave Data Format from DB property if exists because number format is always hardcoded
+            dst.DataFormat = dst.DataFormat.GetDefaultIfEmpty(src.DataFormat);
+
+            // leave validation message from DB property if exists
             // To allow change validation message even it is hardcoded
             dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
             
