@@ -31,3 +31,11 @@ export const DefaultDynmicPage = addStory(Template, {
 export const BackgroundDataTable = addStory(Template, {
   formId: { name: 'colorback-table', module: 'TestModule' },
 });
+
+export const RefListStatusTag = addStory(Template, {
+  formId: { name: 'status-component-reflist-detailsv1', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+  id: '9cc09c5e-b83a-45f3-8352-1467567b5da3',
+});
+
+
+

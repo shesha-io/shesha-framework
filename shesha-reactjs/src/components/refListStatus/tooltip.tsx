@@ -23,15 +23,18 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
         <>
           {popReflistName && (
             <>
-              <span>{currentStatus?.item}</span>
+              <span>{currentStatus?.item?.toUpperCase()}</span>
               <br />
             </>
           )}
-          <span>{currentStatus.description}</span>
+          <span>{currentStatus.description?.toUpperCase()}</span>
         </>
       }
     >
+      <>
       {children}
+      </>
+     
     </Tooltip>
   ) : (
     <>{children}</>
