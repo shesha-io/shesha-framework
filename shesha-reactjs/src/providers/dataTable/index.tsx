@@ -208,6 +208,7 @@ const DataTableWithMetadataProvider: FC<PropsWithChildren<IDataTableProviderProp
 
   return props.sourceType === 'Entity' && modelType
     ? <MetadataProvider id={props.userConfigId} modelType={modelType}>{props.children}</MetadataProvider>
+    // use metadata provider with empty model to reset metadata (clear property list for column editor)
     : <MetadataProvider id={props.userConfigId} modelType={""}>{props.children}</MetadataProvider>;
 };
 
