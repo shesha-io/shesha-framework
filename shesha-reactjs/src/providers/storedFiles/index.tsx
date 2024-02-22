@@ -36,6 +36,7 @@ import {
   StoredFilesStateContext,
 } from './contexts';
 import { storedFilesReducer } from './reducer';
+import { message } from 'antd';
 export interface IStoredFilesProviderProps {
   ownerId: string;
   ownerType: string;
@@ -43,6 +44,10 @@ export interface IStoredFilesProviderProps {
   filesCategory?: string;
   propertyName?: string;
   baseUrl?: string;
+  
+  // used for requered field validation
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 const fileReducer = (data: IStoredFile): IStoredFile => {
@@ -62,6 +67,10 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   filesCategory,
   propertyName,
   baseUrl,
+  
+  // used for requered field validation
+  onChange,
+  value = null
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
@@ -93,6 +102,12 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
   });
 
   const { mutate: uploadFileHttp } = useMutate();
+
+  useEffect(() => {
+    const val = state.fileList?.length > 0 ? 'filled' : null;
+    if (typeof onChange === 'function' && value !== val)
+      onChange(val);
+  }, [state.fileList]);
 
   useEffect(() => {
     if ((ownerId || '') !== '' && (ownerType || '') !== '') {
@@ -171,6 +186,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
           });
       })
       .catch((e) => {
+        message.error(`File upload failed. Propably file size it too big`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, status: 'error' }));
       });
@@ -184,8 +200,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     dispatch(deleteFileSuccessAction(fileIdToDelete));
   };
 
-  const deleteFileError = () => {
-    dispatch(deleteFileErrorAction());
+  const deleteFileError = (fileIdToDelete: string) => {
+    dispatch(deleteFileErrorAction(fileIdToDelete));
   };
 
   const deleteFile = (fileIdToDelete: string) => {
@@ -196,7 +212,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         deleteFileSuccess(fileIdToDelete);
         if (typeof addDelayedUpdate === 'function') removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
       })
-      .catch(() => deleteFileError());
+      .catch(() => deleteFileError(fileIdToDelete));
   };
 
   //#endregion

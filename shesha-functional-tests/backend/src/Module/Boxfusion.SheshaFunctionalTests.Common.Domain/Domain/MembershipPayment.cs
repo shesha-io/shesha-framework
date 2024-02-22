@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Entities.Auditing;
+using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
 using Shesha.Domain.Attributes;
 using System;
 using System.Collections.Generic;
@@ -26,5 +27,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// The date when the payment was made
         /// </summary>
         public virtual DateTime PaymentDate { get; set; }
+        /// <summary>
+        ///
+        /// </summary>
+        [ReferenceList("SheshaFunctionalTests", "PaymentType")]
+        public virtual RefListPaymentType? PaymentType { get; set; }
     }
 }

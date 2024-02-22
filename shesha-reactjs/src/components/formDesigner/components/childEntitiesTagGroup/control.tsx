@@ -140,6 +140,11 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
 
   const contextId = [parent?.subFormIdPrefix, propertyName].filter(x => !!x).join('.');
 
+  const initData = useMemo(() => {
+    return new Promise<any>(resolve => resolve({ [propertyName]: activeValue?.data }));
+  }, [propertyName, activeValue?.data]);
+
+
   return (
     <div className={styles.childEntityTagContainer}>
       {open && (
@@ -148,7 +153,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
           name={propertyName}
           description={propertyName}
           type='control'
-          initialData={new Promise<any>(resolve => resolve({ [propertyName]: activeValue?.data }))}
+          initialData={initData}
         >
           <SubFormProvider id={model.id} context={contextId} propertyName={propertyName} markup={markup} readOnly={model.readOnly}>
             <ChildEntitiesTagGroupModal
