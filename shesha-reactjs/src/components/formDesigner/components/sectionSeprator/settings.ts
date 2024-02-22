@@ -62,7 +62,7 @@ export const getSettings = (data: any) =>
         components: [],
       },
       content: {
-        id: '1BCC52E8-FD3B-4309-AD9B-099CDB729441',
+        id: 'FC8969C8-227F-4F09-90BF-82795C8E4594',
         components: new DesignerToolbarSettings()
           .addCodeEditor({
             id: 'f2504ccf-6c03-4ba4-8f89-776ec2f57b3e',
