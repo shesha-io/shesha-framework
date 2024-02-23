@@ -79,8 +79,8 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
 
           <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
             <Space>
-              <ConfigurationItemViewModeToggler />
               <AppEditModeToggler />
+              <ConfigurationItemViewModeToggler />
             </Space>
           </ProtectedContent>
         </div>

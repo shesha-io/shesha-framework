@@ -6,6 +6,8 @@ import ComponentSettingsModal from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { migrateToConfigActions } from './migrations/migrateToConfigActions';
+import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
+import { Button } from 'antd';
 
 export interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
@@ -49,7 +51,11 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
       >
         {(componentState, BlockOverlay) => (
           <div className={`sidebar ${componentState.wrapperClassName}`}>
-            <BlockOverlay />
+            <BlockOverlay>
+              <div className='sha-configurable-sidemenu-button-wrapper'>
+                <Button title='Edit sidebar menu' shape='default' icon={<RebaseEditOutlined />} />
+              </div>
+            </BlockOverlay>
 
             <SidebarMenuProvider items={componentState.settings?.items || []}>
               <SidebarMenu theme={props.theme} />

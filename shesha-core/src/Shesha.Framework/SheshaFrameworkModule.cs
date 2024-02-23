@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution;
 using Shesha.Exceptions;
@@ -35,7 +34,10 @@ namespace Shesha
         public const string ModuleName = "Shesha";
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName) { 
             FriendlyName = "Shesha Core",
-            Publisher = "Shesha" 
+            Publisher = "Shesha",
+#if DisbleEditModule
+            IsEditable = false,
+#endif
         };
 
         public SheshaFrameworkModule()
