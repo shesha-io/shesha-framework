@@ -1,34 +1,56 @@
-import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
 import { useAppConfigurator } from '@/providers';
-import SwitchToEditModeConfirmation from './switchToEditModeConfirmation';
-import SwitchToLiveModeConfirmation from './switchToLiveModeConfirmation';
-import { Button } from 'antd';
+import { message, Space, Switch } from 'antd';
+import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
+import { CheckCircleOutlined } from '@ant-design/icons';
+import { useStyles } from './styles/styles';
 
 export interface IAppEditModeTogglerProps { }
 
 export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
-  const { mode, toggleCloseEditModeConfirmation, toggleEditModeConfirmation } = useAppConfigurator();
+  const { mode, switchApplicationMode } = useAppConfigurator();
+  const { styles } = useStyles();
 
-  const content =
-    mode === 'edit' ? (
-      <>
-        <Button type="link" title="Click to close Edit Mode" onClick={() => toggleCloseEditModeConfirmation(true)}>
-          <CheckCircleOutlined />
-        </Button>
-        <SwitchToLiveModeConfirmation />
-      </>
-    ) : (
-      <>
-        <Button type="link" title="Click to launch Edit Mode" onClick={() => toggleEditModeConfirmation(true)}>
-          <EditOutlined />
-        </Button>
+  const [messageApi, contextHolder] = message.useMessage();
 
-        <SwitchToEditModeConfirmation />
-      </>
-    );
+  const toggleMode = (checked: boolean, event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    switchApplicationMode(checked ? 'edit' : 'live');
 
-  return <div className="action-icon hidden-sm-scr">{content}</div>;
+    if (checked) {
+      messageApi.destroy('editModeMessage');
+      messageApi.destroy('liveModeMessage');
+      messageApi.open({
+        key: 'editModeMessage',
+        content: `You are now in Edit Mode!`,
+        duration: 1,
+        icon: <RebaseEditOutlined />,
+        className: styles.shaConfigurableModeSwitcherMessageEdit,
+      });
+    } else {
+      messageApi.destroy('liveModeMessage');
+      messageApi.destroy('editModeMessage');
+      messageApi.open({
+        key: 'liveModeMessage',
+        content: 'You are now in Live Mode!',
+        duration: 1,
+        icon: <CheckCircleOutlined />,
+        className: styles.shaConfigurableModeSwitcherMessageLive,
+      });
+    }
+  };
+
+  return (
+    <Space>
+      {contextHolder}
+      <span className={styles.shaConfigurableModeSwitcherLabel}>{mode === 'edit' ? 'Edit Mode' : 'Live Mode'}</span>
+      <Switch className={styles.shaConfigurableModeSwitcherSwitcher}
+        title={mode === 'edit' ? 'Switch to Live mode' : 'Switch to Edit mode'}
+        checked={mode === 'edit'}
+        onChange={toggleMode}
+      />
+    </Space>
+  );
 };
 
 export default AppEditModeToggler;

@@ -3,7 +3,14 @@ import React from 'react';
 
 /* eslint-disable max-len */
 const ClassOutlinedSvg = () => (
-  <svg width="1.2em" height="1.2em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 318.188 318.188">
+  <svg 
+    width="1.2em"
+    height="1.2em"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 318.188 318.188"
+    strokeWidth={0.5}
+    stroke={'currentColor'}
+  >
     <path
       d="M123.905,232.637c-7.613,0-13.417,2.106-17.409,6.317c-3.993,4.212-5.989,10.31-5.989,18.295
         c0,8.073,2.007,14.222,6.021,18.444c4.016,4.223,9.785,6.334,17.312,6.334c7.636,0,13.434-2.1,17.394-6.301
