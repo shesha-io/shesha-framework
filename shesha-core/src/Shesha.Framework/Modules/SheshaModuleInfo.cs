@@ -28,7 +28,7 @@
         /// <summary>
         /// Is editable
         /// </summary>
-        public bool IsEditable { get; set; }
+        public bool IsEditable { get; set; } = true;
 
         /// <summary>
         /// Is root module
