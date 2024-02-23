@@ -39,10 +39,6 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 
   const {defaultModelType, readOnly, formData, onValuesChange} = model;
 
-  let formModel = useFormDesigner(false)?.formSettings?.modelType;
-  const form = useForm(false);
-  formModel = formModel ?? form?.formSettings?.modelType;
-
   const initialState: IContextPropertyAutocompleteState = {
     mode: !!formData?.context || formData?.propertyName !== formData?.componentName 
       ? 'context' 
