@@ -25,9 +25,23 @@ namespace Shesha.Sessions
             _permissionChecker = permissionChecker;
         }
 
+        [Obsolete]
         public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInformations()
         {
-            var output = new GetCurrentLoginInfoOutput {};
+            return await GetCurrentLoginInfo();
+        }
+
+        public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfo()
+        {
+            var output = new GetCurrentLoginInfoOutput
+            {
+                Application = new ApplicationInfoDto
+                {
+                    Version = AppVersionHelper.Version,
+                    ReleaseDate = AppVersionHelper.ReleaseDate,
+                    Features = new Dictionary<string, bool>()
+                }
+            };
 
             if (AbpSession.TenantId.HasValue)
             {
@@ -64,7 +78,7 @@ namespace Shesha.Sessions
             if (AbpSession.UserId.HasValue)
             {
                 var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
-                
+
                 foreach (var permissionName in allPermissionNames)
                 {
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
@@ -75,7 +89,7 @@ namespace Shesha.Sessions
             return grantedPermissions;
         }
 
-      
+
         /// <summary>
         /// I am using this method to get user roles and it is being used on login of a user and also when changing work Order Type, Please contact me(Moses) before removing it
         /// </summary>
