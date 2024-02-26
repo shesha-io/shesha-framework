@@ -112,7 +112,7 @@ stages:
       displayName: dotnet build
       inputs:
         projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
-        arguments: --configuration $(BuildParameters.configuration)
+        arguments: --configuration $(BuildParameters.configuration) -p:DefineConstants=DisbleEditModule
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:

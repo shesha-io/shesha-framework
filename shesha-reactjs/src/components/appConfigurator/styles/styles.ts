@@ -7,14 +7,51 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
     const shaForm = "sha-form";
     const shaEditViewMsg = "sha-edit-view-msg";
 
+    const shaConfigurableModeSwitcherMessageEdit = "sha-configurable-modeswitcher-message-edit";
+    //const shaConfigurableModeSwitcherMessageLive = "sha-configurable-modeswitcher-message-live";
+
+    const shaConfigurableModeSwitcherMessageLive = cx("sha-configurable-modeswitcher-message-live", css`
+      .ant-message-notice-content {
+        background-color: blue !important;
+        color: white;
+      }
+    `);
+
+    const shaConfigurableViewButtonWrapper = cx("sha-configurable-view-button-wrapper", css`
+      left: 100px;
+      top: 100px;
+    `);
+
+    const shaConfigurableModeSwitcherLabel = cx("sha-configurable-modeswitcher-label", css`
+      color: blue;
+    `);
+    const shaConfigurableModeSwitcherSwitcher = cx("sha-configurable-modeswitcher-switcher", css`
+      color: silver;
+    `);
+
     const shaAppEditMode = cx("sha-app-editmode", css`
+        .${shaConfigurableModeSwitcherMessageEdit} {
+          .ant-message-notice-content {
+            background-color: #14A38B;
+            color: white;
+          }
+        }
+
+        .sha-configurable-modeswitcher-label {
+          color: #14A38B;
+        }
+
+        .sha-configurable-modeswitcher-switcher {
+          background-color: #14A38B;
+        }
+
         .${shaConfigurableComponent} {
           position: relative;
-          border: 2px dashed #ddd;
+          //border: 2px dashed #ddd;
           min-height: 30px;
       
           &:hover {
-            border: 2px dashed #4099ff;
+            //border: 2px dashed #4099ff;
           }
       
           &.${shaConfigurableComponentSelected} {
@@ -29,6 +66,36 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
             right: 0;
             z-index: 1000;
             cursor: pointer;
+
+            .sha-configurable-logo-button-wrapper {
+              position: absolute;
+              right: -32px;
+              height: 100%;
+              vertical-align: middle;
+            }
+
+            .sha-configurable-sidemenu-button-wrapper {
+              position: fixed;
+              left: 14px;
+              bottom: 14px;
+              //position: absolute;
+              //bottom: -32px;
+              //width: 100%;
+              //text-align: center;
+            }
+
+            .sha-configurable-view-button-wrapper {
+              position: absolute;
+              left: 50px;
+              top: 50px;
+              z-index: 1001;
+            }
+
+            button {
+              background-color: #14A38B;
+              border-color: #14A38B;
+              color: white;
+            }
           }
       
           .${shaConfigurableComponentOverlay}:after {
@@ -40,7 +107,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
             left: 0;
             right: 0;
             background-color: #ddd;
-            opacity: 0.2;
+            opacity: 0.3;
           }
       
           .${shaForm} {
@@ -107,6 +174,11 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
         shaConfigurableComponentSelected,
         shaConfigurableComponentOverlay,
         shaConfigItemModeToggler,
+        shaConfigurableViewButtonWrapper,
+        shaConfigurableModeSwitcherSwitcher,
+        shaConfigurableModeSwitcherLabel,
+        shaConfigurableModeSwitcherMessageLive,
+        shaConfigurableModeSwitcherMessageEdit,
         appModesDropdown,
         shaEditViewMsg,
     };

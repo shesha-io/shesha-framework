@@ -1,14 +1,12 @@
 import React, { FC } from 'react';
-import { EditOutlined } from '@ant-design/icons';
-import { useStyles } from './styles/styles';
+import { Button } from 'antd';
+import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
 
 export const EditViewMsg: FC = () => {
-  const { styles } = useStyles();
+  
   return (
-    <div className={styles.shaEditViewMsg}>
-      <EditOutlined />
-      <h3>Edit View</h3>
-      <p>Click to edit the view</p>
+    <div className='sha-configurable-view-button-wrapper'>
+      <Button title='Edit view' shape='default' icon={<RebaseEditOutlined />} />
     </div>
   );
 };
