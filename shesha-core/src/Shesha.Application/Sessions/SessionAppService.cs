@@ -33,15 +33,7 @@ namespace Shesha.Sessions
 
         public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfo()
         {
-            var output = new GetCurrentLoginInfoOutput
-            {
-                Application = new ApplicationInfoDto
-                {
-                    Version = AppVersionHelper.Version,
-                    ReleaseDate = AppVersionHelper.ReleaseDate,
-                    Features = new Dictionary<string, bool>()
-                }
-            };
+            var output = new GetCurrentLoginInfoOutput { };
 
             if (AbpSession.TenantId.HasValue)
             {
