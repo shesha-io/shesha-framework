@@ -722,47 +722,51 @@ namespace Shesha.JsonLogic
             return Compare<T>(param, @operator.Arguments, pair => pair, 
                 pair =>
             {
-                if (IsDateTimeMember(pair.Left) && pair.Right.NodeType == ExpressionType.Constant)
+                var rightIsNullConst = pair.Right is ConstantExpression constantExpr && constantExpr.Value == null;
+                if (!rightIsNullConst) 
                 {
-                    // for datetime we strip seconds and compare as a date range: HH:mm:00 <= member <= HH:mm:59
-                    var from = ConvertDateTimeConst(pair.Right, d => d.StartOfTheMinute());
-                    var to = ConvertDateTimeConst(pair.Right, d => d.EndOfTheMinute());
+                    if (IsDateTimeMember(pair.Left) && pair.Right.NodeType == ExpressionType.Constant)
+                    {
+                        // for datetime we strip seconds and compare as a date range: HH:mm:00 <= member <= HH:mm:59
+                        var from = ConvertDateTimeConst(pair.Right, d => d.StartOfTheMinute());
+                        var to = ConvertDateTimeConst(pair.Right, d => d.EndOfTheMinute());
 
-                    return CombineExpressions<T>(new Expression[]
-                        {
-                                            SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
-                                            SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
-                        },
-                        Expression.AndAlso,
-                        param);
-                }
-                if (IsDateMember(pair.Left) && pair.Right.NodeType == ExpressionType.Constant)
-                {
-                    // date member should be compared as range: StartOfTheDay <= member <= EndOfTheDay
-                    var from = ConvertDateTimeConst(pair.Right, d => d.StartOfTheDay());
-                    var to = ConvertDateTimeConst(pair.Right, d => d.EndOfTheDay());
-
-                    return CombineExpressions<T>(new Expression[]
-                        {
-                                            SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
-                                            SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
-                        },
-                        Expression.AndAlso,
-                        param);
-                }
-                if (IsTimeMember(pair.Left) && pair.Right.NodeType == ExpressionType.Constant)
-                {
-                    // time member should be compared as range (from member:00 to member:59 seconds)
-                    var from = ConvertTimeSpanConst(pair.Right, t => t.StartOfTheMinute());
-                    var to = ConvertTimeSpanConst(pair.Right, d => d.EndOfTheMinute());
-
-                    return CombineExpressions<T>(new Expression[]
-                        {
+                        return CombineExpressions<T>(new Expression[]
+                            {
                             SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
                             SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
-                        },
-                        Expression.AndAlso,
-                        param);
+                            },
+                            Expression.AndAlso,
+                            param);
+                    }
+                    if (IsDateMember(pair.Left) && pair.Right.NodeType == ExpressionType.Constant)
+                    {
+                        // date member should be compared as range: StartOfTheDay <= member <= EndOfTheDay
+                        var from = ConvertDateTimeConst(pair.Right, d => d.StartOfTheDay());
+                        var to = ConvertDateTimeConst(pair.Right, d => d.EndOfTheDay());
+
+                        return CombineExpressions<T>(new Expression[]
+                            {
+                            SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
+                            SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
+                            },
+                            Expression.AndAlso,
+                            param);
+                    }
+                    if (IsTimeMember(pair.Left) && pair.Right.NodeType == ExpressionType.Constant)
+                    {
+                        // time member should be compared as range (from member:00 to member:59 seconds)
+                        var from = ConvertTimeSpanConst(pair.Right, t => t.StartOfTheMinute());
+                        var to = ConvertTimeSpanConst(pair.Right, d => d.EndOfTheMinute());
+
+                        return CombineExpressions<T>(new Expression[]
+                            {
+                            SafeNullable(from, pair.Left, Expression.LessThanOrEqual),
+                            SafeNullable(pair.Left, to, Expression.LessThanOrEqual),
+                            },
+                            Expression.AndAlso,
+                            param);
+                    }
                 }
 
                 ConvertEntityReferenceForEquality(param, pair);
