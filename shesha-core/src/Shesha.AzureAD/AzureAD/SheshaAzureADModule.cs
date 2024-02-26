@@ -18,7 +18,7 @@ namespace Shesha.AzureAD
         {
             FriendlyName = "Shesha Azure AD",
             Publisher = "Shesha",
-#if DisbleEditModule
+#if DisableEditModule
             IsEditable = false,
 #endif
         };

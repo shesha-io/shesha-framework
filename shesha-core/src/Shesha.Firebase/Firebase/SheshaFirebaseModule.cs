@@ -22,7 +22,7 @@ namespace Shesha
         {
             FriendlyName = "Shesha Firebase",
             Publisher = "Shesha",
-#if DisbleEditModule
+#if DisableEditModule
             IsEditable = false,
 #endif
         };

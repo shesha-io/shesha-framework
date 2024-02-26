@@ -17,7 +17,7 @@ namespace Shesha.Sms.BulkSms
         {
             FriendlyName = "Shesha BulkSMS",
             Publisher = "Shesha",
-#if DisbleEditModule
+#if DisableEditModule
             IsEditable = false,
 #endif
         };

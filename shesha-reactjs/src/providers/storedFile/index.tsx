@@ -274,7 +274,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, { propertyName });
       })
       .catch((e) => {
-        message.error(`File upload failed. Propably file size it too big`);
+        message.error(`File upload failed. Probably file size is too big`);
         console.error(e);
         dispatch(uploadFileErrorAction({ ...newFile, uid: '-1', status: 'error', error: 'uploading failed' }));
       });
