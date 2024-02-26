@@ -1,9 +1,6 @@
 import React, { FC, PropsWithChildren } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { Tooltip } from 'antd';
-import { useStyles } from './styles/styles';
-
-
 
 interface IToolTipProps {
   currentStatus: ReferenceListItemDto;
@@ -15,7 +12,7 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   showReflistName,
   children,
 }) => {
-  const {styles}=useStyles();
+
   const popReflistName = !!(!showReflistName && currentStatus?.item);
 
   const showToolTip = !!currentStatus?.description || popReflistName;
@@ -23,26 +20,21 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   return showToolTip ? (
     <Tooltip
       placement="rightTop"
-      overlayClassName={styles.shaStatusTag}
       title={
-        <>
+        <div style={{textTransform:'uppercase'}}>
           {popReflistName && (
             <>
-              <span>{currentStatus?.item?.toUpperCase()}</span>
+              <span>{currentStatus?.item}</span>
               <br />
             </>
           )}
-          <span>{currentStatus.description?.toUpperCase()}</span>
-        </>
+          <span>{currentStatus.description}</span>
+        </div>
       }
     >
-      <>
-      {children}
-      </>
-     
+      <>{children}</>
     </Tooltip>
   ) : (
     <>{children}</>
   );
 };
-
