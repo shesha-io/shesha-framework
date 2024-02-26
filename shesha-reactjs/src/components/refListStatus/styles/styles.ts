@@ -14,7 +14,6 @@ export const useStyles = createStyles(({ css, cx }) => {
           width: fit-content;
           justify-content: flex-start;
           align-items: center;
-          text-transform: uppercase;
           text-align: center;
           align-self: center;
           margin: 0px 8px !important;
