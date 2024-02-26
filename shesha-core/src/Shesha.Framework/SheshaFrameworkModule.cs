@@ -35,7 +35,7 @@ namespace Shesha
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName) { 
             FriendlyName = "Shesha Core",
             Publisher = "Shesha",
-#if DisbleEditModule
+#if DisableEditModule
             IsEditable = false,
 #endif
         };

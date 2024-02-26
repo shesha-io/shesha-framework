@@ -17,7 +17,7 @@ namespace Shesha.Sms.SmsPortal
         {
             FriendlyName = "Shesha SMS Portal",
             Publisher = "Shesha",
-#if DisbleEditModule
+#if DisableEditModule
             IsEditable = false,
 #endif
         };

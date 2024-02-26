@@ -17,7 +17,7 @@ namespace Shesha.Sms.Xml2Sms
         {
             FriendlyName = "Shesha Xml2Sms",
             Publisher = "Shesha",
-#if DisbleEditModule
+#if DisableEditModule
             IsEditable = false,
 #endif
         };

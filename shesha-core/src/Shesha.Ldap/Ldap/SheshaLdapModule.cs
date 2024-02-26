@@ -20,7 +20,7 @@ namespace Shesha.Ldap
         {
             FriendlyName = "Shesha LDAP",
             Publisher = "Shesha",
-#if DisbleEditModule
+#if DisableEditModule
             IsEditable = false,
 #endif
         };
