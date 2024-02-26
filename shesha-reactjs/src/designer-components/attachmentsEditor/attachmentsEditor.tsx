@@ -17,6 +17,7 @@ import { axiosHttp } from '@/utils/fetchers';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -69,7 +70,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     };
 
     return (
-      <ConfigurableFormItem model={model}>
+      // Add GHOST_PAYLOAD_KEY to remove field from the payload
+      // File list uses propertyName only for support Required feature
+      <ConfigurableFormItem model={{...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}`}}> 
         {(value, onChange) => {
           return (
             <StoredFilesProvider
