@@ -29,7 +29,7 @@ export const DefaultDynmicPage = addStory(Template, {
 });
 
 export const BackgroundDataTable = addStory(Template, {
-  formId: { name: 'colorback-table', module: 'TestModule' },
+  formId: { name: 'member-table-view', module: 'Shesha' },
 });
 
 export const RefListStatusTag = addStory(Template, {
