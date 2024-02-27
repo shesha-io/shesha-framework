@@ -108,7 +108,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
       {(componentState, BlockOverlay) => (
         <div className={classNames(componentState.wrapperClassName, props?.className)}>
           <BlockOverlay>
-            <EditViewMsg />
+            <EditViewMsg persistedFormProps={formProps}/>
           </BlockOverlay>
           {markup ? (
             renderWithMarkup({
