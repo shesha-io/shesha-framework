@@ -26,12 +26,12 @@ steps:
       Copy-Item 'database/*' -Destination '.' -Recurse
       Remove-Item -LiteralPath "database" -Force -Recurse
       Write-Host "Completed"
-      Write-Host "Changing version reference in packages.json to latest public version"
-      Set-Location -Path "$(System.DefaultWorkingDirectory)/shesha-starter/adminportal"
-      $filePath = "package.json"
-      $Jsonfile = Get-Content $filePath -raw | ConvertFrom-Json
-      $Jsonfile.dependencies.'@shesha-io/reactjs' = "latest"
-      ConvertTo-Json $Jsonfile -Depth 5 | Set-Content $filePath
+       # Write-Host "Changing version reference in packages.json to latest public version"
+       # Set-Location -Path "$(System.DefaultWorkingDirectory)/shesha-starter/adminportal"
+       # $filePath = "package.json"
+       # $Jsonfile = Get-Content $filePath -raw | ConvertFrom-Json
+       # $Jsonfile.dependencies.'@shesha-io/reactjs' = "latest"
+       # ConvertTo-Json $Jsonfile -Depth 5 | Set-Content $filePath
       Write-Host "Completed"      
     workingDirectory: '$(System.DefaultWorkingDirectory)/shesha-starter/'
 
