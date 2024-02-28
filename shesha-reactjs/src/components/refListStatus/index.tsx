@@ -24,7 +24,7 @@ const Icon = ({ type, ...rest }) => {
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
   const { styles } = useStyles();
-  const { value, referenceListId, showIcon, solidBackground, style, showReflistName } = props;
+  const { value, referenceListId, showIcon, solidBackground,showReflistName } = props;
 
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
 
