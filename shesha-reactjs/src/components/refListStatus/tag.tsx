@@ -5,7 +5,6 @@ import { useStyles } from './styles/styles';
 interface ITagProps {
   color: string;
   icon?: React.ReactNode;
-  style: React.CSSProperties;
 }
 
 const RefTag: FC<PropsWithChildren<ITagProps>> = ({ children, ...props }) => {
@@ -13,7 +12,7 @@ const RefTag: FC<PropsWithChildren<ITagProps>> = ({ children, ...props }) => {
   if (!children && !props?.icon) return null;
 
   return (
-    <Tag className={styles.shaStatusTag} {...props}>
+    <Tag className={styles.shaStatusTag} {...props} >
       {children}
     </Tag>
   );

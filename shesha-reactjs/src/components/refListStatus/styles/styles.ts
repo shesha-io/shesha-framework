@@ -10,8 +10,6 @@ export const useStyles = createStyles(({ css, cx }) => {
 
       .${shaStatusTag} {
         text-transform: uppercase;
-        text-align: center;
-        align-self: center;
         display: flex;
         width: fit-content;
         justify-content: flex-start;
@@ -19,6 +17,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         text-align: center;
         align-self: center;
         margin: 0px 8px !important;
+        width: 95%;
 
         .sha-help-icon {
           cursor: help;
@@ -29,15 +28,9 @@ export const useStyles = createStyles(({ css, cx }) => {
     `
   );
 
-  const toolTipContent = cx(
-    'tool-tip-content',
-    css`
-      text-transform: uppercase;
-    `
-  );
+
   return {
     shaStatusTagContainer,
     shaStatusTag,
-    toolTipContent,
   };
 });
