@@ -23,18 +23,34 @@ variables:
   containerAppRevisionImage: boxfusionregistry.azurecr.io/shesha-api-rev1-images:latest
   
 resources:
+  # sqlDatabase:
+  #   type: azure:sql:Database
+  #   properties:
+  #     resourceGroupName: ${sqlResourceGroupName}
+  #     serverName: ${sqlServerName}      
+  #     createMode: Copy
+  #     elasticPoolName: ${sqlElasticPoolName}
+  #     sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/#{databaseName}#
+  #     name: ${sqlDatabaseName}
+  #     location: southafricanorth
+  #     tags:
+  #       shesha: #{projectName}#-shesha-#{role}#-#{env}#
+
   sqlDatabase:
-    type: azure:sql:Database
+    type: azure:mssql:Database
+    name: ${sqlDatabaseName}
     properties:
-      resourceGroupName: ${sqlResourceGroupName}
-      serverName: ${sqlServerName}      
+      serverId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared
+      collation: SQL_Latin1_General_CP1_CI_AS          
       createMode: Copy
-      elasticPoolName: ${sqlElasticPoolName}
+      creationSourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/#{databaseName}#
+      elasticPoolId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/elasticPools/auto-pool          
       sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/#{databaseName}#
-      name: ${sqlDatabaseName}
-      location: southafricanorth
+      licenseType: LicenseIncluded
+      skuName: ElasticPool
       tags:
         shesha: #{projectName}#-shesha-#{role}#-#{env}#
+
   containerApp:
     type: azure-native:app:ContainerApp
     properties:
