@@ -46,7 +46,7 @@ resources:
       creationSourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/#{databaseName}#
       elasticPoolId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/elasticPools/auto-pool          
       licenseType: LicenseIncluded
-      skuName: Gen5
+      skuName: ElasticPool
       tags:
         shesha: #{projectName}#-shesha-#{role}#-#{env}#
 
