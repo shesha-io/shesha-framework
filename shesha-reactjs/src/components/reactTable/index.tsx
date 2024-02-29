@@ -10,8 +10,8 @@ import {
   useTable,
   Column,
 } from 'react-table';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Empty, Spin } from 'antd';
+import { LoadingOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Empty, Spin, Tooltip } from 'antd';
 import _ from 'lodash';
 import { IReactTableProps, OnRowsReorderedArgs } from './interfaces';
 import { nanoid } from '@/utils/uuid';
@@ -473,6 +473,11 @@ export const ReactTable: FC<IReactTableProps> = ({
                         }}
                       >
                         {column.render('Header')}
+                        {(column as any)?.columnType === 'data' && (column as any)?.description && (
+                          <Tooltip title={(column as any)?.description}>
+                            <QuestionCircleOutlined className={styles.shaTooltipIcon} />
+                          </Tooltip>
+                        )}
 
                         {/* Use column.getResizerProps to hook up the events correctly */}
                         {column.canResize && (

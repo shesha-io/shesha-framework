@@ -25,7 +25,7 @@ export type ColumnSorting = 'asc' | 'desc';
 
 export type DataFetchingMode = 'paging' | 'fetchAll';
 
-export type IAnchoredDirection = 'left' | 'right' ;
+export type IAnchoredDirection = 'left' | 'right';
 
 export interface ITableColumn {
   columnType: DatatableColumnType;
@@ -35,7 +35,8 @@ export interface ITableColumn {
   accessor: string;
   header: string;
   caption?: string;
-  
+  description?: string;
+
   isVisible: boolean; // is visible in the table (including columns selector, filter etc.)
   show?: boolean; // is visible on client
   isFilterable: boolean;
@@ -47,7 +48,7 @@ export interface ITableColumn {
 
   filterOption?: IndexColumnFilterOption;
   filter?: any;
-  
+
   name?: string;
   allowShowHide?: boolean;
   metadata?: IPropertyMetadata;
@@ -55,8 +56,7 @@ export interface ITableColumn {
   anchored?: IAnchoredDirection;
 }
 
-
-export interface IAnchoredColumnProps{
+export interface IAnchoredColumnProps {
   shift?: number;
   shadowPosition?: number;
 }
@@ -69,7 +69,7 @@ export interface CellStyleFuncArgs {
    * Cell value
    */
   value: any;
-};
+}
 export type CellStyleFunc = (args: CellStyleFuncArgs) => CSSProperties;
 export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
 
@@ -77,7 +77,7 @@ export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
   propertyName?: string;
   dataType?: ProperyDataType;
   dataFormat?: string;
-  
+
   referenceListName?: string;
   referenceListModule?: string;
   entityReferenceTypeShortAlias?: string;
@@ -88,9 +88,7 @@ export const isDataColumn = (column: ITableColumn): column is ITableDataColumn =
   return column && column.columnType === 'data';
 };
 
-export interface ITableActionColumn extends ITableColumn, IActionColumnProps {
-  
-}
+export interface ITableActionColumn extends ITableColumn, IActionColumnProps {}
 
 export interface ITableCrudOperationsColumn extends ITableColumn {}
 
@@ -214,7 +212,7 @@ export interface IPublicDataTableActions {
   exportToExcel?: () => void;
 }
 
-export interface IDataTableInstance extends IPublicDataTableActions { }
+export interface IDataTableInstance extends IPublicDataTableActions {}
 
 export type ListSortDirection = 0 | 1;
 
@@ -273,12 +271,12 @@ export interface IActionColumnProps {
   /**
    * Icon, is used for action columns
    */
-   icon?: string;
+  icon?: string;
 
-   /**
-    * Configurable action configuration
-    */
-   actionConfiguration?: IConfigurableActionConfiguration;  
+  /**
+   * Configurable action configuration
+   */
+  actionConfiguration?: IConfigurableActionConfiguration;
 }
 
 export interface ISortingItem {

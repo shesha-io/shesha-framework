@@ -26,3 +26,7 @@ export const Basic = Template.bind({});
 export const DefaultDesignerPage = addStory(Template, {
   formId: 'f08cca40-8ca8-4bae-8b4b-3603a14bb86f',
 });
+
+export const TableDesignerPage = addStory(Template, {
+  formId: '4f9f0a81-1ece-4992-937d-071fa43d5a78',
+});

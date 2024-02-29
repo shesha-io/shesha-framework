@@ -1,9 +1,24 @@
 import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
 import { ProperyDataType } from '@/interfaces/metadata';
-import { IConfigurableColumnsProps, isActionColumnProps, isDataColumnProps } from '@/providers/datatableColumnsConfigurator/models';
+import {
+  IConfigurableColumnsProps,
+  isActionColumnProps,
+  isDataColumnProps,
+} from '@/providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from '@/utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
-import { ColumnSorting, DataTableColumnDto, IColumnSorting, isDataColumn, IStoredFilter, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFilter, SortDirection } from './interfaces';
+import {
+  ColumnSorting,
+  DataTableColumnDto,
+  IColumnSorting,
+  isDataColumn,
+  IStoredFilter,
+  ITableActionColumn,
+  ITableColumn,
+  ITableDataColumn,
+  ITableFilter,
+  SortDirection,
+} from './interfaces';
 
 // Filters should read properties as camelCase ?:(
 export const hasDynamicFilter = (filters: IStoredFilter[]) => {
@@ -184,10 +199,12 @@ export const prepareColumn = (
     isSortable: false,
     allowShowHide: false,
     backgroundColor: column.backgroundColor,
+    description: column.description,
   };
 
   if (isDataColumnProps(column)) {
-    const colVisibility = userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
+    const colVisibility =
+      userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
 
     const srvColumn = column.propertyName
       ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(column.propertyName))
@@ -211,7 +228,7 @@ export const prepareColumn = (
       referenceListName: srvColumn?.referenceListName,
       referenceListModule: srvColumn?.referenceListModule,
       allowInherited: srvColumn?.allowInherited,
-
+      description: column?.description,
       allowShowHide: true,
       show: colVisibility,
       metadata: srvColumn?.metadata,
@@ -244,18 +261,15 @@ export const prepareColumn = (
  */
 export const getTableDataColumns = (columns: ITableColumn[]): ITableDataColumn[] => {
   const result: ITableDataColumn[] = [];
-  columns.forEach(col => {
-    if (isDataColumn(col))
-      result.push(col);
+  columns.forEach((col) => {
+    if (isDataColumn(col)) result.push(col);
   });
   return result;
 };
 
 export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn => {
-  const column = columns.find(c => c.id === id);
-  return isDataColumn(column)
-    ? column
-    : null;
+  const column = columns.find((c) => c.id === id);
+  return isDataColumn(column) ? column : null;
 };
 
 export const isStandardSortingUsed = (state: IDataTableStateContext): Boolean => {
@@ -268,13 +282,11 @@ export const isStandardSortingUsed = (state: IDataTableStateContext): Boolean =>
  * @returns Array of sorting column or null
  */
 const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] => {
-  if (!state.userSorting)
-    return null;
+  if (!state.userSorting) return null;
 
-  return state.userSorting.filter(s => {
-    if (!s.id)
-      return false;
-    const column = state.columns.find(c => c.id === s.id);
+  return state.userSorting.filter((s) => {
+    if (!s.id) return false;
+    const column = state.columns.find((c) => c.id === s.id);
     return column && column.isSortable;
   });
 };
@@ -283,11 +295,13 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
   switch (state.sortMode) {
     case 'standard': {
       if (groupingSupported && state.grouping && state.grouping.length > 0) {
-        const groupSorting = state.grouping.map<IColumnSorting>(item => ({ id: item.propertyName, desc: item.sorting === 'desc' }));
+        const groupSorting = state.grouping.map<IColumnSorting>((item) => ({
+          id: item.propertyName,
+          desc: item.sorting === 'desc',
+        }));
         if (state.sortMode === 'standard' && state.standardSorting.length > 0) {
-          state.standardSorting.forEach(item => {
-            if (!groupSorting.find(c => c.id === item.id))
-              groupSorting.push(item);
+          state.standardSorting.forEach((item) => {
+            if (!groupSorting.find((c) => c.id === item.id)) groupSorting.push(item);
           });
         }
         return groupSorting;
