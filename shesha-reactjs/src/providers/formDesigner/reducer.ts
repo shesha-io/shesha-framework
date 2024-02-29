@@ -113,7 +113,14 @@ const reducer = handleActions<IFormDesignerStateContext, any>(
         payload: { propertyMetadata, index, containerId },
       } = action;
 
-      const formComponent = createComponentModelForDataProperty(state.toolboxComponentGroups, propertyMetadata);
+      const formComponent = createComponentModelForDataProperty(state.toolboxComponentGroups, propertyMetadata,
+        (fc, tc) => {
+          return upgradeComponent(fc, tc, state.formSettings, {
+            allComponents: state.allComponents,
+            componentRelations: state.componentRelations,
+          }, true);
+        }
+      );
       if (!Boolean(formComponent)) return state;
 
       formComponent.parentId = containerId; // set parent

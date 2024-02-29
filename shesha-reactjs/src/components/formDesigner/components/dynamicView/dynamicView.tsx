@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { useForm } from '@/providers/form';
-import { createComponentModelForDataProperty } from '@/providers/form/utils';
+import { createComponentModelForDataProperty, upgradeComponent } from '@/providers/form/utils';
 import { camelcaseDotNotation } from '@/utils/string';
 import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
 import { useMetadata } from '@/providers/metadata';
@@ -15,7 +15,7 @@ export interface DynamicViewProps extends IConfigurableFormComponent {
 export const DynamicView: FC<DynamicViewProps> = (model) => {
     const currentMeta = useMetadata(false)?.metadata;
 
-    const { allComponents } = useForm();
+    const { allComponents, componentRelations, formSettings } = useForm();
     const toolboxComponentGroups = useFormDesignerComponentGroups();
 
     const staticComponents = useMemo<IConfigurableFormComponent[]>(() => {
@@ -42,7 +42,15 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
 
     const dynamicComponents = useMemo(() => {
         const components = propsToRender.map(prop => {
-            const component = createComponentModelForDataProperty(toolboxComponentGroups, prop);
+            const component = createComponentModelForDataProperty(toolboxComponentGroups, prop,
+              (fc, tc) => {
+                return upgradeComponent(fc, tc, formSettings, {
+                  allComponents: allComponents,
+                  componentRelations: componentRelations,
+                }, true);
+              }
+            );
+
             if (component)
                 component.isDynamic = true;
             return component;

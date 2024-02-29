@@ -1254,7 +1254,11 @@ export const getDefaultFormMarkup = (type: ViewType = 'blank') => {
 };
 export const createComponentModelForDataProperty = (
   components: IToolboxComponentGroup[],
-  propertyMetadata: IPropertyMetadata
+  propertyMetadata: IPropertyMetadata,
+  migrator?: (
+    componentModel: IConfigurableFormComponent,
+    toolboxComponent: IToolboxComponent<any>
+  ) => IConfigurableFormComponent
 ): IConfigurableFormComponent => {
   const toolboxComponent = findToolboxComponent(
     components,
@@ -1285,6 +1289,8 @@ export const createComponentModelForDataProperty = (
     validate: {},
   };
   if (toolboxComponent.initModel) componentModel = toolboxComponent.initModel(componentModel);
+
+  if (toolboxComponent.migrator && migrator) componentModel = migrator(componentModel, toolboxComponent);
 
   componentModel = listComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 

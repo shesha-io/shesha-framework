@@ -26,7 +26,6 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
       color: blue;
     `);
     const shaConfigurableModeSwitcherSwitcher = cx("sha-configurable-modeswitcher-switcher", css`
-      color: silver;
     `);
 
     const shaAppEditMode = cx("sha-app-editmode", css`
@@ -41,7 +40,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
           color: #14A38B;
         }
 
-        .sha-configurable-modeswitcher-switcher {
+        .sha-configurable-modeswitcher-switcher > .ant-switch-inner {
           background-color: #14A38B;
         }
 
@@ -86,12 +85,25 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
 
             .sha-configurable-view-button-wrapper {
               position: absolute;
-              left: 50px;
-              top: 50px;
+              left: 0px;
+              right: 0px;
+              top: 0px;
+              height: 32px;
+              text-align: center;
+              background-color: #14A38B;
               z-index: 1001;
+
+              .sha-configurable-view-details {
+                position: absolute;
+                left: 12px;
+                top: 0px;
+                padding-top: 6px;
+                color: white;
+                vertical-align: middle;
+              }
             }
 
-            button {
+            button, button:hover {
               background-color: #14A38B;
               border-color: #14A38B;
               color: white;
