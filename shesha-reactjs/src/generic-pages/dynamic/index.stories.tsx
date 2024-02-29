@@ -33,8 +33,8 @@ export const BackgroundDataTable = addStory(Template, {
 });
 
 export const RefListStatusTag = addStory(Template, {
-  formId: { name: 'status-component-reflist-detailsv1', module: 'Boxfusion.SheshaFunctionalTests.Common' },
-  id: '9cc09c5e-b83a-45f3-8352-1467567b5da3',
+  formId: { name: 'troubleshoot-details', module: 'Boxfusion.SheshaFunctionalTests.Common' },
+  id: '78c6e519-8742-4eb7-86a3-011f5c63d481',
 });
 
 
