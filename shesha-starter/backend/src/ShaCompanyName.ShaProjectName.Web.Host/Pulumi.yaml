@@ -47,7 +47,7 @@ resources:
       elasticPoolId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/elasticPools/auto-pool          
       licenseType: BasePrice
       zoneRedundant: false
-      skuName: GP_Gen5_6
+      skuName: GP_Gen5_2
       tags:
         shesha: #{projectName}#-shesha-#{role}#-#{env}#
 
