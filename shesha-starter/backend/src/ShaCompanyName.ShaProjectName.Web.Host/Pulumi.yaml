@@ -8,83 +8,50 @@ config:
     default: pulumi
 
 variables:
-  # subscriptionId1: ad818ed1-a52d-4a5c-8cba-c3e84872abb0
-  # subscriptionId2: 0e111515-3d91-4650-bd92-dfca52077d62
-  # providers:
-  #   - ${azure1}
-  #   - ${azure2}  
-  # sqlResourceGroupName: auto-shared-nonprod-rg
   sqlResourceGroupName: containerapps-shared
-  # sqlAdministratorLogin: boxdbadmin
-  # sqlAdministratorLoginPassword: Gg4ucRwz
-  # sqlServerName: auto-sql-shared-nonprod
   sqlServerName: containerapps-sql-shared
   sqlElasticPoolName: auto-pool
   sqlDatabaseName: #{projectName}#-shesha-#{env}#
-  # dbStorageKey: X9T64IDBYX2PsGUw3gGNhqqOsMiaQlLPJoRgkKLmZCvypnoT86dodg7FtM1zIGZzH6ptOC4yhbO6+AStTN9YyA==
-  # dbStorageKeyType: StorageAccessKey
-  # dbStorageUri: https://autononprodstorage.z1.web.core.windows.net/
   resourceGroupName: containerapps-shesha-#{role}#-#{env}#-rg
   registryLoginServer: #{repoServer}#
-  # adminUsername:
-  #   fn::invoke:
-  #     function: azure-native:containerregistry:listRegistryCredentials
-  #     arguments:
-  #       resourceGroupName: containerapps-shared
-  #       registryName: boxfusionregistry
-  #     return: username
-  # adminPasswords:
-  #   fn::invoke:
-  #     function: azure-native:containerregistry:listRegistryCredentials
-  #     arguments:
-  #       resourceGroupName: containerapps-shared
-  #       registryName: boxfusionregistry
-  #     return: passwords
   adminUsername: #{repoUsername}#
   adminPasswords: #{repoPassword}#   
   containerAppName: #{abbrvProjectName}#-#{role}#-#{env}#
   containerAppCustomerDomainName: #{projectName}#-#{role}#-#{env}#.shesha.dev
   containerAppEnvName: shesha-#{role}#-#{env}#
   certificateId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shesha-#{role}#-#{env}#-rg/providers/Microsoft.App/managedEnvironments/shesha-#{role}#-#{env}#-env/certificates/shesha.dev
-  containerAppRevisionImage: boxfusionregistry.azurecr.io/shesha-api:47720
+  containerAppRevisionImage: boxfusionregistry.azurecr.io/shesha-api-rev1-images:latest
   
 resources:
-  # azure1:
-  #   type: pulumi:providers:azure-native
+  # sqlDatabase:
+  #   type: azure:sql:Database
   #   properties:
-  #     subscriptionId: ${subscriptionId1}
-  # azure2:
-  #   type: pulumi:providers:azure-native
-  #   properties:
-  #     subscriptionId: ${subscriptionId2}      
+  #     resourceGroupName: ${sqlResourceGroupName}
+  #     serverName: ${sqlServerName}      
+  #     createMode: Copy
+  #     elasticPoolName: ${sqlElasticPoolName}
+  #     sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/#{databaseName}#
+  #     name: ${sqlDatabaseName}
+  #     location: southafricanorth
+  #     tags:
+  #       shesha: #{projectName}#-shesha-#{role}#-#{env}#
+
   sqlDatabase:
-    type: azure:sql:Database
-    # options:
-    #   provider: ${azure1}    
+    type: azure:mssql:Database
     properties:
-      resourceGroupName: ${sqlResourceGroupName}
-      serverName: ${sqlServerName}      
+      name: ${sqlDatabaseName}    
+      serverId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared
+      collation: SQL_Latin1_General_CP1_CI_AS          
       createMode: Copy
-      elasticPoolName: ${sqlElasticPoolName}
-      # sourceDatabaseId: /subscriptions/ad818ed1-a52d-4a5c-8cba-c3e84872abb0/resourceGroups/auto-shared-nonprod-rg/providers/Microsoft.Sql/servers/auto-sql-shared-nonprod/databases/source-shesha
-      # sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/source-shesha
-      sourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/#{databaseName}#
-      name: ${sqlDatabaseName}
-      #import:
-      #   - administratorLogin: ${sqlAdministratorLogin}
-      #     administratorLoginPassword: ${sqlAdministratorLoginPassword}
-      #     authenticationType : SQL
-      #     storageKey: ${dbStorageKey}
-      #     storageKeyType : ${dbStorageKeyType}
-      #     storageUri: ${dbStorageUri}
-      #     operationMode : Import
-      location: southafricanorth
+      creationSourceDatabaseId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/databases/#{databaseName}#
+      elasticPoolId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared/elasticPools/auto-pool          
+      licenseType: LicenseIncluded
+      skuName: GP_Gen5
       tags:
         shesha: #{projectName}#-shesha-#{role}#-#{env}#
+
   containerApp:
     type: azure-native:app:ContainerApp
-    # options:
-    #   provider: ${azure2}     
     properties:
       configuration:
         # dapr:
@@ -146,7 +113,7 @@ outputs:
   containerAppEnvName: ${containerAppEnvName}
   certificateId: ${certificateId}
   containerAppRevisionImage: ${containerAppRevisionImage}
-  sqlResourceGroupName: ${containerAppRevisionImage}
-  sqlServerName: ${containerAppRevisionImage}
+  sqlResourceGroupName: ${sqlResourceGroupName}
+  sqlServerName: ${sqlServerName}
   sqlElasticPoolName: ${sqlElasticPoolName}
   sqlDatabaseName: ${sqlDatabaseName}

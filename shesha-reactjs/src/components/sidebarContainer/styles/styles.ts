@@ -113,7 +113,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
               &.open {
                 display: block;
                 height: 85vh;
-                overflow-y: auto;
               }
             }
     

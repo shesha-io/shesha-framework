@@ -30,7 +30,7 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
             <Modal
                 open={open}
                 onCancel={onCancel}
-                width={'80%'}
+                width={'95%'}
                 footer={null}
                 className={styles.quickEditModal}
             >

@@ -1,7 +1,6 @@
 import React, { FC, PropsWithChildren } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { Tooltip } from 'antd';
-import { useStyles } from './styles/styles';
 
 interface IToolTipProps {
   currentStatus: ReferenceListItemDto;
@@ -13,7 +12,7 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   showReflistName,
   children,
 }) => {
-  const { styles } = useStyles();
+
   const popReflistName = !!(!showReflistName && currentStatus?.item);
 
   const showToolTip = !!currentStatus?.description || popReflistName;
@@ -21,8 +20,9 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   return showToolTip ? (
     <Tooltip
       placement="rightTop"
+     
       title={
-        <div className={styles.toolTipContent}>
+        <div >
           {popReflistName && (
             <>
               <span>{currentStatus?.item}</span>
