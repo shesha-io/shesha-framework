@@ -40,6 +40,7 @@ resources:
     type: azure:mssql:Database
     name: ${sqlDatabaseName}
     properties:
+      name: ${sqlDatabaseName}    
       serverId: /subscriptions/0e111515-3d91-4650-bd92-dfca52077d62/resourceGroups/containerapps-shared/providers/Microsoft.Sql/servers/containerapps-sql-shared
       collation: SQL_Latin1_General_CP1_CI_AS          
       createMode: Copy
