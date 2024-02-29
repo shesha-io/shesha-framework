@@ -1,4 +1,4 @@
-import { message } from 'antd';
+import { Tooltip, message } from 'antd';
 import moment from 'moment';
 import React from 'react';
 import { IconType, ShaIcon } from '@/components';
@@ -24,7 +24,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const { globalState, setState } = useGlobalState();
   const { executeAction } = useConfigurableActionDispatcher();
 
-  const { actionConfiguration, icon } = columnConfig ?? {};
+  const { actionConfiguration, icon, description } = columnConfig ?? {};
 
   const getRowData = (data) => {
     return data?.cell?.row?.original;
@@ -59,7 +59,11 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
 
   return (
     <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
-      {icon && <ShaIcon iconName={icon as IconType} />}
+      {icon && (
+        <Tooltip title={description}>
+          <ShaIcon iconName={icon as IconType} />
+        </Tooltip>
+      )}
     </a>
   );
 };
