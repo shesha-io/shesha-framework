@@ -9,6 +9,7 @@ import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
+import { CreateFormCell } from '../dataTable/cell/formCell';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,
@@ -91,6 +92,9 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row }) => {
     >
       {columnConfig && columnConfig.columnType === 'data' && (
         <CreateDataCell columnConfig={columnConfig} propertyMeta={propertyMeta} />
+      )}
+      {columnConfig && columnConfig.columnType === 'form' && (
+        <CreateFormCell columnConfig={columnConfig} />
       )}
       {columnConfig && columnConfig.columnType === 'crud-operations' && (
         <CrudOperationsCell columnConfig={columnConfig} />

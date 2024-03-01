@@ -1,23 +1,26 @@
 import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
 import { ProperyDataType } from '@/interfaces/metadata';
-import {
+import { 
   IConfigurableColumnsProps,
+  IFormColumnsProps,
   isActionColumnProps,
-  isDataColumnProps,
+  isDataColumnProps 
 } from '@/providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from '@/utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
-import {
-  ColumnSorting,
+import { 
+  ColumnSorting, 
   DataTableColumnDto,
   IColumnSorting,
-  isDataColumn,
-  IStoredFilter,
-  ITableActionColumn,
-  ITableColumn,
-  ITableDataColumn,
-  ITableFilter,
-  SortDirection,
+  isDataColumn, 
+  isFormColumn, 
+  IStoredFilter, 
+  ITableActionColumn, 
+  ITableColumn, 
+  ITableDataColumn, 
+  ITableFilter, 
+  ITableFormColumn, 
+  SortDirection
 } from './interfaces';
 
 // Filters should read properties as camelCase ?:(
@@ -215,6 +218,9 @@ export const prepareColumn = (
       id: column.propertyName,
       accessor: camelcaseDotNotation(column?.propertyName),
       propertyName: column.propertyName,
+      
+      propertiesToFetch: column.propertyName,
+      isEnitty: srvColumn?.dataType === 'entity',
 
       createComponent: column.createComponent,
       editComponent: column.editComponent,
@@ -248,10 +254,24 @@ export const prepareColumn = (
     return actionColumn;
   }
 
-  if (column.columnType === 'crud-operations')
+  if (column.columnType === 'crud-operations') {
     return {
       ...baseProps,
     };
+  }
+
+  if (column.columnType === 'form') {
+    const col = column as IFormColumnsProps;
+    return {
+      ...baseProps,
+      propertiesToFetch: col.propertiesNames,
+
+      displayFormId: col.displayFormId,
+      createFormId: col.createFormId,
+      editFormId: col.editFormId,
+    } as ITableFormColumn;
+  }
+
 
   return null;
 };
@@ -263,6 +283,15 @@ export const getTableDataColumns = (columns: ITableColumn[]): ITableDataColumn[]
   const result: ITableDataColumn[] = [];
   columns.forEach((col) => {
     if (isDataColumn(col)) result.push(col);
+  });
+  return result;
+};
+
+export const getTableFormColumns = (columns: ITableColumn[]): ITableDataColumn[] => {
+  const result: ITableDataColumn[] = [];
+  columns.forEach(col => {
+    if (isFormColumn(col))
+      result.push(col);
   });
   return result;
 };

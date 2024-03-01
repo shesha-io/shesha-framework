@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useRef
 } from 'react';
-import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns } from './utils';
+import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns, getTableFormColumns } from './utils';
 import { dataTableReducer } from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
@@ -191,6 +191,8 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
     });
   }
   const filter = getFilter(state);
+
+  getTableFormColumns(state.columns).forEach(col => dataColumns.push(col));
 
   const payload: IGetListDataPayload = {
     columns: dataColumns,
