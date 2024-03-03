@@ -52,12 +52,19 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
   return listItem?.loading ? (
     <Skeleton.Button />
   ) : (
+   
     <div className={styles.shaStatusTagContainer}>
-      <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
+          <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}> 
+
+
         <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}>
           {showReflistName && itemData?.item}
         </RefTag>
-      </DescriptionTooltip>
-    </div>
+      
+        </DescriptionTooltip> 
+        </div>
+
+   
+  
   );
 };
