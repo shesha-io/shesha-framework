@@ -7,17 +7,16 @@ export const useStyles = createStyles(({ css, cx }) => {
     css`
       display: flex;
       align-items: center;
+      width: fit-content;
 
       .${shaStatusTag} {
         text-transform: uppercase;
         display: flex;
-        width: fit-content;
+        width: 100%;
         justify-content: flex-start;
         align-items: center;
         text-align: center;
         align-self: center;
-        margin: 0px 8px !important;
-        width: 95%;
 
         .sha-help-icon {
           cursor: help;
@@ -27,7 +26,6 @@ export const useStyles = createStyles(({ css, cx }) => {
       }
     `
   );
-
 
   return {
     shaStatusTagContainer,

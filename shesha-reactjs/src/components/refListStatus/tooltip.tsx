@@ -17,10 +17,10 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
 
   const showToolTip = !!currentStatus?.description || popReflistName;
 
+
   return showToolTip ? (
     <Tooltip
-      placement="rightTop"
-     
+      placement="right"
       title={
         <div >
           {popReflistName && (
