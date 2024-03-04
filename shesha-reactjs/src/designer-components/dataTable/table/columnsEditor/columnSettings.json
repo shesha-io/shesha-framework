@@ -25,6 +25,11 @@
                     "id": "8400a8ec-577d-4468-9347-5601f952b44c",
                     "label": "Data",
                     "value": "data"
+                },
+                {
+                    "id": "ffffa8ec-577d-4468-9347-5601f952b44c",
+                    "label": "Form",
+                    "value": "form"
                 }
             ],
             "validate": {
@@ -77,6 +82,40 @@
             "flexWrap": "wrap"
         },
         {
+          "id": "135a51c1-13cc-4952-a25c-5b03442097a0",
+          "type": "container",
+          "propertyName": "dataContainerp",
+          "label": "Container3p",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": {
+              "_code": "return  getSettingValue(data?.columnType) !== 'form';",
+              "_mode": "code",
+              "_value": false
+          },
+          "direction": "vertical",
+          "justifyContent": "left",
+          "settingsValidationErrors": [],
+          "components": [
+              {
+                  "id": "5314460d-2e64-4d79-a900-7cd28b0bebd3",
+                  "type": "propertyAutocomplete",
+                  "jsSetting": false,
+                  "propertyName": "propertiesNames",
+                  "label": "Properties to fetch",
+                  "labelAlign": "right",
+                  "parentId": "135a51c1-13cc-4952-a25c-5b03442097a0",
+                  "mode": "multiple",
+                  "hidden": false,
+                  "validate": {},
+                  "settingsValidationErrors": [],
+                  "version": 1
+              }
+          ],
+          "version": 2,
+          "flexWrap": "wrap"
+      },
+      {
             "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
             "type": "textField",
             "jsSetting": false,
@@ -191,27 +230,27 @@
             "settingsValidationErrors": [],
             "version": 2
         },
-       {
-        "id": "57a40a33-7e08-4ce4-9f08-a34d24a82338",
-        "type": "dropdown",
-        "propertyName": "anchored",
-        "parentId": "root",
-        "label": "Anchored ",
-        "values": [
-          {
-            "label": "Left",
-            "value": "left",
-            "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-          },
-          {
-            "label": "Right",
-            "value": "right",
-            "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-          }
-        ],
-        "allowClear":true,
-        "dataSourceType": "values"
-          },
+        {
+          "id": "57a40a33-7e08-4ce4-9f08-a34d24a82338",
+          "type": "dropdown",
+          "propertyName": "anchored",
+          "parentId": "root",
+          "label": "Anchored ",
+          "values": [
+            {
+              "label": "Left",
+              "value": "left",
+              "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+            },
+            {
+              "label": "Right",
+              "value": "right",
+              "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+            }
+          ],
+          "allowClear":true,
+          "dataSourceType": "values"
+        },
         {
             "id": "EhERYkBRv066KGKNaRA7j",
             "type": "container",
@@ -298,6 +337,61 @@
             "settingsValidationErrors": []
         },
         {
+          "id": "dfaRYkBRv066KGKNaRA7j",
+          "type": "container",
+          "propertyName": "container3fp",
+          "label": "Container3",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": {
+              "_code": "return  getSettingValue(data?.columnType) !== 'form';",
+              "_mode": "code",
+              "_value": false
+          },
+          "isDynamic": false,
+          "version": 2,
+          "direction": "vertical",
+          "justifyContent": "left",
+          "display": "block",
+          "flexWrap": "wrap",
+          "components": [
+              {
+                  "id": "1FGIcguhDkag6a801GXSgm",
+                  "type": "formAutocomplete",
+                  "componentName": "displayFormId",
+                  "propertyName": "displayFormId",
+                  "parentId": "dfaRYkBRv066KGKNaRA7j",
+                  "label": "Display form",
+                  "version": 2,
+                  "textType": "text"
+              },
+              {
+                  "id": "1rYYm0wT-TDnBfqmOMVmIX",
+                  "type": "formAutocomplete",
+                  "componentName": "createFormId",
+                  "propertyName": "createFormId",
+                  "parentId": "dfaRYkBRv066KGKNaRA7j",
+                  "label": "Create form",
+                  "version": 2,
+                  "textType": "text"
+              },
+              {
+                  "id": "1L2bRSuStgiAmWfd5Z09CR",
+                  "type": "formAutocomplete",
+                  "componentName": "editFormId",
+                  "propertyName": "editFormId",
+                  "parentId": "dfaRYkBRv066KGKNaRA7j",
+                  "label": "Edit form",
+                  "version": 2,
+                  "textType": "text"
+              }
+          ],
+          "gap": "",
+          "gridColumnsCount": "",
+          "className": "",
+          "settingsValidationErrors": []
+        },
+        {
             "id": "33IOXJRmPdfU9KLeDUF64",
             "type": "checkbox",
             "jsSetting": false,
@@ -306,8 +400,11 @@
             "label": "Allow sorting",
             "labelAlign": "right",
             "parentId": "root",
-            "hidden": false,
-            "isDynamic": false,
+            "hidden": {
+              "_code": "return  getSettingValue(data?.columnType) !== 'data';",
+              "_mode": "code",
+              "_value": false
+            },            "isDynamic": false,
             "version": 2,
             "validate": {},
             "settingsValidationErrors": []

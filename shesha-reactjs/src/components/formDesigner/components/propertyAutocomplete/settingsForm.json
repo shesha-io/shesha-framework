@@ -139,6 +139,27 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "1115d12f-6ea0-4b11-a1a1-6088c7160fd9",
+      "type": "dropdown",
+      "propertyName": "mode",
+      "parentId": "root",
+      "label": "Mode",
+      "allowClear": true,
+      "values": [
+        {
+          "label": "Single",
+          "value": "single",
+          "id": "1111403c-95fd-4e49-bb60-cb8c25f0f3c3"
+        },
+        {
+          "label": "Multiple",
+          "value": "multiple",
+          "id": "1115c476-e632-4fa7-89ad-2be6cfb7f1f1"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "sectionSeparator",
       "propertyName": "separator2",

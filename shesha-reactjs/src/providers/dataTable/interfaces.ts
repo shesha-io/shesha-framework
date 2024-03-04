@@ -2,7 +2,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
-import { IDictionary, IPropertySetting } from '@/interfaces';
+import { FormIdentifier, IDictionary, IPropertySetting } from '@/interfaces';
 import { CSSProperties } from 'react';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
@@ -18,7 +18,7 @@ export type IndexColumnFilterOption =
   | 'before'
   | 'after';
 
-export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations';
+export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations' | 'form';
 
 export type SortDirection = 0 /*asc*/ | 1 /*desc*/;
 export type ColumnSorting = 'asc' | 'desc';
@@ -73,7 +73,12 @@ export interface CellStyleFuncArgs {
 export type CellStyleFunc = (args: CellStyleFuncArgs) => CSSProperties;
 export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
 
-export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
+export interface ITableDataFetchColumn extends ITableColumn {
+  propertiesToFetch?: string | string[];
+  isEnitty?: boolean;
+}
+
+export interface ITableDataColumn extends ITableColumn, ITableDataFetchColumn, IEditableColumnProps {
   propertyName?: string;
   dataType?: ProperyDataType;
   dataFormat?: string;
@@ -84,11 +89,23 @@ export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
   allowInherited?: boolean;
 }
 
+export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {
+  propertiesNames?: string;
+
+  displayFormId?: FormIdentifier;
+  createFormId?: FormIdentifier;
+  editFormId?: FormIdentifier;
+}
+
 export const isDataColumn = (column: ITableColumn): column is ITableDataColumn => {
   return column && column.columnType === 'data';
 };
 
-export interface ITableActionColumn extends ITableColumn, IActionColumnProps {}
+export const isFormColumn = (column: ITableColumn): column is ITableFormColumn => {
+  return column && column.columnType === 'form';
+};
+
+export interface ITableActionColumn extends ITableColumn, IActionColumnProps { }
 
 export interface ITableCrudOperationsColumn extends ITableColumn {}
 

@@ -67,7 +67,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
             mode={editMode}
             allowChangeMode={allowChangeEditMode}
             autoSave={autoSave}
-              flatComponents={flatComponents}
+            flatComponents={flatComponents}
             formSettings={formSettings}
           >
             <div className={styles.shaDatalistCell}>

@@ -6,7 +6,7 @@ import qs from "qs";
 import React, { ComponentType, useMemo } from "react";
 import { FC } from "react";
 import { camelcaseDotNotation } from "@/utils/string";
-import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBackendPayload, IGetListDataPayload, ITableDataColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
+import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBackendPayload, IGetListDataPayload, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
 import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs, SupportsGroupingArgs } from "./interfaces";
 import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
@@ -55,21 +55,29 @@ interface ICreateBackendRepositoryArgs extends IWithBackendRepositoryArgs {
 const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepository => {
     const { backendUrl, httpHeaders, getListUrl, entityType, metadataDispatcher, apiHelper, mutator } = args;
 
-    const getPropertyNamesForFetching = (columns: ITableDataColumn[]): string[] => {
-        const result: string[] = [];
-        columns.forEach(column => {
-            result.push(column.propertyName);
-
-            // special handling for entity references: expand properties list to include `id` and `_displayName`
-            if (column.dataType === 'entity') {
-                const requiredProps = [`${column.propertyName}.Id`, `${column.propertyName}._displayName`];
-                requiredProps.forEach(rp => {
-                    if (!result.includes(rp))
-                        result.push(rp);
-                });
-            };
-        });
-        return result;
+    const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
+      const result: string[] = [];
+      columns.forEach(column => {
+        if (!column.propertiesToFetch)
+          return;
+        if (Array.isArray(column.propertiesToFetch)) {
+          column.propertiesToFetch.forEach(p => {
+            if (!!p)
+              result.push(p);
+          });
+        } else {
+          result.push(column.propertiesToFetch);
+          // special handling for entity references: expand properties list to include `id` and `_displayName`
+          if (column.isEnitty) {
+            const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
+            requiredProps.forEach(rp => {
+              if (!result.includes(rp))
+                result.push(rp);
+            });
+          };
+        }
+      });
+      return result;
     };
 
     /** Convert common payload to a form that uses the back-end */
