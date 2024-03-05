@@ -132,7 +132,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   const onAddMultipleClick = () => {
     selectMultipleVlaue(multipleValue);
-  }
+  };
 
   const onSelectMultiple = (data: string) => {
     if (data !== multipleValue) {
