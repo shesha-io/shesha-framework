@@ -92,7 +92,9 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         setSelected(-1);
       }
     };
-    document.addEventListener('click', onClickOutside);
+    const tableRowsSection=document.getElementsByClassName(styles.tbody)[0] as HTMLElement;
+    
+    tableRowsSection.addEventListener('click', onClickOutside);
   }, []);
 
   const rowId = row.original.id ?? row.id;
