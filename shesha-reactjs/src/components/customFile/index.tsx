@@ -41,7 +41,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         isStub={props.isStub}
         disabled={!props.allowAdd}
         isDragger={props?.isDragger}
-        fileList={fileList.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
+        fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
         allowUpload={false}
         //downloadFile={downloadFile}
         deleteFile={deleteFile}
