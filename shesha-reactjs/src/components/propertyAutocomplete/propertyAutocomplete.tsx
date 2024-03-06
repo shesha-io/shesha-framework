@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { AutoComplete, Button, Input, Select, Tag } from 'antd';
-import { ThunderboltOutlined } from '@ant-design/icons';
+import { PlusOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useForm, useMetadata, useMetadataDispatcher } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { camelCase } from 'lodash';
@@ -115,22 +115,30 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     }
   };
 
+  const selectMultipleVlaue = (data: string) => {
+    var list = props.value
+      ? Array.isArray(props.value) ? props.value : []
+      : [];
+
+    list.push(data);
+    setMultipleValue('');
+
+    if (props.onChange) props.onChange(list);
+    if (props.onSelect) {
+      const property = getProperty(data);
+      props.onSelect(list, property);
+    }
+  };
+
+  const onAddMultipleClick = () => {
+    selectMultipleVlaue(multipleValue);
+  };
+
   const onSelectMultiple = (data: string) => {
     if (data !== multipleValue) {
       setMultipleValue(data);
     } else {
-      var list = props.value
-        ? Array.isArray(props.value) ? props.value : []
-        : [];
-
-      list.push(data);
-      setMultipleValue('');
-
-      if (props.onChange) props.onChange(list);
-      if (props.onSelect) {
-        const property = getProperty(data);
-        props.onSelect(list, property);
-      }
+      selectMultipleVlaue(data);
     }
   };
 
@@ -225,24 +233,19 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   const tagChild = Boolean(props.value) && Array.isArray(props.value) ? props.value?.map(forMap) : null;
 
   const multiple = (
-    <>
-      <AutoComplete
-        disabled={readOnly}
-        value={multipleValue}
-        options={state.options}
-        style={showFillPropsButton ? { width: 'calc(100% - 32px)' } : props.style}
-        //onChange={setMultipleValue}
-        onSelect={onSelectMultiple}
-        onSearch={onSearchMultiple}
-        notFoundContent="Not found"
-        size={props.size}
-        dropdownStyle={props?.dropdownStyle}
-        popupMatchSelectWidth={false}
-      />
-      <div style={{ marginTop: 16 }}>
-        {tagChild}
-      </div>
-    </>
+    <AutoComplete
+      disabled={readOnly}
+      value={multipleValue}
+      options={state.options}
+      style={showFillPropsButton ? { width: 'calc(100% - 32px)' } : props.style}
+      //onChange={setMultipleValue}
+      onSelect={onSelectMultiple}
+      onSearch={onSearchMultiple}
+      notFoundContent="Not found"
+      size={props.size}
+      dropdownStyle={props?.dropdownStyle}
+      popupMatchSelectWidth={false}
+    />
   );
 
   return (
@@ -263,7 +266,21 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           )
           : <>{autoComplete}</>
       ) : mode === 'multiple' ? (
-        <>{multiple}</>
+        <>
+          <Input.Group style={props.style}>
+            {multiple}
+            <Button
+              icon={<PlusOutlined />}
+              onClick={onAddMultipleClick}
+              disabled={!Boolean(multipleValue)}
+              style={style}
+              size={props.size}
+            />
+          </Input.Group>
+          <div style={{ marginTop: 16 }}>
+            {tagChild}
+          </div>
+        </>
       ) :
         (
           <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /*showSearch*/ size={props.size} disabled={readOnly}>

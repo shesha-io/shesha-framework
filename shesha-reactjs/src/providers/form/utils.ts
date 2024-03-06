@@ -262,7 +262,7 @@ export const getActualModelWithParent = <T>(
 ): T => {
   const parentReadOnly =
     allData.formMode !== 'designer' 
-    && (parent?.model?.readOnly ?? parent.formMode === 'readonly' ?? allData.formMode === 'readonly');
+    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.formMode === 'readonly'));
     
   const actualModel = getActualModel(model, allData, parentReadOnly);
   // update Id for complex containers (SubForm, DataList item, etc)
