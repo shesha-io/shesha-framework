@@ -85,6 +85,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   const { styles: mainStyles } = useMainStyles();
 
   const { setDragState } = useDataTableStore();
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const { allColumns, allRows } = componentState;
 
@@ -350,8 +351,9 @@ export const ReactTable: FC<IReactTableProps> = ({
     return result;
   }, [containerStyle, minHeight, maxHeight]);
 
-  const renderRow = (row: Row<any>, rowIndex: number) => {
+  const renderRow = (row: Row<any>, rowIndex: number,ref?:React.MutableRefObject<HTMLDivElement>) => {
     const id = row.original?.id;
+  
     return (
       <Row
         key={id ?? rowIndex}
@@ -370,18 +372,23 @@ export const ReactTable: FC<IReactTableProps> = ({
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        tableRef={ref}
       />
     );
   };
 
-  const renderRows = () => {
+  const renderRows = (tableRef) => {
+   
     return onRowsRendering
       ? onRowsRendering({ rows: rows, defaultRender: renderRow })
-      : rows.map((row, rowIndex) => renderRow(row, rowIndex));
+      : rows.map((row, rowIndex) => renderRow(row, rowIndex,tableRef));
   };
   const fixedHeadersStyle: React.CSSProperties = freezeHeaders
     ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
     : null;
+
+
+    
 
   return (
     <Spin
@@ -503,6 +510,8 @@ export const ReactTable: FC<IReactTableProps> = ({
               overflowX: 'unset',
             }}
             {...getTableBodyProps()}
+            ref={tableRef}
+           
           >
             {rows?.length === 0 && !loading && (
               <div className={styles.shaTableEmpty}>
@@ -538,7 +547,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                 </ReactSortable>
               )}
             >
-              {renderRows()}
+              {renderRows(tableRef)}
             </ConditionalWrap>
           </div>
           {canAddInline && newRowCapturePosition === 'bottom' && renderNewRowEditor()}
