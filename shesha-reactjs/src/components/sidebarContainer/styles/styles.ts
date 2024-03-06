@@ -27,6 +27,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         max-height: 85vh;
         overflow-y: auto;
         overflow-x: hidden;
+        width: 350px;
+        margin: 0 auto;
+       
       }
     
       .${sidebarContainerHeader} {

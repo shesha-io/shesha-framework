@@ -11,6 +11,10 @@ import { UndoRedoButtons } from './undoRedoButtons';
 import { PreviewButton } from './previewButton';
 import { FormSettingsButton } from './formSettingsButton';
 import { useStyles } from '../styles/styles';
+import { DeskTopButton } from './desktopButton';
+import { MobileButton } from './mobileButton';
+import { TabletButton } from './tabletButton';
+import { LandScapeButton } from './landScapeButton';
 
 export interface IProps { }
 
@@ -38,6 +42,14 @@ export const FormDesignerToolbar: FC<IProps> = () => {
         )}
         <CreateNewVersionButton onSuccess={onVersionCreated} />
         <PublishButton />
+      </div>
+      <div style={{display: 'flex', justifyContent: 'space-between', gap: '1.5rem', margin: '0 20%'}}>
+      <DeskTopButton/>
+      <MobileButton/>
+      <TabletButton/>
+      <LandScapeButton/>
+
+
       </div>
       <div className={styles.shaDesignerToolbarRight}>
         <FormSettingsButton />
