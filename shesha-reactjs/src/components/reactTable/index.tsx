@@ -352,6 +352,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   }, [containerStyle, minHeight, maxHeight]);
 
   const renderRow = (row: Row<any>, rowIndex: number,ref?:React.MutableRefObject<HTMLDivElement>) => {
+    
     const id = row.original?.id;
   
     return (
@@ -377,11 +378,11 @@ export const ReactTable: FC<IReactTableProps> = ({
     );
   };
 
-  const renderRows = (tableRef) => {
+  const renderRows = (tableRef:React.MutableRefObject<HTMLDivElement>) => {
    
     return onRowsRendering
-      ? onRowsRendering({ rows: rows, defaultRender: renderRow })
-      : rows.map((row, rowIndex) => renderRow(row, rowIndex,tableRef));
+    ? onRowsRendering({ rows: rows, defaultRender: (row, rowIndex) => renderRow(row, rowIndex, tableRef) })
+    : rows.map((row, rowIndex) => renderRow(row, rowIndex, tableRef));
   };
   const fixedHeadersStyle: React.CSSProperties = freezeHeaders
     ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
