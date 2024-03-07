@@ -351,7 +351,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     return result;
   }, [containerStyle, minHeight, maxHeight]);
 
-  const renderRow = (row: Row<any>, rowIndex: number,ref?:React.MutableRefObject<HTMLDivElement>) => {
+  const renderRow = (row: Row<any>, rowIndex: number, ref: React.MutableRefObject<HTMLDivElement>) => {
     
     const id = row.original?.id;
   
@@ -378,7 +378,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     );
   };
 
-  const renderRows = (tableRef:React.MutableRefObject<HTMLDivElement>) => {
+  const renderRows = (tableRef: React.MutableRefObject<HTMLDivElement>) => {
    
     return onRowsRendering
     ? onRowsRendering({ rows: rows, defaultRender: (row, rowIndex) => renderRow(row, rowIndex, tableRef) })

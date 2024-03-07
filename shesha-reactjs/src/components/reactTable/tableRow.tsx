@@ -27,7 +27,7 @@ export interface ISortableRowProps {
   inlineSaveMode?: InlineSaveMode;
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
-  tableRef:React.MutableRefObject<HTMLDivElement>;
+  tableRef: React.MutableRefObject<HTMLDivElement>;
 }
 
 interface RowDragHandleProps {
