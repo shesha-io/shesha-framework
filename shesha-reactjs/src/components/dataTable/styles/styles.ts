@@ -1,6 +1,14 @@
 import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ css, cx }) => {
+    const shaFormCell = cx("sha-form-cell", css`
+      width: 100%;
+
+      .ant-form-item-control {
+        flex-direction: unset;
+      }
+    `);
+
     const tableErrorContainer = cx("sha-table-error-container", css`
         margin: 12px;
         margin-top: 0;
@@ -11,6 +19,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     `);
 
     return {
-        shaChildTableErrorContainer: tableErrorContainer
+        shaChildTableErrorContainer: tableErrorContainer,
+        shaFormCell,
     };
 });
