@@ -47,7 +47,7 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
     document.title = !!applicationName  ? `${applicationName} | ${title}` : title;
     return () => {
       document.title = '';
-    }
+    };
   }, [applicationName, title]);
 
   const hasBackUrl = !!backUrl?.trim();
