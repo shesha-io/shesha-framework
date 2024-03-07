@@ -29,14 +29,12 @@ export const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const selection = useEntitySelectionData({
     entityType: entityType,
     propertyName: displayEntityKey,
-    selection: Array.isArray(value)
-      ? value.map(x => props.incomeValueFunc(x, {}))
-      : props.incomeValueFunc(value, {}),
+    selection: Array.isArray(value) ? value.map((x) => props.incomeValueFunc(x, {})) : props.incomeValueFunc(value, {}),
   });
   const selectedItems = selection?.rows;
 
   const displayText = useMemo(() => {
-    return selectedItems?.map(ent => ent[displayEntityKey]).join(', ');
+    return selectedItems?.map((ent) => ent[displayEntityKey]).join(', ');
   }, [selectedItems]);
 
   return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} />;
@@ -53,6 +51,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     value,
     mode,
     size,
+    style,
     useButtonPicker,
     pickerButtonProps,
     onSelect,
@@ -62,7 +61,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     configurableColumns,
     width,
     outcomeValueFunc,
-    incomeValueFunc
+    incomeValueFunc,
   } = props;
 
   const { styles } = useStyles();
@@ -72,12 +71,8 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
   });
   const isSmall = useMedia('(max-width: 480px)');
 
-  const {
-    changeSelectedStoredFilterIds,
-    selectedStoredFilterIds,
-    registerConfigurableColumns,
-    setPredefinedFilters,
-  } = useDataTable();
+  const { changeSelectedStoredFilterIds, selectedStoredFilterIds, registerConfigurableColumns, setPredefinedFilters } =
+    useDataTable();
   const { globalState } = useGlobalState();
   const { formData } = useForm();
   const selectRef = useRef(undefined);
@@ -86,12 +81,12 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     registerConfigurableColumns(modalId, configurableColumns);
   }, [configurableColumns]);
 
-  const showPickerDialog = () => setState(prev => ({ ...prev, showModal: true }));
+  const showPickerDialog = () => setState((prev) => ({ ...prev, showModal: true }));
 
-  const hidePickerDialog = () => setState(prev => ({ ...prev, showModal: false }));
+  const hidePickerDialog = () => setState((prev) => ({ ...prev, showModal: false }));
 
   const valueId = Array.isArray(value)
-    ? value.map(x => props.incomeValueFunc(x, {}))
+    ? value.map((x) => props.incomeValueFunc(x, {}))
     : props.incomeValueFunc(value, {});
 
   const selection = useEntitySelectionData({
@@ -111,13 +106,13 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
       onSelect(row);
     } else {
       if (isMultiple) {
-        const values = !!valueId ? (Array.isArray(valueId) ? valueId : [valueId]): [];
+        const values = !!valueId ? (Array.isArray(valueId) ? valueId : [valueId]) : [];
         if (!values.includes(row.id)) {
-          const vs = !!value ? (Array.isArray(value) ? value : [value]): [];
+          const vs = !!value ? (Array.isArray(value) ? value : [value]) : [];
           onChange([...vs, props.outcomeValueFunc(row, {})], null);
         }
       } else {
-        onChange(props.outcomeValueFunc(row, {}),null);
+        onChange(props.outcomeValueFunc(row, {}), null);
       }
     }
 
@@ -160,7 +155,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
         { match: 'globalState', data: globalState },
       ],
       propertyMetadataAccessor
-    ).then(evaluatedFilters => {
+    ).then((evaluatedFilters) => {
       let parsedFilters = evaluatedFilters;
 
       const firstElement = evaluatedFilters[0];
@@ -218,7 +213,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     handleOnChange(row);
   };
 
-  const handleMultiChange = selectedValues => {
+  const handleMultiChange = (selectedValues) => {
     if (onChange) onChange(selectedValues, null);
   };
 
@@ -244,9 +239,9 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     let result: DefaultOptionType[] = null;
     if (selection.loading) {
       const items = valueId ? (Array.isArray(valueId) ? valueId : [valueId]) : [];
-      result = items.map(item => ({ label: 'loading...', value: item, key: item }));
+      result = items.map((item) => ({ label: 'loading...', value: item, key: item }));
     } else {
-      result = (selectedItems ?? []).map(ent => {
+      result = (selectedItems ?? []).map((ent) => {
         const key = incomeValueFunc(outcomeValueFunc(ent, {}), {});
         return { label: ent[displayEntityKey], value: key, key };
       });
@@ -273,7 +268,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
   );
 
   return (
-    <div className={styles.entityPickerContainer}>
+    <div>
       <div>
         {useButtonPicker ? (
           <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})}>
@@ -296,13 +291,12 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
               allowClear
               mode={selectedMode}
               options={options}
-              suffixIcon={null} // hide arrow              
+              suffixIcon={null} // hide arrow
               onChange={handleMultiChange}
-              style={{ width: 'calc(100% - 32px)' }}
+              style={{ ...style, width: 'calc(100% - 32px)' }}
               loading={selection.loading}
-            >
-              {''}
-            </Select>
+            ></Select>
+
             <Button
               onClick={showPickerDialog}
               className={styles.pickerInputGroupEllipsis}
@@ -348,9 +342,9 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
       <DataTableProvider
         userConfigId={'table_' + props.name}
         actionOwnerName={'table_' + props.name}
-        sourceType='Entity'
+        sourceType="Entity"
         entityType={entityType}
-        dataFetchingMode='paging'
+        dataFetchingMode="paging"
       >
         <EntityPickerEditableInner {...props} disabled={disabled} displayEntityKey={displayEntityKey} />
       </DataTableProvider>
