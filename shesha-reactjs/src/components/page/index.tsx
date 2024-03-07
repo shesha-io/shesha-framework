@@ -44,9 +44,10 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
   const { theme } = useTheme();
 
   useEffect(() => {
-    document.title = !!applicationName 
-      ? `${applicationName} | ${title}`
-      : title;
+    document.title = !!applicationName  ? `${applicationName} | ${title}` : title;
+    return () => {
+      document.title = '';
+    }
   }, [applicationName, title]);
 
   const hasBackUrl = !!backUrl?.trim();
