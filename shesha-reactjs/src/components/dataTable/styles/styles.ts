@@ -7,6 +7,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       .ant-form-item-control {
         flex-direction: unset;
         display: flex;
+        text-wrap: wrap;
       }
     `);
 
