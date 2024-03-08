@@ -109,6 +109,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     }
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
+    const computedStyle = getStyle(style, formData) ?? {};
 
     const computedStyle = getStyle(style, formData) ?? {};
 
@@ -116,36 +117,37 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
         {(value, onChange) => {
           return (
-            <EntityPicker
-              incomeValueFunc={incomeValueFunc}
-              outcomeValueFunc={outcomeValueFunc}
-              formId={model.id}
-              readOnly={model.readOnly}
-              displayEntityKey={model.displayEntityKey}
-              entityType={model.entityType}
-              filters={entityPickerFilter}
-              style={computedStyle}
-              mode={model.mode}
-              addNewRecordsProps={
-                model.allowNewRecord
-                  ? {
-                      modalFormId: model.modalFormId,
-                      modalTitle: model.modalTitle,
-                      showModalFooter: model.showModalFooter,
-                      submitHttpVerb: model.submitHttpVerb,
-                      onSuccessRedirectUrl: model.onSuccessRedirectUrl,
-                      modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-                    }
-                  : undefined
-              }
-              name={model?.componentName}
-              width={width}
-              configurableColumns={model.items ?? []}
-              value={value}
-              onChange={onChange}
-              size={model.size}
-            />
-          );
+
+          <EntityPicker
+            incomeValueFunc={incomeValueFunc}
+            outcomeValueFunc={outcomeValueFunc}
+            style={computedStyle}
+            formId={model.id}
+            readOnly={model.readOnly}
+            displayEntityKey={model.displayEntityKey}
+            entityType={model.entityType}
+            filters={entityPickerFilter}
+            mode={model.mode}
+            addNewRecordsProps={
+              model.allowNewRecord
+                ? {
+                  modalFormId: model.modalFormId,
+                  modalTitle: model.modalTitle,
+                  showModalFooter: model.showModalFooter,
+                  submitHttpVerb: model.submitHttpVerb,
+                  onSuccessRedirectUrl: model.onSuccessRedirectUrl,
+                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+                }
+                : undefined
+            }
+            name={model?.componentName}
+            width={width}
+            configurableColumns={model.items ?? []}
+            value={value}
+            onChange={onChange}
+            size={model.size}
+          />
+        );
         }}
       </ConfigurableFormItem>
     );

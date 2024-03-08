@@ -331,7 +331,7 @@ namespace Shesha
                         if (propConfig.DataType != DataTypes.ObjectReference
                             && propConfig.DataType != DataTypes.Object)
                         {
-                            sb.Append(" { ");
+                            sb.Append(" { id ");
                             await AppendPropertiesAsync(sb, propConfig.EntityType, innerProps.Where(x => !x.IsNullOrWhiteSpace()).ToList());
                             sb.Append(" } ");
                         }
