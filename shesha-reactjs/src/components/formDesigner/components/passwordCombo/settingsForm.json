@@ -200,10 +200,10 @@
 }
     },
 
-    {
+       {
       "id": "b8c06332-2e5e-40ad-a5f0-770de616ee3e",
       "type": "collapsiblePanel",
-      "propertyName": "pnStyle",
+      "propertyName": "pnlStyle",
       "label": "Style",
       "labelAlign": "right",
       "parentId": "root",
@@ -212,7 +212,7 @@
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "start",
-      "collapsible": "header",
+"collapsible": "header",
       "collapsedByDefault": false,
       "ghost": true,
       "header": {
@@ -220,48 +220,48 @@
         "components": []
       },
       "content": {
-        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "id": "54bf6-f76d-4139-a850-c99bf06c8b69",
         "components": [
           {
-
+            
       "id": "77711f71-809f-40d3-bdb1-d5fcd9c9cdef",
-      "type": "codeEditor",
-      "propertyName": "style",
-      "label": "Style",
-      "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-    },
-    {
-      "id": "28242e9f-78d5-4396-859b-d13f88c29101",
-      "type": "dropdown",
-      "propertyName": "size",
-      "parentId": "root",
-      "label": "Size",
-      "allowClear": true,
-      "values": [
-        {
-          "label": "Small",
-          "value": "small",
-          "id": "9377eece-22db-4948-9337-6028d16b6c4f"
-        },
-        {
-          "label": "Middle",
-          "value": "middle",
-          "id": "3259a358-36de-49e4-a24f-d10328943771"
-        },
-        {
-          "label": "Large",
-          "value": "large",
-          "id": "54e34b63-e1eb-457c-a5ac-b97ef8c23719"
-        }
-      ],
-      "dataSourceType": "values"
-    }
-  ]
-}
+            "type": "codeEditor",
+            "propertyName": "style",
+            "label": "Style",
+            "parentId": "root",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+            "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+          },
+          {
+            "id": "28242e9f-78d5-4396-859b-d13f88c29101",
+            "type": "dropdown",
+            "propertyName": "size",
+            "parentId": "root",
+            "label": "Size",
+            "allowClear": true,
+            "values": [
+              {
+                "label": "Small",
+                "value": "small",
+                "id": "9377eece-22db-4948-9337-6028d16b6c4f"
+              },
+              {
+                "label": "Middle",
+                "value": "middle",
+                "id": "3259a358-36de-49e4-a24f-d10328943771"
+              },
+              {
+                "label": "Large",
+                "value": "large",
+                "id": "54e34b63-e1eb-457c-a5ac-b97ef8c23719"
+              }
+            ],
+            "dataSourceType": "values"
+          }
+        ]
+      }
     }
   
   ],
