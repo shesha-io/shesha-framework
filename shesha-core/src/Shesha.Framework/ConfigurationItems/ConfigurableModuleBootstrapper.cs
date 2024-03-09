@@ -116,25 +116,28 @@ namespace Shesha.ConfigurationItems
 
                 await _unitOfWorkManager.Current.SaveChangesAsync();
 
-                // initialize main module
-                var mainModuleInitialized = await codeModule.Instance.InitializeConfigurationAsync();
-
-                // initialize submodules
-                var submodules = allSubModules.Where(m => m.ModuleType == codeModule.ModuleType).OfType<IHasDataDrivenConfiguration>().ToList();
-                var submodulesInitialized = false;
-                foreach (var submodule in submodules)
+                using (_unitOfWorkManager.Current.EnableFilter(AbpDataFilters.SoftDelete)) 
                 {
-                    submodulesInitialized = submodulesInitialized || await submodule.InitializeConfigurationAsync();
-                }
+                    // initialize main module
+                    var mainModuleInitialized = await codeModule.Instance.InitializeConfigurationAsync();
 
-                if (mainModuleInitialized || submodulesInitialized)
-                {
-                    if (isNewModule)
-                        dbModule.FirstInitializedDate = Clock.Now;
-                    else
-                        dbModule.LastInitializedDate = Clock.Now;
+                    // initialize submodules
+                    var submodules = allSubModules.Where(m => m.ModuleType == codeModule.ModuleType).OfType<IHasDataDrivenConfiguration>().ToList();
+                    var submodulesInitialized = false;
+                    foreach (var submodule in submodules)
+                    {
+                        submodulesInitialized = submodulesInitialized || await submodule.InitializeConfigurationAsync();
+                    }
 
-                    await _moduleRepo.UpdateAsync(dbModule);
+                    if (mainModuleInitialized || submodulesInitialized)
+                    {
+                        if (isNewModule)
+                            dbModule.FirstInitializedDate = Clock.Now;
+                        else
+                            dbModule.LastInitializedDate = Clock.Now;
+
+                        await _moduleRepo.UpdateAsync(dbModule);
+                    }
                 }
             }
         }
