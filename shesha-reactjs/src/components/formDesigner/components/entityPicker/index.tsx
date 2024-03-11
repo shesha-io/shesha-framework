@@ -8,7 +8,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { useForm } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
-import { executeExpression, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeExpression, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
 import ConfigurableFormItem from '../formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
@@ -49,8 +49,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
-    const { filters, modalWidth, customWidth, widthUnits } = model;
-    const { formMode } = useForm();
+    const { filters, modalWidth, customWidth, widthUnits, style } = model;
+    const { formMode, formData } = useForm();
 
     const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
       return [
@@ -99,6 +99,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     }
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
+    const computedStyle = getStyle(style, formData) ?? {};
 
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
@@ -107,7 +108,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
           <EntityPicker
             incomeValueFunc={incomeValueFunc}
             outcomeValueFunc={outcomeValueFunc}
-
+            style={computedStyle}
             formId={model.id}
             readOnly={model.readOnly}
             displayEntityKey={model.displayEntityKey}
@@ -131,6 +132,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
             configurableColumns={model.items ?? []}
             value={value}
             onChange={onChange}
+            size={model.size}
           />
         );
         }}
