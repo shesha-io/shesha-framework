@@ -39,7 +39,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   allowDelete = true,
   //uploadMode = 'async',
   callback,
-  isStub = false,
+  isStub = !allowUpload,
   allowedFileTypes = [],
   isDragger = false,
 }) => {
@@ -187,7 +187,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     );
   };
 
-  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
+  return <span className={styles.shaFileUploadContainer}>{!isStub ? renderStub() : renderUploader()}</span>;
 };
 
 export default FileUpload;
