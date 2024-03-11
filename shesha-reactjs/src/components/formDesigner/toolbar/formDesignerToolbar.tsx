@@ -14,7 +14,7 @@ import { useStyles } from '../styles/styles';
 import { DeskTopButton } from './desktopButton';
 import { MobileButton } from './mobileButton';
 import { TabletButton } from './tabletButton';
-import { LandScapeButton } from './landScapeButton';
+import { DialogButton } from './dialogButton';
 
 export interface IProps { }
 
@@ -47,7 +47,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
       <DeskTopButton/>
       <MobileButton/>
       <TabletButton/>
-      <LandScapeButton/>
+      <DialogButton/>
 
 
       </div>
