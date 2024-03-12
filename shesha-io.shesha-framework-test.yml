@@ -104,7 +104,17 @@ stages:
     - task: SonarCloudAnalyze@1
       inputs:
         jdkversion: 'JAVA_HOME_17_X64'
-        
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'Sonarcloud'
+        organization: 'boxfusion'
+        scannerMode: 'MSBuild'
+        projectKey: 'Boxfusion_Shesha-Web-v3.0'
+        projectName: 'Shesha Framework'
+        projectVersion: '$(versionNo)'
+    - task: SonarQubePublish@5
+      inputs:
+        pollingTimeoutSec: '300'
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
