@@ -354,6 +354,39 @@ stages:
     pool:
       vmImage: windows-latest
     steps:    
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                         
+        workingDirectory: '$(System.DefaultWorkingDirectory)'    
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Output to console the current branch and version
+      inputs:
+        targetType: 'inline'
+        script: |
+          write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'    
     # - task: SonarCloudAnalyze@1
     #   inputs:
     #     jdkversion: 'JAVA_HOME_17_X64'
@@ -364,8 +397,9 @@ stages:
         organization: 'boxfusion'
         scannerMode: 'MSBuild'
         projectKey: 'Boxfusion_Shesha-Web-v3.0'
-        projectName: 'Shesha Framework'
-        projectVersion: '$(versionNo)'
+        projectName: 'Shesha Web v3.0'
+        projectVersion: '0.3.2'
+
     - task: SonarQubePublish@5
       inputs:
         pollingTimeoutSec: '300'    
