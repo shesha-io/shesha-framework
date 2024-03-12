@@ -47,6 +47,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         allowResizeX:model?.allowResizeX && !model?.autoWidth,
         allowResizeY:model?.allowResizeY && !model?.autoHeight,
         autofocus: model?.autofocus,
+        showCharsCounter: model?.showCharsCounter,
+        showWordsCounter: model?.showWordsCounter
       };
       return typedConfig;
     }, [model, model.readOnly]);
