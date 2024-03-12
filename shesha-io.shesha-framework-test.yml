@@ -354,9 +354,10 @@ stages:
     pool:
       vmImage: windows-latest
     steps:    
-    - task: SonarCloudAnalyze@1
-      inputs:
-        jdkversion: 'JAVA_HOME_17_X64'
+    # - task: SonarCloudAnalyze@1
+    #   inputs:
+    #     jdkversion: 'JAVA_HOME_17_X64'
+
     - task: SonarCloudPrepare@1
       inputs:
         SonarCloud: 'Sonarcloud'
