@@ -165,7 +165,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
       {isDragger ? (
         isStub ? (
-          <DraggerStub />
+          <Dragger disabled><DraggerStub /></Dragger>
         ) : (
           <Dragger {...props}>{renderDraggerContent()}</Dragger>
         )

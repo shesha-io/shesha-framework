@@ -155,7 +155,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const renderStub = () => {
     if (isDragger) {
-      return  "<DraggerStub />" ;
+      return  <Dragger disabled><DraggerStub /></Dragger>;
     }
 
     return <div className={classes}></div>
