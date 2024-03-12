@@ -8,7 +8,6 @@ import {
   DeleteOutlined,
   LoadingOutlined,
   UploadOutlined,
-  InboxOutlined,
 } from '@ant-design/icons';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
@@ -168,13 +167,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
           <span ref={uploadDraggerSpanRef} />
   
           <Show when={showUploadButton}>
-            <p className={styles.antUploadDragIcon}>
-              <InboxOutlined />
-            </p>
-            <p className={styles.antUploadText}>Click or drag file to this area to upload</p>
-            <p className={styles.antUploadHint}>
-              Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
-            </p>
+            <DraggerStub/>
           </Show>
         </Dragger>
       );
@@ -188,7 +181,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
 
-  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
+  return <span className={styles.shaFileUploadContainer}>{isStub || !allowUpload ? renderStub() : renderUploader()}</span>;
 };
 
 export default FileUpload;
