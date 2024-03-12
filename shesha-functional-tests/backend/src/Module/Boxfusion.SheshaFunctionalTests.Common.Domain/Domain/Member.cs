@@ -1,6 +1,7 @@
 ﻿using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.Web.FormsDesigner.Domain;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -88,5 +89,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// The bank that the Member belongs to
         /// </summary>
         public virtual Bank Bank { get; set; }
+        /// <summary>
+        /// Form to be rendered on the details view
+        /// </summary>
+        public virtual FormConfiguration DetailsForm { get; set; }
     }
 }

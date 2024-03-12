@@ -13,9 +13,10 @@ export interface ISubFormProviderProps extends IValuable, IChangeable {
   id: string;
   componentName?: string;
 
-  formSelectionMode?: 'name' | 'dynamic';
+  formSelectionMode?: 'name' | 'dynamic' | 'expression';
   formType?: string;
 
+  expression?: string;
   formId?: FormIdentifier;
 
   submitUrl?: string;

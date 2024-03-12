@@ -8,14 +8,15 @@ import React, {
   useReducer,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { ColProps, message, notification } from 'antd';
 import {
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
   executeScript,
+  executeScriptSync,
   upgradeComponents
-  } from '@/providers/form/utils';
+} from '@/providers/form/utils';
 import { DEFAULT_FORM_SETTINGS } from '../form/models';
 import { EntitiesGetQueryParams } from '@/apis/entities';
 import { EntityAjaxResponse } from '@/generic-pages/dynamic/interfaces';
@@ -24,7 +25,7 @@ import {
   useDeepCompareMemoKeepReference,
   useMutate,
   usePubSub
-  } from '@/hooks';
+} from '@/hooks';
 import { getQueryParams, QueryStringParams } from '@/utils/url';
 import { IAnyObject } from '@/interfaces';
 import { ISubFormProviderProps } from './interfaces';
@@ -66,6 +67,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const {
     formSelectionMode,
     formType,
+    expression,
     children,
     value,
     formId,
@@ -95,7 +97,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const { formData = {}, formMode } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
-  
+
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   /**
@@ -167,13 +169,13 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     return getUrl
       ? // if getUrl is specified - evaluate value using JS
-        evaluateUrl(getUrl)
+      evaluateUrl(getUrl)
       : internalEntityType
-      ? // if entityType is specified - get default url for the entity
+        ? // if entityType is specified - get default url for the entity
         urlHelper
           .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then((endpoint) => endpoint.url)
-      : // return empty string
+        : // return empty string
         Promise.resolve('');
   };
 
@@ -194,6 +196,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       if (value && typeof value === 'object' && value['_className'] && !formConfig?.formId)
         getEntityFormId(value['_className'], formType).then((formid) => {
           setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
+        });
+    } else if (value && formSelectionMode === 'expression') {
+      const formId = executeScriptSync(expression, { data: formData, globalState });
+      getForm({ formId: formId, skipCache: false, configurationItemMode })
+        .then((form) => {
+          setFormConfig({ formId: { name: form.name, module: form.module }, lazy: true });
         });
     }
   }, [value]);
@@ -440,7 +448,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   //#endregion
 
   const getChildComponents = (componentId: string) => {
-    
+
     const childIds = state.componentRelations[componentId];
 
     if (!childIds) return [];
