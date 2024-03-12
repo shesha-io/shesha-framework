@@ -398,8 +398,16 @@ stages:
         scannerMode: 'MSBuild'
         projectKey: 'Boxfusion_Shesha-Web-v3.0'
         projectName: 'Shesha Web v3.0'
-        projectVersion: '0.3.2'
-
+        projectVersion: '$(versionNo)'
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'Sonarcloud' # This is the name of the service connection you created
+        organization: 'boxfusion'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'Boxfusion_Shesha-Web-v3.0'
+        cliProjectName: 'Shesha Web v3.0'
+        cliSources: '$(System.DefaultWorkingDirectory)' # This is the relative path to your source code
     - task: SonarQubePublish@5
       inputs:
         pollingTimeoutSec: '300'    
