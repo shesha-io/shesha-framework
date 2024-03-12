@@ -101,6 +101,10 @@ stages:
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
       # condition: ne(variables['currentBranch'], 'refs/heads/main')
+    - task: SonarCloudAnalyze@1
+      inputs:
+        jdkversion: 'JAVA_HOME_17_X64'
+        
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
