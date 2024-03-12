@@ -37,6 +37,7 @@ stages:
   jobs:
   - job: Job_1
     displayName: Build_Functional_Shesha_API
+    dependsOn: Job_4    
     pool:
       name: Azure Pipelines
       vmImage: windows-latest
@@ -101,20 +102,6 @@ stages:
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
       # condition: ne(variables['currentBranch'], 'refs/heads/main')
-    - task: SonarCloudAnalyze@1
-      inputs:
-        jdkversion: 'JAVA_HOME_17_X64'
-    - task: SonarCloudPrepare@1
-      inputs:
-        SonarCloud: 'Sonarcloud'
-        organization: 'boxfusion'
-        scannerMode: 'MSBuild'
-        projectKey: 'Boxfusion_Shesha-Web-v3.0'
-        projectName: 'Shesha Framework'
-        projectVersion: '$(versionNo)'
-    - task: SonarQubePublish@5
-      inputs:
-        pollingTimeoutSec: '300'
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -170,6 +157,7 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
   - job: Job_2
+    dependsOn: Job_4
     displayName: Build_Functional_Shesha_AdminPortal
     pool:
       vmImage: windows-latest
@@ -297,6 +285,7 @@ stages:
         ArtifactName: adminportal-functional
   - job: Job_3
     displayName: Prepare Release if published
+    dependsOn: Job_4
     pool:
       vmImage: windows-latest
     steps:
@@ -359,4 +348,23 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: Release Version'
       inputs:
-        ArtifactName: release-version        
+        ArtifactName: release-version
+  - job: Job_4
+    displayName: SonarSource
+    pool:
+      vmImage: windows-latest
+    steps:    
+    - task: SonarCloudAnalyze@1
+      inputs:
+        jdkversion: 'JAVA_HOME_17_X64'
+    - task: SonarCloudPrepare@1
+      inputs:
+        SonarCloud: 'Sonarcloud'
+        organization: 'boxfusion'
+        scannerMode: 'MSBuild'
+        projectKey: 'Boxfusion_Shesha-Web-v3.0'
+        projectName: 'Shesha Framework'
+        projectVersion: '$(versionNo)'
+    - task: SonarQubePublish@5
+      inputs:
+        pollingTimeoutSec: '300'    
