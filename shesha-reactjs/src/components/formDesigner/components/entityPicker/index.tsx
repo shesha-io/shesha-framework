@@ -107,7 +107,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
           <EntityPicker
             incomeValueFunc={incomeValueFunc}
             outcomeValueFunc={outcomeValueFunc}
-
+            placeholder={model.placeholder}
             formId={model.id}
             readOnly={model.readOnly}
             displayEntityKey={model.displayEntityKey}
