@@ -6,6 +6,12 @@ export const useStyles = createStyles(({ css, cx }) => {
 
       .ant-form-item-control {
         flex-direction: unset;
+        display: flex;
+      }
+
+      .ant-form-item-control-input   {
+        width: 100%;
+        min-height: --ant-control-height;
       }
     `);
 
