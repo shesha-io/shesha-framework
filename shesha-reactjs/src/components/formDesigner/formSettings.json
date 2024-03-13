@@ -1,241 +1,47 @@
 {
-  
   "components": [
-      {
-        "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
-        "type": "collapsiblePanel",
-        "propertyName": "pnlDisplay",
-        "label": "Display",
-        "labelAlign": "right",
-        "parentId": "root",
-        "hidden": false,
-  
-        "isDynamic": false,
-        "version": 1,
-        "expandIconPosition": "start",
-        "collapsible": "header",
-        "collapsedByDefault": false,
-        "ghost": true,
-        "header": {
-          "id": "2JkE1UV7XdEQgLMcKGSq3",
-          "components": []
-        },
-        "content": {
-          "id": "pnl54bf6-f76d-4139-a850-c89bf06c8b69",
-          "components": [
-            {
-
-      "id": "f67bf678-f667-4620-8eba-b0fd1cdd3271",
-      "type": "propertyAutocomplete",
-      "propertyName": "propertyName",
+    {
+      "id": "ee6a9269-0e8e-41db-b6e0-069036accb19",
+      "type": "autocomplete",
+      "propertyName": "modelType",
+      "label": "Entity",
+      "labelAlign": "right",
       "parentId": "root",
-      "label": "Property name",
+      "hidden": false,
+      "dataSourceType": "url",
+      "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
+      "validate": {},
+      "useRawValues": true
+    },
+    {
+      "id": "077f5a0d-d59e-44b8-bc5b-a06e18438f4d",
+      "type": "dropdown",
+      "propertyName": "layout",
+      "label": "Layout",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
       "validate": {
         "required": true
-      }
-    },
-    {
-      "id": "f86bdc91-2c07-4214-ba2b-54799ddbbb56",
-      "type": "textField",
-      "propertyName": "label",
-      "parentId": "root",
-      "label": "Label"
-    },
-    {
-      "id": "e93ed37c-2bd5-4ced-ac68-73797b516bfc",
-      "type": "textField",
-      "propertyName": "confirmLabel",
-      "parentId": "root",
-      "label": "Label: Confirmation"
-    },
-    {
-      "id": "5bb92b3f-ffed-4dca-8c46-887501ad3d87",
-      "type": "dropdown",
-      "propertyName": "labelAlign",
-      "parentId": "root",
-      "label": "Label align",
+      },
+      "dataSourceType": "values",
       "values": [
         {
-          "label": "left",
-          "value": "left",
-          "id": "1641ad88-5ff9-4c06-a272-ccc18c81b2b5"
+          "id": "3f7bd074-37e6-450c-8106-95e8d8164ada",
+          "label": "horizontal",
+          "value": "horizontal"
         },
         {
-          "label": "right",
-          "value": "right",
-          "id": "33796247-1cb7-43d4-81b6-59acc02dd18e"
+          "id": "5709e098-7c1d-4a27-92e5-f25e998c26fd",
+          "label": "vertical",
+          "value": "vertical"
         }
       ],
-      "dataSourceType": "values"
-    },
-    {
-      "id": "1336690b-7917-4d39-a530-ee3025821801",
-      "type": "textField",
-      "propertyName": "placeholder",
-      "parentId": "root",
-      "label": "Placeholder"
-    },
-    {
-      "id": "84f127cb-20f4-4af3-a60d-86eadb41fec2",
-      "type": "textField",
-      "propertyName": "confirmPlaceholder",
-      "parentId": "root",
-      "label": "Placeholder: Confirmation"
-    },
-    {
-      "id": "605af7f5-9a9e-4ace-a42b-46d6004af9ce",
-      "type": "textArea",
-      "propertyName": "description",
-      "parentId": "root",
-      "label": "Description"
-    },
-    {
-      "id": "dff1b08b-2a0f-4182-b71c-385d2c0004d9",
-      "type": "textArea",
-      "propertyName": "confirmDescription",
-      "parentId": "root",
-      "label": "Description: Confirmation"
-    },
-    {
-      "id": "2b2c4bcd-5607-4dd4-9899-5fa59bab06d0",
-      "type": "checkbox",
-      "propertyName": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
-    },
-    {
-      "id": "0393ea49-2fe9-4dc9-9cd8-ca9221b2aec1",
-      "type": "checkbox",
-      "propertyName": "hideLabel",
-      "parentId": "root",
-      "label": "Hide Label"
-    },
-    {
-      "id": "ea219103-9299-499e-86bb-8c4490e1c759",
-      "type": "editModeSelector",
-      "propertyName": "editMode",
-      "parentId": "root",
-      "label": "Edit mode"
-    },
-    {
-      "id": "bf95c7d8-aa8a-41d2-bf47-b47a7ce99ada",
-      "type": "checkbox",
-      "propertyName": "hideBorder",
-      "label": "Hide border",
-      "parentId": "root",
-      "hidden": false,
-      "validate": {}
-    }]
-        }
-      },
-    {
-      "id": "07356df9-8bb9-4d8b-bc8f-6919b316a060",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlValidation",
-      "label": "Validation",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-
-      "isDynamic": false,
       "version": 1,
-      "expandIconPosition": "start",
-      "collapsible": "header",
-      "collapsedByDefault": false,
-      "ghost": true,
-      "header": {
-        "id": "2JkE1UV7XdEQgLAcKGSq3",
-        "components": []
-      },
-      "content": {
-        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
-        "components": [
-          {
-      "id": "c8ac6cea-17ed-4ba4-abeb-11148d7c8144",
-      "type": "checkbox",
-      "propertyName": "validate.required",
-      "parentId": "root",
-      "label": "Required"
+      "referenceListId": null
     },
     {
-      "id": "dfcd525a-5c0a-49e0-9ef6-3175c5185de1",
-      "type": "numberField",
-      "propertyName": "minLength",
-      "parentId": "root",
-      "label": "Min Password Length",
-      "validate": {},
-      "defaultValue": 4
-    },
-    {
-      "id": "cdd57f4e-83d6-46c7-89ac-2c12cace86d0",
-      "type": "textField",
-      "propertyName": "message",
-      "parentId": "root",
-      "label": "Message",
-      "validate": {}
-    },
-    {
-      "id": "db276deb-2c5a-461a-9ea3-9d5d4d75a698",
-      "type": "codeEditor",
-      "propertyName": "validate.validator",
-      "parentId": "root",
-      "label": "Validator",
-      "validate": {},
-      "labelAlign": "right",
-      "hidden": false,
-      "description": "Enter custom validator logic for form.item rules. Returns a Promise",
-      "settingsValidationErrors": [],
-      "exposedVariables": [
-        {
-          "propertyName": "rules",
-          "description": "Validate rules, only support customize validator",
-          "type": "object"
-        },
-        { "propertyName": "value", "description": "Component current value", "type": "object" },
-        { "propertyName": "callback", "description": "Callback called by component", "type": "function" },
-        { "propertyName": "data", "description": "Form values", "type": "object" }
-      ]
-    }
-  ]
-}
-    },
-
-    {
-      "id": "b8c06332-2e5e-40ad-a5f0-770de616ee3e",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlStyle",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-
-      "isDynamic": false,
-      "version": 1,
-      "expandIconPosition": "start",
-      "collapsible": "header",
-      "collapsedByDefault": false,
-      "ghost": true,
-      "header": {
-        "id": "2JkE1UV7XdEQgLAcKGSq3",
-        "components": []
-      },
-      "content": {
-        "id": "54bf6-f76d-4139-a850-c99bf06c8b69",
-        "components": [
-          {
-
-      "id": "77711f71-809f-40d3-bdb1-d5fcd9c9cdef",
-      "type": "codeEditor",
-      "propertyName": "style",
-      "label": "Style",
-      "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-    },
-    {
-      "id": "28242e9f-78d5-4396-859b-d13f88c29101",
+      "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
       "type": "dropdown",
       "propertyName": "size",
       "parentId": "root",
@@ -245,40 +51,479 @@
         {
           "label": "Small",
           "value": "small",
-          "id": "9377eece-22db-4948-9337-6028d16b6c4f"
+          "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
         },
         {
           "label": "Middle",
           "value": "middle",
-          "id": "3259a358-36de-49e4-a24f-d10328943771"
+          "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
         },
         {
           "label": "Large",
           "value": "large",
-          "id": "54e34b63-e1eb-457c-a5ac-b97ef8c23719"
+          "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
         }
       ],
-      "dataSourceType": "values"
+      "dataSourceType": "values",
+      "version": 1,
+      "referenceListId": null
+    },
+    {
+      "id": "b6bdf196-769f-4bce-b488-9ca50ad16176",
+      "type": "checkbox",
+      "propertyName": "colon",
+      "label": "Colon",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "description": "Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)",
+      "validate": {}
+    },
+    {
+      "id": "493e12cd-d4ab-4f2a-8c08-3a20ce0f617e",
+      "type": "numberField",
+      "propertyName": "labelCol.span",
+      "label": "Label span",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "validate": {},
+      "description": "Raster number of cells to occupy, 0 corresponds to display: none"
+    },
+    {
+      "id": "99c93c99-0005-429e-8f71-e899230f1c6e",
+      "type": "numberField",
+      "propertyName": "wrapperCol.span",
+      "label": "Component span",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "validate": {},
+      "description": "Raster number of cells to occupy, 0 corresponds to display: none"
+    },
+    {
+      "id": "0e3231f1-e158-427a-b32b-00ff9da941bb",
+      "type": "checkbox",
+      "propertyName": "excludeFormFieldsInPayload",
+      "label": "Exclude '_formFields' in the payload?",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "description": "Whether or not _formFields should be included in the payload. By default it is included.",
+      "validate": {}
+    },
+    {
+      "id": "63f3360d-1e54-4a79-a888-8cd23b0bedd5",
+      "type": "propertyAutocomplete",
+      "propertyName": "fieldsToFetch",
+      "label": "Additional fields for fetch",
+      "mode": "multiple",
+      "labelAlign": "right",
+      "hidden": false,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "A list of fields you want to fetch",
+      "parentId": "root"
+    },
+    {
+      "id": "52f4460d-2e64-4d79-a900-7cd28b0bebd3",
+      "type": "propertyAutocomplete",
+      "propertyName": "formKeysToPersist",
+      "label": "Persisted properties",
+      "mode": "tags",
+      "labelAlign": "right",
+      "hidden": false,
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "A list of form properties you want persisted",
+      "parentId": "root"
+    },
+    {
+      "id": "ad28d795-92d8-4470-a87e-603822368cc8",
+      "type": "textField",
+      "propertyName": "uniqueFormId",
+      "label": "Unique Form Id",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {"_code": "return  !getSettingValue(data?.formKeysToPersist?.length);", "_mode": "code", "_value": false},
+      "validate": {
+        "required": true
+      },
+      "description": "This is very important since some form are rendered using the markup, in which case they wouldn't have the path or id that could be used as a unique id of the form",
+      "version": 0,
+      "textType": "text"
+    },
+    {
+      "id": "6c121baa-57e3-4965-a429-0632dadc2a99",
+      "type": "labelValueEditor",
+      "propertyName": "initialValues",
+      "parentId": "root",
+      "label": "Initial Values",
+      "labelTitle": "Key",
+      "labelName": "key",
+      "valueTitle": "Value",
+      "valueName": "value",
+      "ignorePrefixesOnNewItems": true,
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "The form data",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "query",
+          "description": "Query parameters from the address bar",
+          "type": "object"
+        }
+      ],
+      "description": "Enter values that you would like passed to the server as payload. Note that you can also use Mustache expression as in {{parent.id}}. Also you can use dot notation such as query.name"
+    },
+    {
+      "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
+      "type": "codeEditor",
+      "propertyName": "preparedValues",
+      "label": "Prepared Values",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "The form data",
+          "type": "object"
+        },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values",
+          "type": "object"
+        }
+      ],
+      "description": "Write a code that allows you to return an object whose values will be merged with the form state before submit. Check the variables tab for exposed variables"
+    },
+    {
+      "id": "055f85e2-f2f1-4a88-95ad-0d1afb81cae7",
+      "type": "codeEditor",
+      "propertyName": "onInitialized",
+      "label": "On Initialized",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "exposedVariables": [
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        },
+        {
+          "name": "form",
+          "description": "The form instance",
+          "type": "object"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
+        }
+      ],
+      "description": "This action will be executed the first time the form loads. Just before any API call has been made. At this stage, the form has no data except for initialValues if passed"
+    },
+    {
+      "id": "087a4e7d-ff28-4175-9221-61bef0bbaea2",
+      "type": "codeEditor",
+      "propertyName": "onDataLoaded",
+      "label": "On Data Loaded",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "Fetched data from the server",
+          "type": "object"
+        },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values passsed to the form. In most cases, it's the selected row in a case where an action column is the one triggering the form displaying on the dialog",
+          "type": "object"
+        },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        },
+        {
+          "name": "form",
+          "description": "The form instance",
+          "type": "object"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
+        }
+      ],
+      "description": "This action will be executed immediately after the data has been loaded (Fetched from the API)"
+    },
+    {
+      "id": "5092dd2b-c514-4b06-bfb5-546ce94fab97",
+      "type": "codeEditor",
+      "propertyName": "onUpdate",
+      "label": "On Update",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "The form data",
+          "type": "object"
+        },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
+        {
+          "name": "parentFormValues",
+          "description": "Parent form values. The values of the form rendering the dialog.",
+          "type": "object"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "initialValues",
+          "description": "Initial values",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        },
+        {
+          "name": "setFormData",
+          "description": "A function used to update the form data",
+          "type": "({ values: object, mergeValues: boolean}) => void"
+        },
+        {
+          "name": "setGlobalState",
+          "description": "Setting the global state of the application",
+          "type": "(payload: { key: string, data: any } ) => void"
+        }
+      ],
+      "description": "This action will be executed whenever the form updates"
+    },
+    {
+      "id": "Q6s-GKx4El9BhcH9MQ8bj",
+      "type": "collapsiblePanel",
+      "propertyName": "collapsiblePanel1",
+      "label": "Advanced Settings...",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "expandIconPosition": "end",
+      "settingsValidationErrors": [],
+      "components": [
+        {
+          "id": "y3d0ny6_gznxiEEHFa1ZG",
+          "type": "endpointsAutocomplete",
+          "propertyName": "postUrl",
+          "label": "Custom Create Url",
+          "labelAlign": "right",
+          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
+          "hidden": false,
+
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "prefix": "POST",
+          "suffix": "",
+          "initialValue": "",
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "oamRBlEs6O2Jlc2FGL_gY",
+          "type": "endpointsAutocomplete",
+          "propertyName": "getUrl",
+          "label": "Custom Read Url",
+          "labelAlign": "right",
+          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
+          "hidden": false,
+
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "prefix": "GET",
+          "suffix": "",
+          "initialValue": "",
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "pooSZYaENGyIjZFy6gH9G",
+          "type": "endpointsAutocomplete",
+          "propertyName": "putUrl",
+          "label": "Custom Update Url",
+          "labelAlign": "right",
+          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
+          "hidden": false,
+
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "prefix": "PUT",
+          "suffix": "",
+          "initialValue": "",
+          "settingsValidationErrors": []
+        },
+        {
+          "id": "Qlyg6-hRbU8Q287-P_Fr7",
+          "type": "endpointsAutocomplete",
+          "propertyName": "deleteUrl",
+          "label": "Custom Delete Url",
+          "labelAlign": "right",
+          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
+          "hidden": false,
+
+          "isDynamic": false,
+          "placeholder": "",
+          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+          "validate": {
+            "minLength": "",
+            "maxLength": "",
+            "message": ""
+          },
+          "quickviewWidth": "",
+          "prefix": "DELETE",
+          "suffix": "",
+          "initialValue": "",
+          "settingsValidationErrors": []
+        }
+      ],
+      "collapsedByDefault": true
     }
-  ]
-}
-    }
-  
   ],
   "formSettings": {
     "layout": "horizontal",
     "colon": true,
     "labelCol": {
-      "span": 8
+      "span": 5
     },
     "wrapperCol": {
-      "span": 16
-    },
-    "displayName": "DEFAULT_FORM_SETTINGS",
-    "__docgenInfo": {
-      "description": "Default form settings",
-      "displayName": "DEFAULT_FORM_SETTINGS",
-      "props": {}
+      "span": 19
     }
   }
 }
