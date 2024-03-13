@@ -28,7 +28,7 @@ const formatDate = (dateText: string, dateFormat: string) => {
 };
 
 export const formatDateStringAndPrefix = (content: string, dateFormat: string) => {
-  const regex = /^\s*([\S\s]+?)\s+(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3})/;
+  const regex = /^\s*([\S\s]+?)\s+(\d{4}-\d{2}-\d{2})/;
   const match = content?.match(regex);
 
   if (match && match?.length > 2) {
@@ -37,7 +37,7 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string) =
 
     return `${prefix} ${formatDate(dateString, dateFormat)}`;
   } else {
-    return formatDate(content, dateFormat);
+    return content.replace(regex, formatDate(content, dateFormat));
   }
 };
 
