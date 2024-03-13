@@ -353,7 +353,9 @@ stages:
     displayName: SonarSource
     pool:
       vmImage: ubuntu-latest
-    steps:    
+    steps:
+    - checkout: self
+      fetchDepth: 0    
     - task: PowerShell@2
       displayName: Check if Pull Request
       retryCountOnTaskFailure: 5
