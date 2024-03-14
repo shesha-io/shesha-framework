@@ -6,10 +6,12 @@ import {
   ITableActionColumn,
   ITableCrudOperationsColumn,
   ITableDataColumn,
+  ITableFormColumn,
 } from '@/providers/dataTable/interfaces';
 import ActionCell from './actionCell';
 import CrudOperationsCell from './crudOperationsCell';
 import DataCell from './dataCell';
+import FormCell from './formCell';
 
 export const getCellRenderer = <D extends object = {}, V = any>(
   column: ITableColumn,
@@ -31,6 +33,10 @@ export const getCellRenderer = <D extends object = {}, V = any>(
     }
     case 'calculated': {
       return null;
+    }
+    case 'form': {
+      const baseProps = { columnConfig: column as ITableFormColumn };
+      return (cellProps: CellProps<D, V>) => <FormCell<D, V> {...cellProps} {...baseProps} />;
     }
     default: {
       console.error(`Unexpected column type '${column.columnType}'`, column);

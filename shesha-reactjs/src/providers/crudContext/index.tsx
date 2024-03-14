@@ -25,6 +25,7 @@ import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from './context
 import { CrudMode } from './models';
 import reducer from './reducer';
 import { FormWrapper } from './formWrapper';
+import ParentProvider from '../parentProvider/index';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -274,9 +275,11 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           mode={state.mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}
         >
-          <FormWrapper form={form} initialValues={state.initialValues} onValuesChange={onValuesChange} formSettings={formSettings}>
-            {children}
-          </FormWrapper>
+          <ParentProvider model={{readOnly: state.mode === 'read'}} formMode={state.mode === 'read' ? 'readonly' : 'edit'}>
+            <FormWrapper form={form} initialValues={state.initialValues} onValuesChange={onValuesChange} formSettings={formSettings}>
+              {children}
+            </FormWrapper>
+          </ParentProvider>
         </FormProvider>
       )}
     </CrudContext.Provider>

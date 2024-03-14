@@ -19,7 +19,10 @@ namespace Shesha.Sms.Clickatell
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha Clickatell",
-            Publisher = "Shesha"
+            Publisher = "Shesha",
+#if DisableEditModule
+            IsEditable = false,
+#endif
         };
 
         public override async Task<bool> InitializeConfigurationAsync()

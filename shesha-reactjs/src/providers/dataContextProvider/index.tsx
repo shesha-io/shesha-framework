@@ -30,16 +30,17 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   } = props;
 
   const { onChangeContextData } = useDataContextManager();
-  const dataRef = useRef<any>();
+  const dataRef = useRef<any>(undefined);
+  const initialDataRef = useRef<any>(undefined);
 
   const onChangeData = useRef<ContextOnChangeData>();
   if (props.onChangeData) {
     onChangeData.current = props.onChangeData;
   }
-  
     useEffect(() => {
-      if (initialData) {
+      if (initialData && initialDataRef.current === undefined) {
         initialData.then((data) => {
+          initialDataRef.current = data ?? null;
           dataRef.current = data;
         });
       }

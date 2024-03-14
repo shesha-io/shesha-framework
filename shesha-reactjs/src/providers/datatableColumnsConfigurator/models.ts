@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent } from '@/interfaces';
+import { FormIdentifier, IConfigurableFormComponent } from '@/interfaces';
 import { DatatableColumnType, IActionColumnProps, IAnchoredDirection } from '@/providers/dataTable/interfaces';
 
 type ColumnsItemType = 'item' | 'group';
@@ -49,6 +49,17 @@ export interface IConfigurableColumnsProps extends IConfigurableColumnsBase {
 export interface IDataColumnsProps extends IConfigurableColumnsProps, IEditableColumnProps {
   propertyName: string;
   allowSorting: boolean;
+}
+
+/**
+ * Configurable form column (displays form)
+ */
+export interface IFormColumnsProps extends IConfigurableColumnsProps, IEditableColumnProps {
+  propertiesNames?: string;
+
+  displayFormId?: FormIdentifier;
+  createFormId?: FormIdentifier;
+  editFormId?: FormIdentifier;
 }
 
 /**

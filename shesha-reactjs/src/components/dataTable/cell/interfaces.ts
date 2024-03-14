@@ -1,7 +1,7 @@
 import { CellProps } from 'react-table';
 import { FormMode, ITableColumn } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { ITableDataColumn } from '@/providers/dataTable/interfaces';
+import { ITableDataColumn, ITableFormColumn } from '@/providers/dataTable/interfaces';
 import { IFieldComponentProps } from '@/providers/datatableColumnsConfigurator/models';
 import { InlineEditMode } from '@/components/reactTable/interfaces';
 
@@ -20,6 +20,8 @@ export interface ICommonCellProps<TConfig extends ITableColumn, D extends object
   IConfigurableCellProps<TConfig> { }
 
 export interface IDataCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableDataColumn, D, V> { }
+
+export interface IFormCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableFormColumn, D, V> { }
 
 export interface IComponentWrapperProps {
   customComponent: IFieldComponentProps;

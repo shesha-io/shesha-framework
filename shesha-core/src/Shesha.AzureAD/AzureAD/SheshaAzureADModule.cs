@@ -17,7 +17,10 @@ namespace Shesha.AzureAD
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha Azure AD",
-            Publisher = "Shesha"
+            Publisher = "Shesha",
+#if DisableEditModule
+            IsEditable = false,
+#endif
         };
 
         public override void PreInitialize()

@@ -16,7 +16,10 @@ namespace Shesha.Sms.SmsPortal
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha SMS Portal",
-            Publisher = "Shesha"
+            Publisher = "Shesha",
+#if DisableEditModule
+            IsEditable = false,
+#endif
         };
 
         public override async Task<bool> InitializeConfigurationAsync()

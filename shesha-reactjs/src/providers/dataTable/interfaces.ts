@@ -2,7 +2,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IDataColumnsProps, IEditableColumnProps } from '../datatableColumnsConfigurator/models';
 import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
-import { IDictionary, IPropertySetting } from '@/interfaces';
+import { FormIdentifier, IDictionary, IPropertySetting } from '@/interfaces';
 import { CSSProperties } from 'react';
 
 export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
@@ -18,14 +18,14 @@ export type IndexColumnFilterOption =
   | 'before'
   | 'after';
 
-export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations';
+export type DatatableColumnType = 'data' | 'action' | 'calculated' | 'crud-operations' | 'form';
 
 export type SortDirection = 0 /*asc*/ | 1 /*desc*/;
 export type ColumnSorting = 'asc' | 'desc';
 
 export type DataFetchingMode = 'paging' | 'fetchAll';
 
-export type IAnchoredDirection = 'left' | 'right' ;
+export type IAnchoredDirection = 'left' | 'right';
 
 export interface ITableColumn {
   columnType: DatatableColumnType;
@@ -35,7 +35,8 @@ export interface ITableColumn {
   accessor: string;
   header: string;
   caption?: string;
-  
+  description?: string;
+
   isVisible: boolean; // is visible in the table (including columns selector, filter etc.)
   show?: boolean; // is visible on client
   isFilterable: boolean;
@@ -47,7 +48,7 @@ export interface ITableColumn {
 
   filterOption?: IndexColumnFilterOption;
   filter?: any;
-  
+
   name?: string;
   allowShowHide?: boolean;
   metadata?: IPropertyMetadata;
@@ -55,8 +56,7 @@ export interface ITableColumn {
   anchored?: IAnchoredDirection;
 }
 
-
-export interface IAnchoredColumnProps{
+export interface IAnchoredColumnProps {
   shift?: number;
   shadowPosition?: number;
 }
@@ -69,28 +69,43 @@ export interface CellStyleFuncArgs {
    * Cell value
    */
   value: any;
-};
+}
 export type CellStyleFunc = (args: CellStyleFuncArgs) => CSSProperties;
 export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
 
-export interface ITableDataColumn extends ITableColumn, IEditableColumnProps {
+export interface ITableDataFetchColumn extends ITableColumn {
+  propertiesToFetch?: string | string[];
+  isEnitty?: boolean;
+}
+
+export interface ITableDataColumn extends ITableColumn, ITableDataFetchColumn, IEditableColumnProps {
   propertyName?: string;
   dataType?: ProperyDataType;
   dataFormat?: string;
-  
+
   referenceListName?: string;
   referenceListModule?: string;
   entityReferenceTypeShortAlias?: string;
   allowInherited?: boolean;
 }
 
+export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {
+  propertiesNames?: string;
+
+  displayFormId?: FormIdentifier;
+  createFormId?: FormIdentifier;
+  editFormId?: FormIdentifier;
+}
+
 export const isDataColumn = (column: ITableColumn): column is ITableDataColumn => {
   return column && column.columnType === 'data';
 };
 
-export interface ITableActionColumn extends ITableColumn, IActionColumnProps {
-  
-}
+export const isFormColumn = (column: ITableColumn): column is ITableFormColumn => {
+  return column && column.columnType === 'form';
+};
+
+export interface ITableActionColumn extends ITableColumn, IActionColumnProps { }
 
 export interface ITableCrudOperationsColumn extends ITableColumn {}
 
@@ -214,7 +229,7 @@ export interface IPublicDataTableActions {
   exportToExcel?: () => void;
 }
 
-export interface IDataTableInstance extends IPublicDataTableActions { }
+export interface IDataTableInstance extends IPublicDataTableActions {}
 
 export type ListSortDirection = 0 | 1;
 
@@ -273,12 +288,12 @@ export interface IActionColumnProps {
   /**
    * Icon, is used for action columns
    */
-   icon?: string;
+  icon?: string;
 
-   /**
-    * Configurable action configuration
-    */
-   actionConfiguration?: IConfigurableActionConfiguration;  
+  /**
+   * Configurable action configuration
+   */
+  actionConfiguration?: IConfigurableActionConfiguration;
 }
 
 export interface ISortingItem {

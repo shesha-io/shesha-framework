@@ -8,7 +8,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IConfigurableFormComponent, MetadataProvider, useForm } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
-import { MetadataContext, MetadataType } from '@/providers/metadata/contexts';
+import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { PropertyCascaderDotNotation } from '@/components/propertyAutocomplete/propertyCascader';
@@ -39,10 +39,6 @@ interface IContextPropertyAutocompleteState {
 export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> = (model) => {
 
   const { defaultModelType, readOnly, formData, onValuesChange } = model;
-
-  let formModel = useFormDesigner(false)?.formSettings?.modelType;
-  const form = useForm(false);
-  formModel = formModel ?? form?.formSettings?.modelType;
 
   const initialState: IContextPropertyAutocompleteState = {
     mode: !!formData?.context || formData?.propertyName !== formData?.componentName
@@ -90,10 +86,6 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
         }} />
       </Form.Item>
       <ConditionalWrap
-        condition={!modelType && !formModel}
-        wrap={content => <MetadataContext.Provider value={undefined}>{content}</MetadataContext.Provider>}
-      >
-        <ConditionalWrap
           condition={Boolean(modelType)}
           wrap={content => <MetadataProvider modelType={modelType} dataType={dataType}>{content}</MetadataProvider>}
         >
@@ -138,7 +130,6 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
             )}
           </Form.Item>
         </ConditionalWrap>
-      </ConditionalWrap>
       <Button type='link' onClick={setFormDataMode} hidden={model.readOnly || state.mode === 'formData'}>
         hide binding option (bind to form data)
       </Button>

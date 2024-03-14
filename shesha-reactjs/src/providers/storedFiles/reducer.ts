@@ -17,7 +17,6 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.DownloadFileSuccess:
     case StoredFilesActionEnums.DownloadFileError:
     case StoredFilesActionEnums.FetchFileListSuccess:
-    case StoredFilesActionEnums.DeleteFileError:
     case StoredFilesActionEnums.DowloadZipRequest:
     case StoredFilesActionEnums.DowloadZipSuccess:
     case StoredFilesActionEnums.DeleteFileRequest:
@@ -38,14 +37,14 @@ export function storedFilesReducer(
     case StoredFilesActionEnums.OnFileDeleted:
       return {
         ...state,
-        fileList: state.fileList.filter(
+        fileList: state.fileList?.filter(
           ({ id, uid }) => id !== payload.fileIdToDelete && uid !== payload.fileIdToDelete
         ),
       };
     case StoredFilesActionEnums.UploadFileRequest:
       return {
         ...state,
-        fileList: [...state.fileList, payload.newFile],
+        fileList: [...(state.fileList ?? []), payload.newFile],
       };
     case StoredFilesActionEnums.UploadFileSuccess: {
       const { fileList } = state;
@@ -97,6 +96,18 @@ export function storedFilesReducer(
         }),
       };
     }
+    case StoredFilesActionEnums.DeleteFileError: {
+      if (state.fileList?.find(x => x.uid === payload.fileIdToDelete)?.status === 'error')
+        return {
+          ...state,
+          fileList: state.fileList.filter(
+            ({ id, uid }) => id !== payload.fileIdToDelete && uid !== payload.fileIdToDelete
+          ),
+        };
+      
+      return state;
+    }
+
     default: {
       return state;
     }

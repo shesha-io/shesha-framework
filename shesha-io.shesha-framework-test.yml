@@ -37,6 +37,7 @@ stages:
   jobs:
   - job: Job_1
     displayName: Build_Functional_Shesha_API
+    dependsOn: Job_4    
     pool:
       name: Azure Pipelines
       vmImage: windows-latest
@@ -112,7 +113,7 @@ stages:
       displayName: dotnet build
       inputs:
         projects: shesha-functional-tests/backend/Boxfusion.SheshaFunctionalTests.sln
-        arguments: --configuration $(BuildParameters.configuration)
+        arguments: --configuration $(BuildParameters.configuration) -p:DefineConstants=DisableEditModule
     - task: DotNetCoreCLI@2
       displayName: dotnet publish
       inputs:
@@ -156,6 +157,7 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'packs-functional'
   - job: Job_2
+    dependsOn: Job_4
     displayName: Build_Functional_Shesha_AdminPortal
     pool:
       vmImage: windows-latest
@@ -283,6 +285,7 @@ stages:
         ArtifactName: adminportal-functional
   - job: Job_3
     displayName: Prepare Release if published
+    dependsOn: Job_4
     pool:
       vmImage: windows-latest
     steps:
@@ -345,4 +348,75 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: Release Version'
       inputs:
-        ArtifactName: release-version        
+        ArtifactName: release-version
+  - job: Job_4
+    displayName: SonarSource
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: self
+      fetchDepth: 0    
+    - task: PowerShell@2
+      displayName: Check if Pull Request
+      retryCountOnTaskFailure: 5
+      inputs:
+        targetType: 'inline'
+        script: |
+          $targetBranch = ""
+          if ("$(Build.SourceBranch)" -like "*/pull/*")
+          {
+              $targetBranch = "$(System.PullRequest.TargetBranch)"
+              write-host "This is a Pull Request and the target branch is: $targetBranch"  
+              write-host "##vso[task.setvariable variable=prTargetBranch]$targetBranch"
+          }
+          else
+          {
+            write-host "This is not a Pull Request and the target branch is set to empty string"  
+            write-host "##vso[task.setvariable variable=prTargetBranch]''"                              
+          }                         
+        workingDirectory: '$(System.DefaultWorkingDirectory)'    
+    - task: PowerShell@2
+      displayName: Check to establish if this pipeline was triggered from a tag
+      inputs:
+        filePath: 'ReleaseFlow.ps1'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        arguments: '-PipeBuildNumber "$(Build.BuildNumber)" -PipeSourceBranch "$(Build.SourceBranch)" -PipeSourceVersion "$(Build.SourceVersion)" -PipeTargetBranch "$(prTargetBranch)" -PipeBuildId "$(Build.BuildId)"' 
+    - task: PowerShell@2
+      displayName: Output to console the current branch and version
+      inputs:
+        targetType: 'inline'
+        script: |
+          write-host "The current branch is: $(currentBranch)"
+          write-host "The current version is: $(versionNo)"
+        workingDirectory: '$(System.DefaultWorkingDirectory)'    
+    # - task: SonarCloudAnalyze@1
+    #   inputs:
+    #     jdkversion: 'JAVA_HOME_17_X64'
+
+    # - task: SonarCloudPrepare@1
+    #   inputs:
+    #     SonarCloud: 'Sonarcloud'
+    #     organization: 'boxfusion'
+    #     scannerMode: 'MSBuild'
+    #     projectKey: 'Boxfusion_Shesha-Web-v3.0'
+    #     projectName: 'Shesha Web v3.0'
+    #     projectVersion: '$(versionNo)'
+    - task: SonarCloudPrepare@1
+      condition: eq(variables['System.PullRequest.IsFork'], 'false')
+      inputs:
+        SonarCloud: 'Sonarcloud' # This is the name of the service connection you created
+        organization: 'boxfusion'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'Boxfusion_Shesha-Web-v3.0'
+        cliProjectName: 'Shesha Web v3.0'
+        cliProjectVersion: '$(versionNo)'
+        cliSources: '$(System.DefaultWorkingDirectory)' # This is the relative path to your source code
+    - task: SonarCloudAnalyze@1
+      condition: eq(variables['System.PullRequest.IsFork'], 'false')    
+      inputs:
+        jdkversion: 'JAVA_HOME_17_X64'
+    - task: SonarQubePublish@5
+      condition: eq(variables['System.PullRequest.IsFork'], 'false')
+      inputs:
+        pollingTimeoutSec: '300'    

@@ -1,14 +1,20 @@
 import React, { FC } from 'react';
-import { EditOutlined } from '@ant-design/icons';
-import { useStyles } from './styles/styles';
+import { Button } from 'antd';
+import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
+import { IPersistedFormProps } from '@/index';
 
-export const EditViewMsg: FC = () => {
-  const { styles } = useStyles();
+export interface IEditViewMsgProps {
+  persistedFormProps?: IPersistedFormProps;
+};
+
+export const EditViewMsg: FC<IEditViewMsgProps> = ({persistedFormProps}) => {
+  
   return (
-    <div className={styles.shaEditViewMsg}>
-      <EditOutlined />
-      <h3>Edit View</h3>
-      <p>Click to edit the view</p>
+    <div className='sha-configurable-view-button-wrapper'>
+      <span className='sha-configurable-view-details'>
+        Form: {persistedFormProps?.module}\{persistedFormProps?.name} v{persistedFormProps?.versionNo}
+      </span>
+      <Button title='Edit view' shape='default' icon={<RebaseEditOutlined />} />
     </div>
   );
 };

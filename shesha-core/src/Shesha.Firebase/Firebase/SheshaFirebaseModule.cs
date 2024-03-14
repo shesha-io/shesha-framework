@@ -21,7 +21,10 @@ namespace Shesha
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName)
         {
             FriendlyName = "Shesha Firebase",
-            Publisher = "Shesha"
+            Publisher = "Shesha",
+#if DisableEditModule
+            IsEditable = false,
+#endif
         };
 
         public override void PreInitialize()

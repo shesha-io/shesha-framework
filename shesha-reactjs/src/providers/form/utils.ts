@@ -267,7 +267,9 @@ export const getActualModelWithParent = <T>(
   parent: IParentProviderStateContext
 ): T => {
   const parentReadOnly =
-    allData.formMode !== 'designer' && (parent?.model?.readOnly ?? allData.formMode === 'readonly');
+    allData.formMode !== 'designer' 
+    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.formMode === 'readonly'));
+    
   const actualModel = getActualModel(model, allData, parentReadOnly);
   // update Id for complex containers (SubForm, DataList item, etc)
   if (!!parent?.subFormIdPrefix) {
@@ -1262,7 +1264,11 @@ export const getDefaultFormMarkup = (type: ViewType = 'blank') => {
 };
 export const createComponentModelForDataProperty = (
   components: IToolboxComponentGroup[],
-  propertyMetadata: IPropertyMetadata
+  propertyMetadata: IPropertyMetadata,
+  migrator?: (
+    componentModel: IConfigurableFormComponent,
+    toolboxComponent: IToolboxComponent<any>
+  ) => IConfigurableFormComponent
 ): IConfigurableFormComponent => {
   const toolboxComponent = findToolboxComponent(
     components,
@@ -1293,6 +1299,8 @@ export const createComponentModelForDataProperty = (
     validate: {},
   };
   if (toolboxComponent.initModel) componentModel = toolboxComponent.initModel(componentModel);
+
+  if (toolboxComponent.migrator && migrator) componentModel = migrator(componentModel, toolboxComponent);
 
   componentModel = listComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 

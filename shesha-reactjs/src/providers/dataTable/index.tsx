@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useRef
 } from 'react';
-import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns } from './utils';
+import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumns, getTableFormColumns } from './utils';
 import { dataTableReducer } from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IHasModelType, IHasRepository, IRepository } from './repository/interfaces';
@@ -192,6 +192,8 @@ const getFetchListDataPayload = (state: IDataTableStateContext, repository: IRep
   }
   const filter = getFilter(state);
 
+  getTableFormColumns(state.columns).forEach(col => dataColumns.push(col));
+
   const payload: IGetListDataPayload = {
     columns: dataColumns,
     pageSize: state.dataFetchingMode === 'paging' ? state.selectedPageSize : -1,
@@ -208,7 +210,8 @@ const DataTableWithMetadataProvider: FC<PropsWithChildren<IDataTableProviderProp
 
   return props.sourceType === 'Entity' && modelType
     ? <MetadataProvider id={props.userConfigId} modelType={modelType}>{props.children}</MetadataProvider>
-    : <>{props.children}</>;
+    // use metadata provider with empty model to reset metadata (clear property list for column editor)
+    : <MetadataProvider id={props.userConfigId} modelType={""}>{props.children}</MetadataProvider>;
 };
 
 const sortingItems2ColumnSorting = (items: ISortingItem[]): IColumnSorting[] => {

@@ -17,6 +17,7 @@ import { axiosHttp } from '@/utils/fetchers';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -69,29 +70,39 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     };
 
     return (
-      <ConfigurableFormItem model={model}>
-        <StoredFilesProvider
-          ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-          ownerType={
-            Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
-          }
-          ownerName={model.ownerName}
-          filesCategory={model.filesCategory}
-          baseUrl={backendUrl}
-        >
-          <CustomFile
-            isStub={formMode === 'designer'}
-            allowAdd={enabled && model.allowAdd}
-            allowDelete={enabled && model.allowDelete}
-            allowReplace={enabled && model.allowReplace}
-            allowRename={enabled && model.allowRename}
-            allowedFileTypes={model.allowedFileTypes}
-            maxHeight={model.maxHeight}
-            isDragger={model?.isDragger}
-            onFileListChanged={onFileListChanged}
-            downloadZip={model.downloadZip}
-          />
-        </StoredFilesProvider>
+      // Add GHOST_PAYLOAD_KEY to remove field from the payload
+      // File list uses propertyName only for support Required feature
+      <ConfigurableFormItem model={{...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.propertyName}`}}> 
+        {(value, onChange) => {
+          return (
+            <StoredFilesProvider
+              ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+              ownerType={
+                Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
+              }
+              ownerName={model.ownerName}
+              filesCategory={model.filesCategory}
+              baseUrl={backendUrl}
+              
+              // used for requered field validation
+              onChange={onChange}
+              value={value}
+            >
+              <CustomFile
+                isStub={formMode === 'designer'}
+                allowAdd={enabled && model.allowAdd}
+                allowDelete={enabled && model.allowDelete}
+                allowReplace={enabled && model.allowReplace}
+                allowRename={enabled && model.allowRename}
+                allowedFileTypes={model.allowedFileTypes}
+                maxHeight={model.maxHeight}
+                isDragger={model?.isDragger}
+                onFileListChanged={onFileListChanged}
+                downloadZip={model.downloadZip}
+              />
+            </StoredFilesProvider>
+          );
+        }}
       </ConfigurableFormItem>
     );
   },

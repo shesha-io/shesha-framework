@@ -154,98 +154,95 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
 
   return (
     <div>
-        <Page
-      title={`Entity Configuration ${entityConfig?.label ? `- ${entityConfig?.label}` : ''}`}
-      description=""
-      loading={loadingState.loading}
-      loadingText={loadingState.loadingText}
-      
-    
-    >
-      <Row>
-        <Col span="6">
-          <div style={{ minHeight: '1000px', maxHeight: '1000px', overflow: 'none' }}>
-            <EntityConfigTree
-              onChange={onChange}
-              
-              defaultSelected={entityConfigId}
-              entityConfigTreeRef={entityConfigTreeRef}
-            />
-          </div>
-        </Col>
-        <Col span="18">
-          <IndexToolbar items={toolbarItems} />
-          <ModelConfigurator id={entityConfigId} configuratorRef={configuratorRef} />
-        </Col>
-      </Row>
-      <div>{contextHolder}</div>
-      <Modal
-        title="Merge entity confifurations"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={() => {
-          setIsModalOpen(false);
-        }}
+      <Page
+        title={`Entity Configuration ${entityConfig?.label ? `- ${entityConfig?.label}` : ''}`}
+        description=""
+        loading={loadingState.loading}
+        loadingText={loadingState.loadingText}
       >
-        <ValidationErrors error={mergeError} />
-        <Alert
-          type="warning"
-          showIcon
-          description={
-            "This will merge this entity configuration '" +
-            entityConfig?.namespace +
-            '.' +
-            entityConfig?.className +
-            "' into and overwrite the configuration of the entity you selected"
-          }
-        />
         <Row>
           <Col span="6">
-            <Form.Item>Merge from:</Form.Item>
-          </Col>
-          <Col span="18">
-            {entityConfig && (
-              <Form.Item>
-                {entityConfig?.namespace}. {entityConfig?.className}
-              </Form.Item>
-            )}
-          </Col>
-        </Row>
-        <Row>
-          <Col span="6">
-            <Form.Item>Merge to:</Form.Item>
-          </Col>
-          <Col span="18">
-            <Form.Item>
-              <Autocomplete
-                dataSourceType={'url'}
-                dataSourceUrl={'/api/services/app/EntityConfig/EntityConfigAutocomplete?implemented=true'}
-                value={autocompleteResult}
-                onChange={setAutocompleteResult}
+            <div style={{ minHeight: '1000px', maxHeight: '1000px', overflow: 'none' }}>
+              <EntityConfigTree
+                onChange={onChange}
+                
+                defaultSelected={entityConfigId}
+                entityConfigTreeRef={entityConfigTreeRef}
               />
-            </Form.Item>
+            </div>
+          </Col>
+          <Col span="18">
+            <IndexToolbar items={toolbarItems} />
+            <ModelConfigurator id={entityConfigId} configuratorRef={configuratorRef} />
           </Col>
         </Row>
-        {(!(entityConfig?.source === MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented) && (
+        <div>{contextHolder}</div>
+        <Modal
+          title="Merge entity confifurations"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={() => {
+            setIsModalOpen(false);
+          }}
+        >
+          <ValidationErrors error={mergeError} />
+          <Alert
+            type="warning"
+            showIcon
+            description={
+              "This will merge this entity configuration '" +
+              entityConfig?.namespace +
+              '.' +
+              entityConfig?.className +
+              "' into and overwrite the configuration of the entity you selected"
+            }
+          />
           <Row>
             <Col span="6">
-              <Form.Item>Delete after merge:</Form.Item>
+              <Form.Item>Merge from:</Form.Item>
+            </Col>
+            <Col span="18">
+              {entityConfig && (
+                <Form.Item>
+                  {entityConfig?.namespace}. {entityConfig?.className}
+                </Form.Item>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Col span="6">
+              <Form.Item>Merge to:</Form.Item>
             </Col>
             <Col span="18">
               <Form.Item>
-                <Checkbox
-                  checked={isDeleteAfterMerge}
-                  onChange={(e) => {
-                    setIsDeleteAfterMerge(e.target.checked);
-                  }}
+                <Autocomplete
+                  dataSourceType={'url'}
+                  dataSourceUrl={'/api/services/app/EntityConfig/EntityConfigAutocomplete?implemented=true'}
+                  value={autocompleteResult}
+                  onChange={setAutocompleteResult}
                 />
               </Form.Item>
             </Col>
           </Row>
-        )}
-      </Modal>
-    </Page>
+          {(!(entityConfig?.source === MetadataSourceType.ApplicationCode) || entityConfig?.notImplemented) && (
+            <Row>
+              <Col span="6">
+                <Form.Item>Delete after merge:</Form.Item>
+              </Col>
+              <Col span="18">
+                <Form.Item>
+                  <Checkbox
+                    checked={isDeleteAfterMerge}
+                    onChange={(e) => {
+                      setIsDeleteAfterMerge(e.target.checked);
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          )}
+        </Modal>
+      </Page>
     </div>
-  
   );
 };

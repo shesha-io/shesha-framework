@@ -103,8 +103,9 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
   useEffect(() => {
-    document.title = title || '';
-  });
+    if (!!title)
+      document.title = title;
+  }, [title]);
 
   const hasHeading = useMemo(() => {
     return Boolean(heading);

@@ -24,6 +24,7 @@ const tableClassNames = {
   shaSortable: 'sha-sortable',
   shaDragging: 'sha-dragging',
   shaHover: 'sha-hover',
+  shaTooltipIcon: 'sha-tooltip-icon',
 };
 const tableStyles = {
   styles: tableClassNames,
@@ -58,6 +59,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaSortable,
     shaDragging,
     shaHover,
+    shaTooltipIcon,
   } = tableClassNames;
 
   // var(--ant-primary-3)
@@ -222,9 +224,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
             background: ${token.colorPrimary};
             color: white;
-            
           }
-        
 
           .${prefixCls}-form-item {
             .${prefixCls}-form-item-row {
@@ -240,6 +240,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               }
             }
           }
+        }
+        .${shaTooltipIcon} {
+          color: darkgray !important;
+          margin-left: 5px;
+          margin-right: 5px;
         }
         .${th} {
           &.${sortedAsc} {
@@ -305,9 +310,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             position: sticky;
             z-index: 10;
             opacity: 1;
-             .sha-link {
+            .sha-link {
               color: ${token.colorPrimary};
-            
             }
           }
           &.${relativeColumn} {

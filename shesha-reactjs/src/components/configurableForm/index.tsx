@@ -18,7 +18,6 @@ import { IConfigurableFormProps } from './models';
 import { Result } from 'antd';
 import { MetadataProvider, useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
-import ConditionalWrap from '../conditionalWrapper/index';
 
 interface RenderWithMarkupArgs {
   providedMarkup: FormRawMarkup;
@@ -109,7 +108,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
       {(componentState, BlockOverlay) => (
         <div className={classNames(componentState.wrapperClassName, props?.className)}>
           <BlockOverlay>
-            <EditViewMsg />
+            <EditViewMsg persistedFormProps={formProps}/>
           </BlockOverlay>
           {markup ? (
             renderWithMarkup({
@@ -138,14 +137,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
                           />
                         )}
                         {persister.loaded &&
-                          <ConditionalWrap
-                            condition={!!persister.formSettings?.modelType}
-                            wrap={(children) => (
-                              <MetadataProvider modelType={persister.formSettings?.modelType}>
-                                {children}
-                              </MetadataProvider>
-                            )}
-                          >
+                          <MetadataProvider modelType={persister.formSettings?.modelType}>
                             {renderWithMarkup({
                               providedMarkup: persister.markup,
                               formSettings: persister.formSettings,
@@ -154,7 +146,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
                                 persisterActions.loadForm({ skipCache: true });
                               }
                             })}
-                          </ConditionalWrap>
+                          </MetadataProvider>
                         }
                       </>
                     )}

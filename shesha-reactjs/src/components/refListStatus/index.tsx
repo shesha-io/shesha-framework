@@ -24,7 +24,7 @@ const Icon = ({ type, ...rest }) => {
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
   const { styles } = useStyles();
-  const { value, referenceListId, showIcon, solidBackground, style, showReflistName } = props;
+  const { value, referenceListId, showIcon, solidBackground,showReflistName } = props;
 
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
 
@@ -52,12 +52,19 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
   return listItem?.loading ? (
     <Skeleton.Button />
   ) : (
+   
     <div className={styles.shaStatusTagContainer}>
-      <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
-        <RefTag color={memoizedColor} style={style} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}>
+          <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}> 
+
+
+        <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}>
           {showReflistName && itemData?.item}
         </RefTag>
-      </DescriptionTooltip>
-    </div>
+      
+        </DescriptionTooltip> 
+        </div>
+
+   
+  
   );
 };
