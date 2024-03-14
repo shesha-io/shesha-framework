@@ -183,7 +183,6 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
             readOnly={readOnly}
             mode="dialog"
             label="On Change"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={EXPOSED_VARIABLES}
           />
@@ -199,7 +198,6 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
             readOnly={readOnly}
             mode="dialog"
             label="On Select"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={EXPOSED_VARIABLES}
           />

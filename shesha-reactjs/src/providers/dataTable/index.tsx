@@ -377,7 +377,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   );
 
   const debouncedFetch = (payload: IGetListDataPayload) => {
-    //console.log('LOG: fetch', payload);
     debouncedFetchInternal(payload);
   };
 

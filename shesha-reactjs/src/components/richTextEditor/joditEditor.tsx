@@ -1,11 +1,8 @@
 import React, { FC, useMemo, useState, lazy } from 'react';
 import { Skeleton } from 'antd';
-import { AceEditorInitialize } from '../codeEditor/index';
 
 let defaultOptions = {};
 const JoditEditor = lazy(async () => {
-    // initialize AceEditor to prevent conflicts
-    await AceEditorInitialize();
     const jodit = await import("jodit");
     defaultOptions = jodit.Jodit.defaultOptions;
 

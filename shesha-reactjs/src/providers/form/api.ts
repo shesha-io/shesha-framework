@@ -7,7 +7,7 @@ import {
   getMatchData,
   hasFormIdGotValue,
   IMatchData
-  } from './utils';
+} from './utils';
 import { ConfigurationItemsViewMode } from '../appConfigurator/models';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { EntityAjaxResponse, IEntity } from '@/generic-pages/dynamic/interfaces';
@@ -17,12 +17,12 @@ import {
   FormRawMarkup,
   IFormDto,
   IFormSettings
-  } from './models';
+} from './models';
 import { GetDataError, useGet } from '@/hooks';
 import { getQueryParams, joinUrlAndPath } from '@/utils/url';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from '@/interfaces/metadata';
+import { asPropertiesArray, IApiEndpoint, IPropertyMetadata, isPropertiesArray, StandardEntityActions } from '@/interfaces/metadata';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
 import { IToolboxComponents } from '@/interfaces';
@@ -34,7 +34,7 @@ import {
   useMemo,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { useFormDesignerComponents } from './hooks';
 import { useModelApiEndpoint, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import {
@@ -46,7 +46,7 @@ import {
 /**
  * Form configuration DTO
  */
- export interface FormConfigurationDto {
+export interface FormConfigurationDto {
   id?: string;
   /**
    * Form path/id is used to identify a form
@@ -148,11 +148,11 @@ export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string,
   const requestParams = formRawId
     ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formRawId } }
     : formFullName
-    ? {
+      ? {
         url: '/api/services/Shesha/FormConfiguration/GetByName',
         queryParams: { name: formFullName.name, module: formFullName.module, version: formFullName.version },
       }
-    : null;
+      : null;
 
   return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(
     requestParams.url,
@@ -197,8 +197,8 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
   const reFetcher = () => {
     return canFetch
       ? reFetch().then((response) => {
-          return getMarkupFromResponse(response);
-        })
+        return getMarkupFromResponse(response);
+      })
       : Promise.reject('Can`t fetch form due to internal state');
   };
 
@@ -342,6 +342,8 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
 
     const fieldNames = getFormFields(payload);
 
+    const metaProperties = asPropertiesArray(metadata.properties, []);
+
     // create list of promises
     const promises: Promise<any>[] = [];
 
@@ -354,7 +356,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
           fields.push({
             name: item,
             child: [],
-            property: metadata.properties.find((p) => p.path.toLowerCase() === pathParts[0].toLowerCase()),
+            property: metaProperties.find((p) => p.path.toLowerCase() === pathParts[0].toLowerCase()),
           });
           return;
         }
@@ -370,10 +372,10 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
               child: [],
               property:
                 idx === 0
-                  ? metadata.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                  : parent?.property?.dataType === 'object'
-                  ? parent.property.properties?.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                  : null,
+                  ? metaProperties.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                  : parent?.property?.dataType === 'object' && isPropertiesArray(parent.property.properties)
+                    ? parent.property.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                    : null,
             };
             // If property metadata is not set - fetch it using dispatcher.
             // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests

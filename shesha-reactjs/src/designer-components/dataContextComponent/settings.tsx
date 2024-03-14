@@ -7,7 +7,7 @@ import { Button, Input, Modal } from 'antd';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 import { IDataContextComponentProps } from '.';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { PropertiesEditor } from '@/components/modelConfigurator/propertiesEditor';
 
@@ -16,7 +16,7 @@ interface IDataContextSettingsState extends IDataContextComponentProps { }
 const convertPropertyMetadataToModelItem = (property: IPropertyMetadata) => {
   const res = { ...property, properties: [], name: property.path };
   delete res.path;
-  if (property.properties)
+  if (isPropertiesArray(property.properties))
     res.properties = property.properties?.map((item) => convertPropertyMetadataToModelItem(item));
   return res as IModelItem;
 };
@@ -69,7 +69,6 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
             readOnly={readOnly}
             mode="dialog"
             label="Initial Data"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             propertyName="initialDataCode"
             description="Initial Data"
             exposedVariables={[
@@ -95,8 +94,6 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
               { name: "globalState", description: "Global state", type: "object" },
               { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
               { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-              { name: "staticValue", description: "Static value of this setting", type: "any" },
-              { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
               { name: "form", description: "Form instance", type: "object" },
               { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
               { name: "moment", description: "moment", type: "object" },

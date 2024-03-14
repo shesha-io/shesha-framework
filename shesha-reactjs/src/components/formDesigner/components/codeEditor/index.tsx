@@ -34,7 +34,6 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
                 language="typescript"
                 {...editorProps}
                 mode={model.mode || 'dialog'}
-                setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
                 readOnly={model.readOnly}
               />
             );

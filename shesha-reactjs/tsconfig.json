@@ -30,13 +30,13 @@
     "strict": false,
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
-    "target": "es5",
+    "target": "ESNext",
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
       ]
-    }    
+    }
   },
   "exclude": [
     "node_modules",
@@ -49,7 +49,7 @@
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.stories.d.ts",
-    "**/__test__/**"
+    "**/__tests__/**"
   ],
   "include": [
     "src",

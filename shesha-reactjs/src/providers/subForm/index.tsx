@@ -287,7 +287,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     dataRequestAbortController.current = new AbortController();
 
-    console.log('fetch subForm');
     dispatch(fetchDataRequestAction());
     getReadUrl().then((getUrl) => {
       if (!Boolean(getUrl)) {

@@ -235,7 +235,6 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           readOnly={readOnly}
           mode="dialog"
           label="Style"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="style"
           description="CSS Style"
           exposedVariables={[

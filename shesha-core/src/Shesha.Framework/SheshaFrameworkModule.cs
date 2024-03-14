@@ -35,7 +35,8 @@ namespace Shesha
         public const string ModuleName = "Shesha";
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo(ModuleName) { 
             FriendlyName = "Shesha Core",
-            Publisher = "Shesha" 
+            Publisher = "Shesha",
+            IsEditable = true,
         };
 
         public SheshaFrameworkModule()

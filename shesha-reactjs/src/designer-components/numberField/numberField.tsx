@@ -14,6 +14,7 @@ import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/
 import { getNumberFormat } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { asPropertiesArray } from '@/interfaces/metadata';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -26,7 +27,9 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   Factory: ({ model, form }) => {
-    const { properties = [] } = useMetadata(false)?.metadata ?? {};
+    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
+    const properties = asPropertiesArray(metaProperties, []);
+
     const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
 

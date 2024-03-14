@@ -88,7 +88,6 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
           <CodeEditor
             readOnly={readOnly}
             mode="dialog"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             propertyName="labelFormat"
             label="Label Format"
             description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
@@ -99,8 +98,6 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
               { name: "globalState", description: "Global state", type: "object" },
               { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
               { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-              { name: "staticValue", description: "Static value of this setting", type: "any" },
-              { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
               { name: "form", description: "Form instance", type: "object" },
               { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
               { name: "moment", description: "moment", type: "object" },

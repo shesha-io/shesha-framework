@@ -27,6 +27,7 @@ module.exports = {
     '.eslintrc.js',
     'rollup.config.mjs',
     'next.config.js',
+    'jest.config.js',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {

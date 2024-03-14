@@ -1,10 +1,10 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
-import { AutoComplete, Button, Input, Select, Tag } from 'antd';
+import { AutoComplete, Button, Select, Space, Tag } from 'antd';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { useForm, useMetadata, useMetadataDispatcher } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { camelCase } from 'lodash';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, asPropertiesArray } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 
@@ -57,7 +57,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   const { getContainerProperties } = useMetadataDispatcher();
   const { metadata } = meta || {};
 
-  const initialProperties = metadata?.properties ?? [];
+  const initialProperties = asPropertiesArray(metadata?.properties, []);
   const [state, setState] = useState<IAutocompleteState>({ options: properties2options(initialProperties, null), properties: initialProperties });
   const [multipleValue, setMultipleValue] = useState('');
 
@@ -174,7 +174,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
     if (typeof action === 'function') {
       action(selectedProperty, form);
-   }
+    }
   };
 
   const showFillPropsButton = props.showFillPropsButton !== false && Boolean(form) && !readOnly;
@@ -250,7 +250,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       {mode === 'single' ? (
         showFillPropsButton
           ? (
-            <Input.Group style={props.style}>
+            <Space.Compact style={{ width: "100%", ...props.style }}>
               {autoComplete}
               <Button
                 icon={<ThunderboltOutlined />}
@@ -259,7 +259,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
                 style={style}
                 size={props.size}
               />
-            </Input.Group>
+            </Space.Compact>
           )
           : <>{autoComplete}</>
       ) : mode === 'multiple' ? (

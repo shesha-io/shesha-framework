@@ -93,6 +93,10 @@ export interface MetadataDto {
    */
   dataType?: string | null;
   /**
+   * Module
+   */
+  module?: string | null;
+  /**
    * Propeties
    */
   properties?: PropertyMetadataDto[] | null;

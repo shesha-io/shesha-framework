@@ -7,8 +7,9 @@ import itemGroupSettingsJson from './itemGroupSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
+import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 
-export interface IButtonGroupPropertiesProps {}
+export interface IButtonGroupPropertiesProps { }
 
 export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useButtonGroupConfigurator();
@@ -40,20 +41,22 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
       componentModel.itemType === 'item'
         ? (itemSettingsJson as FormMarkup)
         : componentModel.itemType === 'group'
-        ? (itemGroupSettingsJson as FormMarkup)
-        : [];
+          ? (itemGroupSettingsJson as FormMarkup)
+          : [];
     return (
-      <ConfigurableForm
-        //key={selectedItemId} // rerender for each item to initialize all controls
-        formRef={formRef}
-        labelCol={{ span: 24 }}
-        wrapperCol={{ span: 24 }}
-        mode={ readOnly ? 'readonly' : 'edit' }
-        markup={markup}
-        form={form}
-        initialValues={componentModel}
-        onValuesChange={debouncedSave}
-      />
+      <SourceFilesFolderProvider folder={`button-${selectedItemId}`}>
+        <ConfigurableForm
+          //key={selectedItemId} // rerender for each item to initialize all controls
+          formRef={formRef}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          mode={readOnly ? 'readonly' : 'edit'}
+          markup={markup}
+          form={form}
+          initialValues={componentModel}
+          onValuesChange={debouncedSave}
+        />
+      </SourceFilesFolderProvider>
     );
   }, [selectedItemId]);
 

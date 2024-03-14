@@ -25,7 +25,12 @@ namespace Shesha.Sessions
             _permissionChecker = permissionChecker;
         }
 
-        //[DisableAuditing]
+        [Obsolete]
+        public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInformations() 
+        {
+            return await GetCurrentLoginInfo();
+        }
+
         public async Task<GetCurrentLoginInfoOutput> GetCurrentLoginInfo()
         {
             var output = new GetCurrentLoginInfoOutput
@@ -61,7 +66,6 @@ namespace Shesha.Sessions
                     GrantedPermissions = await GetGrantedPermissions(),
                     HomeUrl = homeUrl
                 };
-                //output.User = ObjectMapper.Map<UserLoginInfoDto>(await GetCurrentUserAsync());
             }
 
             return output;

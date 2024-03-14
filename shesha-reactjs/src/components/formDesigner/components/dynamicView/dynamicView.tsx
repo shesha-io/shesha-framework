@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { useForm } from '@/providers/form';
 import { createComponentModelForDataProperty } from '@/providers/form/utils';
 import { camelcaseDotNotation } from '@/utils/string';
@@ -36,7 +36,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
     const propsToRender = useMemo<IPropertyMetadata[]>(() => {
         if (!currentMeta)
             return [];
-        const propertiesToMap = currentMeta.properties.filter(property => property.isVisible && !property.isFrameworkRelated && !staticComponentBindings.includes(camelcaseDotNotation(property.path)));
+        const propertiesToMap = (isPropertiesArray(currentMeta.properties) ? currentMeta.properties : []).filter(property => property.isVisible && !property.isFrameworkRelated && !staticComponentBindings.includes(camelcaseDotNotation(property.path)));
         return propertiesToMap;
     }, [staticComponents, currentMeta]);
 

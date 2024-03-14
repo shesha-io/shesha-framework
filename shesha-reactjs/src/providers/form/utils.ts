@@ -78,6 +78,7 @@ import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { IParentProviderStateContext } from '../parentProvider/index';
+import { SheshaCommonContexts } from '../dataContextManager/models';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -129,7 +130,12 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   const dcm = useDataContextManager(false);
   const form = useForm(false) ?? dcm.getFormInstance();
   const { globalState, setState: setGlobalState } = useGlobalState();
+
+  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+  const applicationData = application?.getData();
+
   return {
+    application: applicationData,
     data: useFormData()?.data,
     contexts: { ...dcm?.getDataContextsData(tcId) },
     setFormData: form?.setFormData,
@@ -163,12 +169,11 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
 
     // update setting value to actual
     if (isPropertySettings(value)) {
-      const v = value as IPropertySetting;
-      if (v?._mode === 'code' && Boolean(v?._code)) {
-        const val = calcFunction(v, allData);
-        return val;
-      } else {
-        return v?._value;
+      switch(value._mode){
+        case 'code':
+          return Boolean(value._code) ? calcFunction(value, allData) : undefined;
+        case 'value':
+          return value._value;
       }
     }
 
@@ -197,7 +202,8 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
       }
     const res = new Function(vars, setting?._code)(...datas);
     return res;
-  } catch {
+  } catch(error) {
+    console.error("calcValue failed", error);
     return undefined;
   }
 };
@@ -737,6 +743,9 @@ export const getFunctionExecutor = <TResult = any>(
   return expressionExecuter as FunctionExecutor<TResult>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+
 export function executeScript<TResult = any>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments
@@ -753,9 +762,8 @@ export function executeScript<TResult = any>(
       }
     }
 
-    const expressionExecuter = new Function(argsDefinition, expression);
-
-    const result = expressionExecuter.apply(null, argList);
+    const asyncFn = new AsyncFunction(argsDefinition, expression);
+    const result = asyncFn.apply(null, argList);
     resolve(result);
   });
 }

@@ -3,16 +3,14 @@ import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models'
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '../formItem';
 import settingsFormJson from './settingsForm.json';
-import { getString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
-import { StoredFileProvider, useForm, useFormData, useSheshaApplication } from '@/providers';
 import {
   migrateCustomFunctions,
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
-import FileView from '@/components/fileView';
-import { Alert } from 'antd';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { ImageField, ImageStorageFormat } from './image';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height: number | string;
@@ -20,6 +18,8 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   url: string;
   storedFileId: string;
   dataSource?: 'url' | 'storedFileId';
+
+  storageFormat: ImageStorageFormat;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -30,12 +30,11 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   icon: <FileImageOutlined />,
 
   Factory: ({ model }) => {
-    const { data: formData } = useFormData();
+    /*
     const { formMode } = useForm();
-    const { backendUrl } = useSheshaApplication();
 
     const hasDimensions = model?.height && model?.width;
-    
+
     if (formMode === 'designer' && !hasDimensions) {
       return (
         <Alert
@@ -46,10 +45,19 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         />
       );
     }
-
+*/
     return (
       <ConfigurableFormItem model={model}>
-        {(value) => {
+        {(value, onChange) => {
+          return (
+            <ImageField 
+              storageFormat={model.storageFormat}
+              value={value}
+              onChange={onChange} 
+              readOnly={model.readOnly}
+            />
+          );
+          /*
           const url: string = getString(model.url, formData);
           const storedFileId: string = getString(model.storedFileId, formData) || (value?.id || value);
 
@@ -65,6 +73,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               />
             </StoredFileProvider>
           );
+          */
         }}
       </ConfigurableFormItem>
     );

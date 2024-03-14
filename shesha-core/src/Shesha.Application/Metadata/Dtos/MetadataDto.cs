@@ -14,6 +14,11 @@ namespace Shesha.Metadata.Dtos
         public string DataType { get; set; }
 
         /// <summary>
+        /// Module name current model belongs to
+        /// </summary>
+        public string Module { get; set; }
+
+        /// <summary>
         /// Propeties
         /// </summary>
         public List<PropertyMetadataDto> Properties { get; set; } = new List<PropertyMetadataDto>();
