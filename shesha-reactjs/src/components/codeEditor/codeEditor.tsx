@@ -2,7 +2,7 @@ import { Skeleton } from 'antd';
 import React, { FC, lazy } from 'react';
 import { ICodeEditorProps } from './models';
 
-const CodeEditorNoSsr = lazy(() => import('./monaco-local/codeEditorClientSide').then(module => ({ default: module.CodeEditorClientSide })));
+const CodeEditorNoSsr = lazy(() => import('./client-side/codeEditorClientSide'));
 
 /**
  * Renders a CodeEditor component for the given ICodeEditorProps.

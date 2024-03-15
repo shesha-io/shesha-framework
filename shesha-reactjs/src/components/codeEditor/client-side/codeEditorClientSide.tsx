@@ -50,8 +50,8 @@ const prefixLibPath = (path: string): string => path.indexOf("node_modules") ===
  * @param {ICodeEditorProps} props - the properties for the code editor
  * @return {ReactNode} the code editor component
  */
-export const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
-    const { value, onChange, availableConstants, fileName, path, wrapInTemplate } = props;
+const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
+    const { value, onChange, availableConstants, fileName, path, wrapInTemplate, readOnly = false } = props;
     const monacoInst = useRef<Monaco>();
 
     const { getMetadata } = useMetadataDispatcher();
@@ -190,6 +190,7 @@ ${(c) => c.editable(code)}
                 onChange={onChange}
                 options={{
                     automaticLayout: true,
+                    readOnly: readOnly,
                 }}
                 onMount={onEditorMount}
                 template={template}
@@ -197,3 +198,5 @@ ${(c) => c.editable(code)}
         </div>
     );
 };
+
+export default CodeEditorClientSide;
