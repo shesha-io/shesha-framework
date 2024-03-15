@@ -111,7 +111,10 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
         </DataTableProvider>
         ;
 
-    return props.hidden? null : sourceType === 'Form'
+      if(props?.hidden){
+        return null
+      }
+    return sourceType === 'Form'
         ? <ConfigurableFormItem model={{ ...props, hideLabel: true }} wrapperCol={{ md: 24 }}>
             {(value, onChange) => provider(() => value, onChange)}
         </ConfigurableFormItem>
