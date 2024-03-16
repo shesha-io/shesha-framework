@@ -44,6 +44,57 @@ namespace Shesha
             });
         }
 
+        [EntityAction(StandardEntityActions.List)]
+        public override async Task<PagedResultDto<TDynamicDto>> GetAllAsync(PropsFilteredPagedAndSortedResultRequestDto input)
+        {
+            CheckGetAllPermission();
+
+            var query = CreateFilteredQuery(input);
+
+            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
+
+            query = ApplySorting(query, input);
+            query = ApplyPaging(query, input);
+
+            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+
+            var list = new List<TDynamicDto>();
+            foreach (var entity in entities)
+            {
+                list.Add(await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+                {
+                    UseDtoForEntityReferences = true
+                }));
+            }
+
+            return new PagedResultDto<TDynamicDto>(
+                totalCount,
+                list
+            );
+        }
+
+        [EntityAction(StandardEntityActions.Create)]
+        public override async Task<TDynamicDto> CreateAsync(TDynamicDto input)
+        {
+            CheckCreatePermission();
+            var entity = await InternalCreateAsync(input);
+            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+            {
+                UseDtoForEntityReferences = true
+            });
+        }
+
+        [EntityAction(StandardEntityActions.Update)]
+        public override async Task<TDynamicDto> UpdateAsync(TDynamicDto input)
+        {
+            CheckUpdatePermission();
+            var entity = await InternalUpdateAsync(input);
+            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+            {
+                UseDtoForEntityReferences = true
+            });
+        }
+
         private async Task<TEntity> InternalUpdateAsync(TDynamicDto input)
         {
             var entity = await Repository.GetAsync(input.Id);
@@ -103,17 +154,6 @@ namespace Shesha
             CheckUpdatePermission();
             var entity = await InternalUpdateAsync(input);
             return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
-        }
-
-        [EntityAction(StandardEntityActions.Update)]
-        public override async Task<TDynamicDto> UpdateAsync(TDynamicDto input)
-        {
-            CheckUpdatePermission();
-            var entity = await InternalUpdateAsync(input);
-            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
-            {
-                UseDtoForEntityReferences = true
-            });
         }
 
         private async Task<TEntity> InternalCreateAsync(TDynamicDto input)
@@ -198,45 +238,6 @@ namespace Shesha
             CheckUpdatePermission();
             var entity = await InternalCreateAsync(input);
             return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
-        }
-
-        [EntityAction(StandardEntityActions.Create)]
-        public override async Task<TDynamicDto> CreateAsync(TDynamicDto input)
-        {
-            CheckCreatePermission();
-            var entity = await InternalCreateAsync(input);
-            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
-            {
-                UseDtoForEntityReferences = true
-            });
-        }
-
-        public override async Task<PagedResultDto<TDynamicDto>> GetAllAsync(PropsFilteredPagedAndSortedResultRequestDto input)
-        {
-            CheckGetAllPermission();
-
-            var query = CreateFilteredQuery(input);
-
-            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
-
-            query = ApplySorting(query, input);
-            query = ApplyPaging(query, input);
-
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
-
-            var list = new List<TDynamicDto>();
-            foreach (var entity in entities)
-            {
-                list.Add(await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
-                {
-                    UseDtoForEntityReferences = true
-                }));
-            }
-
-            return new PagedResultDto<TDynamicDto>(
-                totalCount,
-                list
-            );
         }
     }
 }
