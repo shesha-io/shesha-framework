@@ -12,7 +12,7 @@ namespace Shesha.DynamicEntities
         {
             var moduleName = GetConfigurableModuleName(entityType) ?? AbpControllerAssemblySetting.DefaultServiceModuleName;
 
-            var routeTemplate = $"api/dynamic/{moduleName}/{action.Controller.ControllerName}/{action.ActionName}";
+            var routeTemplate = $"api/dynamic/{moduleName}/{action.Controller.ControllerName}/Crud/{action.ActionName}";
             return routeTemplate;
         }
 
