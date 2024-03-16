@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.DelayedUpdate;
@@ -19,7 +20,7 @@ namespace Shesha
 {
     [DynamicControllerNameConvention]
     public class DynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey> : SheshaCrudServiceBase<TEntity,
-        TDynamicDto, TPrimaryKey, FilteredPagedAndSortedResultRequestDto, TDynamicDto, TDynamicDto, GetDynamicEntityInput<TPrimaryKey>>, IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>, ITransientDependency
+        TDynamicDto, TPrimaryKey, PropsFilteredPagedAndSortedResultRequestDto, TDynamicDto, TDynamicDto, GetDynamicEntityInput<TPrimaryKey>>, IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>, ITransientDependency
         where TEntity : class, IEntity<TPrimaryKey>
         where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
     {
@@ -90,12 +91,13 @@ namespace Shesha
 
         /// <summary>
         /// Update entity data. 
-        /// NOTE: don't use on prod, will be merged with the `Update`endpoint soon
+        /// NOTE: don't use on prod, this is merged with the `Update`endpoint
         /// </summary>
         /// <param name="properties">List of properties to fetch in GraphQL-like syntax. Supports nested properties</param>
         /// <param name="input"></param>
         /// <returns></returns>
         /// <response code="200">NOTE: shape of the `result` depends on the `properties` argument. When `properties` argument is not specified - it returns top level properties of the entity, all referenced entities are presented as their Id values</response>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public virtual async Task<GraphQLDataResult<TEntity>> UpdateGqlAsync(string properties, TDynamicDto input)
         {
             CheckUpdatePermission();
@@ -184,12 +186,13 @@ namespace Shesha
 
         /// <summary>
         /// Create entity.
-        /// NOTE: don't use on prod, will be merged with the `Update`endpoint soon
+        /// NOTE: don't use on prod, this is merged with the `Create`endpoint
         /// </summary>
         /// <param name="properties">List of properties to fetch in GraphQL-like syntax. Supports nested properties</param>
         /// <param name="input"></param>
         /// <returns></returns>
         /// <response code="200">NOTE: shape of the `result` depends on the `properties` argument. When `properties` argument is not specified - it returns top level properties of the entity, all referenced entities are presented as their Id values</response>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public virtual async Task<GraphQLDataResult<TEntity>> CreateGqlAsync(string properties, TDynamicDto input)
         {
             CheckUpdatePermission();
@@ -208,7 +211,7 @@ namespace Shesha
             });
         }
 
-        public override async Task<PagedResultDto<TDynamicDto>> GetAllAsync(FilteredPagedAndSortedResultRequestDto input)
+        public override async Task<PagedResultDto<TDynamicDto>> GetAllAsync(PropsFilteredPagedAndSortedResultRequestDto input)
         {
             CheckGetAllPermission();
 

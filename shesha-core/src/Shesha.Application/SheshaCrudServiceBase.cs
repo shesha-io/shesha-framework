@@ -68,7 +68,7 @@ namespace Shesha
         where TEntity : class, IEntity<TPrimaryKey>
         where TEntityDto : IEntityDto<TPrimaryKey>
         where TUpdateInput : IEntityDto<TPrimaryKey>
-        where TGetAllInput: FilteredPagedAndSortedResultRequestDto
+        where TGetAllInput : FilteredPagedAndSortedResultRequestDto
         where TGetInput : IEntityDto<TPrimaryKey>
     {
         public IQuickSearcher QuickSearcher { get; set; } = new NullQuickSearcher();
@@ -157,12 +157,13 @@ namespace Shesha
 
         /// <summary>
         /// Query entity data. 
-        /// NOTE: don't use on prod, will be merged with the `Get`endpoint soon
+        /// NOTE: don't use on prod, this is merged with the `Get`endpoint
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
         /// <response code="200">NOTE: shape of the `result` depends on the `properties` argument. When `properties` argument is not specified - it returns top level properties of the entity, all referenced entities are presented as their Id values</response>
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public virtual async Task<GraphQLDataResult<TEntity>> QueryAsync(GetDynamicEntityInput<TPrimaryKey> input)
         {
             CheckGetAllPermission();
@@ -210,12 +211,13 @@ namespace Shesha
 
         /// <summary>
         /// Query entities list
-        /// NOTE: don't use on prod, will be merged with the GetAll endpoint soon
+        /// NOTE: don't use on prod, this is merged with the `GetAll`endpoint
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
         /// <response code="200">NOTE: shape of the `items[]` depends on the `properties` argument. When `properties` argument is not specified - it returns top level properties of the entity, all referenced entities are presented as their Id values</response>
         [HttpGet]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public virtual async Task<GraphQLDataResult<PagedResultDto<TEntity>>> QueryAllAsync(PropsFilteredPagedAndSortedResultRequestDto input)
         {
             CheckGetAllPermission();
