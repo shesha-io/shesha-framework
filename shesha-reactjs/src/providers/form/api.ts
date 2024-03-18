@@ -312,7 +312,7 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
     if (components.hasOwnProperty(key)) {
       const propName = components[key].propertyName;
       fieldNames.push(propName);
-      const fieldsFunc = toolboxComponents[components[key].type].getFieldsToFetch;
+      const fieldsFunc = toolboxComponents[components[key].type]?.getFieldsToFetch;
       if (typeof fieldsFunc === 'function')
         fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
     }
