@@ -13,7 +13,8 @@ namespace Shesha.Extensions
         {
             return app
                 .UseMiddleware<ConfigurationFrameworkMiddleware>()
-                .UseMiddleware<RequestToGqlMiddleware>();
+                //.UseMiddleware<RequestToGqlMiddleware>()
+            ;
         }
     }
 }
