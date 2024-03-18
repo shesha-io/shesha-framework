@@ -75,6 +75,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       wrapInTemplate={props.wrapInTemplate}
       fileName={props.fileName}
       availableConstants={props.availableConstants}
+      style={mode === 'dialog' ? { height: "100%" } : undefined }
     />
   );
 
@@ -89,9 +90,9 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         key: "code",
         label: "Code",
         children: (
-          <>
+          <div style={{ height: "70vh" }}>
             {renderCodeEditor()}
-          </>
+          </div>
         )
       },
       {
@@ -118,10 +119,11 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         open={showDialog}
         onCancel={onDialogCancel}
         onOk={onDialogSave}
-        width={900}
+        width="50vw"
         title={props.label}
         okButtonProps={{ hidden: readOnly }}
         cancelText={readOnly ? 'Close' : undefined}
+        maskClosable={false}
         keyboard={false} /*prevent close by Esc*/
       >
         <Show when={!!props?.description}>

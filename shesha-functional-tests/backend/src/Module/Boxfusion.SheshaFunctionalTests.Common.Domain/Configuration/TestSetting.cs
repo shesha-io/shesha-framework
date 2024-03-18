@@ -1,10 +1,12 @@
-﻿using Shesha.Settings;
+﻿using Shesha.Attributes;
+using Shesha.Settings;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Configuration
 {
     [Category("Tests")]
+    [Alias("common")]
     public interface ITestSetting: ISettingAccessors
     {
         [Display(Name = "UserLockout")]

@@ -1,19 +1,21 @@
-import { ConfigurationItemVersionStatus } from "@/utils/configurationFramework/models";
 import { HttpClientApi } from "../http/api";
 import { SettingConfigurationDto } from "./models";
 import qs from "qs";
-import { GetAllResponse } from "@/interfaces/gql";
 import { IAjaxResponse } from "@/interfaces";
-import { verifiedCamelCase } from "@/utils/string";
-import { ISettingIdentifier } from "@/providers/settings/models";
+import { ISettingFullAccessor, ISettingIdentifier } from "@/providers/settings/models";
 
-interface ModuleSettingsMap {
+interface CategorySettingsMap {
     name: string;
     settings: Map<string, string>;
 }
 
+interface ModuleSettingsMap {
+    name: string;
+    categories: Map<string, CategorySettingsMap>;
+}
+
 export const SETTINGS_URLS = {
-    GET_CONFIGURATIONS: '/api/dynamic/Shesha/SettingConfiguration/QueryAll',
+    GET_CONFIGURATIONS: '/api/services/app/Settings/GetConfigurations',
     GET_VALUE: '/api/services/app/Settings/GetValue',
     SET_VALUE: '/api/services/app/Settings/UpdateValue',
 };
@@ -23,20 +25,23 @@ export class SettingsManager {
     static #configurationsPromise: Promise<SettingConfigurationDto[]> = undefined;
     #modulesMapPromise: Promise<Map<string, ModuleSettingsMap>> = undefined;
 
-    resolveSettingAsync = (id: ISettingIdentifier): Promise<ISettingIdentifier> => {
+    resolveSettingAsync = (id: ISettingFullAccessor): Promise<ISettingIdentifier> => {
         return this.#fetchModulesMapAsync().then(map => {
             const moduleItem = map.get(id.module);
             if (moduleItem) {
-                const settingName = moduleItem.settings.get(id.name);
-                if (settingName) {
-                    return { module: moduleItem.name, name: settingName };
+                const category = moduleItem.categories.get(id.category);
+                if (category) {
+                    return { 
+                        module: moduleItem.name, 
+                        name: category.settings.get(id.name)
+                    };
                 }
             }
             return undefined;
         });
     };
 
-    getValueAsync = <Value = any>(id: ISettingIdentifier): Promise<Value> => {
+    getValueAsync = <Value = any>(id: ISettingFullAccessor): Promise<Value> => {
         return this.resolveSettingAsync(id).then(resolvedId => {
             const url = `${SETTINGS_URLS.GET_VALUE}?${qs.stringify(resolvedId)}`;
             return this._httpClient.get<IAjaxResponse<Value>>(url)
@@ -46,7 +51,7 @@ export class SettingsManager {
         });
     };
 
-    setValueAsync = <Value = any>(id: ISettingIdentifier, value: Value): Promise<void> => {
+    setValueAsync = <Value = any>(id: ISettingFullAccessor, value: Value): Promise<void> => {
         return this.resolveSettingAsync(id).then(resolvedId => {
             const payload = {
                 module: resolvedId.module,
@@ -69,20 +74,9 @@ export class SettingsManager {
         if (this.#configurationsPromise)
             return this.#configurationsPromise;
 
-        const requestParams = {
-            filter: JSON.stringify({
-                and: [
-                    { "==": [{ "var": "versionStatus" }, ConfigurationItemVersionStatus.Live] } // todo: add support of mode switcher
-                ]
-            }),
-            properties: "name label description dataType module { name description }",
-            skipCount: 0,
-            maxResultCount: 1000,
-        };
-        const url = `${SETTINGS_URLS.GET_CONFIGURATIONS}?${qs.stringify(requestParams)}`;
-        this.#configurationsPromise = httpClient.get<IAjaxResponse<GetAllResponse<SettingConfigurationDto>>>(url)
+        this.#configurationsPromise = httpClient.get<IAjaxResponse<SettingConfigurationDto[]>>(SETTINGS_URLS.GET_CONFIGURATIONS)
             .then(res => {
-                const result = res.data.success ? res.data.result.items : [];
+                const result = res.data.success ? res.data.result : [];
                 return result;
             });
         return this.#configurationsPromise;
@@ -99,13 +93,20 @@ export class SettingsManager {
         this.#modulesMapPromise = this.#fetchConfigurationsAsync().then(configs => {
             const map = new Map<string, ModuleSettingsMap>();
             configs.forEach(config => {
-                const camelCased = verifiedCamelCase(config.module.name);
-                let moduleItem = map.get(camelCased);
+                let moduleItem = map.get(config.module.accessor);
                 if (!moduleItem) {
-                    moduleItem = { name: config.module.name, settings: new Map<string, string>() };
-                    map.set(camelCased, moduleItem);
+                    moduleItem = { 
+                        name: config.module.name, 
+                        categories: new Map<string, CategorySettingsMap>() 
+                    };
+                    map.set(config.module.accessor, moduleItem);
                 }
-                moduleItem.settings.set(verifiedCamelCase(config.name), config.name);
+                let categoryItem = moduleItem.categories.get(config.category.accessor);
+                if (!categoryItem){
+                    categoryItem = { name: config.category.name, settings: new Map<string, string>() };
+                    moduleItem.categories.set(config.category.accessor, categoryItem);
+                }
+                categoryItem.settings.set(config.accessor, config.name);
             });
             return map;
         });

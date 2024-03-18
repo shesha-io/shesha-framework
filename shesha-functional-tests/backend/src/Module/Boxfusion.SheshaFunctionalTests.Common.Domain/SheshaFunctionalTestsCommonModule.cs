@@ -25,7 +25,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common
         public override SheshaModuleInfo ModuleInfo => new SheshaModuleInfo("Boxfusion.SheshaFunctionalTests.Common")
         {
             FriendlyName = "Shesha Functional Tests Common",
-            Publisher = "Boxfusion"
+            Publisher = "Boxfusion",
+            Alias = "functionalTests"
+
         };
 
         /// inheritedDoc

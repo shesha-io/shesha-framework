@@ -112,8 +112,9 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             const propertyName = verifiedCamelCase(prop.path);
             const dataType = await this.#getTypescriptType(prop);
 
-            if (dataType && dataType.filePath !== fileName) {
-                typesImporter.import(dataType);
+            if (dataType) {
+                if (dataType.filePath !== fileName)
+                    typesImporter.import(dataType);
 
                 this.#appendCommentBlock(sb, [prop.label, prop.description]);
                 sb.append(`${propertyName}: ${dataType.typeName};`);

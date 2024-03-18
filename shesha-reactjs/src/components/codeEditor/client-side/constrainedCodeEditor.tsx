@@ -74,6 +74,9 @@ export const ConstrainedCodeEditor: FC<IConstrainedCodeEditorProps> = (props) =>
         editorRef.current = editor;
         monacoRef.current = monaco;
 
+        const model = editor.getModel();
+        console.log('LOG: constrained model URI: ', model.uri.toString());
+
         const constrainedInstance = constrainedMonaco(monaco);
         constrainedInstanceRef.current = constrainedInstance;
 

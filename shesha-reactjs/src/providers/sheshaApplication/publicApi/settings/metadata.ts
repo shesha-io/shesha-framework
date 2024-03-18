@@ -1,10 +1,16 @@
 import { IPropertyMetadata, SourceFile, TypeDefinition, isPropertiesArray } from "@/interfaces/metadata";
 import { DataTypes } from "@/interfaces";
-import { verifiedCamelCase } from "@/utils/string";
 import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { SettingConfigurationDto } from "./models";
 import { SettingsManager } from "./manager";
 import { HttpClientApi } from "../http/api";
+import { StringBruilder } from "@/utils/metadata/stringBruilder";
+
+type SettingItemType = 'module' | 'category' | 'setting';
+
+export interface ISettingPropertyMetadata extends IPropertyMetadata {
+    settingItemType: SettingItemType;
+}
 
 /**
  * Convert the given settings configuration to an array of property metadata.
@@ -12,29 +18,47 @@ import { HttpClientApi } from "../http/api";
  * @param {SettingConfigurationDto[]} settings - the settings configuration to be converted
  * @return {IPropertyMetadata[]} the array of property metadata
  */
-const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]): IPropertyMetadata[] => {
-    const result: IPropertyMetadata[] = [];
-    const modules = new Map<string, IPropertyMetadata>();
+const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]): ISettingPropertyMetadata[] => {
+    const result: ISettingPropertyMetadata[] = [];
     settings.forEach(setting => {
-        let appModule = modules.get(setting.module.name);
-        if (!appModule) {
-            appModule = {
-                path: setting.module.name,
+        let moduleProp = result.find(m => m.path === setting.module.accessor);
+        if (!moduleProp) {
+            moduleProp = {
+                path: setting.module.accessor,
+                label: setting.module.name,
                 dataType: DataTypes.object,
                 properties: [],
+                settingItemType: 'module',
             };
-            modules.set(setting.module.name, appModule);
-
-            result.push(appModule);
+            result.push(moduleProp);
         }
-        if (!isPropertiesArray(appModule.properties))
-            throw new Error("Something went wrong. Settings should be an array of properties");
+        if (!isPropertiesArray(moduleProp.properties))
+            throw new Error("Something went wrong. Expected array of properties");
 
-        appModule.properties.push({
-            path: verifiedCamelCase(setting.name),
+        let categoryProp = moduleProp.properties.find(p => p.path === setting.category.accessor) as ISettingPropertyMetadata;
+        if (!categoryProp) {
+            categoryProp = {
+                path: setting.category.accessor,
+                label: setting.category.name,
+                dataType: DataTypes.object,
+                properties: [],
+                settingItemType: 'category',
+            };
+            moduleProp.properties.push(categoryProp);
+        }
+
+        const settingMetadata: ISettingPropertyMetadata = {
+            path: setting.accessor,
+            label: setting.name,
             description: setting.description,
-            dataType: setting.dataType,
-        });
+            dataType: setting.dataType?.dataType,
+            dataFormat: setting.dataType?.dataFormat,
+            settingItemType: 'setting',
+        };
+        if (!isPropertiesArray(categoryProp.properties))
+            throw new Error("Something went wrong. Expected array of properties");
+
+        categoryProp.properties.push(settingMetadata);
     });
 
     return result;
@@ -65,34 +89,13 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
         typeName: "ApplicationSettingsApi",
         files: [apiFile],
     };
-    const modules = new Map<string, IPropertyMetadata>();
-    settings.forEach(setting => {
-        const moduleName = verifiedCamelCase(setting.module.name);
-        let appModule = modules.get(moduleName);
-        if (!appModule) {
-            appModule = {
-                path: moduleName,
-                dataType: DataTypes.object,
-                properties: [],
-            };
-            modules.set(moduleName, appModule);
-        }
-        if (!isPropertiesArray(appModule.properties))
-            throw new Error("Something went wrong. Settings should be an array of properties");
-
-        appModule.properties.push({
-            path: verifiedCamelCase(setting.name),
-            description: setting.description,
-            dataType: setting.dataType,
-        });
-    });
     const content = [
         "/**",
         " * Setting Accessor",
         " */",
         "interface ApplicationSettingAccessor<TValue = any> {",
         "   getValueAsync(): Promise<TValue>;",
-        "   setValue(value: TValue): Promise<void>;",
+        "   setValueAsync(value: TValue): Promise<void>;",
         "}",
         "",
         "/**",
@@ -100,23 +103,46 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
         " */",
         `interface ${result.typeName} {`,
     ];
-    modules.forEach(appModule => {
-        if (appModule.description)
-            content.push(`    /** ${appModule.description} */`);
-        content.push(`    ${appModule.path}: {`);
 
-        if (!isPropertiesArray(appModule.properties))
+    const wroteObject = (sb: StringBruilder, property: ISettingPropertyMetadata) => {
+        if (property.description)
+            sb.append(`/** ${property.description} */`);
+
+        sb.append(`${property.path}: {`);
+
+        if (!isPropertiesArray(property.properties))
             throw new Error("Something went wrong. Settings should be an array of properties");
 
-        appModule.properties.forEach(prop => {
-            if (prop.description)
-                content.push(`        /** ${prop.description} */`);
-            content.push(`        ${prop.path}: ApplicationSettingAccessor<${prop.dataType}>;`);
+        sb.incIndent();
+        property.properties.forEach(prop => {
+            if ((prop as ISettingPropertyMetadata).settingItemType === 'setting') {
+                if (prop.description)
+                    sb.append(`/** ${prop.description} */`);
+                sb.append(`${prop.path}: ApplicationSettingAccessor<${prop.dataType}>;`);
+            } else
+                if (prop.dataType === DataTypes.object) {
+                    wroteObject(sb, prop as ISettingPropertyMetadata);
+                }
         });
-        content.push(`    }`);
+        sb.decIndent();
+        sb.append("}");
+    };
+
+    const sb = new StringBruilder();
+    sb.appendLines(content);
+
+    const properties = settingsConfigurationToProperties(settings);
+
+    sb.incIndent();
+    properties.forEach(property => {
+        wroteObject(sb, property);
     });
-    content.push("}");
-    apiFile.content = content.join("\r\n");
+    sb.decIndent();
+
+
+    sb.append("}");
+
+    apiFile.content = sb.build();
 
     return result;
 };

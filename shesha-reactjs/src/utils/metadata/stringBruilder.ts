@@ -29,6 +29,17 @@ export class StringBruilder {
     append(line: string) {
         this.content.push(this.#formatLine(line));
     }
+
+    /**
+     * Append multiple lines to the current context.
+     *
+     * @param {string[]} lines - array of lines to be appended
+     * @return {void} 
+     */
+    appendLines(lines: string[]) {
+        lines.forEach(line => this.append(line));
+    };
+
     /**
      * Build the entire content by joining with '\r\n'.
      *

@@ -51,8 +51,9 @@ const prefixLibPath = (path: string): string => path.indexOf("node_modules") ===
  * @return {ReactNode} the code editor component
  */
 const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
-    const { value, onChange, availableConstants, fileName, path, wrapInTemplate, readOnly = false } = props;
+    const { value, onChange, availableConstants, fileName, path, wrapInTemplate, readOnly = false, style } = props;
     const monacoInst = useRef<Monaco>();
+    const editorRef = useRef<editor.IStandaloneCodeEditor>();
 
     const { getMetadata } = useMetadataDispatcher();
 
@@ -80,6 +81,8 @@ ${(c) => c.editable(code)}
         const uri = monaco.Uri.parse(filePath);
         const existingModel = monaco.editor.getModel(uri);
         if (!existingModel) {
+            console.log('LOG: create model with URI: ', uri.toString());
+
             monaco.editor.createModel(content, "typescript", uri);
         }
 
@@ -170,18 +173,35 @@ ${(c) => c.editable(code)}
     };
 
     const onEditorMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+        editorRef.current = editor;
         monacoInst.current = monaco;
+
+        const allModels = monaco.editor.getModels();
+        console.log('LOG: onEditorMount', allModels.length);
 
         initDiagnosticsOptions(monaco);
 
         initEditor(editor, monaco);
 
+        monaco.editor.onDidCreateEditor(newEditor => {
+            newEditor.onDidChangeModel(() => {
+                newEditor.updateOptions({
+                    readOnly: true
+                });
+            });
+        });
+
         if (template && availableConstants && asPropertiesArray(availableConstants.properties, []).length > 0)
             editor.trigger(null, 'editor.fold', { selectionLines: [1] });
     };
 
+    const beforeMount = (monaco: Monaco) => {
+        const allModels = monaco.editor.getModels();
+        console.log('LOG: beforeMount', allModels.length);
+    };
+
     return (
-        <div style={{ minHeight: "300px", height: "300px", width: "100%" }}>
+        <div style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
             <CodeEditorMayHaveTemplate
                 path={fileNamesState.modelPath}
                 language={props.language}
@@ -192,8 +212,11 @@ ${(c) => c.editable(code)}
                     automaticLayout: true,
                     readOnly: readOnly,
                 }}
+                beforeMount={beforeMount}
                 onMount={onEditorMount}
                 template={template}
+
+                keepCurrentModel={false}
             />
         </div>
     );

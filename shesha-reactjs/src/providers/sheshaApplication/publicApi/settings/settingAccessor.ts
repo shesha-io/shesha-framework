@@ -5,19 +5,21 @@ import { SettingsManager } from "./manager";
  */
 export interface ISettingAccessor<Value = any> {
     getValueAsync: () => Promise<Value>;
-    setValue: (value: Value) => Promise<void>;
+    setValueAsync: (value: Value) => Promise<void>;
 }
 /**
  * Setting value accessor. It allows to read and write specified setting value.
  */
 export class SettingAccessor<Value = any> implements ISettingAccessor<Value> {
     readonly _name: string;
-    readonly _moduleName: string;
+    readonly _moduleAccessor: string;
+    readonly _categoryAccessor: string;
     readonly _settingManager: SettingsManager;
 
-    constructor(settingManager: SettingsManager, moduleName: string, name: string) {
+    constructor(settingManager: SettingsManager, moduleAccessor: string, categoryAccessor: string, name: string) {
         this._settingManager = settingManager;
-        this._moduleName = moduleName;
+        this._moduleAccessor = moduleAccessor;
+        this._categoryAccessor = categoryAccessor;
         this._name = name;
     }
 
@@ -27,7 +29,7 @@ export class SettingAccessor<Value = any> implements ISettingAccessor<Value> {
      * @returns setting value
      */
     getValueAsync() {
-        return this._settingManager.getValueAsync<Value>({ module: this._moduleName, name: this._name });
+        return this._settingManager.getValueAsync<Value>({ module: this._moduleAccessor, category: this._categoryAccessor, name: this._name });
     };
 
     /**
@@ -35,7 +37,7 @@ export class SettingAccessor<Value = any> implements ISettingAccessor<Value> {
      * @param value New value
      * @returns Promise that will be resolved when value is written
      */
-    setValue(value: Value): Promise<void> {
-        return this._settingManager.setValueAsync<Value>({ module: this._moduleName, name: this._name }, value);
+    setValueAsync(value: Value): Promise<void> {
+        return this._settingManager.setValueAsync<Value>({ module: this._moduleAccessor, category: this._categoryAccessor, name: this._name }, value);
     }
 }

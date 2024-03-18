@@ -2,6 +2,7 @@ import { EditorProps } from "@monaco-editor/react";
 import { TemplateEvaluator } from "./utils";
 import { CodeLanguages } from "../formDesigner/components/codeEditor/types";
 import { IObjectMetadata } from "@/interfaces";
+import { CSSProperties } from "react";
 
 export interface IHasCodeTemplate {
     template: TemplateEvaluator;
@@ -20,6 +21,7 @@ export interface ICodeEditorProps {
     readOnly?: boolean;
     placeholder?: string;
     language: CodeLanguages;
+    style?: CSSProperties;
 
     path?: string;
     fileName?: string;
