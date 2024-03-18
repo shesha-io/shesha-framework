@@ -22,7 +22,7 @@ import { GetDataError, useGet } from '@/hooks';
 import { getQueryParams, joinUrlAndPath } from '@/utils/url';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { IApiEndpoint, IPropertyMetadata, StandardEntityActions } from '@/interfaces/metadata';
+import { IApiEndpoint, IModelMetadata, IPropertyMetadata, StandardEntityActions } from '@/interfaces/metadata';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
 import { IToolboxComponents } from '@/interfaces';
@@ -283,7 +283,10 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
   const resf = (items: IFieldData[]) => {
     let s = '';
     items.forEach((item) => {
-      if (!item.property) return;
+      if (!(!!item.property
+          || item.name === '_className'
+          || item.name === '_displayName'
+      )) return;
       s += s ? ',' + item.name : item.name;
       if (item.child.length > 0) {
         s += '{' + resf(item.child) + '}';
@@ -296,7 +299,7 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
   return resf(fields);
 };
 
-const getFormFields = (payload: GetFormFieldsPayload): string[] => {
+const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata): string[] => {
   const { formMarkup, formSettings, toolboxComponents } = payload;
   if (!formMarkup) return null;
 
@@ -307,7 +310,11 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
   let fieldNames = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-      fieldNames.push(components[key].propertyName);
+      const propName = components[key].propertyName;
+      fieldNames.push(propName);
+      const fieldsFunc = toolboxComponents[components[key].type].getFieldsToFetch;
+      if (typeof fieldsFunc === 'function')
+        fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
     }
   }
 
@@ -340,7 +347,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
   return getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType }).then((metadata) => {
     let fields: IFieldData[] = [];
 
-    const fieldNames = getFormFields(payload);
+    const fieldNames = getFormFields(payload, metadata);
 
     // create list of promises
     const promises: Promise<any>[] = [];

@@ -64,6 +64,13 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     };
     return customProps;
   },
+  getFieldsToFetch: (propertyName) => {
+    return [
+      propertyName + '.id',
+      propertyName + '._displayName',
+      propertyName + '._className',
+    ];
+  },
 };
 
 export default SubFormComponent;
