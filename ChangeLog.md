@@ -1,34 +1,22 @@
 # Release Notes
 ## Enhancements
-- Introduction of a Quick Edit form builder, now opening in a large dialog box instead of a new tab.
-- Allowing users to define the width of the datalist create dialog.
-- Updating to the latest versions of Ant Design (antD) and Next.js.
+- Improved API functionality by cleaning up and removing duplications in dynamically generated APIs.
+- Enhanced flexibility in displaying dataTable content with support for sub-form based custom rendering on dataTable columns.
+- Implemented restriction preventing assignment of configurations to modules not in development.
+- Tooltip descriptions are now exposed, providing additional information when hovering over icons on action columns.
+- Updated existing edit mode and introduced new edit mode with icons
+- Implemented cosmetic changes to enhance the entity configuration interface.
 
 ## Bug Fixes
-- Resolving issues with the time picker range and hour properties.
-- Setting specific widths for CRUD operations column and action column.
-- Addressing the problem where the same form is displayed for creating and listing when using view type on datalist.
-- Fixing rendering issues related to custom hidden state and edit mode with if statements.
-- Correcting the edit mode behavior on the subform.
-- Resolving the issue where the ChildEntitiesTagGroup component sends null values.
-- Ensuring datalist becomes editable when rendering the component within a layout component.
-- Fixing the failure to prepopulate relevant additional fields for components requiring them upon selection.
-- Rectifying the problem where subform data comes empty when rendered on the datalist.
-- Fixing the Entity Picker component failing to update the value when rendered on the datalist.
-- Addressing the datalist form selection mode expression hiding the create form field.
+- Fixed issue where an incorrect module was appended to the reference list endpoint.
+- Resolved issue where size and style properties were not being applied to the component entity picker.
+- Fixed bug causing duplication of properties on the password combo component.
+- Addressed reference list navigation error after drag-and-drop, resulting in missing radio buttons.
+- Capitalized 'refListName' displayed when hovering over referenceListStatus.
+- Fixed file list component still prompting for additional attachments even after multiple files have been attached when required is true.
+- Fixed inability to delete a file that failed to upload due to file size.
+- Fixed issue where switch values do not display when rendering in details view.
 
 ## UX Changes
-- Addition of a new styling component on layout components.
-- Displaying the delete button only on the selected widget.
-
-## Configuration Changes
-- Removed the label field from new forms.
-- Added tooltips to key fields.
-- Adjustments to the template dropdown on new forms.
-- Moved the entity field after the template.
-- Adjustments to the Entity dropdown on new forms.
-- Default Form to currently edited module.
-- Updated the label and component span
-
-## Breaking Changes
-- Due to recent changes, some old forms may not render as expected, requiring reconfiguration.
+- Removed bottom scroller displayed at the bottom when on the designer form.
+- Increased size of Quick Edit dialog width and height for improved visibility.
