@@ -240,8 +240,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
-    params.properties =
-      typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
+    params.properties = !!properties
+      ? typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' ') // Always include the `id` property/. Useful for deleting
+      : null;
 
     const queryParamsFromJs = queryParamsEvaluator({
       data: formData ?? {},
@@ -251,6 +252,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (queryParams) {
       params = { ...params, ...(typeof queryParamsFromJs === 'object' ? queryParamsFromJs : {}) };
     }
+    
+    if (!params.id && !!value && !!value['id'])
+      params.id = value['id'];
 
     return params;
   };
