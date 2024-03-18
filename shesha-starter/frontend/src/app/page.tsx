@@ -42,7 +42,6 @@ const Home: PageWithLayout<{}> = () => {
             title="How to change landing page"
             url={
               "https://docs.shesha.io/docs/fundamentals/how-to-change-home-page/"
-
             }
             description="Change your landing page to a custom page"
           />
