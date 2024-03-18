@@ -35,6 +35,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
+
     const eventProps = {
       model,
       form,
@@ -47,11 +48,12 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       setFormData,
       setGlobalState,
     };
-
+//omitting the value prop fixes date formatting for all formats, including YYYY/Wo
     return (
       <Fragment>
         <ConfigurableFormItem model={model}>
-          {(value, onChange) => {
+
+          {(onChange) => {
             const customEvent =  customDateEventHandler(eventProps);
             const onChangeInternal = (...args: any[]) => {
               customEvent.onChange(args[0], args[1]);
@@ -59,7 +61,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
                 onChange(...args);
             };
             
-            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
+            return <DatePickerWrapper {...model} {...customEvent} onChange={onChangeInternal} />;
           }}
         </ConfigurableFormItem>
       </Fragment>
