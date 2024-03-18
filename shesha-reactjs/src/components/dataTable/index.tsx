@@ -53,6 +53,7 @@ import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces'
 import { useStyles } from './styles/styles';
 import { adjustWidth, getCruadActionConditions } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
+import Alert from 'antd/lib/alert/Alert';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -692,6 +693,17 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     onRowsRendering: grouping && grouping.length > 0 && groupingAvailable ? onRowsRenderingWithGrouping : undefined,
     onResizedChange: onResizedChange,
   };
+
+  if (tableProps.columns && tableProps.columns.length === 0) {
+    return (
+      <Alert
+        showIcon
+        message="No Data"
+        description="No data is available for this table"
+        type="warning"
+      />
+    );
+  }
 
   return (
     <Fragment>
