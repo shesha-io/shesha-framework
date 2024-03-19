@@ -46,6 +46,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         colorPickerDefaultTab: 'color',
         allowResizeX:model?.allowResizeX && !model?.autoWidth,
         allowResizeY:model?.allowResizeY && !model?.autoHeight,
+        askBeforePasteHTML: model?.askBeforePasteHTML,
+        askBeforePasteFromWord: model?.askBeforePasteFromWord,
         autofocus: model?.autofocus,
       };
       return typedConfig;
