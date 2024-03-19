@@ -143,10 +143,11 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
 
     if (event.keyCode === KeyCodes.ArrowUp || event.keyCode === KeyCodes.ArrowDown) {
       let suggestion: ISuggestion;
-
+      
       if (event.keyCode === KeyCodes.ArrowUp) {
         if (!highlightedPlaceId) {
-          suggestion = suggestions[lastIndex]; // Return the last one if the highlighted is empty
+          suggestion = suggestions[lastIndex];
+          setHighlightedPlaceId(suggestion.placeId) // Return the last one if the highlighted is empty
         } else {
           if (foundIndex === firstIndex) {
             suggestion = suggestions[lastIndex]; // It's the first one, go to the last one
@@ -236,20 +237,20 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             })}
           >
             {suggestions.map(suggestion => {
-              const localSuggestion = { ...suggestion };
-              localSuggestion.description = ignoreText
+
+              suggestion.description = ignoreText
                 ? suggestion.description?.replace(ignoreText, '')
                 : suggestion.description;
 
               return (
                 <div
-                  {...getSuggestionItemProps(localSuggestion)}
-                  className={classNames(styles.dropdownContainer, {
-                    highlighted: highlightedPlaceId === localSuggestion?.placeId,
+                  {...getSuggestionItemProps(suggestion)}
+                  className={classNames(styles.suggestionContainer, {
+                    highlighted: highlightedPlaceId === suggestion?.placeId,
                   })}
-                  key={localSuggestion?.placeId}
+                  key={suggestion?.placeId}
                 >
-                  <div className={styles.suggestion}>{localSuggestion?.description}</div>
+                  <div className={styles.suggestion}>{suggestion?.description}</div>
                 </div>
               );
             })}
