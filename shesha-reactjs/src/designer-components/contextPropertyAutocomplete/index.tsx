@@ -121,6 +121,8 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
   type: 'contextPropertyAutocomplete',
   name: 'Context Property Autocomplete',
   icon: <FileSearchOutlined />,
+  isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
     const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
     const { formData, formSettings, setFormData } = useForm();
