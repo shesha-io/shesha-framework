@@ -15,6 +15,7 @@ import {
   FormIdentifier,
   FormMarkupWithSettings,
   FormRawMarkup,
+  IComponentsDictionary,
   IFormDto,
   IFormSettings
   } from './models';
@@ -270,6 +271,24 @@ interface IFieldData {
   property: IPropertyMetadata;
 }
 
+export const filterDataByOutputComponents = (
+  data: any,
+  components: IComponentsDictionary,
+  toolboxComponents: IToolboxComponents,
+) => {
+  const newData = { ...data };
+  for (const key in components) {
+    if (components.hasOwnProperty(key)) {
+      var component = components[key];
+      if (data.hasOwnProperty(component.propertyName) && !toolboxComponents[component.type].isOutput) {
+         delete data[component.propertyName];
+      }
+    }
+  }
+
+  return newData;
+};
+
 const getFieldsFromCustomEvents = (code: string) => {
   if (!code) return [];
   const reg = new RegExp('(?<![_a-zA-Z0-9.])data.[_a-zA-Z0-9.]+', 'g');
@@ -310,11 +329,17 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
   let fieldNames = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-      const propName = components[key].propertyName;
-      fieldNames.push(propName);
-      const fieldsFunc = toolboxComponents[components[key].type]?.getFieldsToFetch;
-      if (typeof fieldsFunc === 'function')
-        fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
+      var component = toolboxComponents[components[key].type];
+      
+      // get data only for isInput components
+      // and for context = null or empty string (form context)
+      if (component?.isInput && !components[key].context) {
+        const propName = components[key].propertyName;
+        fieldNames.push(propName);
+        const fieldsFunc = component?.getFieldsToFetch;
+        if (typeof fieldsFunc === 'function')
+          fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
+      }
     }
   }
 
@@ -339,6 +364,7 @@ interface GetGqlFieldsPayload extends GetFormFieldsPayload {
   getContainerProperties: IMetadataDispatcherActionsContext['getContainerProperties'];
   getMetadata: IMetadataDispatcherActionsContext['getMetadata'];
 }
+
 export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]> => {
   const { formMarkup, formSettings, getMetadata, getContainerProperties } = payload;
 

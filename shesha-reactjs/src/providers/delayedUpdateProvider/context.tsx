@@ -8,7 +8,7 @@ export interface IDelayedUpdateStateContext {
 export interface IDelayedUpdateActionContext {
   addItem: (groupName: string, id: any, data?: any) => void;
   removeItem: (groupName: string, id: any) => void;
-  getPayload: () => {};
+  getPayload: () => IDelayedUpdateGroup[];
 }
 
 /** initial state */
