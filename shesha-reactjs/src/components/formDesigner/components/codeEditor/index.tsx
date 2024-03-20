@@ -17,6 +17,8 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
   type: 'codeEditor',
   name: 'Code Editor',
   icon: <CodeSandboxOutlined />,
+  isInput: true,
+  isOutput: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && (dataFormat === StringFormats.javascript || dataFormat === StringFormats.json),
   Factory: ({ model }) => {

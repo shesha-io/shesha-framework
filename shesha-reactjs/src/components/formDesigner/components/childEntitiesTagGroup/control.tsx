@@ -12,6 +12,7 @@ import { useStyles } from './styles/styles';
 import { useParent } from '@/providers/parentProvider/index';
 import { useDeepCompareMemo } from '@/index';
 import DataContextProvider from '@/providers/dataContextProvider/index';
+import { getValueByPropertyName } from '@/utils/object';
 
 const { confirm } = Modal;
 
@@ -82,7 +83,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   }, [value]);
 
   const onModalChange = (value: any) => {
-    const data = !!value ? value[propertyName] : undefined;
+    const data = !!value ? getValueByPropertyName(value, propertyName) : undefined;
     if (activeValue) {
       onChange(options.map(item => item.value === activeValue.value ? data : item.data));
     } else {
