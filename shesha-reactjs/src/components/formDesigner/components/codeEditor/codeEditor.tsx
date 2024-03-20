@@ -5,13 +5,14 @@ import React, {
 } from 'react';
 import {
   Alert,
+  App,
   Button,
   Modal,
   Space,
   Tabs
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
-import { CodeOutlined } from '@ant-design/icons';
+import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
 import { Show } from '@/components';
@@ -30,6 +31,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 }) => {
   const [internalValue, setInternalValue] = useState<string>(value); // stores value for the `dialog` mode
   const [showDialog, setShowDialog] = useState(false);
+  const { modal } = App.useApp();
 
   const src = useSourcesFolder(false);
 
@@ -53,8 +55,23 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const openEditorDialog = () => setShowDialog(true);
 
   const onDialogCancel = () => {
-    setInternalValue(value);
-    setShowDialog(false);
+    if (!readOnly && value !== internalValue) {
+      modal.confirm({
+        title: 'Close code editor?',
+        icon: <ExclamationCircleFilled />,
+        content: 'Unsaved changes will be lost. Are you sure you want to cancel edit?',
+        okText: 'Yes',
+        okType: 'danger',
+        cancelText: 'No',
+        onOk() {
+          setInternalValue(value);
+          setShowDialog(false);
+        }
+      });
+    } else {
+      setInternalValue(value);
+      setShowDialog(false);
+    }
   };
   const onDialogSave = () => {
     if (props.onChange) props.onChange(internalValue);
@@ -73,9 +90,10 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
       path={src?.path}
       wrapInTemplate={props.wrapInTemplate}
+      templateSettings={props.templateSettings}
       fileName={props.fileName}
       availableConstants={props.availableConstants}
-      style={mode === 'dialog' ? { height: "100%" } : undefined }
+      style={mode === 'dialog' ? { height: "100%" } : undefined}
     />
   );
 
@@ -99,7 +117,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         key: "variable",
         label: "Variables",
         children: (<CodeVariablesTables data={exposedVariables} />)
-      }
+      }      
     ]
     : undefined;
 
@@ -123,8 +141,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         title={props.label}
         okButtonProps={{ hidden: readOnly }}
         cancelText={readOnly ? 'Close' : undefined}
-        maskClosable={false}
-        keyboard={false} /*prevent close by Esc*/
+        destroyOnClose={true}
       >
         <Show when={!!props?.description}>
           <Alert message={props?.description} />

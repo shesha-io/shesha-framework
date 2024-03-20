@@ -2,10 +2,12 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { CodeLanguages } from './types';
 import { IObjectMetadata } from '@/interfaces/metadata';
+import { CodeTemplateSettings } from '@/components/codeEditor/models';
 
 export interface IExecutableCodeEditor {
   fileName?: string;
   wrapInTemplate?: boolean;
+  templateSettings?: CodeTemplateSettings;
   availableConstants?: IObjectMetadata;
   /**
    * @deprecated to be removed

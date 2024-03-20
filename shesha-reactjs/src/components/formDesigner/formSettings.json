@@ -11,7 +11,8 @@
       "dataSourceType": "url",
       "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
       "validate": {},
-      "useRawValues": true
+      "useRawValues": true,
+      "version": 4
     },
     {
       "id": "077f5a0d-d59e-44b8-bc5b-a06e18438f4d",
@@ -37,8 +38,9 @@
           "value": "vertical"
         }
       ],
-      "version": 1,
-      "referenceListId": null
+      "version": 5,
+      "referenceListId": null,
+      "valueFormat": "listItem"
     },
     {
       "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -65,8 +67,9 @@
         }
       ],
       "dataSourceType": "values",
-      "version": 1,
-      "referenceListId": null
+      "version": 5,
+      "referenceListId": null,
+      "valueFormat": "listItem"
     },
     {
       "id": "b6bdf196-769f-4bce-b488-9ca50ad16176",
@@ -77,7 +80,8 @@
       "parentId": "root",
       "hidden": false,
       "description": "Configure the default value of colon for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)",
-      "validate": {}
+      "validate": {},
+      "version": 2
     },
     {
       "id": "493e12cd-d4ab-4f2a-8c08-3a20ce0f617e",
@@ -88,7 +92,8 @@
       "parentId": "root",
       "hidden": false,
       "validate": {},
-      "description": "Raster number of cells to occupy, 0 corresponds to display: none"
+      "description": "Raster number of cells to occupy, 0 corresponds to display: none",
+      "version": 2
     },
     {
       "id": "99c93c99-0005-429e-8f71-e899230f1c6e",
@@ -99,7 +104,8 @@
       "parentId": "root",
       "hidden": false,
       "validate": {},
-      "description": "Raster number of cells to occupy, 0 corresponds to display: none"
+      "description": "Raster number of cells to occupy, 0 corresponds to display: none",
+      "version": 2
     },
     {
       "id": "0e3231f1-e158-427a-b32b-00ff9da941bb",
@@ -110,7 +116,8 @@
       "parentId": "root",
       "hidden": false,
       "description": "Whether or not _formFields should be included in the payload. By default it is included.",
-      "validate": {}
+      "validate": {},
+      "version": 2
     },
     {
       "id": "63f3360d-1e54-4a79-a888-8cd23b0bedd5",
@@ -123,7 +130,8 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A list of fields you want to fetch",
-      "parentId": "root"
+      "parentId": "root",
+      "version": 1
     },
     {
       "id": "52f4460d-2e64-4d79-a900-7cd28b0bebd3",
@@ -136,7 +144,8 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A list of form properties you want persisted",
-      "parentId": "root"
+      "parentId": "root",
+      "version": 1
     },
     {
       "id": "ad28d795-92d8-4470-a87e-603822368cc8",
@@ -145,12 +154,16 @@
       "label": "Unique Form Id",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": {"_code": "return  !getSettingValue(data?.formKeysToPersist?.length);", "_mode": "code", "_value": false},
+      "hidden": {
+        "_code": "return  !getSettingValue(data?.formKeysToPersist?.length);",
+        "_mode": "code",
+        "_value": false
+      },
       "validate": {
         "required": true
       },
       "description": "This is very important since some form are rendered using the markup, in which case they wouldn't have the path or id that could be used as a unique id of the form",
-      "version": 0,
+      "version": 3,
       "textType": "text"
     },
     {
@@ -186,7 +199,10 @@
           "type": "object"
         }
       ],
-      "description": "Enter values that you would like passed to the server as payload. Note that you can also use Mustache expression as in {{parent.id}}. Also you can use dot notation such as query.name"
+      "description": "Enter values that you would like passed to the server as payload. Note that you can also use Mustache expression as in {{parent.id}}. Also you can use dot notation such as query.name",
+      "version": 2,
+      "mode": "dialog",
+      "settingsValidationErrors": []
     },
     {
       "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
@@ -227,7 +243,12 @@
           "type": "object"
         }
       ],
-      "description": "Write a code that allows you to return an object whose values will be merged with the form state before submit. Check the variables tab for exposed variables"
+      "description": "Write a code that allows you to return an object whose values will be merged with the form state before submit. Check the variables tab for exposed variables",
+      "version": 2,
+      "settingsValidationErrors": [],
+      "placeholder": "",
+      "mode": "dialog",
+      "wrapInTemplate": true
     },
     {
       "id": "055f85e2-f2f1-4a88-95ad-0d1afb81cae7",
@@ -283,7 +304,12 @@
           "type": "(payload: { key: string, data: any } ) => void"
         }
       ],
-      "description": "This action will be executed the first time the form loads. Just before any API call has been made. At this stage, the form has no data except for initialValues if passed"
+      "description": "This action will be executed the first time the form loads. Just before any API call has been made. At this stage, the form has no data except for initialValues if passed",
+      "version": 2,
+      "settingsValidationErrors": [],
+      "placeholder": "",
+      "mode": "dialog",
+      "wrapInTemplate": true
     },
     {
       "id": "087a4e7d-ff28-4175-9221-61bef0bbaea2",
@@ -344,7 +370,12 @@
           "type": "(payload: { key: string, data: any } ) => void"
         }
       ],
-      "description": "This action will be executed immediately after the data has been loaded (Fetched from the API)"
+      "description": "This action will be executed immediately after the data has been loaded (Fetched from the API)",
+      "version": 2,
+      "settingsValidationErrors": [],
+      "placeholder": "",
+      "mode": "dialog",
+      "wrapInTemplate": true
     },
     {
       "id": "5092dd2b-c514-4b06-bfb5-546ce94fab97",
@@ -405,7 +436,12 @@
           "type": "(payload: { key: string, data: any } ) => void"
         }
       ],
-      "description": "This action will be executed whenever the form updates"
+      "description": "This action will be executed whenever the form updates",
+      "version": 2,
+      "settingsValidationErrors": [],
+      "placeholder": "",
+      "mode": "dialog",
+      "wrapInTemplate": true
     },
     {
       "id": "Q6s-GKx4El9BhcH9MQ8bj",
@@ -415,105 +451,113 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "expandIconPosition": "end",
       "settingsValidationErrors": [],
-      "components": [
-        {
-          "id": "y3d0ny6_gznxiEEHFa1ZG",
-          "type": "endpointsAutocomplete",
-          "propertyName": "postUrl",
-          "label": "Custom Create Url",
-          "labelAlign": "right",
-          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
-          "hidden": false,
-
-          "isDynamic": false,
-          "placeholder": "",
-          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
-          "validate": {
-            "minLength": "",
-            "maxLength": "",
-            "message": ""
+      "collapsedByDefault": true,
+      "version": 4,
+      "header": {
+        "id": "Ck5P-EpUBUq4b7BUdi4Rchr6Fb_0u3",
+        "components": []
+      },
+      "content": {
+        "id": "IUbL5u-qUoKAAXvV51xWFnn9qn-17x",
+        "components": [
+          {
+            "id": "y3d0ny6_gznxiEEHFa1ZG",
+            "type": "endpointsAutocomplete",
+            "propertyName": "postUrl",
+            "label": "Custom Create Url",
+            "labelAlign": "right",
+            "parentId": "IUbL5u-qUoKAAXvV51xWFnn9qn-17x",
+            "hidden": false,
+            "isDynamic": false,
+            "placeholder": "",
+            "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+            "validate": {
+              "minLength": "",
+              "maxLength": "",
+              "message": ""
+            },
+            "quickviewWidth": "",
+            "prefix": "POST",
+            "suffix": "",
+            "initialValue": "",
+            "settingsValidationErrors": [],
+            "version": 2
           },
-          "quickviewWidth": "",
-          "prefix": "POST",
-          "suffix": "",
-          "initialValue": "",
-          "settingsValidationErrors": []
-        },
-        {
-          "id": "oamRBlEs6O2Jlc2FGL_gY",
-          "type": "endpointsAutocomplete",
-          "propertyName": "getUrl",
-          "label": "Custom Read Url",
-          "labelAlign": "right",
-          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
-          "hidden": false,
-
-          "isDynamic": false,
-          "placeholder": "",
-          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
-          "validate": {
-            "minLength": "",
-            "maxLength": "",
-            "message": ""
+          {
+            "id": "oamRBlEs6O2Jlc2FGL_gY",
+            "type": "endpointsAutocomplete",
+            "propertyName": "getUrl",
+            "label": "Custom Read Url",
+            "labelAlign": "right",
+            "parentId": "IUbL5u-qUoKAAXvV51xWFnn9qn-17x",
+            "hidden": false,
+            "isDynamic": false,
+            "placeholder": "",
+            "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+            "validate": {
+              "minLength": "",
+              "maxLength": "",
+              "message": ""
+            },
+            "quickviewWidth": "",
+            "prefix": "GET",
+            "suffix": "",
+            "initialValue": "",
+            "settingsValidationErrors": [],
+            "version": 2
           },
-          "quickviewWidth": "",
-          "prefix": "GET",
-          "suffix": "",
-          "initialValue": "",
-          "settingsValidationErrors": []
-        },
-        {
-          "id": "pooSZYaENGyIjZFy6gH9G",
-          "type": "endpointsAutocomplete",
-          "propertyName": "putUrl",
-          "label": "Custom Update Url",
-          "labelAlign": "right",
-          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
-          "hidden": false,
-
-          "isDynamic": false,
-          "placeholder": "",
-          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
-          "validate": {
-            "minLength": "",
-            "maxLength": "",
-            "message": ""
+          {
+            "id": "pooSZYaENGyIjZFy6gH9G",
+            "type": "endpointsAutocomplete",
+            "propertyName": "putUrl",
+            "label": "Custom Update Url",
+            "labelAlign": "right",
+            "parentId": "IUbL5u-qUoKAAXvV51xWFnn9qn-17x",
+            "hidden": false,
+            "isDynamic": false,
+            "placeholder": "",
+            "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+            "validate": {
+              "minLength": "",
+              "maxLength": "",
+              "message": ""
+            },
+            "quickviewWidth": "",
+            "prefix": "PUT",
+            "suffix": "",
+            "initialValue": "",
+            "settingsValidationErrors": [],
+            "version": 2
           },
-          "quickviewWidth": "",
-          "prefix": "PUT",
-          "suffix": "",
-          "initialValue": "",
-          "settingsValidationErrors": []
-        },
-        {
-          "id": "Qlyg6-hRbU8Q287-P_Fr7",
-          "type": "endpointsAutocomplete",
-          "propertyName": "deleteUrl",
-          "label": "Custom Delete Url",
-          "labelAlign": "right",
-          "parentId": "Q6s-GKx4El9BhcH9MQ8bj",
-          "hidden": false,
-
-          "isDynamic": false,
-          "placeholder": "",
-          "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
-          "validate": {
-            "minLength": "",
-            "maxLength": "",
-            "message": ""
-          },
-          "quickviewWidth": "",
-          "prefix": "DELETE",
-          "suffix": "",
-          "initialValue": "",
-          "settingsValidationErrors": []
-        }
-      ],
-      "collapsedByDefault": true
+          {
+            "id": "Qlyg6-hRbU8Q287-P_Fr7",
+            "type": "endpointsAutocomplete",
+            "propertyName": "deleteUrl",
+            "label": "Custom Delete Url",
+            "labelAlign": "right",
+            "parentId": "IUbL5u-qUoKAAXvV51xWFnn9qn-17x",
+            "hidden": false,
+            "isDynamic": false,
+            "placeholder": "",
+            "description": "Check the 'URL variables' tab for the exposed variables. Live empty to use default endpoint.",
+            "validate": {
+              "minLength": "",
+              "maxLength": "",
+              "message": ""
+            },
+            "quickviewWidth": "",
+            "prefix": "DELETE",
+            "suffix": "",
+            "initialValue": "",
+            "settingsValidationErrors": [],
+            "version": 2
+          }
+        ]
+      },
+      "collapsible": "icon"
     }
   ],
   "formSettings": {

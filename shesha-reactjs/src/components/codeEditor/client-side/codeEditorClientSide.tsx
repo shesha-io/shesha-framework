@@ -1,6 +1,6 @@
-import React, { FC, useMemo, useRef } from "react";
+import React, { FC, useEffect, useMemo, useRef } from "react";
 import { Monaco } from '@monaco-editor/react';
-import { editor, languages } from 'monaco-editor';
+import { IDisposable, editor, languages } from 'monaco-editor';
 import { DataTypes, IObjectMetadata } from "@/interfaces";
 import { ModelTypeIdentifier, NestedProperties, PropertiesPromise, asPropertiesArray, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import { TypesBuilder } from "@/utils/metadata/typesBuilder";
@@ -9,12 +9,20 @@ import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
 import { makeCodeTemplate } from "../utils";
 import { useMetadataDispatcher } from "@/providers";
-import { ICodeEditorProps } from "../models";
+import { CODE_TEMPLATE_DEFAULTS, ICodeEditorProps } from "../models";
 
 interface EditorFileNamesState {
     modelPath: string;
     exposedVarsPath?: string;
 }
+
+interface IEmbeddedCodeEditorWidget extends editor.ICodeEditor {
+    getParentEditor: () => editor.ICodeEditor;
+}
+const isChildEditor = (editor: editor.ICodeEditor): editor is IEmbeddedCodeEditorWidget => {
+    const typed = editor as IEmbeddedCodeEditorWidget;
+    return typed && typeof (typed.getParentEditor) === 'function';
+};
 
 //#region local utils
 
@@ -25,7 +33,7 @@ const getImportBlock = (constantsMetadata: IObjectMetadata, fileName: string): s
         return `//#region Exposed variables
 import { 
     ${constantsNames} } from './${fileName}.variables';
-//#endregion\r\n`;
+//#endregion\r\n\r\n`;
     }
     return undefined;
 };
@@ -51,11 +59,32 @@ const prefixLibPath = (path: string): string => path.indexOf("node_modules") ===
  * @return {ReactNode} the code editor component
  */
 const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
-    const { value, onChange, availableConstants, fileName, path, wrapInTemplate, readOnly = false, style } = props;
+    const { 
+        value, 
+        onChange, 
+        availableConstants, 
+        fileName, 
+        path, 
+        wrapInTemplate, 
+        readOnly = false, 
+        style,
+        templateSettings = CODE_TEMPLATE_DEFAULTS,
+    } = props;
     const monacoInst = useRef<Monaco>();
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
 
     const { getMetadata } = useMetadataDispatcher();
+
+    const subscriptions = useRef<IDisposable[]>([]);
+    const addSubscription = (subscription: IDisposable) => {
+        subscriptions.current.push(subscription);
+    };
+    useEffect(() => {
+        return () => {
+            const subsCopy = [...subscriptions.current];
+            subsCopy.forEach(s => s.dispose());
+        };
+    }, []);
 
     const addExtralibIfMissing = (language: languages.typescript.LanguageServiceDefaults, content: string, filePath?: string) => {
         const extraLibs = language.getExtraLibs();
@@ -68,21 +97,21 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         if (wrapInTemplate !== true)
             return undefined;
 
+        const { useAsyncDeclaration, functionName } = templateSettings;
+
         const importBlock = getImportBlock(availableConstants, fileName);
 
-        const result = (code) => makeCodeTemplate`${importBlock}
-const evaluator = async () => {
+        const result = (code) => makeCodeTemplate`${importBlock}const ${functionName} = ${useAsyncDeclaration ? "async " : ""}() => {
 ${(c) => c.editable(code)}
 };`;
         return result;
-    }, [wrapInTemplate, fileName, availableConstants]);
+    }, [wrapInTemplate, fileName, availableConstants, templateSettings]);
 
     const addExtraLib = (monaco: Monaco, content: string, filePath?: string) => {
         const uri = monaco.Uri.parse(filePath);
         const existingModel = monaco.editor.getModel(uri);
         if (!existingModel) {
-            console.log('LOG: create model with URI: ', uri.toString());
-
+            //console.log('LOG: create model with URI: ', uri.toString());
             monaco.editor.createModel(content, "typescript", uri);
         }
 
@@ -176,28 +205,27 @@ ${(c) => c.editable(code)}
         editorRef.current = editor;
         monacoInst.current = monaco;
 
-        const allModels = monaco.editor.getModels();
-        console.log('LOG: onEditorMount', allModels.length);
-
         initDiagnosticsOptions(monaco);
 
         initEditor(editor, monaco);
 
-        monaco.editor.onDidCreateEditor(newEditor => {
-            newEditor.onDidChangeModel(() => {
-                newEditor.updateOptions({
-                    readOnly: true
+        const createEditorSubscription = monaco.editor.onDidCreateEditor(newEditor => {
+            if (isChildEditor(newEditor)) {
+                const changeModelSubscription = newEditor.onDidChangeModel(() => {
+                    const parent = newEditor.getParentEditor();
+                    if (parent === editorRef.current) {
+                        newEditor.updateOptions({
+                            readOnly: true
+                        });
+                    }
                 });
-            });
+                addSubscription(changeModelSubscription);
+            }
         });
+        addSubscription(createEditorSubscription);
 
         if (template && availableConstants && asPropertiesArray(availableConstants.properties, []).length > 0)
             editor.trigger(null, 'editor.fold', { selectionLines: [1] });
-    };
-
-    const beforeMount = (monaco: Monaco) => {
-        const allModels = monaco.editor.getModels();
-        console.log('LOG: beforeMount', allModels.length);
     };
 
     return (
@@ -212,11 +240,8 @@ ${(c) => c.editable(code)}
                     automaticLayout: true,
                     readOnly: readOnly,
                 }}
-                beforeMount={beforeMount}
                 onMount={onEditorMount}
                 template={template}
-
-                keepCurrentModel={false}
             />
         </div>
     );

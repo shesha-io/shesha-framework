@@ -15,6 +15,11 @@ export interface IMonacoEditorProps extends Omit<EditorProps, "onChange"> {
 export interface IGenericCodeEditorProps extends IMonacoEditorProps, Partial<IHasCodeTemplate> {
 }
 
+export interface CodeTemplateSettings {
+    useAsyncDeclaration?: boolean;
+    functionName?: string;
+}
+
 export interface ICodeEditorProps {
     value?: string;
     onChange?: (newValue: string) => void;
@@ -26,5 +31,11 @@ export interface ICodeEditorProps {
     path?: string;
     fileName?: string;
     wrapInTemplate?: boolean;
+    templateSettings?: CodeTemplateSettings;
     availableConstants?: IObjectMetadata;
 }
+
+export const CODE_TEMPLATE_DEFAULTS: CodeTemplateSettings = {
+    functionName: "handler",
+    useAsyncDeclaration: false,
+};

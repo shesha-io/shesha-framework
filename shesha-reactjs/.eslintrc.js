@@ -48,7 +48,12 @@ module.exports = {
         {
           "name": "nanoid",
           "message": "Please import nanoid from `@/utils/uuid` instead."
-        }] }
+        },
+        /*{
+          "name": "antd",
+          "importNames": ["message"],
+          "message": "Please get `message` via the App instead, see example: const { message } = App.useApp();"
+        }*/] }
     ],
     'sort-imports': [
       'off',
