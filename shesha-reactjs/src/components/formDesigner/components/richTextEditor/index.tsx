@@ -42,7 +42,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
         defaultActionOnPaste: 'insert_as_html',
-        enter: 'br',
+        enter: model?.enter || 'br',
         editHTMLDocumentMode: false,
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
