@@ -31,11 +31,30 @@ export const getPropertySettingsFromData = (data: any, propName: string): IPrope
         return { _mode: 'value', _code: undefined, _value: val };
 };
 
+export const updateSettingsFromVlues = <T,>(model: T, values: T): T => {
+    const copy = { ...model };
+    Object.keys(values).forEach(k => {
+      if (isPropertySettings(copy[k]) && !isPropertySettings(values[k]))
+        copy[k]._value = values[k];
+      else 
+        copy[k] = values[k];
+    });
+    return copy;
+};
+
 export const getValueFromPropertySettings = (value: any): any => {
     if (isPropertySettings(value))
         return value._value;
     else
         return value;
+};
+
+export const getValuesFromSettings = <T,>(model: T): T => {
+  const copy = { ...model };
+  Object.keys(copy).forEach(k => {
+      copy[k] = getValueFromPropertySettings(copy[k]);
+  });
+  return copy;
 };
 
 export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
