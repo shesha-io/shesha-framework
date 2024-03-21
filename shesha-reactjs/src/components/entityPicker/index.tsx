@@ -300,7 +300,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
               options={options}
               suffixIcon={null} // hide arrow              
               onChange={handleMultiChange}
-              style={{ ...style, width: 'calc(100% - 32px)' }}
+              style={{ ...style, width: `calc(100% - ${size === 'large'? '40px' : '32px'})` }}
               loading={selection.loading}
             >
               {''}
