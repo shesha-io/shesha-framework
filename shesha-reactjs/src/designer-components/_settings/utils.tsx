@@ -1,18 +1,18 @@
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
 import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "@/interfaces";
 
-export const isPropertySettings = (data: any) => {
+/**
+ * Checks if the provided data is an instance of IPropertySetting.
+ *
+ * @param {any} data - The data to be checked
+ * @return {boolean} Indicates whether the data is an instance of IPropertySetting
+ */
+export const isPropertySettings = (data: any): data is IPropertySetting => {
     if (!data || typeof data !== 'object')
         return false;
     
-    if (data.hasOwnProperty('_mode')
-        && (data._mode === 'code' || data._mode === 'value'))
-        /*&& data.hasOwnProperty('_value') 
-        && data.hasOwnProperty('_code')
-        && Object.keys(data).length === 3)*/
-        return true;
-    
-    return false;
+    const typed = data as IPropertySetting;
+    return typed._mode === 'code' || typed._mode === 'value';
 };
 
 export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {

@@ -11,7 +11,7 @@ import { useFormConfiguration } from '@/providers/form/api';
 import { useStyles } from './styles/styles';
 import { useParent } from '@/providers/parentProvider/index';
 import { useDeepCompareMemo } from '@/index';
-import DataContextProvider from '@/providers/dataContextProvider/index';
+import { DataContextProvider } from '@/providers/dataContextProvider/index';
 import { getValueByPropertyName } from '@/utils/object';
 
 const { confirm } = Modal;
