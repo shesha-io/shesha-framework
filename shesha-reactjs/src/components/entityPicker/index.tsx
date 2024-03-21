@@ -63,7 +63,8 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     configurableColumns,
     width,
     outcomeValueFunc,
-    incomeValueFunc
+    incomeValueFunc,
+    placeholder
   } = props;
 
   const { styles } = useStyles();
@@ -289,7 +290,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
                 showPickerDialog();
               }}
               value={selection.loading ? undefined : valueId}
-              placeholder={selection.loading ? 'Loading...' : undefined}
+              placeholder={selection.loading ? 'Loading...' : placeholder}
               notFoundContent={''}
               defaultValue={defaultValue}
               disabled={disabled || selection.loading}
