@@ -51,6 +51,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         askBeforePasteHTML: model?.askBeforePasteHTML,
         askBeforePasteFromWord: model?.askBeforePasteFromWord,
         autofocus: model?.autofocus,
+        showCharsCounter: model?.showCharsCounter,
+        showWordsCounter: model?.showWordsCounter
       };
       return typedConfig;
     }, [model, model.readOnly]);
