@@ -248,7 +248,11 @@
       "settingsValidationErrors": [],
       "placeholder": "",
       "mode": "dialog",
-      "wrapInTemplate": true
+      "wrapInTemplate": true,
+      "templateSettings": {
+        "useAsyncDeclaration": true,
+        "functionName": "getValues"
+      }
     },
     {
       "id": "055f85e2-f2f1-4a88-95ad-0d1afb81cae7",
@@ -309,7 +313,10 @@
       "settingsValidationErrors": [],
       "placeholder": "",
       "mode": "dialog",
-      "wrapInTemplate": true
+      "wrapInTemplate": true,
+      "templateSettings": {
+        "functionName": "onInitialized"
+      }
     },
     {
       "id": "087a4e7d-ff28-4175-9221-61bef0bbaea2",
@@ -375,7 +382,10 @@
       "settingsValidationErrors": [],
       "placeholder": "",
       "mode": "dialog",
-      "wrapInTemplate": true
+      "wrapInTemplate": true,
+      "templateSettings": {
+        "functionName": "onDataLoaded"
+      }
     },
     {
       "id": "5092dd2b-c514-4b06-bfb5-546ce94fab97",
@@ -441,7 +451,10 @@
       "settingsValidationErrors": [],
       "placeholder": "",
       "mode": "dialog",
-      "wrapInTemplate": true
+      "wrapInTemplate": true,
+      "templateSettings": {
+        "functionName": "onUpdate"
+      }
     },
     {
       "id": "Q6s-GKx4El9BhcH9MQ8bj",

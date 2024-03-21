@@ -91,13 +91,13 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
       path={src?.path}
       wrapInTemplate={props.wrapInTemplate}
       templateSettings={props.templateSettings}
-      fileName={props.fileName}
+      fileName={props.fileName ?? props.propertyName}
       availableConstants={props.availableConstants}
       style={mode === 'dialog' ? { height: "100%" } : undefined}
     />
   );
 
-  const hasValue = Boolean(value?.trim());
+  const hasValue = value && typeof(value) === 'string' && Boolean(value?.trim());
 
   if (mode === 'inline')
     return renderCodeEditor();

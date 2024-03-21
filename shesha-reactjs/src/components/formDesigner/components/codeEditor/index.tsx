@@ -10,6 +10,7 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { useAvailableConstantsStandard } from '@/utils/metadata/useAvailableConstants';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -23,6 +24,8 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     const editorProps: ICodeEditorProps = {
       ...model,
     };
+    // todo: replace with metadata editor
+    const availableConstants = useAvailableConstantsStandard();
 
     return (
         <ConfigurableFormItem model={model}>
@@ -35,6 +38,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
                 {...editorProps}
                 mode={model.mode || 'dialog'}
                 readOnly={model.readOnly}
+                availableConstants={availableConstants}
               />
             );
           }}

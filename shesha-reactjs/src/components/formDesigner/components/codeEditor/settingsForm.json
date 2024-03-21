@@ -215,6 +215,18 @@
               "message": ""
             },
             "context": null
+          },
+          {
+            "id": "mDxv2vTiexMZ-K7iqfRSjKwTh3Lpo6",
+            "type": "setting",
+            "propertyName": "availableConstants",
+            "componentName": "setting1",
+            "label": "Available Constants",
+            "labelAlign": "right",
+            "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8111",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 0
           }
         ]
       },

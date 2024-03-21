@@ -1,0 +1,1370 @@
+{
+  "components": [
+    {
+      "id": "vZLe2HPuWJhlTGoDL3nui6ah7Jt26s",
+      "type": "collapsiblePanel",
+      "propertyName": "panel1",
+      "componentName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "end",
+      "components": [
+        {
+          "id": "WhdIVI0QPwG1KTja1gJPiLb1Cq--3U",
+          "components": []
+        },
+        {
+          "id": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
+          "components": [
+            {
+              "id": "aYeIfcjqrSZpmuKd6Fijn",
+              "type": "textField",
+              "propertyName": "name",
+              "label": "Name",
+              "labelAlign": "right",
+              "parentId": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
+              "validate": {
+                "required": true
+              },
+              "settingsValidationErrors": [],
+              "textType": "text",
+              "version": 3
+            },
+            {
+              "id": "0XFvEV-W_E2LzxEHjLiGm",
+              "type": "textField",
+              "propertyName": "label",
+              "label": "Label",
+              "labelAlign": "right",
+              "parentId": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
+              "validate": {
+                "required": true
+              },
+              "settingsValidationErrors": [],
+              "version": 3,
+              "textType": "text"
+            },
+            {
+              "id": "4SvCStsfdAUCwndFWVxi_",
+              "type": "textArea",
+              "propertyName": "description",
+              "label": "Description",
+              "labelAlign": "right",
+              "parentId": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
+              "version": 2
+            }
+          ]
+        }
+      ],
+      "header": {
+        "id": "WhdIVI0QPwG1KTja1gJPiLb1Cq--3U",
+        "components": []
+      },
+      "content": {
+        "id": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
+        "components": [
+          {
+            "id": "aYeIfcjqrSZpmuKd6Fijn",
+            "type": "textField",
+            "propertyName": "name",
+            "label": "Name",
+            "labelAlign": "right",
+            "parentId": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
+            "validate": {
+              "required": true
+            },
+            "settingsValidationErrors": [],
+            "textType": "text",
+            "version": 3
+          },
+          {
+            "id": "0XFvEV-W_E2LzxEHjLiGm",
+            "type": "textField",
+            "propertyName": "label",
+            "label": "Label",
+            "labelAlign": "right",
+            "parentId": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
+            "validate": {
+              "required": true
+            },
+            "settingsValidationErrors": [],
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "4SvCStsfdAUCwndFWVxi_",
+            "type": "textArea",
+            "propertyName": "description",
+            "label": "Description",
+            "labelAlign": "right",
+            "parentId": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
+            "version": 2
+          }
+        ]
+      },
+      "collapsible": "icon",
+      "settingsValidationErrors": [],
+      "ghost": true,
+      "className": ""
+    },
+    {
+      "id": "0OB_WP7HvaZd4nJJsi5KkU30rQZnN2",
+      "type": "collapsiblePanel",
+      "propertyName": "panel1",
+      "componentName": "pnlDataType",
+      "label": "Data Type",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "end",
+      "components": [
+        {
+          "id": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+          "components": [
+            {
+              "id": "F7W3qRl8P_Jdv_R2Q-f3u",
+              "type": "dropdown",
+              "propertyName": "dataType",
+              "label": "Data Type",
+              "labelAlign": "right",
+              "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+              "mode": [
+                "single"
+              ],
+              "dataSourceType": "values",
+              "validate": {
+                "required": true
+              },
+              "settingsValidationErrors": [],
+              "values": [
+                {
+                  "id": "R8Et3awUms5zQgj2ZlCT-",
+                  "label": "string",
+                  "value": "string"
+                },
+                {
+                  "id": "1vazc9Yx6zJBMlfJxfZsM",
+                  "label": "date",
+                  "value": "date"
+                },
+                {
+                  "id": "mqPLuVfEKgjMvaqqO_ouJ",
+                  "label": "time",
+                  "value": "time"
+                },
+                {
+                  "id": "8skNr05iNJvcT8cftTsE9",
+                  "label": "date time",
+                  "value": "date-time"
+                },
+                {
+                  "id": "Z3TqNTKkc1tjlw-j6PmAD",
+                  "label": "entity",
+                  "value": "entity"
+                },
+                {
+                  "id": "Q0kAdFB4WlsU5Yml32khM",
+                  "label": "file",
+                  "value": "file"
+                },
+                {
+                  "id": "ZGr5SDOzlttoGVm5LOgen",
+                  "label": "number",
+                  "value": "number"
+                },
+                {
+                  "id": "qSKpsp4vwL4QRsfbs6k2Q",
+                  "label": "reference list item",
+                  "value": "reference-list-item"
+                },
+                {
+                  "id": "EQ6Qc_8JnVBaLRsGJIqqQ",
+                  "label": "boolean",
+                  "value": "boolean"
+                },
+                {
+                  "id": "ePVI2HM5PX0ntN1hgmMWJ",
+                  "label": "array",
+                  "value": "array"
+                },
+                {
+                  "id": "Ylqiy3ABfkJvNndXAKB8A",
+                  "label": "object",
+                  "value": "object"
+                }
+              ],
+              "version": 5,
+              "useRawValues": false,
+              "referenceListId": null,
+              "disabled": {
+                "_mode": "code",
+                "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+              },
+              "editMode": {
+                "_value": "inherited",
+                "_mode": "code",
+                "_code": "    return data.source != 1;"
+              },
+              "valueFormat": "listItem",
+              "placeholder": "",
+              "description": "",
+              "defaultValue": ""
+            },
+            {
+              "id": "7cYicDJe6G4QZySqcHoIN",
+              "type": "textField",
+              "propertyName": "dataFormat",
+              "label": {
+                "_code": "    return getSettingValue(data?.dataType) === 'date' \r\n        ? 'Date format' \r\n        : getSettingValue(data?.dataType) === 'date-time' \r\n            ? 'Date time format' \r\n            : 'Time format';",
+                "_mode": "code",
+                "_value": "Date format"
+              },
+              "hidden": {
+                "_code": "    return !(getSettingValue(data?.dataType) === 'date' || getSettingValue(data?.dataType) === 'date-time' || getSettingValue(data?.dataType) === 'time');",
+                "_mode": "code",
+                "_value": false
+              },
+              "description": "Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/",
+              "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+              "version": 3,
+              "textType": "text",
+              "settingsValidationErrors": [],
+              "placeholder": "",
+              "prefix": "",
+              "suffix": "",
+              "initialValue": "",
+              "validate": {
+                "minLength": "",
+                "maxLength": "",
+                "message": ""
+              }
+            },
+            {
+              "id": "7cYicDJe6G4QZySqcHoIM",
+              "type": "container",
+              "propertyName": "string-config",
+              "label": "Container1",
+              "labelAlign": "right",
+              "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+              "hidden": {
+                "_code": "    return !(getSettingValue(data?.dataType) === 'string');",
+                "_mode": "code",
+                "_value": false
+              },
+              "direction": "vertical",
+              "justifyContent": "left",
+              "settingsValidationErrors": [],
+              "components": [
+                {
+                  "id": "2ZMc7dhCaBX00rMMK1H3n",
+                  "type": "dropdown",
+                  "propertyName": "dataFormat",
+                  "label": "String format",
+                  "labelAlign": "right",
+                  "parentId": "7cYicDJe6G4QZySqcHoIM",
+                  "mode": "single",
+                  "dataSourceType": "values",
+                  "validate": {},
+                  "settingsValidationErrors": [],
+                  "values": [
+                    {
+                      "id": "rwi4vhiLvAT9K23e_Ksgj",
+                      "label": "single line",
+                      "value": "singleline"
+                    },
+                    {
+                      "id": "x-TvGzV2iRDO2i6YV9j3X",
+                      "label": "multiline",
+                      "value": "multiline"
+                    },
+                    {
+                      "id": "--5BYr5Bdo5iypUL7CqIx",
+                      "label": "html",
+                      "value": "html"
+                    },
+                    {
+                      "id": "D-c1l644RII3Lb3k3rQAt",
+                      "label": "json",
+                      "value": "json"
+                    },
+                    {
+                      "id": "BOmZUc1tVLECruteER2lw",
+                      "label": "javascript",
+                      "value": "javascript"
+                    },
+                    {
+                      "id": "6bdzeIQhcc81pDS2QJU4J",
+                      "label": "password",
+                      "value": "password"
+                    },
+                    {
+                      "id": "xmJyjeobf5hRpr5uBDhJw",
+                      "label": "email",
+                      "value": "email"
+                    },
+                    {
+                      "id": "5ksY0OlNdBo2jdlgWsbtD",
+                      "label": "phone",
+                      "value": "phone"
+                    }
+                  ],
+                  "version": 5,
+                  "useRawValues": false,
+                  "referenceListId": null,
+                  "valueFormat": "listItem"
+                },
+                {
+                  "id": "XEyIWE4U614Ip_x0FqViL",
+                  "type": "numberField",
+                  "propertyName": "minLength",
+                  "label": "Min Length",
+                  "labelAlign": "right",
+                  "parentId": "7cYicDJe6G4QZySqcHoIM",
+                  "stepNumeric": 1,
+                  "stepString": "1",
+                  "defaultValue": "",
+                  "validate": {
+                    "minValue": "",
+                    "maxValue": ""
+                  },
+                  "settingsValidationErrors": [],
+                  "version": 2,
+                  "disabled": {
+                    "_mode": "code",
+                    "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.sizeHardcoded;\n\n})();"
+                  },
+                  "editMode": {
+                    "_value": "inherited",
+                    "_mode": "code",
+                    "_code": "    return !data.sizeHardcoded;"
+                  },
+                  "placeholder": "",
+                  "description": ""
+                },
+                {
+                  "id": "XEyIWE4U614Ip_x0FqVi1",
+                  "type": "numberField",
+                  "propertyName": "maxLength",
+                  "label": "Max Length",
+                  "labelAlign": "right",
+                  "parentId": "7cYicDJe6G4QZySqcHoIM",
+                  "placeholder": "",
+                  "description": "",
+                  "stepNumeric": 1,
+                  "stepString": "1",
+                  "defaultValue": "",
+                  "validate": {
+                    "minValue": "",
+                    "maxValue": ""
+                  },
+                  "settingsValidationErrors": [],
+                  "version": 2,
+                  "disabled": {
+                    "_mode": "code",
+                    "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.sizeHardcoded;\n\n})();"
+                  },
+                  "editMode": {
+                    "_value": "inherited",
+                    "_mode": "code",
+                    "_code": "    return !data.sizeHardcoded;"
+                  }
+                },
+                {
+                  "id": "aYeIfcjqrSZpmuKd6Fij1",
+                  "type": "textField",
+                  "propertyName": "regExp",
+                  "label": "Regular Expression",
+                  "labelAlign": "right",
+                  "parentId": "7cYicDJe6G4QZySqcHoIM",
+                  "validate": {
+                    "required": false,
+                    "minLength": "",
+                    "maxLength": "",
+                    "message": ""
+                  },
+                  "settingsValidationErrors": [],
+                  "textType": "text",
+                  "version": 3,
+                  "disabled": {
+                    "_mode": "code",
+                    "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.regExpHardcoded;\n\n})();"
+                  },
+                  "editMode": {
+                    "_value": "inherited",
+                    "_mode": "code",
+                    "_code": "    return !data.regExpHardcoded;"
+                  },
+                  "placeholder": "",
+                  "description": "",
+                  "prefix": "",
+                  "suffix": "",
+                  "initialValue": ""
+                }
+              ],
+              "version": 2,
+              "flexWrap": "wrap",
+              "componentName": "",
+              "gap": "",
+              "className": ""
+            },
+            {
+              "id": "ipxZABhhFbnZBrO1iijxF",
+              "type": "container",
+              "propertyName": "container2",
+              "label": "Container2",
+              "labelAlign": "right",
+              "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+              "hidden": {
+                "_code": "    return !(getSettingValue(data?.dataType) === 'number');",
+                "_mode": "code",
+                "_value": false
+              },
+              "direction": "vertical",
+              "justifyContent": "left",
+              "settingsValidationErrors": [],
+              "components": [
+                {
+                  "id": "V6PekH9pFf_Qu-vmaKxfz",
+                  "type": "dropdown",
+                  "propertyName": "dataFormat",
+                  "label": "Number format",
+                  "labelAlign": "right",
+                  "parentId": "ipxZABhhFbnZBrO1iijxF",
+                  "mode": [
+                    "single"
+                  ],
+                  "dataSourceType": "values",
+                  "validate": {},
+                  "settingsValidationErrors": [],
+                  "values": [
+                    {
+                      "id": "h0LdMbbQrqIvARnQmeKGZ",
+                      "label": "currency",
+                      "value": "currency"
+                    },
+                    {
+                      "id": "nUxe-TK4m6R9JVenT-v3m",
+                      "label": "double",
+                      "value": "double"
+                    },
+                    {
+                      "id": "4GuxqgahDOQeGhCPcIMYV",
+                      "label": "round",
+                      "value": "round"
+                    },
+                    {
+                      "id": "8voeOvZX7oxeb_sB0yb3K",
+                      "label": "thousand separator",
+                      "value": "thousandSeparator"
+                    }
+                  ],
+                  "version": 5,
+                  "useRawValues": false,
+                  "referenceListId": null,
+                  "valueFormat": "listItem"
+                },
+                {
+                  "id": "XEyIWE4U614Ip_x0FqV11",
+                  "type": "numberField",
+                  "propertyName": "min",
+                  "label": "Min",
+                  "labelAlign": "right",
+                  "parentId": "ipxZABhhFbnZBrO1iijxF",
+                  "placeholder": "",
+                  "description": "",
+                  "stepNumeric": 1,
+                  "stepString": "0.1",
+                  "defaultValue": "",
+                  "validate": {
+                    "minValue": "",
+                    "maxValue": ""
+                  },
+                  "settingsValidationErrors": [],
+                  "version": 2,
+                  "disabled": {
+                    "_mode": "code",
+                    "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.sizeHardcoded;\n\n})();"
+                  },
+                  "editMode": {
+                    "_value": "inherited",
+                    "_mode": "code",
+                    "_code": "    return !data.sizeHardcoded;"
+                  }
+                },
+                {
+                  "id": "XEyIWE4U614Ip_x0FqV12",
+                  "type": "numberField",
+                  "propertyName": "max",
+                  "label": "Max",
+                  "labelAlign": "right",
+                  "parentId": "ipxZABhhFbnZBrO1iijxF",
+                  "stepNumeric": 1,
+                  "stepString": "0.1",
+                  "defaultValue": "",
+                  "validate": {
+                    "minValue": "",
+                    "maxValue": ""
+                  },
+                  "settingsValidationErrors": [],
+                  "version": 2,
+                  "disabled": {
+                    "_mode": "code",
+                    "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.sizeHardcoded;\n\n})();"
+                  },
+                  "editMode": {
+                    "_value": "inherited",
+                    "_mode": "code",
+                    "_code": "    return !data.sizeHardcoded;"
+                  },
+                  "placeholder": "",
+                  "description": ""
+                }
+              ],
+              "version": 2,
+              "flexWrap": "wrap",
+              "componentName": "",
+              "gap": "",
+              "className": ""
+            },
+            {
+              "id": "gTpIAiV940w7puAHNwu5H",
+              "type": "container",
+              "propertyName": "container3",
+              "label": "Data Type",
+              "labelAlign": "right",
+              "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+              "hidden": {
+                "_code": "    return !(getSettingValue(data?.dataType) === 'reference-list-item');",
+                "_mode": "code",
+                "_value": false
+              },
+              "direction": "vertical",
+              "justifyContent": "left",
+              "settingsValidationErrors": [],
+              "mode": [
+                "single"
+              ],
+              "dataSourceType": "values",
+              "validate": {
+                "required": false
+              },
+              "values": [
+                {
+                  "id": "R8Et3awUms5zQgj2ZlCT-",
+                  "label": "string",
+                  "value": "string"
+                },
+                {
+                  "id": "1vazc9Yx6zJBMlfJxfZsM",
+                  "label": "date",
+                  "value": "date"
+                },
+                {
+                  "id": "mqPLuVfEKgjMvaqqO_ouJ",
+                  "label": "time",
+                  "value": "time"
+                },
+                {
+                  "id": "8skNr05iNJvcT8cftTsE9",
+                  "label": "date time",
+                  "value": "date-time"
+                },
+                {
+                  "id": "Z3TqNTKkc1tjlw-j6PmAD",
+                  "label": "entity",
+                  "value": "entity"
+                },
+                {
+                  "id": "Q0kAdFB4WlsU5Yml32khM",
+                  "label": "file",
+                  "value": "file"
+                },
+                {
+                  "id": "ZGr5SDOzlttoGVm5LOgen",
+                  "label": "number",
+                  "value": "number"
+                },
+                {
+                  "id": "qSKpsp4vwL4QRsfbs6k2Q",
+                  "label": "reference list item",
+                  "value": "reference-list-item"
+                },
+                {
+                  "id": "EQ6Qc_8JnVBaLRsGJIqqQ",
+                  "label": "boolean",
+                  "value": "boolean"
+                },
+                {
+                  "id": "ePVI2HM5PX0ntN1hgmMWJ",
+                  "label": "list",
+                  "value": "list"
+                }
+              ],
+              "components": [
+                {
+                  "id": "4bT3OMjJ9ssaBvfBkvNIl",
+                  "type": "textField",
+                  "propertyName": "referenceListName",
+                  "label": "Reference List name",
+                  "labelAlign": "right",
+                  "parentId": "gTpIAiV940w7puAHNwu5H",
+                  "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                    "message": ""
+                  },
+                  "settingsValidationErrors": [],
+                  "version": 3,
+                  "textType": "text",
+                  "disabled": {
+                    "_mode": "code",
+                    "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+                  },
+                  "editMode": {
+                    "_value": "inherited",
+                    "_mode": "code",
+                    "_code": "    return data.source != 1;"
+                  },
+                  "placeholder": "",
+                  "description": "",
+                  "prefix": "",
+                  "suffix": "",
+                  "initialValue": ""
+                },
+                {
+                  "id": "dsiSpDTinQZxtfTlJW4AE",
+                  "type": "textField",
+                  "propertyName": "referenceListNamespace",
+                  "label": "Reference List namespace",
+                  "labelAlign": "right",
+                  "parentId": "gTpIAiV940w7puAHNwu5H",
+                  "validate": {
+                    "minLength": "",
+                    "maxLength": "",
+                    "message": ""
+                  },
+                  "settingsValidationErrors": [],
+                  "version": 3,
+                  "textType": "text",
+                  "disabled": {
+                    "_mode": "code",
+                    "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+                  },
+                  "editMode": {
+                    "_value": "inherited",
+                    "_mode": "code",
+                    "_code": "    return data.source != 1;"
+                  },
+                  "placeholder": "",
+                  "description": "",
+                  "prefix": "",
+                  "suffix": "",
+                  "initialValue": ""
+                }
+              ],
+              "version": 2,
+              "flexWrap": "wrap",
+              "disabled": {
+                "_mode": "code",
+                "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+              },
+              "componentName": "",
+              "gap": "",
+              "className": ""
+            },
+            {
+              "id": "MwjxidwaPufFS-PixP6_j",
+              "type": "container",
+              "propertyName": "container4",
+              "label": "Container4",
+              "labelAlign": "right",
+              "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+              "hidden": {
+                "_code": "    return !(getSettingValue(data?.dataType) === 'entity');",
+                "_mode": "code",
+                "_value": false
+              },
+              "direction": "vertical",
+              "justifyContent": "left",
+              "settingsValidationErrors": [],
+              "components": [
+                {
+                  "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
+                  "type": "autocomplete",
+                  "propertyName": "entityType",
+                  "label": "Entity Type",
+                  "labelAlign": "right",
+                  "hidden": false,
+                  "parentId": "MwjxidwaPufFS-PixP6_j",
+                  "dataSourceType": "url",
+                  "validate": {},
+                  "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+                  "settingsValidationErrors": [],
+                  "useRawValues": true,
+                  "textType": "text",
+                  "version": 4,
+                  "disabled": {
+                    "_mode": "code",
+                    "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+                  },
+                  "editMode": {
+                    "_value": "inherited",
+                    "_mode": "code",
+                    "_code": "    return data.source != 1;"
+                  },
+                  "description": "",
+                  "placeholder": "",
+                  "mode": [
+                    "single"
+                  ],
+                  "keyPropName": "",
+                  "valuePropName": ""
+                }
+              ],
+              "version": 2,
+              "flexWrap": "wrap",
+              "componentName": "",
+              "gap": "",
+              "className": ""
+            }
+          ]
+        }
+      ],
+      "header": {
+        "id": "LeW52isrqT5EdjflpVfTx07IEj_idy",
+        "components": []
+      },
+      "content": {
+        "id": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+        "components": [
+          {
+            "id": "F7W3qRl8P_Jdv_R2Q-f3u",
+            "type": "dropdown",
+            "propertyName": "dataType",
+            "label": "Data Type",
+            "labelAlign": "right",
+            "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+            "mode": [
+              "single"
+            ],
+            "dataSourceType": "values",
+            "validate": {
+              "required": true
+            },
+            "settingsValidationErrors": [],
+            "values": [
+              {
+                "id": "R8Et3awUms5zQgj2ZlCT-",
+                "label": "string",
+                "value": "string"
+              },
+              {
+                "id": "1vazc9Yx6zJBMlfJxfZsM",
+                "label": "date",
+                "value": "date"
+              },
+              {
+                "id": "mqPLuVfEKgjMvaqqO_ouJ",
+                "label": "time",
+                "value": "time"
+              },
+              {
+                "id": "8skNr05iNJvcT8cftTsE9",
+                "label": "date time",
+                "value": "date-time"
+              },
+              {
+                "id": "Z3TqNTKkc1tjlw-j6PmAD",
+                "label": "entity",
+                "value": "entity"
+              },
+              {
+                "id": "Q0kAdFB4WlsU5Yml32khM",
+                "label": "file",
+                "value": "file"
+              },
+              {
+                "id": "ZGr5SDOzlttoGVm5LOgen",
+                "label": "number",
+                "value": "number"
+              },
+              {
+                "id": "qSKpsp4vwL4QRsfbs6k2Q",
+                "label": "reference list item",
+                "value": "reference-list-item"
+              },
+              {
+                "id": "EQ6Qc_8JnVBaLRsGJIqqQ",
+                "label": "boolean",
+                "value": "boolean"
+              },
+              {
+                "id": "ePVI2HM5PX0ntN1hgmMWJ",
+                "label": "array",
+                "value": "array"
+              },
+              {
+                "id": "Ylqiy3ABfkJvNndXAKB8A",
+                "label": "object",
+                "value": "object"
+              }
+            ],
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "disabled": {
+              "_mode": "code",
+              "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+            },
+            "editMode": {
+              "_value": "inherited",
+              "_mode": "code",
+              "_code": "    return data.source != 1;"
+            },
+            "valueFormat": "listItem",
+            "placeholder": "",
+            "description": "",
+            "defaultValue": ""
+          },
+          {
+            "id": "7cYicDJe6G4QZySqcHoIN",
+            "type": "textField",
+            "propertyName": "dataFormat",
+            "label": {
+              "_code": "    return getSettingValue(data?.dataType) === 'date' \r\n        ? 'Date format' \r\n        : getSettingValue(data?.dataType) === 'date-time' \r\n            ? 'Date time format' \r\n            : 'Time format';",
+              "_mode": "code",
+              "_value": "Date format"
+            },
+            "hidden": {
+              "_code": "    return !(getSettingValue(data?.dataType) === 'date' || getSettingValue(data?.dataType) === 'date-time' || getSettingValue(data?.dataType) === 'time');",
+              "_mode": "code",
+              "_value": false
+            },
+            "description": "Enter the format for this property. Also, note that you can use moment display options. See https://momentjscom.readthedocs.io/en/latest/moment/04-displaying/01-format/",
+            "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+            "version": 3,
+            "textType": "text",
+            "settingsValidationErrors": [],
+            "placeholder": "",
+            "prefix": "",
+            "suffix": "",
+            "initialValue": "",
+            "validate": {
+              "minLength": "",
+              "maxLength": "",
+              "message": ""
+            }
+          },
+          {
+            "id": "7cYicDJe6G4QZySqcHoIM",
+            "type": "container",
+            "propertyName": "string-config",
+            "label": "Container1",
+            "labelAlign": "right",
+            "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+            "hidden": {
+              "_code": "    return !(getSettingValue(data?.dataType) === 'string');",
+              "_mode": "code",
+              "_value": false
+            },
+            "direction": "vertical",
+            "justifyContent": "left",
+            "settingsValidationErrors": [],
+            "components": [
+              {
+                "id": "2ZMc7dhCaBX00rMMK1H3n",
+                "type": "dropdown",
+                "propertyName": "dataFormat",
+                "label": "String format",
+                "labelAlign": "right",
+                "parentId": "7cYicDJe6G4QZySqcHoIM",
+                "mode": "single",
+                "dataSourceType": "values",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "values": [
+                  {
+                    "id": "rwi4vhiLvAT9K23e_Ksgj",
+                    "label": "single line",
+                    "value": "singleline"
+                  },
+                  {
+                    "id": "x-TvGzV2iRDO2i6YV9j3X",
+                    "label": "multiline",
+                    "value": "multiline"
+                  },
+                  {
+                    "id": "--5BYr5Bdo5iypUL7CqIx",
+                    "label": "html",
+                    "value": "html"
+                  },
+                  {
+                    "id": "D-c1l644RII3Lb3k3rQAt",
+                    "label": "json",
+                    "value": "json"
+                  },
+                  {
+                    "id": "BOmZUc1tVLECruteER2lw",
+                    "label": "javascript",
+                    "value": "javascript"
+                  },
+                  {
+                    "id": "6bdzeIQhcc81pDS2QJU4J",
+                    "label": "password",
+                    "value": "password"
+                  },
+                  {
+                    "id": "xmJyjeobf5hRpr5uBDhJw",
+                    "label": "email",
+                    "value": "email"
+                  },
+                  {
+                    "id": "5ksY0OlNdBo2jdlgWsbtD",
+                    "label": "phone",
+                    "value": "phone"
+                  }
+                ],
+                "version": 5,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "XEyIWE4U614Ip_x0FqViL",
+                "type": "numberField",
+                "propertyName": "minLength",
+                "label": "Min Length",
+                "labelAlign": "right",
+                "parentId": "7cYicDJe6G4QZySqcHoIM",
+                "stepNumeric": 1,
+                "stepString": "1",
+                "defaultValue": "",
+                "validate": {
+                  "minValue": "",
+                  "maxValue": ""
+                },
+                "settingsValidationErrors": [],
+                "version": 2,
+                "disabled": {
+                  "_mode": "code",
+                  "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.sizeHardcoded;\n\n})();"
+                },
+                "editMode": {
+                  "_value": "inherited",
+                  "_mode": "code",
+                  "_code": "    return !data.sizeHardcoded;"
+                },
+                "placeholder": "",
+                "description": ""
+              },
+              {
+                "id": "XEyIWE4U614Ip_x0FqVi1",
+                "type": "numberField",
+                "propertyName": "maxLength",
+                "label": "Max Length",
+                "labelAlign": "right",
+                "parentId": "7cYicDJe6G4QZySqcHoIM",
+                "placeholder": "",
+                "description": "",
+                "stepNumeric": 1,
+                "stepString": "1",
+                "defaultValue": "",
+                "validate": {
+                  "minValue": "",
+                  "maxValue": ""
+                },
+                "settingsValidationErrors": [],
+                "version": 2,
+                "disabled": {
+                  "_mode": "code",
+                  "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.sizeHardcoded;\n\n})();"
+                },
+                "editMode": {
+                  "_value": "inherited",
+                  "_mode": "code",
+                  "_code": "    return !data.sizeHardcoded;"
+                }
+              },
+              {
+                "id": "aYeIfcjqrSZpmuKd6Fij1",
+                "type": "textField",
+                "propertyName": "regExp",
+                "label": "Regular Expression",
+                "labelAlign": "right",
+                "parentId": "7cYicDJe6G4QZySqcHoIM",
+                "validate": {
+                  "required": false,
+                  "minLength": "",
+                  "maxLength": "",
+                  "message": ""
+                },
+                "settingsValidationErrors": [],
+                "textType": "text",
+                "version": 3,
+                "disabled": {
+                  "_mode": "code",
+                  "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.regExpHardcoded;\n\n})();"
+                },
+                "editMode": {
+                  "_value": "inherited",
+                  "_mode": "code",
+                  "_code": "    return !data.regExpHardcoded;"
+                },
+                "placeholder": "",
+                "description": "",
+                "prefix": "",
+                "suffix": "",
+                "initialValue": ""
+              }
+            ],
+            "version": 2,
+            "flexWrap": "wrap",
+            "componentName": "",
+            "gap": "",
+            "className": ""
+          },
+          {
+            "id": "ipxZABhhFbnZBrO1iijxF",
+            "type": "container",
+            "propertyName": "container2",
+            "label": "Container2",
+            "labelAlign": "right",
+            "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+            "hidden": {
+              "_code": "    return !(getSettingValue(data?.dataType) === 'number');",
+              "_mode": "code",
+              "_value": false
+            },
+            "direction": "vertical",
+            "justifyContent": "left",
+            "settingsValidationErrors": [],
+            "components": [
+              {
+                "id": "V6PekH9pFf_Qu-vmaKxfz",
+                "type": "dropdown",
+                "propertyName": "dataFormat",
+                "label": "Number format",
+                "labelAlign": "right",
+                "parentId": "ipxZABhhFbnZBrO1iijxF",
+                "mode": [
+                  "single"
+                ],
+                "dataSourceType": "values",
+                "validate": {},
+                "settingsValidationErrors": [],
+                "values": [
+                  {
+                    "id": "h0LdMbbQrqIvARnQmeKGZ",
+                    "label": "currency",
+                    "value": "currency"
+                  },
+                  {
+                    "id": "nUxe-TK4m6R9JVenT-v3m",
+                    "label": "double",
+                    "value": "double"
+                  },
+                  {
+                    "id": "4GuxqgahDOQeGhCPcIMYV",
+                    "label": "round",
+                    "value": "round"
+                  },
+                  {
+                    "id": "8voeOvZX7oxeb_sB0yb3K",
+                    "label": "thousand separator",
+                    "value": "thousandSeparator"
+                  }
+                ],
+                "version": 5,
+                "useRawValues": false,
+                "referenceListId": null,
+                "valueFormat": "listItem"
+              },
+              {
+                "id": "XEyIWE4U614Ip_x0FqV11",
+                "type": "numberField",
+                "propertyName": "min",
+                "label": "Min",
+                "labelAlign": "right",
+                "parentId": "ipxZABhhFbnZBrO1iijxF",
+                "placeholder": "",
+                "description": "",
+                "stepNumeric": 1,
+                "stepString": "0.1",
+                "defaultValue": "",
+                "validate": {
+                  "minValue": "",
+                  "maxValue": ""
+                },
+                "settingsValidationErrors": [],
+                "version": 2,
+                "disabled": {
+                  "_mode": "code",
+                  "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.sizeHardcoded;\n\n})();"
+                },
+                "editMode": {
+                  "_value": "inherited",
+                  "_mode": "code",
+                  "_code": "    return !data.sizeHardcoded;"
+                }
+              },
+              {
+                "id": "XEyIWE4U614Ip_x0FqV12",
+                "type": "numberField",
+                "propertyName": "max",
+                "label": "Max",
+                "labelAlign": "right",
+                "parentId": "ipxZABhhFbnZBrO1iijxF",
+                "stepNumeric": 1,
+                "stepString": "0.1",
+                "defaultValue": "",
+                "validate": {
+                  "minValue": "",
+                  "maxValue": ""
+                },
+                "settingsValidationErrors": [],
+                "version": 2,
+                "disabled": {
+                  "_mode": "code",
+                  "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn !data.sizeHardcoded;\n\n})();"
+                },
+                "editMode": {
+                  "_value": "inherited",
+                  "_mode": "code",
+                  "_code": "    return !data.sizeHardcoded;"
+                },
+                "placeholder": "",
+                "description": ""
+              }
+            ],
+            "version": 2,
+            "flexWrap": "wrap",
+            "componentName": "",
+            "gap": "",
+            "className": ""
+          },
+          {
+            "id": "gTpIAiV940w7puAHNwu5H",
+            "type": "container",
+            "propertyName": "container3",
+            "label": "Data Type",
+            "labelAlign": "right",
+            "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+            "hidden": {
+              "_code": "    return !(getSettingValue(data?.dataType) === 'reference-list-item');",
+              "_mode": "code",
+              "_value": false
+            },
+            "direction": "vertical",
+            "justifyContent": "left",
+            "settingsValidationErrors": [],
+            "mode": [
+              "single"
+            ],
+            "dataSourceType": "values",
+            "validate": {
+              "required": false
+            },
+            "values": [
+              {
+                "id": "R8Et3awUms5zQgj2ZlCT-",
+                "label": "string",
+                "value": "string"
+              },
+              {
+                "id": "1vazc9Yx6zJBMlfJxfZsM",
+                "label": "date",
+                "value": "date"
+              },
+              {
+                "id": "mqPLuVfEKgjMvaqqO_ouJ",
+                "label": "time",
+                "value": "time"
+              },
+              {
+                "id": "8skNr05iNJvcT8cftTsE9",
+                "label": "date time",
+                "value": "date-time"
+              },
+              {
+                "id": "Z3TqNTKkc1tjlw-j6PmAD",
+                "label": "entity",
+                "value": "entity"
+              },
+              {
+                "id": "Q0kAdFB4WlsU5Yml32khM",
+                "label": "file",
+                "value": "file"
+              },
+              {
+                "id": "ZGr5SDOzlttoGVm5LOgen",
+                "label": "number",
+                "value": "number"
+              },
+              {
+                "id": "qSKpsp4vwL4QRsfbs6k2Q",
+                "label": "reference list item",
+                "value": "reference-list-item"
+              },
+              {
+                "id": "EQ6Qc_8JnVBaLRsGJIqqQ",
+                "label": "boolean",
+                "value": "boolean"
+              },
+              {
+                "id": "ePVI2HM5PX0ntN1hgmMWJ",
+                "label": "list",
+                "value": "list"
+              }
+            ],
+            "components": [
+              {
+                "id": "4bT3OMjJ9ssaBvfBkvNIl",
+                "type": "textField",
+                "propertyName": "referenceListName",
+                "label": "Reference List name",
+                "labelAlign": "right",
+                "parentId": "gTpIAiV940w7puAHNwu5H",
+                "validate": {
+                  "minLength": "",
+                  "maxLength": "",
+                  "message": ""
+                },
+                "settingsValidationErrors": [],
+                "version": 3,
+                "textType": "text",
+                "disabled": {
+                  "_mode": "code",
+                  "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+                },
+                "editMode": {
+                  "_value": "inherited",
+                  "_mode": "code",
+                  "_code": "    return data.source != 1;"
+                },
+                "placeholder": "",
+                "description": "",
+                "prefix": "",
+                "suffix": "",
+                "initialValue": ""
+              },
+              {
+                "id": "dsiSpDTinQZxtfTlJW4AE",
+                "type": "textField",
+                "propertyName": "referenceListNamespace",
+                "label": "Reference List namespace",
+                "labelAlign": "right",
+                "parentId": "gTpIAiV940w7puAHNwu5H",
+                "validate": {
+                  "minLength": "",
+                  "maxLength": "",
+                  "message": ""
+                },
+                "settingsValidationErrors": [],
+                "version": 3,
+                "textType": "text",
+                "disabled": {
+                  "_mode": "code",
+                  "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+                },
+                "editMode": {
+                  "_value": "inherited",
+                  "_mode": "code",
+                  "_code": "    return data.source != 1;"
+                },
+                "placeholder": "",
+                "description": "",
+                "prefix": "",
+                "suffix": "",
+                "initialValue": ""
+              }
+            ],
+            "version": 2,
+            "flexWrap": "wrap",
+            "disabled": {
+              "_mode": "code",
+              "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+            },
+            "componentName": "",
+            "gap": "",
+            "className": ""
+          },
+          {
+            "id": "MwjxidwaPufFS-PixP6_j",
+            "type": "container",
+            "propertyName": "container4",
+            "label": "Container4",
+            "labelAlign": "right",
+            "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
+            "hidden": {
+              "_code": "    return !(getSettingValue(data?.dataType) === 'entity');",
+              "_mode": "code",
+              "_value": false
+            },
+            "direction": "vertical",
+            "justifyContent": "left",
+            "settingsValidationErrors": [],
+            "components": [
+              {
+                "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
+                "type": "autocomplete",
+                "propertyName": "entityType",
+                "label": "Entity Type",
+                "labelAlign": "right",
+                "hidden": false,
+                "parentId": "MwjxidwaPufFS-PixP6_j",
+                "dataSourceType": "url",
+                "validate": {},
+                "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+                "settingsValidationErrors": [],
+                "useRawValues": true,
+                "textType": "text",
+                "version": 4,
+                "disabled": {
+                  "_mode": "code",
+                  "_code": "// Automatically updated from 'customEnabled', please review\n\nreturn !(() => {\n    // Source code\n\nreturn data.source != 1;\n\n})();"
+                },
+                "editMode": {
+                  "_value": "inherited",
+                  "_mode": "code",
+                  "_code": "    return data.source != 1;"
+                },
+                "description": "",
+                "placeholder": "",
+                "mode": [
+                  "single"
+                ],
+                "keyPropName": "",
+                "valuePropName": ""
+              }
+            ],
+            "version": 2,
+            "flexWrap": "wrap",
+            "componentName": "",
+            "gap": "",
+            "className": ""
+          }
+        ]
+      },
+      "collapsible": "icon",
+      "settingsValidationErrors": [],
+      "ghost": true,
+      "className": ""
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    }
+  }
+}
