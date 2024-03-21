@@ -4,6 +4,7 @@ using Shesha.Attributes;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
+using Shesha.Modules;
 using Shesha.Services;
 using Shesha.Utilities;
 using System;
@@ -693,6 +694,25 @@ namespace Shesha.Reflection
         public static string GetConfigurableModuleName(this Type type)
         {
             return type.Assembly.GetConfigurableModuleName();
+        }
+
+        /// <summary>
+        /// Returns type of the configurable module current <paramref name="type"/> belongs to
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type GetConfigurableModuleType(this Type type)
+        {
+            return type.Assembly.GetConfigurableModuleType();
+        }
+
+        /// <summary>
+        /// Returns information about the configurable module current <paramref name="type"/> belongs to
+        /// </summary>
+        /// <returns></returns>
+        public static SheshaModuleInfo GetConfigurableModuleInfo(this Type type)
+        {
+            return type.Assembly.GetConfigurableModuleInfo();
         }
     }
 }

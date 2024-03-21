@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Shesha.ConfigurationItems;
+using Shesha.DynamicEntities.Middleware;
 
 namespace Shesha.Extensions
 {
@@ -10,7 +11,10 @@ namespace Shesha.Extensions
     {
         public static IApplicationBuilder UseConfigurationFramework(this IApplicationBuilder app)
         {
-            return app.UseMiddleware<ConfigurationFrameworkMiddleware>();
+            return app
+                .UseMiddleware<ConfigurationFrameworkMiddleware>()
+                .UseMiddleware<RequestToGqlMiddleware>()
+            ;
         }
     }
 }

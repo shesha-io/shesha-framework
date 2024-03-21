@@ -32,7 +32,7 @@ namespace Shesha.Domain.Attributes
         public GenerateApplicationServiceState GenerateApplicationService { get; set; } = GenerateApplicationServiceState.UseConfiguration;
 
         /// <summary>
-        /// Name of the auto-generated applicaiton service, applicable only when <see cref="GenerateApplicationService"/> is true. Leave empty to use class name as a name of the applicaiton service
+        /// Name of the auto-generated applicaiton service, applicable only when <see cref="GenerateApplicationService"/> is true. Leave empty to use `{class name}Crud` as a name of the applicaiton service
         /// </summary>
         public string ApplicationServiceName { get; set; }
 

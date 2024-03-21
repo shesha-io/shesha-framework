@@ -20,11 +20,11 @@ import {
 import { IModelsDictionary, IProvidersDictionary } from './models';
 import metadataReducer from './reducer';
 import { useSheshaApplication } from '@/providers';
-import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isObjectReferencePropertyMetadata, ISpecification } from '@/interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isObjectReferencePropertyMetadata, ISpecification, isDataPropertyMetadata, isPropertiesArray, asPropertiesArray, NestedProperties } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IDictionary } from '@/interfaces';
 
-export interface IMetadataDispatcherProviderProps {}
+export interface IMetadataDispatcherProviderProps { }
 
 const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProviderProps>> = ({ children }) => {
   const initial: IMetadataDispatcherStateContext = {
@@ -40,19 +40,23 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   const { backendUrl, httpHeaders } = useSheshaApplication();
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const mapProperty = (property: PropertyMetadataDto, prefix: string = ''): IPropertyMetadata => {
-    return {
-      ...property,
-      path: property.path,
-      prefix,
-      properties: property.properties?.map((child) => mapProperty(child, property.path)),
-    };
-  };
-
-  const getMetadata = (payload: IGetMetadataPayload) => {
+  const getMetadata = (payload: IGetMetadataPayload): Promise<IModelMetadata> => {
     const { modelType, dataType } = payload;
     const loadedModel = models.current[payload.modelType]; // todo: split list by types
     if (loadedModel) return loadedModel;
+
+    const mapProperty = (property: PropertyMetadataDto, prefix: string = ''): IPropertyMetadata => {
+      const nestedProperties: NestedProperties = property.dataType === DataTypes.entityReference
+        ? () => getMetadata({ dataType: DataTypes.entityReference, modelType: property.entityType }).then(m => m.properties as IPropertyMetadata[])
+        : property.properties.map((child) => mapProperty(child, property.path));
+        
+      return {
+        ...property,
+        path: property.path,
+        prefix,
+        properties: nestedProperties,
+      };
+    };
 
     if (dataType === DataTypes.entityReference || dataType === DataTypes.objectReference || dataType === null) {
       const metaPromise = new Promise<IModelMetadata>((resolve, reject) => {
@@ -79,6 +83,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
 
             const meta: IModelMetadata = {
               entityType: payload.modelType,
+              entityModule: response.result.module,
               dataType: response.result.dataType,
               name: payload.modelType, // todo: fetch name from server
               properties,
@@ -117,9 +122,14 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   const extractNestedProperty = (mainProperty: IPropertyMetadata, name: string): Promise<IPropertyMetadata> => {
     return isEntityReferencePropertyMetadata(mainProperty)
       ? getMetadata({ dataType: mainProperty.dataType, modelType: mainProperty.entityType }).then(entityMeta => {
-        return getPropertyByName(entityMeta?.properties, name);
+        return entityMeta && isPropertiesArray(entityMeta.properties) 
+          ? getPropertyByName(entityMeta.properties, name)
+          : undefined;
       })
-      : Promise.resolve(getPropertyByName(mainProperty.properties, name));
+      : Promise.resolve(isDataPropertyMetadata(mainProperty) && isPropertiesArray(mainProperty.properties)
+        ? getPropertyByName(mainProperty.properties, name)
+        : undefined
+      );
   };
 
   const getPropertyMetadata = (payload: IGetPropertyMetadataPayload): Promise<IPropertyMetadata> => {
@@ -133,7 +143,9 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     // get first level property and its metadata
     const level1 = pathParts.shift();
     const level1Promise = rootMetaPromise.then((m) => {
-      const propertyMeta = getPropertyByName(m?.properties, level1);
+      const propertyMeta = m && isPropertiesArray(m.properties) 
+        ? getPropertyByName(m.properties, level1)
+        : undefined;
       return propertyMeta;
     });
 
@@ -169,6 +181,13 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     });
   };
 
+  /**
+   * Register a metadata provider with the given payload.
+   * Registration of providers is used for access by the provider identifier
+   *
+   * @param {IRegisterProviderPayload} payload - the payload for registering the provider
+   * @return {void} 
+   */
   const registerProvider = (payload: IRegisterProviderPayload) => {
     const existingProvider = providers.current[payload.id];
     if (!existingProvider) {
@@ -183,11 +202,22 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
     }
   };
 
+  /**
+   * Activates a provider based on the provided ID.
+   * Active provider can be used in the forms designer for configuration
+   *
+   * @param {string} providerId - The ID of the provider to activate
+   */
   const activateProvider = (providerId: string) => {
     if (state.activeProvider !== providerId)
       dispatch(activateProviderAction(providerId));
   };
 
+  /**
+   * Retrieves the context value of the active provider.
+   *
+   * @return {type} the context value of the active provider
+   */
   const getActiveProvider = () => {
     const registration = state.activeProvider ? providers.current[state.activeProvider] : null;
 
@@ -195,25 +225,26 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const getNested = (meta: IModelMetadata, propName: string): Promise<IModelMetadata> => {
-    const propMeta = meta.properties.find((p) => camelcase(p.path) === propName);
+    const propMeta = asPropertiesArray(meta.properties, []).find((p) => camelcase(p.path) === propName);
 
     if (!propMeta) return Promise.reject(`property '${propName}' not found`);
 
     if (isEntityReferencePropertyMetadata(propMeta))
       return getMetadata({ dataType: DataTypes.entityReference, modelType: propMeta.entityType });
 
-    if (isObjectReferencePropertyMetadata(propMeta)){
+    if (isObjectReferencePropertyMetadata(propMeta)) {
       return getMetadata({ dataType: DataTypes.objectReference, modelType: propMeta.entityType });
-    }      
+    }
 
-    if (propMeta.dataType === DataTypes.object)
-      return Promise.resolve({
-        type: DataTypes.object,
+    if (isDataPropertyMetadata(propMeta) && propMeta.dataType === DataTypes.object) {
+      const meta: IModelMetadata = {
         properties: propMeta.properties,
         specifications: [],
         apiEndpoints: {},
         dataType: DataTypes.object,
-      });
+      };
+      return Promise.resolve(meta);
+    }
 
     return Promise.reject(`data type '${propMeta.dataType}' doesn't support nested properties`);
   };
@@ -236,7 +267,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
 
   const getContainerProperties = (payload: IGetNestedPropertiesPayload) => {
-    return getContainerMetadata(payload).then((m) => m.properties);
+    return getContainerMetadata(payload).then((m) => typeof (m.properties) === 'function' ? m.properties() : m.properties);
   };
 
   const isEntityType = (modelType: string): Promise<boolean> => {

@@ -26,6 +26,10 @@ import { CrudMode } from './models';
 import reducer from './reducer';
 import { FormWrapper } from './formWrapper';
 import ParentProvider from '../parentProvider/index';
+import { filterDataByOutputComponents } from '../form/api';
+import { useFormDesignerComponents } from '../form/hooks';
+import { removeGhostKeys } from '@/utils/form';
+import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -72,6 +76,9 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     autoSave,
     initialValues: typeof data !== 'function' ? data : undefined,
   });
+
+  const toolboxComponents = useFormDesignerComponents();
+  const delayedUpdate = useRef<IDelayedUpdateGroup[]>();
 
   const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean) => {
     dispatch(switchModeAction({ mode, allowChangeMode }));
@@ -160,7 +167,15 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         // todo: call common data preparation code (check configurableFormRenderer)
         const mergedData = { ...state.initialValues, ...values };
 
-        const finalDataPromise = onSave ? Promise.resolve(onSave(mergedData)) : Promise.resolve(mergedData);
+        const postData = filterDataByOutputComponents(
+          removeGhostKeys(mergedData), // ToDo: temporary use ghost keys for file upload components, form colums still not provide components structure
+          props.editorComponents.allComponents,
+          toolboxComponents
+        );
+        // send data of stored files
+        if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate.current;
+
+        const finalDataPromise = onSave ? Promise.resolve(onSave(postData)) : Promise.resolve(postData);
 
         return finalDataPromise.then((finalData) => {
           return processor(finalData)
@@ -276,7 +291,10 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           isActionsOwner={false}
         >
           <ParentProvider model={{readOnly: state.mode === 'read'}} formMode={state.mode === 'read' ? 'readonly' : 'edit'}>
-            <FormWrapper form={form} initialValues={state.initialValues} onValuesChange={onValuesChange} formSettings={formSettings}>
+            <FormWrapper 
+              form={form} initialValues={state.initialValues} onValuesChange={onValuesChange}
+              formSettings={formSettings} delayedUpdate={delayedUpdate}
+            >
               {children}
             </FormWrapper>
           </ParentProvider>

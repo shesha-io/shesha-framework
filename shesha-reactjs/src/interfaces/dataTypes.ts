@@ -53,6 +53,7 @@ export const DataTypes = {
   objectReference: 'object-reference',
   specification: 'specification',
   context: 'context',
+  function: 'function',
 };
 
 export const StringFormats = {
