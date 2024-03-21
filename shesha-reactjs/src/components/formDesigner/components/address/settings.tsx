@@ -19,12 +19,10 @@ import { useFormDesigner } from '@/providers/formDesigner';
 interface IEntityReferenceSettingsState extends IAddressCompomentProps {}
 
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
-  const { model: state, getFieldsValue, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
+  const { values, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
-
-  const formData = getFieldsValue();
 
   return (
     <>
@@ -33,7 +31,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={formData}
+          formData={values}
           onValuesChange={onValuesChange}
         />
 
@@ -139,7 +137,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
 
-        <Show when={state.showPriorityBounds}>
+        <Show when={values.showPriorityBounds}>
           <SettingsFormItem
             name="latPriority"
             label="Latitude (Priority Bound)"
