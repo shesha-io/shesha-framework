@@ -28,6 +28,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   type: 'image',
   name: 'Image',
   icon: <FileImageOutlined />,
+  isInput: true,
 
   Factory: ({ model }) => {
     /*

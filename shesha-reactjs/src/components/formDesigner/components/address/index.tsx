@@ -13,6 +13,8 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
   name: 'Address',
+  isInput: true,
+  isOutput: true,
   icon: <HomeOutlined />,
   Factory: ({ model }) => {
     return (

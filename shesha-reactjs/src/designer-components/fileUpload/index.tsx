@@ -29,7 +29,8 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   type: 'fileUpload',
   name: 'File',
   icon: <FileAddOutlined />,
-
+  isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
 

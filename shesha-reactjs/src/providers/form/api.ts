@@ -15,6 +15,7 @@ import {
   FormIdentifier,
   FormMarkupWithSettings,
   FormRawMarkup,
+  IComponentsDictionary,
   IFormDto,
   IFormSettings
 } from './models';
@@ -22,7 +23,7 @@ import { GetDataError, useGet } from '@/hooks';
 import { getQueryParams, joinUrlAndPath } from '@/utils/url';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { asPropertiesArray, IApiEndpoint, IPropertyMetadata, isPropertiesArray, StandardEntityActions } from '@/interfaces/metadata';
+import { asPropertiesArray, IApiEndpoint, IModelMetadata, IPropertyMetadata, isPropertiesArray, StandardEntityActions } from '@/interfaces/metadata';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
 import { IToolboxComponents } from '@/interfaces';
@@ -270,6 +271,24 @@ interface IFieldData {
   property: IPropertyMetadata;
 }
 
+export const filterDataByOutputComponents = (
+  data: any,
+  components: IComponentsDictionary,
+  toolboxComponents: IToolboxComponents,
+) => {
+  const newData = { ...data };
+  for (const key in components) {
+    if (components.hasOwnProperty(key)) {
+      var component = components[key];
+      if (data.hasOwnProperty(component.propertyName) && !toolboxComponents[component.type].isOutput) {
+         delete data[component.propertyName];
+      }
+    }
+  }
+
+  return newData;
+};
+
 const getFieldsFromCustomEvents = (code: string) => {
   if (!code) return [];
   const reg = new RegExp('(?<![_a-zA-Z0-9.])data.[_a-zA-Z0-9.]+', 'g');
@@ -283,7 +302,10 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
   const resf = (items: IFieldData[]) => {
     let s = '';
     items.forEach((item) => {
-      if (!item.property) return;
+      if (!(!!item.property
+          || item.name === '_className'
+          || item.name === '_displayName'
+      )) return;
       s += s ? ',' + item.name : item.name;
       if (item.child.length > 0) {
         s += '{' + resf(item.child) + '}';
@@ -296,7 +318,7 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
   return resf(fields);
 };
 
-const getFormFields = (payload: GetFormFieldsPayload): string[] => {
+const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata): string[] => {
   const { formMarkup, formSettings, toolboxComponents } = payload;
   if (!formMarkup) return null;
 
@@ -307,8 +329,18 @@ const getFormFields = (payload: GetFormFieldsPayload): string[] => {
   let fieldNames = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-      fieldNames.push(components[key].propertyName);
+      var component = toolboxComponents[components[key].type];
+      
+      // get data only for isInput components
+      // and for context = null or empty string (form context)
+      if (component?.isInput && !components[key].context) {
+        const propName = components[key].propertyName;
+        fieldNames.push(propName);
+        const fieldsFunc = component?.getFieldsToFetch;
+        if (typeof fieldsFunc === 'function')
+          fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
     }
+  }
   }
 
   fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
@@ -332,6 +364,7 @@ interface GetGqlFieldsPayload extends GetFormFieldsPayload {
   getContainerProperties: IMetadataDispatcherActionsContext['getContainerProperties'];
   getMetadata: IMetadataDispatcherActionsContext['getMetadata'];
 }
+
 export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]> => {
   const { formMarkup, formSettings, getMetadata, getContainerProperties } = payload;
 
@@ -340,7 +373,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
   return getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType }).then((metadata) => {
     let fields: IFieldData[] = [];
 
-    const fieldNames = getFormFields(payload);
+    const fieldNames = getFormFields(payload, metadata);
 
     const metaProperties = asPropertiesArray(metadata.properties, []);
 

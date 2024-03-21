@@ -6,6 +6,7 @@ using Abp.Runtime.Session;
 using Abp.UI;
 using Shesha.Services;
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace Shesha.Domain
@@ -58,5 +59,29 @@ namespace Shesha.Domain
             return null;
         }
 
-    }
+        /// <summary>
+        /// Saves or updates the entity of the specified type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TId"></typeparam>
+        /// <param name="service"></param>
+        /// <param name="id"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public static async Task<T> SaveOrUpdateEntityAsync<T, TId>(this DomainService service, TId? id, Func<T, Task> action) where T : class, IEntity<TId> where TId: struct
+        {
+			var isNew = id == null;
+			var item = !isNew
+				? await GetEntityAsync<T, TId>(service, id.Value)
+				: (T)Activator.CreateInstance(typeof(T));
+
+			await action.Invoke(item);
+
+			var dynamicRepo = StaticContext.IocManager.Resolve<IDynamicRepository>();
+			await dynamicRepo.SaveOrUpdateAsync(item);
+
+			return item;
+		}
+
+	}
 }
