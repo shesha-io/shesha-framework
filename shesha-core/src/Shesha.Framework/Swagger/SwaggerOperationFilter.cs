@@ -31,11 +31,31 @@ namespace Shesha.Swagger
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
+            // Add "properties" parameter to CRUD Create and Update actions to support Gql requests
+            // This is working only with RequestToGqlMiddleware
+            AddPropertiesToCrudCreateUpdate(operation, context);
+
             // Decorate wrapped responses
             DecorateWrappedResponses(operation, context);
 
             // Decorate operation parameters
             DecorateOperaionParameters(operation, context);
+        }
+
+        private void AddPropertiesToCrudCreateUpdate(OpenApiOperation operation, OperationFilterContext context)
+        {
+            if (context.ApiDescription.RelativePath.ToLower().EndsWith("crud/create")
+                || context.ApiDescription.RelativePath.ToLower().EndsWith("crud/update"))
+            {
+                // Add as the first parameter
+                operation.Parameters.Insert(0, new OpenApiParameter()
+                {
+                    Name = "properties",
+                    In = ParameterLocation.Query,
+                    Description = "List of properties to fetch in GraphQL-like syntax. Supports nested properties",
+                    Schema = new OpenApiSchema() { Type = "string" },
+                });
+            }
         }
 
         private void DecorateWrappedResponses(OpenApiOperation operation, OperationFilterContext context)

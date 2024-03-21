@@ -53,6 +53,7 @@ import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces'
 import { useStyles } from './styles/styles';
 import { adjustWidth, getCruadActionConditions } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
+import { isPropertiesArray } from '@/interfaces/metadata';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -482,7 +483,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             return;
           }
 
-          const propertyMeta = metadata?.properties?.find(({ path }) => toCamelCase(path) === dataCol.id);
+          const propertyMeta = isPropertiesArray(metadata?.properties) ? metadata.properties.find(({ path }) => toCamelCase(path) === dataCol.id) : undefined;
 
           let model: IColumnEditorProps = {
             ...customComponent.settings,

@@ -27,6 +27,7 @@ module.exports = {
     '.eslintrc.js',
     'rollup.config.mjs',
     'next.config.js',
+    'jest.config.js',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -47,7 +48,12 @@ module.exports = {
         {
           "name": "nanoid",
           "message": "Please import nanoid from `@/utils/uuid` instead."
-        }] }
+        },
+        /*{
+          "name": "antd",
+          "importNames": ["message"],
+          "message": "Please get `message` via the App instead, see example: const { message } = App.useApp();"
+        }*/] }
     ],
     'sort-imports': [
       'off',

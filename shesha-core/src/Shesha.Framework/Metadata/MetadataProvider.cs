@@ -127,8 +127,10 @@ namespace Shesha.Metadata
                         ? property.PropertyType.FullName
                         : dataType.DataType == DataTypes.Array
                             ?   dataType.ObjectType
-                            : null
-                        ,
+                            : null,
+                EntityModule = property.PropertyType.IsEntityType()
+                    ? property.PropertyType.GetConfigurableModuleName()
+                    : null,
                 ReferenceListModule = epc?.ReferenceListModule,
                 ReferenceListName = epc?.ReferenceListName,
                 EnumType = epc?.EnumType,

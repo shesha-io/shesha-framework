@@ -41,6 +41,8 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   type: 'rate',
   name: 'Rate',
   icon: <LikeOutlined />,
+  isInput: true,
+  isOutput: true,
   Factory: ({ model, form }) => {
     const { formMode, setFormData } = useForm();
     const { data: formData } = useFormData();

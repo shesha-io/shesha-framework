@@ -3,6 +3,7 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.JsonEntities;
 using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
@@ -236,15 +237,17 @@ namespace Shesha.Configuration.Runtime
             {
                 return GeneralDataType.Numeric;
             }
-            else if (underlyingPropType.IsSubtypeOfGeneric(typeof(IList<>)) ||  underlyingPropType.IsSubtypeOfGeneric(typeof(ICollection<>)))
+            else if (underlyingPropType.IsSubtypeOfGeneric(typeof(IList<>)) 
+					|| underlyingPropType.IsSubtypeOfGeneric(typeof(ICollection<>)))
             {
                 return GeneralDataType.List;
-            } else 
-            if (underlyingPropType.IsAssignableTo(typeof(IGenericEntityReference)))
+            } 
+			else if (underlyingPropType.IsAssignableTo(typeof(IGenericEntityReference)))
                 return GeneralDataType.GenericEntityReference;
-            else
-            if (underlyingPropType == typeof(string))
+            else if (underlyingPropType == typeof(string))
                 return GeneralDataType.Text;
+            else if (underlyingPropType.IsAssignableTo(typeof(IJsonEntity)))
+                return GeneralDataType.JsonEntity;
             else
                 return GeneralDataType.Unknown;
         }

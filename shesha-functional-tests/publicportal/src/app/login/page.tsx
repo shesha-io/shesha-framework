@@ -43,12 +43,14 @@ const Login: FC = () => {
         </div>
 
         <ShaInput
+          className="lg-margin-bottom"
           name="userNameOrEmailAddress"
           label="Email Address"
           placeholder="Placeholder"
         />
 
         <ShaInput
+          className="lg-margin-bottom"
           name="password"
           label="Password"
           placeholder="Placeholder"
