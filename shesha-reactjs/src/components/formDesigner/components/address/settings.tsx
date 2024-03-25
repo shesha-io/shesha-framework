@@ -1,4 +1,4 @@
-import CodeEditor from '../codeEditor/codeEditor';
+import { CodeEditor } from '../codeEditor/codeEditor';
 import React, { FC } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';

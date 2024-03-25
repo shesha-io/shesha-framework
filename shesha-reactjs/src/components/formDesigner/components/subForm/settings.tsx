@@ -1,4 +1,4 @@
-import CodeEditor from '../codeEditor/codeEditor';
+import { CodeEditor } from '../codeEditor/codeEditor';
 import FormAutocomplete from '@/components/formAutocomplete';
 import React, { FC, useState } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';

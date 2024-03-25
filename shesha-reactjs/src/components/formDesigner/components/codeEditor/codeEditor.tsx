@@ -1,6 +1,5 @@
 import React, {
   FC,
-  Fragment,
   useState
 } from 'react';
 import {
@@ -97,7 +96,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     />
   );
 
-  const hasValue = value && typeof(value) === 'string' && Boolean(value?.trim());
+  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 
   if (mode === 'inline')
     return renderCodeEditor();
@@ -117,7 +116,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         key: "variable",
         label: "Variables",
         children: (<CodeVariablesTables data={exposedVariables} />)
-      }      
+      }
     ]
     : undefined;
 
@@ -151,12 +150,10 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         {tabItems ? (
           <Tabs items={tabItems} />
         ) : (
-          <Fragment>{renderCodeEditor()}</Fragment>
+          <div style={{ height: "70vh" }}>{renderCodeEditor()}</div>
         )}
-      </Modal>
+    </Modal >
 
     </>
   );
 };
-
-export default CodeEditor;

@@ -176,57 +176,91 @@
             "validate": {}
           },
           {
-            "id": "L2MCtMu_bnRIr9-5S5Mp7EVQHnmG72",
-            "type": "checkbox",
-            "propertyName": "templateSettings.useAsyncDeclaration",
+            "id": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
+            "type": "container",
+            "propertyName": "container1",
+            "componentName": "container1",
+            "label": "Container1",
+            "labelAlign": "right",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8111",
-            "label": "Async declaration",
-            "version": 2,
-            "settingsValidationErrors": [],
-            "description": "",
             "hidden": {
               "_mode": "code",
-              "_code": "    return !data?.wrapInTemplate;"
+              "_code": "    return !data?.wrapInTemplate;",
+              "_value": false
             },
-            "validate": {},
-            "context": null
-          },
-          {
-            "textType": "text",
-            "id": "j-UURbDJqIzrFtmZ2GBSgL3Dtovb0N",
-            "type": "textField",
-            "propertyName": "templateSettings.functionName",
-            "componentName": "templateSettings.functionName",
-            "label": "Function name",
-            "labelAlign": "right",
-            "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8111",
-            "hidden": false,
             "isDynamic": false,
-            "version": 3,
+            "version": 2,
+            "direction": "vertical",
+            "justifyContent": "left",
+            "flexWrap": "wrap",
+            "components": [
+              {
+                "id": "L2MCtMu_bnRIr9-5S5Mp7EVQHnmG72",
+                "type": "checkbox",
+                "propertyName": "templateSettings.useAsyncDeclaration",
+                "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
+                "label": "Async declaration",
+                "version": 2,
+                "settingsValidationErrors": [],
+                "description": "",
+                "hidden": {
+                  "_mode": "code",
+                  "_code": null
+                },
+                "validate": {},
+                "context": null
+              },
+              {
+                "textType": "text",
+                "id": "j-UURbDJqIzrFtmZ2GBSgL3Dtovb0N",
+                "type": "textField",
+                "propertyName": "templateSettings.functionName",
+                "componentName": "templateSettings.functionName",
+                "label": "Function name",
+                "labelAlign": "right",
+                "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
+                "hidden": false,
+                "isDynamic": false,
+                "version": 3,
+                "settingsValidationErrors": [],
+                "placeholder": "",
+                "description": "",
+                "prefix": "",
+                "suffix": "",
+                "initialValue": "",
+                "validate": {
+                  "minLength": "",
+                  "maxLength": "",
+                  "message": ""
+                },
+                "context": null
+              },
+              {
+                "id": "9bwTOXitpfb7rb0DhhQIecgxfkvAZh",
+                "type": "codeEditor",
+                "propertyName": "availableConstantsExpression",
+                "componentName": "availableConstantsExpression",
+                "label": "Available constants",
+                "labelAlign": "right",
+                "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
+                "hidden": false,
+                "isDynamic": false,
+                "mode": "dialog",
+                "version": 2,
+                "settingsValidationErrors": [],
+                "placeholder": "",
+                "description": "",
+                "templateSettings": {
+                  "functionName": "getAvailableConstants",
+                  "useAsyncDeclaration": true
+                },
+                "validate": {},
+                "wrapInTemplate": true
+              }
+            ],
             "settingsValidationErrors": [],
-            "placeholder": "",
-            "description": "",
-            "prefix": "",
-            "suffix": "",
-            "initialValue": "",
-            "validate": {
-              "minLength": "",
-              "maxLength": "",
-              "message": ""
-            },
-            "context": null
-          },
-          {
-            "id": "mDxv2vTiexMZ-K7iqfRSjKwTh3Lpo6",
-            "type": "setting",
-            "propertyName": "availableConstants",
-            "componentName": "setting1",
-            "label": "Available Constants",
-            "labelAlign": "right",
-            "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8111",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 0
+            "gap": "",
+            "className": ""
           }
         ]
       },

@@ -1,4 +1,4 @@
-import CodeEditor from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
 import React, { FC, useState } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';

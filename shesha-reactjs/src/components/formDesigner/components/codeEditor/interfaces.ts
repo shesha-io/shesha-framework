@@ -28,4 +28,5 @@ export interface ICodeEditorComponentProps extends IConfigurableFormComponent, I
   mode?: 'dialog' | 'inline';
 
   language?: CodeLanguages;
+  availableConstantsExpression?: string;
 }
