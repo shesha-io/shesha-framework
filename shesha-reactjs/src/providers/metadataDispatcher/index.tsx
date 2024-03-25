@@ -20,9 +20,10 @@ import {
 import { IModelsDictionary, IProvidersDictionary } from './models';
 import metadataReducer from './reducer';
 import { useSheshaApplication } from '@/providers';
-import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isObjectReferencePropertyMetadata, ISpecification, isDataPropertyMetadata, isPropertiesArray, asPropertiesArray, NestedProperties } from '@/interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityReferencePropertyMetadata, isObjectReferencePropertyMetadata, ISpecification, isDataPropertyMetadata, isPropertiesArray, asPropertiesArray, NestedProperties, ModelTypeIdentifier, IObjectMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IDictionary } from '@/interfaces';
+import { MetadataFetcher } from '@/utils/metadata/metadataBuilder';
 
 export interface IMetadataDispatcherProviderProps { }
 
@@ -344,10 +345,17 @@ const useNestedPropertyMetadatAccessor = (modelType: string): NestedPropertyMeta
   return accessor;
 };
 
+const useMetadataFetcher = (): MetadataFetcher => {
+  const { getMetadata } = useMetadataDispatcher();
+  const metadataFetcher = (typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId.name });
+  return metadataFetcher;
+};
+
 export {
   MetadataDispatcherProvider,
   useMetadataDispatcher,
   useMetadataDispatcherActions,
   useMetadataDispatcherState,
   useNestedPropertyMetadatAccessor,
+  useMetadataFetcher,
 };

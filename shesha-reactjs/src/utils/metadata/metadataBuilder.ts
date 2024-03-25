@@ -1,13 +1,32 @@
 import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
-import { IHasEntityType, IObjectMetadata, IPropertyMetadata, PropertiesLoader, TypeDefinitionLoader } from "@/interfaces/metadata";
+import { IHasEntityType, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
+
+export interface IMetadataBuilder {
+
+}
 
 export type PropertiesBuilder = (builder: MetadataBuilder) => void;
+export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata>;
+export type MetadataBuilderAction = (builder: MetadataBuilder) => void;
 
-export class MetadataBuilder {
+export class MetadataBuilder implements IMetadataBuilder {
+    readonly metadataFetcher: MetadataFetcher;
+    readonly _standardProperties: Map<string, MetadataBuilderAction> = new Map<string, MetadataBuilderAction>();
+
     private metadata: IObjectMetadata = {
         dataType: DataTypes.object,
         properties: null,
     };
+
+    constructor(metadataFetcher: MetadataFetcher, name: string, description?: string) {
+        this.metadataFetcher = metadataFetcher;
+        this.metadata.name = name;
+        this.metadata.description = description;
+    }
+
+    registerStandardProperty(key: string, action: MetadataBuilderAction) {
+        this._standardProperties.set(key, action);
+    }
 
     _createProperty(dataType: string, path: string, label: string): IPropertyMetadata {
         const property: IPropertyMetadata = {
@@ -55,7 +74,7 @@ export class MetadataBuilder {
         const nestedObject = this._createProperty(DataTypes.object, path, label);
 
         if (propertiesBuilder){
-            const builder = new MetadataBuilder();
+            const builder = new MetadataBuilder(this.metadataFetcher, path);
             propertiesBuilder(builder);
             nestedObject.properties = builder.metadata.properties;
             nestedObject.typeDefinitionLoader = builder.metadata.typeDefinitionLoader;
@@ -64,21 +83,26 @@ export class MetadataBuilder {
         return this;
     }
 
-    addEntity(path: string, entityType: string, entityModule: string, label: string, propertiesBuilder: PropertiesBuilder) {
-        const nestedObject = this._createProperty(DataTypes.entityReference, path, label);
-        nestedObject.dataFormat = entityType;
+    addEntityAsync(path: string, label: string, entityType: string): Promise<this> {
+        return this.metadataFetcher({ name: entityType, module: null }).then(response => {
+            const nestedObject = this._createProperty(DataTypes.entityReference, path, label);
+            nestedObject.dataFormat = entityType;
+    
+            if (!isEntityMetadata(response))
+                throw new Error(`Failed to resolve entity type '${entityType}'`);
 
-        const entityProperty = nestedObject as IHasEntityType;
-        entityProperty.entityType = entityType;
-        entityProperty.entityModule = entityModule;
+            const entityProperty = nestedObject as IHasEntityType;
+            entityProperty.entityType = response.entityType;
+            entityProperty.entityModule = response.entityModule;
 
-        if (propertiesBuilder){
-            const builder = new MetadataBuilder();
-            propertiesBuilder(builder);
-            nestedObject.properties = builder.metadata.properties;
-            nestedObject.typeDefinitionLoader = builder.metadata.typeDefinitionLoader;
-        }
-
+            return this;
+        });
+    }
+    addStandard(key: string | string[]): this {
+        const keys = Array.isArray(key) ? key : [key];
+        keys.forEach(key => {
+            this._standardProperties.get(key)?.(this);
+        });
         return this;
     }
 

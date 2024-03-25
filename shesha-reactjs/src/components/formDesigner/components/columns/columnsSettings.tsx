@@ -1,4 +1,4 @@
-import CodeEditor from '../codeEditor/codeEditor';
+import { CodeEditor } from '../codeEditor/codeEditor';
 import ColumnsList from './columnsList';
 import React, { FC } from 'react';
 import SectionSeparator from '@/components/sectionSeparator';

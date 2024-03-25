@@ -15,7 +15,8 @@
       "components": [
         {
           "id": "WhdIVI0QPwG1KTja1gJPiLb1Cq--3U",
-          "components": []
+          "components": [],
+          "parentId": "vZLe2HPuWJhlTGoDL3nui6ah7Jt26s"
         },
         {
           "id": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
@@ -57,7 +58,8 @@
               "parentId": "0DhkJiQGiCd3KmsZYdUTQSuu0nbyPC",
               "version": 2
             }
-          ]
+          ],
+          "parentId": "vZLe2HPuWJhlTGoDL3nui6ah7Jt26s"
         }
       ],
       "header": {
@@ -112,6 +114,58 @@
       "className": ""
     },
     {
+      "id": "A7cIsakW92nluolUhq6-egqkNM-VV0",
+      "type": "dropdown",
+      "propertyName": "propertySource",
+      "componentName": "propertySource",
+      "label": "Source",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 5,
+      "dataSourceType": "values",
+      "useRawValues": false,
+      "referenceListId": null,
+      "valueFormat": "simple",
+      "settingsValidationErrors": [],
+      "placeholder": "",
+      "description": "",
+      "defaultValue": "",
+      "mode": [
+        "single"
+      ],
+      "values": [
+        {
+          "label": "Configuration",
+          "value": "configuration"
+        },
+        {
+          "label": "Code",
+          "value": "code"
+        }
+      ],
+      "validate": {}
+    },
+    {
+      "id": "HTeeNZ7tgwGkS7MngmPWjGx-cUtX7F",
+      "type": "dynamicItemsConfigurator",
+      "propertyName": "dynamicConfiguration",
+      "componentName": "dynamicItemsConfigurator1",
+      "label": "Provider",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_mode": "code",
+        "_code": "    return data.propertySource !== 'code';",
+        "_value": false
+      },
+      "isDynamic": false,
+      "settingsValidationErrors": [],
+      "description": "",
+      "customVisibility": "return data.propertySource !== 'code';"
+    },
+    {
       "id": "0OB_WP7HvaZd4nJJsi5KkU30rQZnN2",
       "type": "collapsiblePanel",
       "propertyName": "panel1",
@@ -119,7 +173,11 @@
       "label": "Data Type",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
+      "hidden": {
+        "_mode": "code",
+        "_code": "    return data.propertySource !== 'configuration';",
+        "_value": false
+      },
       "isDynamic": false,
       "version": 4,
       "expandIconPosition": "end",
@@ -733,7 +791,8 @@
               "gap": "",
               "className": ""
             }
-          ]
+          ],
+          "parentId": "0OB_WP7HvaZd4nJJsi5KkU30rQZnN2"
         }
       ],
       "header": {

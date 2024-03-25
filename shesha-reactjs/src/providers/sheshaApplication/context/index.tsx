@@ -1,46 +1,14 @@
-import React, { FC, PropsWithChildren, useEffect, useState } from 'react';
-import { SheshaCommonContexts } from '../../dataContextManager/models';
-import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
-import { ApplicationContext, IApplicationContext } from '../publicApi';
-import { useApplicationContextMetadata } from '../publicApi/metadata';
-import { useHttpClient } from '../publicApi/http/hooks';
-import { useAuthState } from '@/providers';
-import { IUserProfileInfo } from '../publicApi/currentUser/api';
+import React, { FC, PropsWithChildren } from 'react';
+import { ApplicationDataProvider } from './applicationContext';
 
 export interface IApplicationDataProviderProps {
 
 }
 
-export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
-  const contextMetadata = useApplicationContextMetadata();
-  const httpClient = useHttpClient();
-  const [contextData] = useState<IApplicationContext>(() => new ApplicationContext(httpClient));
-
-  const { loginInfo } = useAuthState(false) ?? {};
-  useEffect(() => {
-    const profile: IUserProfileInfo = loginInfo
-      ? {
-        id: loginInfo.id?.toString(),
-        userName: loginInfo.userName,
-        firstName: loginInfo.firstName,
-        lastName: loginInfo.lastName
-      }
-      : undefined;
-
-    contextData.user.setProfileInfo(profile);
-  }, [loginInfo, contextData.user]);
-
+export const ApplicationContextsProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
   return (
-    <DataContextBinder
-      id={SheshaCommonContexts.ApplicationContext}
-      name={SheshaCommonContexts.ApplicationContext}
-      description={'Application context'}
-      type={'root'}
-
-      metadata={contextMetadata}
-      data={contextData}
-    >
+    <ApplicationDataProvider>
       {children}
-    </DataContextBinder>
+    </ApplicationDataProvider>
   );
 };

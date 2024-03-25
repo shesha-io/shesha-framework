@@ -1,9 +1,10 @@
 import { DataTypes, FormFullName } from "@/interfaces";
-import { IHasEntityType, IObjectMetadata, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
+import { IHasEntityType, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import camelcase from "camelcase";
 import { verifiedCamelCase } from "../string";
 import { StringBruilder } from "./stringBruilder";
 import { TypesImporter } from "./typesImporter";
+import { MetadataFetcher } from "./metadataBuilder";
 
 export interface BuildResult {
     content: string;
@@ -13,7 +14,6 @@ export interface BuildContext {
 }
 
 type AsyncPropertyHandler = (property: IPropertyMetadata) => Promise<void>;
-type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata>;
 /**
  * Type definition builder
  */
@@ -213,6 +213,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     async build(properties: NestedProperties): Promise<BuildResult> {
         const typesImporter = new TypesImporter();
         const sb = new StringBruilder();
+
         await this.#iterateProperties(properties, async (prop) => {
             const dataType = await this.#getTypescriptType(prop);
             if (dataType) {
