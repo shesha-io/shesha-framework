@@ -99,7 +99,7 @@ namespace Shesha.Domain
 		{
 			if (StaticContext.IocManager.IsRegistered(typeof(IValidator<TEntity>)))
 			{
-				var validator = Abp.Dependency.IocManager.Instance.Resolve<IValidator<TEntity>>();
+				var validator = StaticContext.IocManager.Resolve<IValidator<TEntity>>();
 				FluentValidationResult fluentValidationResults = await validator.ValidateAsync(entity);
 
 				//Map FluentValidationResult to normal System.ComponentModel.DataAnnotations.ValidationResult,
