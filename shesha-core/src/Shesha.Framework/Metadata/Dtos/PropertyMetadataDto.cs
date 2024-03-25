@@ -92,5 +92,10 @@ namespace Shesha.Metadata.Dtos
         public PropertyMetadataDto ItemsType { get; set; }
 
         public MetadataSourceType Source { get; set; }
+
+        /// <summary>
+        /// If true, indicates that the property is nullable
+        /// </summary>
+        public bool IsNullable { get; set; }
     }
 }

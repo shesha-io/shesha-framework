@@ -117,7 +117,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                     typesImporter.import(dataType);
 
                 this.#appendCommentBlock(sb, [prop.label, prop.description]);
-                sb.append(`${propertyName}: ${dataType.typeName};`);
+                sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
             }
         });
         sb.decIndent();
@@ -161,7 +161,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             await this.#iterateProperties(properties, async (prop) => {
                 const dataType = await this.#getTypescriptType(prop);
                 if (dataType)
-                    sb.append(`${prop.path}: ${dataType.typeName};`);
+                    sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
             });
             sb.decIndent();
             sb.append("}");
@@ -220,7 +220,9 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                 typesImporter.import(dataType);
 
                 this.#appendCommentBlock(sb, [prop.label, prop.description]);
-                sb.append(`export const ${prop.path}: ${dataType.typeName};`);
+
+                const typeDefinition = dataType.typeName + (prop.isNullable ? ' | null' : '');
+                sb.append(`export const ${prop.path}: ${typeDefinition};`);
             }
         });
         const exportSection = sb.build();
