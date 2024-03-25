@@ -42,7 +42,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
         defaultActionOnPaste: 'insert_as_html',
-        enter: 'br',
+        enter: model?.enter || 'br',
         editHTMLDocumentMode: false,
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
@@ -51,6 +51,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         askBeforePasteHTML: model?.askBeforePasteHTML,
         askBeforePasteFromWord: model?.askBeforePasteFromWord,
         autofocus: model?.autofocus,
+        showCharsCounter: model?.showCharsCounter,
+        showWordsCounter: model?.showWordsCounter
       };
       return typedConfig;
     }, [model, model.readOnly]);

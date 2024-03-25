@@ -8,7 +8,6 @@ import {
   DeleteOutlined,
   LoadingOutlined,
   UploadOutlined,
-  InboxOutlined,
 } from '@ant-design/icons';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
@@ -154,40 +153,35 @@ export const FileUpload: FC<IFileUploadProps> = ({
   );
 
   const renderStub = () => {
-    if (!isDragger) {
-      return <div className={classes}>{uploadButton}</div>;
+    if (isDragger) {
+      return  <Dragger disabled><DraggerStub /></Dragger>;
     }
 
-    return <DraggerStub />;
+    return <div className={classes}></div>
   };
 
   const renderUploader = () => {
-    if (!isDragger) {
+    if (isDragger) {
       return (
-        <Upload {...fileProps} className={classes}>
-          {uploadButton}
-        </Upload>
+        <Dragger {...fileProps} className={classes}>
+          <span ref={uploadDraggerSpanRef} />
+  
+          <Show when={showUploadButton}>
+            <DraggerStub/>
+          </Show>
+        </Dragger>
       );
     }
 
     return (
-      <Dragger {...fileProps} className={classes}>
-        <span ref={uploadDraggerSpanRef} />
-
-        <Show when={showUploadButton}>
-          <p className={styles.antUploadDragIcon}>
-            <InboxOutlined />
-          </p>
-          <p className={styles.antUploadText}>Click or drag file to this area to upload</p>
-          <p className={styles.antUploadHint}>
-            Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
-          </p>
-        </Show>
-      </Dragger>
-    );
+        <Upload {...fileProps} className={classes}>
+          {uploadButton}
+        </Upload>
+      );
   };
 
-  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
+
+  return <span className={styles.shaFileUploadContainer}>{isStub || !allowUpload ? renderStub() : renderUploader()}</span>;
 };
 
 export default FileUpload;

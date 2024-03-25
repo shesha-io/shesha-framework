@@ -15,12 +15,10 @@ import { useFormDesigner } from '@/providers/formDesigner';
 const { Option } = Select;
 
 const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesTagGroupProps>> = ({ readOnly }) => {
-  const { getFieldsValue, onValuesChange } = useSettingsForm<IChildEntitiesTagGroupProps>();
+  const { values, onValuesChange } = useSettingsForm<IChildEntitiesTagGroupProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
-
-  const formData = getFieldsValue();
 
   return (
     <>
@@ -28,7 +26,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={formData}
+          formData={values}
           onValuesChange={onValuesChange}
         />
 

@@ -30,23 +30,28 @@ const convertModelItemToPropertyMetadata = (item: IModelItem) => {
 };
 
 const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = ({ readOnly }) => {
-  const { model, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
+  const { values, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
 
   const [open, setOpen] = useState<boolean>(false);
   const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
 
   const openModal = () => {
-    if (Array.isArray(model.items))
-      setProperties([...model.items]);
+    if (Array.isArray(values.items))
+      setProperties([...values.items]);
     setOpen(true);
   };
 
-  const items = model?.items?.map((item) => convertPropertyMetadataToModelItem(item));
+  const items = values?.items?.map((item) => convertPropertyMetadataToModelItem(item));
 
   return (
     <>
       <SettingsCollapsiblePanel header="Data context">
-        <SettingsFormItem name='componentName' label="Component name" tooltip='This name will be used as identifier and in the code editor' required>
+        <SettingsFormItem 
+          name='componentName'
+          label="Component name"
+          tooltip='This name will be used as identifier and in the code editor'
+          required
+        >
           {(value) =>
             <Input readOnly={readOnly} value={value} onChange={(e) => {
               const name = e.target.value;
@@ -56,11 +61,11 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           }
         </SettingsFormItem>
 
-        <SettingsFormItem name='description' label="Description">
+        <SettingsFormItem name='description' label="Description" jsSetting>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
 
-        <SettingsFormItem name="initialDataCode" label="Context metadata" jsSetting>
+        <SettingsFormItem name="items" label="Context metadata" jsSetting>
           <Button onClick={openModal}>Configure metadata</Button>
         </SettingsFormItem>
 
