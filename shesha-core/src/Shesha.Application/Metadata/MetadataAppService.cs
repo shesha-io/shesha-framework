@@ -255,6 +255,7 @@ namespace Shesha.Metadata
 
                         var prop = ObjectMapper.Map<PropertyMetadataDto>(p);
                         prop.EnumType = hardCodedProp?.EnumType;
+                        prop.IsNullable = hardCodedProp?.IsNullable ?? false;
                         prop.OrderIndex = idx;
                         prop.GroupName = hardCodedProp?.GroupName;
 

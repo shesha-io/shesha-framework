@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
+using JsonLogic.Net;
 using NetTopologySuite.Geometries;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
@@ -136,6 +137,7 @@ namespace Shesha.Metadata
                 EnumType = epc?.EnumType,
                 OrderIndex = property.GetAttribute<DisplayAttribute>()?.GetOrder() ?? -1,
                 IsFrameworkRelated = IsFrameworkRelatedProperty(property),
+                IsNullable = property.IsNullable(),
                 //ConfigurableByUser = property.GetAttribute<BindableAttribute>()?.Bindable ?? true,
                 //GroupName = ReflectionHelper.get(declaredProperty ?? property),
                 IsFilterable = epc != null && epc.IsMapped,

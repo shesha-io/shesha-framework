@@ -345,6 +345,14 @@ namespace Shesha.Reflection
         }
 
         /// <summary>
+        /// Checks if a given property nullable
+        /// </summary>
+        public static bool IsNullable(this PropertyInfo property) 
+        {
+            return property.PropertyType.IsNullableType() || property.HasAttribute<System.Runtime.CompilerServices.NullableAttribute>();
+        }
+
+        /// <summary>
         /// Checks to see if the specified type is Nullable and if so returns its underlying type, 
         /// otherwise returns the original type.
         /// </summary>
