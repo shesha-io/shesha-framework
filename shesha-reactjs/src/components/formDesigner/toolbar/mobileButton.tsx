@@ -6,12 +6,13 @@ import { useForm } from '@/providers';
 export interface IPreviewButtonProps {}
 
 export const MobileButton: FC<IPreviewButtonProps> = () => {
-  const {  formMode } = useForm();
+  const {  formMode ,setFormWidth} = useForm();
   const [mode,setMode]=useState(1);
 
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     setMode(parseInt(e.key));
+  setFormWidth(e.key==='1'?'30%':'50%')
   };
 
   const disable=(key:number)=>mode===key?true:false;

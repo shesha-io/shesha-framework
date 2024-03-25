@@ -3,6 +3,8 @@ import React, { FC, PropsWithChildren, ReactNode } from 'react';
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
+import { useForm } from '@/providers/form';
+
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   /**
@@ -37,6 +39,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   noPadding,
 }) => {
   const { styles } = useStyles();
+  const {fornWidth}=useForm();
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
     return sidebarProps
@@ -63,7 +66,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
           )}
         >
-          <div className={styles.sidebarContainerMainAreaBody}>{children}</div>
+          <div className={styles.sidebarContainerMainAreaBody} style={{width:fornWidth}}>{children}</div>
         </div>
 
         {renderSidebar('right')}

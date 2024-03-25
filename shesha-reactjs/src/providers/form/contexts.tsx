@@ -25,7 +25,7 @@ export interface IFormStateInternalContext {
   formSettings: IFormSettings;
   formMarkup?: FormRawMarkup;
   formMode: FormMode;
-
+  fornWidth?: string;
   form?: FormInstance<any>;
   actions: IFormAction[];
   sections: IFormSection[];
@@ -77,6 +77,7 @@ export interface IRegisterActionsPayload {
 
 export interface IFormActionsContext {
   setFormMode: (formMode: FormMode) => void;
+  setFormWidth: (width: string) => void;
   getChildComponents: (id: string) => IConfigurableFormComponent[];
   getChildComponentIds: (containerId: string) => string[];
   getComponentModel: (id: string) => IConfigurableFormComponent;
@@ -112,6 +113,7 @@ export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   visibleComponentIdsIsSet: false,
   enabledComponentIds: [],
   formMode: 'designer',
+  fornWidth:'60%',
   actions: [],
   sections: [],
   context: null,
