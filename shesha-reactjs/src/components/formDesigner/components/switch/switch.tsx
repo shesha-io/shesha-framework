@@ -20,6 +20,8 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
   type: 'switch',
   name: 'Switch',
   icon: <SwitcherOutlined />,
+  isInput: true,
+  isOutput: true,
   canBeJsSetting: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   Factory: ({ model: passedModel }) => {

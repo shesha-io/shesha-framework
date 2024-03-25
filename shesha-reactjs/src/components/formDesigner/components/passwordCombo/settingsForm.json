@@ -203,7 +203,7 @@
     {
       "id": "b8c06332-2e5e-40ad-a5f0-770de616ee3e",
       "type": "collapsiblePanel",
-      "propertyName": "pnStyle",
+      "propertyName": "pnlStyle",
       "label": "Style",
       "labelAlign": "right",
       "parentId": "root",
@@ -220,7 +220,7 @@
         "components": []
       },
       "content": {
-        "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+        "id": "54bf6-f76d-4139-a850-c99bf06c8b69",
         "components": [
           {
 

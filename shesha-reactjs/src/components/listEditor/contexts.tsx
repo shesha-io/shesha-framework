@@ -3,6 +3,7 @@ import { createContext } from "react";
 export interface IListEditorStateContext<TItem = any> {
   value: TItem[];
   readOnly?: boolean;
+  selectedItem?: TItem;
 }
 
 export interface IListEditorActionsContext<TItem = any> {
@@ -11,6 +12,7 @@ export interface IListEditorActionsContext<TItem = any> {
   insertItem: (index: number) => void;
   updateItem: (index: number, item: TItem) => void;
   updateList: (newItems: TItem[]) => void;
+  setSelectedItem: (item: TItem) => void;
 }
 
 export interface IListEditorContext<TItem = any> extends IListEditorStateContext<TItem>, IListEditorActionsContext<TItem> {

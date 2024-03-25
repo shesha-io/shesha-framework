@@ -176,7 +176,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     name: 'DataList',
     visible: true,
-    components: [DataList, DataSource],
+    components: [DataList, DataSource, DataContextComponent],
   },
   {
     name: 'Layout',
@@ -201,11 +201,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   },
   {
     visible: true,
-    name: 'Settings',
-    components: [ContextPropertyAutocompleteComponent, DataContextComponent, DataContextSelector, SettingsComponent],
-  },
-  {
-    visible: true,
     name: 'Internal',
     components: [
       PropertyAutocompleteComponent, 
@@ -216,6 +211,9 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       PermissionedObjectsTree,
       PermissionsTree,
       LabelValueEditorComponent,
+      DataContextSelector, 
+      ContextPropertyAutocompleteComponent, 
+      SettingsComponent,
     ],
   },
 ];

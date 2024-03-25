@@ -87,6 +87,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
 
     return {
       ...model,
+      dateFormat: !!metadata.dataFormat ? metadata.dataFormat : model.dateFormat,
       showTime: metadata.dataType === DataTypes.date ? false : model.showTime,
     };
   },

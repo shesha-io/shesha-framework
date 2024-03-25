@@ -23,6 +23,8 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
   type: 'radio',
   name: 'Radio',
   icon: <CheckCircleOutlined />,
+  isInput: true,
+  isOutput: true,
   canBeJsSetting: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   Factory: ({ model }) => {

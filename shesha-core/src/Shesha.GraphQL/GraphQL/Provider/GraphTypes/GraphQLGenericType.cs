@@ -6,6 +6,7 @@ using NetTopologySuite.IO;
 using Newtonsoft.Json;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
+using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.EntityReferences;
@@ -164,6 +165,18 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 });
                 return;
             }
+
+            if (propertyInfo.GetCustomAttribute<SaveAsJsonAttribute>() != null)
+            {
+                Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {
+                    var jsonValue = propertyInfo.GetValue(context.Source);
+                    return jsonValue != null
+                        ? new RawJson(jsonValue)
+                        : null;
+                });
+                return;
+            }
+
             if (typeof(Geometry).IsAssignableFrom(propertyInfo.PropertyType))
             {
                 Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {

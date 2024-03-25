@@ -252,7 +252,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             <CodeEditor
               readOnly={readOnly}
               mode="dialog"
-              setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
               propertyName="formIdExpression"
               label="Form identifer expression"
               description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
@@ -263,8 +262,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                 { name: "globalmodel", description: "Global model", type: "object" },
                 { name: "setGlobalmodel", description: "Functiont to set globalmodel", type: "function" },
                 { name: "formMode", description: "Form mode", type: "object" },
-                { name: "staticValue", description: "Static value of this setting", type: "any" },
-                { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
                 { name: "form", description: "Form instance", type: "object" },
                 { name: "selectedListItem", description: "Selected list item of nearest table (null if not available)", type: "object" },
                 { name: "moment", description: "moment", type: "object" },
@@ -391,7 +388,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             readOnly={readOnly}
             mode="dialog"
             label="New list item init"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             description="Specify logic to initialise the object bound to a new list item. This handler should return an object or a Promise<object>."
             exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
           />
@@ -407,7 +403,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             readOnly={readOnly}
             mode="dialog"
             label="On list item save"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             description="Allows custom business logic to be executed on saving of new/updated list item (e.g. custom validation / calculations)."
             exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
           />
@@ -445,7 +440,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <CodeEditor
             readOnly={readOnly}
             mode="dialog"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             propertyName="groupStyle"
             label="Style of group headers"
             //description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
