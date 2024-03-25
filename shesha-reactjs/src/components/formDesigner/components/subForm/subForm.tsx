@@ -16,7 +16,7 @@ interface ISubFormProps {
   readOnly?: boolean;
 }
 
-const SubForm: FC<ISubFormProps> = ({ style, readOnly }) => {
+const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const { formInfoBlockVisible } = useAppConfigurator();
   const {
     id,
@@ -52,7 +52,7 @@ const SubForm: FC<ISubFormProps> = ({ style, readOnly }) => {
           <ValidationErrors key={index} error={errors[error]} />
         ))}
 
-        <div style={style}>
+        <div>
           <ComponentsContainerProvider
             ContainerComponent={ComponentsContainerSubForm}
           >
