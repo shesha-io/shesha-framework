@@ -7,7 +7,7 @@ import { Button, Input, Modal } from 'antd';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
 import { IDataContextComponentProps } from '.';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { PropertiesEditor } from '@/components/modelConfigurator/propertiesEditor';
 
@@ -16,7 +16,7 @@ interface IDataContextSettingsState extends IDataContextComponentProps { }
 const convertPropertyMetadataToModelItem = (property: IPropertyMetadata) => {
   const res = { ...property, properties: [], name: property.path };
   delete res.path;
-  if (property.properties)
+  if (isPropertiesArray(property.properties))
     res.properties = property.properties?.map((item) => convertPropertyMetadataToModelItem(item));
   return res as IModelItem;
 };
@@ -30,23 +30,28 @@ const convertModelItemToPropertyMetadata = (item: IModelItem) => {
 };
 
 const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = ({ readOnly }) => {
-  const { model, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
+  const { values, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
 
   const [open, setOpen] = useState<boolean>(false);
   const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
 
   const openModal = () => {
-    if (Array.isArray(model.items))
-      setProperties([...model.items]);
+    if (Array.isArray(values.items))
+      setProperties([...values.items]);
     setOpen(true);
   };
 
-  const items = model?.items?.map((item) => convertPropertyMetadataToModelItem(item));
+  const items = values?.items?.map((item) => convertPropertyMetadataToModelItem(item));
 
   return (
     <>
       <SettingsCollapsiblePanel header="Data context">
-        <SettingsFormItem name='componentName' label="Component name" tooltip='This name will be used as identifier and in the code editor' required>
+        <SettingsFormItem 
+          name='componentName'
+          label="Component name"
+          tooltip='This name will be used as identifier and in the code editor'
+          required
+        >
           {(value) =>
             <Input readOnly={readOnly} value={value} onChange={(e) => {
               const name = e.target.value;
@@ -56,11 +61,11 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           }
         </SettingsFormItem>
 
-        <SettingsFormItem name='description' label="Description">
+        <SettingsFormItem name='description' label="Description" jsSetting>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
 
-        <SettingsFormItem name="initialDataCode" label="Context metadata" jsSetting>
+        <SettingsFormItem name="items" label="Context metadata" jsSetting>
           <Button onClick={openModal}>Configure metadata</Button>
         </SettingsFormItem>
 
@@ -69,7 +74,6 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
             readOnly={readOnly}
             mode="dialog"
             label="Initial Data"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             propertyName="initialDataCode"
             description="Initial Data"
             exposedVariables={[
@@ -95,8 +99,6 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
               { name: "globalState", description: "Global state", type: "object" },
               { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
               { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-              { name: "staticValue", description: "Static value of this setting", type: "any" },
-              { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
               { name: "form", description: "Form instance", type: "object" },
               { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
               { name: "moment", description: "moment", type: "object" },

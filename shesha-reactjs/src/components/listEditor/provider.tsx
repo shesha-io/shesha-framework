@@ -1,4 +1,4 @@
-import React, { Context, PropsWithChildren } from 'react';
+import React, { Context, PropsWithChildren, useState } from 'react';
 import { IListEditorStateContext, IListEditorActionsContext } from './contexts';
 import { ValueMutator } from './interfaces';
 
@@ -8,6 +8,7 @@ export interface IGenericListEditorProviderProps<TItem extends object> {
     actionContext: Context<IListEditorActionsContext<TItem>>;
     value: TItem[];
     onChange: ValueMutator<TItem[]>;
+    onSelectionChange?: (value: TItem) => void;
     initNewItem: (items: TItem[]) => TItem;
     readOnly: boolean;
 }
@@ -19,22 +20,37 @@ const GenericListEditorProvider = <TItem extends object>({
     actionContext,
     value,
     onChange,
+    onSelectionChange,
     initNewItem,
     readOnly,
 }: PropsWithChildren<IGenericListEditorProviderProps<TItem>>) => {
-   const state: IListEditorStateContext<TItem> = { ...initialState, value: value, readOnly: readOnly };
+    const [selectedItem, insernalSetSelectedItem] = useState<TItem>();
 
-   const updateItem = (index: number, item: TItem) => {
+    const setSelectedItem = (item: TItem) => {
+        insernalSetSelectedItem(item);
+        if (onSelectionChange)
+            onSelectionChange(item);
+    };
+
+    const state: IListEditorStateContext<TItem> = {
+        ...initialState,
+        value: value,
+        readOnly: readOnly,
+        selectedItem: selectedItem
+    };
+
+    const updateItem = (index: number, item: TItem) => {
         const newValue = [...state.value];
-        newValue[index] = {...item} as TItem;
+        newValue[index] = { ...item } as TItem;
         onChange(newValue);
-   };
+    };
 
     const addItem = () => {
         const newItem = initNewItem(state.value);
         const newValue = state.value ? [...state.value] : [];
         newValue.push(newItem);
 
+        setSelectedItem(newItem);
         onChange(newValue);
     };
 
@@ -42,6 +58,8 @@ const GenericListEditorProvider = <TItem extends object>({
         const newItem = initNewItem(state.value);
         const newValue = state.value ? [...state.value] : [];
         newValue.splice(index, 0, newItem);
+        
+        setSelectedItem(newItem);
         onChange(newValue);
     };
 
@@ -49,8 +67,11 @@ const GenericListEditorProvider = <TItem extends object>({
         if (!state.value)
             return;
         const newValue = [...state.value];
-        newValue.splice(index, 1);
+        const deletedItem = newValue.splice(index, 1);
 
+        if (selectedItem && selectedItem === deletedItem[0]) {
+            setSelectedItem(undefined);
+        }
         onChange(newValue);
     };
 
@@ -65,6 +86,7 @@ const GenericListEditorProvider = <TItem extends object>({
         insertItem,
         updateItem,
         updateList,
+        setSelectedItem,
     };
 
     return (

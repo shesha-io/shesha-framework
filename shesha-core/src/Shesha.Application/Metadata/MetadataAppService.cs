@@ -150,6 +150,7 @@ namespace Shesha.Metadata
             var dto = new MetadataDto 
             { 
                 DataType = containerType.IsEntityType() ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
+                Module = containerType.IsEntityType() ? containerType.GetConfigurableModuleName() : null,
                 Properties = await GetPropertiesInternalAsync(containerType, container),
                 Specifications = await GetSpecificationsAsync(containerType),
                 ApiEndpoints = await GetApiEndpoints(containerType),

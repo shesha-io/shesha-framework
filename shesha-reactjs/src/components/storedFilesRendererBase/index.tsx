@@ -9,7 +9,7 @@ import {
   Upload
   } from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
-import { FileZipOutlined, InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import { FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
@@ -139,20 +139,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
   };
 
-  const renderDraggerContent = () => {
-    return (
-      <>
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-        <p className="ant-upload-hint">
-          Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
-        </p>
-      </>
-    );
-  };
-
   const renderUploadContent = () => {
     return (
       <Button type="link" icon={<UploadOutlined />} style={{ display: disabled ? 'none' : '' }} {...uploadBtnProps}>
@@ -165,9 +151,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
       {isDragger ? (
         isStub ? (
-          <DraggerStub />
+          <Dragger disabled><DraggerStub /></Dragger>
         ) : (
-          <Dragger {...props}>{renderDraggerContent()}</Dragger>
+          <Dragger {...props}><DraggerStub /></Dragger>
         )
       ) : isStub ? (
         <div>{renderUploadContent()}</div>

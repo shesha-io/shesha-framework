@@ -56,6 +56,12 @@ export const entityPickerSettings = new DesignerToolbarSettings()
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Description',
         })
+        .addTextField({
+            id: "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+            propertyName: "placeholder",
+            parentId: "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+            label: "Placeholder",
+          })
         .addDropdown({
           id: '1692d566-fe48-43bd-84e0-28b7103354c1',
           propertyName: 'mode',

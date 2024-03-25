@@ -113,7 +113,6 @@ export { FormComponentSelector, type IFormComponentSelectorProps } from './formC
 export { default as PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 export { ColorPicker } from '@/components/colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
-export { default as Properties } from '@/components/properties';
 export { HelpTextPopover } from './helpTextPopover';
 export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';
