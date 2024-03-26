@@ -16,7 +16,13 @@ export const DATE_TIME_FORMATS = {
 export const getDatePickerValue = (props: IDateFieldProps, pickerFormat: string) => {
   const { value, injectedDefaultValue } = props;
 
+
   /** Used to changed value/defaultValue based on whether it's rendered on the table **/
+  if(props.dateFormat === 'YYYY/Wo'){
+
+    return {value: getMoment(value, DATE_TIME_FORMATS.month)}
+  }
+
   if (injectedDefaultValue) {
     return { defaultValue: getMoment(value, pickerFormat) };
   }
