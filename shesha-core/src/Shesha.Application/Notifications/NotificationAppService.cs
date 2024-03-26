@@ -94,10 +94,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             SendType = RefListNotificationType.Email,
             RecipientText = emailAddress,
             Attachments = attachments,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
 
@@ -132,10 +132,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             SendType = RefListNotificationType.Email,
             RecipientText = emailAddress,
             Attachments = attachments,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
 
@@ -168,10 +168,9 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             TemplateId = templateId,
             Attachments = attachments,
             Cc = cc,
-            SourceEntityId = sourceEntity?.Id,
-            SourceEntityClassName = sourceEntity?._className,
-            SourceEntityDisplayName = sourceEntity?._displayName,
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
 
         await _notificationPublisher.PublishAsync("DirectEmail", wrappedData, entityIdentifier);
     }
@@ -210,10 +209,9 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             TemplateId = templateId,
             Attachments = attachments,
             Cc = cc,
-            SourceEntityId = sourceEntity?.Id,
-            SourceEntityClassName = sourceEntity?._className,
-            SourceEntityDisplayName = sourceEntity?._displayName,
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
 
         await _notificationPublisher.PublishAsync("DirectEmail", wrappedData, entityIdentifier);
     }
@@ -244,10 +242,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         {
             SendType = RefListNotificationType.SMS,
             RecipientText = mobileNo,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
 
@@ -277,10 +275,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             SendType = RefListNotificationType.SMS,
             RecipientId = recipient?.Id ?? null,
             RecipientText = mobileNumber,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
 
@@ -308,10 +306,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             SendType = RefListNotificationType.SMS,
             RecipientText = mobileNo,
             TemplateId = templateId,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
     }
 
@@ -343,10 +341,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             RecipientId = recipient?.Id ?? null,
             RecipientText = mobileNumber,
             TemplateId = templateId,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
     }
 

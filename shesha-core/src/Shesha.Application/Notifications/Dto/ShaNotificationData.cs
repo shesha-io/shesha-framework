@@ -56,6 +56,21 @@ namespace Shesha.Notifications.Dto
             set => Properties[nameof(DataTypeName)] = value;
         }
 
+        public void SetSourceEntity(GenericEntityReference sourceEntity = null)
+        {
+            if (sourceEntity != null)
+            {
+                SourceEntityId = sourceEntity.Id;
+                SourceEntityClassName = sourceEntity._className;
+                SourceEntityDisplayName = sourceEntity._displayName;
+            }
+            else
+            {
+                SourceEntityId = null;
+                SourceEntityClassName = null;
+                SourceEntityDisplayName = null;
+            }
+        }
 
         public NotificationData GetData()
         {
