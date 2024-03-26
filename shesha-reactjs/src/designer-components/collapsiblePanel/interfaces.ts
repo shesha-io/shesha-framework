@@ -22,6 +22,7 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   bodyColor?: string;
   isSimpleDesign?: boolean;
   radius?: string;
+  hideCollapseContent?: boolean;
 }
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {

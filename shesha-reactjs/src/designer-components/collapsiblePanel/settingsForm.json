@@ -134,6 +134,20 @@
             "version": 1
           },
           {
+            "id": "7e5fc1c1-a804-4f0a-8327-1a92e963e5e1",
+            "type": "checkbox",
+            "propertyName": "hideCollapseContent",
+            "label": "Hide Top Bar",
+            "labelAlign": "right",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "hidden": false,
+            "isDynamic": false,
+            "description": "Hides the collapsible panel",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "version": 1
+          },
+          {
             "id": "cd7d29fe-63d4-4c43-96c3-d4456f9ef237",
             "type": "checkbox",
             "propertyName": "isSimpleDesign",

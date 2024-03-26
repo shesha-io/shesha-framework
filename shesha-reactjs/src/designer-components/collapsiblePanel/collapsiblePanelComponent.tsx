@@ -36,6 +36,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       headerColor,
       isSimpleDesign,
       radius,
+      hideCollapseContent,
     } = model;
 
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
@@ -80,6 +81,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           className={model.className}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
+          hideCollapseContent={hideCollapseContent}
           radius={radius}
         >
           <ComponentsContainer

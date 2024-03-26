@@ -24,16 +24,21 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   radius?: string;
   radiusLeft?: string;
   radiusRight?: string;
+  hideCollapseContent?: boolean;
 }
 
 const StyledCollapse = styled(Collapse)<
   Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
 >`
+  .ant-collapse-header {
+    visibility: ${({ hideCollapseContent }) => (hideCollapseContent ? 'hidden' : 'visible')};
+  }
+
   .ant-collapse-content {
     border-bottom-left-radius: ${({ radiusLeft }) => radiusLeft} !important;
     border-bottom-right-radius: ${({ radiusRight }) => radiusRight} !important;
 
-    .ant-collapse-content-box {
+    .ant-collapse-content-box > .sha-components-container {
       background-color: ${({ bodyColor }) => bodyColor};
     }
   }
@@ -57,6 +62,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   bodyColor = 'unset',
   isSimpleDesign,
   radius,
+  hideCollapseContent,
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
@@ -75,6 +81,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       bodyColor={bodyColor}
       radiusLeft={radius ? `${radius}px` : ''}
       radiusRight={radius ? `${radius}px` : ''}
+      hideCollapseContent={hideCollapseContent}
     >
       <Panel
         key="1"
