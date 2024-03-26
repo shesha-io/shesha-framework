@@ -18,6 +18,10 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   className?: string;
   marginBottom?: string;
   marginTop?: string;
+  headerColor?: string;
+  bodyColor?: string;
+  isSimpleDesign?: boolean;
+  radius?: string;
 }
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {
