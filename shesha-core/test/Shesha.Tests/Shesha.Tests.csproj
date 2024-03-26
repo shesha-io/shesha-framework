@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Shesha.Application\Shesha.Application.csproj" />
-    <ProjectReference Include="..\..\src\Shesha.AzureAD\Shesha.AzureAD.csproj" />
     <ProjectReference Include="..\..\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Scheduler\Shesha.Scheduler.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Web.Core\Shesha.Web.Core.csproj" />
