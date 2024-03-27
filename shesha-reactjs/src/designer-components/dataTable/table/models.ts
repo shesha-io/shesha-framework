@@ -1,5 +1,4 @@
 import { IShaDataTableInlineEditableProps } from '@/components/dataTable/interfaces';
-import { IconType } from '@/index';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 

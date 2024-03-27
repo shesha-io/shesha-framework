@@ -76,7 +76,7 @@ export const ReactTable: FC<IReactTableProps> = ({
   inlineDisplayComponents,
   freezeHeaders,
   noDataText = "No Data",
-  noDataSecondaryText = "There's nothing to display",
+  noDataSecondaryText = "No data is available for this table",
   noDataIcon,
   onRowsRendering,
   onRowsReordered
@@ -510,7 +510,7 @@ export const ReactTable: FC<IReactTableProps> = ({
             {...getTableBodyProps()}
           >
             {rows?.length === 0 && !loading && (
-              <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "self", margin: "30px"}}>
+              <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", margin: "30px"}}>
                 <ShaIcon style={{fontSize: "50"}} iconName={noDataIcon as IconType}/>
                 <h4 style={{fontSize: "40", margin: "0px", marginTop: "10px"}}>{noDataText}</h4>
                 <p style={{margin: "0px", marginTop: "5px"}}>{noDataSecondaryText}</p>

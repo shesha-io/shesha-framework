@@ -29,7 +29,6 @@ export type OnSaveSuccessHandler = (
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
-  console.log("DATALIST CONTROL IS RENDERED", props)
   const { 
     dataSourceInstance: dataSource,
     onListItemSave,
@@ -41,8 +40,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     canEditInline,
     canDeleteInline,
     readOnly,
-    noDataText,
-    noDataSecondaryText,
+    noDataText = "No Data",
+    noDataSecondaryText = "No data is available for this table",
     noDataIcon
   } = props;
   const {
@@ -218,20 +217,18 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         {...props}
         createFormId={props.createFormId ?? props.formId}
         createFormType={props.createFormType ?? props.formType}
-
         canAddInline={canAction(canAddInline)}
         canEditInline={canAction(canEditInline)}
         canDeleteInline={canAction(canDeleteInline)}
         noDataIcon={noDataIcon}
         noDataSecondaryText={noDataSecondaryText}
         noDataText={noDataText}
-
         entityType={modelType}
         onSelectRow={onSelectRow}
         onMultiSelectRows={setMultiSelectedRow}
         selectedRow={selectedRow}
         selectedRows={selectedRows}
-        records={data}
+        records={[]}
         grouping={grouping}
         groupingMetadata={groupingColumns?.map(item => item.metadata) ?? []}
         isFetchingTableData={isFetchingTableData}
@@ -240,9 +237,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         createAction={creater}
         updateAction={updater}
         deleteAction={deleter}
-
         actionRef={dataListRef}
-
         modalWidth={width}
       />
     </ConfigurableFormItem>

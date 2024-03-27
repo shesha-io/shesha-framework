@@ -360,7 +360,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
       </SettingsFormItem>
       
       <SettingsFormItem name="noDataSecondaryText" label="No Data Secondary Text" jsSetting>
-        <Input defaultValue={"There's nothing to display"} readOnly={readOnly} />
+        <Input defaultValue={"No data is available for this table"} readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="noDataIcon" label="Icon Picker" jsSetting>

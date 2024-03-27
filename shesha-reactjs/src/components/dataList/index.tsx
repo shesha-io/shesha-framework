@@ -21,6 +21,7 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
+import { ShaIcon, IconType } from '..';
 
 interface EntityForm {
   entityType: string;
@@ -210,9 +211,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
-    console.log(entityFormInfo, "ENTITYFORMINFO")
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
-    console.log(entityForm, "FROM GET ENTITY FORM")
     if (!entityForm) {
       entityForm = {
         entityType: className,
@@ -263,7 +262,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       fType = !!createFormType ? createFormType : null;
     }
     if (!!fId || !!fType)
-      console.log(createFormInfo, "CREATE FORM INFO")
       isReady = getEntityForm(className, fId, fType, createFormInfo) && isReady;
 
     records.forEach((item) => {
@@ -322,8 +320,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       } else console.error('Action is not configured');
       return false;
     };
-
-    console.log(entityForm.formConfiguration.markup, "ENTITY FORM CONFIG")
   
     return (
       <div onDoubleClick={dblClick}>
@@ -343,9 +339,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           allowChangeEditMode={inlineEditMode === 'one-by-one'}
           editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
           autoSave={inlineSaveMode === 'auto'}
-          noDataIcon={noDataIcon}
-          noDataSecondaryText={noDataSecondaryText}
-          noDataText={noDataText}
           />
          
       </div>
@@ -550,6 +543,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             horizontal: orientation === 'horizontal',
           })}
         >
+
+          <Show when={records?.length === 0}>
+          <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", margin: "30px"}}>
+                <ShaIcon style={{fontSize: "50"}} iconName={noDataIcon as IconType}/>
+                <h4 style={{fontSize: "40", margin: "0px", marginTop: "10px"}}>{noDataText}</h4>
+                <p style={{margin: "0px", marginTop: "5px"}}>{noDataSecondaryText}</p>
+              </div>
+          </Show>
           <Show when={records?.length > 0}>
             { content }
           </Show>

@@ -22,8 +22,6 @@ const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({ children, markup, 
       if (formSettings?.isSettingsForm)
           components = updateSettingsComponents(designerComponents, components);
       const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
-
-      console.log(newFlatComponents, "NEW FLAT COMPONENTS")
       
       // migrate components to last version
       upgradeComponents(designerComponents, formSettings, newFlatComponents);

@@ -457,7 +457,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       </SettingsFormItem>
       
       <SettingsFormItem name="noDataSecondaryText" label="No Data Secondary Text" jsSetting>
-        <Input value={"There's nothing to display"} readOnly={readOnly} />
+        <Input value={"No data is available for this table"} readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="noDataIcon" label="Icon Picker">

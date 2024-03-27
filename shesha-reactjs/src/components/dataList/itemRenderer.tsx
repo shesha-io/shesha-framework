@@ -25,9 +25,6 @@ export interface IDataListItemProps {
   data?: any;
   markup: FormRawMarkup;
   formSettings: IFormSettings;
-  noDataText?: string;
-  noDataIcon?: string;
-  noDataSecondaryText?: string;
   allowChangeEditMode: boolean;
   autoSave?: boolean;
 
@@ -40,6 +37,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
     itemIndex,
     itemId,
     data,
+    
     allowEdit,
     updater,
     allowDelete,
@@ -56,8 +54,8 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
 
   return (
     <div key={itemListId}>
+
       <FormMarkupConverter markup={markup} formSettings={formSettings}>
-        
         {(flatComponents) => {
           return (
           <DataListCrudProvider
@@ -78,7 +76,6 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
               <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
                 {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
                 <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-
                   <ComponentsContainer containerId={'root'}/>
                 </FormItemProvider>
               </ComponentsContainerProvider>
