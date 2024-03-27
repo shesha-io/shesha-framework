@@ -1,9 +1,9 @@
 import { colors, sizesPx } from "@/styles/variables";
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const shaMainLayout = cx(
-    "ant-layout",
+    `${prefixCls}-layout`,
     css`
       * {
         font-family: "Roboto", sans-serif;
@@ -12,7 +12,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
       min-height: 100vh;
       overflow: auto;
 
-      .ant-layout-header {
+      .${prefixCls}-layout-header {
         border: none;
         box-shadow: 1px 1px 5px 2px #d7d7d7;
         display: flex;
@@ -24,45 +24,45 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         padding: 0 10%;
       }
 
-      .ant-layout-content {
+      .${prefixCls}-layout-content {
         padding: 50px 15%;
       }
 
       .sha-components-container {
-        .ant-btn {
+        .${prefixCls}-btn {
           border-radius: 5px;
           font-size: 14px;
           min-height: 30px;
           min-width: 100px;
 
-          &.ant-btn-primary,
-          &.ant-btn-ghost,
-          &.ant-btn-link {
+          &.${prefixCls}-btn-primary,
+          &.${prefixCls}-btn-ghost,
+          &.${prefixCls}-btn-link {
             border: none;
           }
 
-          &.ant-btn-sm {
+          &.${prefixCls}-btn-sm {
             font-size: 12px;
             min-height: 21px;
             min-width: 70px;
           }
 
-          &.ant-btn-lg {
+          &.${prefixCls}-btn-lg {
             font-size: 18px;
             min-height: 45px;
             min-width: 150px;
           }
 
-          &.ant-btn-link {
+          &.${prefixCls}-btn-link {
             box-shadow: none;
           }
         }
 
-        .ant-input-affix-wrapper,
-        .ant-select > .ant-select-selector,
-        .ant-picker,
-        .ant-input-number,
-        .ant-form-item-control-input-content > .ant-input {
+        .${prefixCls}-input-affix-wrapper,
+        .${prefixCls}-select > .${prefixCls}-select-selector,
+        .${prefixCls}-picker,
+        .${prefixCls}-input-number,
+        .${prefixCls}-form-item-control-input-content > .${prefixCls}-input {
           border: 2px solid #d8d8d8;
           border-radius: 5px;
           font-size: 18px;
@@ -83,25 +83,25 @@ export const useStyles = createStyles(({ css, cx, token }) => {
           }
         }
 
-        .ant-select {
+        .${prefixCls}-select {
           height: ${sizesPx.inputHeight};
         }
 
-        .ant-input-number-input-wrap {
+        .${prefixCls}-input-number-input-wrap {
           height: 100%;
 
-          .ant-input-number-input {
+          .${prefixCls}-input-number-input {
             height: 100%;
             padding: 0;
           }
         }
 
-        .ant-input-textarea-affix-wrapper,
-        .ant-form-item-control-input-content > textarea {
+        .${prefixCls}-input-textarea-affix-wrapper,
+        .${prefixCls}-form-item-control-input-content > textarea {
           min-height: 180px !important;
         }
 
-        .ant-input-textarea-affix-wrapper {
+        .${prefixCls}-input-textarea-affix-wrapper {
           padding-left: unset;
           padding-right: unset;
 
@@ -115,39 +115,39 @@ export const useStyles = createStyles(({ css, cx, token }) => {
           }
         }
 
-        .ant-input-data-count {
+        .${prefixCls}-input-data-count {
           bottom: calc(
             ${token.fontSize} * ${token.lineHeight} * -1) - 12px
           );
         }
 
-        .ant-input-show-count {
+        .${prefixCls}-input-show-count {
           margin-bottom: 26px !important;
         }
 
-        .ant-alert {
+        .${prefixCls}-alert {
           border: none;
           border-radius: 8px;
           padding: 18px 36px;
 
-          &.ant-alert-error {
+          &.${prefixCls}-alert-error {
             background-color: ${colors.error};
           }
 
-          &.ant-alert-info {
+          &.${prefixCls}-alert-info {
             background-color: ${colors.info};
           }
 
-          &.ant-alert-success {
+          &.${prefixCls}-alert-success {
             background-color: ${colors.success};
           }
 
-          &.ant-alert-warning {
+          &.${prefixCls}-alert-warning {
             background-color: ${colors.warning};
           }
 
-          .ant-alert-content {
-            .ant-alert-description {
+          .${prefixCls}-alert-content {
+            .${prefixCls}-alert-description {
               color: #fff;
             }
           }
@@ -160,47 +160,47 @@ export const useStyles = createStyles(({ css, cx, token }) => {
           }
         }
 
-        .ant-checkbox .ant-checkbox-inner,
-        .ant-radio .ant-radio-inner {
+        .${prefixCls}-checkbox .${prefixCls}-checkbox-inner,
+        .${prefixCls}-radio .${prefixCls}-radio-inner {
           font-family: arial;
           height: 20px;
           width: 20px;
         }
 
-        .ant-steps {
-          .ant-steps-item {
-            &.ant-steps-item-finish {
-              .ant-steps-item-icon {
+        .${prefixCls}-steps {
+          .${prefixCls}-steps-item {
+            &.${prefixCls}-steps-item-finish {
+              .${prefixCls}-steps-item-icon {
                 border: 1px solid ${token.colorPrimary};
                 background: none;
               }
             }
 
-            &.ant-steps-item-wait {
-              .ant-steps-item-icon {
+            &.${prefixCls}-steps-item-wait {
+              .${prefixCls}-steps-item-icon {
                 border: 1px solid ${token.colorTextDescription};
                 background: none;
               }
             }
 
-            .ant-steps-item-title {
+            .${prefixCls}-steps-item-title {
               font-family: arial;
               font-weight: bold;
             }
 
-            .ant-steps-item-description {
+            .${prefixCls}-steps-item-description {
               font-size: 12px;
               line-height: 10px;
             }
           }
         }
 
-        .ant-tag {
+        .${prefixCls}-tag {
           padding: 6px 10px;
           border-radius: 14px;
         }
 
-        .ant-rate {
+        .${prefixCls}-rate {
           .anticon {
             svg {
               height: 30px;

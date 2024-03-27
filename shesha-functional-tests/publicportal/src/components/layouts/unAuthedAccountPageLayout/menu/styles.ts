@@ -1,8 +1,8 @@
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const shaMenu = cx(
-    "ant-menu",
+    `${prefixCls}-menu`,
     css`
       max-width: 800px;
 
