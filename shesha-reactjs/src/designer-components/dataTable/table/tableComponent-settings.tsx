@@ -166,7 +166,7 @@ interface IColumnsSettingsState {
   rowDroppedMode?: RowDroppedMode;
 }
 
-const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({readOnly,}) => {
+const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({readOnly}) => {
   const { model } = useSettingsForm<ITableComponentProps>();
   
   const [state, setState] = useState<IColumnsSettingsState>({
