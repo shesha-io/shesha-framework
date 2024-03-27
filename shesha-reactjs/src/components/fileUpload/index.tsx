@@ -13,7 +13,6 @@ import {
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import { FileVersionsPopup } from './fileVersionsPopup';
-import { DraggerStub } from './stubs';
 import Show from '@/components/show';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
@@ -29,6 +28,7 @@ export interface IFileUploadProps {
   onChange?: any;
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
+  allowAdd?: boolean;
   allowedFileTypes?: string[];
   isDragger?: boolean;
 }
@@ -39,7 +39,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   allowDelete = true,
   //uploadMode = 'async',
   callback,
-  isStub = false,
+  isStub,
   allowedFileTypes = [],
   isDragger = false,
 }) => {
@@ -57,6 +57,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
 
+
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
     uploadFile({ file: file as File }, callback);
@@ -69,7 +70,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
-
     if (!isDragger) {
       uploadButtonRef.current.click();
     } else {
@@ -111,6 +111,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     name: 'file',
     accept: allowedFileTypes?.join(','),
     multiple: false,
+    disabled: isStub,
     fileList: fileInfo ? [fileInfo] : [],
     customRequest: onCustomRequest,
     onChange(info) {
@@ -139,7 +140,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
     },
   };
 
-  const showUploadButton = allowUpload && !fileInfo && !isUploading;
+  const showUploadButton = allowUpload && !fileInfo && !isUploading && isStub;
+  const disabled =!showUploadButton;
+
   const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
@@ -153,41 +156,34 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </Button>
   );
 
-  const renderStub = () => {
-    if (!isDragger) {
-      return <div className={classes}>{uploadButton}</div>;
-    }
-
-    return <DraggerStub />;
-  };
-
-  const renderUploader = () => {
-    if (!isDragger) {
-      return (
-        <Upload {...fileProps} className={classes}>
-          {uploadButton}
-        </Upload>
-      );
-    }
-
+    const renderDraggerContent = () => {
     return (
-      <Dragger {...fileProps} className={classes}>
-        <span ref={uploadDraggerSpanRef} />
-
-        <Show when={showUploadButton}>
-          <p className={styles.antUploadDragIcon}>
-            <InboxOutlined />
-          </p>
-          <p className={styles.antUploadText}>Click or drag file to this area to upload</p>
-          <p className={styles.antUploadHint}>
-            Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
-          </p>
-        </Show>
-      </Dragger>
+      <>
+        <p className="ant-upload-drag-icon">
+          <InboxOutlined />
+        </p>
+        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+        <p className="ant-upload-hint">
+          Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
+        </p>
+      </>
     );
   };
 
-  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
+  return <div className={styles.shaFileUploadContainer}>
+      {isDragger ? (
+          <Dragger {...{...fileProps, disabled: !isStub}}>
+            <span ref={uploadDraggerSpanRef}>
+              <Show when={!fileInfo}>
+                  {renderDraggerContent()}
+              </Show>
+            </span>
+          </Dragger>
+        )
+      :
+        <Upload {...fileProps} disabled={disabled}>{uploadButton}</Upload>
+      }
+      </div>
 };
 
 export default FileUpload;

@@ -8,7 +8,6 @@ import {
   notification,
   Upload
   } from 'antd';
-import { DraggerStub } from '@/components/fileUpload/stubs';
 import { FileZipOutlined, InboxOutlined, UploadOutlined } from '@ant-design/icons';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
@@ -164,15 +163,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   return (
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
       {isDragger ? (
-        isStub ? (
-          <DraggerStub />
-        ) : (
           <Dragger {...props}>{renderDraggerContent()}</Dragger>
-        )
       ) : isStub ? (
         <div>{renderUploadContent()}</div>
       ) : (
-        <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
+        <Upload {...props}>{renderUploadContent()}</Upload>
       )}
 
       {fetchFilesError && (
