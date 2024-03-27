@@ -28,8 +28,9 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   initialValue,
   className,
   labelCol,
-  wrapperCol,
+  wrapperCol
 }) => {
+
   const { formData, form } = useForm();
 
   const formItem = useFormItem();

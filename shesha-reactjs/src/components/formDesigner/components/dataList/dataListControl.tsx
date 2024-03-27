@@ -28,6 +28,8 @@ export type OnSaveSuccessHandler = (
 ) => void;
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
+
+  console.log("DATALIST CONTROL IS RENDERED", props)
   const { 
     dataSourceInstance: dataSource,
     onListItemSave,
@@ -38,7 +40,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     canAddInline,
     canEditInline,
     canDeleteInline,
-    readOnly
+    readOnly,
+    noDataText,
+    noDataSecondaryText,
+    noDataIcon
   } = props;
   const {
     tableData,
@@ -208,15 +213,18 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       )}
       wrapperCol={{  md: 24 }}
     >
+
       <DataList
         {...props}
-
         createFormId={props.createFormId ?? props.formId}
         createFormType={props.createFormType ?? props.formType}
 
         canAddInline={canAction(canAddInline)}
         canEditInline={canAction(canEditInline)}
         canDeleteInline={canAction(canDeleteInline)}
+        noDataIcon={noDataIcon}
+        noDataSecondaryText={noDataSecondaryText}
+        noDataText={noDataText}
 
         entityType={modelType}
         onSelectRow={onSelectRow}

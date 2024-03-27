@@ -67,8 +67,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   inlineEditMode,
   inlineSaveMode,
   actionRef,
+  noDataIcon,
+  noDataSecondaryText,
+  noDataText,
   ...props
 }) => {
+
   const { styles } = useStyles();
   //const refreshRef = useRef(0);
 
@@ -206,7 +210,9 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const getEntityForm = (className: string, fId: FormIdentifier, fType: string, entityFormInfo: MutableRefObject<EntityForm>): boolean => {
+    console.log(entityFormInfo, "ENTITYFORMINFO")
     let entityForm = entityForms.current.find((x) => x.entityType === className && x.formType === fType);
+    console.log(entityForm, "FROM GET ENTITY FORM")
     if (!entityForm) {
       entityForm = {
         entityType: className,
@@ -257,6 +263,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       fType = !!createFormType ? createFormType : null;
     }
     if (!!fId || !!fType)
+      console.log(createFormInfo, "CREATE FORM INFO")
       isReady = getEntityForm(className, fId, fType, createFormInfo) && isReady;
 
     records.forEach((item) => {
@@ -283,7 +290,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -315,6 +322,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       } else console.error('Action is not configured');
       return false;
     };
+
+    console.log(entityForm.formConfiguration.markup, "ENTITY FORM CONFIG")
   
     return (
       <div onDoubleClick={dblClick}>
@@ -334,7 +343,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           allowChangeEditMode={inlineEditMode === 'one-by-one'}
           editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
           autoSave={inlineSaveMode === 'auto'}
+          noDataIcon={noDataIcon}
+          noDataSecondaryText={noDataSecondaryText}
+          noDataText={noDataText}
           />
+         
       </div>
     );
   };
@@ -416,6 +429,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
+  
     const selected =
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));

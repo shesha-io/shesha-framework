@@ -17,7 +17,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
-
+    console.log(model, "RAW MODEL")
     if (model.hidden) return null;
   
     const dataSource = model.dataSource
@@ -52,7 +52,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         collapsible: true
       };
     })
-    .add<IDataListComponentProps>(5, prev => {
+    .add<IDataListComponentProps>(5, prev => 
+      {
       return {
         ...prev,
         canAddInline: 'no',
@@ -60,7 +61,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         canDeleteInline: 'no',
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
-        dblClickActionConfiguration: prev['actionConfiguration']
+        dblClickActionConfiguration: prev['actionConfiguration'],  
+        
       };
     })
     .add<IDataListComponentProps>(6, prev => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))
