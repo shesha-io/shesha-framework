@@ -451,7 +451,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Empty Table'>
+      <SettingsCollapsiblePanel header='Empty List'>
     <SettingsFormItem name="noDataText" label="No Data Primary Text" jsSetting>
         <Input defaultValue={"No Data"} readOnly={readOnly} />
       </SettingsFormItem>
