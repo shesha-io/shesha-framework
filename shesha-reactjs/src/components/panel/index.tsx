@@ -21,9 +21,6 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   collapsedByDefault?: boolean;
   bodyColor?: string;
   isSimpleDesign?: boolean;
-  radius?: string;
-  radiusLeft?: string;
-  radiusRight?: string;
   hideCollapseContent?: boolean;
 }
 
@@ -35,9 +32,6 @@ const StyledCollapse = styled(Collapse)<
   }
 
   .ant-collapse-content {
-    border-bottom-left-radius: ${({ radiusLeft }) => radiusLeft} !important;
-    border-bottom-right-radius: ${({ radiusRight }) => radiusRight} !important;
-
     .ant-collapse-content-box > .sha-components-container {
       background-color: ${({ bodyColor }) => bodyColor};
     }
@@ -61,7 +55,6 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   ghost,
   bodyColor = 'unset',
   isSimpleDesign,
-  radius,
   hideCollapseContent,
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
@@ -79,8 +72,6 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       style={style}
       ghost={ghost}
       bodyColor={bodyColor}
-      radiusLeft={radius ? `${radius}px` : ''}
-      radiusRight={radius ? `${radius}px` : ''}
       hideCollapseContent={hideCollapseContent}
     >
       <Panel

@@ -35,7 +35,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       bodyColor,
       headerColor,
       isSimpleDesign,
-      radius,
       hideCollapseContent,
     } = model;
 
@@ -52,7 +51,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const getPanelStyle = {
       backgroundColor: headerColor,
-      borderRadius: radius ? `${radius}px` : {},
       ...pickStyleFromModel(styling),
       ...(executeFunction(model?.style, { data, globalState }) || {}),
     };
@@ -82,7 +80,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
           hideCollapseContent={hideCollapseContent}
-          radius={radius}
         >
           <ComponentsContainer
             containerId={model.content.id}

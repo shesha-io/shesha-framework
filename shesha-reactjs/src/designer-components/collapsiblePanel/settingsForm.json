@@ -251,22 +251,6 @@
             "settingsValidationErrors": []
           },
           {
-            "textType": "text",
-            "id": "m2456f7c96a4cdd2e1d06",
-            "type": "numberField",
-            "propertyName": "radius",
-            "label": "Radius",
-            "labelAlign": "right",
-            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 2,
-            "description": "Custom radius in px to add to this component",
-            "validate": {},
-            "settingsValidationErrors": [],
-            "jsSetting": false
-          },
-          {
             "id": "e029c4ed-6415-412f-be9e-73dddff4037c",
             "type": "codeEditor",
             "propertyName": "style",
