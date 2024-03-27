@@ -154,7 +154,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
   const mainSider = css`
     overflow-x: hidden;
-    scrollbar-width: thin;
     height: 100vh;
     position: fixed !important;
     padding-top: 48px;
@@ -166,15 +165,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     min-width: ${shaSiderExpandedWidth}  !important;
     width: ${shaSiderExpandedWidth}  !important;
 
-    ::-webkit-scrollbar {
-      width: 9px;
-      background-color: black;
-      color: black;
-    }
-
-    ::-webkit-scrollbar-track {
-      background-color: gray;
-    }
+    ${sheshaStyles.thinScrollbars}
 
     .${prefixCls}-layout-sider-children {
       width: ${shaSiderExpandedWidth}  !important;

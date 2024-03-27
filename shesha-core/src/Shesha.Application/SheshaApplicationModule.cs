@@ -18,8 +18,6 @@ using Shesha.Modules;
 using Shesha.Notifications;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
-using Shesha.Push;
-using Shesha.Push.Configuration;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
 using Shesha.Sms;
@@ -53,7 +51,6 @@ namespace Shesha
             Configuration.Notifications.Providers.Add<ShaNotificationProvider>();
             Configuration.Notifications.Notifiers.Add<EmailRealTimeNotifier>();
             Configuration.Notifications.Notifiers.Add<SmsRealTimeNotifier>();
-            Configuration.Notifications.Notifiers.Add<PushRealTimeNotifier>();
 
             Configuration.Authorization.Providers.Add<SheshaAuthorizationProvider>();
             Configuration.Authorization.Providers.Add<DbAuthorizationProvider>();
@@ -72,33 +69,6 @@ namespace Shesha
                 Component.For<IOtpManager>().Forward<IOtpAppService>().Forward<OtpAppService>().ImplementedBy<OtpAppService>().LifestyleTransient(),
                 Component.For(typeof(IEntityReorderer<,,>)).ImplementedBy(typeof(EntityReorderer<,,>)).LifestyleTransient()
             );
-
-            #region Push notifications
-
-            IocManager.RegisterSettingAccessor<IPushSettings>(s => {
-                s.PushNotifier.WithDefaultValue(NullPushNotifier.Uid);
-            });
-            IocManager.Register<NullPushNotifier, NullPushNotifier>(DependencyLifeStyle.Transient);
-            IocManager.IocContainer.Register(
-                Component.For<IPushNotifier>().UsingFactoryMethod(f =>
-                {
-                    var settings = f.Resolve<IPushSettings>();
-                    var pushNotifier = settings.PushNotifier.GetValue();
-
-                    var pushNotifierType = !string.IsNullOrWhiteSpace(pushNotifier)
-                        ? f.Resolve<ITypeFinder>().Find(t => typeof(IPushNotifier).IsAssignableFrom(t) && t.GetClassUid() == pushNotifier).FirstOrDefault()
-                        : null;
-
-                    if (pushNotifierType == null)
-                        pushNotifierType = typeof(NullPushNotifier);
-
-                    return pushNotifierType != null
-                        ? f.Resolve(pushNotifierType) as IPushNotifier
-                        : null;
-                }, managedExternally: true).LifestyleTransient()
-            );
-
-            #endregion
 
             #region SMS Gateways
 

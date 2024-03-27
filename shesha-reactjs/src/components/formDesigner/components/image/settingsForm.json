@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -92,7 +91,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -107,7 +105,6 @@
       "content": {
         "id": "y9SNudmMM0Wd1Sc_YH1ng",
         "components": [
-          
           {
             "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
             "type": "checkbox",
@@ -116,8 +113,7 @@
             "label": "Required"
           }
         ]
-}
-      
+      }
     },
     {
       "id": "aIMnn1re1exN1M7pEEur9",
@@ -134,11 +130,9 @@
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": [],
-  "header": {
+      "header": {
         "id": "FizvkIoyeq1cZMqAgbDLL",
-        "components": [
-
-        ]
+        "components": []
       },
       "content": {
         "id": "y9SNusmMM0Wd1Sc_YI1ng",
@@ -186,8 +180,18 @@
             "validate": {},
             "settingsValidationErrors": [],
             "description": "A script that returns the image url as a string. This should return a string",
-            "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }],
-            "hidden": { "_code": "return getSettingValue(data?.dataSource) !== 'url';", "_mode": "code", "_value": false }
+            "exposedVariables": [
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSource) !== 'url';",
+              "_mode": "code",
+              "_value": false
+            }
           },
           {
             "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
@@ -203,14 +207,17 @@
             "validate": {},
             "settingsValidationErrors": [],
             "description": "A script that returns the storedFileId as a string. This should return a string",
-            "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-          
-        }
-
+            "exposedVariables": [
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ]
+          }
         ]
       }
     },
-    
     {
       "id": "aIMnm2re1exN1M7pEEur9",
       "type": "collapsiblePanel",
@@ -219,7 +226,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 2,
       "expandIconPosition": "left",
@@ -229,9 +235,7 @@
       "settingsValidationErrors": [],
       "header": {
         "id": "FizvkIoyeq1cZMqAgbDCC",
-        "components": [
-
-        ]
+        "components": []
       },
       "content": {
         "id": "y9SNuvsmMM0Wd1Sc_YI1ng",
@@ -245,13 +249,18 @@
             "validate": {},
             "settingsValidationErrors": [],
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-            "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+            "exposedVariables": [
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ]
           }
         ]
       }
     }
-
-  ],  
+  ],
   "formSettings": {
     "layout": "horizontal",
     "colon": true,

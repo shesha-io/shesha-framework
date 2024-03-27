@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.Application\Shesha.Application.csproj" />
-    <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.AzureAD\Shesha.AzureAD.csproj" />
     <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.Core\Shesha.Core.csproj" />
     <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.Framework\Shesha.Framework.csproj" />
     <ProjectReference Include="..\..\..\..\..\shesha-core\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />

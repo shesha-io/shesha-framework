@@ -4,11 +4,6 @@
     {
         public const string UploadFolder = "Shesha.UploadFolder";
 
-        public static class RabbitMQ 
-        {
-            public const string ExchangeName = "Shesha.ExchangeName";
-        }
-
         public static class Security
         {
             public const string AutoLogoffTimeout = "Shesha.Security.AutoLogoffTimeout";
@@ -27,12 +22,6 @@
         {
             public const string SmsGateway = "Shesha.Sms.SmsGateway";
             public const string RedirectAllMessagesTo = "Shesha.Sms.RedirectAllMessagesTo";
-        }
-
-        public static class Push
-        {
-            public const string PushNotifier = "Shesha.Push.PushNotifier";
-            public const string PushNotificationsEnabled = "Shesha.Push.PushNotificationsEnabled";
         }
 
         public static class Email
