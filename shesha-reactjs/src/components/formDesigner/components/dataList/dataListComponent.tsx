@@ -17,7 +17,6 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
-    console.log(model, "RAW MODEL")
     if (model.hidden) return null;
   
     const dataSource = model.dataSource
