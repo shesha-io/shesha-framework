@@ -228,7 +228,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         onMultiSelectRows={setMultiSelectedRow}
         selectedRow={selectedRow}
         selectedRows={selectedRows}
-        records={[]}
+        records={data}
         grouping={grouping}
         groupingMetadata={groupingColumns?.map(item => item.metadata) ?? []}
         isFetchingTableData={isFetchingTableData}

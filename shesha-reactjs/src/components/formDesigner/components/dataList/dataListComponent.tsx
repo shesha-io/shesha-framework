@@ -51,8 +51,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         collapsible: true
       };
     })
-    .add<IDataListComponentProps>(5, prev => 
-      {
+    .add<IDataListComponentProps>(5, prev => {
       return {
         ...prev,
         canAddInline: 'no',
@@ -60,7 +59,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         canDeleteInline: 'no',
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
-        dblClickActionConfiguration: prev['actionConfiguration'],  
+        dblClickActionConfiguration: prev['actionConfiguration']
         
       };
     })

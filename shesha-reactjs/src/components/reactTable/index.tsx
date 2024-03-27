@@ -206,6 +206,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     headerGroups,
     prepareRow,
     state,
+    rows,
     columns: tableColumns,
   } = useTable(
     {
@@ -247,8 +248,6 @@ export const ReactTable: FC<IReactTableProps> = ({
       }
     }
   );
-
-  const rows=[]
 
   const { pageIndex, pageSize, selectedRowIds, sortBy } = state;
 
