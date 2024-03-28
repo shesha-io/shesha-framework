@@ -57,7 +57,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
 
-
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
     uploadFile({ file: file as File }, callback);

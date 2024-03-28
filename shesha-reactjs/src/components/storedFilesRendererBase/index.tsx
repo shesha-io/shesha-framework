@@ -9,7 +9,6 @@ import {
   Upload
   } from 'antd';
 import { FileZipOutlined, UploadOutlined } from '@ant-design/icons';
-
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
