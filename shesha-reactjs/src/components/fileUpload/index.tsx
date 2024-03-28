@@ -7,15 +7,15 @@ import {
   SyncOutlined,
   DeleteOutlined,
   LoadingOutlined,
-  UploadOutlined,
+  UploadOutlined
 } from '@ant-design/icons';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import { FileVersionsPopup } from './fileVersionsPopup';
-import { DraggerStub } from './stubs';
 import Show from '@/components/show';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { DraggerStub } from './stubs';
 
 const { Dragger } = Upload;
 
@@ -28,6 +28,7 @@ export interface IFileUploadProps {
   onChange?: any;
   /* isStub is used just to fix strange error when the user is reordering components on the form */
   isStub?: boolean;
+  allowAdd?: boolean;
   allowedFileTypes?: string[];
   isDragger?: boolean;
 }
@@ -38,7 +39,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   allowDelete = true,
   //uploadMode = 'async',
   callback,
-  isStub = false,
+  isStub,
   allowedFileTypes = [],
   isDragger = false,
 }) => {
@@ -68,7 +69,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const onReplaceClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
-
     if (!isDragger) {
       uploadButtonRef.current.click();
     } else {
@@ -138,7 +138,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     },
   };
 
-  const showUploadButton = allowUpload && !fileInfo && !isUploading;
+  const showUploadButton = allowUpload && !fileInfo && !isUploading && !isStub;
   const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
@@ -146,42 +146,29 @@ export const FileUpload: FC<IFileUploadProps> = ({
       icon={<UploadOutlined />}
       type="link"
       ref={uploadButtonRef}
-      style={{ display: !showUploadButton ? 'none' : '' }}
-    >
+      style={{ display: !showUploadButton ? 'none' : '' }}>
       (press to upload)
     </Button>
   );
 
-  const renderStub = () => {
-    if (isDragger) {
-      return  <Dragger disabled><DraggerStub /></Dragger>;
-    }
-
-    return <div className={classes}></div>;
-  };
-
-  const renderUploader = () => {
-    if (isDragger) {
-      return (
-        <Dragger {...fileProps} className={classes}>
-          <span ref={uploadDraggerSpanRef} />
-  
-          <Show when={showUploadButton}>
-            <DraggerStub/>
-          </Show>
-        </Dragger>
-      );
-    }
-
-    return (
-        <Upload {...fileProps} className={classes}>
-          {uploadButton}
-        </Upload>
-      );
-  };
-
-
-  return <span className={styles.shaFileUploadContainer}>{isStub || !allowUpload ? renderStub() : renderUploader()}</span>;
+  return <div className={styles.shaFileUploadContainer}>
+      {isDragger ? (
+          <Dragger {...{...fileProps, disabled: isStub || !allowUpload}}>
+            <span ref={uploadDraggerSpanRef}>
+              <Show when={!fileInfo}>
+                  <DraggerStub/>
+              </Show>
+            </span>
+          </Dragger>
+        )
+      :
+        <div className={styles.shaFileUploadContainer}>
+          <Upload {...fileProps} disabled={!showUploadButton}>
+            <div className={classes}>{uploadButton}</div>
+          </Upload>
+        </div>
+      }
+      </div>
 };
 
 export default FileUpload;
