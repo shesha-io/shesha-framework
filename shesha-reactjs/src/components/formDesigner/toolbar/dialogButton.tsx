@@ -5,25 +5,32 @@ import { useForm } from '@/providers';
 
 export interface IPreviewButtonProps {}
 
-const totalBrowserWidth = window.innerWidth;
-
-const calculatePercentageToPx = (value: number) => {
-  return Math.round((value / 100) * totalBrowserWidth);
+const calculatePercentageToPx = (value: number,browserWidth:number) => {
+  return Math.round((value / 100) * browserWidth);
 }
+
 
 export const DialogButton: FC<IPreviewButtonProps> = () => {
   const { setFormWidth,formWidth,setFormZoom} = useForm();
-  const [currentWidth,setCurrentWidth]=useState(calculatePercentageToPx(formWidth))
+  const [browserWidth, setBrowserWidth] = useState<number>();
+  const [currentWidth,setCurrentWidth]=useState(calculatePercentageToPx(formWidth,browserWidth))
 
+
+  
   useEffect(()=>{
-    setCurrentWidth(calculatePercentageToPx((formWidth)))
-  },[formWidth])
+    if(!browserWidth){
+      setBrowserWidth(window.innerWidth)
+    }else if(browserWidth){
+      setCurrentWidth(calculatePercentageToPx(formWidth,browserWidth))
+
+    }
+  },[formWidth,browserWidth])
   
   const calculatePercentage=(value: number) =>{
     if(!value){
       return 0;
     }
-    return (value / totalBrowserWidth) * 100;
+    return (value / browserWidth) * 100;
   }
 
   const items: MenuProps['items'] = [

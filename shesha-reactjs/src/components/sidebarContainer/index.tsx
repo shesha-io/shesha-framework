@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FC, PropsWithChildren, ReactNode } from 'react';
+import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
@@ -47,6 +47,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       : null;
   };
 
+  const magnifiedWidth = useMemo(()=>formWidth * (zoom/100),[formWidth,zoom])
+
   return (
     <div className={styles.sidebarContainer}>
       {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
@@ -66,9 +68,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse }
 
           )}
-          style={{overflow:'auto',border:'1px solid #d9d9d9',borderRadius:'4px'}}
         >
-          <div className={styles.sidebarContainerMainAreaBody} style={{width:`${formWidth}%`, zoom:`${zoom}%`,overflow:'auto'}}>{children}</div>
+          <div className={styles.sidebarContainerMainAreaBody} style={{width:`${magnifiedWidth}%`, zoom:`${zoom}%`,overflow:'auto'}}>{children}</div>
         </div>
 
         {renderSidebar('right')}
