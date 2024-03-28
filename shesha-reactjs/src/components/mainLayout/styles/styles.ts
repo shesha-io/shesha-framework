@@ -47,7 +47,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   const antLayoutHeader = cx(css`
     border-bottom: ${shaBorder};
     position: fixed;
-    z-index: 1;
+    z-index: 3;
     width: 100%;
     padding: unset;
     height: ${layoutHeaderHeight};
