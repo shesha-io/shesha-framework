@@ -116,6 +116,10 @@ export interface IPropertyMetadata extends IMemberMetadata/*, Partial<IHasProper
    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
    */
   isFrameworkRelated?: boolean;
+  /**
+   * If true, indicates that current property is nullable
+   */
+  isNullable?: boolean;
   prefix?: string;
   isVisible?: boolean;
 }

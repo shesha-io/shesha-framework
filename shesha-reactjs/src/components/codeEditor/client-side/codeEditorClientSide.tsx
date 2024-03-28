@@ -32,7 +32,8 @@ const getImportBlock = (constantsMetadata: IObjectMetadata, fileName: string): s
         const constantsNames = constants.map(p => p.path).sort().join(",\r\n    ");
         return `//#region Exposed variables
 import { 
-    ${constantsNames} } from './${fileName}.variables';
+    ${constantsNames} 
+} from './${fileName}.variables';
 //#endregion\r\n\r\n`;
     }
     return undefined;

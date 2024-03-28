@@ -8,7 +8,7 @@ import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomp
 import SectionSeparator from '@/components/sectionSeparator';
 import Show from '@/components/show';
 import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
-import CodeEditor from '../codeEditor/codeEditor';
+import { CodeEditor } from '../codeEditor/codeEditor';
 import { IListItemsProps } from './models';
 
 const Option = Select.Option;

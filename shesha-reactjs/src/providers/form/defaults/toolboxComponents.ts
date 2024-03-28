@@ -90,6 +90,7 @@ import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import { ComponentSelectorComponent } from '@/designer-components';
 import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
+import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -214,6 +215,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       DataContextSelector, 
       ContextPropertyAutocompleteComponent, 
       SettingsComponent,
+      MetadataEditorComponent,
     ],
   },
 ];

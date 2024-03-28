@@ -132,6 +132,68 @@
             "validate": {},
             "settingsValidationErrors": [],
             "version": 1
+          },
+          {
+            "id": "7e5fc1c1-a804-4f0a-8327-1a92e963e5e1",
+            "type": "checkbox",
+            "propertyName": "hideCollapseContent",
+            "label": "Hide Top Bar",
+            "labelAlign": "right",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "hidden": false,
+            "isDynamic": false,
+            "description": "Hides the collapsible panel",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "version": 1
+          },
+          {
+            "id": "cd7d29fe-63d4-4c43-96c3-d4456f9ef237",
+            "type": "checkbox",
+            "propertyName": "isSimpleDesign",
+            "label": "Simple Design",
+            "labelAlign": "right",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "hidden": false,
+            "isDynamic": false,
+            "description": "Make the collapse borderless, background transparent and simple design",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "version": 1
+          },
+          {
+            "id": "d95693e6-f8dc-4f77-9ec4-68a14612cf34",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "type": "colorPicker",
+            "propertyName": "headerColor",
+            "componentName": "headerColor",
+            "label": "Header Background Color",
+            "labelAlign": "right",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true
+          },
+          {
+            "id": "09f31142-4053-45e6-ab3d-e9b063acbfa7",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "type": "colorPicker",
+            "propertyName": "bodyColor",
+            "componentName": "bodyColor",
+            "label": "Body Background Color",
+            "labelAlign": "right",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true
           }
         ]
       }
@@ -156,6 +218,22 @@
       "content": {
         "id": "f47668c1-e424-4d18-850e-6d712e48211d",
         "components": [
+          {
+            "textType": "text",
+            "id": "b1M4TO4K1t3pl8pyM2mOK",
+            "type": "textField",
+            "propertyName": "className",
+            "componentName": "className",
+            "label": "Custom CSS Class",
+            "labelAlign": "right",
+            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "description": "Custom CSS Class to add to this component",
+            "validate": {},
+            "settingsValidationErrors": []
+          },
           {
             "textType": "text",
             "id": "b1M4TO4K1t3pl8pyM2mOK",

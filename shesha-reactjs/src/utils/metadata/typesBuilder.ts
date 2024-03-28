@@ -1,9 +1,10 @@
 import { DataTypes, FormFullName } from "@/interfaces";
-import { IHasEntityType, IObjectMetadata, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
+import { IHasEntityType, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import camelcase from "camelcase";
 import { verifiedCamelCase } from "../string";
 import { StringBruilder } from "./stringBruilder";
 import { TypesImporter } from "./typesImporter";
+import { MetadataFetcher } from "./metadataBuilder";
 
 export interface BuildResult {
     content: string;
@@ -13,7 +14,6 @@ export interface BuildContext {
 }
 
 type AsyncPropertyHandler = (property: IPropertyMetadata) => Promise<void>;
-type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata>;
 /**
  * Type definition builder
  */
@@ -117,7 +117,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                     typesImporter.import(dataType);
 
                 this.#appendCommentBlock(sb, [prop.label, prop.description]);
-                sb.append(`${propertyName}: ${dataType.typeName};`);
+                sb.append(`${propertyName}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
             }
         });
         sb.decIndent();
@@ -161,7 +161,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             await this.#iterateProperties(properties, async (prop) => {
                 const dataType = await this.#getTypescriptType(prop);
                 if (dataType)
-                    sb.append(`${prop.path}: ${dataType.typeName};`);
+                    sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
             });
             sb.decIndent();
             sb.append("}");
@@ -213,13 +213,16 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     async build(properties: NestedProperties): Promise<BuildResult> {
         const typesImporter = new TypesImporter();
         const sb = new StringBruilder();
+
         await this.#iterateProperties(properties, async (prop) => {
             const dataType = await this.#getTypescriptType(prop);
             if (dataType) {
                 typesImporter.import(dataType);
 
                 this.#appendCommentBlock(sb, [prop.label, prop.description]);
-                sb.append(`export const ${prop.path}: ${dataType.typeName};`);
+
+                const typeDefinition = dataType.typeName + (prop.isNullable ? ' | null' : '');
+                sb.append(`export const ${prop.path}: ${typeDefinition};`);
             }
         });
         const exportSection = sb.build();

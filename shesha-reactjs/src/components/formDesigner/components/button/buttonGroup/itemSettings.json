@@ -241,7 +241,7 @@
           "type": "dynamicItemsConfigurator",
           "propertyName": "dynamicItemsConfiguration",
           "componentName": "configurableActionConfigurator1",
-          "label": "Configurable Action Configurator1",
+          "label": "",
           "labelAlign": "right",
           "parentId": "P4lhbrJsly_2yCjgicaql",
           "hidden": false,

@@ -9,6 +9,8 @@ import {
 import { AppProgressBar } from 'next-nprogress-bar';
 import { useTheme } from 'antd-style';
 import { useNextRouter } from '@/hooks/useNextRouter';
+import { EntityCrudActions } from '@/providers/dynamicActions/implementations/entityCrudActions';
+import { StandardApis } from '@/providers/dynamicActions/implementations/standardApis';
 
 export interface IAppProviderProps {
     backendUrl: string;
@@ -31,9 +33,13 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                 router={nextRouter}
                 noAuth={nextRouter.path?.includes('/no-auth')}
             >
-                <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
-                        {children}
-                </StoredFilesProvider>
+                <EntityCrudActions>
+                    <StandardApis>
+                        <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
+                            {children}
+                        </StoredFilesProvider>
+                    </StandardApis>
+                </EntityCrudActions>
             </ShaApplicationProvider>
         </GlobalStateProvider>
     );

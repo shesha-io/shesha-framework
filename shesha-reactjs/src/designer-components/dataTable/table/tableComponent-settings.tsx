@@ -3,7 +3,7 @@ import { Button, Select, Input, InputNumber } from 'antd';
 import { ITableComponentProps, RowDroppedMode } from './models';
 import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
-import CodeEditor from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator/configurator';
 import { YesNoInheritJs } from '@/components/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from '@/components/reactTable/interfaces';
