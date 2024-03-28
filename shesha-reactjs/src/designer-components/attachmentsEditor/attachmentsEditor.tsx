@@ -89,7 +89,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               value={value}
             >
               <CustomFile
-                isStub={!enabled}
+                isStub={formMode === 'designer'}
                 allowAdd={enabled && model.allowAdd}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}

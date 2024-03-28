@@ -24,6 +24,7 @@ with allEnt as (
 	ec.ClassName,
 	(select count(1)
 		from Frwk_FormConfigurations fc
+		inner join Frwk_ConfigurationItems cii on cii.Id = fc.Id and cii.IsLast = 1
 		where fc.Id in (select id from @a) and fc.Markup like '%/api/dynamic/' + mm.Name + '/' + ec.ClassName + '/%') as cou
 	from Frwk_EntityConfigs ec
 		inner join Frwk_ConfigurationItems ci on ci.Id = ec.Id and ci.IsLast = 1
@@ -38,6 +39,7 @@ from allEnt
 update fc set 
 	Markup = REPLACE(fc.Markup, '/api/dynamic/' + ent.Name + '/' + ent.ClassName + '/', '/api/dynamic/' + ent.Name + '/' + ent.ClassName + '/Crud/')
 from Frwk_FormConfigurations fc
+inner join Frwk_ConfigurationItems ci on ci.Id = fc.Id and ci.IsLast = 1
 left join @ent ent on 1=1
 where 
 fc.id in (select id from @a)
@@ -62,6 +64,7 @@ with ""allEnt"" as (
 	ec.""ClassName"",
 	(select count(1)
 		from ""Frwk_FormConfigurations"" fc
+		inner join ""Frwk_ConfigurationItems"" cii on cii.""Id"" = fc.""Id"" and cii.""IsLast""
 		where fc.""Id"" in (select ""Id"" from ""aa"") and fc.""Markup"" like '%/api/dynamic/' || mm.""Name"" || '/' || ec.""ClassName"" || '/%') as ""Cou""
 	from ""Frwk_EntityConfigs"" ec
 		inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = ec.""Id"" and ci.""IsLast""
@@ -76,6 +79,7 @@ from ""allEnt""
 update ""Frwk_FormConfigurations"" set 
 	""Markup"" = REPLACE(fc.""Markup"", '/api/dynamic/' || ent.""Name"" || '/' || ent.""ClassName"" || '/', '/api/dynamic/' || ent.""Name"" || '/' || ent.""ClassName"" || '/Crud/')
 from ""Frwk_FormConfigurations"" fc
+inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = fc.""Id"" and ci.""IsLast""
 left join ""ent"" ent on 1=1
 where 
 ""Frwk_FormConfigurations"".""Id"" in (select ""Id"" from ""aa"")
