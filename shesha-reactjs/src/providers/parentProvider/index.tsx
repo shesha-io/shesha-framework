@@ -1,11 +1,13 @@
-import React, { createContext, useContext, FC, PropsWithChildren } from "react";
-import { FormMode } from "../index";
+import React, { createContext, useContext, FC, PropsWithChildren, useCallback } from "react";
+import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure } from "../index";
 
 export interface IParentProviderStateContext {
   formMode?: FormMode;
   subFormIdPrefix?: string;
   context?: string;
   model: any;
+  flatComponentsStructure?: IFlatComponentsStructure;
+  getChildComponents: (componentId: string) => IConfigurableFormComponent[];
 }
 
 export interface IParentProviderProps { 
@@ -13,9 +15,10 @@ export interface IParentProviderProps {
   subFormIdPrefix?: string;
   context?: string;
   model: any;
+  flatComponentsStructure?: IFlatComponentsStructure;
 }
 
-export const ParentProviderStateContext = createContext<IParentProviderStateContext>({model: {}});
+export const ParentProviderStateContext = createContext<IParentProviderStateContext>({model: {}, getChildComponents: () => null });
 
 export function useParent(require: boolean = true) {
   const stateContext = useContext(ParentProviderStateContext);
@@ -32,16 +35,31 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     subFormIdPrefix,
     model,
     formMode,
-    context
+    context,
+    flatComponentsStructure
   } = props;
 
   const parent = useParent(false);
+
+  const getChildComponents = useCallback((componentId: string): IConfigurableFormComponent[] => {
+    if (!!flatComponentsStructure) {
+      const childIds = flatComponentsStructure.componentRelations[componentId];
+      if (!childIds) return [];
+      const components = childIds.map((childId) => {
+        return flatComponentsStructure.allComponents[childId];
+      });
+      return components;
+    }
+    return null;
+  }, [flatComponentsStructure]);
 
   const value: IParentProviderStateContext = {
     formMode: formMode ?? parent?.formMode,
     subFormIdPrefix: subFormIdPrefix ?? parent?.subFormIdPrefix,
     context,
-    model: {...parent?.model, ...model}
+    flatComponentsStructure: flatComponentsStructure ?? parent?.flatComponentsStructure,
+    model: {...parent?.model, ...model},
+    getChildComponents
   };
 
   return (
