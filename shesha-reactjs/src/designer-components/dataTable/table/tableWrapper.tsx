@@ -31,7 +31,7 @@ const NotConfiguredWarning: FC = () => {
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { id, items, useMultiselect, tableStyle, containerStyle } = props;
-
+    
     const { formMode } = useForm();
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
@@ -128,6 +128,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 inlineEditMode={props.inlineEditMode}
                 minHeight={props.minHeight}
                 maxHeight={props.maxHeight}
+                noDataText={props.noDataText}
+                noDataSecondaryText={props.noDataSecondaryText}
+                noDataIcon={props.noDataIcon}
             />
         </SidebarContainer>
     );

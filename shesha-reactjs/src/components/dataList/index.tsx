@@ -21,6 +21,7 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
+import { ShaIcon, IconType } from '..';
 
 interface EntityForm {
   entityType: string;
@@ -67,8 +68,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   inlineEditMode,
   inlineSaveMode,
   actionRef,
+  noDataIcon,
+  noDataSecondaryText,
+  noDataText,
   ...props
 }) => {
+
   const { styles } = useStyles();
   //const refreshRef = useRef(0);
 
@@ -283,7 +288,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -335,6 +340,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
           autoSave={inlineSaveMode === 'auto'}
           />
+         
       </div>
     );
   };
@@ -416,6 +422,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
+  
     const selected =
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
@@ -536,6 +543,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             horizontal: orientation === 'horizontal',
           })}
         >
+
+          <Show when={records?.length === 0}>
+          <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", margin: "30px"}}>
+                {noDataIcon && <ShaIcon style={{fontSize: "50"}} iconName={noDataIcon as IconType}/>}
+                <h4 style={{fontSize: "40", margin: "0px", marginTop: "10px"}}>{noDataText}</h4>
+                <p style={{margin: "0px", marginTop: "5px"}}>{noDataSecondaryText}</p>
+              </div>
+          </Show>
           <Show when={records?.length > 0}>
             { content }
           </Show>

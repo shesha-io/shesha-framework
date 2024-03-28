@@ -11,7 +11,7 @@ import {
   Column,
 } from 'react-table';
 import { LoadingOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Empty, Spin, Tooltip } from 'antd';
+import { Spin, Tooltip } from 'antd';
 import _ from 'lodash';
 import { IReactTableProps, OnRowsReorderedArgs } from './interfaces';
 import { nanoid } from '@/utils/uuid';
@@ -26,6 +26,7 @@ import { useDataTableStore } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
+import { ShaIcon, IconType } from '..';
 
 interface IReactTableState {
   allRows: any[];
@@ -74,8 +75,11 @@ export const ReactTable: FC<IReactTableProps> = ({
   inlineCreatorComponents,
   inlineDisplayComponents,
   freezeHeaders,
+  noDataText = "No Data",
+  noDataSecondaryText = "No data is available for this table",
+  noDataIcon,
   onRowsRendering,
-  onRowsReordered,
+  onRowsReordered
 }) => {
   const [componentState, setComponentState] = useState<IReactTableState>({
     allRows: data,
@@ -200,9 +204,9 @@ export const ReactTable: FC<IReactTableProps> = ({
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
     prepareRow,
     state,
+    rows,
     columns: tableColumns,
   } = useTable(
     {
@@ -505,8 +509,10 @@ export const ReactTable: FC<IReactTableProps> = ({
             {...getTableBodyProps()}
           >
             {rows?.length === 0 && !loading && (
-              <div className={styles.shaTableEmpty}>
-                <Empty description="There is no data for this table" />
+              <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", margin: "30px"}}>
+                {noDataIcon && <ShaIcon style={{fontSize: "50"}} iconName={noDataIcon as IconType}/>}
+                <h4 style={{fontSize: "40", margin: "0px", marginTop: "10px"}}>{noDataText}</h4>
+                <p style={{margin: "0px", marginTop: "5px"}}>{noDataSecondaryText}</p>
               </div>
             )}
 

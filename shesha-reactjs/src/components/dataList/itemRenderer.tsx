@@ -10,6 +10,7 @@ import CrudActionButtons from "./crudActionButtons";
 import { ItemContainerForm } from "./itemContainerForm";
 import { useStyles } from './styles/styles';
 
+
 export interface IDataListItemProps {
   listId: string;
   listName?: string;
@@ -24,7 +25,6 @@ export interface IDataListItemProps {
   data?: any;
   markup: FormRawMarkup;
   formSettings: IFormSettings;
-
   allowChangeEditMode: boolean;
   autoSave?: boolean;
 
@@ -32,12 +32,12 @@ export interface IDataListItemProps {
 }
 
 export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
-
   const {
     listId,
     itemIndex,
     itemId,
     data,
+    
     allowEdit,
     updater,
     allowDelete,
@@ -54,6 +54,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
 
   return (
     <div key={itemListId}>
+
       <FormMarkupConverter markup={markup} formSettings={formSettings}>
         {(flatComponents) => {
           return (
@@ -71,6 +72,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
             formSettings={formSettings}
           >
             <div className={styles.shaDatalistCell}>
+
               <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
                 {/*add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
                 <FormItemProvider namePrefix='' labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>

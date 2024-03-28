@@ -173,6 +173,12 @@ export interface IConfigurableFormComponent
 
   /** Default css style applied as string */
   stylingBox?: string;
+  
+  noDataText?: string;
+
+  noDataIcon?: string;
+
+  noDataSecondaryText?: string;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

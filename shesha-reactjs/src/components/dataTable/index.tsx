@@ -66,6 +66,9 @@ export interface IIndexTableProps extends IShaDataTableProps, TableProps {
   tableStyle?: CSSProperties;
   minHeight?: number;
   maxHeight?: number;
+  noDataText?: string;
+  noDataSecondaryText?: string;
+  noDataIcon?: string;
 }
 
 export interface IExtendedModalProps extends ModalProps {
@@ -94,6 +97,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   onRowSave,
   inlineEditMode,
   freezeHeaders,
+  noDataText,
+  noDataSecondaryText,
+  noDataIcon,
   onRowSaveSuccessAction: onRowSaveSuccess,
   ...props
 }) => {
@@ -686,7 +692,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     inlineDisplayComponents,
     minHeight: props.minHeight,
     maxHeight: props.maxHeight,
-
+    noDataText,
+    noDataSecondaryText,
+    noDataIcon,
     allowReordering: allowReordering && reorderingAvailable,
     onRowsReordered: handleRowsReordered,
 
@@ -699,8 +707,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       <div className={styles.shaChildTableErrorContainer}>
         {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
       </div>
-
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
+      
+      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps}  />}
     </Fragment>
   );
 };
