@@ -111,7 +111,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
     name: 'file',
     accept: allowedFileTypes?.join(','),
     multiple: false,
-    disabled: isStub,
     fileList: fileInfo ? [fileInfo] : [],
     customRequest: onCustomRequest,
     onChange(info) {
@@ -140,7 +139,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     },
   };
 
-  const showUploadButton = allowUpload && !fileInfo && !isUploading && isStub;
+  const showUploadButton = allowUpload && !fileInfo && !isUploading && !isStub;
   const disabled =!showUploadButton;
 
   const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
@@ -172,7 +171,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   return <div className={styles.shaFileUploadContainer}>
       {isDragger ? (
-          <Dragger {...{...fileProps, disabled: !isStub}}>
+          <Dragger {...{...fileProps, disabled: isStub || !allowUpload}}>
             <span ref={uploadDraggerSpanRef}>
               <Show when={!fileInfo}>
                   {renderDraggerContent()}
@@ -181,7 +180,8 @@ export const FileUpload: FC<IFileUploadProps> = ({
           </Dragger>
         )
       :
-        <Upload {...fileProps} disabled={disabled}>{uploadButton}</Upload>
+        <Upload {...fileProps} disabled={disabled}><div className={classes}> {
+        }{uploadButton}</div></Upload>
       }
       </div>
 };
