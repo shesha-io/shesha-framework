@@ -1,4 +1,4 @@
-import { ConfigProvider, ThemeConfig } from 'antd';
+import { App, ConfigProvider, ThemeConfig } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
 import { THEME_CONFIG_NAME } from '@/shesha-constants';
 import { useDebouncedCallback } from 'use-debounce';
@@ -57,13 +57,13 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
 
     const theme: ThemeConfig['token'] = appTheme
       ? {
-          colorPrimary: appTheme.primaryColor,
-          colorLink: appTheme.primaryColor,
-          colorInfo: appTheme.infoColor,
-          colorSuccess: appTheme.successColor,
-          colorError: appTheme.errorColor,
-          colorWarning: appTheme.warningColor,
-        }
+        colorPrimary: appTheme.primaryColor,
+        colorLink: appTheme.primaryColor,
+        colorInfo: appTheme.infoColor,
+        colorSuccess: appTheme.successColor,
+        colorError: appTheme.errorColor,
+        colorWarning: appTheme.warningColor,
+      }
       : {};
 
     const result: ThemeConfig = {
@@ -89,7 +89,9 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
             requiredMark: defaultRequiredMark,
           }}
         >
-          {children}
+          <App>
+            {children}
+          </App>
         </ConfigProvider>
       </UiActionsContext.Provider>
     </UiStateContext.Provider>

@@ -75,4 +75,11 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
     .add<ITimePickerProps>(1, (prev) => migrateVisibility(prev))
     .add<ITimePickerProps>(2, (prev) => migrateReadOnly(prev))
   ,
+  linkToModelMetadata: (model, metadata): ITimePickerProps => {
+
+    return {
+      ...model,
+      format: metadata.dataFormat ? metadata.dataFormat : DATE_TIME_FORMAT,
+    };
+  },
 };

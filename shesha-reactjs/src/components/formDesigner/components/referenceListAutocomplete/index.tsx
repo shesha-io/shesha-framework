@@ -17,6 +17,8 @@ const ReferenceListAutocompleteComponent: IToolboxComponent<IReferenceListAutoco
   type: 'referenceListAutocomplete',
   name: 'Reference List Autocomplete',
   icon: <FileSearchOutlined />,
+  isInput: true,
+  isOutput: true,
   isHidden: false,
   Factory: ({ model }) => {
     return (

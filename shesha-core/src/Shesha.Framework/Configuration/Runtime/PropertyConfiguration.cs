@@ -81,6 +81,12 @@ namespace Shesha.Configuration.Runtime
                 if (_isMapped.HasValue)
                     return _isMapped.Value;
 
+                if (GeneralType == GeneralDataType.JsonEntity)
+                {
+                    _isMapped = false;
+                    return _isMapped.Value;
+                }
+
                 var informer = StaticContext.IocManager.Resolve<IDbMappingInformer>();
                 _isMapped = informer.IsMappedEntity(EntityType, PropertyInfo);
                 return _isMapped.Value;

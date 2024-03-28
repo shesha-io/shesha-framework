@@ -8,6 +8,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const listInsertPlaceholder = "sha-list-insert-placeholder";
     const listInsertRow = "sha-list-insert-row";
     const listItem = "sha-list-item";
+    const listItemSelected = "sha-list-item-selected";
     const listItemContent = "sha-list-item-content";
     const listItemControls = "sha-list-item-controls";
     const listItemGhost = "sha-list-item-ghost";
@@ -23,6 +24,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
 
         .${listContainer} {
+            padding-top: 7px;
+            padding-bottom: 7px;
             .${listItem} {
                 position: relative;
                 padding: 5px;
@@ -31,6 +34,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 border: 1px solid #ddd;
                 border-radius: 4px;
                 margin-bottom: 4px;
+
+                &.${listItemSelected}{
+                    border: #61affe 1px dashed;
+                    border-radius: 4px;
+                    background-color: #ebf3fb;
+                }
 
                 .${listInsertPlaceholder} {
                     width: 100%;
@@ -111,6 +120,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         listInsertPlaceholder,
         listInsertRow,
         listItem,
+        listItemSelected,
         listItemContent,
         listItemControls,
         listItemGhost,

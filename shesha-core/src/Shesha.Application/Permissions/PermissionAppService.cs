@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using Shesha.Permissions.Dtos;
 using Shesha.Roles.Dto;
 using System;
 using System.Collections.Generic;
@@ -20,16 +21,19 @@ namespace Shesha.Permissions
         private readonly ILocalizationContext _localizationContext;
         private IPermissionDefinitionContext _defenitionContext => PermissionManager as IPermissionDefinitionContext;
         private IShaPermissionManager _shaPermissionManager => PermissionManager as IShaPermissionManager;
+        private readonly IShaPermissionChecker _permissionChecker;
 
         private const string emptyId = "_";
 
         public PermissionAppService(
             IRepository<PermissionDefinition, Guid> permissionDefinitionRepository,
-            ILocalizationContext localizationContext
+            ILocalizationContext localizationContext,
+            IShaPermissionChecker permissionChecker
             )
         {
             _permissionDefinitionRepository = permissionDefinitionRepository;
             _localizationContext = localizationContext;
+            _permissionChecker = permissionChecker;
         }
 
         public Task<PermissionDto> GetAsync(string id)
@@ -137,6 +141,16 @@ namespace Shesha.Permissions
                 .ToList();
 
             return Task.FromResult(permissions);
+        }
+
+        /// <summary>
+        /// Checks if current user is granted for a permission.
+        /// </summary>
+        [HttpGet]
+        [AbpAuthorize()]
+        public async Task<bool> IsPermissionGranted(IsPermissionGrantedInput input) 
+        {
+            return await _permissionChecker.IsGrantedAsync(input.PermissionName);
         }
     }
 }

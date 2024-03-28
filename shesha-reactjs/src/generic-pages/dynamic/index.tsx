@@ -248,6 +248,7 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
       if (onInitialized) {
         executeExpression(onInitialized, {
           initialValues: getInitialValues(initialValues, globalState),
+          parentFormValues: undefined,
         });
       }
     }

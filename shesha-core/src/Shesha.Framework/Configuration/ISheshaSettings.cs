@@ -16,9 +16,5 @@ namespace Shesha.Configuration
         [Display(Name = "Upload Folder", Description = "Upload folder for stored files", GroupName = "General")]
         [Setting(SheshaSettingNames.UploadFolder)]
         ISettingAccessor<string> UploadFolder { get; }
-
-        [Display(Name = "ExchangeName", GroupName = "RabbitMQ")]
-        [Setting(SheshaSettingNames.RabbitMQ.ExchangeName)]
-        ISettingAccessor<string> ExchangeName { get; }
     }
 }

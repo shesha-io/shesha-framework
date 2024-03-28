@@ -1,4 +1,4 @@
-export type EditorModes =
+export type CodeLanguages =
   | 'abap'
   | 'abc'
   | 'actionscript'

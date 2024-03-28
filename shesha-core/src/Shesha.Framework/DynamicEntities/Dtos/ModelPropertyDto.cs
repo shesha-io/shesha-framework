@@ -42,6 +42,11 @@ namespace Shesha.DynamicEntities.Dtos
         public string EntityType { get; set; }
 
         /// <summary>
+        /// Module the entity belongs to. Aplicable for entity references
+        /// </summary>
+        public string EntityModule { get; set; }
+
+        /// <summary>
         /// Reference list name
         /// </summary>
         public string ReferenceListName { get; set; }

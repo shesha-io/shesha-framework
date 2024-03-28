@@ -1,13 +1,14 @@
 import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
 import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interfaces";
+import { getValuesFromSettings, updateSettingsFromVlues } from './utils';
 
 interface SettingsFormState<TModel> {
     model?: TModel;
+    values?: TModel;
 }
 
-interface ISettingsFormActions<TModel> {
-    getFieldsValue: () => TModel;
+interface ISettingsFormActions {
     propertyFilter: (name: string) => boolean;
     onValuesChange?: (changedValues: any) => void;
 }
@@ -18,7 +19,7 @@ export const DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE: SettingsFormState<any>
 
 export const SettingsFormStateContext = createContext<SettingsFormState<any>>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE);
 
-export const SettingsFormActionsContext = createContext<ISettingsFormActions<any>>(undefined);
+export const SettingsFormActionsContext = createContext<ISettingsFormActions>(undefined);
 
 export interface SettingsFormProps<TModel> extends ISettingsFormFactoryArgs<TModel> {
 }
@@ -35,7 +36,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
     } = props;
 
     const [form] = Form.useForm();
-    const [state, setState] = useState<SettingsFormState<TModel>>({model});
+    const [state, setState] = useState<SettingsFormState<TModel>>({model, values: getValuesFromSettings(model)});
   
     if (formRef)
         formRef.current = {
@@ -43,23 +44,27 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
             reset: () => form.resetFields(),
         };
 
-    const getFieldsValue = () => (state.model);
-
     const valuesChange = (changedValues) => {
-        const incomingState = { ...state.model, ...changedValues };
-        setState({model: incomingState});
+        const incomingState = updateSettingsFromVlues(state.model, changedValues);
+        setState({model: incomingState, values: getValuesFromSettings(incomingState)});
         onValuesChange(changedValues, incomingState);
         form.setFieldsValue(incomingState);
+    };
+    
+    const settingsChange = (changedValues) => {
+      const incomingState = {...state.model, ...changedValues};
+      setState({model: incomingState, values: getValuesFromSettings(incomingState)});
+      onValuesChange(changedValues, incomingState);
+      form.setFieldsValue(incomingState);
     };
 
     const onSaveInternal = () => {
         onSave(state.model);
     };
 
-    const SettingsFormActions = {
-        getFieldsValue,
+    const SettingsFormActions: ISettingsFormActions = {
         propertyFilter,
-        onValuesChange: valuesChange
+        onValuesChange: valuesChange,
     };
 
     return (
@@ -69,7 +74,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
                     form={form}
                     onFinish={onSaveInternal}
                     {...layoutSettings}
-                    onValuesChange={valuesChange}
+                    onValuesChange={settingsChange}
                     initialValues={model}
                 >
                     {props.children}

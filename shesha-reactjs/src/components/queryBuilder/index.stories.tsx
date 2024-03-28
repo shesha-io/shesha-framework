@@ -69,7 +69,7 @@ const StaticMetadata: IObjectMetadata = {
       dataType: DataTypes.entityReference,
       path: 'person',
       isVisible: true,
-      entityType: 'Shesha.Core.Person'
+      entityType: 'Shesha.Core.Person',
     } as IEntityReferencePropertyMetadata,
   ]
 };

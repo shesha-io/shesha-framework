@@ -9,9 +9,11 @@ export type ItemInsertPosition = 'before' | 'after';
 
 export interface IListItemWrapperProps extends PropsWithChildren {
     onDelete: () => void;
+    onDragHandleClick: () => void;
     onInsert: (insertPosition: ItemInsertPosition) => void;
     readOnly?: boolean;
     isLast: boolean;
+    className?: string;
 }
 
 interface NewItemPlaceHolderProps {
@@ -22,7 +24,7 @@ const NewItemPlaceHolder: FC<NewItemPlaceHolderProps> = ({ className }) => {
     return (<div className={classNames(styles.listInsertPlaceholder, className)}></div>);
 };
 
-export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete, onInsert, readOnly, isLast }) => {
+export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete, onDragHandleClick, onInsert, readOnly, isLast, className }) => {
     const [placeholderPosition, setPlaceholderPosition] = useState<ItemInsertPosition>(null);
     const { styles } = useStyles();
 
@@ -31,7 +33,7 @@ export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete,
     };
 
     return (
-        <div className={styles.listItem}>
+        <div className={classNames(styles.listItem, className)}>
             {!readOnly && (
                 <>
                     <InsertItemMarker
@@ -39,7 +41,7 @@ export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete,
                         onOpenChange={(visible) => (setPlaceholderPosition(visible ? 'before' : null))}
                     />
                     {placeholderPosition === 'before' && <NewItemPlaceHolder className={placeholderPosition} />}
-                    <span className={styles.dragHandle}>
+                    <span className={styles.dragHandle} onClick={onDragHandleClick}>
                         <MenuOutlined />
                     </span>
                 </>

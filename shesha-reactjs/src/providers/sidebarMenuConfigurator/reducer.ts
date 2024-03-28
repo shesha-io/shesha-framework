@@ -63,7 +63,6 @@ const sidebarMenuReducer = handleActions<ISidebarMenuConfiguratorStateContext, a
       state: ISidebarMenuConfiguratorStateContext,
       action: ReduxActions.Action<string>
     ) => {
-      // console.log('[SidebarMenuActionEnums.SelectItem]');
       const { payload } = action;
 
       return {

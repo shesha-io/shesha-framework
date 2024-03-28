@@ -24,10 +24,18 @@ namespace Shesha.Metadata
         /// </summary>
         public string ObjectType { get; set; }
 
-        public DataTypeInfo(string dataType, string dataFormat = null, string objectType = null)
+        public DataTypeInfo(string dataType)
         {
             DataType = dataType;
+        }
+
+        public DataTypeInfo(string dataType, string dataFormat): this(dataType)
+        {
             DataFormat = dataFormat;
+        }
+
+        public DataTypeInfo(string dataType, string dataFormat, string objectType) : this(dataType, dataFormat)
+        {
             ObjectType = objectType;
         }
     }

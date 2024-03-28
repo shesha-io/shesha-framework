@@ -1,0 +1,167 @@
+{
+  "components": [
+    {
+      "id": "UwqQzUPiVOyjESDnaO1fH",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "Ej-xAcQkLWmpX6ROTnPQj",
+        "components": []
+      },
+      "content": {
+        "id": "jNmEKg7HtYXwaL9CylTOX",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "jNmEKg7HtYXwaL9CylTOX",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "jNmEKg7HtYXwaL9CylTOX",
+            "label": "Label",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            "type": "dropdown",
+            "propertyName": "labelAlign",
+            "parentId": "jNmEKg7HtYXwaL9CylTOX",
+            "label": "Label align",
+            "values": [
+              {
+                "label": "left",
+                "value": "left",
+                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              },
+              {
+                "label": "right",
+                "value": "right",
+                "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+            "type": "textArea",
+            "propertyName": "description",
+            "parentId": "jNmEKg7HtYXwaL9CylTOX",
+            "label": "Description",
+            "version": 2
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "jNmEKg7HtYXwaL9CylTOX",
+            "label": "Hidden",
+            "version": 2
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "propertyName": "hideLabel",
+            "parentId": "jNmEKg7HtYXwaL9CylTOX",
+            "label": "Hide Label",
+            "version": 2
+          },
+          {
+            "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+            "type": "editModeSelector",
+            "propertyName": "editMode",
+            "parentId": "jNmEKg7HtYXwaL9CylTOX",
+            "label": "Edit mode"
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "1HN3kJVk0rT-XYjOfKJOv",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlStyle",
+      "label": "Data",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "HHiVdA1MDZzDeceTWF4A1",
+        "components": []
+      },
+      "content": {
+        "id": "PsUJNIUY99sSnEs7Fi3C1",
+        "components": [
+          {
+            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+            "type": "codeEditor",
+            "propertyName": "baseProperties",
+            "label": "Base properties",
+            "parentId": "PsUJNIUY99sSnEs7Fi3C1",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "",
+            "exposedVariables": [
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "version": 2,
+            "placeholder": "",
+            "templateSettings": {
+              "functionName": ""
+            }
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "componentName": "",
+      "className": ""
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

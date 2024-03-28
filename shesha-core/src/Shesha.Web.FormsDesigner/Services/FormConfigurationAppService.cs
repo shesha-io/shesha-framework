@@ -12,6 +12,7 @@ using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Exceptions;
+using Shesha.Extensions;
 using Shesha.Mvc;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Domain;
@@ -445,5 +446,44 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         #endregion
+
+        public async Task ExportAll(ExportAllInput input) 
+        {
+            if (!Directory.Exists(input.Path))
+                Directory.CreateDirectory(input.Path);
+
+            var forms = await Repository.GetAll()
+                .Select(f => new
+            {
+                Name = f.Name,
+                Version = f.VersionNo,
+                Markup = f.Markup,
+                Module = f.Module != null ? f.Module.Name : "[no-module]"
+            }).ToListAsync();
+
+            foreach (var form in forms)
+            {
+                if (!string.IsNullOrWhiteSpace(form.Markup)) 
+                {
+                    try
+                    {
+                        var fileName = Path.Combine(input.Path, form.Module, $"{form.Name}.v{form.Version}.json".RemovePathIllegalCharacters());
+                        var directory = Path.GetDirectoryName(fileName);
+                        if (!Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
+
+                        await File.WriteAllTextAsync(fileName, form.Markup);
+                    }
+                    catch (Exception e) {
+                        e.LogError();
+                    }
+                }
+            }
+        }
+
+        public class ExportAllInput 
+        { 
+            public string Path { get; set; }
+        }
     }
 }

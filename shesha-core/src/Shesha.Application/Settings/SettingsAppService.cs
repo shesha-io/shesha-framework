@@ -14,11 +14,13 @@ namespace Shesha.Settings
     {
         private readonly IShaSettingManager _settingProvider;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
+        private readonly ISettingDefinitionManager _settingDefinitionManager;
 
-        public SettingsAppService(IShaSettingManager settingProvider, IConfigurationFrameworkRuntime cfRuntime)
+        public SettingsAppService(IShaSettingManager settingProvider, IConfigurationFrameworkRuntime cfRuntime, ISettingDefinitionManager settingDefinitionManager)
         {
             _settingProvider = settingProvider;
             _cfRuntime = cfRuntime;
+            _settingDefinitionManager = settingDefinitionManager;
         }
 
         /// <summary>
@@ -65,5 +67,14 @@ namespace Shesha.Settings
         {
             await _settingProvider.SetAsync(input.Module, input.Name, input.Value, new SettingManagementContext { AppKey = input.AppKey });
         }
+
+        [HttpGet]
+        public Task<List<SettingConfigurationDto>> GetConfigurationsAsync()
+        {
+            var settings = _settingDefinitionManager.GetAll();
+            var result = settings.Select(s => new SettingConfigurationDto(s)).ToList();
+
+            return Task.FromResult(result);
+        }        
     }
 }

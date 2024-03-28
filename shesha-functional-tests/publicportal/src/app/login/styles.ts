@@ -97,4 +97,12 @@ export const LoginPageWrapper = styled(LoginPageLayout)`
       }
     }
   }
+
+  .lg-margin-bottom {
+    margin-bottom: ${lgSpace} !important;
+  }
+
+  .lg-margin-top {
+    margin-top: ${lgSpace};
+  }
 `;

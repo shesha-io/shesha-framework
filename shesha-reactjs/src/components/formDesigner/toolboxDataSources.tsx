@@ -5,7 +5,7 @@ import { useMetadata } from '@/providers';
 import { IDataSource } from '@/providers/formDesigner/models';
 import SearchBox from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';
-import { IPropertyMetadata, isEntityMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
@@ -26,7 +26,7 @@ const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): I
 
   items.forEach(item => {
     if (!item.isFrameworkRelated && item.isVisible) {
-      const childItems = getVisibleProperties(item.properties, searchText);
+      const childItems = isPropertiesArray(item.properties) ? getVisibleProperties(item.properties, searchText) : [];
       const matched =
         (searchText ?? '') === '' ||
         item.path?.toLowerCase().includes(searchText) ||
@@ -57,7 +57,7 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
       id: currentMeta.id,
       name: currentMeta.metadata.name,
       containerType: currentMeta.metadata.entityType,
-      items: currentMeta.metadata.properties,
+      items: isPropertiesArray(currentMeta.metadata.properties) ? currentMeta.metadata.properties : [],
     });
 
     return dataSources;

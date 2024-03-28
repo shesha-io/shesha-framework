@@ -1,52 +1,101 @@
+import { FormFullName } from "@/providers";
 import { DataTypes } from "./dataTypes";
 import { IDictionary } from "./shesha";
 
-export interface IPropertyMetadataBase {
-  isVisible?: boolean;
-  path?: string | null;
-  label?: string | null;
-  description?: string | null;
+export interface IMemberType {
   dataType?: string | null;
   dataFormat?: string | null;
-  /**
-   * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
-   */
-  isFrameworkRelated?: boolean;
-  prefix?: string;
+  baseType?: IMemberType;
+}
+
+export interface SourceFile {
+  fileName: string;
+  content: string;
+}
+
+export interface TypeDefinition {
+  typeName: string;
+  files: SourceFile[];
+}
+
+export interface TypeAndLocation {
+  typeName: string;
+  filePath?: string;
+}
+
+export interface ITypeDefinitionBuilder {
+  getEntityType: (typeId: ModelTypeIdentifier) => Promise<TypeAndLocation>;  
+  makeFormType: (formId: FormFullName, content: string) => TypeDefinition;
+};
+export interface ITypeDefinitionLoadingContext {
+  typeDefinitionBuilder: ITypeDefinitionBuilder;
+}
+
+export type TypeDefinitionLoader = (context: ITypeDefinitionLoadingContext) => Promise<TypeDefinition>;
+export interface IHasTypeDefinition {
+  typeDefinitionLoader: TypeDefinitionLoader;
+}
+
+export interface IMetadata extends Partial<IHasTypeDefinition> {
+  dataType: string;
+  name?: string;
+  description?: string;
+}
+
+export interface IMemberMetadata extends IMemberType, Partial<IHasTypeDefinition> {
+  path?: string | null; // todo: check usages, replace with `name` and move to a common ancestor with IMetadata
+  label?: string | null;
+  description?: string | null;
 }
 
 export interface IHasChildPropertiesMetadata {
   properties: IPropertyMetadata[];
 }
 
+export interface ModelTypeIdentifier {
+  name: string;
+  module: string;
+}
+
 export interface IHasEntityType {
-  entityType?: string | null; // todo: split this property into two different (for objects and for entities) or rename existing
+  entityType: string | null; // todo: split this property into two different (for objects and for entities) or rename existing
+  entityModule?: string | null;
 }
 
-export interface IObjectReferencePropertyMetadata extends IPropertyMetadataBase, IHasEntityType, IHasChildPropertiesMetadata {
+export interface IObjectReferencePropertyMetadata extends IMemberMetadata, IHasEntityType, IHasChildPropertiesMetadata {
 }
 
-export interface IEntityReferencePropertyMetadata extends IPropertyMetadataBase, IHasEntityType, IHasChildPropertiesMetadata {
+export interface IEntityReferencePropertyMetadata extends IMemberMetadata, IHasEntityType, Partial<IHasChildPropertiesMetadata> {
 }
 
-export const isEntityReferencePropertyMetadata = (propMeta: IPropertyMetadataBase): propMeta is IEntityReferencePropertyMetadata => {
+export const isEntityReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IEntityReferencePropertyMetadata => {
   return propMeta && propMeta.dataType === DataTypes.entityReference;
 };
 
-export const isObjectReferencePropertyMetadata = (propMeta: IPropertyMetadataBase): propMeta is IObjectReferencePropertyMetadata => {
+export const isObjectReferencePropertyMetadata = (propMeta: IMemberMetadata): propMeta is IObjectReferencePropertyMetadata => {
   return propMeta && propMeta.dataType === DataTypes.objectReference;
 };
 
-export interface IRefListPropertyMetadata extends IPropertyMetadataBase {
+export interface IRefListPropertyMetadata extends IMemberMetadata {
   referenceListName?: string | null;
   referenceListModule?: string | null;
 }
 
-export const isRefListPropertyMetadata = (propMeta: IPropertyMetadataBase): propMeta is IRefListPropertyMetadata => {
+export const isRefListPropertyMetadata = (propMeta: IMemberMetadata): propMeta is IRefListPropertyMetadata => {
   return propMeta && propMeta.dataType === DataTypes.referenceListItem;
 };
 
-export interface IPropertyMetadata extends IPropertyMetadataBase {
+export interface IFunctionMetadata extends IMemberMetadata {
+  arguments?: IMemberMetadata[];
+  resultType: IMemberType;
+}
+
+export type PropertiesPromise = Promise<IPropertyMetadata[]>;
+export type PropertiesLoader = () => PropertiesPromise;
+
+export type NestedProperties = IPropertyMetadata[] | PropertiesLoader | null;
+
+export interface IPropertyMetadata extends IMemberMetadata/*, Partial<IHasPropertiesLoader>*/ {
   required?: boolean;
   readonly?: boolean;
   minLength?: number | null;
@@ -60,8 +109,39 @@ export interface IPropertyMetadata extends IPropertyMetadataBase {
   /**
    * Child properties, applicable for complex data types (e.g. object, array)
    */
-  properties?: IPropertyMetadata[] | null;
+  properties?: NestedProperties;
+  functions?: IFunctionMetadata[] | null;
+
+  /**
+   * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
+   */
+  isFrameworkRelated?: boolean;
+  /**
+   * If true, indicates that current property is nullable
+   */
+  isNullable?: boolean;
+  prefix?: string;
+  isVisible?: boolean;
 }
+
+export const isPropertiesArray = (value: NestedProperties): value is IPropertyMetadata[] => {
+  return value && Array.isArray(value);
+};
+
+export const isPropertiesLoader = (value: NestedProperties): value is PropertiesLoader => {
+  return value && typeof value === 'function';
+};
+
+export const asPropertiesArray = (value: NestedProperties, fallback: IPropertyMetadata[] | undefined): IPropertyMetadata[] | undefined => {
+  return isPropertiesArray(value) ? value : fallback;
+};
+
+export const isFunctionMetadata = (value: IMemberMetadata): value is IFunctionMetadata => {
+  return value && value.dataType === DataTypes.function;
+};
+export const isDataPropertyMetadata = (value: IMemberMetadata): value is IPropertyMetadata => {
+  return value && value.dataType !== DataTypes.function;
+};
 
 export type ProperyDataType =
   | 'string'
@@ -95,18 +175,11 @@ export enum StandardEntityActions {
   delete = 'delete',
 }
 
-export interface IMetadata {
-  dataType: string;
-  name?: string;
-  description?: string;
-}
-
 export interface IContainerWithNestedProperties {
-  properties: IPropertyMetadata[];
+  properties: NestedProperties;
 }
 
-export interface IEntityMetadata extends IMetadata, IContainerWithNestedProperties {
-  entityType: string;
+export interface IEntityMetadata extends IMetadata, IContainerWithNestedProperties, IHasEntityType {
   specifications: ISpecification[];
   apiEndpoints: IDictionary<IApiEndpoint>;
 }

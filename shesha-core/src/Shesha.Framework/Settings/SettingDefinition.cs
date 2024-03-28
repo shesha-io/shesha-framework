@@ -1,11 +1,6 @@
-﻿using Abp.Localization;
-using Abp;
-using JetBrains.Annotations;
-using Shesha.Configuration.Runtime.Exceptions;
-using Shesha.ConfigurationItems;
-using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using JetBrains.Annotations;
 using Shesha.Domain;
+using System;
 
 namespace Shesha.Settings
 {
@@ -17,6 +12,12 @@ namespace Shesha.Settings
         [NotNull]
         public string Name { get; protected set; }
 
+        /// <summary>
+        /// Accessor of the setting (camelCased property name or alias if specified)
+        /// </summary>
+        [NotNull]
+        public string Accessor { get; set; }
+
         [NotNull]
         public string DisplayName { get; set; }
 
@@ -27,6 +28,11 @@ namespace Shesha.Settings
         /// Category of the setting, is used for groupping in the UI only
         /// </summary>
         public string Category { get; set; }
+
+        /// <summary>
+        /// Accessor of the category (camelCased name or alias if specified)
+        /// </summary>
+        public string CategoryAccessor { get; set; }
 
         /// <summary>
         /// Is client (front-end application) specific
@@ -42,7 +48,15 @@ namespace Shesha.Settings
         public abstract object GetDefaultValue();
         public abstract Type GetValueType();
         
+        /// <summary>
+        /// Name of the module current setting belongs to
+        /// </summary>
         public string ModuleName { get; set; }
+
+        /// <summary>
+        /// Accessor of the module (usually it's camelCased name or alias if specified)
+        /// </summary>
+        public string ModuleAccessor { get; set; }
 
         public string FullName => !string.IsNullOrWhiteSpace(ModuleName)
             ? $"{ModuleName}.{Name}"

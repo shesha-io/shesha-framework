@@ -75,8 +75,11 @@ const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
 const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = ({ item, onEvaluated }) => {
     const dispatcher = useDynamicActionsDispatcher();
 
+    const { providerUid } = item?.dynamicItemsConfiguration ?? {};
     const providers = dispatcher.getProviders();
-    const provider = providers[item.dynamicItemsConfiguration.providerUid];
+    const provider = providerUid
+        ? providers[providerUid]
+        : undefined;
     const actionsContext = provider 
         ? provider.contextValue 
         : DEFAULT_DYNAMIC_EVALUATOR;

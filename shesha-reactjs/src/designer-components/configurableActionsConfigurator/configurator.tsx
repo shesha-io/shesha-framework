@@ -7,6 +7,8 @@ import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
+import { useAvailableConstantsStandard } from '@/utils/metadata/useAvailableConstants';
+import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 
 const { Panel } = Collapse;
 
@@ -34,6 +36,8 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
+
+  const availableConstants = useAvailableConstantsStandard();
 
   const formValues = useMemo<IActionFormModel>(() => {
     if (!value)
@@ -87,13 +91,16 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
           <ActionSelect actions={actions} readOnly={readOnly}></ActionSelect>
         </Form.Item>
         {selectedAction && selectedAction.hasArguments && (
-          <Form.Item name="actionArguments" label={null}>
-            <ActionArgumentsEditor
-              action={selectedAction}
-              readOnly={readOnly}
-              exposedVariables={props.exposedVariables}
-            />
-          </Form.Item>
+          <SourceFilesFolderProvider folder={`action-${props.level}`}>
+            <Form.Item name="actionArguments" label={null}>
+              <ActionArgumentsEditor
+                action={selectedAction}
+                readOnly={readOnly}
+                exposedVariables={props.exposedVariables}
+                availableConstants={availableConstants}
+              />
+            </Form.Item>
+          </SourceFilesFolderProvider>
         )}
         {selectedAction && (
           <>

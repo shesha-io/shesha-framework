@@ -17,6 +17,8 @@ const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentPro
   type: 'editableTagGroup',
   name: 'Tags Outlined',
   icon: <HomeOutlined />,
+  isInput: true,
+  isOutput: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   Factory: ({ model }) => {
     return (

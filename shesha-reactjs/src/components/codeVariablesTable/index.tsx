@@ -26,7 +26,6 @@ export interface ICodeExposedVariable {
   name: string;
   description: string;
   type: string;
-  // type: 'bigint' | 'object' | 'function' | 'number' | 'string' | 'boolean' | 'symbol' | ' ' | 'array';
 }
 
 export interface ICodeVariablesTableProps {

@@ -20,6 +20,7 @@
         StoredFile = 11,
         List = 12,
         GenericEntityReference = 13,
+        JsonEntity = 14,
         Unknown = 999,
     }
 }

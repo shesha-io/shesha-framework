@@ -88,6 +88,13 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
       propertyName: 'expression',
       label: 'Expression',
       mode: 'dialog',
+
+      fileName: 'expression',
+      wrapInTemplate: true,
+      availableConstants: props.availableConstants,
+      /**
+       * @deprecated to be removed
+       */
       exposedVariables: variables,
     })
     .toJson();

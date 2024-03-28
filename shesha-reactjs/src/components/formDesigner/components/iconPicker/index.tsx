@@ -15,6 +15,8 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',
   name: 'Icon Picker',
   icon: <HeartOutlined />,
+  isInput: true,
+  isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
 

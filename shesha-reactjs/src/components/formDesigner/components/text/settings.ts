@@ -412,6 +412,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           exposedVariables: [
             { id: '06ab0599-914d-4d2d-875c-765a495472f6', name: 'data', description: 'Form values', type: 'object' },
           ],
+          //availableConstants: [],
           mode: 'dialog',
         }).toJson()
       ]

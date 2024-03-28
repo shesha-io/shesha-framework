@@ -5,6 +5,7 @@ import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import { useAvailableConstantsStandard } from '@/utils/metadata/useAvailableConstants';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -24,8 +25,6 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "globalState", description: "Global state", type: "object" },
   { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
   { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-  { name: "staticValue", description: "Static value of this setting", type: "any" },
-  { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
   { name: "form", description: "Form instance", type: "object" },
   { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
   { name: "moment", description: "moment", type: "object" },
@@ -36,6 +35,8 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
 export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   const { styles } = useStyles();
+
+  const availableConstants = useAvailableConstantsStandard();
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
@@ -89,6 +90,10 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
             mode='dialog'
             language='typescript'
             propertyName={props.propertyName + 'Code'}
+
+            fileName={props.propertyName}
+            wrapInTemplate={true}
+            availableConstants={availableConstants}
             exposedVariables={props.exposedVariables !== undefined ? props.exposedVariables : defaultExposedVariables}
           />
         }

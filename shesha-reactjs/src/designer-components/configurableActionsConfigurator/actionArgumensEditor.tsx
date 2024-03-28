@@ -8,6 +8,7 @@ import {
 } from '@/interfaces/configurableAction';
 import { FormMarkup } from '@/providers/form/models';
 import GenericArgumentsEditor from './genericArgumentsEditor';
+import { IObjectMetadata } from '@/interfaces';
 
 const { Panel } = Collapse;
 
@@ -17,16 +18,17 @@ export interface IActionArgumentsEditorProps {
   onChange?: (value: any) => void;
   readOnly?: boolean;
   exposedVariables?: ICodeExposedVariable[];
+  availableConstants?: IObjectMetadata;
 }
 
 const getDefaultFactory = (
   markup: FormMarkup | FormMarkupFactory,
   readOnly: boolean
 ): IConfigurableActionArgumentsFormFactory => {
-  return ({ model, onSave, onCancel, onValuesChange, exposedVariables }) => {
+  return ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
 
-    const formMarkup = markupFactory({ exposedVariables });
+    const formMarkup = markupFactory({ exposedVariables, availableConstants });
     return (
       <GenericArgumentsEditor
         model={model}
@@ -46,13 +48,14 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   onChange,
   readOnly = false,
   exposedVariables,
+  availableConstants,
 }) => {
   const argumentsEditor = useMemo(() => {
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
-      ? getDefaultFactory(action.argumentsFormMarkup, readOnly)
-      : null;
+        ? getDefaultFactory(action.argumentsFormMarkup, readOnly)
+        : null;
 
     const onCancel = () => {
       //
@@ -68,13 +71,14 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
 
     return settingsFormFactory
       ? settingsFormFactory({
-          model: value,
-          onSave,
-          onCancel,
-          onValuesChange,
-          readOnly,
-          exposedVariables,
-        })
+        model: value,
+        onSave,
+        onCancel,
+        onValuesChange,
+        readOnly,
+        exposedVariables,
+        availableConstants,
+      })
       : null;
   }, [action]);
 

@@ -16,7 +16,17 @@ export interface IListEditorRendererProps<TItem = any> {
 export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRendererProps<TItem>) => {
     const { styles } = useStyles();
     const { contextAccessor, children } = props;
-    const { value, deleteItem, addItem, insertItem, updateItem, updateList, readOnly } = contextAccessor();
+    const { 
+        value, 
+        deleteItem, 
+        addItem, 
+        insertItem, 
+        updateItem, 
+        updateList, 
+        readOnly,
+        selectedItem,
+        setSelectedItem,
+    } = contextAccessor();
 
     const onAddClick = () => {
         addItem();
@@ -84,12 +94,16 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                                     onDelete={() => {
                                         deleteItem(index);
                                     }}
+                                    onDragHandleClick={() => {
+                                        setSelectedItem(item);
+                                    }}
                                     onInsert={(insertPosition) => {
                                         const newIndex = index + (insertPosition === 'before' ? 0 : 1);
                                         insertItem(newIndex);
                                     }}
                                     readOnly={readOnly}
                                     isLast={index === value.length - 1}
+                                    className={ selectedItem && item === selectedItem ? styles.listItemSelected : undefined }
                                 >
                                     {children({
                                         item,

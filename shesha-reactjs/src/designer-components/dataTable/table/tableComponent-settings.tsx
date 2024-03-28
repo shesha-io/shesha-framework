@@ -3,7 +3,7 @@ import { Button, Select, Input, InputNumber } from 'antd';
 import { ITableComponentProps, RowDroppedMode } from './models';
 import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
-import CodeEditor from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator/configurator';
 import { YesNoInheritJs } from '@/components/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from '@/components/reactTable/interfaces';
@@ -211,7 +211,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           readOnly={readOnly}
           mode="dialog"
           label="Can edit inline expression"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           description="Return true to enable inline editing and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -235,7 +234,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           readOnly={readOnly}
           mode="dialog"
           label="Can add inline expression"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           description="Return true to enable inline creation of new rows and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -260,7 +258,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           readOnly={readOnly}
           mode="dialog"
           label="New row init"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           description="Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>."
           exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
         />
@@ -276,7 +273,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           readOnly={readOnly}
           mode="dialog"
           label="On row save"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           description="Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations)."
           exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
         />
@@ -299,7 +295,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
           readOnly={readOnly}
           mode="dialog"
           label="Can delete inline expression"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           description="Return true to enable inline deletion and false to disable."
           exposedVariables={ENABLE_CRUD_EXPOSED_VARIABLES}
         />
@@ -338,7 +333,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         <CodeEditor
           readOnly={readOnly}
           mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="containerStyle"
           label="Table container style"
           description="The style that will be applied to the table container/wrapper"
@@ -350,7 +344,6 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         <CodeEditor
           readOnly={readOnly}
           mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="tableStyle"
           label="Table style"
           description="The style that will be applied to the table"

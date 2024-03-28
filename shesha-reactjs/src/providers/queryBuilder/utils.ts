@@ -1,6 +1,6 @@
 import camelcase from "camelcase";
 import { useMemo } from "react";
-import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
+import { IPropertyMetadata, asPropertiesArray, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
 import { useMetadata } from "@/providers/metadata";
 import { IProperty, hasCustomQBSettings, IPropertyWithCustomQBSettings } from "./models";
 
@@ -41,8 +41,9 @@ export const useMetadataFields = () => {
 
   const fields = useMemo<IProperty[]>(() => {
     if (metadata) {
-      const properties = metadata?.metadata?.properties || [];
-      if (Boolean(properties)) return properties.map<IProperty>((property) => propertyMetadata2QbProperty(property));
+      const properties = asPropertiesArray(metadata?.metadata?.properties, []);
+      if (Boolean(properties)) 
+        return properties.map<IProperty>((property) => propertyMetadata2QbProperty(property));
     }
     return null;
   }, [metadata, metadata?.metadata]);

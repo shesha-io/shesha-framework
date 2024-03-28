@@ -115,29 +115,6 @@ namespace Shesha.Notifications
         Task PublishSmsNotificationAsync<TData>(Guid templateId, TData data, Person recipient, GenericEntityReference sourceEntity = null) where TData : NotificationData;
 
         /// <summary>
-        /// Publish email notification
-        /// </summary>
-        /// <param name="notificationName">Name of the notification. Default email template of the specified notification will be used</param>
-        /// <param name="data">Data that is used to fill template</param>
-        /// <param name="personId">Recipient person id</param>
-        /// <param name="attachments">Notification attachments</param>
-        /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-        /// <returns></returns>
-        Task PublishPushNotificationAsync<TData>(string notificationName, TData data, string personId, List<NotificationAttachmentDto> attachments = null, GenericEntityReference sourceEntity = null) where TData : NotificationData;
-
-        /// <summary>
-        /// Publish email notification using explicitly specified template
-        /// </summary>
-        /// <param name="templateId">Id of the template</param>
-        /// <param name="data">Data that is used to fill template</param>
-        /// <param name="personId">Recipient person id</param>
-        /// <param name="attachments">Notification attachments</param>
-        /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-        /// <returns></returns>
-        Task PublishPushNotificationAsync<TData>(Guid templateId, TData data, string personId, List<NotificationAttachmentDto> attachments = null, GenericEntityReference sourceEntity = null) where TData : NotificationData;
-
-
-        /// <summary>
         /// Save notification attachment
         /// </summary>
         Task<NotificationAttachmentDto> SaveAttachmentAsync(string fileName, Stream stream);

@@ -41,7 +41,6 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
       message.info('Items imported successfully');
       hideModal();
     }).catch((e) => {
-      console.log('catch in footer');
       displayNotificationError('Failed to import package', e);
       setInProgress(false);
     });
@@ -75,7 +74,6 @@ export const useConfigurationItemsImportAction = () => {
         };
 
         const onImported = () => {
-          console.log('onImported');
           removeModal(modalId);
           resolve(true);
         };

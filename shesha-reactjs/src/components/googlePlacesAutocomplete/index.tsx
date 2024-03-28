@@ -244,7 +244,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
               return (
                 <div
                   {...getSuggestionItemProps(localSuggestion)}
-                  className={classNames(styles.dropdownContainer, {
+                  className={classNames(styles.suggestionContainer, {
                     highlighted: highlightedPlaceId === localSuggestion?.placeId,
                   })}
                   key={localSuggestion?.placeId}

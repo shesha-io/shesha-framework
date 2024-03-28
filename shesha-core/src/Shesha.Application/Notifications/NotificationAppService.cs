@@ -94,10 +94,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             SendType = RefListNotificationType.Email,
             RecipientText = emailAddress,
             Attachments = attachments,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
 
@@ -132,10 +132,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             SendType = RefListNotificationType.Email,
             RecipientText = emailAddress,
             Attachments = attachments,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
 
@@ -168,10 +168,9 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             TemplateId = templateId,
             Attachments = attachments,
             Cc = cc,
-            SourceEntityId = sourceEntity?.Id,
-            SourceEntityClassName = sourceEntity?._className,
-            SourceEntityDisplayName = sourceEntity?._displayName,
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
 
         await _notificationPublisher.PublishAsync("DirectEmail", wrappedData, entityIdentifier);
     }
@@ -210,10 +209,9 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             TemplateId = templateId,
             Attachments = attachments,
             Cc = cc,
-            SourceEntityId = sourceEntity?.Id,
-            SourceEntityClassName = sourceEntity?._className,
-            SourceEntityDisplayName = sourceEntity?._displayName,
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
 
         await _notificationPublisher.PublishAsync("DirectEmail", wrappedData, entityIdentifier);
     }
@@ -244,10 +242,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         {
             SendType = RefListNotificationType.SMS,
             RecipientText = mobileNo,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
 
@@ -277,10 +275,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             SendType = RefListNotificationType.SMS,
             RecipientId = recipient?.Id ?? null,
             RecipientText = mobileNumber,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
     }
 
@@ -308,10 +306,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             SendType = RefListNotificationType.SMS,
             RecipientText = mobileNo,
             TemplateId = templateId,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
     }
 
@@ -343,10 +341,10 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             RecipientId = recipient?.Id ?? null,
             RecipientText = mobileNumber,
             TemplateId = templateId,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
         };
+
+        wrappedData.SetSourceEntity(sourceEntity);
+
         await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
     }
 
@@ -377,77 +375,6 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
         }
 
         return entityIdentifier;
-    }
-
-    #endregion
-
-    #region Direct Push notifications
-
-    /// <summary>
-    /// Publish Push notification
-    /// </summary>
-    /// <param name="notificationName">Name of the notification. Default push template of the specified notification will be used</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="personId">Recipient person id</param>
-    /// <param name="attachments">Notification attachments</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <returns></returns>
-    public async Task PublishPushNotificationAsync<TData>(string notificationName,
-        TData data,
-        string personId,
-        List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
-    {
-        if (string.IsNullOrWhiteSpace(personId))
-            throw new Exception($"{nameof(personId)} must not be null");
-
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.Push,
-            RecipientId = string.IsNullOrEmpty(personId) ? null : new Guid(personId),
-            RecipientText = personId,
-            Attachments = attachments,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
-        };
-        await _notificationPublisher.PublishAsync(notificationName, wrappedData, entityIdentifier);
-    }
-
-    /// <summary>
-    /// Publish Push notification using explicitly specified template
-    /// </summary>
-    /// <param name="templateId">Id of the template</param>
-    /// <param name="data">Data that is used to fill template</param>
-    /// <param name="personId">Recipient person id</param>
-    /// <param name="attachments">Attachments</param>
-    /// <param name="sourceEntity">Optional parameter. If notification is an Entity level notification, specifies the entity the notification relates to.</param>
-    /// <returns></returns>
-    public async Task PublishPushNotificationAsync<TData>(Guid templateId,
-        TData data,
-        string personId,
-        List<NotificationAttachmentDto> attachments = null,
-        GenericEntityReference sourceEntity = null) where TData : NotificationData
-    {
-        if (string.IsNullOrWhiteSpace(personId))
-            throw new Exception($"{nameof(personId)} must not be null");
-
-        var entityIdentifier = GetEntityIdentifier(sourceEntity);
-
-        var wrappedData = new ShaNotificationData(data)
-        {
-            SendType = RefListNotificationType.Push,
-            RecipientId = string.IsNullOrEmpty(personId) ? null : new Guid(personId),
-            RecipientText = personId,
-            TemplateId = templateId,
-            Attachments = attachments,
-            SourceEntityId = sourceEntity.Id,
-            SourceEntityClassName = sourceEntity._className,
-            SourceEntityDisplayName = sourceEntity._displayName
-        };
-        await _notificationPublisher.PublishAsync(templateId.ToString(), wrappedData, entityIdentifier);
     }
 
     #endregion
@@ -502,7 +429,6 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
             else
             {
                 await SendNotificationByType(notificationName, (int)RefListNotificationType.SMS, recipient, data, sourceEntity, attachments);
-                await SendNotificationByType(notificationName, (int)RefListNotificationType.Push, recipient, data, sourceEntity, attachments);
                 return await SendNotificationByType(notificationName, (int)RefListNotificationType.Email, recipient, data, sourceEntity, attachments, cc);
             }
         }
@@ -522,8 +448,6 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
                     return await SendEmailAsync(template.Id, recipient: person, data, sourceEntity: sourceEntity, attachments: attachments, cc: cc);
                 case (int)RefListNotificationType.SMS:
                     return await SendSmsAsync(template.Id, recipient: person, data, sourceEntity: sourceEntity);
-                case (int)RefListNotificationType.Push:
-                    return await SendPushAsync(template.Id, person.Id, data, sourceEntity: sourceEntity, recipient: person);
                 default:
                     break;
             }
@@ -608,26 +532,5 @@ public class NotificationAppService : DynamicCrudAppService<Notification, Dynami
 
         return messageId;
     }
-
-    private async Task<Guid?> SendPushAsync<TData>(Guid notificationTemplate, Guid personId, TData data, GenericEntityReference sourceEntity = null, List<NotificationAttachmentDto> attachments = null, Person recipient = null) where TData : NotificationData
-    {
-        Guid? messageId = Guid.Empty;
-
-        using (_notificationPublicationContext.BeginScope())
-        {
-            await PublishPushNotificationAsync(
-                templateId: notificationTemplate,
-                data: data,
-                attachments: attachments,
-                personId: personId.ToString(),
-                sourceEntity: sourceEntity
-                );
-
-            messageId = _notificationPublicationContext.Statistics.NotificationMessages.FirstOrDefault()?.Id;
-        }
-
-        return messageId;
-    }
-
     #endregion
 }

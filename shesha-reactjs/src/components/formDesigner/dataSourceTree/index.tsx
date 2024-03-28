@@ -2,7 +2,7 @@ import { Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useMemo, useState, useEffect } from 'react';
 import { ReactSortable } from 'react-sortablejs';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
@@ -18,11 +18,11 @@ const getTreeData = (prop: IPropertyMetadata, onAddItem: (prop: IPropertyMetadat
   const node: DataNodeWithMeta = {
     key: prop.path,
     title: prop.label ?? prop.path,
-    isLeaf: prop.properties.length === 0,
+    isLeaf: !isPropertiesArray(prop.properties) || prop.properties.length === 0,
     selectable: false,
     meta: prop,
   };
-  node.children = prop.properties.map<DataNodeWithMeta>(childProp => getTreeData(childProp, onAddItem));
+  node.children = isPropertiesArray(prop.properties) ? prop.properties.map<DataNodeWithMeta>(childProp => getTreeData(childProp, onAddItem)) : [];
 
   onAddItem(prop);
 

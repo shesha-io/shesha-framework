@@ -11,7 +11,7 @@ export interface IDynamicActionsConfiguratorProps {
     readOnly?: boolean;
 }
 
-export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = ({ value, onChange }) => {
+export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = ({ value, onChange, readOnly }) => {
     const { providerUid } = value ?? {};
 
     const onChangeProvider = (newValue: string) => {
@@ -21,7 +21,7 @@ export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = 
 
     return (
         <div>
-            <ProviderSelector value={providerUid} onChange={onChangeProvider}/>
+            <ProviderSelector value={providerUid} onChange={onChangeProvider} readOnly={readOnly} />
         </div>
     );
 };

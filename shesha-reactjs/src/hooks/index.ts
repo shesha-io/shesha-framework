@@ -4,7 +4,6 @@ export { useDeepCompareMemo, useDeepCompareMemoKeepReference } from './useDeepCo
 export { useDeepCompareMemoize } from './useDeepCompareMemoize';
 export { useDelete } from './useDelete';
 export { type GetDataError, type UseGetProps, useGet } from './useGet';
-export { useIdQueryParam } from './useIdQueryParam';
 export { useIsSsr } from './useIsSsr';
 export { useLocalStorage } from './useLocalStorage';
 export { type IUseMutateResponse, type IUseMutateResponseFixedEndpoint, useMutateForEndpoint, useMutate } from './useMutate';

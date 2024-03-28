@@ -2,6 +2,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ReactNode } from 'react';
 import { FormMarkup, GenericDictionary } from '@/providers/form/models';
 import { StandardNodeTypes } from './formComponent';
+import { IObjectMetadata } from './metadata';
 
 /**
  * Configuration action executer
@@ -20,10 +21,12 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments>
   onValuesChange?: (changedValues: any, values: TModel) => void;
   readOnly?: boolean;
   exposedVariables?: ICodeExposedVariable[];
+  availableConstants?: IObjectMetadata;
 }
 
 export interface FormMarkupFactoryArgs {
   exposedVariables?: ICodeExposedVariable[];
+  availableConstants?: IObjectMetadata;
 }
 export type FormMarkupFactory = (factoryArgs: FormMarkupFactoryArgs) => FormMarkup;
 

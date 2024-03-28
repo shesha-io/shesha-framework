@@ -16,7 +16,7 @@ export interface IDataContextProviderProps {
   onChangeAction?: IConfigurableActionConfiguration;
 }
 
-const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (props) => {
+export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (props) => {
     
   const {
     children,
@@ -80,5 +80,3 @@ const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (p
       </DataContextBinder>
     );
 };
-
-export default DataContextProvider;

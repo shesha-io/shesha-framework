@@ -16,6 +16,8 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
   type: 'labelValueEditor',
   name: 'Label Value editor',
   icon: <OneToOneOutlined />,
+  isInput: true,
+  isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
 

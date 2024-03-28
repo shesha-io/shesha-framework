@@ -38,10 +38,8 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
     setInProgress(true);
 
     exporterRef.current.exportExecuter().then(() => {
-      console.log('then in footer');
       hideModal();
     }).catch((e) => {
-      console.log('catch in footer');
       displayNotificationError('Failed to export package', e);
       setInProgress(false);
     });
@@ -75,7 +73,6 @@ export const useConfigurationItemsExportAction = () => {
         };
 
         const onExported = () => {
-          console.log('onExported');
           removeModal(modalId);
           resolve(true);
         };

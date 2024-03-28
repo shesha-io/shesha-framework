@@ -74,7 +74,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     return (
       <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
         {(flatComponents) => (
-          <ParentProvider model={{}} formMode={mode}>
+          <ParentProvider model={{}} formMode={mode} flatComponentsStructure={{...flatComponents}}>
             <FormProvider
               needDebug={needDebug}
               name="Form"

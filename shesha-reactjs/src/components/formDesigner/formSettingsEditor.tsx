@@ -24,7 +24,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
 
   return (
     <Modal
-    open={isVisible}
+      open={isVisible}
       title="Form Settings"
       width="50vw"
 
@@ -34,7 +34,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
       okButtonProps={{ hidden: readOnly }}
 
       onCancel={close}
-      cancelText={ readOnly ? 'Close' : undefined }
+      cancelText={readOnly ? 'Close' : undefined}
     >
       <Tabs
         items={[
@@ -46,7 +46,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
                 layout="horizontal"
                 labelCol={{ span: 7 }}
                 wrapperCol={{ span: 17 }}
-                mode={ readOnly ? 'readonly' : 'edit' }
+                mode={readOnly ? 'readonly' : 'edit'}
                 form={form}
                 onFinish={onSave}
                 markup={formSettingsJson as FormMarkup}

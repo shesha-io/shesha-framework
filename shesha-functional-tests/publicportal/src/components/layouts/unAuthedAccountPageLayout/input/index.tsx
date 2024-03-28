@@ -3,6 +3,7 @@ import { ShaInputStyledWrapper } from "./styles";
 import ShaInputWrapper from "./wrapper";
 
 interface IProps {
+  className?: string;
   label?: string;
   name: string;
   placeholder?: string;
@@ -10,9 +11,9 @@ interface IProps {
   type?: "text" | "password";
 }
 
-const ShaInput: FC<IProps> = ({ name, ...props }) => {
+const ShaInput: FC<IProps> = ({ className, name, ...props }) => {
   return (
-    <ShaInputStyledWrapper name={name}>
+    <ShaInputStyledWrapper name={name} className={className}>
       <ShaInputWrapper {...props} />
     </ShaInputStyledWrapper>
   );

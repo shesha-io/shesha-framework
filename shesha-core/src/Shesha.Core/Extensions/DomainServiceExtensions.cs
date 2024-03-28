@@ -4,10 +4,14 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Services;
 using Abp.Runtime.Session;
 using Abp.UI;
+using FluentValidation;
 using Shesha.Services;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using FluentValidationResult = FluentValidation.Results.ValidationResult;
 
 namespace Shesha.Domain
 {
@@ -83,5 +87,31 @@ namespace Shesha.Domain
 			return item;
 		}
 
+		/// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="service"></param>
+        /// <param name="entity"></param>
+        /// <param name="validationResults"></param>
+        /// <returns></returns>
+		public static async Task FluentValidationsOnEntityAsync<TEntity>(this DomainService service, TEntity entity, List<ValidationResult> validationResults)
+		{
+			if (StaticContext.IocManager.IsRegistered(typeof(IValidator<TEntity>)))
+			{
+				var validator = StaticContext.IocManager.Resolve<IValidator<TEntity>>();
+				FluentValidationResult fluentValidationResults = await validator.ValidateAsync(entity);
+
+				//Map FluentValidationResult to normal System.ComponentModel.DataAnnotations.ValidationResult,
+				//so to throw one same Validations Exceptions on AbpValidationException
+				if (!fluentValidationResults.IsValid)
+					fluentValidationResults.Errors.ForEach(err =>
+					{
+						var memberNames = new List<string>() { err.PropertyName };
+						var valResult = new ValidationResult(err.ErrorMessage, memberNames);
+						validationResults.Add(valResult);
+					});
+			}
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import CodeEditor from '../codeEditor/codeEditor';
+import { CodeEditor } from '../codeEditor/codeEditor';
 import React, { FC } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
@@ -19,12 +19,10 @@ import { useFormDesigner } from '@/providers/formDesigner';
 interface IEntityReferenceSettingsState extends IAddressCompomentProps {}
 
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
-  const { model: state, getFieldsValue, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
+  const { values, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
-
-  const formData = getFieldsValue();
 
   return (
     <>
@@ -33,7 +31,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={formData}
+          formData={values}
           onValuesChange={onValuesChange}
         />
 
@@ -139,7 +137,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
 
-        <Show when={state.showPriorityBounds}>
+        <Show when={values.showPriorityBounds}>
           <SettingsFormItem
             name="latPriority"
             label="Latitude (Priority Bound)"
@@ -183,7 +181,6 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
             readOnly={readOnly}
             mode="dialog"
             label="On Change"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={EXPOSED_VARIABLES}
           />
@@ -199,7 +196,6 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
             readOnly={readOnly}
             mode="dialog"
             label="On Select"
-            setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
             description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={EXPOSED_VARIABLES}
           />

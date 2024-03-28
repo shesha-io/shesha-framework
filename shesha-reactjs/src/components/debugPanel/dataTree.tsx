@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { Tree } from "antd";
 import { DataNode } from "antd/lib/tree";
-import { IPropertyMetadata } from "@/interfaces/metadata";
+import { IPropertyMetadata, isDataPropertyMetadata, isPropertiesArray } from "@/interfaces/metadata";
 import { toCamelCase } from "@/utils/string";
 import { IDebugDataTreeProps } from "./model";
 import { DebugDataTreeProp } from "./debugDataTreeProp";
@@ -9,6 +9,7 @@ import { DebugDataTreeFunc } from "./debugDataTreeFunc";
 import { useLocalStorage } from "@/hooks";
 
 export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, metadata, onChange}) => {
+    const metadataProperties = isPropertiesArray(metadata?.properties) ? metadata.properties : undefined;
 
     const title = name + (metadata?.name ? `(${metadata?.name})` : '');
 
@@ -65,7 +66,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, met
         while (parts.length > 0) {
             p = p[parts[0]];
             pm = pl?.find(x => toCamelCase(x.path) === parts[0]);
-            pl = pm?.properties;
+            pl = isDataPropertyMetadata(pm) && isPropertiesArray(pm.properties) ? pm.properties : undefined;
             parts = parts.slice(1);
         }
 
@@ -86,7 +87,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, met
                 const n: DataNode = {title: <DebugDataTreeProp name={item} metadata={pm} value={undefined}/>, key, isLeaf: false };
                 res.push(n);
             } else {
-                const readonly = !editAll && (!pm || pm?.readonly);
+                const readonly = !editAll && (!pm || isDataPropertyMetadata(pm) && pm?.readonly);
                 res.push({title: <DebugDataTreeProp 
                     name={item} 
                     metadata={pm} 
@@ -119,7 +120,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, met
                 setLoaded([...loaded, key]);
 
             if (!children) {
-                const c = getChildren(data, key, metadata?.properties);
+                const c = getChildren(data, key, metadataProperties);
                 setTreeData(prev => loadTreeData(prev, key, c));
             }
             resolve();
@@ -128,7 +129,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, met
     const updateTreeData = (list: DataNode[], nodedata: any) =>
         list?.forEach(node => {
             if (expanded.filter(x => x === node.key)?.length > 0 || loaded.filter(x => x === node.key)?.length > 0) {
-                const c = getChildren(nodedata, node.key.toString(), metadata?.properties);
+                const c = getChildren(nodedata, node.key.toString(), metadataProperties);
                 node.children = c;
                 updateTreeData(node.children, nodedata);
             }
@@ -137,7 +138,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, met
     useEffect(() => {
         const n = treeData[0];
         if (expanded.filter(x => x === 'root')?.length > 0 || loaded.filter(x => x === 'root')?.length > 0) {
-            const c = getChildren(data, 'root', metadata?.properties);
+            const c = getChildren(data, 'root', metadataProperties);
             n.children = c;
             updateTreeData(n.children, data);
         }

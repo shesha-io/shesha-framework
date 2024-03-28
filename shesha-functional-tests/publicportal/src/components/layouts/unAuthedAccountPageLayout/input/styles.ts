@@ -1,10 +1,7 @@
 import { Form } from "antd";
-import { lgSpace } from "@/styles/variables";
 import styled from "styled-components";
 
 export const ShaInputStyledWrapper = styled(Form.Item)`
-  margin-bottom: ${lgSpace} !important;
-
   * {
     margin: 0;
     padding: 0;

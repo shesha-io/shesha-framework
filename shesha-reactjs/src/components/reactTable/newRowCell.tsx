@@ -5,11 +5,12 @@ import { useMetadata } from '@/providers';
 import React, { FC } from 'react';
 import { Cell, ColumnInstance, HeaderPropGetter, TableCellProps, TableHeaderProps } from 'react-table';
 import { toCamelCase } from '@/utils/string';
+import { asPropertiesArray } from '@/interfaces/metadata';
 import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
-import { CreateFormCell } from '../dataTable/cell/formCell';
+import { CreateFormCell } from '../dataTable/cell/formCell/formCell';
 
 const getStyles = (props: Partial<TableHeaderProps | TableCellProps>, align = 'left') => [
   props,
@@ -34,8 +35,8 @@ export const NewRowCell: FC<INewRowCellProps> = ({ column, row }) => {
   const columnConfig = (column as DataTableColumn)?.originalConfig;
 
   const metadata = useMetadata(false)?.metadata;
+  const propertyMeta = asPropertiesArray(metadata?.properties, undefined)?.find(({ path }) => toCamelCase(path) === column.id);
   const { styles } = useStyles();
-  const propertyMeta = metadata?.properties?.find(({ path }) => toCamelCase(path) === column.id);
   const { key, ...headerProps } = column.getHeaderProps(cellProps);
   const anchored = getColumnAnchored((column as any)?.anchored);
   const index = row.indexOf(column);

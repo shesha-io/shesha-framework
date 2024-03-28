@@ -22,6 +22,8 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   type: 'autocompleteTagGroup',
   name: 'Autocomplete Tags Outlined',
   icon: <TagOutlined />,
+  isInput: true,
+  isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
     return (

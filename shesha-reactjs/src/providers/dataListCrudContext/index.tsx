@@ -26,6 +26,8 @@ import { CrudMode } from '../crudContext/models';
 import reducer from '../crudContext/reducer';
 import { useDelayedUpdate } from '../delayedUpdateProvider/index';
 import ParentProvider from '../parentProvider/index';
+import { filterDataByOutputComponents } from '../form/api';
+import { useFormDesignerComponents } from '../form/hooks';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -80,6 +82,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const {form, setFormData, setFormMode} = useForm();
 
   const {getPayload: getDelayedUpdate} = useDelayedUpdate(false) ?? {};
+  const toolboxComponents = useFormDesignerComponents();
 
   const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean) => {
     if (mode === 'read')
@@ -169,11 +172,16 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         // todo: call common data preparation code (check configurableFormRenderer)
         const mergedData = { ...state.initialValues, ...values };
 
+        const postData = filterDataByOutputComponents(
+          mergedData,
+          props.flatComponents.allComponents,
+          toolboxComponents
+        );
         // send data of stored files
         const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
-        if (Boolean(delayedUpdate)) mergedData['_delayedUpdate'] = delayedUpdate;
+        if (Boolean(delayedUpdate)) postData['_delayedUpdate'] = delayedUpdate;
 
-        const finalDataPromise = onSave ? Promise.resolve(onSave(mergedData)) : Promise.resolve(mergedData);
+        const finalDataPromise = onSave ? Promise.resolve(onSave(postData)) : Promise.resolve(postData);
 
         return finalDataPromise.then((finalData) => {
           return processor(finalData)

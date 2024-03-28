@@ -11,6 +11,7 @@ import { BulbOutlined, BulbTwoTone } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 import {
+  asPropertiesArray,
   IModelMetadata,
   IPropertyMetadata,
   isEntityMetadata,
@@ -116,7 +117,7 @@ const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem
     return [];
 
   const properties = metadataHasNestedProperties(modelMetadata)
-    ? (modelMetadata.properties).map<IPropertyItem>(p => ({ ...p, itemType: 'property' }))
+    ? asPropertiesArray(modelMetadata.properties, []).map<IPropertyItem>(p => ({ ...p, itemType: 'property' }))
     : [];
 
   const specifications = isEntityMetadata(modelMetadata)

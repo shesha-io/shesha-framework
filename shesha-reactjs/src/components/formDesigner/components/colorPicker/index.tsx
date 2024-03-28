@@ -13,6 +13,8 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',
   name: 'Color Picker',
   canBeJsSetting: true,
+  isInput: true,
+  isOutput: true,
   icon: <FormatPainterOutlined />,
   Factory: ({ model }) => {
     return (

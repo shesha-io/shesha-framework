@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { CodeOutlined } from '@ant-design/icons';
 import { ComponentsContainer } from '@/components';
-import DataContextProvider from '@/providers/dataContextProvider';
+import { DataContextProvider } from '@/providers/dataContextProvider';
 import { DataContextSettingsForm } from './settings';
 import { IConfigurableActionConfiguration, IConfigurableFormComponent } from '@/providers';
 import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';

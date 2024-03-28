@@ -22,7 +22,7 @@ import { axiosHttp } from '@/utils/fetchers';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { Form, message, Spin } from 'antd';
-import { FormConfigurationDto, useFormData } from '@/providers/form/api';
+import { filterDataByOutputComponents, FormConfigurationDto, useFormData } from '@/providers/form/api';
 import { getQueryParams } from '@/utils/url';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { IAnyObject, ValidateErrorEntity } from '@/interfaces';
@@ -47,6 +47,7 @@ import {
   getObjectWithOnlyIncludedKeys,
   IMatchData,
 } from '@/providers/form/utils';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -81,6 +82,8 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   const designerMode = formMode === 'designer';
 
   const { isDragging = false } = useFormDesigner(false) ?? {};
+  const toolboxComponents = useFormDesignerComponents();
+
   const { excludeFormFieldsInPayload, onDataLoaded, onUpdate, onInitialized, formKeysToPersist, uniqueFormId } =
     formSettings;
   const { globalState, setState: setGlobalState } = useGlobalState();
@@ -331,9 +334,11 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
         const initialValues = getInitialValuesFromFormSettings();
         const nonFormValues = { ...dynamicValues, ...initialValues };
 
-        const postData = excludeFormFieldsInPayload
+        let postData = excludeFormFieldsInPayload
           ? removeGhostKeys({ ...formData, ...nonFormValues })
           : removeGhostKeys(addFormFieldsList(formData, nonFormValues, form));
+
+        postData = filterDataByOutputComponents(postData, allComponents, toolboxComponents);
 
         const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
         if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate;

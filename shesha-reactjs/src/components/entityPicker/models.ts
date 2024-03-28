@@ -60,7 +60,7 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
   addNewRecordsProps?: IAddNewRecordProps;
   style?: CSSProperties;
   readOnly?: boolean;
-
+  placeholder: string;
   incomeValueFunc: IncomeValueFunc;
   outcomeValueFunc: OutcomeValueFunc;
 }

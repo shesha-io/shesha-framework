@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
 using Shesha.Domain.Attributes;
+using Shesha.Web.FormsDesigner.Domain;
 using System;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
@@ -14,5 +15,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         public virtual RefListAccType? AccountType { get; set; }
 
         public virtual Bank Bank { get; set; }
+        public virtual FormConfiguration CaptureForm { get; set; }
     }
 }

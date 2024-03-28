@@ -99,7 +99,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             onSubmitted: (values) => {
               removeModal(modalId);
 
-              console.log('dialog success:', { values });
               resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
             },
           };

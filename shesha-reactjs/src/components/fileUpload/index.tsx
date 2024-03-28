@@ -8,13 +8,11 @@ import {
   DeleteOutlined,
   LoadingOutlined,
   UploadOutlined,
-  InboxOutlined,
 } from '@ant-design/icons';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import { FileVersionsPopup } from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
-import Show from '@/components/show';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 
@@ -109,6 +107,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const fileProps: UploadProps = {
     name: 'file',
+    disabled: !allowUpload,
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
@@ -154,38 +153,30 @@ export const FileUpload: FC<IFileUploadProps> = ({
   );
 
   const renderStub = () => {
-    if (!isDragger) {
-      return <div className={classes}>{uploadButton}</div>;
+    if (isDragger) {
+      return  <Dragger disabled><DraggerStub /></Dragger>;
     }
 
-    return <DraggerStub />;
+    return <div className={classes}></div>;
   };
 
   const renderUploader = () => {
-    if (!isDragger) {
+    if (isDragger && allowUpload) {
       return (
-        <Upload {...fileProps} className={classes}>
-          {uploadButton}
-        </Upload>
+        <Dragger {...fileProps} className={classes}>
+          <span ref={uploadDraggerSpanRef} />
+            <DraggerStub/>
+        </Dragger>
       );
     }
 
     return (
-      <Dragger {...fileProps} className={classes}>
-        <span ref={uploadDraggerSpanRef} />
-
-        <Show when={showUploadButton}>
-          <p className={styles.antUploadDragIcon}>
-            <InboxOutlined />
-          </p>
-          <p className={styles.antUploadText}>Click or drag file to this area to upload</p>
-          <p className={styles.antUploadHint}>
-            Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
-          </p>
-        </Show>
-      </Dragger>
-    );
+        <Upload {...fileProps} className={classes}>
+          {allowUpload && uploadButton}
+        </Upload>
+      );
   };
+
 
   return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
 };

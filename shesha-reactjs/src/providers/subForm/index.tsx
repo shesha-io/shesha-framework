@@ -98,6 +98,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
+  const onChangeInternal = (newValue: any) => {
+    if (onChange) 
+      onChange({...(typeof value === 'object' ? value : {} ), ...newValue });
+  };
+
   /**
    * Evaluate url using js expression
    *
@@ -240,8 +245,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
-    params.properties =
-      typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
+    params.properties = !!properties
+      ? typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' ') // Always include the `id` property/. Useful for deleting
+      : null;
 
     const queryParamsFromJs = queryParamsEvaluator({
       data: formData ?? {},
@@ -251,6 +257,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (queryParams) {
       params = { ...params, ...(typeof queryParamsFromJs === 'object' ? queryParamsFromJs : {}) };
     }
+    
+    if (!params.id && !!value && !!value['id'])
+      params.id = value['id'];
 
     return params;
   };
@@ -277,8 +286,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     // Skip loading if we work with entity and the `id` is not specified
     if (internalEntityType && !finalQueryParams?.id) {
-      if (typeof onChange === 'function')
-        onChange({});
       return;
     }
 
@@ -287,7 +294,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     dataRequestAbortController.current = new AbortController();
 
-    console.log('fetch subForm');
     dispatch(fetchDataRequestAction());
     getReadUrl().then((getUrl) => {
       if (!Boolean(getUrl)) {
@@ -307,9 +313,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           dataRequestAbortController.current = null;
 
           if (dataResponse.success) {
-            if (typeof onChange === 'function') {
-              onChange(dataResponse?.result);
-            }
+            onChangeInternal(dataResponse?.result);
             dispatch(fetchDataSuccessAction({entityId: dataResponse?.result?.id}));
           } else {
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
@@ -339,7 +343,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       });
     } else {
       postHttp(value).then((submittedValue) => {
-        onChange(submittedValue?.result);
+        onChangeInternal(submittedValue?.result);
         if (onCreated) {
           const evaluateOnCreated = () => {
             // tslint:disable-next-line:function-constructor
@@ -367,7 +371,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       });
     } else {
       putHttp(value).then((submittedValue) => {
-        onChange(submittedValue?.result);
+        onChangeInternal(submittedValue?.result);
         if (onUpdated) {
           const evaluateOnUpdated = () => {
             // tslint:disable-next-line:function-constructor

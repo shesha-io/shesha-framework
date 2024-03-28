@@ -58,8 +58,6 @@ const SidebarMenuConfiguratorProvider: FC<PropsWithChildren<ISidebarMenuConfigur
   };
 
   const addGroup = () => {
-    // console.log('addGroup.... called');
-
     dispatch(addGroupAction());
   };
 

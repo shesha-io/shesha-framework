@@ -20,6 +20,18 @@ export const sheshaStyles = {
     justify-content: space-between;
     align-items: center;
 `,
+    thinScrollbars: 
+`
+scrollbar-width: thin;
+::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #ccc;
+}`,
 };
 
 export const getTextHoverEffects = (token: FullToken) => {
