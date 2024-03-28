@@ -8,7 +8,6 @@ import {
   DeleteOutlined,
   LoadingOutlined,
   UploadOutlined,
-  InboxOutlined,
 } from '@ant-design/icons';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
@@ -154,6 +153,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       (press to upload)
     </Button>
   );
+
 
     const renderDraggerContent = () => {
     return (

@@ -85,7 +85,7 @@ export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 export { default as ConfigurableForm } from './configurableForm';
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';
-export { default as CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
+export { CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
@@ -105,7 +105,6 @@ export { default as CurrencyConverter, type ICurrencyConverterProps } from './cu
 
 export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { default as ButtonGroupConfigurator } from './formDesigner/components/button/buttonGroup/configurator';
-export { default as CodeEditorModal } from './formDesigner/components/codeEditor/codeEditor';
 export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
@@ -113,7 +112,6 @@ export { FormComponentSelector, type IFormComponentSelectorProps } from './formC
 export { default as PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 export { ColorPicker } from '@/components/colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
-export { default as Properties } from '@/components/properties';
 export { HelpTextPopover } from './helpTextPopover';
 export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';

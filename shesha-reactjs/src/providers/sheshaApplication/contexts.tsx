@@ -38,6 +38,8 @@ export interface ISheshaApplicationActionsContext {
   setGlobalVariables?: (values: { [x: string]: any }) => void;
 }
 
+export type ISheshaApplication = ISheshaApplicationStateContext & ISheshaApplicationActionsContext;
+
 export const DEFAULT_ACCESS_TOKEN_NAME = 'xDFcxiooPQxazdndDsdRSerWQPlincytLDCarcxVxv';
 
 export const SheshaApplicationStateContext = createContext<ISheshaApplicationStateContext>(

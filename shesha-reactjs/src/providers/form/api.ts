@@ -7,7 +7,7 @@ import {
   getMatchData,
   hasFormIdGotValue,
   IMatchData
-  } from './utils';
+} from './utils';
 import { ConfigurationItemsViewMode } from '../appConfigurator/models';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { EntityAjaxResponse, IEntity } from '@/generic-pages/dynamic/interfaces';
@@ -15,14 +15,15 @@ import {
   FormIdentifier,
   FormMarkupWithSettings,
   FormRawMarkup,
+  IComponentsDictionary,
   IFormDto,
   IFormSettings
-  } from './models';
+} from './models';
 import { GetDataError, useGet } from '@/hooks';
 import { getQueryParams, joinUrlAndPath } from '@/utils/url';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { IApiEndpoint, IModelMetadata, IPropertyMetadata, StandardEntityActions } from '@/interfaces/metadata';
+import { asPropertiesArray, IApiEndpoint, IModelMetadata, IPropertyMetadata, isPropertiesArray, StandardEntityActions } from '@/interfaces/metadata';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
 import { IToolboxComponents } from '@/interfaces';
@@ -34,7 +35,7 @@ import {
   useMemo,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { useFormDesignerComponents } from './hooks';
 import { useModelApiEndpoint, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import {
@@ -46,7 +47,7 @@ import {
 /**
  * Form configuration DTO
  */
- export interface FormConfigurationDto {
+export interface FormConfigurationDto {
   id?: string;
   /**
    * Form path/id is used to identify a form
@@ -148,11 +149,11 @@ export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string,
   const requestParams = formRawId
     ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formRawId } }
     : formFullName
-    ? {
+      ? {
         url: '/api/services/Shesha/FormConfiguration/GetByName',
         queryParams: { name: formFullName.name, module: formFullName.module, version: formFullName.version },
       }
-    : null;
+      : null;
 
   return RestfulShesha.get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(
     requestParams.url,
@@ -197,8 +198,8 @@ export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarku
   const reFetcher = () => {
     return canFetch
       ? reFetch().then((response) => {
-          return getMarkupFromResponse(response);
-        })
+        return getMarkupFromResponse(response);
+      })
       : Promise.reject('Can`t fetch form due to internal state');
   };
 
@@ -270,6 +271,24 @@ interface IFieldData {
   property: IPropertyMetadata;
 }
 
+export const filterDataByOutputComponents = (
+  data: any,
+  components: IComponentsDictionary,
+  toolboxComponents: IToolboxComponents,
+) => {
+  const newData = { ...data };
+  for (const key in components) {
+    if (components.hasOwnProperty(key)) {
+      var component = components[key];
+      if (data.hasOwnProperty(component.propertyName) && !toolboxComponents[component.type].isOutput) {
+         delete data[component.propertyName];
+      }
+    }
+  }
+
+  return newData;
+};
+
 const getFieldsFromCustomEvents = (code: string) => {
   if (!code) return [];
   const reg = new RegExp('(?<![_a-zA-Z0-9.])data.[_a-zA-Z0-9.]+', 'g');
@@ -310,12 +329,18 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
   let fieldNames = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-      const propName = components[key].propertyName;
-      fieldNames.push(propName);
-      const fieldsFunc = toolboxComponents[components[key].type]?.getFieldsToFetch;
-      if (typeof fieldsFunc === 'function')
-        fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
+      var component = toolboxComponents[components[key].type];
+      
+      // get data only for isInput components
+      // and for context = null or empty string (form context)
+      if (component?.isInput && !components[key].context) {
+        const propName = components[key].propertyName;
+        fieldNames.push(propName);
+        const fieldsFunc = component?.getFieldsToFetch;
+        if (typeof fieldsFunc === 'function')
+          fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
     }
+  }
   }
 
   fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
@@ -339,6 +364,7 @@ interface GetGqlFieldsPayload extends GetFormFieldsPayload {
   getContainerProperties: IMetadataDispatcherActionsContext['getContainerProperties'];
   getMetadata: IMetadataDispatcherActionsContext['getMetadata'];
 }
+
 export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]> => {
   const { formMarkup, formSettings, getMetadata, getContainerProperties } = payload;
 
@@ -348,6 +374,8 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
     let fields: IFieldData[] = [];
 
     const fieldNames = getFormFields(payload, metadata);
+
+    const metaProperties = asPropertiesArray(metadata.properties, []);
 
     // create list of promises
     const promises: Promise<any>[] = [];
@@ -361,7 +389,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
           fields.push({
             name: item,
             child: [],
-            property: metadata.properties.find((p) => p.path.toLowerCase() === pathParts[0].toLowerCase()),
+            property: metaProperties.find((p) => p.path.toLowerCase() === pathParts[0].toLowerCase()),
           });
           return;
         }
@@ -377,10 +405,10 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
               child: [],
               property:
                 idx === 0
-                  ? metadata.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                  : parent?.property?.dataType === 'object'
-                  ? parent.property.properties?.find((p) => p.path.toLowerCase() === part.toLowerCase())
-                  : null,
+                  ? metaProperties.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                  : parent?.property?.dataType === 'object' && isPropertiesArray(parent.property.properties)
+                    ? parent.property.properties.find((p) => p.path.toLowerCase() === part.toLowerCase())
+                    : null,
             };
             // If property metadata is not set - fetch it using dispatcher.
             // Note: it's safe to fetch the same container multiple times because the dispatcher returns the same promise for all requests

@@ -90,6 +90,7 @@ import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import { ComponentSelectorComponent } from '@/designer-components';
 import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
+import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 
 export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
@@ -176,7 +177,7 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   {
     name: 'DataList',
     visible: true,
-    components: [DataList, DataSource],
+    components: [DataList, DataSource, DataContextComponent],
   },
   {
     name: 'Layout',
@@ -201,11 +202,6 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
   },
   {
     visible: true,
-    name: 'Settings',
-    components: [ContextPropertyAutocompleteComponent, DataContextComponent, DataContextSelector, SettingsComponent],
-  },
-  {
-    visible: true,
     name: 'Internal',
     components: [
       PropertyAutocompleteComponent, 
@@ -216,6 +212,10 @@ export const ToolboxComponents: IToolboxComponentGroup[] = [
       PermissionedObjectsTree,
       PermissionsTree,
       LabelValueEditorComponent,
+      DataContextSelector, 
+      ContextPropertyAutocompleteComponent, 
+      SettingsComponent,
+      MetadataEditorComponent,
     ],
   },
 ];

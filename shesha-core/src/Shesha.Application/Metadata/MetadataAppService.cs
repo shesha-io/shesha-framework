@@ -150,6 +150,7 @@ namespace Shesha.Metadata
             var dto = new MetadataDto 
             { 
                 DataType = containerType.IsEntityType() ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
+                Module = containerType.IsEntityType() ? containerType.GetConfigurableModuleName() : null,
                 Properties = await GetPropertiesInternalAsync(containerType, container),
                 Specifications = await GetSpecificationsAsync(containerType),
                 ApiEndpoints = await GetApiEndpoints(containerType),
@@ -254,6 +255,7 @@ namespace Shesha.Metadata
 
                         var prop = ObjectMapper.Map<PropertyMetadataDto>(p);
                         prop.EnumType = hardCodedProp?.EnumType;
+                        prop.IsNullable = hardCodedProp?.IsNullable ?? false;
                         prop.OrderIndex = idx;
                         prop.GroupName = hardCodedProp?.GroupName;
 

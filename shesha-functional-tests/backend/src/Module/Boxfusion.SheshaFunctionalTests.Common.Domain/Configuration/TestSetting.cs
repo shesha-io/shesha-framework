@@ -1,15 +1,12 @@
-﻿using Shesha.Settings;
-using System;
-using System.Collections.Generic;
+﻿using Shesha.Attributes;
+using Shesha.Settings;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Configuration
 {
     [Category("Tests")]
+    [Alias("common")]
     public interface ITestSetting: ISettingAccessors
     {
         [Display(Name = "UserLockout")]
@@ -19,5 +16,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Configuration
         [Display(Name = "Test Complex", Description = "Testing the complex setting item")]
         [Setting(TestSettingNames.TestComplex, EditorFormName = "complex-setting-test")]
         ISettingAccessor<TestComplexSetting> TestComplexSetting { get; }
+
+        [Display(Name = "Stars Count")]
+        [Setting(TestSettingNames.StarsCount)]
+        ISettingAccessor<int> StarsCount { get; }
     }
 }

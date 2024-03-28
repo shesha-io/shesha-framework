@@ -494,6 +494,8 @@ namespace Shesha.DynamicEntities
                         prop.CascadeCreateHardcoded = hardCodedProp.CascadeCreate != null;
                         prop.CascadeUpdateHardcoded = hardCodedProp.CascadeUpdate != null;
                         prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced != null;
+
+                        prop.EntityModule = hardCodedProp.EntityModule;
                     }
                 }
             }

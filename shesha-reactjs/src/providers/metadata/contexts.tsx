@@ -11,7 +11,7 @@ export interface IMetadataStateContext {
 }
 
 export interface IMetadataActionsContext {
-  getMetadata: () => Promise<IModelMetadata>;
+  //getMetadata: () => Promise<IModelMetadata>;
   getPropertyMeta: (name: string) => IPropertyMetadata;
 }
 
@@ -27,7 +27,7 @@ export interface ISetMetadataPayload {
 export const METADATA_CONTEXT_INITIAL_STATE: IMetadataContext = {
   id: null,
   modelType: null,
-  getMetadata: null,
+  //getMetadata: null,
   getPropertyMeta: null,
 };
 

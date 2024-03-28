@@ -1,4 +1,4 @@
-import CodeEditor from '../codeEditor/codeEditor';
+import { CodeEditor } from '../codeEditor/codeEditor';
 import FormAutocomplete from '@/components/formAutocomplete';
 import React, { FC, useState } from 'react';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
@@ -28,7 +28,7 @@ interface ISubFormSettingsState extends ISubFormComponentProps { }
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({ readOnly }) => {
-  const { model: formData, onValuesChange } = useSettingsForm<ISubFormComponentProps>();
+  const { values: formData, onValuesChange } = useSettingsForm<ISubFormComponentProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -163,7 +163,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                 return <CodeEditor
                   readOnly={readOnly}
                   mode="inline"
-                  setOptions={{ minLines: 15, maxLines: 500, fixedWidthGutter: true }}
                   propertyName="properties"
                   value={typeof value === 'string' ? value : value?.join(' ')}
                   onChange={(val) => {
@@ -185,7 +184,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
             <CodeEditor
               readOnly={readOnly}
               mode="dialog"
-              setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
               propertyName="getUrl"
               label="Query Params"
               description="The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id"
@@ -233,7 +231,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                 <CodeEditor
                   readOnly={readOnly}
                   mode="dialog"
-                  setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
                   propertyName="getUrl"
                   value={value}
                   onChange={(val) => {
@@ -274,7 +271,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
             <CodeEditor
               readOnly={readOnly}
               mode="dialog"
-              setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
               propertyName="postUrl"
               label="POST Url"
               description="The API url that will be used to update data. Write the code that returns the string"
@@ -309,7 +305,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
             <CodeEditor
               readOnly={readOnly}
               mode="dialog"
-              setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
               propertyName="putUrl"
               label="PUT Url"
               description="The API url that will be used to update data. Write the code that returns the string"
@@ -346,7 +341,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
         <CodeEditor
           readOnly={readOnly}
           mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="beforeGet"
           label="On Submit"
           description="Triggered before retrieving the sub-form object from the back-end"
@@ -388,7 +382,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
         <CodeEditor
           readOnly={readOnly}
           mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="onCreated"
           label="On Created"
           description="Triggered after successfully creating a new sub-form object in the back-end"
@@ -435,7 +428,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
         <CodeEditor
           readOnly={readOnly}
           mode="dialog"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="onUpdated"
           label="On Updated"
           description="Triggered after successfully updating the sub-form object in the back-end"
@@ -489,7 +481,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           readOnly={readOnly}
           mode="dialog"
           label="Style"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="style"
           description="CSS Style"
           exposedVariables={[

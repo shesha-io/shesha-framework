@@ -45,6 +45,10 @@ export interface PropertyMetadataDto {
    */
   isFrameworkRelated?: boolean;
   /**
+   * If true, indicates that current property is nullable
+   */
+  isNullable?: boolean;
+  /**
    * Child properties (applicable for complex objects)
    */
   properties?: PropertyMetadataDto[] | null;
@@ -92,6 +96,10 @@ export interface MetadataDto {
    * Data type
    */
   dataType?: string | null;
+  /**
+   * Module
+   */
+  module?: string | null;
   /**
    * Propeties
    */

@@ -18,6 +18,8 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
   type: 'endpointsAutocomplete',
   name: 'API Endpoints Autocomplete',
   icon: <ApiOutlined />,
+  isInput: true,
+  isOutput: true,
   isHidden: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
