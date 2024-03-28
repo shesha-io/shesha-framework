@@ -8,11 +8,12 @@ import {
   notification,
   Upload
   } from 'antd';
-import { FileZipOutlined, InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import { FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
+import { DraggerStub } from '../fileUpload/stubs';
 
 interface IUploaderFileTypes {
   name: string;
@@ -64,7 +65,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   maxFileLength = 0,
   isDragger = false,
   disabled,
-  isStub = false,
   allowedFileTypes = [],
   maxHeight,
   downloadZip
@@ -139,23 +139,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
   };
 
-  const renderUploadContent = () => {
-    return (
+  const uploadButton =  (
       <Button type="link" icon={<UploadOutlined />} style={{ display: disabled ? 'none' : '' }} {...uploadBtnProps}>
         (press to upload)
       </Button>
     );
-  };
 
   return (
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
       {isDragger ? (
-          <Dragger {...props}>{renderDraggerContent()}</Dragger>
-
-      ) : isStub ? (
-        <div>{renderUploadContent()}</div>
-      ) : (
-        <Upload {...props}>{renderUploadContent()}</Upload>
+          <Dragger {...props}><DraggerStub/></Dragger>
+      ): (
+        <Upload {...props}>{uploadButton}</Upload>
       )}
 
       {fetchFilesError && (

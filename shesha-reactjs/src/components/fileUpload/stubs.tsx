@@ -6,7 +6,7 @@ export const DraggerStub: FC = () => {
   const { styles, prefixCls } = useStyles();
 
   return (
-      <span className={`${prefixCls}-upload ${prefixCls}-upload-btn`}>
+       <span className={`${prefixCls}-upload ${prefixCls}-upload-btn`}>
         <p className={styles.antUploadDragIcon}>
             <InboxOutlined />
           </p>

@@ -7,7 +7,7 @@ import {
   SyncOutlined,
   DeleteOutlined,
   LoadingOutlined,
-  UploadOutlined,
+  UploadOutlined
 } from '@ant-design/icons';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
@@ -15,6 +15,7 @@ import { FileVersionsPopup } from './fileVersionsPopup';
 import Show from '@/components/show';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { DraggerStub } from './stubs';
 
 const { Dragger } = Upload;
 
@@ -139,7 +140,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading && !isStub;
-  const disabled =!showUploadButton;
 
   const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
@@ -154,34 +154,19 @@ export const FileUpload: FC<IFileUploadProps> = ({
     </Button>
   );
 
-
-    const renderDraggerContent = () => {
-    return (
-      <>
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-        <p className="ant-upload-hint">
-          Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
-        </p>
-      </>
-    );
-  };
-
   return <div className={styles.shaFileUploadContainer}>
       {isDragger ? (
           <Dragger {...{...fileProps, disabled: isStub || !allowUpload}}>
             <span ref={uploadDraggerSpanRef}>
               <Show when={!fileInfo}>
-                  {renderDraggerContent()}
+                  <DraggerStub/>
               </Show>
             </span>
           </Dragger>
         )
       :
-        <Upload {...fileProps} disabled={disabled}><div className={classes}> {
-        }{uploadButton}</div></Upload>
+        <div className={styles.shaFileUploadContainer}><Upload {...fileProps} disabled={!showUploadButton}><div className={classes}> {
+        }{uploadButton}</div></Upload></div>
       }
       </div>
 };
