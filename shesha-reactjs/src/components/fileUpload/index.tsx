@@ -140,7 +140,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const showUploadButton = allowUpload && !fileInfo && !isUploading && !isStub;
-
   const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
   const uploadButton = (
@@ -148,8 +147,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       icon={<UploadOutlined />}
       type="link"
       ref={uploadButtonRef}
-      style={{ display: !showUploadButton ? 'none' : '' }}
-    >
+      style={{ display: !showUploadButton ? 'none' : '' }}>
       (press to upload)
     </Button>
   );
@@ -165,8 +163,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
           </Dragger>
         )
       :
-        <div className={styles.shaFileUploadContainer}><Upload {...fileProps} disabled={!showUploadButton}><div className={classes}> {
-        }{uploadButton}</div></Upload></div>
+        <div className={styles.shaFileUploadContainer}>
+          <Upload {...fileProps} disabled={!showUploadButton}>
+            <div className={classes}>{uploadButton}</div>
+          </Upload>
+        </div>
       }
       </div>
 };

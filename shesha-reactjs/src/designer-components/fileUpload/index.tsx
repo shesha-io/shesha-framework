@@ -44,7 +44,6 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
 
     const enabled = !model.readOnly;
     
-    console.log(model.disabled)
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
