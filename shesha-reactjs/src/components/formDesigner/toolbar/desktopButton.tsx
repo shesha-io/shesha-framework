@@ -8,18 +8,17 @@ export interface IPreviewButtonProps {
 }
 
 export const DeskTopButton: FC<IPreviewButtonProps> = () => {
-    const {  formMode ,setFormWidth} = useForm();
-    
-    return (
-        
+    const {  setFormWidth,formWidth} = useForm();
+
+    return (        
         <Button
            
-            type={formMode === 'designer' ? 'default' : 'primary'}
+          type={formWidth == 100 ? 'primary':'default'}
             shape="round"
             title="Desktop"
-            onClick={()=>setFormWidth('100%')}
+            onClick={()=>setFormWidth(100)}
         >
-            <DesktopOutlined size={80} style={{color:'#ad25b8'}} />
+            <DesktopOutlined  />
         </Button>
   
     );

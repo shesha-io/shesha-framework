@@ -39,7 +39,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   noPadding,
 }) => {
   const { styles } = useStyles();
-  const {fornWidth}=useForm();
+  const {formWidth,zoom}=useForm();
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
     return sidebarProps
@@ -64,9 +64,11 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'no-right-panel': !rightSidebarProps },
             { 'no-padding': noPadding },
             { 'allow-full-collapse': allowFullCollapse }
+
           )}
+          style={{overflow:'auto',border:'1px solid #d9d9d9',borderRadius:'4px'}}
         >
-          <div className={styles.sidebarContainerMainAreaBody} style={{width:fornWidth}}>{children}</div>
+          <div className={styles.sidebarContainerMainAreaBody} style={{width:`${formWidth}%`, zoom:`${zoom}%`,overflow:'auto'}}>{children}</div>
         </div>
 
         {renderSidebar('right')}

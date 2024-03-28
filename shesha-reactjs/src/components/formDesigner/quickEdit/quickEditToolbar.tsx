@@ -10,6 +10,7 @@ import { PreviewButton } from '../toolbar/previewButton';
 import { PublishButton } from '../toolbar/publishButton';
 import { SaveMenu } from '../toolbar/saveMenu';
 import { UndoRedoButtons } from '../toolbar/undoRedoButtons';
+import { CanvasConfig } from '../toolbar/canvasConfig';
 
 export interface IQuickEditToolbarProps {
     onUpdated: () => void;
@@ -50,6 +51,7 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, onNewV
                 <CreateNewVersionButton onSuccess={onVersionCreated} />
                 <PublishButton onPublished={onPublished}/>
             </div>
+            <CanvasConfig/>
             <div className="sha-designer-toolbar-right">
                 <FormSettingsButton />
                 <OpenOnNewPageButton />
