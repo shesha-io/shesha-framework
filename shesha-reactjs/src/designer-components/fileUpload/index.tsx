@@ -35,7 +35,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     const { backendUrl } = useSheshaApplication();
 
     // todo: refactor and implement a generic way for values evaluation
-    const { formSettings } = useForm();
+    const { formSettings, formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const ownerId = evaluateValue(model.ownerId, { data, globalState });
@@ -59,7 +59,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               uploadMode={model.useSync ? 'sync' : 'async'}
             >
               <FileUpload
-                isStub={!enabled}
+                isStub={formMode === 'designer'}
                 allowUpload={enabled && model.allowUpload}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}

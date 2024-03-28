@@ -13,7 +13,6 @@ import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
 import { FileVersionsPopup } from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
-import Show from '@/components/show';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 
@@ -108,6 +107,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const fileProps: UploadProps = {
     name: 'file',
+    disabled: !allowUpload,
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
@@ -161,27 +161,24 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const renderUploader = () => {
-    if (isDragger) {
+    if (isDragger && allowUpload) {
       return (
         <Dragger {...fileProps} className={classes}>
           <span ref={uploadDraggerSpanRef} />
-  
-          <Show when={showUploadButton}>
             <DraggerStub/>
-          </Show>
         </Dragger>
       );
     }
 
     return (
         <Upload {...fileProps} className={classes}>
-          {uploadButton}
+          {allowUpload && uploadButton}
         </Upload>
       );
   };
 
 
-  return <span className={styles.shaFileUploadContainer}>{isStub || !allowUpload ? renderStub() : renderUploader()}</span>;
+  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
 };
 
 export default FileUpload;
