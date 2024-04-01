@@ -26,13 +26,29 @@ const reducer = handleActions<IFormStateInternalContext, any>(
         formSettings: payload,
       };
     },
-
+ 
     [FormActionEnums.SetFormMode]: (state: IFormStateInternalContext, action: ReduxActions.Action<FormMode>) => {
       const { payload } = action;
 
       return {
         ...state,
         formMode: payload,
+      };
+    },
+    [FormActionEnums.SetFormWidth]: (state: IFormStateInternalContext, action: ReduxActions.Action<number>) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        formWidth: payload,
+      };
+    },
+    [FormActionEnums.SetFormZoom]: (state: IFormStateInternalContext, action: ReduxActions.Action<number>) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        zoom: payload,
       };
     },
 
