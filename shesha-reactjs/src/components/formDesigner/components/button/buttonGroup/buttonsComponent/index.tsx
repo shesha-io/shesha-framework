@@ -10,7 +10,6 @@ const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
   type: 'buttons',
   name: 'Buttons',
   icon: <GroupOutlined />,
-  isHidden: true,
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>

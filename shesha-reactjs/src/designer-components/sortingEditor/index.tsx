@@ -23,7 +23,6 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
     isOutput: true,
     canBeJsSetting: true,
     icon: <GroupOutlined />,
-    isHidden: true,
     Factory: ({ model }) => {
         const { data: formData } = useFormData();
         const { modelType: modelTypeExpression } = model;

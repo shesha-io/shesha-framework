@@ -11,7 +11,6 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
   type: 'dynamicItemsConfigurator',
   name: 'Dynamic Items Configurator',
   icon: <ThunderboltOutlined />,
-  isHidden: true,
   Factory: ({ model }) => {
 
     if (model.hidden) return null;

@@ -17,7 +17,6 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
   type: 'metadataEditor',
   isInput: true,
   isOutput: true,
-  isHidden: true,
   canBeJsSetting: false,
   name: 'Metadata editor',
   icon: <ApartmentOutlined />,

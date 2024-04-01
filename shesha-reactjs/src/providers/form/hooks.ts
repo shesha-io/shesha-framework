@@ -5,11 +5,11 @@ import defaultToolboxComponents from './defaults/toolboxComponents';
 
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
-  const appComponentGroups = app?.toolboxComponentGroups ?? [];
+  const appComponentGroups = app?.toolboxComponentGroups;
 
   const toolboxComponentGroups = useMemo(() => {
-    return [...(defaultToolboxComponents || []), ...appComponentGroups];
-  }, [defaultToolboxComponents, appComponentGroups]);
+    return [...(defaultToolboxComponents || []), ...(appComponentGroups || [])];
+  }, [appComponentGroups]);
   return toolboxComponentGroups;
 };
 

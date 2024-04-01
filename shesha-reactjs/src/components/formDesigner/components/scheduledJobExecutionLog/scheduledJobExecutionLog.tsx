@@ -18,7 +18,6 @@ const settingsForm = settingsFormJson as FormMarkup;
  * @deprecated
  */
 const ScheduledJobExecutionLog: IToolboxComponent<IScheduledJobExecutionLogProps> = {
-  isHidden: true,
   type: 'scheduledJobExecutionLog',
   name: 'ScheduledJobExecutionLog',
   icon: <SmallDashOutlined />,
