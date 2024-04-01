@@ -218,6 +218,22 @@
             "version": 2
         },
         {
+          "id": "adc03af1-37fb-4f03-b2b6-727b7f17730c",
+          "type": "numberField",
+          "propertyName": "minHeight",
+          "label": "Min Height",
+          "labelAlign": "right",
+          "parentId": "root",
+          "hidden": {
+            "_code": "return  getSettingValue(data?.columnType) !== 'form';",
+            "_mode": "code",
+            "_value": false
+          },
+          "validate": {},
+          "settingsValidationErrors": [],
+          "version": 2
+        },
+        {
             "id": "77ceb915-f4f9-4957-b62f-7a4e4ba00846",
             "type": "checkbox",
             "jsSetting": false,

@@ -95,6 +95,8 @@ export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {
   displayFormId?: FormIdentifier;
   createFormId?: FormIdentifier;
   editFormId?: FormIdentifier;
+
+  minHeight?: number;
 }
 
 export const isDataColumn = (column: ITableColumn): column is ITableDataColumn => {

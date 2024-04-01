@@ -20,7 +20,6 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
   icon: <FileSearchOutlined />,
   isInput: true,
   isOutput: true,
-  isHidden: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
     const { modelType: modelTypeExpression } = model;

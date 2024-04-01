@@ -35,7 +35,7 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
   return !form
     ? <LoadingOutlined />
     : (
-      <div className={styles.shaFormCell}> 
+      <div className={styles.shaFormCell} style={{minHeight: props.columnConfig.minHeight ?? 0}}> 
         <FormItemProvider labelCol={form.settings?.labelCol}>
           <ParentProvider model={{ readOnly: true }} formMode='readonly' flatComponentsStructure={flatComponentsStructure}>
             <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
@@ -64,7 +64,7 @@ export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) 
   return !form
     ? <LoadingOutlined />
     : (
-      <div className={styles.shaFormCell}> 
+      <div className={styles.shaFormCell} style={{minHeight: props.columnConfig.minHeight ?? 0}}> 
         <FormItemProvider labelCol={form.settings?.labelCol}>
           <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
             <ComponentsContainer containerId={ROOT_COMPONENT_KEY} dynamicComponents={form.markup} />
@@ -91,7 +91,7 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
   return !form
     ? <LoadingOutlined />
     : (
-      <div className={styles.shaFormCell}> 
+      <div className={styles.shaFormCell} style={{minHeight: props.columnConfig.minHeight ?? 0}}> 
         <FormItemProvider labelCol={form.settings?.labelCol}>
           <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
             <ComponentsContainer containerId={ROOT_COMPONENT_KEY} dynamicComponents={form.markup} />
