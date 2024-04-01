@@ -1,15 +1,18 @@
 import { useMemo } from 'react';
-import { FormIdentifier, useSheshaApplication } from '..';
+import { FormIdentifier, useSettingValue, useSheshaApplication } from '..';
 import { IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
-import defaultToolboxComponents from './defaults/toolboxComponents';
+import getDefaultToolboxComponents from './defaults/toolboxComponents';
 
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
+  const devMode = useSettingValue({module: "Shesha", name: "Shesha.DevMode"});
+  console.log("Shesha.DevMode", devMode);
+  const defaultToolboxComponents = getDefaultToolboxComponents(!!devMode.value);
   const appComponentGroups = app?.toolboxComponentGroups;
 
   const toolboxComponentGroups = useMemo(() => {
     return [...(defaultToolboxComponents || []), ...(appComponentGroups || [])];
-  }, [appComponentGroups]);
+  }, [defaultToolboxComponents, appComponentGroups]);
   return toolboxComponentGroups;
 };
 
