@@ -1,37 +1,37 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Button, Dropdown, Form, Input, MenuProps } from 'antd';
+import {Dropdown, Form, Input, MenuProps } from 'antd';
 import { BlockOutlined } from '@ant-design/icons';
 import { useForm } from '@/providers';
 
-export interface IPreviewButtonProps {}
+export interface IPreviewButtonProps {
+  refLink?: React.LegacyRef<HTMLSpanElement>;
+};
 
-const calculatePercentageToPx = (value: number,browserWidth:number) => {
+const calculatePercentageToPx = (value: number,browserWidth: number) => {
   return Math.round((value / 100) * browserWidth);
-}
+};
 
 
-export const DialogButton: FC<IPreviewButtonProps> = () => {
+export const DialogButton: FC<IPreviewButtonProps> = ({refLink}) => {
   const { setFormWidth,formWidth,setFormZoom} = useForm();
   const [browserWidth, setBrowserWidth] = useState<number>();
-  const [currentWidth,setCurrentWidth]=useState(calculatePercentageToPx(formWidth,browserWidth))
+  const [currentWidth,setCurrentWidth]=useState(calculatePercentageToPx(formWidth,browserWidth));
 
-
-  
   useEffect(()=>{
     if(!browserWidth){
-      setBrowserWidth(window.innerWidth)
+      setBrowserWidth(window.innerWidth);
     }else if(browserWidth){
-      setCurrentWidth(calculatePercentageToPx(formWidth,browserWidth))
+      setCurrentWidth(calculatePercentageToPx(formWidth,browserWidth));
 
-    }
-  },[formWidth,browserWidth])
+    };
+  },[formWidth,browserWidth]);
   
   const calculatePercentage=(value: number) =>{
     if(!value){
       return 0;
     }
     return (value / browserWidth) * 100;
-  }
+  };
 
   const items: MenuProps['items'] = [
     {
@@ -40,13 +40,13 @@ export const DialogButton: FC<IPreviewButtonProps> = () => {
         <Form>
           <Form.Item label="Width">
             <Input type="number"  value={currentWidth} suffix={'px'} onChange={e=>{
-                 setFormWidth(calculatePercentage(parseInt(e.target.value)))
+                 setFormWidth(calculatePercentage(parseInt(e.target.value,10)));
              }
             }/>
           </Form.Item>
           <Form.Item label="Zoom">
             <Input type="number" defaultValue={100} step={10} suffix={'%'} onChange={e=>{
-             setFormZoom(parseInt(e.target.value))
+             setFormZoom(parseInt(e.target.value,10));
             }
             }/>
           </Form.Item>
@@ -60,20 +60,14 @@ export const DialogButton: FC<IPreviewButtonProps> = () => {
 
   const menuProps = {
     items,
-    title: 'Tablet',
+    title: 'Options',
   };
-  const isCustomWidth = (formWidth === 100 || formWidth === 75)
+
   return (
-<Dropdown menu={menuProps}  placement="bottom" trigger={['click']} overlayStyle={{border:'1px dashed gray'}} >
-<Button
-        type={isCustomWidth ? 'default' : 'primary'}
-        shape="round"
-        title="disable"
-      >
-        <BlockOutlined  />
-      </Button>
+      <Dropdown menu={menuProps}   placement="bottom" trigger={['click']} overlayStyle={{border:'1px dashed gray'}} >
+        <BlockOutlined  ref={refLink}  onClick={(e) => e.preventDefault()}/>
       </Dropdown>
-  );
+       );
  };
 
   

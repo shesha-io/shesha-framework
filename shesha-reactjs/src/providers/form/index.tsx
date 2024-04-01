@@ -137,10 +137,10 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const  setFormWidth = (width: number) => {
     dispatch(setFormWidthAction(width));
-  }
+  };
   const  setFormZoom = (zoom: number) => {
     dispatch(setFormZoomAction(zoom));
-  }
+  };
 
   const setSettings = (settings: IFormSettings) => {
     dispatch(setSettingsAction(settings));

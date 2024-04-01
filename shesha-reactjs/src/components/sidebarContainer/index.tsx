@@ -47,7 +47,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       : null;
   };
 
-  const magnifiedWidth = useMemo(()=>formWidth * (zoom/100),[formWidth,zoom])
+  const magnifiedWidth = useMemo(()=>formWidth * (zoom/100),[formWidth,zoom]);
 
   return (
     <div className={styles.sidebarContainer}>
