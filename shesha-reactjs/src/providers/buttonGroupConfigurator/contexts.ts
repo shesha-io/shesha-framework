@@ -37,7 +37,6 @@ export interface IButtonGroupConfiguratorActionsContext {
 
 export const BUTTON_GROUP_CONTEXT_INITIAL_STATE: IButtonGroupConfiguratorStateContext = {
   items: [],
-  total: 0,
   readOnly: false,
 };
 
