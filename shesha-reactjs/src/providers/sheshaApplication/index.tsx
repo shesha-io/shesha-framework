@@ -45,7 +45,7 @@ import {
 } from './contexts';
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
-import { ApplicationDataProvider } from './context';
+import { ApplicationContextsProvider } from './context';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -161,7 +161,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           <ReferenceListDispatcherProvider>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
-                                <ApplicationDataProvider>
+                                <ApplicationContextsProvider>
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
@@ -171,7 +171,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                       </DynamicModalProvider>
                                     </DataSourcesProvider>
                                   </StackedNavigationProvider>
-                                </ApplicationDataProvider>
+                                </ApplicationContextsProvider>
                               </DataContextManager>
                             </MetadataDispatcherProvider>
                           </ReferenceListDispatcherProvider>

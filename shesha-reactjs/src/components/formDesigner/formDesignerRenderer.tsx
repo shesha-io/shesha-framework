@@ -14,9 +14,12 @@ export const FormDesignerRenderer: FC = ({ }) => {
           <DesignerTitle />
         </div>
       </div>
-      <div className={styles.formDesigner}>
+      <div className={styles.formDesigner} >
         <FormDesignerToolbar />
-        <DesignerMainArea />  
+   
+        <DesignerMainArea  />  
+   
+       
       </div>
     </div>
   );

@@ -141,7 +141,6 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 };
 
 const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAutocompleteComponentProps> = {
-  isHidden: true,
   type: 'contextPropertyAutocomplete',
   name: 'Context Property Autocomplete',
   icon: <FileSearchOutlined />,

@@ -32,7 +32,6 @@ const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorCompon
     type: 'dataContextSelector',
     isInput: true,
     isOutput: true,
-    isHidden: true,
     name: 'DataContext selector',
     icon: <CodeOutlined />,
     dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.string && dataFormat === StringFormats.singleline,

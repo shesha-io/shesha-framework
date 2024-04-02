@@ -9,10 +9,13 @@ import {
 import { Button, Menu } from "antd";
 import React, { FC, useState } from "react";
 import ShaMenuDrawer from "../menuDrawer/index";
+import { useStyles } from "./styles";
 
 interface IProps {}
 
 export const LayoutMenu: FC<IProps> = () => {
+  const { styles } = useStyles();
+
   const [{ open }, setState] = useState({ open: false });
   const onClick = () => setState((s) => ({ ...s, open: true }));
   const onClose = () => setState((s) => ({ ...s, open: false }));
@@ -41,8 +44,8 @@ export const LayoutMenu: FC<IProps> = () => {
     })
   );
 
-  return menuItems.length <= 3 ? (
-    <Menu mode="horizontal" items={menuItems} />
+  return menuItems.length <= 30 ? (
+    <Menu className={styles.shaMenu} mode="horizontal" items={menuItems} />
   ) : (
     <>
       <Button type="link" icon={<MenuOutlined />} onClick={onClick} />

@@ -1,4 +1,4 @@
-import CodeEditor from '../codeEditor/codeEditor';
+import { CodeEditor } from '../codeEditor/codeEditor';
 import React, { FC } from 'react';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';

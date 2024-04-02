@@ -20,7 +20,6 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
   icon: <ApiOutlined />,
   isInput: true,
   isOutput: true,
-  isHidden: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();

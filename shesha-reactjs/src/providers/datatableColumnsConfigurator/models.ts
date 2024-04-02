@@ -60,6 +60,8 @@ export interface IFormColumnsProps extends IConfigurableColumnsProps, IEditableC
   displayFormId?: FormIdentifier;
   createFormId?: FormIdentifier;
   editFormId?: FormIdentifier;
+
+  minHeight?: number;
 }
 
 /**

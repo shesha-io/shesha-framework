@@ -17,7 +17,6 @@ const Page: PageWithLayout<{}> = () => {
     const [readOnly] = useState(false);
 
     const onSelectionChange = (item: ItemType) => {
-        console.log('LOG: on select', item);
         setSelectedItem(item);
     };
 

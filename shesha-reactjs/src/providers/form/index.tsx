@@ -18,6 +18,8 @@ import {
   setFormControlsDataAction,
   setFormDataAction,
   setFormModeAction,
+  setFormWidthAction,
+  setFormZoomAction,
   setSettingsAction,
   setValidationErrorsAction,
   setVisibleComponentsAction,
@@ -131,6 +133,13 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const setFormMode = (formMode: FormMode) => {
     dispatch(setFormModeAction(formMode));
+  };
+
+  const  setFormWidth = (width: number) => {
+    dispatch(setFormWidthAction(width));
+  };
+  const  setFormZoom = (zoom: number) => {
+    dispatch(setFormZoomAction(zoom));
   };
 
   const setSettings = (settings: IFormSettings) => {
@@ -440,6 +449,8 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     getChildComponents,
     getChildComponentIds,
     setFormMode,
+    setFormWidth,
+    setFormZoom,
     setVisibleComponents,
     updateStateFormData,
     setFormControlsData,
