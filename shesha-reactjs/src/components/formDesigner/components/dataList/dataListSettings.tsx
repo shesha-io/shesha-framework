@@ -249,12 +249,12 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         }
 
         {model.formSelectionMode === 'expression' &&
-          <SettingsFormItem name="formIdExpression" label="Form identifer expression">
+          <SettingsFormItem name="formIdExpression" label="Form identifier expression">
             <CodeEditor
               readOnly={readOnly}
               mode="dialog"
               propertyName="formIdExpression"
-              label="Form identifer expression"
+              label="Form identifier expression"
               description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
               exposedVariables={[
                 { name: "item", description: "List item", type: "object" },
