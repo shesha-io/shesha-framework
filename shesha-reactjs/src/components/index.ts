@@ -73,6 +73,7 @@ export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
 export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
+export { default as EmptyState, type IEmptyStateProps } from './emptyState';
 export {
   AppEditModeToggler,
   type IAppEditModeTogglerProps as IEditModeTogglerProps,

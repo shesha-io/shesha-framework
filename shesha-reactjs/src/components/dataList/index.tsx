@@ -22,6 +22,7 @@ import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
 import { ShaIcon, IconType } from '..';
+import {EmptyState} from "..";
 
 interface EntityForm {
   entityType: string;
@@ -545,11 +546,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
         >
 
           <Show when={records?.length === 0}>
-          <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", margin: "30px"}}>
-                {noDataIcon && <ShaIcon style={{fontSize: "50"}} iconName={noDataIcon as IconType}/>}
-                <h4 style={{fontSize: "40", margin: "0px", marginTop: "10px"}}>{noDataText}</h4>
-                <p style={{margin: "0px", marginTop: "5px"}}>{noDataSecondaryText}</p>
-              </div>
+              <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
           </Show>
           <Show when={records?.length > 0}>
             { content }

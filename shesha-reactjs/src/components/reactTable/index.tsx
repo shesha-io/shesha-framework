@@ -27,6 +27,7 @@ import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
 import { ShaIcon, IconType } from '..';
+import {EmptyState} from '..';
 
 interface IReactTableState {
   allRows: any[];
@@ -509,11 +510,7 @@ export const ReactTable: FC<IReactTableProps> = ({
             {...getTableBodyProps()}
           >
             {rows?.length === 0 && !loading && (
-              <div style={{display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", margin: "30px"}}>
-                {noDataIcon && <ShaIcon style={{fontSize: "50"}} iconName={noDataIcon as IconType}/>}
-                <h4 style={{fontSize: "40", margin: "0px", marginTop: "10px"}}>{noDataText}</h4>
-                <p style={{margin: "0px", marginTop: "5px"}}>{noDataSecondaryText}</p>
-              </div>
+              <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
             )}
 
             <ConditionalWrap

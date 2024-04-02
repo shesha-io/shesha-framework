@@ -708,7 +708,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
       </div>
       
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps}  />}
+      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} data={[]}  />}
     </Fragment>
   );
 };
