@@ -1,33 +1,30 @@
 import { createStyles } from 'antd-style';
-import { sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx }) => {
   const shaGlobalEmptyState = cx(
     'sha-global-empty-state',
     css `
-      padding-right: ${sheshaStyles.paddingLG}px;
-      width: 350px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px;
 
-        .ant-title {
-          color: ${token.colorPrimary};
-          font-size: ${token.sizeLG};
-          margin-top: ${token.sizeMS};
-          font-weight: ${token.fontWeightStrong};
-        }
+    .sha-icon {
+      font-size: 30px;
+    }
 
-        .ant-paragraph {
-          color: ${token.colorPrimary};
-          font-size: ${token.sizeMD};
-        }
-      }
+    .no-data-title {
+      font-size: 15px;
+      margin: 0;
+      margin-top: 0px;
+    }
 
-      div {
-        display: "flex";
-        justify-content: "center";
-        flex-direction: "column";
-        align-items: "center";
-        margin: "30px;
-      }
+    .no-data-paragraph {
+      margin: 0;
+      margin-top: 5px;
+      font-size: 14px
+    }
     `
   );
   return {

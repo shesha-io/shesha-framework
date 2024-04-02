@@ -26,7 +26,6 @@ import { useDataTableStore } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
-import { ShaIcon, IconType } from '..';
 import {EmptyState} from '..';
 
 interface IReactTableState {
