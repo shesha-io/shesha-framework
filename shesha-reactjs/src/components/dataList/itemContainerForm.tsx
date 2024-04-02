@@ -76,7 +76,7 @@ export const ItemContainerForm: FC<PropsWithChildren<IComponentsContainerProps>>
 
   const renderComponents = () => {
     const renderedComponents = components.map((c, index) =>{ 
-     return <ConfigurableFormComponent id={c.id} index={index} key={c.id} />
+     return <ConfigurableFormComponent id={c.id} index={index} key={c.id} />;
   });
 
     return typeof props.render === 'function' ? props.render(renderedComponents) : renderedComponents;

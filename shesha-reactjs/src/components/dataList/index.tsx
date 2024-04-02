@@ -21,7 +21,6 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
-import { ShaIcon, IconType } from '..';
 import {EmptyState} from "..";
 
 interface EntityForm {
