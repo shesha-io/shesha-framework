@@ -1,10 +1,4 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import {
-  migrateCustomFunctions,
-  migratePropertyName,
-  migrateReadOnly,
-} from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { useFormData, useGlobalState } from '@/providers';
@@ -63,11 +57,6 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     content: { id: nanoid(), components: [] },
   }),
   settingsFormMarkup: (data) => getSettings(data),
-  migrator: (m) =>
-    m
-      .add<ICardComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ICardComponentProps>(1, (prev) => migrateVisibility(prev))
-      .add<ICardComponentProps>(2, (prev) => migrateReadOnly(prev)),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   customContainerNames: ['header', 'content'],
 };
