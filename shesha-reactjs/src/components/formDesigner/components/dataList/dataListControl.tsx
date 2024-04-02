@@ -28,6 +28,7 @@ export type OnSaveSuccessHandler = (
 ) => void;
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
+
   const { 
     dataSourceInstance: dataSource,
     onListItemSave,
@@ -38,7 +39,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     canAddInline,
     canEditInline,
     canDeleteInline,
-    readOnly
+    readOnly,
+    noDataText = "No Data",
+    noDataSecondaryText = "No data is available for this table",
+    noDataIcon
   } = props;
   const {
     tableData,
@@ -208,16 +212,17 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       )}
       wrapperCol={{  md: 24 }}
     >
+
       <DataList
         {...props}
-
         createFormId={props.createFormId ?? props.formId}
         createFormType={props.createFormType ?? props.formType}
-
         canAddInline={canAction(canAddInline)}
         canEditInline={canAction(canEditInline)}
         canDeleteInline={canAction(canDeleteInline)}
-
+        noDataIcon={noDataIcon}
+        noDataSecondaryText={noDataSecondaryText}
+        noDataText={noDataText}
         entityType={modelType}
         onSelectRow={onSelectRow}
         onMultiSelectRows={setMultiSelectedRow}
@@ -232,9 +237,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         createAction={creater}
         updateAction={updater}
         deleteAction={deleter}
-
         actionRef={dataListRef}
-
         modalWidth={width}
       />
     </ConfigurableFormItem>
