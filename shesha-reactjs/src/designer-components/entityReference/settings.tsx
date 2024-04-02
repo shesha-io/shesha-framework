@@ -1,7 +1,7 @@
 import { AutoComplete, Checkbox, Input, InputNumber, Select, Switch, } from 'antd';
 import React, { FC, useState } from 'react';
 import PropertyAutocomplete from '@/components/propertyAutocomplete/propertyAutocomplete';
-import CodeEditor from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
 import Show from '@/components/show';
 import { Autocomplete } from '@/components/autocomplete';
 import FormAutocomplete from '@/components/formAutocomplete';
@@ -22,7 +22,7 @@ import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({readOnly}) => {
-  const { model: state, getFieldsValue, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
+  const { values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -33,15 +33,13 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
     })
   );
 
-  const formData = getFieldsValue();
-
   return (
     <>
     <SettingsCollapsiblePanel header='Display'>
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly} 
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={formData}
+          formData={values}
           onValuesChange={onValuesChange}
         />
 
@@ -78,7 +76,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         />
       </SettingsFormItem>
 
-      <MetadataProvider modelType={state?.entityType}>
+      <MetadataProvider modelType={values?.entityType}>
         <SettingsFormItem name="displayProperty" label="Display property"  jsSetting>
           <PropertyAutocomplete readOnly={readOnly} showFillPropsButton={false} />
         </SettingsFormItem>
@@ -99,7 +97,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         </Select>
       </SettingsFormItem>
 
-      {state?.formSelectionMode === 'dynamic' && (
+      {values?.formSelectionMode === 'dynamic' && (
         <SettingsFormItem name="formType" label="Form type" jsSetting>
           <AutoComplete
             disabled={readOnly}
@@ -119,14 +117,14 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           />
         </SettingsFormItem>
       )}
-      {(state?.formSelectionMode === 'name') && (
+      {(values?.formSelectionMode === 'name') && (
         <SettingsFormItem name="formIdentifier" label="Form" jsSetting>
           <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
         </SettingsFormItem>
       )}
     </SettingsCollapsiblePanel>
 
-    <Show when={state?.entityReferenceType === 'Quickview'}>
+    <Show when={values?.entityReferenceType === 'Quickview'}>
       <SettingsCollapsiblePanel header='Quickview settings'>
         <SettingsFormItem name="quickviewWidth" label="Quickview width" jsSetting>
           <InputNumber min={0} defaultValue={600} step={1} readOnly={readOnly} />
@@ -134,7 +132,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
       </SettingsCollapsiblePanel>
     </Show>
 
-    <Show when={state?.entityReferenceType === 'Dialog'}>
+    <Show when={values?.entityReferenceType === 'Dialog'}>
       <SettingsCollapsiblePanel header='Dialog settings'>
         <SettingsFormItem name="modalTitle" label="Title" jsSetting>
           <Input readOnly={readOnly} />
@@ -144,7 +142,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
 
-        {state?.showModalFooter &&
+        {values?.showModalFooter &&
           <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb" jsSetting>
             <Select disabled={readOnly}>
               <Select.Option value="POST">POST</Select.Option>
@@ -183,7 +181,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
             <Select.Option value="custom">Custom</Select.Option>
           </Select>
         </SettingsFormItem>
-        {state?.modalWidth === 'custom' &&
+        {values?.modalWidth === 'custom' &&
           <>
             <SettingsFormItem name="widthUnits" label="Units" jsSetting>
               <Select disabled={readOnly}>
@@ -200,7 +198,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         <SettingsFormItem name="handleSuccess" label="Handle Success" valuePropName="checked">
           <Switch />
         </SettingsFormItem>
-        {state?.handleSuccess &&
+        {values?.handleSuccess &&
           <CollapsiblePanel header="On Success handler">
             <SettingsFormItem name="onSuccess" label="On Success">
               <ConfigurableActionConfigurator editorConfig={null} level={0} />
@@ -211,7 +209,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         <SettingsFormItem name="handleFail" label="Handle Fail" valuePropName="checked">
           <Switch />
         </SettingsFormItem>
-        {state?.handleFail &&
+        {values?.handleFail &&
           <CollapsiblePanel header="On Fail handler">
             <SettingsFormItem name="onFail" label="On Fail">
               <ConfigurableActionConfigurator editorConfig={null} level={0} />
@@ -235,7 +233,6 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           readOnly={readOnly}
           mode="dialog"
           label="Style"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           propertyName="style"
           description="CSS Style"
           exposedVariables={[

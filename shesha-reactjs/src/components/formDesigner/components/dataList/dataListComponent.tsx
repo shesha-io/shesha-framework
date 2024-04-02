@@ -17,7 +17,6 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStore(false);
-
     if (model.hidden) return null;
   
     const dataSource = model.dataSource
@@ -61,6 +60,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
         dblClickActionConfiguration: prev['actionConfiguration']
+        
       };
     })
     .add<IDataListComponentProps>(6, prev => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))

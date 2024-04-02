@@ -63,7 +63,8 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     configurableColumns,
     width,
     outcomeValueFunc,
-    incomeValueFunc
+    incomeValueFunc,
+    placeholder
   } = props;
 
   const { styles } = useStyles();
@@ -189,6 +190,8 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
     }
   }, [filters, formData, globalState]);
 
+ 
+
   useEffect(() => {
     const { showModal } = state;
     if (showModal) {
@@ -281,7 +284,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
             {title}
           </Button>
         ) : (
-          <Input.Group style={{ width: '100%' }}>
+          <Input.Group style={{ width: '100%' }} >
             <Select
               size={size}
               onClick={() => {
@@ -289,17 +292,17 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
                 showPickerDialog();
               }}
               value={selection.loading ? undefined : valueId}
-              placeholder={selection.loading ? 'Loading...' : undefined}
+              placeholder={selection.loading ? 'Loading...' : placeholder}
               notFoundContent={''}
               defaultValue={defaultValue}
               disabled={disabled || selection.loading}
               ref={selectRef}
               allowClear
               mode={selectedMode}
-              options={options}
+              options={options}              
               suffixIcon={null} // hide arrow              
               onChange={handleMultiChange}
-              style={{ ...style, width: 'calc(100% - 32px)' }}
+              style={{ ...style, width: `calc(100% - ${size === 'large'? '40px' : '32px'})`}}     
               loading={selection.loading}
             >
               {''}
@@ -361,7 +364,8 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
 
 export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
   return restProps.readOnly ? (
-    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
+
+   <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );

@@ -33,6 +33,9 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   actionRef?: MutableRefObject<any>;
 
   modalWidth?: string;
+  noDataText?: string;
+  noDataSecondaryText?: string;
+  noDataIcon?: string;
 }
 
 export interface IDataListBaseProps {
@@ -66,6 +69,9 @@ export interface IDataListBaseProps {
 
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
+  noDataText?: string;
+  noDataSecondaryText?: string;
+  noDataIcon?: string;
 
   onNewListItemInitialize?: string;
 }

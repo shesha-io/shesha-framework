@@ -269,6 +269,8 @@ export const prepareColumn = (
       displayFormId: col.displayFormId,
       createFormId: col.createFormId,
       editFormId: col.editFormId,
+
+      minHeight: col.minHeight,
     } as ITableFormColumn;
   }
 

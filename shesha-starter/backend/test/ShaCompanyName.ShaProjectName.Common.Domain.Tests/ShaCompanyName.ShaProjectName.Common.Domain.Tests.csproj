@@ -9,9 +9,9 @@
 	<ItemGroup>
 		<PackageReference Include="Abp.Castle.Log4Net" Version="9.0.0" />
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
-		<PackageReference Include="Shesha.Application" Version="0.31.0-beta.63610" />
-		<PackageReference Include="Shesha.Core" Version="0.31.0-beta.63610" />
-		<PackageReference Include="Shesha.Framework" Version="0.31.0-beta.63610" />
+		<PackageReference Include="Shesha.Application" Version="0.32.0-beta.65173" />
+		<PackageReference Include="Shesha.Core" Version="0.32.0-beta.65173" />
+		<PackageReference Include="Shesha.Framework" Version="0.32.0-beta.65173" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Identity.Client" Version="4.54.1" />

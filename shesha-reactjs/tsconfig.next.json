@@ -7,7 +7,8 @@
       }
     ],
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+    "noEmit": true
   },
   "include": [
     "src",

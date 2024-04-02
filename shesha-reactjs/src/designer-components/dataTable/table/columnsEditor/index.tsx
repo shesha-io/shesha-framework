@@ -14,7 +14,6 @@ const ColumnsEditorComponent: IToolboxComponent<IColumnsEditorComponentProps> = 
   type: 'columnsEditorComponent',
   name: 'Columns Editor Component',
   icon: <ColumnWidthOutlined />,
-  isHidden: true, // We do not want to show this on the component toolbox
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>

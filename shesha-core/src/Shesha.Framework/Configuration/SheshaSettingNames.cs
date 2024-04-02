@@ -3,11 +3,7 @@
     public static class SheshaSettingNames
     {
         public const string UploadFolder = "Shesha.UploadFolder";
-
-        public static class RabbitMQ 
-        {
-            public const string ExchangeName = "Shesha.ExchangeName";
-        }
+        public const string DevMode = "Shesha.DevMode";
 
         public static class Security
         {
@@ -27,12 +23,6 @@
         {
             public const string SmsGateway = "Shesha.Sms.SmsGateway";
             public const string RedirectAllMessagesTo = "Shesha.Sms.RedirectAllMessagesTo";
-        }
-
-        public static class Push
-        {
-            public const string PushNotifier = "Shesha.Push.PushNotifier";
-            public const string PushNotificationsEnabled = "Shesha.Push.PushNotificationsEnabled";
         }
 
         public static class Email

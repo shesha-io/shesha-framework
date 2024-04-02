@@ -7,7 +7,6 @@ import { ApplicationActionsProcessor } from './configurable-actions/applicationA
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
 import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
 import { DataContextManager } from '@/providers/dataContextManager';
-import DataContextProvider from '@/providers/dataContextProvider';
 import { DataSourcesProvider } from '@/providers/dataSourcesProvider';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 import { IToolboxComponentGroup } from '@/interfaces';
@@ -38,14 +37,15 @@ import {
 import {
   DEFAULT_ACCESS_TOKEN_NAME,
   DEFAULT_SHESHA_ROUTES,
+  ISheshaApplication,
   ISheshaRutes,
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
   SheshaApplicationActionsContext,
   SheshaApplicationStateContext,
 } from './contexts';
-import { SheshaCommonContexts } from '../dataContextManager/models';
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
+import { ApplicationContextsProvider } from './context';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -161,12 +161,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           <ReferenceListDispatcherProvider>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
-                                <DataContextProvider
-                                  id={SheshaCommonContexts.ApplicationContext}
-                                  name={SheshaCommonContexts.ApplicationContext}
-                                  description={'Application context'}
-                                  type={'root'}
-                                >
+                                <ApplicationContextsProvider>
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
@@ -176,7 +171,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                       </DynamicModalProvider>
                                     </DataSourcesProvider>
                                   </StackedNavigationProvider>
-                                </DataContextProvider>
+                                </ApplicationContextsProvider>
                               </DataContextManager>
                             </MetadataDispatcherProvider>
                           </ReferenceListDispatcherProvider>
@@ -194,7 +189,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   );
 };
 
-function useSheshaApplication(require: boolean = true) {
+const useSheshaApplication = (require: boolean = true): ISheshaApplication => {
   const stateContext = useContext(SheshaApplicationStateContext);
   const actionsContext = useContext(SheshaApplicationActionsContext);
 
@@ -203,6 +198,6 @@ function useSheshaApplication(require: boolean = true) {
   }
 
   return { ...stateContext, ...actionsContext };
-}
+};
 
 export { ShaApplicationProvider, useSheshaApplication };
