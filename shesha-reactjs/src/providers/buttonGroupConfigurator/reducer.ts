@@ -28,7 +28,10 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       const newItems = [...state.items];
       const parent = state.selectedItemId ? (getItemById(newItems, state.selectedItemId) as IButtonGroup) : null;
       if (parent && parent.itemType === 'group') {
-        parent.childItems = [...parent.childItems, buttonProps];
+        parent.childItems = [...parent.childItems, buttonProps].map((item, i)=> ({...item, 
+        sortOrder: i + 1,
+        name: `button${i + 1}`,
+        label: `Button ${i + 1}`}));
       } else newItems.push(buttonProps);
 
       return {
@@ -102,6 +105,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       };
 
       const newItems = updateItems(state.items);
+      console.log(newItems)
 
       return {
         ...state,
