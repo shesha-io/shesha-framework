@@ -70,6 +70,45 @@ namespace Shesha.Migrations
 						OR Category like '%RabbitMQ%'
 					)
             ");
+
+            IfDatabase("SqlServer").Execute.Sql(@"
+                DELETE ci
+                FROM Frwk_ConfigurationItems ci
+                JOIN Frwk_SettingConfigurations sc ON ci.Id = sc.Id
+                WHERE sc.Id IN (
+                    SELECT 
+                        ci.Id
+                    FROM 
+                        Frwk_ConfigurationItems ci
+                    WHERE
+                        ci.ItemType = 'setting-configuration'
+                        AND (
+                            ci.name LIKE 'GatewaySettings%'
+                            OR ci.Name LIKE 'Shesha.AzureAD%'
+                            OR ci.Name LIKE 'Shesha.Ldap%'
+                            OR ci.Name LIKE 'Shesha.Firebase%'
+                            OR ci.Name LIKE 'Shesha.Push%' 
+                            OR ci.Name LIKE '%ExchangeName%'
+                        )
+                )
+                AND (
+                    sc.Category LIKE '%SMS Portal%'
+                    OR sc.Category LIKE '%Bulk SMS%'
+                    OR sc.Category LIKE '%Xml2Sms%'
+                    OR sc.Category LIKE '%Azure AD%'
+                    OR sc.Category LIKE '%LDAP%'
+                    OR sc.Category LIKE '%Firebase%'
+                    OR sc.Category LIKE '%Push%'
+                    OR sc.Category LIKE '%RabbitMQ%'
+                );
+            ");
+
+            // remove settings configuration without corresponding configurations
+            Execute.Sql(@"delete from 
+	            Frwk_ConfigurationItems
+                WHERE
+	            ItemType = 'setting-configuration'
+	            AND NOT EXISTS (select 1 from Frwk_SettingConfigurations where Id = Frwk_ConfigurationItems.Id)");
         }
 
         /// <summary>
