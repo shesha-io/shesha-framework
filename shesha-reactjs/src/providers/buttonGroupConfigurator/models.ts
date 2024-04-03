@@ -64,7 +64,6 @@ export interface IButtonGroup extends IButtonGroupItemBase {
    * Child items (buttons or nested groups)
    */
   childItems?: ButtonGroupItemProps[];
-  /* */
   count: number,
 }
 

@@ -26,7 +26,6 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       };
 
       const newItems = [...state.items];
-
       const parent = state.selectedItemId ? (getItemById(newItems, state.selectedItemId) as IButtonGroup) : null;
       if (parent && parent.itemType === 'group') {
         buttonProps.name = `button${parent.count + 1}`,
@@ -84,8 +83,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
         childItems: [],
         count: 0,
         editMode: 'inherited'
-      };
-
+      }
       return {
         ...state,
         items: [...state.items, groupProps],
@@ -112,8 +110,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       };
 
       const newItems = updateItems(state.items);
-      console.log(newItems)
-
+    
       return {
         ...state,
         items: [...newItems],
