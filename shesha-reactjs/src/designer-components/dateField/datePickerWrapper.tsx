@@ -98,8 +98,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         );
     }
 
-    const evaluatedStyle = getStyle(style, formData, globalState);
-
+    const evaluatedStyle = style ? getStyle(style, formData, globalState) : { width: '100%' };
 
     if (range) {
         return (
@@ -135,7 +134,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             showSecond={true}
             picker={picker}
             format={pickerFormat}
-            style={{...evaluatedStyle, width: '100%'}}
+            style={evaluatedStyle}
             {...rest}
             {...getDatePickerValue(props, pickerFormat)}
             allowClear
