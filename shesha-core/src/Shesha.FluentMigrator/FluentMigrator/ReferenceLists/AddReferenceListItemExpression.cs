@@ -9,13 +9,16 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     public class AddReferenceListItemExpression : SheshaMigrationExpressionBase
     {
-        public AddReferenceListItemExpression(IQuerySchema querySchema) : base(querySchema)
+        public AddReferenceListItemExpression(IQuerySchema querySchema, string @namespace, string name, ReferenceListItemDefinition item) : base(querySchema)
         {
+            Namespace = @namespace;
+            Name = name;
+            Item = item;
         }
 
         public string Name { get; set; }
         public string Namespace { get; set; }
-        public ReferenceListItemDefinition Item { get; set; } = new ReferenceListItemDefinition();
+        public ReferenceListItemDefinition Item { get; set; }
 
         public override void ExecuteWith(IMigrationProcessor processor)
         {

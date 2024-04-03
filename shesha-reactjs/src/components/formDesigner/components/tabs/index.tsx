@@ -49,6 +49,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           permissions,
           hidden,
           readOnly,
+          selectMode,
           components,
         } = tabModel;
 
@@ -72,7 +73,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           animated: animated,
           destroyInactiveTabPane: destroyInactiveTabPane,
           closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
-          disabled: readOnly,
+          disabled: selectMode === 'readOnly' || selectMode === 'inherited' && readOnly,
           style: getLayoutStyle(model, { data, globalState }),
           children: (
             <ParentProvider model={tabModel}>

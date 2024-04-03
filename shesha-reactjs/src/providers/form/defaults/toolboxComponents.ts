@@ -21,7 +21,6 @@ import FormAutocompleteComponent from '@/components/formDesigner/components/form
 import IconPicker from '@/components/formDesigner/components/iconPicker';
 import Image from '@/components/formDesigner/components/image';
 import ImageAnnotationComponent from '@/components/formDesigner/components/imageAnnotation';
-import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
 import Paragraph from '@/components/formDesigner/components/legacy/paragraph';
 import Title from '@/components/formDesigner/components/legacy/title';
 import Link from '@/components/formDesigner/components/link';
@@ -52,9 +51,11 @@ import Tabs from '@/components/formDesigner/components/tabs';
 import Text from '@/components/formDesigner/components/text';
 import ValidationErrors from '@/components/formDesigner/components/validationErrors';
 import Wizard from '@/components/formDesigner/components/wizard';
+import { ComponentSelectorComponent } from '@/designer-components';
 import SettingsComponent from '@/designer-components/_settings/settingsComponent';
 import AttachmentsEditor from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import Autocomplete from '@/designer-components/autocomplete/autocomplete';
+import Card from '@/designer-components/card';
 import Checkbox from '@/designer-components/checkbox/checkbox';
 import CollapsiblePanel from '@/designer-components/collapsiblePanel/collapsiblePanelComponent';
 import ConfigurableActionConfigurator from '@/designer-components/configurableActionsConfigurator';
@@ -78,8 +79,11 @@ import Toolbar from '@/designer-components/dataTable/toolbar/toolbarComponent';
 import DateField from '@/designer-components/dateField/dateField';
 import Dropdown from '@/designer-components/dropdown';
 import { DynamicActionsConfiguratorComponent } from '@/designer-components/dynamicActionsConfigurator/index';
+import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
 import EntityReferenceComponent from '@/designer-components/entityReference/entityReference';
 import FileUpload from '@/designer-components/fileUpload';
+import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
+import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 import NumberFieldComponent from '@/designer-components/numberField/numberField';
 import QueryBuilderComponent from '@/designer-components/queryBuilder/queryBuilderComponent';
 import RefListStatusComponent from '@/designer-components/refListStatus';
@@ -88,9 +92,6 @@ import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
-import { ComponentSelectorComponent } from '@/designer-components';
-import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
-import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 
 export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[] => {
   return [
@@ -116,13 +117,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
     {
       name: 'Data display',
       visible: true,
-      components: [
-        Alert,
-        Link,
-        Statistic,
-        Text,
-        ValidationErrors,
-      ],
+      components: [Alert, Link, Statistic, Text, ValidationErrors],
     },
     {
       name: 'Advanced',
@@ -182,6 +177,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
       name: 'Layout',
       visible: true,
       components: [
+        Card,
         CollapsiblePanel,
         Columns,
         ContainerComponent,
@@ -207,16 +203,16 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         EntityPickerColumnsEditor,
         ColumnsEditor, // Hidden
         ReferenceListAutocompleteComponent,
-        PropertyAutocompleteComponent, 
-        SortingEditorComponent, 
+        PropertyAutocompleteComponent,
+        SortingEditorComponent,
         EditModeSelectorComponent,
         ConfigurableActionConfigurator,
         DynamicActionsConfiguratorComponent,
         PermissionedObjectsTree,
         PermissionsTree,
         LabelValueEditorComponent,
-        DataContextSelector, 
-        ContextPropertyAutocompleteComponent, 
+        DataContextSelector,
+        ContextPropertyAutocompleteComponent,
         SettingsComponent,
         MetadataEditorComponent,
         Buttons,

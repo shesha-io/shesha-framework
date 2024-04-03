@@ -27,7 +27,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
         /// <param name="orderIndex"></param>
         /// <param name="description"></param>
         /// <returns></returns>
-        IUpdateReferenceListSyntax AddItem(long value, string item, Int64? orderIndex = null, string description = null);
+        IUpdateReferenceListSyntax AddItem(long value, string item, Int64? orderIndex = null, string? description = null);
 
         /// <summary>
         /// Update item

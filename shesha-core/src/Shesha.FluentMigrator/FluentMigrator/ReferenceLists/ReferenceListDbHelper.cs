@@ -22,7 +22,7 @@ namespace Shesha.FluentMigrator.ReferenceLists
             return _querySchema.ColumnExists(null, "Frwk_ReferenceLists", "Name") && _querySchema.ColumnExists(null, "Frwk_ReferenceLists", "Namespace");
         }
 
-        internal Guid InsertReferenceList(string @namespace, string name, string description)
+        internal Guid InsertReferenceList(string @namespace, string name, string? description)
         {
             var existingId = GetReferenceListId(@namespace, name);
             if (existingId.HasValue)
