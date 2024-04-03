@@ -27,6 +27,7 @@ import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { EntityReference } from '@/components/entityReference';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -44,6 +45,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model, form }) => {
+
     const { queryParams, filter } = model;
     const { formMode, setFormData } = useForm();
     const { data } = useFormData();
@@ -208,14 +210,21 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
             if (typeof onChange === 'function') 
               onChange(...args);
           };
-         
           
+          if(model.readOnly == false){
           return (
           model.useRawValues ? (
             <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-          ) : (
+            ) : (
             <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
           ));
+            }else{
+              return(
+                <EntityReference entityReferenceType={'Quickview'} formSelectionMode={'name'} handleSuccess={false} handleFail={false} displayProperty={''} {...model} disabled={model.readOnly} value={value} />
+              );
+            }
+            
+          
         }}
       </ConfigurableFormItem>
     );

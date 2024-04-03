@@ -21,6 +21,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   isOutput: true,
   icon: <LinkExternalOutlined />,
   Factory: ({ model: passedModel }) => {
+    
     const { style, hidden, readOnly, ...model } = passedModel;
     if (hidden)
       return null;
