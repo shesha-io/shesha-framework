@@ -98,8 +98,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         );
     }
 
-    const evaluatedStyle = {...getStyle(style, formData, globalState), width: '100%'};
-
+    const evaluatedStyle = {width: '100%', ...getStyle(style, formData, globalState)};
 
     if (range) {
         return (
