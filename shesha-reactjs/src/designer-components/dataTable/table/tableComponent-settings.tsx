@@ -363,7 +363,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         <Input defaultValue={"No data is available for this table"} readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="noDataIcon" label="Picker" jsSetting>
+      <SettingsFormItem name="noDataIcon" label="Icon" jsSetting>
       {(value, onChange)=>
          <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} defaultValue={"RightOutlined"}/> 
       }
