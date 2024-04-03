@@ -13,26 +13,30 @@ import { getItemById, updateBranch } from './utils';
 const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, any>(
   {
     [ButtonGroupActionEnums.AddButton]: (state: IButtonGroupConfiguratorStateContext) => {
-      const buttonsCount = state.items.filter((i) => i.itemType === 'item').length;
+
       const buttonProps: IButtonGroupItem = {
         id: nanoid(),
         itemType: 'item',
-        sortOrder: state.items.length,
-        name: `button${buttonsCount + 1}`,
-        label: `Button ${buttonsCount + 1}`,
+        sortOrder: state.buttonCount,
+        name: `button${state.buttonCount + 1}`,
+        label: `Button ${state.buttonCount + 1}`,
         itemSubType: 'button',
         buttonType: 'link',
         editMode: 'inherited'
       };
 
       const newItems = [...state.items];
+
       const parent = state.selectedItemId ? (getItemById(newItems, state.selectedItemId) as IButtonGroup) : null;
       if (parent && parent.itemType === 'group') {
-        parent.childItems = [...parent.childItems, buttonProps].map((item, i)=> ({...item, 
-        sortOrder: i + 1,
-        name: `button${i + 1}`,
-        label: `Button ${i + 1}`}));
-      } else newItems.push(buttonProps);
+        buttonProps.name = `button${parent.count + 1}`,
+        buttonProps.label = `Button ${parent.count + 1}`
+        parent.childItems = [...parent.childItems, buttonProps];
+        parent.count = parent.count + 1;
+      } else {
+        state.buttonCount  = state.buttonCount + 1;
+        newItems.push(buttonProps);
+      };
 
       return {
         ...state,
@@ -68,21 +72,24 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
     },
 
     [ButtonGroupActionEnums.AddGroup]: (state: IButtonGroupConfiguratorStateContext) => {
-      const groupsCount = state.items.filter((i) => i.itemType === 'group').length;
+      const groupsCount = state.groupCount;
       const groupProps: IButtonGroup = {
         id: nanoid(),
         itemType: 'group',
-        sortOrder: state.items.length,
+        sortOrder: state.groupCount,
         name: `group${groupsCount + 1}`,
         label: `Group ${groupsCount + 1}`,
         buttonType: 'link',
         hideWhenEmpty: true,
         childItems: [],
+        count: 0,
         editMode: 'inherited'
       };
+
       return {
         ...state,
         items: [...state.items, groupProps],
+        groupCount: state.groupCount + 1,
         selectedItemId: groupProps.id,
       };
     },
