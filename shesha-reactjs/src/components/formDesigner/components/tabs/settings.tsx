@@ -28,6 +28,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
       key: id,
       title: `Tab ${count + 1}`,
       editMode: 'editable',
+      selectMode: 'editable',
       components: [],
     };
 

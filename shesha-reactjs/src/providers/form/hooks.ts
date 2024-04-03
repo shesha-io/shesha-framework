@@ -6,7 +6,6 @@ import getDefaultToolboxComponents from './defaults/toolboxComponents';
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
   const devMode = useSettingValue({module: "Shesha", name: "Shesha.DevMode"});
-  console.log("Shesha.DevMode", devMode);
   const defaultToolboxComponents = getDefaultToolboxComponents(!!devMode.value);
   const appComponentGroups = app?.toolboxComponentGroups;
 
