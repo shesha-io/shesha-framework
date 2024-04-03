@@ -1,5 +1,5 @@
 import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
-import React, { CSSProperties, FC } from 'react';
+import React, { CSSProperties, FC, Suspense } from 'react';
 import RefTag from './tag';
 import { Alert, Skeleton } from 'antd';
 import { DescriptionTooltip } from './tooltip';
@@ -24,9 +24,12 @@ const Icon = ({ type, ...rest }) => {
 
 export const RefListStatus: FC<IRefListStatusProps> = (props) => {
   const { styles } = useStyles();
-  const { value, referenceListId, showIcon, solidBackground,showReflistName } = props;
-
+  const { value, referenceListId, showIcon, solidBackground,showReflistName} = props;
   const listItem = useReferenceListItem(referenceListId?.module, referenceListId?.name, value);
+
+  if (!props) {
+    return <Suspense fallback={<Skeleton.Button/>}></Suspense>;
+   }
 
   if (listItem?.error && !listItem?.loading) {
     return (
@@ -49,22 +52,17 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
   if (!itemData?.itemValue && !listItem?.loading) return null;
 
-  return listItem?.loading ? (
-    <Skeleton.Button />
-  ) : (
-   
-    <div className={styles.shaStatusTagContainer}>
-          <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}> 
+  if (!itemData?.item && !listItem?.loading ) return null;
 
-
-        <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}>
-          {showReflistName && itemData?.item}
-        </RefTag>
-      
+  return (listItem?.loading
+    ?
+      <Skeleton.Button/>
+    :
+      <div className={styles.shaStatusTagContainer}>
+        <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}> 
+         <RefTag color={memoizedColor} icon={canShowIcon ? <Icon type={itemData?.icon} /> : null}>
+           {showReflistName && itemData?.item}
+         </RefTag>
         </DescriptionTooltip> 
-        </div>
-
-   
-  
-  );
+      </div>);  
 };
