@@ -28,16 +28,19 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
         setRadioValue('desktop');
         setCanvasWidth(100);
       }
-      }>
+      }
+      title="Desktop">
         <DesktopOutlined/>
         </Radio.Button>
       <Radio.Button value="tablet"  onClick={()=>{
             setRadioValue('tablet');
             setCanvasWidth(75);     
-      }}>
+      }}
+      title="Tablet"
+      >
         <TabletOutlined/>
       </Radio.Button>
-      <Radio.Button value="dialog" onClick={()=> dialogRef.current.click()}>
+      <Radio.Button value="dialog" onClick={()=> dialogRef.current.click()}   title="Custom-Width">
         <DialogButton refLink={dialogRef}/>
         </Radio.Button>
     </Radio.Group>
