@@ -358,11 +358,6 @@
           "type": "object"
         },
         {
-          "name": "initialValues",
-          "description": "Initial values",
-          "type": "object"
-        },
-        {
           "name": "http",
           "description": "axios instance used to make http requests",
           "type": "object"
