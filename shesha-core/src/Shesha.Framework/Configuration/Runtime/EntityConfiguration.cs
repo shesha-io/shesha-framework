@@ -18,6 +18,8 @@ namespace Shesha.Configuration.Runtime
     /// </summary>
     public class EntityConfiguration
     {
+        private const int _typeShortAliasMaxLength = 50;
+
         private static IDictionary<Type, EntityConfiguration> _entityConfigurations =
             new Dictionary<Type, EntityConfiguration>();
 
@@ -60,16 +62,25 @@ namespace Shesha.Configuration.Runtime
                     throw new ConfigurationErrorsException(
                         $"TypeShortAlias property for entity '{EntityType.FullName}' has not been specified.");
 
-                const int typeShortAliasMaxLength = 50;
-                if (!string.IsNullOrEmpty(_typeShortAlias) && _typeShortAlias.Length > typeShortAliasMaxLength)
+                if (!TypeShortAliasIsValid)
                     throw new ConfigurationErrorsException(
-                        $"TypeShortAlias property for entity '{EntityType.FullName}' must be {typeShortAliasMaxLength} characters or less.");
+                        $"TypeShortAlias property for entity '{EntityType.FullName}' must be {_typeShortAliasMaxLength} characters or less.");
 
                 return _typeShortAlias;
             }
             set => _typeShortAlias = value;
         }
+
+        public bool TypeShortAliasIsValid
+        {
+            get 
+            {
+                return string.IsNullOrEmpty(_typeShortAlias) || _typeShortAlias.Length <= _typeShortAliasMaxLength;
+            }
+        }
+
         public string FriendlyName { get; set; }
+        public string Accessor { get; set; }
 
         public string TableName => MappingMetadata?.TableName;
         public string DiscriminatorValue => MappingMetadata?.DiscriminatorValue;

@@ -7,6 +7,7 @@ using Shesha.Bootstrappers;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Modules;
+using Shesha.Utilities;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -56,6 +57,7 @@ namespace Shesha.ConfigurationItems
                     var version = moduleInfo.UseAssemblyVersion
                         ? FileVersionInfo.GetVersionInfo(type.Assembly.Location).FileVersion
                         : moduleInfo.VersionNo;
+                    var accessor = moduleInfo.GetModuleAccessor();
 
                     return new
                     {
@@ -63,6 +65,7 @@ namespace Shesha.ConfigurationItems
                         Instance = instance,
                         ModuleInfo = moduleInfo,
                         Version = version,
+                        Accessor = accessor
                     };
                 })
                 .ToList();
@@ -88,6 +91,7 @@ namespace Shesha.ConfigurationItems
                     {
                         Name = codeModule.ModuleInfo.Name,
                         FriendlyName = codeModule.ModuleInfo.FriendlyName,
+                        Accessor = codeModule.Accessor,
                         Description = codeModule.ModuleInfo.Description,
                         Publisher = codeModule.ModuleInfo.Publisher,
                         IsEditable = codeModule.ModuleInfo.IsEditable,
@@ -101,6 +105,7 @@ namespace Shesha.ConfigurationItems
                 }
                 else {
                     dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
+                    dbModule.Accessor = codeModule.Accessor;
                     dbModule.FriendlyName = codeModule.ModuleInfo.FriendlyName;
                     dbModule.Description = codeModule.ModuleInfo.Description;
                     dbModule.Publisher = codeModule.ModuleInfo.Publisher;

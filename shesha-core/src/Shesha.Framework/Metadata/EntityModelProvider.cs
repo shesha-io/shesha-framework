@@ -8,6 +8,7 @@ using Abp.Runtime.Caching;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using Shesha.Utilities;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Metadata
 {
-    public class EntityModelProvider : BaseModelProvider, ITransientDependency,
+    public class EntityModelProvider : BaseModelProvider<EntityModelDto>, IEntityModelProvider, ITransientDependency,
         IEventHandler<EntityChangedEventData<EntityConfig>>,
         IEventHandler<EntityChangingEventData<ConfigurationItem>>
     {
@@ -54,27 +55,31 @@ namespace Shesha.Metadata
             };
         }
 
-        protected override Task<List<ModelDto>> FetchModelsAsync()
+        protected async override Task<List<EntityModelDto>> FetchModelsAsync()
         {
-            var types = _entityConfigRepository.GetAll().ToList()
+            var types = (await _entityConfigRepository.GetAll().ToListAsync())
                 .Select(t =>
                 {
                     var config = _entityConfigurationStore.GetOrNull(t.FullClassName);
                     return config == null && t.Source == Domain.Enums.MetadataSourceType.ApplicationCode
                         ? null
-                        : new ModelDto
+                        : new EntityModelDto
                         {
                             Suppress = t.Suppress,
                             ClassName = t.FullClassName,
                             Type = config?.EntityType,
                             Description = t.Description ?? (config?.EntityType != null ? ReflectionHelper.GetDescription(config?.EntityType) : ""),
                             Alias = string.IsNullOrWhiteSpace(t.TypeShortAlias) ? config?.SafeTypeShortAlias : t.TypeShortAlias,
+                            Accessor = t.Accessor,
+                            ModuleAccessor = t.Module?.Accessor,
+                            MD5 = t.PropertiesMD5,
+                            ModificationTime = t.LastModificationTime ?? t.CreationTime,
                         };
                 })
                 .Where(t => t != null)
                 .ToList();
 
-            return Task.FromResult(types);
+            return types;
         }
     }
 }
