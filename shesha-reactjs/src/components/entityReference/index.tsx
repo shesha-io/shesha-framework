@@ -249,8 +249,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   }, [formIdentifier, displayText, entityId, props.disabled, property.length]);
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
-
-  console.log(formIdentifier, "ENTITY_REFERENCE_FORM_IDENTIFIER");
     return (
       <Button className={styles.entityReferenceBtn} type="link" disabled>
         Form identifier is not configured
