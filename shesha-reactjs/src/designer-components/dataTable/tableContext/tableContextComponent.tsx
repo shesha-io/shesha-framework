@@ -15,6 +15,8 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   type: 'datatableContext',
   name: 'DataTable Context',
   icon: <LayoutOutlined />,
+  isOutput: true,
+  isInput: true,
   Factory: ({ model }) => {
     return <TableContext {...model} />;
   },
@@ -50,6 +52,9 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  getFieldsToFetch: (propertyName, rawModel) => {
+    return rawModel.sourceType === 'Form' ? [propertyName] : [];
+  },
 };
 
 export default TableContextComponent;
