@@ -10,6 +10,7 @@ using Shesha.Authentication.External;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization.Models;
 using Shesha.Authorization.Users;
+using Shesha.Configuration;
 using Shesha.Controllers;
 using Shesha.Domain;
 using Shesha.Extensions;
@@ -37,6 +38,7 @@ namespace Shesha.Authorization
         private readonly UserRegistrationManager _userRegistrationManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<MobileDevice, Guid> _mobileDeviceRepository;
+        private readonly IAuthenticationSettings _authSetting;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -47,7 +49,8 @@ namespace Shesha.Authorization
             IExternalAuthManager externalAuthManager,
             UserRegistrationManager userRegistrationManager,
             IRepository<Person, Guid> personRepository,
-            IRepository<MobileDevice, Guid> mobileDeviceRepository)
+            IRepository<MobileDevice, Guid> mobileDeviceRepository,
+            IAuthenticationSettings authSetting)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -58,6 +61,7 @@ namespace Shesha.Authorization
             _userRegistrationManager = userRegistrationManager;
             _personRepository = personRepository;
             _mobileDeviceRepository = mobileDeviceRepository;
+            _authSetting = authSetting;
         }
 
         [HttpPost]
@@ -89,6 +93,11 @@ namespace Shesha.Authorization
                 ? await _mobileDeviceRepository.FirstOrDefaultAsync(e => e.IMEI == imei.Trim())
                 : null;
 
+            var changePasswordUrl = loginResult.User.ChangePasswordOnNextLogin
+                ? await _authSetting.PasswordChangeUrl.GetValueAsync()
+                : null;
+            
+
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
@@ -97,7 +106,9 @@ namespace Shesha.Authorization
                 ExpireOn = DateTime.Now.AddSeconds(expireInSeconds),
                 UserId = loginResult.User.Id,
                 PersonId = personId,
-                DeviceName = device?.Name
+                DeviceName = device?.Name, 
+                ShouldChangePassword = loginResult.User.ChangePasswordOnNextLogin,
+                PasswordChangeUrl = changePasswordUrl
             };
         }
 

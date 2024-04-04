@@ -121,6 +121,7 @@ namespace Shesha
 
                 s.AutoLogoffTimeout.WithDefaultValue(0);
                 s.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.WithDefaultValue(3);
+                s.PasswordChangeUrl.WithDefaultValue("/account/change-password");
             });
             IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
                 s.RequiredLength.WithDefaultValue(3);

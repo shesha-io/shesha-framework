@@ -87,5 +87,12 @@ namespace Shesha.Configuration
         [Display(Name = "Num questions allowed")]
         [Setting(SheshaSettingNames.Security.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed)]
         ISettingAccessor<int> ResetPasswordViaSecurityQuestionsNumQuestionsAllowed { get; }
+
+        /// <summary>
+        /// When you require users to change their passwords, this is the URL they will be redirected to
+        /// </summary>
+        [Display(Name = "Password change URL")]
+        [Setting(SheshaSettingNames.Security.PasswordChangeUrl)]
+        ISettingAccessor<string> PasswordChangeUrl { get; }
     }
 }
