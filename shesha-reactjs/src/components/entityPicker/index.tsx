@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Alert, Button, Input, Modal, Select, Skeleton } from 'antd';
+import { Alert, Button, Space, Modal, Select, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import _, { isEmpty } from 'lodash';
 import { nanoid } from '@/utils/uuid';
@@ -282,7 +282,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
             {title}
           </Button>
         ) : (
-          <Input.Group style={{ width: '100%' }}>
+          <Space.Compact style={{ width: '100%' }}>
             <Select
               size={size}
               onClick={() => {
@@ -313,7 +313,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
               size={size}
               icon={<EllipsisOutlined />}
             />
-          </Input.Group>
+          </Space.Compact>
         )}
       </div>
 

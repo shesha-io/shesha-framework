@@ -67,7 +67,7 @@ const settingsConfigurationToProperties = (settings: SettingConfigurationDto[]):
 /**
  * Fetches settings API as metadata properties.
  *
- * @param {AxiosRequestConfig} fetcherConfig - configuration for the fetcher
+ * @param {HttpClientApi} httpClient - The HttpClientApi used to make the API request.
  * @return {Promise<IPropertyMetadata[]>} a promise of an array of property metadata
  */
 export const fetchSettingsApiAsMetadataProperties = (httpClient: HttpClientApi): Promise<IPropertyMetadata[]> => {
@@ -82,7 +82,7 @@ export const fetchSettingsApiAsMetadataProperties = (httpClient: HttpClientApi):
  */
 const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto[]): TypeDefinition => {
     const apiFile: SourceFile = {
-        fileName: "/apis/applicationSettingsApi.d.ts",
+        fileName: "apis/applicationSettingsApi.d.ts",
         content: ""
     };
     const result: TypeDefinition = {
@@ -101,10 +101,10 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
         "/**",
         " * Application Settings API",
         " */",
-        `interface ${result.typeName} {`,
+        `export interface ${result.typeName} {`,
     ];
 
-    const wroteObject = (sb: StringBruilder, property: ISettingPropertyMetadata) => {
+    const writeObject = (sb: StringBruilder, property: ISettingPropertyMetadata) => {
         if (property.description)
             sb.append(`/** ${property.description} */`);
 
@@ -121,7 +121,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
                 sb.append(`${prop.path}: ApplicationSettingAccessor<${prop.dataType}>;`);
             } else
                 if (prop.dataType === DataTypes.object) {
-                    wroteObject(sb, prop as ISettingPropertyMetadata);
+                    writeObject(sb, prop as ISettingPropertyMetadata);
                 }
         });
         sb.decIndent();
@@ -135,7 +135,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
 
     sb.incIndent();
     properties.forEach(property => {
-        wroteObject(sb, property);
+        writeObject(sb, property);
     });
     sb.decIndent();
 
@@ -148,21 +148,21 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
 };
 
 /**
- * Fetches the type definition from the settings API using the provided Axios request configuration.
+ * Fetches the type definition for the Settings API using the provided HttpClient.
  *
- * @param {AxiosRequestConfig} fetcherConfig - The configuration for the Axios request.
- * @return {Promise<TypeDefinition>} A promise that resolves to the type definition fetched from the API.
+ * @param {HttpClientApi} httpClient - The HttpClient to use for fetching the configurations.
+ * @return {Promise<TypeDefinition>} A Promise that resolves to the TypeDefinition for the Settings API.
  */
 const fetchSettingsApiTypeDefinition = (httpClient: HttpClientApi): Promise<TypeDefinition> => {
     return SettingsManager.fetchConfigurationsAsync(httpClient).then(res => settingsConfigurationToTypeDefinition(res));
 };
 
 /**
- * Returns a MetadataBuilder with properties loader and type definition set based on the provided axios configuration.
+ * Returns a MetadataBuilder with properties loader and type definition set.
  *
- * @param {MetadataBuilder} builder - the MetadataBuilder instance
- * @param {AxiosRequestConfig} axiosConfig - the configuration for Axios HTTP client
- * @return {MetadataBuilder} the updated MetadataBuilder instance
+ * @param {MetadataBuilder} builder - The MetadataBuilder used to build the settings API properties.
+ * @param {HttpClientApi} httpClient - The HttpClientApi used to make the API request.
+ * @return {MetadataBuilder} The MetadataBuilder with the settings API properties set.
  */
 export const getSettingsApiProperties = (builder: MetadataBuilder, httpClient: HttpClientApi): MetadataBuilder => builder
     .setPropertiesLoader(() => fetchSettingsApiAsMetadataProperties(httpClient))

@@ -4,7 +4,7 @@ import { ListEditor } from './index';
 import StoryApp from '@/components/storyBookApp/index';
 import { MainLayout, PropertyAutocomplete } from '@/components/index';
 import { addStory } from 'src/stories/utils';
-import { Checkbox, Col, Input, Row, Select } from 'antd';
+import { Checkbox, Col, Row, Select, Space } from 'antd';
 import { MetadataProvider } from '@/providers/index';
 import { getNanoId } from '@/utils/uuid';
 import { ColumnSorting } from '@/providers/dataTable/interfaces';
@@ -56,7 +56,7 @@ const Template: StoryFn<IUserDecisionsEditorStoryProps> = ({ }) => {
                 {({ item, itemOnChange, readOnly: nestedReadOnly }) => {
                   return (
                     <div>
-                      <Input.Group style={{ width: '100%' }}>
+                      <Space.Compact style={{ width: '100%' }}>
                         <PropertyAutocomplete
                           style={{ width: 'calc(100% - 120px)' }}
                           mode='single'
@@ -78,7 +78,7 @@ const Template: StoryFn<IUserDecisionsEditorStoryProps> = ({ }) => {
                           <Option value="asc">Ascending</Option>
                           <Option value="desc">Descending</Option>
                         </Select>
-                      </Input.Group>
+                      </Space.Compact>
                     </div>);
                 }}
               </ListEditor>

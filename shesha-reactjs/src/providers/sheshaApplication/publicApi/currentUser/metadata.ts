@@ -6,7 +6,7 @@ const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinitio
         "/**",
         " * Current logged in User API",
         " */",
-        "interface UserApi {",
+        "export interface UserApi {",
         "    /**",
         "     * Is user logged in",
         "     */",
@@ -41,7 +41,7 @@ const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinitio
         typeName: "UserApi",
         files: [{
             content: userSource,
-            fileName: "/apis/userApi.d.ts",
+            fileName: "apis/userApi.d.ts",
         }],        
     });
 };

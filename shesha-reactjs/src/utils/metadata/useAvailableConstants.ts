@@ -7,6 +7,7 @@ import { SheshaCommonContexts } from "@/providers/dataContextManager/models";
 import { useDataContextManager } from "@/providers/dataContextManager";
 import { useMetadataBuilderFactory } from "./hooks";
 import { SheshaConstants } from "@/utils/metadata/standardProperties";
+import { TypesImporter } from "./typesImporter";
 
 export interface AvailableConstantsArgs {
     formMetadata?: IModelMetadata;
@@ -55,7 +56,7 @@ export const useAvailableConstants = ({ formMetadata, formId, addGlobalConstants
  * Model of the ${formId.module}/${formId.name} form
  */`;
                     const modelDefinition = response
-                        ? `import { ${response.typeName} } from '${response.filePath}';
+                        ? `import { ${response.typeName} } from '${TypesImporter.cleanupFileNameForImport(response.filePath)}';
 
 ${commentBlock}
 export interface FormModel extends ${response.typeName} {
@@ -75,7 +76,10 @@ export interface FormModel {
             SheshaConstants.globalState,
             SheshaConstants.setGlobalState,
             SheshaConstants.selectedRow,
-            SheshaConstants.contexts
+            SheshaConstants.contexts,
+            SheshaConstants.http,
+            SheshaConstants.message,
+            SheshaConstants.moment,
         ]);
         metaBuilder
             .addGlobalConstants();
