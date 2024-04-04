@@ -136,7 +136,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         open={showDialog}
         onCancel={onDialogCancel}
         onOk={onDialogSave}
-        width="50vw"
+        width={900}
         title={props.label}
         okButtonProps={{ hidden: readOnly }}
         cancelText={readOnly ? 'Close' : undefined}
@@ -152,7 +152,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         ) : (
           <div style={{ height: "70vh" }}>{renderCodeEditor()}</div>
         )}
-    </Modal >
+      </Modal >
 
     </>
   );

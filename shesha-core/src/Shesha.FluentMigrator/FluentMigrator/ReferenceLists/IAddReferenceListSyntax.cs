@@ -25,6 +25,6 @@
         /// <param name="orderIndex">Order index</param>
         /// <param name="description">Description</param>
         /// <returns></returns>
-        IAddReferenceListSyntax AddItem(long value, string item, Int64? orderIndex = null, string description = null);
+        IAddReferenceListSyntax AddItem(long value, string item, Int64? orderIndex = null, string? description = null);
     }
 }

@@ -1,10 +1,5 @@
 ﻿using FluentMigrator;
 using FluentMigrator.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shesha.FluentMigrator.ReferenceLists
 {
@@ -13,8 +8,10 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     public class DeleteReferenceListItemExpression : SheshaMigrationExpressionBase
     {
-        public DeleteReferenceListItemExpression(IQuerySchema querySchema) : base(querySchema)
+        public DeleteReferenceListItemExpression(IQuerySchema querySchema, string @namespace, string name) : base(querySchema)
         {
+            Namespace = @namespace;
+            Name = name;
         }
 
         public string Name { get; set; }
