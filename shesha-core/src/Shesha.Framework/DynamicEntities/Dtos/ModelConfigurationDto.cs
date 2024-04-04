@@ -25,6 +25,9 @@ namespace Shesha.DynamicEntities.Dtos
 
         public List<ModelPropertyDto> Properties { get; set; }
 
+        public string MD5 { get; set; }
+        public DateTime ChangeTime { get; set; }
+
         // ConfigurationItem        
         public Guid? ModuleId { get; set; }
         public string Module { get; set; }

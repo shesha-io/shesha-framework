@@ -63,6 +63,12 @@ namespace Shesha.Domain
         }
 
         [NotMapped]
-        public virtual string FullClassName => $"{Namespace}.{ClassName}";       
+        public virtual string FullClassName => $"{Namespace}.{ClassName}";
+
+        /// <summary>
+        /// Code identifier that can be used in the client-side code to reference current module
+        /// </summary>
+        [StringLength(200)]
+        public virtual string Accessor { get; set; }
     }
 }
