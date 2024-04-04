@@ -11,7 +11,6 @@ const CustomFilterComponent: IToolboxComponent<ICustomFilterComponentProps> = {
   type: 'filter',
   name: 'Filter',
   icon: <FilterOutlined />,
-  isHidden: true,
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>

@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NoWarn>$(NoWarn);CS1591;612;618;809</NoWarn>
+        <NoWarn>$(NoWarn);CS1591;612;618;809;7034;7035</NoWarn>
         <PackageProjectUrl>https://github.com/Boxfusion/shesha-core</PackageProjectUrl>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/Boxfusion/shesha-core</RepositoryUrl>

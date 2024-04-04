@@ -28,6 +28,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
       key: id,
       title: `Tab ${count + 1}`,
       editMode: 'editable',
+      selectMode: 'editable',
       components: [],
     };
 
@@ -113,7 +114,6 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
           readOnly={readOnly}
           mode="dialog"
           label="Style"
-          setOptions={{ minLines: 20, maxLines: 500, fixedWidthGutter: true }}
           description="A script that returns the style of the element as an object. This should conform to CSSProperties"
           exposedVariables={[
             {

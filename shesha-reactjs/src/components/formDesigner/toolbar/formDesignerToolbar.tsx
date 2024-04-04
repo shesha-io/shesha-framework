@@ -11,6 +11,7 @@ import { UndoRedoButtons } from './undoRedoButtons';
 import { PreviewButton } from './previewButton';
 import { FormSettingsButton } from './formSettingsButton';
 import { useStyles } from '../styles/styles';
+import { CanvasConfig } from './canvasConfig';
 
 export interface IProps { }
 
@@ -39,6 +40,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
         <CreateNewVersionButton onSuccess={onVersionCreated} />
         <PublishButton />
       </div>
+      <CanvasConfig/>
       <div className={styles.shaDesignerToolbarRight}>
         <FormSettingsButton />
         <PreviewButton />

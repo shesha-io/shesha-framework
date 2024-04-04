@@ -29,6 +29,7 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { useStyles } from './styles/styles';
+import { isPropertiesArray } from '@/interfaces/metadata';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -119,7 +120,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   useEffect(() => {
     if (entityType) {
       getMetadata({ modelType: entityType, dataType: null }).then((res) => {
-        setProperty(res?.properties ?? []);
+        setProperty(isPropertiesArray(res?.properties) ? res.properties : []);
       });
     }
   }, [entityType]);

@@ -11,6 +11,7 @@ export const useStyles = () => {
     const shaDesignerToolbar = "sha-designer-toolbar";
     const shaDesignerToolbarLeft = "sha-designer-toolbar-left";
     const shaDesignerToolbarRight = "sha-designer-toolbar-right";
+    const shaDesignerCanvasConfig = "sha-designer-canvas-config";
 
     const shaDesignerToolbox = "sha-designer-toolbox";
     const shaDatasourceTree = "sha-datasource-tree";
@@ -48,6 +49,7 @@ export const useStyles = () => {
             shaDesignerToolbar,
             shaDesignerToolbarLeft,
             shaDesignerToolbarRight,
+            shaDesignerCanvasConfig,
             shaDesignerToolbox,
             sidebarHeaderTitle,
             shaDesignerHeader,
@@ -84,6 +86,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaDesignerToolbar,
         shaDesignerToolbarLeft,
         shaDesignerToolbarRight,
+        shaDesignerCanvasConfig,
         shaDesignerToolbox,
         sidebarHeaderTitle,
         shaDesignerHeader,
@@ -167,6 +170,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 margin-left: 2px;
                 }
             }
+            .${shaDesignerCanvasConfig} {
+                display: flex;
+                justify-content: space-between;
+                gap: 1.5rem;
+                margin: 0 20%;
+                padding-left:10%;
+;            }
         }
         .${shaDesignerToolbox} {
             .${shaDatasourceTree} {

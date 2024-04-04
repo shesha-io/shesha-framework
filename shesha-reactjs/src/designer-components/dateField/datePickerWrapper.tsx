@@ -15,13 +15,15 @@ import {
     getFormat,
     getRangePickerValues,
 } from './utils';
+import { asPropertiesArray } from '@/interfaces/metadata';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
 const { RangePicker } = DatePicker;
 
 export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
-    const { properties = [] } = useMetadata(false)?.metadata ?? {};
+    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
+    const properties = asPropertiesArray(metaProperties, []);
 
     const { globalState } = useGlobalState();
 
@@ -96,7 +98,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         );
     }
 
-    const evaluatedStyle = style ? getStyle(style, formData, globalState) : { width: '100%' };
+    const evaluatedStyle = {width: '100%', ...getStyle(style, formData, globalState)};
 
     if (range) {
         return (

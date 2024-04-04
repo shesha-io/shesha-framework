@@ -11,7 +11,7 @@ import {
   IFormSettings,
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
-import { IPropertyMetadata } from './metadata';
+import { IModelMetadata, IPropertyMetadata } from './metadata';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -133,6 +133,8 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
    * Settings migrations. Returns last version of settings
    */
   migrator?: SettingsMigrator<T>;
+
+  getFieldsToFetch?: (propertyName: string, metadata: IModelMetadata) => string[];
 }
 
 export interface SettingsMigrationContext {

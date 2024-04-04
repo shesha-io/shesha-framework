@@ -21,6 +21,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   type: 'richTextEditor',
   name: 'Rich Text Editor',
   icon: <EditOutlined />,
+  isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
 
@@ -34,19 +36,23 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         iframe: model?.iframe,
         direction: model?.direction,
         disablePlugins: model?.disablePlugins?.join(',') || '',
-        height: model?.height,
-        width: model?.width,
+        ...!model.autoHeight && {height: model?.height},
+        ...!model.autoWidth && {width: model?.width},
         placeholder: model?.placeholder,
         readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
         defaultActionOnPaste: 'insert_as_html',
-        enter: 'br',
+        enter: model?.enter || 'br',
         editHTMLDocumentMode: false,
         enterBlock: 'div',
         colorPickerDefaultTab: 'color',
         allowResizeX:model?.allowResizeX && !model?.autoWidth,
         allowResizeY:model?.allowResizeY && !model?.autoHeight,
+        askBeforePasteHTML: model?.askBeforePasteHTML,
+        askBeforePasteFromWord: model?.askBeforePasteFromWord,
         autofocus: model?.autofocus,
+        showCharsCounter: model?.showCharsCounter,
+        showWordsCounter: model?.showWordsCounter
       };
       return typedConfig;
     }, [model, model.readOnly]);
@@ -64,7 +70,6 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     showCharsCounter: true,
     showWordsCounter: true,
     showXPathInStatusbar: true,
-    height: 200,
     minHeight: 200,
     minWidth: 200,
     toolbar: true,

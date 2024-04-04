@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useState } from 'react';
+import React, { FC, PropsWithChildren, useContext, useState, useCallback } from 'react';
 import {
   DelayedUpdateProviderActionsContext,
   DelayedUpdateProviderStateContext,
@@ -11,11 +11,7 @@ interface IDelayedUpdateProps {}
 const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ children }) => {
   const [state, setState] = useState<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
 
-  /*useEffect(() => {
-        console.log(JSON.stringify(getPayload()));
-    }, [state.groups])*/
-
-  const addItem = (groupName: string, id: any, data?: any) => {
+  const addItem = useCallback((groupName: string, id: any, data?: any) => {
     const group = state.groups?.find((x) => x.name === groupName);
     if (Boolean(group)) {
       const item = group.items?.find((x) => x.id === id);
@@ -48,9 +44,9 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
     } else {
       setState({ groups: [...state.groups, { name: groupName, items: [{ id, data }] }] });
     }
-  };
+  }, [state]);
 
-  const removeItem = (groupName: string, id: any) => {
+  const removeItem = useCallback((groupName: string, id: any) => {
     const group = state.groups.find((x) => x.name === groupName);
     if (Boolean(group)) {
       const item = group.items.find((x) => x.id === id);
@@ -66,12 +62,12 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
         });
       }
     }
-  };
+  }, [state]);
 
-  const getPayload = () => {
+  const getPayload = useCallback(() => {
     const obj = [...state.groups?.filter((g) => g.items?.length > 0)];
     return obj.length > 0 ? obj : null;
-  };
+  }, [state]);
 
   return (
     <DelayedUpdateProviderStateContext.Provider value={state}>

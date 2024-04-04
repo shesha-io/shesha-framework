@@ -83,6 +83,33 @@
       "label": "Edit mode"
     },
     {
+      "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+      "type": "dropdown",
+      "propertyName": "selectMode",
+      "parentId": "root",
+      "label": "Select mode",
+      "allowClear": false,
+      "defaultValue": "editable",
+      "values": [
+        {
+          "label": "Selectable",
+          "value": "editable",
+          "id": "editable"
+        },
+        {
+          "label": "Disabled",
+          "value": "readOnly",
+          "id": "readOnly"
+        },
+        {
+          "label": "Inherited from Edit mode",
+          "value": "inherited",
+          "id": "inherited"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
       "id": "a8b12318-65a5-4b98-bcce-834b6a40b2fd",
       "type": "checkbox",
       "propertyName": "destroyInactiveTabPane",

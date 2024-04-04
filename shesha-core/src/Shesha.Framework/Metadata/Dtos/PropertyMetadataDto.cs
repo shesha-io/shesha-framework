@@ -45,10 +45,18 @@ namespace Shesha.Metadata.Dtos
         public string DataType { get; set; }
         public string DataFormat { get; set; }
 
+        /// <summary>
+        /// Type of the entity. Applicable when DataType = <seealso cref="DataTypes.EntityReference"/>
+        /// </summary>
         [JsonProperty("entityType")]
         [JsonPropertyName("entityType")]
         public string EntityTypeShortAlias { get; set; }
-        
+
+        /// <summary>
+        /// Module the entity belongs to. Applicable when DataType = <seealso cref="DataTypes.EntityReference"/>
+        /// </summary>
+        public string EntityModule { get; set; }
+
         [Newtonsoft.Json.JsonIgnore]
         [System.Text.Json.Serialization.JsonIgnore]
         public Type EnumType { get; set; }
@@ -84,5 +92,10 @@ namespace Shesha.Metadata.Dtos
         public PropertyMetadataDto ItemsType { get; set; }
 
         public MetadataSourceType Source { get; set; }
+
+        /// <summary>
+        /// If true, indicates that the property is nullable
+        /// </summary>
+        public bool IsNullable { get; set; }
     }
 }

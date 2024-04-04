@@ -66,6 +66,15 @@ export const GlobalTableStyles = createGlobalStyle`
           }
         }
       }
+      .sha-form-cell {
+        .${p => p.theme.prefixCls}-form-item {
+          .${p => p.theme.prefixCls}-row {
+            &.${p => p.theme.prefixCls}-form-item-row {
+              margin-bottom: 5px;
+            }
+          }
+        }
+      }
     }
   }
 `;

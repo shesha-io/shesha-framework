@@ -6,20 +6,20 @@ using NetTopologySuite.IO;
 using Newtonsoft.Json;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
+using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
-using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Json;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.GraphQL.Provider.GraphTypes
 {
@@ -83,31 +83,18 @@ namespace Shesha.GraphQL.Provider.GraphTypes
 
                 // add displayName
                 FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.DisplayNameField, "Entity display name",
-                    resolve: async context => {
-                        try
-                        {
-                            return displayNameProperty != null
-                                ? displayNameProperty.GetValue(context.Source)
-                                : "";
-                        }
-                        catch (Exception e)
-                        {
-                            throw;
-                        }
+                    resolve: context => {
+                        var value = displayNameProperty != null
+                            ? displayNameProperty.GetValue(context.Source)
+                            : "";
+                        return Task.FromResult(value);
                     }
                 );
 
                 // add className
                 FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.ClassNameField, "Entity class name",
-                    resolve: async context => {
-                        try
-                        {
-                            return typeof(TModel).FullName;
-                        }
-                        catch (Exception e)
-                        {
-                            throw;
-                        }
+                    resolve: context => {
+                        return Task.FromResult(typeof(TModel).FullName as object);
                     }
                 );
 
@@ -121,15 +108,8 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                             var propType = await _dynamicDtoTypeBuilder.GetDtoPropertyTypeAsync(dynamicProp, new DynamicDtoTypeBuildingContext());
                             FieldAsync(GraphTypeMapper.GetGraphType(propType, isInput: false), dynamicProp.Name, dynamicProp.Description,
                                 resolve: async context => {
-                                    try
-                                    {
-                                        var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
-                                        return value;
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        throw;
-                                    }
+                                    var value = await _dynamicPropertyManager.GetPropertyAsync(context.Source, dynamicProp.Name);
+                                    return value;
                                 }
                             );
                         }
@@ -164,6 +144,18 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 });
                 return;
             }
+
+            if (propertyInfo.GetCustomAttribute<SaveAsJsonAttribute>() != null)
+            {
+                Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {
+                    var jsonValue = propertyInfo.GetValue(context.Source);
+                    return jsonValue != null
+                        ? new RawJson(jsonValue)
+                        : null;
+                });
+                return;
+            }
+
             if (typeof(Geometry).IsAssignableFrom(propertyInfo.PropertyType))
             {
                 Field(GraphTypeMapper.GetGraphType(typeof(RawJson), isInput: false), propertyInfo.Name, resolve: context => {

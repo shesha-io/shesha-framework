@@ -17,8 +17,9 @@ namespace Shesha.Configuration
         [Setting(SheshaSettingNames.UploadFolder)]
         ISettingAccessor<string> UploadFolder { get; }
 
-        [Display(Name = "ExchangeName", GroupName = "RabbitMQ")]
-        [Setting(SheshaSettingNames.RabbitMQ.ExchangeName)]
-        ISettingAccessor<string> ExchangeName { get; }
+        [Display(Name = "Dev Move", Description = "Enables development mode for some parts of the UI", GroupName = "General")]
+        [Setting(SheshaSettingNames.DevMode)]
+        ISettingAccessor<bool> DevMode { get; }
+
     }
 }

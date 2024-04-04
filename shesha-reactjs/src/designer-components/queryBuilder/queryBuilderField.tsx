@@ -4,7 +4,7 @@ import { Button, Collapse, Modal, Space } from 'antd';
 import React, { FC, useState } from 'react';
 import { useMedia } from 'react-use';
 import { QueryBuilder, Show } from '@/components';
-import CodeEditor from '@/components/codeEditor';
+import { CodeEditor } from '@/components/codeEditor/codeEditor';
 import { IQueryBuilderFieldProps } from './models';
 import { useStyles } from './styles/styles';
 
@@ -87,25 +87,9 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
           key="1"
         >
           <CodeEditor
-            width="100%"
             readOnly={true}
             value={props.value ? JSON.stringify(props.value, null, 2) : null}
-            mode="json"
-            theme="monokai"
-            fontSize={14}
-            showPrintMargin={true}
-            showGutter={true}
-            highlightActiveLine={true}
-            setOptions={{
-              enableBasicAutocompletion: true,
-              enableLiveAutocompletion: true,
-              enableSnippets: false,
-              showLineNumbers: true,
-              tabSize: 2,
-              autoScrollEditorIntoView: true,
-              minLines: 3,
-              maxLines: 100,
-            }}
+            language='javascript'
           />
         </Collapse.Panel>
       </Collapse>

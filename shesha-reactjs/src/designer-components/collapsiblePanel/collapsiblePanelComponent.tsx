@@ -26,7 +26,17 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const { formMode, hasVisibleChilds } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const { label, expandIconPosition, collapsedByDefault, collapsible, ghost } = model;
+    const {
+      label,
+      expandIconPosition,
+      collapsedByDefault,
+      collapsible,
+      ghost,
+      bodyColor,
+      headerColor,
+      isSimpleDesign,
+      hideCollapseContent,
+    } = model;
 
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
@@ -40,6 +50,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
     const styling = JSON.parse(model.stylingBox || '{}');
 
     const getPanelStyle = {
+      backgroundColor: headerColor,
       ...pickStyleFromModel(styling),
       ...(executeFunction(model?.style, { data, globalState }) || {}),
     };
@@ -66,6 +77,9 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           ghost={ghost}
           style={getPanelStyle}
           className={model.className}
+          bodyColor={bodyColor}
+          isSimpleDesign={isSimpleDesign}
+          hideCollapseContent={hideCollapseContent}
         >
           <ComponentsContainer
             containerId={model.content.id}

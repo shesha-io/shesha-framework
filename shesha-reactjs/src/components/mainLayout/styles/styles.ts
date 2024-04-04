@@ -47,7 +47,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   const antLayoutHeader = cx(css`
     border-bottom: ${shaBorder};
     position: fixed;
-    z-index: 1;
+    z-index: 3;
     width: 100%;
     padding: unset;
     height: ${layoutHeaderHeight};
@@ -154,27 +154,18 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
   const mainSider = css`
     overflow-x: hidden;
-    scrollbar-width: thin;
     height: 100vh;
     position: fixed !important;
     padding-top: 48px;
     left: 0;
 
-    z-index: 2;
+    z-index: 4;
     flex: 0 0 ${shaSiderExpandedWidth} !important;
     max-width: ${shaSiderExpandedWidth}  !important;
     min-width: ${shaSiderExpandedWidth}  !important;
     width: ${shaSiderExpandedWidth}  !important;
 
-    ::-webkit-scrollbar {
-      width: 9px;
-      background-color: black;
-      color: black;
-    }
-
-    ::-webkit-scrollbar-track {
-      background-color: gray;
-    }
+    ${sheshaStyles.thinScrollbars}
 
     .${prefixCls}-layout-sider-children {
       width: ${shaSiderExpandedWidth}  !important;
