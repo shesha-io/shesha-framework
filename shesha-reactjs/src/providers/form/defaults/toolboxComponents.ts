@@ -82,6 +82,7 @@ import { DynamicActionsConfiguratorComponent } from '@/designer-components/dynam
 import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
 import EntityReferenceComponent from '@/designer-components/entityReference/entityReference';
 import FileUpload from '@/designer-components/fileUpload';
+import HtmlRender from '@/designer-components/htmlRender';
 import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
 import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 import NumberFieldComponent from '@/designer-components/numberField/numberField';
@@ -129,6 +130,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         ColorPickerComponent,
         IconPicker,
         EditableTagGroup,
+        HtmlRender,
         Image,
         ImageAnnotationComponent,
         RichTextEditor,
