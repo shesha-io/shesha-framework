@@ -1,6 +1,5 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { IToolboxComponent } from '@/interfaces';
-import { DataTypes } from '@/interfaces/dataTypes';
 import { useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
 import { getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -16,7 +15,6 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   type: 'card',
   name: 'Card',
   icon: <CodeSandboxSquareFilled />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { formMode, hasVisibleChilds } = useForm();
