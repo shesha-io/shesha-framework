@@ -1,9 +1,8 @@
 import classNames from 'classnames';
-import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import React, { FC, PropsWithChildren, ReactNode } from 'react';
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
-import {  useCanvasConfig } from '@/providers/canvasConfig';
 
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
@@ -39,7 +38,6 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   noPadding,
 }) => {
   const { styles } = useStyles();
-  const {width,zoom}=useCanvasConfig();
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
     return sidebarProps
@@ -47,7 +45,6 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
       : null;
   };
 
-  const magnifiedWidth = useMemo(()=>width * (zoom/100),[width,zoom]);
 
 
 
@@ -72,7 +69,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
 
           )}
         >
-          <div className={styles.sidebarContainerMainAreaBody} style={{width:`${magnifiedWidth}%`, zoom:`${zoom}%`,overflow:'auto'}}>{children}</div>
+          <div className={styles.sidebarContainerMainAreaBody}>{children}</div>
         </div>
 
         {renderSidebar('right')}

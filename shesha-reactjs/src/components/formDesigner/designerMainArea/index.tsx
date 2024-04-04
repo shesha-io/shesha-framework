@@ -5,7 +5,7 @@ import React, { FC } from 'react';
 import Toolbox from '../toolbox';
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import { DebugPanel } from '../debugPanel';
-import { useForm } from '@/providers';
+import { useCanvasConfig, useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 
@@ -16,6 +16,7 @@ export interface IDesignerMainAreaProps {
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { isDebug, readOnly } = useFormDesigner();
     const { form, formMode } = useForm();
+    const {width,zoom}=useCanvasConfig();
     const { styles } = useStyles();
 
     return (
@@ -36,7 +37,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
             }}
         >
             <ParentProvider model={{}} formMode='designer'>
-                <ConfigurableFormRenderer form={form} skipFetchData={true} className={formMode === 'designer' ? styles.designerWorkArea : undefined} >
+                <ConfigurableFormRenderer form={form} skipFetchData={true} width={width} zoom={zoom} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
                     {isDebug && (
                         <DebugPanel formData={form.getFieldsValue()} />
                     )}

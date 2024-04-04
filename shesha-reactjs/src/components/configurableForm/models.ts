@@ -61,6 +61,9 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
   sections?: IFormSections;
   context?: any; // todo: make generic
 
+  width?: number;
+  zoom?: number;
+
   httpVerb?: 'POST' | 'PUT' | 'DELETE';
   /**
    * Submit action. By default it's `create`
