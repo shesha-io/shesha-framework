@@ -11,10 +11,6 @@ interface IDelayedUpdateProps {}
 const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ children }) => {
   const [state, setState] = useState<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
 
-  /*useEffect(() => {
-        console.log(JSON.stringify(getPayload()));
-    }, [state.groups])*/
-
   const addItem = useCallback((groupName: string, id: any, data?: any) => {
     const group = state.groups?.find((x) => x.name === groupName);
     if (Boolean(group)) {

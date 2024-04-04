@@ -1,19 +1,28 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useCrud } from "@/providers/crudContext/index";
-import { IConfigurableCellProps, IFormCellProps } from './interfaces';
-import { ComponentsContainer, FormItemProvider, IFormDto, ROOT_COMPONENT_KEY, useAppConfigurator, useConfigurationItemsLoader } from '@/index';
+import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
+import { ComponentsContainer, FormItemProvider, IFlatComponentsStructure, IFormDto, ROOT_COMPONENT_KEY, componentsTreeToFlatStructure, useAppConfigurator, useConfigurationItemsLoader } from '@/index';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { ComponentsContainerForm } from '@/components/formDesigner/containers/componentsContainerForm';
 import ParentProvider from '@/providers/parentProvider/index';
 import { ITableFormColumn } from '@/providers/dataTable/interfaces';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useStyles } from '../styles/styles';
+import { useStyles } from '../../styles/styles';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { ComponentsContainerFormCell } from './componentsContainerFormCell';
 
 const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D, V>) => {
   const { configurationItemMode } = useAppConfigurator();
   const [form, setForm] = useState<IFormDto>();
   const { getForm } = useConfigurationItemsLoader();
   const { styles } = useStyles();
+  const toolboxComponents = useFormDesignerComponents();
+
+  const flatComponentsStructure: IFlatComponentsStructure = useMemo(() => {
+    return !!form?.markup
+      ? componentsTreeToFlatStructure(toolboxComponents, form.markup)
+      : {allComponents: {}, componentRelations: {}};
+  }, [form, toolboxComponents]);
 
   if (!props.columnConfig.displayFormId) 
     return <></>;
@@ -26,10 +35,10 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
   return !form
     ? <LoadingOutlined />
     : (
-      <div className={styles.shaFormCell}> 
+      <div className={styles.shaFormCell} style={{minHeight: props.columnConfig.minHeight ?? 0}}> 
         <FormItemProvider labelCol={form.settings?.labelCol}>
-          <ParentProvider model={{ readOnly: true }} formMode='readonly'>
-            <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
+          <ParentProvider model={{ readOnly: true }} formMode='readonly' flatComponentsStructure={flatComponentsStructure}>
+            <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
               <ComponentsContainer containerId={ROOT_COMPONENT_KEY} dynamicComponents={form.markup} />
             </ComponentsContainerProvider>
           </ParentProvider>
@@ -55,7 +64,7 @@ export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) 
   return !form
     ? <LoadingOutlined />
     : (
-      <div className={styles.shaFormCell}> 
+      <div className={styles.shaFormCell} style={{minHeight: props.columnConfig.minHeight ?? 0}}> 
         <FormItemProvider labelCol={form.settings?.labelCol}>
           <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
             <ComponentsContainer containerId={ROOT_COMPONENT_KEY} dynamicComponents={form.markup} />
@@ -82,7 +91,7 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
   return !form
     ? <LoadingOutlined />
     : (
-      <div className={styles.shaFormCell}> 
+      <div className={styles.shaFormCell} style={{minHeight: props.columnConfig.minHeight ?? 0}}> 
         <FormItemProvider labelCol={form.settings?.labelCol}>
           <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
             <ComponentsContainer containerId={ROOT_COMPONENT_KEY} dynamicComponents={form.markup} />

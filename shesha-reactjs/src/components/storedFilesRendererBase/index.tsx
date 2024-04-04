@@ -149,17 +149,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   return (
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
-      {isDragger ? (
-        isStub ? (
-          <Dragger disabled><DraggerStub /></Dragger>
-        ) : (
-          <Dragger {...props}><DraggerStub /></Dragger>
-        )
-      ) : isStub ? (
-        <div>{renderUploadContent()}</div>
-      ) : (
-        <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
-      )}
+      {isStub 
+        ? isDragger
+          ? <Dragger disabled><DraggerStub /></Dragger>
+          : <div>{renderUploadContent()}</div>
+        : props.disabled
+          ? <Upload {...props} />
+          : isDragger
+            ? <Dragger {...props}><DraggerStub /></Dragger>
+            : <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
+      }
 
       {fetchFilesError && (
         <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />

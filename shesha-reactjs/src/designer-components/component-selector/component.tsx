@@ -15,7 +15,6 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
   type: 'component-selector',
   name: 'Component selector',
   icon: <BorderOutlined />,
-  isHidden: true,
   Factory: ({ model: passedModel }) => {
     const { style, ...model } = passedModel;
     const { data: formData } = useFormData();

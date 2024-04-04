@@ -77,7 +77,7 @@ import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { IParentProviderStateContext } from '../parentProvider/index';
+import { IParentProviderProps } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 
 /** Interface to geat all avalilable data */
@@ -264,7 +264,7 @@ const updateConfigurableActionParent = (model: any, parentId: string) => {
 export const getActualModelWithParent = <T>(
   model: T,
   allData: any,
-  parent: IParentProviderStateContext
+  parent: IParentProviderProps
 ): T => {
   const parentReadOnly =
     allData.formMode !== 'designer' 

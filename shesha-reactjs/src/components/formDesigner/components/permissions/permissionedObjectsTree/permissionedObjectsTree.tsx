@@ -18,7 +18,6 @@ export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFor
 const settingsForm = settingsFormJson as FormMarkup;
 
 const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTreeComponentProps> = {
-  isHidden: true,
   type: 'permissionedObjectsTree',
   name: 'Permissioned objects tree',
   icon: <ApartmentOutlined />,

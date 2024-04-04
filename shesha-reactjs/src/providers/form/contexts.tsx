@@ -25,7 +25,8 @@ export interface IFormStateInternalContext {
   formSettings: IFormSettings;
   formMarkup?: FormRawMarkup;
   formMode: FormMode;
-
+  formWidth?: number;
+  zoom?: number;
   form?: FormInstance<any>;
   actions: IFormAction[];
   sections: IFormSection[];
@@ -77,6 +78,8 @@ export interface IRegisterActionsPayload {
 
 export interface IFormActionsContext {
   setFormMode: (formMode: FormMode) => void;
+  setFormWidth: (width: number) => void;
+  setFormZoom: (zoom: number) => void;
   getChildComponents: (id: string) => IConfigurableFormComponent[];
   getChildComponentIds: (containerId: string) => string[];
   getComponentModel: (id: string) => IConfigurableFormComponent;
@@ -112,6 +115,8 @@ export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   visibleComponentIdsIsSet: false,
   enabledComponentIds: [],
   formMode: 'designer',
+  formWidth:100,
+  zoom: 100,
   actions: [],
   sections: [],
   context: null,

@@ -11,7 +11,7 @@ import {
 import ActionCell from './actionCell';
 import CrudOperationsCell from './crudOperationsCell';
 import DataCell from './dataCell';
-import FormCell from './formCell';
+import FormCell from './formCell/formCell';
 
 export const getCellRenderer = <D extends object = {}, V = any>(
   column: ITableColumn,

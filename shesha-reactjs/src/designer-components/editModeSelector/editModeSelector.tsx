@@ -15,7 +15,6 @@ const EditModeSelectorComponent: IToolboxComponent<IConfigurableFormComponent> =
   canBeJsSetting: true,
   name: 'Edit mode Selector',
   icon: <CodeOutlined />,
-  isHidden: true,
   Factory: ({ model }) => {
     return <ConfigurableFormItem model={model}><EditModeSelector readOnly={model.readOnly}/></ConfigurableFormItem>;
   },

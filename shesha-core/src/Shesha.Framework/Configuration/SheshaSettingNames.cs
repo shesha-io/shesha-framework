@@ -3,6 +3,7 @@
     public static class SheshaSettingNames
     {
         public const string UploadFolder = "Shesha.UploadFolder";
+        public const string DevMode = "Shesha.DevMode";
 
         public static class Security
         {

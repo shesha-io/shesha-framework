@@ -1,6 +1,6 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
 import FormAutocomplete from '@/components/formAutocomplete';
-import React, { FC, useState } from 'react';
+import React, { FC, ReactNode, useState } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
@@ -17,6 +17,7 @@ import { IDataListComponentProps } from './model';
 import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
 import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
+import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -248,12 +249,12 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         }
 
         {model.formSelectionMode === 'expression' &&
-          <SettingsFormItem name="formIdExpression" label="Form identifer expression">
+          <SettingsFormItem name="formIdExpression" label="Form identifier expression">
             <CodeEditor
               readOnly={readOnly}
               mode="dialog"
               propertyName="formIdExpression"
-              label="Form identifer expression"
+              label="Form identifier expression"
               description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
               exposedVariables={[
                 { name: "item", description: "List item", type: "object" },
@@ -449,6 +450,24 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header='Empty List'>
+    <SettingsFormItem name="noDataText" label="No Data Primary Text" jsSetting>
+        <Input defaultValue={"No Data"} readOnly={readOnly} />
+      </SettingsFormItem>
+      
+      <SettingsFormItem name="noDataSecondaryText" label="No Data Secondary Text" jsSetting>
+        <Input value={"No data is available for this table"} readOnly={readOnly} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="noDataIcon" label="Icon Picker">
+      {(value, onChange)=>
+         <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} /> 
+      }
+      </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      
     </>
   );
 };
