@@ -27,7 +27,7 @@ import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { EntityReference } from '@/components/entityReference';
+import { EntityReference, IEntityReferenceProps } from '@/components/entityReference';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -194,6 +194,12 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       style: getStyle(model.style, data),
       size: model.size,
       allowFreeText: model.allowFreeText,
+      entityReferenceType: model.entityReferenceType,
+      formSelectionMode: model.formSelectionMode,
+      handleSuccess: model.handleSuccess,
+      handleFail: model.handleFail,
+      displayProperty: model.displayProperty,
+      formIdentifier: model.formIdentifier
     };
 
     const formProps = defaultValue ? { model, initialValue: getDefaultValue() } : { model };
@@ -211,16 +217,16 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
               onChange(...args);
           };
           
-          if(model.readOnly == false){
+          if(model?.readOnly === false){
           return (
-          model.useRawValues ? (
-            <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-            ) : (
-            <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-          ));
+              model.useRawValues ? (
+                <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
+              ) : (
+                <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
+              ));
             }else{
               return(
-                <EntityReference entityReferenceType={'Quickview'} formSelectionMode={'name'} handleSuccess={false} handleFail={false} displayProperty={''} {...model} disabled={model.readOnly} value={value} />
+                  <EntityReference {...autocompleteProps as unknown as IEntityReferenceProps} value={value} />
               );
             }
             

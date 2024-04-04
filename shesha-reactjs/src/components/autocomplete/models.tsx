@@ -3,6 +3,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { LabeledValue } from 'antd/lib/select';
 import { IReadOnly } from '@/interfaces/readOnly';
 import { FormIdentifier } from '@/providers';
+import { EntityReferenceTypes } from '../entityReference';
 
 export type AutocompleteDataSourceType = 'entitiesList' | 'url';
 
@@ -106,6 +107,8 @@ export interface ICommonAutocompleteProps<TValue = any> extends IReadOnly {
   subscribedEventNames?: string[];
 }
 
+
+/*entityReferenceType={'Quickview'} formSelectionMode={'name'} handleSuccess={false} handleFail={false} displayProperty={''}*/
 export interface IAutocompleteProps<TValue = any>
   extends IEntityAutocompleteProps<TValue>,
     IUrlAutocompleteProps<TValue> {
@@ -114,6 +117,15 @@ export interface IAutocompleteProps<TValue = any>
    */
   dataSourceType: AutocompleteDataSourceType;
   className?: string;
+
+  entityReferenceType?: EntityReferenceTypes;
+  formSelectionMode?: "name" | "dynamic";
+  handleSuccess?: boolean;
+  handleFail?: boolean;
+  displayProperty?: string;
+  formIdentifier?: FormIdentifier;
+
+
 }
 
 export interface IEntityAutocompleteProps<TValue = any> extends ICommonAutocompleteProps<TValue> {

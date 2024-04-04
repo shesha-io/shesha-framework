@@ -35,17 +35,17 @@ export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
 export interface IEntityReferenceProps {
   // common properties
-  entityReferenceType: EntityReferenceTypes;
+  entityReferenceType?: EntityReferenceTypes;
   value?: any;
   disabled?: boolean;
   placeholder?: string;
   entityType?: string;
-  formSelectionMode: 'name' | 'dynamic';
+  formSelectionMode?: 'name' | 'dynamic';
 
   /** The Url that details of the entity are retreived */
   getEntityUrl?: string;
   /** The property froom the data to use as the label and title for the popover */
-  displayProperty: string;
+  displayProperty?: string;
   /** From identifier for navigate/dialog/quickview  */
   formIdentifier?: FormIdentifier;
   /** View type for navigate/dialog/quickview  */
@@ -70,13 +70,16 @@ export interface IEntityReferenceProps {
   submitHttpVerb?: 'POST' | 'PUT';
 
   // Dialog action properties
-  handleSuccess: boolean;
+  handleSuccess?: boolean;
   onSuccess?: IConfigurableActionConfiguration;
-  handleFail: boolean;
+  handleFail?: boolean;
   onFail?: IConfigurableActionConfiguration;
 }
 
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
+
+  console.log(props, "ENTITY_REF_PROPS");
+  
   const { executeAction } = useConfigurableActionDispatcher();
   const { globalState } = useGlobalState();
   const { styles } = useStyles();
@@ -246,6 +249,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   }, [formIdentifier, displayText, entityId, props.disabled, property.length]);
 
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
+
+  console.log(formIdentifier, "ENTITY_REFERENCE_FORM_IDENTIFIER");
     return (
       <Button className={styles.entityReferenceBtn} type="link" disabled>
         Form identifier is not configured
