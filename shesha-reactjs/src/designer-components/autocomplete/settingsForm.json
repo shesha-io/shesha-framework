@@ -349,7 +349,7 @@
                 "placeholder": "",
                 "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
                 "validate": {},
-                "modelType": "{{data.entityTypeShortAlias}}",
+                "modelType": "{{data.entityDisplayProperty}}",
                 "showFillPropsButton": false,
                 "settingsValidationErrors": []
               },
@@ -614,7 +614,7 @@
             "placeholder": "",
             "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
             "validate": {},
-            "modelType": "{{data.entityTypeShortAlias}}",
+            "modelType": "{{data.entityDisplayProperty}}",
             "showFillPropsButton": false,
             "settingsValidationErrors": [],
             "jsSetting": false
@@ -730,7 +730,7 @@
               "placeholder": "",
               "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
               "validate": {},
-              "modelType": "{{data.entityTypeShortAlias}}",
+              "modelType": "{{data.entityFormIdentifier}}",
               "showFillPropsButton": false,
               "settingsValidationErrors": [],
               "jsSetting": false

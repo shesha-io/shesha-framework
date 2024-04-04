@@ -204,8 +204,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const formProps = defaultValue ? { model, initialValue: getDefaultValue() } : { model };
 
-    // todo: implement other types of datasources!
+    console.log(model, "AUTOCOMPLETE MODEL")
 
+    // todo: implement other types of datasources!
 
     return (
       <ConfigurableFormItem {...formProps}>
@@ -226,11 +227,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
               ));
             }else{
               return(
-                  <EntityReference {...autocompleteProps as unknown as IEntityReferenceProps} value={value} />
+                  <EntityReference {...model}  value={value} />
               );
             }
-            
-          
         }}
       </ConfigurableFormItem>
     );
