@@ -717,7 +717,7 @@
                 }
               ],
               "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
-              "hidden": {"_code": "return !getSettingValue(data?.formSelectionMode?.toLowerCase() == 'dynamic');", "_mode": "code", "_value": false},
+              "hidden": {"_code": "return !(getSettingValue(data?.formSelectionMode?.toLowerCase() == 'dynamic') && getSettingValue(data?.entityReferenceEnabled));", "_mode": "code", "_value": false},
               "dataSourceType": "value",
               "validate": {},
               "version": 1,
@@ -730,7 +730,7 @@
               "label": "Form",
               "labelAlign": "right",
               "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
-              "hidden": {"_code": "return !getSettingValue(data?.formSelectionMode?.toLowerCase() == 'name');", "_mode": "code", "_value": true},
+              "hidden": {"_code": "return !(getSettingValue(data?.formSelectionMode?.toLowerCase() == 'name') && getSettingValue(data?.entityReferenceEnabled));", "_mode": "code", "_value": true},
               "isDynamic": false,
               "placeholder": "",
               "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
