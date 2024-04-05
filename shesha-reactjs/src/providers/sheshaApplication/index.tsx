@@ -163,19 +163,19 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
                                 <ApplicationContextsProvider>
-                                  <StackedNavigationProvider>
-                                    <DataSourcesProvider>
-                                      <DynamicModalProvider>
-                                        <DebugPanel>
-                                          <ApplicationActionsProcessor>
-                                            <CanvasProvider>
+                                  <CanvasProvider>
+                                    <StackedNavigationProvider>
+                                      <DataSourcesProvider>
+                                        <DynamicModalProvider>
+                                          <DebugPanel>
+                                            <ApplicationActionsProcessor>
                                               {children}
-                                            </CanvasProvider>
-                                          </ApplicationActionsProcessor>
-                                        </DebugPanel>
-                                      </DynamicModalProvider>
-                                    </DataSourcesProvider>
-                                  </StackedNavigationProvider>
+                                            </ApplicationActionsProcessor>
+                                          </DebugPanel>
+                                        </DynamicModalProvider>
+                                      </DataSourcesProvider>
+                                    </StackedNavigationProvider>
+                                  </CanvasProvider>
                                 </ApplicationContextsProvider>
                               </DataContextManager>
                             </MetadataDispatcherProvider>
