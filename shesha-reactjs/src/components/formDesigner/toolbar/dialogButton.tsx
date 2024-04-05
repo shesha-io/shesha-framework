@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import {Dropdown, Form, Input, MenuProps } from 'antd';
 import { BlockOutlined } from '@ant-design/icons';
-import { useCanvasConfig } from '@/providers/canvasConfig';
+import { useCanvasConfig } from '@/providers';
 
 export interface IPreviewButtonProps {
   refLink?: React.LegacyRef<HTMLSpanElement>;
