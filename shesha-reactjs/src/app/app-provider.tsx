@@ -11,7 +11,6 @@ import { useTheme } from 'antd-style';
 import { useNextRouter } from '@/hooks/useNextRouter';
 import { EntityCrudActions } from '@/providers/dynamicActions/implementations/entityCrudActions';
 import { StandardApis } from '@/providers/dynamicActions/implementations/standardApis';
-import { CanvasProvider } from '@/providers/canvasConfig';
 
 export interface IAppProviderProps {
     backendUrl: string;
@@ -35,13 +34,11 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                 noAuth={nextRouter.path?.includes('/no-auth')}
             >
                 <EntityCrudActions>
-                    <CanvasProvider>
                     <StandardApis>
                         <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
                             {children}
                         </StoredFilesProvider>
                     </StandardApis>
-                    </CanvasProvider>
                 </EntityCrudActions>
             </ShaApplicationProvider>
         </GlobalStateProvider>

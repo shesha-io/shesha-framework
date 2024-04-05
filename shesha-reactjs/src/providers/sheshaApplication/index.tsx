@@ -27,6 +27,7 @@ import {
   AppConfiguratorProvider,
   DynamicModalProvider,
   UiProvider,
+  CanvasProvider,
 } from '@/providers';
 import {
   setBackendUrlAction,
@@ -166,7 +167,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
                                         <DebugPanel>
-                                          <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                          <ApplicationActionsProcessor>
+                                            <CanvasProvider>
+                                              {children}
+                                            </CanvasProvider>
+                                          </ApplicationActionsProcessor>
                                         </DebugPanel>
                                       </DynamicModalProvider>
                                     </DataSourcesProvider>
