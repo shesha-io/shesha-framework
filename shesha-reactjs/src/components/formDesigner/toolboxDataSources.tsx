@@ -87,7 +87,7 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
             const visibleItems = ds.visibleItems;
             const shortName = getClassNameFromFullName(ds.datasource.name);
 
-            let header = (
+            const header = (
               <Tooltip placement="bottom" title={ds.datasource.name} mouseEnterDelay={1}>
                 {shortName}
               </Tooltip>
