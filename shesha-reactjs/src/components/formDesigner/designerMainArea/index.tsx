@@ -1,7 +1,7 @@
 import ComponentPropertiesPanel from '../componentPropertiesPanel';
 import ComponentPropertiesTitle from '../componentPropertiesTitle';
 import ParentProvider from '@/providers/parentProvider';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import Toolbox from '../toolbox';
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import { DebugPanel } from '../debugPanel';
@@ -18,6 +18,8 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { form, formMode } = useForm();
     const {width,zoom}=useCanvasConfig();
     const { styles } = useStyles();
+
+    const magnifiedWidth = useMemo(()=>width * (zoom/100), [width, zoom]);
 
     return (
         <SidebarContainer
@@ -36,13 +38,15 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                 placeholder: 'Properties',
             }}
         >
+          <div style={{ width:`${magnifiedWidth}%`, zoom:`${zoom}%`, overflow:'auto', margin:'0 auto' }}>
             <ParentProvider model={{}} formMode='designer'>
-                <ConfigurableFormRenderer form={form} skipFetchData={true} width={width} zoom={zoom} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
+                <ConfigurableFormRenderer form={form} skipFetchData={true} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
                     {isDebug && (
                         <DebugPanel formData={form.getFieldsValue()} />
                     )}
                 </ConfigurableFormRenderer>
             </ParentProvider>
+          </div>
         </SidebarContainer>
     );
 };

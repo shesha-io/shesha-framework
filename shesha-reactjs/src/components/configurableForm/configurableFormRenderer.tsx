@@ -58,8 +58,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   beforeSubmit,
   prepareInitialValues,
   skipFetchData,
-  width,
-  zoom,
   ...props
 }) => {
 
@@ -428,8 +426,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     colon: formSettings.colon,
   };
 
-  const magnifiedWidth = useMemo(()=>width * (zoom/100),[width,zoom]);
-
   // Note: render form only after calculation of visible components to prevent re-creation of components
   // Looks like the code that re-creates components are deep inside the antd form
   if (!visibleComponentIdsIsSet) return null;
@@ -446,7 +442,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
         initialValues={initialValues}
         className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
         {...mergedProps}
-        style={designerMode?{width:`${magnifiedWidth}%`, zoom:`${zoom}%`,overflow:'auto',margin:'0 auto'}:null}
       >
         <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
           <ComponentsContainer containerId={ROOT_COMPONENT_KEY}   />
