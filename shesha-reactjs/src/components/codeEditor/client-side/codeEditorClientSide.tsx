@@ -8,7 +8,7 @@ import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
 import { makeCodeTemplate } from "./utils";
-import { useMetadataDispatcher } from "@/providers";
+import { useMetadataDispatcher, useSettingValue } from "@/providers";
 import { CODE_TEMPLATE_DEFAULTS, ICodeEditorProps } from "../models";
 import { useStyles } from './styles';
 import { Button } from "antd";
@@ -108,6 +108,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
     const { styles } = useStyles();
     const [activePane, setActivePane] = useState(null);
+    const devMode = useSettingValue({ module: "Shesha", name: "Shesha.DevMode" });
 
     const { getMetadata } = useMetadataDispatcher();
 
@@ -227,13 +228,16 @@ ${(c) => c.editable(code)}
             ? monacoInst.current.editor.getModel(fileUri)
             : undefined;
         editorRef.current.setModel(model);
-    };        
+    };
 
     const initEditor = (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         const localProperties = fetchProperties(availableConstants?.properties ?? []);
 
         monaco.editor.registerEditorOpener({
             async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, _selectionOrPosition?: IRange | IPosition) {
+                if (devMode.value !== true)
+                    return false;
+                
                 navigateToModel(resource);
                 return true;
             }
@@ -256,7 +260,7 @@ ${(c) => c.editable(code)}
 
             const builder = new TypesBuilder(metadataFetcher, isFileExists, registerFile);
             builder.build(properties).then(builderResult => {
-                if (builderResult.content){
+                if (builderResult.content) {
                     const varsModel = addExtraLib(monaco, builderResult.content, fileNamesState.exposedVarsPath);
                     // dispose variables model
                     addSubscription(varsModel);
@@ -306,48 +310,65 @@ ${(c) => c.editable(code)}
         return editorRef.current?.getModel()?.uri;
     };
 
-    return (
-        <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
-            <div className={styles.sider}>
-                <Button
-                    block
-                    type="link"
-                    icon={<FileOutlined />}
-                    size="large"
-                    //ghost
-                    style={{ border: 'none' }}
-                    onClick={onExplorerClick}
-                    className={activePane === "explorer" ? "active" : "inactive"} />
+    return devMode.value
+        ? (
+            <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
+                <div className={styles.sider}>
+                    <Button
+                        block
+                        type="link"
+                        icon={<FileOutlined />}
+                        size="large"
+                        style={{ border: 'none' }}
+                        onClick={onExplorerClick}
+                        className={activePane === "explorer" ? "active" : "inactive"} />
+                </div>
+                <div className={styles.workspace}>
+                    <CodeWrapper
+                        leftPane={activePane === "explorer"
+                            ? (
+                                <FileTree
+                                    monaco={monacoInst.current}
+                                    onSelect={onFileSelect}
+                                    defaultSelection={getCurrentUri()}
+                                />
+                            )
+                            : undefined}
+                    >
+                        <CodeEditorMayHaveTemplate
+                            path={fileNamesState.modelPath}
+                            language={props.language}
+                            theme="vs-dark"
+                            value={value}
+                            onChange={onChange}
+                            options={{
+                                automaticLayout: true,
+                                readOnly: readOnly,
+                            }}
+                            onMount={onEditorMount}
+                            template={template}
+                        />
+                    </CodeWrapper>
+                </div>
             </div>
-            <div className={styles.workspace}>
-                <CodeWrapper
-                    leftPane={activePane === "explorer"
-                        ? (
-                            <FileTree 
-                                monaco={monacoInst.current} 
-                                onSelect={onFileSelect} 
-                                defaultSelection={getCurrentUri()} 
-                            />
-                        )
-                        : undefined}
-                >
-                    <CodeEditorMayHaveTemplate
-                        path={fileNamesState.modelPath}
-                        language={props.language}
-                        theme="vs-dark"
-                        value={value}
-                        onChange={onChange}
-                        options={{
-                            automaticLayout: true,
-                            readOnly: readOnly,
-                        }}
-                        onMount={onEditorMount}
-                        template={template}
-                    />                    
-                </CodeWrapper>
+        )
+        : (
+            <div style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
+                <CodeEditorMayHaveTemplate
+                    path={fileNamesState.modelPath}
+                    language={props.language}
+                    theme="vs-dark"
+                    value={value}
+                    onChange={onChange}
+                    options={{
+                        automaticLayout: true,
+                        readOnly: readOnly,
+                    }}
+                    onMount={onEditorMount}
+                    template={template}
+                />
             </div>
-        </div>
-    );
+        );
 };
 
 export default CodeEditorClientSide;
