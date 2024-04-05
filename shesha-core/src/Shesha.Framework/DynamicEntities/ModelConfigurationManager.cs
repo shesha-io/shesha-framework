@@ -496,9 +496,17 @@ namespace Shesha.DynamicEntities
                         prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced != null;
 
                         prop.EntityModule = hardCodedProp.EntityModule;
+                        prop.ModuleAccessor = hardCodedProp.ModuleAccessor;
+                        prop.TypeAccessor = hardCodedProp.TypeAccessor;
                     }
                 }
             }
+
+            dto.MD5 = modelConfig.PropertiesMD5;
+            
+            var changeDates = properties.Select(p => p.LastModificationTime ?? p.CreationTime).ToList();
+            changeDates.Add(modelConfig.LastModificationTime ?? modelConfig.CreationTime);
+            dto.ChangeTime = changeDates.Max();
 
             dto.Permission = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}");
             dto.PermissionGet = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Get");

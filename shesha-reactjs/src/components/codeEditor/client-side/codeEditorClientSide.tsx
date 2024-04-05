@@ -1,15 +1,20 @@
-import React, { FC, useEffect, useMemo, useRef } from "react";
+import React, { FC, PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
 import { Monaco } from '@monaco-editor/react';
-import { IDisposable, editor, languages } from 'monaco-editor';
+import { IDisposable, IPosition, IRange, Uri, UriComponents, editor, languages } from 'monaco-editor';
 import { DataTypes, IObjectMetadata } from "@/interfaces";
 import { ModelTypeIdentifier, NestedProperties, PropertiesPromise, asPropertiesArray, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import { TypesBuilder } from "@/utils/metadata/typesBuilder";
 import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
-import { makeCodeTemplate } from "../utils";
-import { useMetadataDispatcher } from "@/providers";
+import { makeCodeTemplate } from "./utils";
+import { useMetadataDispatcher, useSettingValue } from "@/providers";
 import { CODE_TEMPLATE_DEFAULTS, ICodeEditorProps } from "../models";
+import { useStyles } from './styles';
+import { Button } from "antd";
+import { FileOutlined } from "@ant-design/icons";
+import { SizableColumns } from "@/components/sizableColumns";
+import { FileTree } from "./fileTree/fileTree";
 
 interface EditorFileNamesState {
     modelPath: string;
@@ -24,6 +29,34 @@ const isChildEditor = (editor: editor.ICodeEditor): editor is IEmbeddedCodeEdito
     return typed && typeof (typed.getParentEditor) === 'function';
 };
 
+interface CodeWrapperProps extends PropsWithChildren {
+    leftPane?: React.ReactElement;
+}
+const CodeWrapper: FC<CodeWrapperProps> = ({ children, leftPane }) => {
+    const { styles } = useStyles();
+    return (
+        <SizableColumns
+            sizes={leftPane ? [25, 75] : [0, 100]}
+            minSize={leftPane ? 100 : 0}
+            expandToMin={false}
+            gutterSize={leftPane ? 8 : 0}
+            gutterAlign="center"
+            snapOffset={30}
+            dragInterval={1}
+            direction="horizontal"
+            cursor="col-resize"
+            className={styles.workspaceSplit}
+        >
+            <div className={leftPane ? styles.tree : undefined}>
+                {leftPane}
+            </div>
+            <div className={styles.code}>
+                {children}
+            </div>
+        </SizableColumns>
+    );
+};
+
 //#region local utils
 
 const getImportBlock = (constantsMetadata: IObjectMetadata, fileName: string): string => {
@@ -31,8 +64,8 @@ const getImportBlock = (constantsMetadata: IObjectMetadata, fileName: string): s
     if (constants.length > 0) {
         const constantsNames = constants.map(p => p.path).sort().join(",\r\n    ");
         return `//#region Exposed variables
-import { 
-    ${constantsNames} 
+import {
+    ${constantsNames}
 } from './${fileName}.variables';
 //#endregion\r\n\r\n`;
     }
@@ -48,7 +81,7 @@ const prefixPath = (path: string, prefix: string): string => {
         : prefix + "/" + _.trimStart(path, '/');
 };
 
-const prefixFilePath = (path: string): string => prefixPath(path, "ts:filename");
+const prefixFilePath = (path: string): string => path;
 const prefixLibPath = (path: string): string => path.indexOf("node_modules") === -1 ? prefixPath(path, "node_modules") : path;
 
 //#endregion
@@ -60,39 +93,46 @@ const prefixLibPath = (path: string): string => path.indexOf("node_modules") ===
  * @return {ReactNode} the code editor component
  */
 const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
-    const { 
-        value, 
-        onChange, 
-        availableConstants, 
-        fileName, 
-        path, 
-        wrapInTemplate, 
-        readOnly = false, 
+    const {
+        value,
+        onChange,
+        availableConstants,
+        fileName,
+        path,
+        wrapInTemplate,
+        readOnly = false,
         style,
         templateSettings = CODE_TEMPLATE_DEFAULTS,
     } = props;
     const monacoInst = useRef<Monaco>();
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
+    const { styles } = useStyles();
+    const [activePane, setActivePane] = useState(null);
+    const devMode = useSettingValue({ module: "Shesha", name: "Shesha.DevMode" });
 
     const { getMetadata } = useMetadataDispatcher();
 
     const subscriptions = useRef<IDisposable[]>([]);
     const addSubscription = (subscription: IDisposable) => {
         subscriptions.current.push(subscription);
+        //console.log('LOG: addSubscription', { subscriptions: subscriptions.current.length });
     };
     useEffect(() => {
         return () => {
+            //console.log('LOG: clearing subscriptions: ' + subscriptions.current.length);
             const subsCopy = [...subscriptions.current];
             subsCopy.forEach(s => s.dispose());
         };
     }, []);
 
+    /*
     const addExtralibIfMissing = (language: languages.typescript.LanguageServiceDefaults, content: string, filePath?: string) => {
         const extraLibs = language.getExtraLibs();
         if (!extraLibs[filePath]) {
             language.addExtraLib(content, filePath);
         }
     };
+    */
 
     const template = useMemo(() => {
         if (wrapInTemplate !== true)
@@ -108,16 +148,20 @@ ${(c) => c.editable(code)}
         return result;
     }, [wrapInTemplate, fileName, availableConstants, templateSettings]);
 
-    const addExtraLib = (monaco: Monaco, content: string, filePath?: string) => {
+    const addExtraLib = (monaco: Monaco, content: string, filePath?: string): IDisposable => {
         const uri = monaco.Uri.parse(filePath);
-        const existingModel = monaco.editor.getModel(uri);
-        if (!existingModel) {
-            //console.log('LOG: create model with URI: ', uri.toString());
-            monaco.editor.createModel(content, "typescript", uri);
+        let model = monaco.editor.getModel(uri);
+        if (!model) {
+            try {
+                model = monaco.editor.createModel(content, "typescript", uri);
+            } catch (error) {
+                console.error('Failed to create model', { error, uri, content });
+            }
         }
 
-        addExtralibIfMissing(monaco.languages.typescript.javascriptDefaults, content, filePath);
-        addExtralibIfMissing(monaco.languages.typescript.typescriptDefaults, content, filePath);
+        // addExtralibIfMissing(monaco.languages.typescript.javascriptDefaults, content, filePath);
+        // addExtralibIfMissing(monaco.languages.typescript.typescriptDefaults, content, filePath);
+        return model;
     };
 
     const setDiagnosticsOptions = (monaco: Monaco, options: languages.typescript.DiagnosticsOptions) => {
@@ -176,8 +220,28 @@ ${(c) => c.editable(code)}
         return result;
     }, [path, fileName]);
 
+    const navigateToModel = (fileUri?: UriComponents) => {
+        if (!monacoInst.current || !editorRef.current || !fileUri)
+            return;
+
+        const model = monacoInst.current.Uri.isUri(fileUri)
+            ? monacoInst.current.editor.getModel(fileUri)
+            : undefined;
+        editorRef.current.setModel(model);
+    };
+
     const initEditor = (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         const localProperties = fetchProperties(availableConstants?.properties ?? []);
+
+        monaco.editor.registerEditorOpener({
+            async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, _selectionOrPosition?: IRange | IPosition) {
+                if (devMode.value !== true)
+                    return false;
+                
+                navigateToModel(resource);
+                return true;
+            }
+        });
 
         localProperties.then(properties => {
             if (properties.length === 0)
@@ -196,8 +260,13 @@ ${(c) => c.editable(code)}
 
             const builder = new TypesBuilder(metadataFetcher, isFileExists, registerFile);
             builder.build(properties).then(builderResult => {
-                if (builderResult.content)
-                    addExtraLib(monaco, builderResult.content, fileNamesState.exposedVarsPath);
+                if (builderResult.content) {
+                    const varsModel = addExtraLib(monaco, builderResult.content, fileNamesState.exposedVarsPath);
+                    // dispose variables model
+                    addSubscription(varsModel);
+                }
+            }).catch(error => {
+                console.error("Failed to build exposed variables", error);
             });
         });
     };
@@ -229,23 +298,77 @@ ${(c) => c.editable(code)}
             editor.trigger(null, 'editor.fold', { selectionLines: [1] });
     };
 
-    return (
-        <div style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
-            <CodeEditorMayHaveTemplate
-                path={fileNamesState.modelPath}
-                language={props.language}
-                theme="vs-dark"
-                value={value}
-                onChange={onChange}
-                options={{
-                    automaticLayout: true,
-                    readOnly: readOnly,
-                }}
-                onMount={onEditorMount}
-                template={template}
-            />
-        </div>
-    );
+    const onExplorerClick = () => {
+        setActivePane(activePane === "explorer" ? null : "explorer");
+    };
+
+    const onFileSelect = (fileUri?: UriComponents) => {
+        navigateToModel(fileUri);
+    };
+
+    const getCurrentUri = (): UriComponents => {
+        return editorRef.current?.getModel()?.uri;
+    };
+
+    return devMode.value
+        ? (
+            <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
+                <div className={styles.sider}>
+                    <Button
+                        block
+                        type="link"
+                        icon={<FileOutlined />}
+                        size="large"
+                        style={{ border: 'none' }}
+                        onClick={onExplorerClick}
+                        className={activePane === "explorer" ? "active" : "inactive"} />
+                </div>
+                <div className={styles.workspace}>
+                    <CodeWrapper
+                        leftPane={activePane === "explorer"
+                            ? (
+                                <FileTree
+                                    monaco={monacoInst.current}
+                                    onSelect={onFileSelect}
+                                    defaultSelection={getCurrentUri()}
+                                />
+                            )
+                            : undefined}
+                    >
+                        <CodeEditorMayHaveTemplate
+                            path={fileNamesState.modelPath}
+                            language={props.language}
+                            theme="vs-dark"
+                            value={value}
+                            onChange={onChange}
+                            options={{
+                                automaticLayout: true,
+                                readOnly: readOnly,
+                            }}
+                            onMount={onEditorMount}
+                            template={template}
+                        />
+                    </CodeWrapper>
+                </div>
+            </div>
+        )
+        : (
+            <div style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
+                <CodeEditorMayHaveTemplate
+                    path={fileNamesState.modelPath}
+                    language={props.language}
+                    theme="vs-dark"
+                    value={value}
+                    onChange={onChange}
+                    options={{
+                        automaticLayout: true,
+                        readOnly: readOnly,
+                    }}
+                    onMount={onEditorMount}
+                    template={template}
+                />
+            </div>
+        );
 };
 
 export default CodeEditorClientSide;

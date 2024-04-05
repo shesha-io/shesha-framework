@@ -1,22 +1,20 @@
-import { SettingsManager } from "./manager";
-
-export interface ISettingsGroup {
+export interface IBaseAccessor {
 
 }
 
 /**
- * Settings group (module or category)
+ * Base group accessor
  */
-export class SettingsGroup<TChild = ISettingsGroup> implements ISettingsGroup {
+export class BaseAccessor<TChild = IBaseAccessor, TManager = any> implements IBaseAccessor {
     readonly _accessor: string;
     readonly _children: Map<string, TChild>;
-    readonly _settingManager: SettingsManager;
+    readonly _manager: TManager;
 
     createChild(accessor: string): TChild {
         throw new Error("Method 'createChild()' must be implemented. Accessor: " + accessor);
     }
 
-    getSettingAccessor(accessor: string): ISettingsGroup {
+    getChildAccessor(accessor: string): IBaseAccessor {
         if (this._children.has(accessor))
             return this._children.get(accessor);
 
@@ -25,8 +23,8 @@ export class SettingsGroup<TChild = ISettingsGroup> implements ISettingsGroup {
         return children;
     }
 
-    constructor(settingManager: SettingsManager, name: string) {
-        this._settingManager = settingManager;
+    constructor(manager: TManager, name: string) {
+        this._manager = manager;
         this._accessor = name;
         this._children = new Map<string, TChild>();
 
@@ -38,7 +36,7 @@ export class SettingsGroup<TChild = ISettingsGroup> implements ISettingsGroup {
                 }
 
                 return typeof (name) === 'string'
-                    ? target.getSettingAccessor(name)
+                    ? target.getChildAccessor(name)
                     : undefined;
             },
         });

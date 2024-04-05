@@ -35,7 +35,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
       .${sidebarContainerHeader} {
         padding: ${sheshaStyles.paddingLG}px;
         background-color: white;
-     
       }
     
       .${sidebarContainerBody} {
@@ -43,7 +42,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         display: flex;
         position: relative;
         width: 100%;
-   
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
@@ -63,7 +61,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
     
           background: white;
-          .transition();
+          transition: ${sheshaStyles.transition};
     
           .sidebar-subheader {
             margin-top: 8px;
@@ -173,7 +171,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         }
     
         .${sidebarContainerMainArea} {
-          .transition();
+          transition: ${sheshaStyles.transition};
           width: 100%;
           position: sticky;
           overflow-x: auto;

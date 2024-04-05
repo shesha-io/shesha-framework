@@ -55,12 +55,22 @@ export interface IHasChildPropertiesMetadata {
 export interface ModelTypeIdentifier {
   name: string;
   module: string;
+  // accessor: string;
+  // moduleAccessor: string;
 }
 
 export interface IHasEntityType {
   entityType: string | null; // todo: split this property into two different (for objects and for entities) or rename existing
   entityModule?: string | null;
+  
+  typeAccessor?: string;
+  moduleAccessor?: string;
 }
+
+export const isIHasEntityType = (value: any): value is IHasEntityType => {
+  const typed = value as IHasEntityType;
+  return typed && typeof typed.entityType === 'string';
+};
 
 export interface IObjectReferencePropertyMetadata extends IMemberMetadata, IHasEntityType, IHasChildPropertiesMetadata {
 }
@@ -95,7 +105,7 @@ export type PropertiesLoader = () => PropertiesPromise;
 
 export type NestedProperties = IPropertyMetadata[] | PropertiesLoader | null;
 
-export interface IPropertyMetadata extends IMemberMetadata/*, Partial<IHasPropertiesLoader>*/ {
+export interface IPropertyMetadata extends IMemberMetadata {
   required?: boolean;
   readonly?: boolean;
   minLength?: number | null;
@@ -180,6 +190,9 @@ export interface IContainerWithNestedProperties {
 }
 
 export interface IEntityMetadata extends IMetadata, IContainerWithNestedProperties, IHasEntityType {
+  md5?: string;
+  changeTime?: Date;
+  aliases?: string[];
   specifications: ISpecification[];
   apiEndpoints: IDictionary<IApiEndpoint>;
 }
