@@ -13,8 +13,6 @@ export enum FormActionEnums {
   SetFlatComponentsAction = 'SET_FLAT_COMPONENTS',
   SetSettingsAction = 'SET_SETTINGS',
   SetFormMode = 'SET_FORM_MODE',
-  SetFormWidth= 'SET_FORM_WIDTH',
-  SetFormZoom= 'SET_FORM_ZOOM',
   SetVisibleComponents = 'SET_VISIBLE_COMPONENTS',
   SetEnabledComponents = 'SET_ENABLED_COMPONENTS',
   SetFormControlsData = 'SET_FORM_CONTROLS_DATA',
@@ -34,12 +32,6 @@ export const setSettingsAction = createAction<IFormSettings, IFormSettings>(
 );
 
 export const setFormModeAction = createAction<FormMode, FormMode>(FormActionEnums.SetFormMode, (p) => p);
-
-export const setFormWidthAction = createAction<number, number>(FormActionEnums.SetFormWidth, (p) => p);
-
-
-export const setFormZoomAction = createAction<number, number>(FormActionEnums.SetFormZoom, (p) => p);
-
 
 export const setVisibleComponentsAction = createAction<ISetVisibleComponentsPayload, ISetVisibleComponentsPayload>(
   FormActionEnums.SetVisibleComponents,

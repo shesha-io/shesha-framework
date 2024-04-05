@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import {Dropdown, Form, Input, MenuProps } from 'antd';
 import { BlockOutlined } from '@ant-design/icons';
-import { useForm } from '@/providers';
+import { useCanvasConfig } from '@/providers/canvasConfig';
 
 export interface IPreviewButtonProps {
   refLink?: React.LegacyRef<HTMLSpanElement>;
@@ -13,18 +13,18 @@ const calculatePercentageToPx = (value: number,browserWidth: number) => {
 
 
 export const DialogButton: FC<IPreviewButtonProps> = ({refLink}) => {
-  const { setFormWidth,formWidth,setFormZoom} = useForm();
+  const { setCanvasWidth,setCanvasZoom,width} = useCanvasConfig();
   const [browserWidth, setBrowserWidth] = useState<number>();
-  const [currentWidth,setCurrentWidth]=useState(calculatePercentageToPx(formWidth,browserWidth));
+  const [currentWidth,setCurrentWidth]=useState(calculatePercentageToPx(width,browserWidth));
 
   useEffect(()=>{
     if(!browserWidth){
       setBrowserWidth(window.innerWidth);
     }else if(browserWidth){
-      setCurrentWidth(calculatePercentageToPx(formWidth,browserWidth));
+      setCurrentWidth(calculatePercentageToPx(width,browserWidth));
 
     };
-  },[formWidth,browserWidth]);
+  },[width,browserWidth]);
   
   const calculatePercentage=(value: number) =>{
     if(!value){
@@ -33,6 +33,8 @@ export const DialogButton: FC<IPreviewButtonProps> = ({refLink}) => {
     return (value / browserWidth) * 100;
   };
 
+  console.log('currentWidth',width);
+
   const items: MenuProps['items'] = [
     {
       label :<div style={{width:'11rem'}}>
@@ -40,13 +42,13 @@ export const DialogButton: FC<IPreviewButtonProps> = ({refLink}) => {
         <Form>
           <Form.Item label="Width">
             <Input type="number"  value={currentWidth} suffix={'px'} onChange={e=>{
-                 setFormWidth(calculatePercentage(parseInt(e.target.value,10)));
+                 setCanvasWidth(calculatePercentage(parseInt(e.target.value,10)));
              }
             }/>
           </Form.Item>
           <Form.Item label="Zoom">
             <Input type="number" defaultValue={100} step={10} suffix={'%'} onChange={e=>{
-             setFormZoom(parseInt(e.target.value,10));
+             setCanvasZoom(parseInt(e.target.value,10));
             }
             }/>
           </Form.Item>

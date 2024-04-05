@@ -27,7 +27,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         max-height: 85vh;
         overflow-y: auto;
         overflow-x: hidden;
-        width: 450px;
         margin: 0 auto;
        
       }
