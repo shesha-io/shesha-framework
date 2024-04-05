@@ -82,6 +82,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                             const meta = {
                                 ...e.metadata,
                                 entityType: e.metadata.className, // todo: remove after refactoring
+                                name: e.metadata.className, // todo: remove after refactoring
                             };                            
 
                             promises.push(metadataCache.setItem(key, meta));
