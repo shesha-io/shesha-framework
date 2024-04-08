@@ -75,6 +75,6 @@ namespace Shesha.Settings
             var result = settings.Select(s => new SettingConfigurationDto(s)).ToList();
 
             return Task.FromResult(result);
-        }        
+        }
     }
 }

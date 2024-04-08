@@ -6,6 +6,8 @@ import { useApplicationContextMetadata } from '../publicApi/metadata';
 import { useHttpClient } from '../publicApi/http/hooks';
 import { useAuthState } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
+import { useCacheProvider } from '@/hooks/useCache';
+import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/useEntityMetadataFetcher';
 
 export interface IApplicationDataProviderProps {
 
@@ -14,7 +16,10 @@ export interface IApplicationDataProviderProps {
 export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
   const contextMetadata = useApplicationContextMetadata();
   const httpClient = useHttpClient();
-  const [contextData] = useState<IApplicationContext>(() => new ApplicationContext(httpClient));
+  const cacheProvider = useCacheProvider();
+  const metadataFetcher = useEntityMetadataFetcher();
+
+  const [contextData] = useState<IApplicationContext>(() => new ApplicationContext(httpClient, cacheProvider, metadataFetcher));
 
   const { loginInfo } = useAuthState(false) ?? {};
   useEffect(() => {

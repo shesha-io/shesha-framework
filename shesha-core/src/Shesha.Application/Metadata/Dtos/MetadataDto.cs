@@ -1,5 +1,8 @@
-﻿using Shesha.DynamicEntities.Dtos;
+﻿using Newtonsoft.Json;
+using Shesha.DynamicEntities.Dtos;
+using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Shesha.Metadata.Dtos
 {
@@ -19,6 +22,16 @@ namespace Shesha.Metadata.Dtos
         public string Module { get; set; }
 
         /// <summary>
+        /// Type accessor
+        /// </summary>
+        public string TypeAccessor { get; set; }
+
+        /// <summary>
+        /// Module accessor
+        /// </summary>
+        public string ModuleAccessor { get; set; }
+
+        /// <summary>
         /// Propeties
         /// </summary>
         public List<PropertyMetadataDto> Properties { get; set; } = new List<PropertyMetadataDto>();
@@ -34,5 +47,20 @@ namespace Shesha.Metadata.Dtos
         /// value - endpoint DTO (url and http verb)
         /// </summary>
         public Dictionary<string, ApiEndpointDto> ApiEndpoints { get; set; } = new Dictionary<string, ApiEndpointDto>();
+
+        [JsonProperty("md5")]
+        [JsonPropertyName("md5")]
+        public string MD5 { get; set; }
+        public DateTime? ChangeTime { get; set; }
+
+        /// <summary>
+        /// Class name
+        /// </summary>
+        public string ClassName { get; set; }
+
+        /// <summary>
+        /// Full class name (for backward compatibility)
+        /// </summary>
+        public List<string> Aliases { get; set; } = new List<string>();
     }
 }

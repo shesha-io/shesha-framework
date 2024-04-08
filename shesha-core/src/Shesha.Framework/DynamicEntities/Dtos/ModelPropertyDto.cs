@@ -47,6 +47,16 @@ namespace Shesha.DynamicEntities.Dtos
         public string EntityModule { get; set; }
 
         /// <summary>
+        /// Type accessor
+        /// </summary>
+        public string TypeAccessor { get; set; }
+
+        /// <summary>
+        /// Module accessor
+        /// </summary>
+        public string ModuleAccessor { get; set; }
+
+        /// <summary>
         /// Reference list name
         /// </summary>
         public string ReferenceListName { get; set; }

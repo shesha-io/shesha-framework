@@ -16,7 +16,7 @@ namespace Shesha.FluentMigrator
             Transaction = transaction;
         }
 
-        protected void ExecuteNonQuery(string sql, Action<IDbCommand> prepareAction = null)
+        protected void ExecuteNonQuery(string sql, Action<IDbCommand>? prepareAction = null)
         {
             ExecuteCommand(sql, command => {
                 prepareAction?.Invoke(command);
@@ -24,12 +24,12 @@ namespace Shesha.FluentMigrator
             });
         }
 
-        protected T ExecuteScalar<T>(string sql, Action<IDbCommand> prepareAction = null)
+        protected T? ExecuteScalar<T>(string sql, Action<IDbCommand>? prepareAction = null)
         {
-            T result = default(T);
+            T? result = default;
             ExecuteCommand(sql, command => {
                 prepareAction?.Invoke(command);
-                result = (T)command.ExecuteScalar();
+                result = (T?)command.ExecuteScalar();
             });
             return result;
         }

@@ -17,6 +17,7 @@ import { ICodeEditorProps } from './interfaces';
 import { Show } from '@/components';
 import { useSourcesFolder } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import type { TabsProps } from 'antd';
+import { useStyles } from './styles';
 
 type TabItem = TabsProps['items'][number];
 
@@ -33,6 +34,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const { modal } = App.useApp();
 
   const src = useSourcesFolder(false);
+  const { styles } = useStyles();
 
   const onChange = (_value) => {
     switch (mode) {
@@ -107,7 +109,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         key: "code",
         label: "Code",
         children: (
-          <div style={{ height: "70vh" }}>
+          <div className={styles.codeEditorContainer}>
             {renderCodeEditor()}
           </div>
         )
@@ -136,13 +138,15 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         open={showDialog}
         onCancel={onDialogCancel}
         onOk={onDialogSave}
-        width="50vw"
         title={props.label}
         okButtonProps={{ hidden: readOnly }}
         cancelText={readOnly ? 'Close' : undefined}
         destroyOnClose={true}
+        classNames={{ body: styles.codeEditorModalBody }}
+        className={ styles.codeEditorModal }
+        width={null}
       >
-        <Show when={!!props?.description}>
+        <Show when={Boolean(props?.description)}>
           <Alert message={props?.description} />
           <br />
         </Show>
@@ -150,10 +154,9 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         {tabItems ? (
           <Tabs items={tabItems} />
         ) : (
-          <div style={{ height: "70vh" }}>{renderCodeEditor()}</div>
+          <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
         )}
-    </Modal >
-
+      </Modal >
     </>
   );
 };
