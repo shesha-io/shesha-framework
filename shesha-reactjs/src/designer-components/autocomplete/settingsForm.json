@@ -575,6 +575,7 @@
             "propertyName": "placeholder",
             "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
             "label": "Placeholder",
+            "hidden":  {"_code": "return !getSettingValue(data?.entityReferenceEnabled);", "_mode": "code", "_value": false},
             "jsSetting": true
           },
           {
@@ -583,6 +584,7 @@
             "propertyName": "getEntityUrl",
             "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
             "label": "Get Entity URL",
+            "hidden":  {"_code": "return !getSettingValue(data?.entityReferenceEnabled);", "_mode": "code", "_value": false},
             "jsSetting": true,
             "readonly": true
           },
@@ -593,7 +595,7 @@
             "label": "Entity Type",
             "labelAlign": "right",
             "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
-            "hidden": false,
+            "hidden":  {"_code": "return !getSettingValue(data?.entityReferenceEnabled);", "_mode": "code", "_value": false},
             "dataSourceType": "url",
             "validate": {},
             "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
@@ -608,7 +610,7 @@
             "label": "Display Property",
             "labelAlign": "right",
             "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
-            "hidden": {"_code": "return !getSettingValue(data?.entityTypeShortAlias);", "_mode": "code", "_value": false},
+            "hidden": {"_code": "return (!getSettingValue(data?.entityTypeShortAlias) || !getSettingValue(data?.entityReferenceEnabled));", "_mode": "code", "_value": false},
 
             "isDynamic": false,
             "placeholder": "",
@@ -626,6 +628,7 @@
             "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
             "label": "Entity Reference Type",
             "allowClear": true,
+            "hidden":  {"_code": "return !getSettingValue(data?.entityReferenceEnabled);", "_mode": "code", "_value": false},
             "jsSetting": false,
             "values": [
               {
@@ -672,6 +675,7 @@
             "version": 1,
             "referenceListId": null,
             "readonly": true,
+            "hidden":  {"_code": "return !getSettingValue(data?.entityReferenceEnabled);", "_mode": "code", "_value": false},
             "jsSetting": false
           },
           {
@@ -712,7 +716,7 @@
                 }
               ],
               "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
-              "hidden": {"_code": "return !getSettingValue(data?.formSelectionMode?.toLowerCase() == 'dynamic');", "_mode": "code", "_value": false},
+              "hidden": {"_code": "return (!getSettingValue(data?.formSelectionMode?.toLowerCase() == 'dynamic') || !getSettingValue(data?.entityReferenceEnabled));", "_mode": "code", "_value": false},
               "dataSourceType": "value",
               "validate": {},
               "version": 1,
@@ -725,7 +729,7 @@
               "label": "Form",
               "labelAlign": "right",
               "parentId": "6Vw9iiDw9d0MD_Rh5cbIx",
-              "hidden": {"_code": "return !getSettingValue(data?.formSelectionMode?.toLowerCase() == 'name');", "_mode": "code", "_value": true},
+              "hidden": {"_code": "return (!getSettingValue(data?.formSelectionMode?.toLowerCase() == 'name') || !getSettingValue(data?.entityReferenceEnabled));", "_mode": "code", "_value": true},
               "isDynamic": false,
               "placeholder": "",
               "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
