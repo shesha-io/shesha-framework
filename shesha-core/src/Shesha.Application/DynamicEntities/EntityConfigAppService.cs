@@ -11,6 +11,8 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
+using Shesha.Metadata;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -129,5 +131,118 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     {
         await _propertyRepository.DeleteAsync(x => x.EntityConfig.Id == id);
         await _configItemRepository.DeleteAsync(id);
+    }
+
+    [HttpGet]
+    public async Task<List<EntityConfigurationDto>> GetClientApiConfigurationsAsync()
+    {
+        var entities = await _entityConfigManager.GetMainDataListAsync();
+        var result = new List<EntityConfigurationDto>();
+
+        foreach (var entity in entities) 
+        {
+            var entityConfig = _entityConfigurationStore.GetOrNull(entity.FullClassName);
+            if (entityConfig == null)
+                continue;
+
+            if (entityConfig.EntityType.IsJsonEntityType())
+                continue;
+
+            var moduleInfo = entityConfig.EntityType.GetConfigurableModuleInfo();
+            if (moduleInfo == null)
+                continue;
+
+            var dto = new EntityConfigurationDto
+            {
+                Name = entity.FullClassName,
+                Description = entity.Description,
+                Accessor = entityConfig.EntityType.GetTypeAccessor(),
+                Module = new EntityApiItemBase {
+                    Name = moduleInfo.Name,
+                    Description = moduleInfo.Description,
+                    Accessor = moduleInfo.GetModuleAccessor(),
+                }
+            };
+            result.Add(dto);
+        }        
+
+        return result;
+    }
+
+    [HttpPost]
+    public async Task<SyncAllResponse> SyncClientApiAsync(SyncAllRequest input)
+    {
+        var metadataService = IocManager.Resolve<IMetadataAppService>();
+
+        var entityModelProvider = IocManager.Resolve<IEntityModelProvider>();
+        var models = await entityModelProvider.GetModelsAsync();
+        var groupped = models.GroupBy(e => e.ModuleAccessor, (moduleAccessor, entities) => {
+            return new {
+                Module = moduleAccessor,
+                Entities = entities,
+            };
+        }).ToList();
+
+        var response = new SyncAllResponse();
+
+        foreach (var module in input.Modules)
+        {
+            var backendModule = groupped.FirstOrDefault(g => g.Module == module.Accessor);
+            
+            var responseModule = new ModuleSyncResponse() { Accessor = module.Accessor };
+            response.Modules.Add(responseModule);
+
+            if (backendModule != null) 
+            {
+                foreach (var entity in backendModule.Entities) 
+                {
+                    var backendEntity = backendModule.Entities.FirstOrDefault(e => e.Accessor == entity.Accessor);
+                    if (backendEntity != null)
+                    {
+                        if (backendEntity.MD5 == entity.MD5 && backendEntity.ModificationTime == entity.ModificationTime)
+                        {
+                            responseModule.Entities.Add(new BaseEntitySyncResponse
+                            {
+                                Accessor = entity.Accessor,
+                                Status = SyncStatus.UpToDate,
+                            });
+                        }
+                        else {
+                            responseModule.Entities.Add(new OutOfDateEntitySyncResponse
+                            {
+                                Accessor = entity.Accessor,
+                                Status = SyncStatus.OutOfDate,
+                                Metadata = await metadataService.GetAsync(backendEntity.ClassName),
+                            });
+                        }
+                    } else {
+                        responseModule.Entities.Add(new BaseEntitySyncResponse { 
+                            Accessor = entity.Accessor,
+                            Status = SyncStatus.Unknown,
+                        });
+                    }
+                }
+            } else
+                responseModule.Status = SyncStatus.Unknown;
+        }
+
+        // add new modules (which are missing on client)
+        var modulesToAdd = groupped.Where(g => !response.Modules.Any(m => m.Accessor == g.Module)).ToList();
+        foreach (var module in modulesToAdd)
+        {
+            var responseModule = new ModuleSyncResponse() { Accessor = module.Module, Status = SyncStatus.OutOfDate };
+            response.Modules.Add(responseModule);
+
+            foreach (var entity in module.Entities) 
+            {
+                responseModule.Entities.Add(new OutOfDateEntitySyncResponse { 
+                    Accessor = entity.Accessor,
+                    Status = SyncStatus.OutOfDate,
+                    Metadata = await metadataService.GetAsync(entity.ClassName),
+                });
+            }
+        }
+
+        return response;
     }
 }

@@ -170,6 +170,7 @@ namespace Shesha.DynamicEntities
                         c.code != null &&
                         (c.db.FriendlyName != c.code.Config.FriendlyName ||
                         c.db.TableName != c.code.Config.TableName ||
+                        c.db.Accessor != c.code.Config.Accessor ||
                         c.db.TypeShortAlias != c.code.Config.SafeTypeShortAlias ||
                         c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
                         c.db.PropertiesMD5 != c.code.PropertiesMD5 ||
@@ -187,6 +188,7 @@ namespace Shesha.DynamicEntities
             foreach (var config in toUpdate)
             {
                 config.db.FriendlyName = config.code.Config.FriendlyName;
+                config.db.Accessor = config.code.Config.Accessor;
                 config.db.TableName = config.code.Config.TableName;
                 config.db.TypeShortAlias = config.code.Config.SafeTypeShortAlias;
                 config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
@@ -218,6 +220,7 @@ namespace Shesha.DynamicEntities
                 var ec = new EntityConfig()
                 {
                     FriendlyName = config.Config.FriendlyName,
+                    Accessor = config.Config.Accessor,
                     TableName = config.Config.TableName,
                     TypeShortAlias = config.Config.SafeTypeShortAlias,
                     DiscriminatorValue = config.Config.DiscriminatorValue,
@@ -418,7 +421,7 @@ namespace Shesha.DynamicEntities
         {
             dst.Name = src.Path;
             dst.DataType = src.DataType;
-            dst.EntityType = src.EntityTypeShortAlias;
+            dst.EntityType = src.EntityType;
             dst.ReferenceListName = src.ReferenceListName;
             dst.ReferenceListModule = src.ReferenceListModule;
             dst.IsFrameworkRelated = src.IsFrameworkRelated;

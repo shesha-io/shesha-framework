@@ -15,6 +15,7 @@ using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
 using Shesha.Reflection;
+using Shesha.Settings.Dto;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using System;

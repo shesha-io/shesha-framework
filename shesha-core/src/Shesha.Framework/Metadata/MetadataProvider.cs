@@ -12,6 +12,7 @@ using Shesha.DynamicEntities;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -95,6 +96,7 @@ namespace Shesha.Metadata
             var dataType = GetDataType(property);
             var cascadeAttribute = property.GetAttribute<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
+
             var result = new PropertyMetadataDto
             {
                 Path = path,
@@ -122,16 +124,6 @@ namespace Shesha.Metadata
 
                 DataType = dataType.DataType,
                 DataFormat = dataType.DataFormat,
-                EntityTypeShortAlias = property.PropertyType.IsEntityType()
-                    ? _entityConfigurationStore.Get(property.PropertyType)?.SafeTypeShortAlias ?? property.PropertyType.FullName
-                    : property.PropertyType.IsJsonEntityType()
-                        ? property.PropertyType.FullName
-                        : dataType.DataType == DataTypes.Array
-                            ?   dataType.ObjectType
-                            : null,
-                EntityModule = property.PropertyType.IsEntityType()
-                    ? property.PropertyType.GetConfigurableModuleName()
-                    : null,
                 ReferenceListModule = epc?.ReferenceListModule,
                 ReferenceListName = epc?.ReferenceListName,
                 EnumType = epc?.EnumType,
@@ -143,6 +135,8 @@ namespace Shesha.Metadata
                 IsFilterable = epc != null && epc.IsMapped,
                 IsSortable = epc != null && epc.IsMapped,
             };
+            FillEntityRelatedProperties(result, property, dataType);
+
             if (dataType.DataType == DataTypes.Array)
             {
                 result.ItemsType = GetItemsType(property, context);
@@ -155,6 +149,35 @@ namespace Shesha.Metadata
             context.ProcessedTypes.Add(property.PropertyType);
 
             return result;
+        }
+
+        private void FillEntityRelatedProperties(PropertyMetadataDto propertyDto, PropertyInfo property, DataTypeInfo dataType) 
+        {
+            var isEntity = property.PropertyType.IsEntityType();
+            var propType = property.PropertyType.StripCastleProxyType();
+
+            // todo: review and move handling of other types to separate methods
+            propertyDto.EntityType = isEntity
+                    ? _entityConfigurationStore.Get(propType)?.SafeTypeShortAlias ?? propType.FullName
+                    : propType.IsJsonEntityType()
+                        ? propType.FullName
+                        : dataType.DataType == DataTypes.Array
+                            ? dataType.ObjectType
+                            : null;
+
+            if (isEntity) 
+            {
+                var moduleInfo = propType.GetConfigurableModuleInfo();
+                if (moduleInfo != null)
+                {
+                    propertyDto.EntityModule = isEntity
+                        ? moduleInfo.Name
+                        : null;
+
+                    propertyDto.ModuleAccessor = moduleInfo.GetModuleAccessor();
+                }
+                propertyDto.TypeAccessor = propType.GetTypeAccessor();
+            }
         }
 
         private PropertyMetadataDto GetItemsType(PropertyInfo property, MetadataContext context)

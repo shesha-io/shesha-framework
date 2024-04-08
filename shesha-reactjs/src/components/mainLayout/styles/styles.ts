@@ -159,7 +159,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     padding-top: 48px;
     left: 0;
 
-    z-index: 2;
+    z-index: 4;
     flex: 0 0 ${shaSiderExpandedWidth} !important;
     max-width: ${shaSiderExpandedWidth}  !important;
     min-width: ${shaSiderExpandedWidth}  !important;

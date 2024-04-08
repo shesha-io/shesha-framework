@@ -91,6 +91,10 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
 
       fileName: 'expression',
       wrapInTemplate: true,
+      templateSettings: {
+        functionName: "executeScriptAsync",
+        useAsyncDeclaration: true,        
+      },
       availableConstants: props.availableConstants,
       /**
        * @deprecated to be removed

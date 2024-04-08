@@ -17,13 +17,17 @@ export class TypesImporter {
             fileImport.add(type.typeName);
     }
 
-    cleanupFileNameForImport = (path: string) => {
-        return !path.endsWith(".d.ts") ? trimSuffix(path, ".ts") : path;
+    static cleanupFileNameForImport = (path: string) => {
+        return path.endsWith(".d.ts") 
+            ? path.startsWith('.') 
+                ? path
+                : trimSuffix(path, ".d.ts")
+            : trimSuffix(path, ".ts");
     };
 
     generateImports(){
         return Array.from(this.#imports.entries())
-            .map(([filePath, types]) => `import { ${Array.from(types).join(', ')} } from '${this.cleanupFileNameForImport(filePath)}';`)
+            .map(([filePath, types]) => `import { ${Array.from(types).join(', ')} } from '${TypesImporter.cleanupFileNameForImport(filePath)}';`)
             .join('\n');            
     }
 }

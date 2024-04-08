@@ -1,4 +1,4 @@
-import { Input, Select } from 'antd';
+import { Space, Select } from 'antd';
 import { ListEditor, PropertyAutocomplete } from '@/components/index';
 import { ColumnSorting, GroupingItem as SortingItem } from '@/providers/dataTable/interfaces';
 import { MetadataProvider } from '@/providers/index';
@@ -27,7 +27,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                 {({ item, itemOnChange, readOnly }) => {
                     return (
                         <div>
-                            <Input.Group style={{ width: '100%' }}>
+                            <Space.Compact style={{ width: '100%' }}>
                                 <PropertyAutocomplete
                                     style={{ width: 'calc(100% - 120px)' }}
                                     mode='single'
@@ -52,7 +52,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                                     <Option value="asc">Ascending</Option>
                                     <Option value="desc">Descending</Option>
                                 </Select>
-                            </Input.Group>
+                            </Space.Compact>
                         </div>);
                 }}
             </ListEditor>

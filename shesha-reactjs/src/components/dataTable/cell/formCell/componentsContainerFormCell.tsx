@@ -19,8 +19,7 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
 
   return (
     <div style={removeUndefinedProperties(style)}>
-      {components
-        .map((model) => {
+      {components?.map((model) => {
           return (
             <DynamicComponent
               model={{

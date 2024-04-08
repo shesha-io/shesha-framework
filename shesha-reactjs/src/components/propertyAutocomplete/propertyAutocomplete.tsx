@@ -1,5 +1,5 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
-import { AutoComplete, Button, Input, Select, Space, Tag } from 'antd';
+import { AutoComplete, Button, Select, Space, Tag } from 'antd';
 import { PlusOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useForm, useMetadata, useMetadataDispatcher } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
@@ -267,7 +267,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
           : <>{autoComplete}</>
       ) : mode === 'multiple' ? (
         <>
-          <Input.Group style={props.style}>
+          <Space.Compact style={{ width: "100%", ...props.style }}>
             {multiple}
             <Button
               icon={<PlusOutlined />}
@@ -276,7 +276,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
               style={style}
               size={props.size}
             />
-          </Input.Group>
+          </Space.Compact>
           <div style={{ marginTop: 16 }}>
             {tagChild}
           </div>

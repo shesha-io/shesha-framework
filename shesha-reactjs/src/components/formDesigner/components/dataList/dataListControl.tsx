@@ -41,7 +41,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     canDeleteInline,
     readOnly,
     noDataText = "No Data",
-    noDataSecondaryText = "No data is available for this table",
+    noDataSecondaryText = "No data is available for this list",
     noDataIcon
   } = props;
   const {
