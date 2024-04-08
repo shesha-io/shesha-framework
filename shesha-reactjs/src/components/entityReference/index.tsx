@@ -30,7 +30,7 @@ import {
 } from '@/providers';
 import { useStyles } from './styles/styles';
 import { isPropertiesArray } from '@/interfaces/metadata';
-
+import { getStyle } from '@/providers/form/utils';
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
 export interface IEntityReferenceProps {
@@ -39,6 +39,7 @@ export interface IEntityReferenceProps {
   value?: any;
   disabled?: boolean;
   placeholder?: string;
+  style?: string;
   entityType?: string;
   formSelectionMode: 'name' | 'dynamic';
 
@@ -86,7 +87,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const form = useFormLocal?.form;
   const formData = useFormLocal?.formData;
   const formMode = useFormLocal?.formMode;
-
+  const computedStyle = getStyle(props.style, formData) ?? {};
   const { getEntityFormId } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { getMetadata } = useMetadataDispatcher();
@@ -245,6 +246,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     );
   }, [formIdentifier, displayText, entityId, props.disabled, property.length]);
 
+    const style = {width: '100%', borderRadius: '5px', ...computedStyle}
+
   if (props.formSelectionMode === 'name' && !Boolean(formIdentifier))
     return (
       <Button className={styles.entityReferenceBtn} type="link" disabled>
@@ -259,5 +262,5 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       </Button>
     );
 
-  return content;
+  return <div style={style}>{content}</div>;
 };
