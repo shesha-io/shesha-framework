@@ -27,7 +27,7 @@ import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { EntityReference, IEntityReferenceProps } from '@/components/entityReference';
+import { EntityReference } from '@/components/entityReference';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
