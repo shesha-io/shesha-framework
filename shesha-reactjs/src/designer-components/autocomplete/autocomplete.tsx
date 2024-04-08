@@ -185,11 +185,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       getOptionFromFetchedItem,
       disableSearch: model.disableSearch,
       filter: evaluatedFilters,
-      quickviewEnabled: model.quickviewEnabled,
-      quickviewFormPath: model.quickviewFormPath,
-      quickviewDisplayPropertyName: model.quickviewDisplayPropertyName,
-      quickviewGetEntityUrl: model.quickviewGetEntityUrl,
-      quickviewWidth: model.quickviewWidth,
       subscribedEventNames: model.subscribedEventNames,
       style: getStyle(model.style, data),
       size: model.size,
@@ -239,6 +234,11 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       ...prev,
       dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
       useRawValues: prev['useRawValues'] ?? false,
+      quickviewDisplayPropertyName: prev['quickviewDisplayPropertyName'] ?? false,
+      quickviewGetEntityUrl: prev['quickviewGetEntityUrl'] ?? '',
+      quickviewWidth: prev['quickviewWidth'] ?? '600',
+      quickviewFormPath: prev['quickviewFormPath'] ?? '',
+      quickviewEnabled: prev['quickviewEnabled'] ?? false
     }))
     .add<IAutocompleteComponentProps>(1, (prev) => {
       const result = { ...prev };
