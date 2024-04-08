@@ -204,8 +204,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const formProps = defaultValue ? { model, initialValue: getDefaultValue() } : { model };
 
-    console.log(model, "AUTOCOMPLETE MODEL")
-
     // todo: implement other types of datasources!
 
     return (
