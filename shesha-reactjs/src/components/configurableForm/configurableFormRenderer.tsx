@@ -83,6 +83,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { isDragging = false } = useFormDesigner(false) ?? {};
   const toolboxComponents = useFormDesignerComponents();
+  
 
   const { excludeFormFieldsInPayload, onDataLoaded, onUpdate, onInitialized, formKeysToPersist, uniqueFormId } =
     formSettings;
@@ -443,7 +444,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
         {...mergedProps}
       >
         <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
-          <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+          <ComponentsContainer containerId={ROOT_COMPONENT_KEY}   />
         </ComponentsContainerProvider>
         {children}
       </Form>

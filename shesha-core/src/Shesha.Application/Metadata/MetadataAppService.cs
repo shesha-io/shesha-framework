@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using NUglify.JavaScript.Syntax;
 using Shesha.Attributes;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
@@ -14,6 +15,7 @@ using Shesha.Metadata.Dtos;
 using Shesha.Metadata.Exceptions;
 using Shesha.Reflection;
 using Shesha.Specifications;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,7 +136,8 @@ namespace Shesha.Metadata
             // ToDo: show Dynamic entities
             var containerType = await GetContainerTypeAsync(container);
 
-            return await GetPropertiesInternalAsync(containerType, container);
+            var propertiesResponse = await GetPropertiesInternalAsync(containerType, container);
+            return propertiesResponse.Properties;
         }
 
         /// inheritedDoc
@@ -146,15 +149,36 @@ namespace Shesha.Metadata
 
             // ToDo: show Dynamic entities
             var containerType = await GetContainerTypeAsync(container);
+            if (containerType == null)
+                throw new ArgumentException($"Type `{container}` not found");
 
-            var dto = new MetadataDto 
+            var isEntity = containerType.IsEntityType();
+            var moduleInfo = containerType.GetConfigurableModuleInfo();
+
+            var propertiesResponse = await GetPropertiesInternalAsync(containerType, container);
+
+            var dto = new MetadataDto
             { 
-                DataType = containerType.IsEntityType() ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
-                Module = containerType.IsEntityType() ? containerType.GetConfigurableModuleName() : null,
-                Properties = await GetPropertiesInternalAsync(containerType, container),
+                DataType = isEntity ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
+                Properties = propertiesResponse.Properties,
                 Specifications = await GetSpecificationsAsync(containerType),
                 ApiEndpoints = await GetApiEndpoints(containerType),
+                ClassName = containerType.FullName,
+
+                MD5 = propertiesResponse.MD5,
+                ChangeTime = propertiesResponse.ChangeTime,
             };
+            
+            if (isEntity) 
+            {
+                dto.TypeAccessor = containerType.GetTypeAccessor();
+                dto.Module = moduleInfo?.Name;
+                dto.ModuleAccessor = moduleInfo?.GetModuleAccessor();
+
+                var entityConfig = _entityConfigurationStore.Get(containerType);
+                if (entityConfig.HasTypeShortAlias && entityConfig.TypeShortAliasIsValid)
+                    dto.Aliases.Add(entityConfig.TypeShortAlias);
+            }
 
             return dto;
         }
@@ -231,7 +255,7 @@ namespace Shesha.Metadata
             return Task.FromResult(dtos);
         }
 
-        private async Task<List<PropertyMetadataDto>> GetPropertiesInternalAsync(Type containerType, string containerName) 
+        private async Task<GetPropertiesResponse> GetPropertiesInternalAsync(Type containerType, string containerName) 
         {
             var metadataContext = new MetadataContext(containerType);
             var hardCodedProps = containerType == null
@@ -241,10 +265,14 @@ namespace Shesha.Metadata
                     .OrderBy(e => e.Path)
                     .ToList();
 
+            var result = new GetPropertiesResponse();
             // try to get data-driven configuration
             var modelConfig = await _modelConfigurationProvider.GetModelConfigurationOrNullAsync(containerType?.Namespace ?? "Dynamic", containerType?.Name ?? containerName, hardCodedProps);
             if (modelConfig != null)
             {
+                result.MD5 = modelConfig.MD5;
+                result.ChangeTime = modelConfig.ChangeTime;
+
                 var idx = 0;
                 var props = modelConfig.Properties
                     .Select(p =>
@@ -263,10 +291,12 @@ namespace Shesha.Metadata
                     })
                     .OrderBy(p => p.OrderIndex)
                     .ToList();
-                return props.Select(p => RemoveSuppressed(p)).Where(p => p != null).ToList();
+                result.Properties = props.Select(p => RemoveSuppressed(p)).Where(p => p != null).ToList();
             }
             else
-                return hardCodedProps;
+                result.Properties = hardCodedProps;
+            
+            return result;
         }
 
         private PropertyMetadataDto RemoveSuppressed(PropertyMetadataDto prop)
@@ -292,5 +322,12 @@ namespace Shesha.Metadata
             }
         }
 
+
+        private class GetPropertiesResponse 
+        { 
+            public List<PropertyMetadataDto> Properties { get; set; }
+            public string MD5 { get; set; }
+            public DateTime ChangeTime { get; set; }
+        }        
     }
 }

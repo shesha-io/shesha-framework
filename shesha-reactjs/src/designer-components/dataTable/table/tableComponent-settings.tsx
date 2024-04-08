@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, ReactNode, useState } from 'react';
 import { Button, Select, Input, InputNumber } from 'antd';
 import { ITableComponentProps, RowDroppedMode } from './models';
 import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
@@ -12,6 +12,8 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import { IconPicker } from '@/index';
+import { ShaIconTypes } from '@/components/iconPicker';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -351,6 +353,22 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
         />
       </SettingsFormItem>
       </SettingsCollapsiblePanel>
+
+    <SettingsCollapsiblePanel header='Empty Table'>
+    <SettingsFormItem name="noDataText" label="No Data Primary Text" jsSetting>
+        <Input defaultValue={"No Data"} readOnly={readOnly} />
+      </SettingsFormItem>
+      
+      <SettingsFormItem name="noDataSecondaryText" label="No Data Secondary Text" jsSetting>
+        <Input defaultValue={"No data is available for this table"} readOnly={readOnly} />
+      </SettingsFormItem>
+
+      <SettingsFormItem name="noDataIcon" label="Icon Picker" jsSetting>
+      {(value, onChange)=>
+         <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} defaultValue={"RightOutlined"}/> 
+      }
+      </SettingsFormItem>
+     </SettingsCollapsiblePanel>
     </>
   );
 };

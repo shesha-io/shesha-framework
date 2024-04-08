@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Alert, Button, Input, Modal, Select, Skeleton } from 'antd';
+import { Alert, Button, Space, Modal, Select, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import _, { isEmpty } from 'lodash';
 import { nanoid } from '@/utils/uuid';
@@ -284,7 +284,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
             {title}
           </Button>
         ) : (
-          <Input.Group style={{ width: '100%' }} >
+          <Space.Compact style={{ width: '100%' }}>
             <Select
               size={size}
               onClick={() => {
@@ -299,10 +299,10 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
               ref={selectRef}
               allowClear
               mode={selectedMode}
-              options={options}              
+              options={options}
               suffixIcon={null} // hide arrow              
               onChange={handleMultiChange}
-              style={{ ...style, width: `calc(100% - ${size === 'large'? '40px' : '32px'})`}}     
+              style={{ ...style, width: `calc(100% - ${size === 'large'? '40px' : '32px'})` }}
               loading={selection.loading}
             >
               {''}
@@ -315,7 +315,7 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
               size={size}
               icon={<EllipsisOutlined />}
             />
-          </Input.Group>
+          </Space.Compact>
         )}
       </div>
 
@@ -365,7 +365,7 @@ export const EntityPickerEditable = (props: IEntityPickerProps) => {
 export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps) => {
   return restProps.readOnly ? (
 
-   <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
+    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );

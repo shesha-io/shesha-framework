@@ -15,6 +15,7 @@ export interface ITabPaneProps
   components?: IConfigurableFormComponent[];
   childItems?: ITabPaneProps[];
   editMode?: EditMode;
+  selectMode?: EditMode;
   readOnly?: boolean;
 }
 

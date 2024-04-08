@@ -28,6 +28,7 @@ export const ColumnsEditorModalInner: FC<IColumnsEditorModal> = ({ visible, onCh
   return (
     <Modal
       width={isSmall ? '90%' : '60%'}
+      styles={{ body: { overflowY: 'auto', maxHeight: 'calc(100vh - 250px)' } }}
       open={visible}
       title="Configure Columns"
       okText="Save"

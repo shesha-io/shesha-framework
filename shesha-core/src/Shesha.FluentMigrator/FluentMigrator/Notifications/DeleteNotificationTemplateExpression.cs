@@ -1,6 +1,5 @@
 ﻿using FluentMigrator;
 using FluentMigrator.Expressions;
-using System;
 
 namespace Shesha.FluentMigrator.Notifications
 {
@@ -9,8 +8,8 @@ namespace Shesha.FluentMigrator.Notifications
     /// </summary>
     public class DeleteNotificationTemplateExpression : MigrationExpressionBase
     {
-        public string Name { get; set; }
-        public string Namespace { get; set; }
+        public string? Name { get; set; }
+        public string? Namespace { get; set; }
         public bool DeleteAll { get; set; }
         public Guid? TemplateId { get; set; }
 
@@ -28,6 +27,9 @@ namespace Shesha.FluentMigrator.Notifications
                     }
                     else if (DeleteAll)
                     {
+                        if (string.IsNullOrWhiteSpace(Namespace) || string.IsNullOrWhiteSpace(Name))
+                            throw new ArgumentException($"DeleteNotificationTemplateExpression: '{nameof(Namespace)}' and '{nameof(Name)}' are mandatory");
+
                         var templateId = helper.GetNotificationId(Namespace, Name);
                         if (templateId == null)
                             throw new Exception($"Reference list '{Namespace}.{Name}' not found");
@@ -41,5 +43,9 @@ namespace Shesha.FluentMigrator.Notifications
             processor.Process(exp);
         }
 
+        public DeleteNotificationTemplateExpression()
+        {
+            
+        }
     }
 }

@@ -329,16 +329,17 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
   let fieldNames = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-      var component = toolboxComponents[components[key].type];
+      var model = components[key];
+      var component = toolboxComponents[model.type];
       
       // get data only for isInput components
       // and for context = null or empty string (form context)
-      if (component?.isInput && !components[key].context) {
-        const propName = components[key].propertyName;
+      if (component?.isInput && !model.context) {
+        const propName = model.propertyName;
         fieldNames.push(propName);
         const fieldsFunc = component?.getFieldsToFetch;
         if (typeof fieldsFunc === 'function')
-          fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
+          fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata) ?? []);
     }
   }
   }

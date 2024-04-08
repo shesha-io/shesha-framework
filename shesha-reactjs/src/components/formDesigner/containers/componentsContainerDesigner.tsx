@@ -9,6 +9,7 @@ import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from
 import { useForm } from '@/providers/form';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
+import { useParent } from '@/providers/parentProvider';
 
 export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
     const {
@@ -25,10 +26,12 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
 
     const { styles } = useStyles();
     const { getChildComponentIds } = useForm();
+    const parent = useParent();
+
     const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging, readOnly, hasDragged } =
         useFormDesigner();
 
-    const childIds = getChildComponentIds(containerId);
+    const childIds = getChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
     const componentsMapped = useMemo<ItemInterface[]>(() => {
         return childIds.map<ItemInterface>((id) => ({
