@@ -23,8 +23,7 @@ namespace Shesha.Migrations
 	                    Frwk_Modules
                     WHERE
                     (
-	                    name like 'Shesha.Enterprise%'
-	                    OR Name like 'Shesha.AzureAD%'
+	                       Name like 'Shesha.AzureAD%'
 	                    OR Name like 'Shesha.Ldap%'
 	                    OR Name like 'Shesha.Firebase%'
 	                    OR Name like 'Shesha.SmsPortal%'
@@ -44,8 +43,7 @@ namespace Shesha.Migrations
 	                    Frwk_Modules
                     WHERE
                     (
-	                    name like 'Shesha.Enterprise%'
-	                    OR Name like 'Shesha.AzureAD%'
+	                       Name like 'Shesha.AzureAD%'
 	                    OR Name like 'Shesha.Ldap%'
 	                    OR Name like 'Shesha.Firebase%'
 	                    OR Name like 'Shesha.SmsPortal%'
@@ -65,8 +63,7 @@ namespace Shesha.Migrations
 	                    Frwk_Modules
                     WHERE
                     (
-	                    name like 'Shesha.Enterprise%'
-	                    OR Name like 'Shesha.AzureAD%'
+	                       Name like 'Shesha.AzureAD%'
 	                    OR Name like 'Shesha.Ldap%'
 	                    OR Name like 'Shesha.Firebase%'
 	                    OR Name like 'Shesha.SmsPortal%'
@@ -81,8 +78,7 @@ namespace Shesha.Migrations
 	                    Frwk_Modules
                     WHERE
                     (
-	                    name like 'Shesha.Enterprise%'
-	                    OR Name like 'Shesha.AzureAD%'
+	                       Name like 'Shesha.AzureAD%'
 	                    OR Name like 'Shesha.Ldap%'
 	                    OR Name like 'Shesha.Firebase%'
 	                    OR Name like 'Shesha.SmsPortal%'
