@@ -47,6 +47,8 @@ import {
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
+import { DataContextProvider } from '../dataContextProvider';
+import { SheshaCommonContexts } from '../dataContextManager/models';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -163,19 +165,26 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
                                 <ApplicationContextsProvider>
-                                  <CanvasProvider>
-                                    <StackedNavigationProvider>
-                                      <DataSourcesProvider>
-                                        <DynamicModalProvider>
-                                          <DebugPanel>
-                                            <ApplicationActionsProcessor>
-                                              {children}
-                                            </ApplicationActionsProcessor>
-                                          </DebugPanel>
-                                        </DynamicModalProvider>
-                                      </DataSourcesProvider>
-                                    </StackedNavigationProvider>
-                                  </CanvasProvider>
+                                  <DataContextProvider
+                                    id={SheshaCommonContexts.AppContext}
+                                    name={SheshaCommonContexts.AppContext}
+                                    description={'Application data store context'}
+                                    type={'root'}
+                                  >
+                                    <CanvasProvider>
+                                      <StackedNavigationProvider>
+                                        <DataSourcesProvider>
+                                          <DynamicModalProvider>
+                                            <DebugPanel>
+                                              <ApplicationActionsProcessor>
+                                                {children}
+                                              </ApplicationActionsProcessor>
+                                            </DebugPanel>
+                                          </DynamicModalProvider>
+                                        </DataSourcesProvider>
+                                      </StackedNavigationProvider>
+                                    </CanvasProvider>
+                                  </DataContextProvider>
                                 </ApplicationContextsProvider>
                               </DataContextManager>
                             </MetadataDispatcherProvider>
