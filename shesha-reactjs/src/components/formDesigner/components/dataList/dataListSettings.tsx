@@ -452,15 +452,15 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header='Empty List'>
-    <SettingsFormItem name="noDataText" label="No Data Primary Text" jsSetting>
+    <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
         <Input defaultValue={"No Data"} readOnly={readOnly} />
       </SettingsFormItem>
       
-      <SettingsFormItem name="noDataSecondaryText" label="No Data Secondary Text" jsSetting>
-        <Input value={"No data is available for this list"} readOnly={readOnly} />
+      <SettingsFormItem name="noDataSecondaryText" label="Secondary Text" jsSetting>
+        <Input defaultValue={"No data is available for this data list"} readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="noDataIcon" label="Icon Picker">
+      <SettingsFormItem name="noDataIcon" label="Icon">
       {(value, onChange)=>
          <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} /> 
       }
