@@ -134,7 +134,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
    */
   migrator?: SettingsMigrator<T>;
 
-  getFieldsToFetch?: (propertyName: string, metadata: IModelMetadata) => string[];
+  getFieldsToFetch?: (propertyName: string, rawModel: T, metadata: IModelMetadata) => string[];
 }
 
 export interface SettingsMigrationContext {

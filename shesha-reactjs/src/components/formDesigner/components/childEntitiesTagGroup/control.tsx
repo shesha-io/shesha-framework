@@ -1,6 +1,6 @@
 import ChildEntitiesTagGroupModal from './modal';
 import React, { FC, useMemo, useState } from 'react';
-import { Button, Input, message, Modal, Select, Tag } from 'antd';
+import { Button, Space, message, Modal, Select, Tag } from 'antd';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { executeScriptSync, useApplicationContext } from '@/providers/form/utils';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
@@ -170,10 +170,10 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
         </DataContextProvider>
       )}
 
-      <Input.Group {...inputGroupProps}>
+      <Space.Compact style={{ width: "100%" }} {...inputGroupProps}>
         <Select mode="tags" value={options} tagRender={tagRender} dropdownStyle={{ display: 'none' }} searchValue='' />
         {isEditable && <Button onClick={onOpenModal} className={styles.childEntityTagAdd} icon={<PlusOutlined />} />}
-      </Input.Group>
+      </Space.Compact>
     </div>
   );
 };

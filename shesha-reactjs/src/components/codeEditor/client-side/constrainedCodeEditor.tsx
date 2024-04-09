@@ -1,8 +1,8 @@
 import { Editor, Monaco } from '@monaco-editor/react';
 import React, { FC, useEffect, useRef } from 'react';
 import { editor } from 'monaco-editor';
-import { ConstrainedInstance, TextRange } from '../utils';
-import { ValueInEditableRanges, constrainedMonaco, isConstrainedTextModel } from '../constrainedWrapper';
+import { ConstrainedInstance, TextRange } from './utils';
+import { ValueInEditableRanges, constrainedMonaco, isConstrainedTextModel } from './constrainedWrapper';
 import { IHasCodeTemplate, IMonacoEditorProps } from '../models';
 
 export interface IConstrainedCodeEditorProps extends IMonacoEditorProps, IHasCodeTemplate {

@@ -3,13 +3,13 @@ import { ISizableColumnComponentProps } from './interfaces';
 import { BorderHorizontalOutlined } from '@ant-design/icons';
 import React, { Fragment } from 'react';
 import { useFormData, useGlobalState } from '@/providers';
-import Split from 'react-split';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { getLayoutStyle } from '@/providers/form/utils';
 import { nanoid } from '@/utils/uuid';
 import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import ParentProvider from '@/providers/parentProvider/index';
+import { SizableColumns } from '@/components/sizableColumns';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
@@ -25,7 +25,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     return (
       <ParentProvider model={model}>
-        <Split cursor="col-resize" style={style}>
+        <SizableColumns cursor="col-resize" style={style}>
           {columns &&
             columns.map((col) => (
               <Fragment key={col.id}>
@@ -37,7 +37,8 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
                 />
               </Fragment>
             ))}
-        </Split>
+
+        </SizableColumns>
       </ParentProvider>
     );
   },
