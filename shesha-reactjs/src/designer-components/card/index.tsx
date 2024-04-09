@@ -33,6 +33,8 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
         />
       ) : null;
 
+    if (model.hidden) return null;
+
     if (model.hideWhenEmpty && formMode !== 'designer') {
       const childsVisible = hasVisibleChilds(model.content.id);
       if (!childsVisible) return null;
