@@ -34,17 +34,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           border: 1px solid ${colors.greyLine};
           margin-bottom: 12px;
 
-          .ant-btn {
+          ${prefixCls}-btn {
             min-width: unset !important;
           }
 
-          .ant-select {
+          ${prefixCls}-select {
             border-width: 1px;
             height: unset !important;
           }
 
-          .ant-select-selector,
-          .ant-input-affix-wrapper {
+          ${prefixCls}-select-selector,
+          ${prefixCls}-input-affix-wrapper {
             border-width: 1px !important;
             height: unset !important;
           }
@@ -60,11 +60,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
         }
 
-        .ant-pagination {
+        ${prefixCls}-pagination {
           font-size: 16px;
 
-          .ant-pagination-options {
-            .ant-select-selector {
+          ${prefixCls}-pagination-options {
+            ${prefixCls}-select-selector {
               font-size: 16px;
             }
           }
