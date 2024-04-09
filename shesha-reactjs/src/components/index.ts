@@ -88,6 +88,7 @@ export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from
 export { default as Show, type IShowProps } from './show';
 export { CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
+export { default as MaskedText } from './maskedText';
 
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
 
