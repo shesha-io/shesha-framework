@@ -1,5 +1,5 @@
 import { getClosestTableId } from '@/providers/form/utils';
-import { getDispatchEventReplacement } from '../../_common-migrations/migrate-events';
+import { getDispatchEventReplacement } from '../../../../components/formDesigner/components/_common-migrations/migrate-events';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IKeyValue } from '@/interfaces/keyValue';

@@ -355,15 +355,15 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({read
       </SettingsCollapsiblePanel>
 
     <SettingsCollapsiblePanel header='Empty Table'>
-    <SettingsFormItem name="noDataText" label="No Data Primary Text" jsSetting>
+    <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
         <Input defaultValue={"No Data"} readOnly={readOnly} />
       </SettingsFormItem>
       
-      <SettingsFormItem name="noDataSecondaryText" label="No Data Secondary Text" jsSetting>
+      <SettingsFormItem name="noDataSecondaryText" label="Secondary Text" jsSetting>
         <Input defaultValue={"No data is available for this table"} readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="noDataIcon" label="Icon Picker" jsSetting>
+      <SettingsFormItem name="noDataIcon" label="Icon" jsSetting>
       {(value, onChange)=>
          <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} defaultValue={"RightOutlined"}/> 
       }

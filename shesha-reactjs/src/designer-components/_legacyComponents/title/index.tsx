@@ -1,7 +1,7 @@
 import { LineHeightOutlined } from '@ant-design/icons';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
-import { ITextTypographyProps } from '../../text/models';
+import { ITextTypographyProps } from '../../../components/formDesigner/components/text/models';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 
 const TitleComponent: IToolboxComponent<ITextTypographyProps> = {
