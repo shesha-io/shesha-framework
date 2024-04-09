@@ -21,6 +21,9 @@ namespace Shesha.Sessions.Dto
         //public TypeOfAccount? TypeOfAccount { get; set; }
         public string HomeUrl { get; set; }
         public bool IsSelfServiceUser { get; set; }
+
+        public bool ShouldChangePassword { get; set; }
+        public string PasswordChangeUrl { get; set; }
         public List<string> GrantedPermissions { get; set; } = new List<string>();
     }
 }

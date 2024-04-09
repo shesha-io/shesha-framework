@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
+using Shesha.Configuration;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Sessions.Dto;
@@ -16,13 +17,16 @@ namespace Shesha.Sessions
     {
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointmentRepository;
         private readonly IShaPermissionChecker _permissionChecker;
+        private readonly IAuthenticationSettings _authSetting;
 
         public IHomePageRouter HomePageRouter { get; set; } = new NullHomePageRouter();
 
-        public SessionAppService(IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository, IShaPermissionChecker permissionChecker)
+        public SessionAppService(IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository, IShaPermissionChecker permissionChecker, 
+            IAuthenticationSettings authSetting)
         {
             _roleAppointmentRepository = roleAppointmentRepository;
             _permissionChecker = permissionChecker;
+            _authSetting = authSetting;
         }
 
         [Obsolete]
@@ -56,7 +60,9 @@ namespace Shesha.Sessions
                     Email = user.EmailAddress,
                     MobileNumber = user.PhoneNumber,
                     GrantedPermissions = await GetGrantedPermissions(),
-                    HomeUrl = homeUrl
+                    HomeUrl = homeUrl,
+                    ShouldChangePassword = user.ChangePasswordOnNextLogin,
+                    PasswordChangeUrl = user.ChangePasswordOnNextLogin ? await _authSetting.PasswordChangeUrl.GetValueAsync() : null
                 };
             }
 

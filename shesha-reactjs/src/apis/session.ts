@@ -15,6 +15,8 @@ export interface UserLoginInfoDto {
   loginProvider?: string | null;
   homeUrl?: string | null;
   isSelfServiceUser?: boolean;
+  shouldChangePassword?: boolean;
+  passwordChangeUrl?: string | null;
   grantedPermissions?: string[] | null;
 }
 export interface ApplicationInfoDto {

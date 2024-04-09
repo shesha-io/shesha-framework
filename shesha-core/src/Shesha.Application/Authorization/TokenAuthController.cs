@@ -92,10 +92,6 @@ namespace Shesha.Authorization
             var device = !string.IsNullOrWhiteSpace(imei)
                 ? await _mobileDeviceRepository.FirstOrDefaultAsync(e => e.IMEI == imei.Trim())
                 : null;
-
-            var changePasswordUrl = loginResult.User.ChangePasswordOnNextLogin
-                ? await _authSetting.PasswordChangeUrl.GetValueAsync()
-                : null;
             
 
             return new AuthenticateResultModel
@@ -106,9 +102,7 @@ namespace Shesha.Authorization
                 ExpireOn = DateTime.Now.AddSeconds(expireInSeconds),
                 UserId = loginResult.User.Id,
                 PersonId = personId,
-                DeviceName = device?.Name, 
-                ShouldChangePassword = loginResult.User.ChangePasswordOnNextLogin,
-                PasswordChangeUrl = changePasswordUrl
+                DeviceName = device?.Name
             };
         }
 
