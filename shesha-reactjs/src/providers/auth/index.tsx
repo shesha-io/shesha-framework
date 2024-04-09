@@ -10,7 +10,7 @@ import { IHttpHeaders } from '@/interfaces/accessToken';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IApiEndpoint } from '@/interfaces/metadata';
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import { HOME_CACHE_URL, URL_CHANGE_PASSWORD, URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
+import { HOME_CACHE_URL, URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import {
   AUTHORIZATION_HEADER_NAME,
   getAccessToken as getAccessTokenFromStorage,
