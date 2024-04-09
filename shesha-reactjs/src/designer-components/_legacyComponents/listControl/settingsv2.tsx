@@ -4,11 +4,11 @@ import { QueryBuilderRenderer } from '@/designer-components/queryBuilder/queryBu
 import { QueryBuilderWithModelType } from '@/designer-components/queryBuilder/queryBuilderWithModelType';
 import { Autocomplete } from '@/components/autocomplete';
 import FormAutocomplete from '@/components/formAutocomplete';
-import PropertyAutocomplete from '../../../propertyAutocomplete/propertyAutocomplete';
+import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '@/components/sectionSeparator';
 import Show from '@/components/show';
-import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
-import { CodeEditor } from '../codeEditor/codeEditor';
+import ButtonGroupSettingsModal from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupSettingsModal';
+import { CodeEditor } from '../../../components/formDesigner/components/codeEditor/codeEditor';
 import { IListItemsProps } from './models';
 
 const Option = Select.Option;
