@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
-import { FormIdentifier, useSettingValue, useSheshaApplication } from '..';
+import { FormIdentifier, useSheshaApplication } from '..';
 import { IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import getDefaultToolboxComponents from './defaults/toolboxComponents';
+import { useLocalStorage } from '@/hooks';
 
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
-  const devMode = useSettingValue({module: "Shesha", name: "Shesha.DevMode"});
-  const defaultToolboxComponents = getDefaultToolboxComponents(!!devMode.value);
+  const [ isDevmode ] = useLocalStorage('application.isDevMode', false);
+  const defaultToolboxComponents = getDefaultToolboxComponents(isDevmode);
   const appComponentGroups = app?.toolboxComponentGroups;
 
   const toolboxComponentGroups = useMemo(() => {

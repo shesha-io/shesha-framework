@@ -8,13 +8,14 @@ import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
 import { makeCodeTemplate } from "./utils";
-import { useMetadataDispatcher, useSettingValue } from "@/providers";
+import { useMetadataDispatcher } from "@/providers";
 import { CODE_TEMPLATE_DEFAULTS, ICodeEditorProps } from "../models";
 import { useStyles } from './styles';
 import { Button } from "antd";
 import { FileOutlined } from "@ant-design/icons";
 import { SizableColumns } from "@/components/sizableColumns";
 import { FileTree } from "./fileTree/fileTree";
+import { useLocalStorage } from "@/hooks";
 
 interface EditorFileNamesState {
     modelPath: string;
@@ -108,7 +109,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
     const { styles } = useStyles();
     const [activePane, setActivePane] = useState(null);
-    const devMode = useSettingValue({ module: "Shesha", name: "Shesha.DevMode" });
+    const [ isDevmode ] = useLocalStorage('application.isDevMode', false);
 
     const { getMetadata } = useMetadataDispatcher();
 
@@ -235,7 +236,7 @@ ${(c) => c.editable(code)}
 
         monaco.editor.registerEditorOpener({
             async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, _selectionOrPosition?: IRange | IPosition) {
-                if (devMode.value !== true)
+                if (isDevmode)
                     return false;
                 
                 navigateToModel(resource);
@@ -310,7 +311,7 @@ ${(c) => c.editable(code)}
         return editorRef.current?.getModel()?.uri;
     };
 
-    return devMode.value
+    return isDevmode
         ? (
             <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
                 <div className={styles.sider}>

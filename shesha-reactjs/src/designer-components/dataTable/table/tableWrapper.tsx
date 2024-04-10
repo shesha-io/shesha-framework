@@ -1,13 +1,10 @@
 import React, {
     FC,
-    Fragment,
-    useEffect,
-    useRef
+    Fragment
 } from 'react';
 import { filterVisibility } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
-import { useDeepCompareEffect } from 'react-use';
 import {
     SidebarContainer,
     DataTable,
@@ -23,6 +20,7 @@ import {
 } from '@/providers';
 import { GlobalTableStyles } from './styles/styles';
 import { Alert } from 'antd';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 const NotConfiguredWarning: FC = () => {
     return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
@@ -44,7 +42,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         isInProgress: { isFiltering, isSelectingColumns },
         setIsInProgressFlag,
         registerConfigurableColumns,
-        tableData,
         selectedRow,
         setMultiSelectedRow,
         requireColumns,
@@ -55,7 +52,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
     const repository = getRepository();
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         // register columns
         const permissibleColumns = isDesignMode
             ? items
@@ -77,12 +74,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
 
         return <Fragment />;
     };
-
-    const tableDataItems = useRef(tableData);
-
-    useDeepCompareEffect(() => {
-        tableDataItems.current = tableData;
-    }, [tableData]);
 
     if (isDesignMode && !repository) return <NotConfiguredWarning />;
 

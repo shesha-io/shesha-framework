@@ -452,7 +452,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       return {
         ...state,
-        configurableColumns: [...payload.columns],
+        configurableColumns: payload?.columns?.length > 0 ? [...payload.columns] : [],
       };
     },
 

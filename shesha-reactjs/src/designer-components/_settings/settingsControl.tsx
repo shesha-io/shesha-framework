@@ -21,6 +21,7 @@ export interface ISettingsControlProps {
 
 const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "data", description: "Selected form values", type: "object" },
+  { name: "formContext", description: "Contexts data of current form", type: "object" },
   { name: "contexts", description: "Contexts data", type: "object" },
   { name: "globalState", description: "Global state", type: "object" },
   { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
