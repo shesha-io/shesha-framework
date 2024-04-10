@@ -60,6 +60,15 @@ export const getSettings = (data: any) =>
         id: '92ad3873-216c-4465-a21f-489f21e9cca5',
         components: [
           ...new DesignerToolbarSettings()
+            .addTextField({
+              id: nanoid(),
+              propertyName: 'className',
+              componentName: 'className',
+              parentId: '92ad3873-216c-4465-a21f-489f21e9cca5',
+              label: 'Custom CSS Class',
+              textType: 'text',
+              description: 'Custom CSS Class to add to this component',
+            })
             .addCodeEditor({
               id: nanoid(),
               propertyName: 'style',
