@@ -4,6 +4,7 @@ import CheckboxComponent from '@/designer-components/checkbox/checkbox';
 import DateFieldComponent from '@/designer-components/dateField/dateField';
 import DropdownComponent from '@/designer-components/dropdown';
 import EntityReferenceComponent from '@/designer-components/entityReference/entityReference';
+import HtmlComponent from '@/designer-components/htmlRender';
 import NumberComponent from '@/designer-components/numberField/numberField';
 import RefListStatusComponent from '@/designer-components/refListStatus/index';
 import TextFieldComponent from '@/designer-components/textField/textField';
@@ -36,6 +37,11 @@ const styleProperties = ['style', 'size'];
 const allBaseProperties = [...labelProperties, ...bindingProperties, ...visibilityProperties, ...styleProperties];
 
 export const editorAdapters: IDictionary<IEditorAdapter> = {
+  [HtmlComponent.type]: {
+    propertiesFilter: getAllExceptPredicate([
+      ...allBaseProperties
+    ]),
+  },
   [DropdownComponent.type]: {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,

@@ -31,6 +31,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         {
             var columns = input.Properties?.Replace(',', ' ').Split(' ') ?? [];
 
+            /*
             var data = new Dictionary<string, object>();
             var list = new List<Dictionary<string, object>>();
             var personFulNames = new Dictionary<string, object>();
@@ -53,6 +54,26 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             data.Add("total", list.Count);
             data.Add("items", list);
             return data;
+            */
+
+            var data = new Dictionary<string, object>();
+            var list = new List<Dictionary<string, object>>();
+            var rnd = new Random();
+            foreach (var i in Enumerable.Range(0, 5))
+            {
+                var personAmounts = new Dictionary<string, object>();
+                foreach (var column in columns.Where(x => x.Trim() != "id"))
+                {
+                    var person = await _memberRepo.GetAsync(column.Replace("id", "").ToGuid());
+                    personAmounts.Add(column.ToLower(), rnd.NextInt64(1000));
+                }
+                list.Add(personAmounts);
+            }
+
+            data.Add("total", list.Count);
+            data.Add("items", list);
+            return data;
+
         }
     }
 }
