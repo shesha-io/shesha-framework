@@ -1,14 +1,18 @@
 import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
 import { IEntityTypeIndentifier } from "../../sheshaApplication/publicApi/entities/models";
-import { ISyncEntitiesContext, ModuleSyncRequest, SyncAllRequest, SyncAllResponse, isEntityOutOfDateResponse } from "./models";
+import { ICacheProvider, ISyncEntitiesContext, ModuleSyncRequest, SyncAllRequest, SyncAllResponse, isEntityOutOfDateResponse } from "./models";
 
 const CACHE = {
     ENTITIES: 'entities',
+    MISC: 'misc',
 };
 
 const NO_MODULE = '[no-module]';
 const wrapModuleName = (name: string) => (name ?? NO_MODULE);
 const unwrapModuleName = (name: string) => (name === NO_MODULE ? null : name);
+
+const CURRENT_SYNC_VERSION = '1';
+const ENTITIES_SYNC_VERSION_FIELD_NAME = "ENTITIES_SYNC_VERSION";
 
 const URLS = {
     SYNC_ENTITIES: '/api/services/app/EntityConfig/SyncClientApi',
@@ -17,6 +21,16 @@ const URLS = {
 export const getEntityMetadataCacheKey = (id: IEntityTypeIndentifier) => {
     const moduleAccessor = wrapModuleName(id.module);
     return `${moduleAccessor}/${id.name}`;
+};
+
+const getEntitiesSyncVersion = async (cacheProvider: ICacheProvider): Promise<string> => {
+    const cache = cacheProvider.getCache(CACHE.MISC);
+    return cache.getItem<string>(ENTITIES_SYNC_VERSION_FIELD_NAME);
+};
+
+const setEntitiesSyncVersion = async (cacheProvider: ICacheProvider, value: string): Promise<string> => {
+    const cache = cacheProvider.getCache(CACHE.MISC);
+    return cache.setItem<string>(ENTITIES_SYNC_VERSION_FIELD_NAME, value);
 };
 
 const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<SyncAllRequest> => {
@@ -34,25 +48,29 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
 
     const metadataCache = context.cacheProvider.getCache(CACHE.ENTITIES);
 
-    await metadataCache.iterate<IEntityMetadata, void>((metadata) => {
-        if (!metadata.typeAccessor)
-            return;
-        const moduleSync = getModuleSyncRequest(metadata.moduleAccessor);
-        
-        const aliases = [...(metadata.aliases ?? []), metadata.entityType];
-        aliases.forEach(alias => {
-            context.typesMap.register(alias, {
-                module: metadata.moduleAccessor,
-                name: metadata.typeAccessor,
+    const savedVersion = await getEntitiesSyncVersion(context.cacheProvider);
+    if (savedVersion === CURRENT_SYNC_VERSION){
+        await metadataCache.iterate<IEntityMetadata, void>((metadata) => {
+            if (!metadata.typeAccessor)
+                return;
+            const moduleSync = getModuleSyncRequest(metadata.moduleAccessor);
+            
+            const aliases = [...(metadata.aliases ?? []), metadata.entityType];
+            aliases.forEach(alias => {
+                context.typesMap.register(alias, {
+                    module: metadata.moduleAccessor,
+                    name: metadata.typeAccessor,
+                });
+            });
+    
+            moduleSync.entities.push({
+                accessor: metadata.typeAccessor,
+                md5: metadata.md5,
+                modificationTime: metadata.changeTime,
             });
         });
-
-        moduleSync.entities.push({
-            accessor: metadata.typeAccessor,
-            md5: metadata.md5,
-            modificationTime: metadata.changeTime,
-        });
-    });
+    }
+    await setEntitiesSyncVersion(context.cacheProvider, CURRENT_SYNC_VERSION);
 
     const request: SyncAllRequest = {
         modules: [],

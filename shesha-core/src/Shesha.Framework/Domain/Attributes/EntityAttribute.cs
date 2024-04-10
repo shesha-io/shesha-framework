@@ -16,7 +16,7 @@ namespace Shesha.Domain.Attributes
         /// <summary>
         /// This is a short version of the Type name of the entity class that is unique within 
         /// all the entities in the current solution. 
-        /// The Alias must be 50 characters long or less. This is also typically match
+        /// The Alias must be 100 characters long or less. This is also typically match
         /// the Discriminator value defined for the entity on NHibernate mapping if the entity
         /// is a subclass of another entity.
         /// </summary>
