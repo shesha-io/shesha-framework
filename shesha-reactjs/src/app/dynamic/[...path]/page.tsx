@@ -4,7 +4,6 @@ import React, { FC } from 'react';
 import { FormIdentifier } from '@/interfaces';
 import { DynamicPage } from '@/generic-pages/dynamic';
 import { notFound } from 'next/navigation';
-import { DataContextProvider } from '@/providers/dataContextProvider';
 
 interface PageProps {
   params: { path: string[] };
@@ -36,9 +35,7 @@ const DynamicPageInternal: FC<PageProps> = (props) => {
   };
 
   return (
-    <DataContextProvider id={'formContext'} name={'formContext'} type={'form'}>
-      <DynamicPage {...searchParams} formId={ formId }/>
-    </DataContextProvider>            
+    <DynamicPage {...searchParams} formId={ formId }/>
   );
 };
 
