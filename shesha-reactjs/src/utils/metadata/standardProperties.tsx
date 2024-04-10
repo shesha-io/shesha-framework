@@ -13,6 +13,7 @@ export const SheshaConstants = {
   setGlobalState: "shesha:setGlobalState",
   selectedRow: "shesha:selectedRow",
   contexts: "shesha:contexts",
+  formContext: "shesha:formContext",
   form: "shesha:form",
   formMode: "shesha:formMode",
 };
@@ -93,6 +94,16 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder) => {
 
 export const registerContextsAction: MetadataBuilderAction = (builder) => {
   builder.addCustom("contexts", "Contexts data", () => {
+    const definition: TypeDefinition = {
+      typeName: 'any',
+      files: [],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerFormContextAction: MetadataBuilderAction = (builder) => {
+  builder.addCustom("formContext", "Contexts data of current form", () => {
     const definition: TypeDefinition = {
       typeName: 'any',
       files: [],
