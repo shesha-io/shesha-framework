@@ -10,7 +10,7 @@ import { IHttpHeaders } from '@/interfaces/accessToken';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IApiEndpoint } from '@/interfaces/metadata';
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import { HOME_CACHE_URL, URL_CHANGE_PASSWORD, URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
+import { HOME_CACHE_URL, URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import {
   AUTHORIZATION_HEADER_NAME,
   getAccessToken as getAccessTokenFromStorage,
@@ -95,7 +95,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   tokenName = '',
   onSetRequestHeaders,
   unauthorizedRedirectUrl = URL_LOGIN_PAGE,
-  changePasswordUrl = URL_CHANGE_PASSWORD,
   homePageUrl = URL_HOME_PAGE,
   authRef,
 }) => {
@@ -186,8 +185,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
           dispatch(setIsLoggedInAction(true));
 
-          if (state.requireChangePassword && Boolean(changePasswordUrl)) {
-            redirect(changePasswordUrl);
+          if (response.result.user.shouldChangePassword && Boolean(response.result.user.passwordChangeUrl)) {
+            redirect(response.result.user.passwordChangeUrl);
           } else {
             // if we are on the login page - redirect to the returnUrl or home page
             if (isSameUrls(router.path, unauthorizedRedirectUrl)) {
@@ -287,6 +286,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
             // get new headers and fetch the user info
             const headers = getHttpHeadersFromState(newState);
+
             fetchUserInfo(headers);
           } else dispatchThunk(loginUserErrorAction(data?.error as IErrorInfo));
         }

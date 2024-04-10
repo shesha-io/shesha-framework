@@ -16,6 +16,8 @@
             public const string MobileLoginPinLifetime = "Shesha.Security.MobileLoginPinLifetime";            
             public const string ResetPasswordWithSecurityQuestionsIsSupported = "Shesha.Security.ResetPasswordWithSecurityQuestionsIsSupported";
             public const string ResetPasswordWithSecurityQuestionsNumQuestionsAllowed = "Shesha.Security.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed";
+
+            public const string PasswordChangeUrl = "Shesha.Security.PasswordChangeUrl";    
         }
 
         public static class Sms
