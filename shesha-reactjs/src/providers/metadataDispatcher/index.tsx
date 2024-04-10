@@ -33,6 +33,8 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { IDictionary } from '@/interfaces';
 import { MetadataFetcher } from '@/utils/metadata/metadataBuilder';
 import { useEntityMetadataFetcher } from './entities/useEntityMetadataFetcher';
+import { PropertyMetadataDto, metadataGet } from '@/apis/metadata';
+import { useSheshaApplication } from '../sheshaApplication';
 
 export interface IMetadataDispatcherProviderProps { }
 
@@ -46,22 +48,46 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
 
   const [state, dispatch] = useThunkReducer(metadataReducer, initial);
 
+  const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  const mapProperty = (property: PropertyMetadataDto, prefix: string = ''): IPropertyMetadata => {
+    return {
+      ...property,
+      path: property.path,
+      prefix,
+      properties: property.properties?.map((child) => mapProperty(child, property.path)),
+    };
+  };
+  
   const getMetadata = (payload: IGetMetadataPayload): Promise<IModelMetadata> => {
     const { modelType, dataType } = payload;
     const loadedModel = models.current[payload.modelType]; // todo: split list by types
     if (loadedModel) return loadedModel;
 
     if (dataType === DataTypes.entityReference || dataType === DataTypes.objectReference || dataType === null) {
-      const metaPromise = entityMetaFetcher.getByClassName(modelType);
-      const promise = metaPromise.then(response => {
+      const promise = entityMetaFetcher.isEntity(modelType).then(isEntity => {
+        if (isEntity)
+          return entityMetaFetcher.getByClassName(modelType);
 
-        return response;
+        return metadataGet({ container: modelType }, { base: backendUrl, headers: httpHeaders })
+          .then(response => {
+            if (!response.success)
+              throw new Error(`Failed to fetch metadata for model type: '${modelType}'`, { cause: response.error });
+
+            const properties = response.result.properties.map<IPropertyMetadata>(p => mapProperty(p));
+            const meta: IModelMetadata = {
+              entityType: payload.modelType,
+              dataType: response.result.dataType,
+              name: payload.modelType, // todo: fetch name from server
+              properties,
+            };
+            return meta;
+          });
       });
-
       models.current[payload.modelType] = promise;
       return promise;
     }
-    
+
     return Promise.resolve(null);
   };
 

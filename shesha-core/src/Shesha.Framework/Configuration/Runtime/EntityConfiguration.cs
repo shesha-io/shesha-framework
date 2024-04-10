@@ -18,7 +18,7 @@ namespace Shesha.Configuration.Runtime
     /// </summary>
     public class EntityConfiguration
     {
-        private const int _typeShortAliasMaxLength = 50;
+        private const int _typeShortAliasMaxLength = 100;
 
         private static IDictionary<Type, EntityConfiguration> _entityConfigurations =
             new Dictionary<Type, EntityConfiguration>();
