@@ -13,11 +13,19 @@ export interface IDataContextProviderStateContext {
   metadata?: Promise<IModelMetadata>;
 }
 
+export interface IDataContextFull {
+  data: any;
+  api: any;
+  metadata: Promise<IModelMetadata>;
+  setFieldValue: ContextSetFieldValue;
+}
+
 export interface IDataContextProviderActionsContext {
   setFieldValue: ContextSetFieldValue;
   getFieldValue: ContextGetFieldValue;
   setData: ContextSetData;
   getData: ContextGetData;
+  getFull: ContextGetFull;
   updateApi: (api: object) => any;
   getApi: () => any;
   updateOnChangeData: (func: ContextOnChangeData) => void;
@@ -33,7 +41,9 @@ export const DataContextProviderActionsContext = createContext<IDataContextProvi
 
 export type DataContextType = 'root' | 'form' | 'control' | 'settings';
 
+
 export type ContextGetFieldValue = (name: string) => any;
+export type ContextGetFull = () => IDataContextFull;
 export type ContextGetData = () => any;
 export type ContextSetFieldValue = <T,>(name: string, value: T, refreshContext?: RefreshContext) => void;
 export type ContextSetData = <T,>(changedData: T, refreshContext?: RefreshContext) => void;

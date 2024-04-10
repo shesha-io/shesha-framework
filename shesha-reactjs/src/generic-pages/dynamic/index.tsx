@@ -31,6 +31,7 @@ import { useStackedModal } from './navigation/stackedNavigationModalProvider';
 import { useStackedNavigation } from './navigation/stakedNavigation';
 import { DynamicFormPubSubConstants } from './pubSub';
 import { useDataContextManager } from '@/providers/dataContextManager/index';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 
 export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
@@ -40,6 +41,7 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { router } = useShaRouting();
   const { configurationItemMode } = useAppConfigurator();
   const dcm = useDataContextManager(false);
+  const dataContext = useDataContext();
 
   const { publish } = usePubSub();
 
@@ -216,6 +218,7 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
       query: getQueryParams(),
       form,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
+      formContext: dataContext?.getFull(),
       ...context,
     };
 

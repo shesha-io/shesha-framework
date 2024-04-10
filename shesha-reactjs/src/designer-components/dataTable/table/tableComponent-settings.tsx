@@ -1,7 +1,6 @@
-import React, { FC, ReactNode, useState } from 'react';
-import { Button, Select, Input, InputNumber } from 'antd';
-import { ITableComponentProps, RowDroppedMode } from './models';
-import { ColumnsEditorModal } from './columnsEditor/columnsEditorModal';
+import React, { FC, ReactNode } from 'react';
+import { Select, Input, InputNumber } from 'antd';
+import { ITableComponentProps } from './models';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator/configurator';
@@ -14,6 +13,7 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { IconPicker } from '@/index';
 import { ShaIconTypes } from '@/components/iconPicker';
+import { ColumnsConfig } from './columnsEditor/columnsConfig';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -160,35 +160,17 @@ export interface IProps {
   onValuesChange?: (changedValues: any, values: ITableComponentProps) => void;
 }
 
-interface IColumnsSettingsState {
-  showColumnsModal?: boolean;
-  allowRowDragAndDrop?: boolean;
-  rowDroppedMode?: RowDroppedMode;
-}
-
 const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({readOnly}) => {
   const { model } = useSettingsForm<ITableComponentProps>();
   
-  const [state, setState] = useState<IColumnsSettingsState>({
-    showColumnsModal: false,
-  });
-
-  const toggleColumnsModal = () => setState(prev => ({ ...prev, showColumnsModal: !prev?.showColumnsModal }));
-
   return (
     <>
       <SettingsFormItem name="componentName" label="Component name">
         <Input readOnly={readOnly} />
       </SettingsFormItem>
 
-      <Button onClick={toggleColumnsModal}>{readOnly ? 'View Columns' : 'Customize Columns'}</Button>
-
-      <SettingsFormItem name="items">
-        <ColumnsEditorModal
-          visible={state?.showColumnsModal}
-          hideModal={toggleColumnsModal}
-          readOnly={readOnly}
-        />
+      <SettingsFormItem name="items" label="Customize columns" jsSetting>
+        <ColumnsConfig readonly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="useMultiselect" label="Use Multi-select" valuePropName="checked" jsSetting>

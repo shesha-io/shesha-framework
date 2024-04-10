@@ -274,6 +274,16 @@
       "validate": {},
       "exposedVariables": [
         {
+          "name": "contexts",
+          "description": "Contexts data",
+          "type": "object"
+        },
+        {
+          "name": "formContext",
+          "description": "Contexts data of current form",
+          "type": "object"
+        },
+        {
           "name": "moment",
           "description": "The moment.js object",
           "type": "object"
@@ -327,7 +337,7 @@
         "_mode": "code",
         "_code": "    /*\r\n    moment // The moment.js object\r\n    parentFormValues // Parent form values. The values of the form rendering the dialog.\r\n    globalState // The global state of the application\r\n    initialValues // Initial values\r\n    http //axios instance used to make http requests\r\n    message\r\n    form\r\n    setGlobalState\r\n    */\r\n    return undefined;"
       },
-      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\", \r\n    ]);\r\n    return mb.build();"
+      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:formContext\", \r\n        \"shesha:contexts\", \r\n        \"shesha:moment\", \r\n    ]);\r\n    return mb.build();"
     },
     {
       "id": "087a4e7d-ff28-4175-9221-61bef0bbaea2",

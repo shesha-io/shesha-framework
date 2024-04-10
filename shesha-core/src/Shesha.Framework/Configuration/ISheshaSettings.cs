@@ -16,10 +16,5 @@ namespace Shesha.Configuration
         [Display(Name = "Upload Folder", Description = "Upload folder for stored files", GroupName = "General")]
         [Setting(SheshaSettingNames.UploadFolder)]
         ISettingAccessor<string> UploadFolder { get; }
-
-        [Display(Name = "Dev Mode", Description = "Enables development mode for some parts of the UI", GroupName = "General")]
-        [Setting(SheshaSettingNames.DevMode)]
-        ISettingAccessor<bool> DevMode { get; }
-
     }
 }

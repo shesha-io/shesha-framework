@@ -9,6 +9,7 @@ import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 import { 
   ContextGetData,
   ContextGetFieldValue,
+  ContextGetFull,
   ContextOnChangeData,
   ContextSetData,
   ContextSetFieldValue,
@@ -147,6 +148,15 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     return apiRef.current;
   };
 
+  const getFull: ContextGetFull = () => {
+    const data = getData();
+    const api = getApi();
+    if (!!api) 
+      data.api = api;
+    data.setFieldValue = setFieldValue;
+    return data;
+  };
+
   const updateOnChangeData = (func: ContextOnChangeData) => {
     onChangeData.current = func;
   };
@@ -156,6 +166,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
     getFieldValue,
     setData,
     getData,
+    getFull,
     updateApi,
     getApi,
     updateOnChangeData,
