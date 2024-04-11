@@ -1,6 +1,6 @@
 import ConfigurableFormItem from '../formItem';
 import React from 'react';
-import { alertSettingsForm } from './settings';
+import { progressSettingsForm } from './settings';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
@@ -105,8 +105,8 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: alertSettingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(alertSettingsForm, model),
+  settingsFormMarkup: progressSettingsForm,
+  validateSettings: model => validateConfigurableComponentSettings(progressSettingsForm, model),
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
   ,

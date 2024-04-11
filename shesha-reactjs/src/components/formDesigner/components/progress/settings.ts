@@ -1,6 +1,6 @@
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
-export const alertSettingsForm = new DesignerToolbarSettings()
+export const progressSettingsForm = new DesignerToolbarSettings()
 
   .addCollapsiblePanel({
     id: "b8954bf6-f76d-4139-a850-c99bf06c8b69",
@@ -55,6 +55,24 @@ export const alertSettingsForm = new DesignerToolbarSettings()
           ],
           mode: 'dialog',
           description: 'The template function of the content. This function should return string or number',
+          wrapInTemplate: true,
+          templateSettings: {
+            functionName: 'getFormat',            
+          },
+          availableConstants: {
+            dataType: 'object',
+            properties: [
+              {
+                path: 'percent',
+                label: 'percent',
+                dataType: 'number',
+              },
+              {
+                path: 'successPercent',
+                dataType: 'number',
+              },
+            ]
+          }
         })
         .addNumberField({
           id: 'b10d0c9f-d83a-44c5-94e6-0d30f95a36cb',
@@ -112,6 +130,10 @@ export const alertSettingsForm = new DesignerToolbarSettings()
           description:
             'Configs of successfully progress bar. Returns an object of this format: { percent: number, strokeColor: string }',
           mode: 'dialog',
+          wrapInTemplate: true,
+          templateSettings: {
+            functionName: 'getSuccess'
+          }
         })
         .addTextField({
           id: 'd72986e5-e099-4ba7-8ffe-b8e394542524',
