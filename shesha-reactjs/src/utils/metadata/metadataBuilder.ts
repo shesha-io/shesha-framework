@@ -64,6 +64,11 @@ export class MetadataBuilder implements IMetadataBuilder {
         return this.add(DataTypes.boolean, path, label);
     }
     
+    addArray(path: string, label: string){
+        this._createProperty(DataTypes.array, path, label);
+        return this;
+    }
+
     addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader) {
         const nestedObject = this._createProperty(DataTypes.object, path, label);
         nestedObject.typeDefinitionLoader = typeDefinitionLoader;
