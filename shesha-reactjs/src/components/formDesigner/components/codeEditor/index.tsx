@@ -80,6 +80,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     .add<ICodeEditorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ICodeEditorComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ICodeEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
+    .add<ICodeEditorComponentProps>(3, (prev) => ({...prev, language: prev.language ?? "typescript" }))
   ,
   initModel: model => {
     const textAreaModel: ICodeEditorComponentProps = {

@@ -33,7 +33,7 @@ export const DialogButton: FC<IPreviewButtonProps> = ({refLink}) => {
     return (value / browserWidth) * 100;
   };
 
-  console.log('currentWidth',width);
+  //console.log('currentWidth',width);
 
   const items: MenuProps['items'] = [
     {

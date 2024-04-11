@@ -8,9 +8,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "collapsible": "header",
       "collapsedByDefault": false,
@@ -22,77 +21,98 @@
       "content": {
         "id": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
         "components": [
-     {
-      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-      "type": "contextPropertyAutocomplete",
-      "propertyName": "propertyName",
-      "parentId": "root",
-      "label": "Property name",
-      "validate": {
-        "required": true
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
+            "type": "codeEditor",
+            "propertyName": "content",
+            "label": "Content",
+            "labelAlign": "right",
+            "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+            "hidden": false,
+            "autoSize": false,
+            "showCount": false,
+            "allowClear": false,
+            "validate": {},
+            "exposedVariables": [],
+            "version": 2,
+            "settingsValidationErrors": [],
+            "placeholder": "",
+            "description": "",
+            "wrapInTemplate": false,
+            "templateSettings": {
+              "functionName": "getContent"
+            },
+            "language": "markdown"
+          },
+          {
+            "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+            "label": "Hidden",
+            "version": 2
+          }
+        ]
       }
     },
     {
-      "id": "fcfccb85-8fc3-436b-9f87-17e189bc3cdc",
-      "type": "codeEditor",
-      "propertyName": "content",
-      "label": "Content",
+      "id": "b8954bf6-f76d-4139-a850-c11bf06d8b69",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlStyle",
+      "label": "Style",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "autoSize": false,
-      "showCount": false,
-      "allowClear": false,
-      "validate": {},
-      "exposedVariables": []
-    },
-    {
-      "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-      "type": "checkbox",
-      "propertyName": "hidden",
-      "parentId": "root",
-      "label": "Hidden"
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "collapsedByDefault": false,
+      "ghost": true,
+      "header": {
+        "id": "2JkE1UV7XdEQgLAcKGSq3",
+        "components": []
+      },
+      "content": {
+        "id": "pnl54bf6-f55d-4139-a850-c99bf06c8b69",
+        "components": [
+          {
+            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+            "type": "codeEditor",
+            "propertyName": "style",
+            "label": "Style",
+            "parentId": "pnl54bf6-f55d-4139-a850-c99bf06c8b69",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+            "exposedVariables": [
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "version": 2,
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+          }
+        ]
+      }
     }
-  ]
-}
-    } 
-,
-{
-  "id": "b8954bf6-f76d-4139-a850-c11bf06d8b69",
-  "type": "collapsiblePanel",
-  "propertyName": "pnlStyle",
-  "label": "Style",
-  "labelAlign": "right",
-  "parentId": "root",
-  "hidden": false,
-
-  "isDynamic": false,
-  "version": 1,
-  "expandIconPosition": "start",
-  "collapsible": "header",
-  "collapsedByDefault": false,
-  "ghost": true,
-  "header": {
-    "id": "2JkE1UV7XdEQgLAcKGSq3",
-    "components": []
-  },
-  "content": {
-    "id": "pnl54bf6-f55d-4139-a850-c99bf06c8b69",
-    "components": [
-    {
-      "id": "06ab0599-914d-4d2d-875c-765a495472f8",
-      "type": "codeEditor",
-      "propertyName": "style",
-      "label": "Style",
-      "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
-      "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
-    }
-  ]
-}
-}
   ],
   "formSettings": {
     "layout": "horizontal",

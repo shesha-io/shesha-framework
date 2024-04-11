@@ -76,6 +76,11 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
       { id: nanoid(), name: 'globalState', description: 'The global state', type: 'object' },
     ],
+    wrapInTemplate: true,
+    templateSettings: {
+      functionName: 'getCustomIcon'      
+    },
+    availableConstantsExpression: "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
   })
   .toJson(),
 ],
@@ -116,6 +121,11 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
       { id: nanoid(), name: 'globalState', description: 'The global state', type: 'object' },
     ],
+    wrapInTemplate: true,
+    templateSettings: {
+      functionName: 'getCustomColor'      
+    },
+    availableConstantsExpression: "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
   })
   .addCheckbox({
     id: nanoid(),
