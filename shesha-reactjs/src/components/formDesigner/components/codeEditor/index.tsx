@@ -40,19 +40,21 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
         return undefined;
 
       const metadataBuilder = metadataBuilderFactory("baseProperties");
-      //const result = executeScriptSync<IObjectMetadata>(model.availableConstantsExpression, { data: formData, metadataBuilder });
       const result = executeScript<IObjectMetadata>(model.availableConstantsExpression, { data: formData, metadataBuilder });
       return result;
     };
 
-    const [availableConstants, setAvailableConstants] = useState<IObjectMetadata>(/*() => getAvailableConstants()*/);
+    const [availableConstants, setAvailableConstants] = useState<IObjectMetadata>();
     useEffect(() => {
-      const constantsPromise = getAvailableConstantsAsync();
-      constantsPromise?.then(constants => {
-        if (!isDeepEqual(availableConstants, constants)) {
-          setAvailableConstants(constants);
-        }
-      });
+      if (model.availableConstants){
+        setAvailableConstants(model.availableConstants);
+      } else {
+        getAvailableConstantsAsync()?.then(constants => {
+          if (!isDeepEqual(availableConstants, constants)) {
+            setAvailableConstants(constants);
+          }
+        });
+      }
     }, [model.availableConstantsExpression, formData]);
 
     return (
