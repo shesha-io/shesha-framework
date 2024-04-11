@@ -8,10 +8,11 @@ import { useDataContextManager } from "@/providers/dataContextManager";
 import { useMetadataBuilderFactory } from "./hooks";
 import { SheshaConstants } from "@/utils/metadata/standardProperties";
 import { TypesImporter } from "./typesImporter";
-import { MetadataBuilderAction } from "./metadataBuilder";
+import { MetadataBuilder, MetadataBuilderAction } from "./metadataBuilder";
 
 export interface AvailableConstantsArgs {
     addGlobalConstants?: boolean;
+    onBuild?: (metaBuilder: MetadataBuilder) => void;
 }
 
 export const useGlobalConstants = (): IPropertyMetadata[] => {
@@ -77,7 +78,7 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
     return action;
 };
 
-export const useAvailableConstants = ({ addGlobalConstants }: AvailableConstantsArgs): IObjectMetadata => {
+export const useAvailableConstants = ({ addGlobalConstants, onBuild }: AvailableConstantsArgs): IObjectMetadata => {
     const globalProps = useGlobalConstants();
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
@@ -98,6 +99,9 @@ export const useAvailableConstants = ({ addGlobalConstants }: AvailableConstants
         ]);
         metaBuilder
             .addGlobalConstants();
+            
+        onBuild?.(metaBuilder);
+
         const meta = metaBuilder.build();
 
         if (addGlobalConstants && globalProps && isPropertiesArray(meta.properties)) {
