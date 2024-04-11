@@ -8,9 +8,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 2,
+      "version": 4,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -39,7 +38,7 @@
             "propertyName": "label",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Label",
-            "version": 0,
+            "version": 3,
             "textType": "text"
           },
           {
@@ -61,29 +60,33 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
             "type": "textArea",
             "propertyName": "description",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Description"
+            "label": "Description",
+            "version": 2
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
             "type": "checkbox",
             "propertyName": "hidden",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Hidden"
+            "label": "Hidden",
+            "version": 2
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
             "type": "checkbox",
             "propertyName": "hideLabel",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Hide Label"
+            "label": "Hide Label",
+            "version": 2
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -103,9 +106,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 2,
+      "version": 4,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -122,11 +124,13 @@
             "id": "6ad2237c-1c35-4b4d-8c71-cd3116aa0c29",
             "type": "textField",
             "propertyName": "defaultValue",
-            "parentId": "root",
+            "parentId": "1y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Default Value",
             "validate": {},
-            "settingsValidationErrors": []
-          },          
+            "settingsValidationErrors": [],
+            "version": 3,
+            "textType": "text"
+          },
           {
             "id": "f93134cb-049c-47ce-8ad4-6193ffe43ecf",
             "type": "dropdown",
@@ -152,8 +156,9 @@
                 "id": "02501feb-f369-4306-a0fd-50f8c96410f8"
               }
             ],
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "366f360b-a37b-4803-a2c2-8637208caa9d",
@@ -176,7 +181,19 @@
                 "type": "object"
               }
             ],
-            "hidden": {"_code": "return getSettingValue(data?.dataSourceType) !== 'url';", "_mode": "code", "_value": false}
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSourceType) !== 'url';",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getDataSourceUrl"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "c153b326-7ff2-4bb0-af21-45f80e8cd6e0",
@@ -194,7 +211,19 @@
                 "type": "array"
               }
             ],
-            "hidden": {"_code": "return getSettingValue(data?.dataSourceType) !== 'url';", "_mode": "code", "_value": false}
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSourceType) !== 'url';",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "reducerFunction"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addArray(\"data\", \"An array of items returned from the server\").build();"
           },
           {
             "id": "OBr7mbe9PFn54MX0wjb9L",
@@ -203,10 +232,13 @@
             "label": "Reference List",
             "labelAlign": "right",
             "parentId": "1y9SNudmMM0Wd1Sc_YI1ng",
-            "hidden": {"_code": "return getSettingValue(data?.dataSourceType) !== 'referenceList';", "_mode": "code", "_value": false},
-
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSourceType) !== 'referenceList';",
+              "_mode": "code",
+              "_value": false
+            },
             "isDynamic": false,
-            "version": 0,
+            "version": 2,
             "convertToFullId": true,
             "placeholder": "",
             "description": "",
@@ -225,7 +257,13 @@
             "labelName": "label",
             "valueTitle": "Value",
             "valueName": "value",
-            "hidden": {"_code": "return getSettingValue(data?.dataSourceType) !== 'values';", "_mode": "code", "_value": false}
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSourceType) !== 'values';",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 2,
+            "mode": "dialog"
           },
           {
             "id": "341473be-c60a-4cb4-8b9a-d2700c425d4a",
@@ -246,8 +284,9 @@
                 "value": "horizontal"
               }
             ],
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           }
         ]
       }
@@ -260,9 +299,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 2,
+      "version": 4,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -280,7 +318,8 @@
             "type": "checkbox",
             "propertyName": "validate.required",
             "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
-            "label": "Required"
+            "label": "Required",
+            "version": 2
           }
         ]
       }
@@ -293,9 +332,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 2,
+      "version": 4,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -323,7 +361,15 @@
                 "description": "Form values",
                 "type": "object"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       }
