@@ -74,6 +74,11 @@ export const getSettings = (data: any) =>
             description:
               'A script that returns the style of the element as an object. This should conform to CSSProperties',
             exposedVariables: [{ name: 'data', description: 'Form values', type: 'object' }],
+            wrapInTemplate: true,
+            templateSettings: {
+              functionName: 'getTitleStyle',
+            },
+            availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();'
           })
           .addStyleBox({
             id: 'a0e21b98-0cb9-45ef-8b79-c78c884534f4',
@@ -93,6 +98,11 @@ export const getSettings = (data: any) =>
             description:
               'A script that returns the style of the element as an object. This should conform to CSSProperties',
             exposedVariables: [{ name: 'data', description: 'Form values', type: 'object' }],
+            wrapInTemplate: true,
+            templateSettings: {
+              functionName: 'getTitleStyle',
+            },
+            availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();'
           })
           .toJson(),
       },
