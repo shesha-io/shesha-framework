@@ -12,6 +12,7 @@ import { MetadataBuilder, MetadataBuilderAction } from "./metadataBuilder";
 
 export interface AvailableConstantsArgs {
     addGlobalConstants?: boolean;
+    standardConstants?: string[];
     onBuild?: (metaBuilder: MetadataBuilder) => void;
 }
 
@@ -78,7 +79,19 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
     return action;
 };
 
-export const useAvailableConstants = ({ addGlobalConstants, onBuild }: AvailableConstantsArgs): IObjectMetadata => {
+const ALL_STANDARD_CONSTANTS = [
+    SheshaConstants.globalState,
+    SheshaConstants.setGlobalState,
+    SheshaConstants.selectedRow,
+    SheshaConstants.contexts,
+    SheshaConstants.formContext,
+    SheshaConstants.http,
+    SheshaConstants.message,
+    SheshaConstants.moment,
+    SheshaConstants.formData,
+];
+
+export const useAvailableConstants = ({ addGlobalConstants, onBuild, standardConstants = ALL_STANDARD_CONSTANTS }: AvailableConstantsArgs): IObjectMetadata => {
     const globalProps = useGlobalConstants();
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
@@ -86,17 +99,7 @@ export const useAvailableConstants = ({ addGlobalConstants, onBuild }: Available
     const response = useMemo<IObjectMetadata>(() => {
         const metaBuilder = metadataBuilderFactory("constants");
 
-        metaBuilder.addStandard([
-            SheshaConstants.globalState,
-            SheshaConstants.setGlobalState,
-            SheshaConstants.selectedRow,
-            SheshaConstants.contexts,
-            SheshaConstants.formContext,
-            SheshaConstants.http,
-            SheshaConstants.message,
-            SheshaConstants.moment,
-            SheshaConstants.formData,
-        ]);
+        metaBuilder.addStandard(standardConstants);
         metaBuilder
             .addGlobalConstants();
             

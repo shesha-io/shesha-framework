@@ -18,6 +18,8 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { nanoid } from '@/utils/uuid';
 import { useDeepCompareMemo } from '@/hooks';
+import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 const { Option } = Select;
 
@@ -66,6 +68,13 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
     [model.steps, allData.globalState, allData.contexts.lastUpdate]
   );
   const selectRef = useRef<RefSelectProps>();
+
+  const getStyleConstants = useAvailableConstants({ 
+    addGlobalConstants: false,
+    standardConstants: [
+      SheshaConstants.globalState, SheshaConstants.formData
+    ]
+  });
 
   return (
     <>
@@ -197,6 +206,11 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
                 type: 'object',
               },
             ]}
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: 'getStyle'
+            }}
+            availableConstants={getStyleConstants}
           />
         </SettingsFormItem>
 
