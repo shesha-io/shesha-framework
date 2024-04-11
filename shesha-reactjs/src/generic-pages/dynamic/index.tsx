@@ -31,8 +31,10 @@ import { useStackedModal } from './navigation/stackedNavigationModalProvider';
 import { useStackedNavigation } from './navigation/stakedNavigation';
 import { DynamicFormPubSubConstants } from './pubSub';
 import { useDataContextManager } from '@/providers/dataContextManager/index';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
+import { DataContextProvider } from '@/providers/dataContextProvider';
 
-export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
+const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
   const [state, setState] = useState<IDynamicPageState>({});
   const formRef = useRef<ConfigurableFormInstance>();
@@ -40,6 +42,7 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { router } = useShaRouting();
   const { configurationItemMode } = useAppConfigurator();
   const dcm = useDataContextManager(false);
+  const dataContext = useDataContext();
 
   const { publish } = usePubSub();
 
@@ -216,6 +219,7 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
       query: getQueryParams(),
       form,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
+      formContext: dataContext?.getFull(),
       ...context,
     };
 
@@ -334,8 +338,16 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
         open={Boolean(navigationState)}
         parentId={state?.stackId}
       >
-        <DynamicPage onCloseDialog={onStackedDialogClose} {...navigationState} />
+        <DynamicPageInternal onCloseDialog={onStackedDialogClose} {...navigationState} />
       </StackedNavigationModal>
     </Fragment>
+  );
+};
+
+export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
+  return (
+    <DataContextProvider id={'formContext'} name={'formContext'} type={'form'}>
+      <DynamicPageInternal {...props}/>
+    </DataContextProvider> 
   );
 };

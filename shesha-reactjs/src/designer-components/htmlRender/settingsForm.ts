@@ -16,11 +16,11 @@ export const getSettings = (data: any) =>
         id: '87667bd9-0ba6-4f29-a7d3-aecdac17da2a',
         components: [
           ...new DesignerToolbarSettings()
-            .addPropertyAutocomplete({
+            .addContextPropertyAutocomplete({
               id: nanoid(),
-              propertyName: 'componentName',
+              propertyName: 'propertyName',
               parentId: '87667bd9-0ba6-4f29-a7d3-aecdac17da2a',
-              label: 'Component name',
+              label: 'Property name',
               validate: {
                 required: true,
               },
@@ -45,6 +45,14 @@ export const getSettings = (data: any) =>
                   type: 'object',
                 },
               ],
+              wrapInTemplate: true,
+              templateSettings: {
+                "functionName": "renderer"
+              },
+              availableConstantsExpression: '    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n' +
+                '        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n'+
+                '    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n' +
+                '        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:formContext\", \r\n        \"shesha:contexts\", \r\n        \"shesha:moment\", \r\n    ]);\r\n    return mb.build();'
             })
             .addCheckbox({
               id: nanoid(),

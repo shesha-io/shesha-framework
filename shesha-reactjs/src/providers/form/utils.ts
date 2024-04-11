@@ -137,6 +137,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   return {
     application: applicationData,
     data: useFormData()?.data,
+    formContext: form?.formContext,
     contexts: { ...dcm?.getDataContextsData(tcId) },
     setFormData: form?.setFormData,
     formMode: form?.formMode,
@@ -755,18 +756,22 @@ export function executeScript<TResult = any>(
   return new Promise<TResult>((resolve, reject) => {
     if (!expression) reject('Expression must be defined');
 
-    let argsDefinition = '';
-    const argList: any[] = [];
-    for (const argumentName in expressionArgs) {
-      if (expressionArgs.hasOwnProperty(argumentName)) {
-        argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-        argList.push(expressionArgs[argumentName]);
+    try {
+      let argsDefinition = '';
+      const argList: any[] = [];
+      for (const argumentName in expressionArgs) {
+        if (expressionArgs.hasOwnProperty(argumentName)) {
+          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+          argList.push(expressionArgs[argumentName]);
+        }
       }
-    }
 
-    const asyncFn = new AsyncFunction(argsDefinition, expression);
-    const result = asyncFn.apply(null, argList);
-    resolve(result);
+      const asyncFn = new AsyncFunction(argsDefinition, expression);
+      const result = asyncFn.apply(null, argList);
+      resolve(result);
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 

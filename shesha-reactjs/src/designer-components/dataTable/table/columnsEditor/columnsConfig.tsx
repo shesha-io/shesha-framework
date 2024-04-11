@@ -6,9 +6,10 @@ import { ColumnsEditorModal } from './columnsEditorModal';
 interface IColumnsConfigProps {
     value?: ColumnsItemProps[];
     onChange?: (value: ColumnsItemProps[]) => void;
+    readonly?: boolean;
 }
 
-export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange }) => {
+export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange, readonly = false }) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const toggleModalVisibility = () => setModalVisible((prev) => !prev);
@@ -22,7 +23,7 @@ export const ColumnsConfig: FC<IColumnsConfigProps> = ({ value, onChange }) => {
                 hideModal={toggleModalVisibility}
                 value={value}
                 onChange={onChange}
-                readOnly={false}
+                readOnly={readonly}
             />
         </Fragment>
     );

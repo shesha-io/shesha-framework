@@ -36,17 +36,13 @@ namespace Shesha
     /// </summary>
     public abstract class SheshaAppServiceBase : ApplicationService
     {
-
-        protected readonly IObjectValidatorManager _objectValidatorManager;
-
         public SheshaAppServiceBase()
         {
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
-        
-            _objectValidatorManager = StaticContext.IocManager.Resolve<IObjectValidatorManager>(StaticContext.IocManager);
         }
 
         public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
+        public IObjectValidatorManager ValidatorManager { get; set; }
 
         /// <summary>
         /// Reference to the IoC manager.
@@ -240,7 +236,8 @@ namespace Shesha
         {
             await FluentValidationsOnEntityAsync(entity, validationResults);
             var result = !validationResults.Any();
-            result = result && await _objectValidatorManager.ValidateObject(entity, validationResults);
+            if (ValidatorManager != null)
+                result = result && await ValidatorManager.ValidateObject(entity, validationResults);
             return result && Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
         }
 
