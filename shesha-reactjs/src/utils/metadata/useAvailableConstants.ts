@@ -1,17 +1,16 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DataTypes, IObjectMetadata } from "@/interfaces";
-import { FormFullName, useMetadata, useMetadataDispatcher } from "@/providers";
-import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isPropertiesArray } from "@/interfaces/metadata";
+import { useMetadata, useMetadataDispatcher } from "@/providers";
+import { IPropertyMetadata, isEntityMetadata, isPropertiesArray } from "@/interfaces/metadata";
 import { useFormPersister } from "@/providers/formPersisterProvider";
 import { SheshaCommonContexts } from "@/providers/dataContextManager/models";
 import { useDataContextManager } from "@/providers/dataContextManager";
 import { useMetadataBuilderFactory } from "./hooks";
 import { SheshaConstants } from "@/utils/metadata/standardProperties";
 import { TypesImporter } from "./typesImporter";
+import { MetadataBuilderAction } from "./metadataBuilder";
 
 export interface AvailableConstantsArgs {
-    formMetadata?: IModelMetadata;
-    formId?: FormFullName;
     addGlobalConstants?: boolean;
 }
 
@@ -30,15 +29,17 @@ export const useGlobalConstants = (): IPropertyMetadata[] => {
     return constants;
 };
 
-export const useAvailableConstants = ({ formMetadata, formId, addGlobalConstants }: AvailableConstantsArgs): IObjectMetadata => {
+export const useFormDataRegistration = (): MetadataBuilderAction => {
+    const meta = useMetadata(false);
+    const { formProps } = useFormPersister(false) ?? {};
     const { getMetadata } = useMetadataDispatcher();
-    const globalProps = useGlobalConstants();
 
-    const metadataBuilderFactory = useMetadataBuilderFactory();
-
-    const response = useMemo<IObjectMetadata>(() => {
-        const metaBuilder = metadataBuilderFactory("constants");
-
+    const formMetadata = meta?.metadata;
+    const formId = useMemo(() => {
+        return formProps ? { name: formProps.name, module: formProps.module } : undefined;
+    }, [formProps]);    
+    
+    const action = useCallback((metaBuilder) => {
         if (formId) {
             // add form model definition
             metaBuilder.addCustom("data", "Form values", ({ typeDefinitionBuilder }) => {
@@ -53,26 +54,38 @@ export const useAvailableConstants = ({ formMetadata, formId, addGlobalConstants
 
                 return baseTypeGetter.then(response => {
                     const commentBlock = `/**
- * Model of the ${formId.module}/${formId.name} form
- */`;
+  * Model of the ${formId.module}/${formId.name} form
+  */`;
                     const modelDefinition = response
                         ? `import { ${response.typeName} } from '${TypesImporter.cleanupFileNameForImport(response.filePath)}';
-
-${commentBlock}
-export interface FormModel extends ${response.typeName} {
+  
+  ${commentBlock}
+  export interface FormModel extends ${response.typeName} {
     [key: string]: any;
-}`
+  }`
                         : `${commentBlock}
-export interface FormModel {
+  export interface FormModel {
     [key: string]: any;
-}`;
+  }`;
                     return typeDefinitionBuilder.makeFormType(formId, modelDefinition);
                 });
             })
                 .addStandard([SheshaConstants.form, SheshaConstants.formMode]);
         };
+    }, [formId, formMetadata]);
 
-        metaBuilder.addStandard([ 
+    return action;
+};
+
+export const useAvailableConstants = ({ addGlobalConstants }: AvailableConstantsArgs): IObjectMetadata => {
+    const globalProps = useGlobalConstants();
+
+    const metadataBuilderFactory = useMetadataBuilderFactory();
+
+    const response = useMemo<IObjectMetadata>(() => {
+        const metaBuilder = metadataBuilderFactory("constants");
+
+        metaBuilder.addStandard([
             SheshaConstants.globalState,
             SheshaConstants.setGlobalState,
             SheshaConstants.selectedRow,
@@ -81,6 +94,7 @@ export interface FormModel {
             SheshaConstants.http,
             SheshaConstants.message,
             SheshaConstants.moment,
+            SheshaConstants.formData,
         ]);
         metaBuilder
             .addGlobalConstants();
@@ -91,18 +105,15 @@ export interface FormModel {
         }
 
         return meta;
-    }, [formMetadata, formId, addGlobalConstants, globalProps]);
+    }, [addGlobalConstants, globalProps]);
 
     return response;
 };
 
 export const useAvailableConstantsStandard = (): IObjectMetadata => {
-    const meta = useMetadata(false);
-    const { formProps } = useFormPersister(false) ?? {};
     const availableConstants = useAvailableConstants({
-        formMetadata: meta?.metadata,
-        formId: formProps ? { name: formProps.name, module: formProps.module } : undefined,
         addGlobalConstants: true,
     });
     return availableConstants;
 };
+
