@@ -20,6 +20,8 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ISubFormComponentProps } from '.';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 const Option = Select.Option;
 
@@ -38,6 +40,50 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
       return { value: i };
     })
   );
+
+  
+  const getStyleConstants = useAvailableConstants({
+    addGlobalConstants: false,
+    standardConstants: [
+      SheshaConstants.globalState,
+      SheshaConstants.formData,
+    ]
+  });
+  const commonUrlsConstants = useAvailableConstants({
+    addGlobalConstants: false,
+    standardConstants: [
+      SheshaConstants.globalState,
+      SheshaConstants.formData,
+    ],
+    onBuild: (builder) => {
+      builder.addObject("queryParams", "Query parameters", undefined);
+    }
+  });
+
+  const onBeforeGetConstants = useAvailableConstants({
+    addGlobalConstants: false,
+    standardConstants: [
+      SheshaConstants.globalState,
+      SheshaConstants.formData,
+    ],
+    onBuild: (builder) => {
+      builder.addObject("queryParams", "Query parameters", undefined);
+      builder.addObject("initialValues", "Initial values (from the parent form. It's value is the formData if the is the sub-form of the main form)", undefined);
+    }
+  });
+
+  const onCreatedOrUpdatedConstants = useAvailableConstants({
+    addGlobalConstants: false,
+    standardConstants: [
+      SheshaConstants.globalState,
+      SheshaConstants.message,
+      SheshaConstants.formData,
+    ],
+    onBuild: (builder) => {
+      builder.addObject("response", "Submitted data", undefined);
+      builder.addFunction("publish", "Event publisher");
+    }
+  });
 
   return (
     <>
@@ -105,7 +151,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
           </SettingsFormItem>
         )}
       </SettingsCollapsiblePanel>
-        <SettingsCollapsiblePanel header='Data source'>
+      <SettingsCollapsiblePanel header='Data source'>
         <SettingsFormItem
           name="dataSource"
           initialValue={'form'}
@@ -168,7 +214,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                   onChange={(val) => {
                     onValuesChange({ properties: val });
                   }}
-                  language="graphqlschema"
+                  language="graphql"
                   label="Query Params"
                   description="Properties in GraphQL-like syntax"
                 />;
@@ -184,7 +230,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
             <CodeEditor
               readOnly={readOnly}
               mode="dialog"
-              propertyName="getUrl"
+              propertyName="getQueryParams"
               label="Query Params"
               description="The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id"
               exposedVariables={[
@@ -205,14 +251,13 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                   name: 'queryParams',
                   description: 'Query parameters',
                   type: 'object',
-                },
-                {
-                  id: 'bb3f8b7a-fada-43ab-bb83-acf557b77013',
-                  name: 'value',
-                  description: 'The form value',
-                  type: 'object',
-                },
+                }
               ]}
+              wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'getQueryParams'
+              }}
+              availableConstants={commonUrlsConstants}
             />
           </SettingsFormItem>
 
@@ -258,6 +303,11 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                       type: 'object',
                     },
                   ]}
+                  wrapInTemplate={true}
+                  templateSettings={{
+                    functionName: 'getGetUrl'
+                  }}
+                  availableConstants={commonUrlsConstants}
                 />
               }
             </SettingsFormItem>
@@ -294,6 +344,11 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                   type: 'object',
                 },
               ]}
+              wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'getPostUrl'
+              }}
+              availableConstants={commonUrlsConstants}
             />
           </SettingsFormItem>
 
@@ -328,171 +383,196 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
                   type: 'object',
                 },
               ]}
+              wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'getPutUrl'
+              }}
+              availableConstants={commonUrlsConstants}
             />
           </SettingsFormItem>
         </Show>
       </SettingsCollapsiblePanel>
-   <SettingsCollapsiblePanel header="Actions">
-      <SettingsFormItem
-        label="On Submit"
-        name="beforeGet"
-        tooltip="Triggered before retrieving the sub-form object from the back-end"
-      >
-        <CodeEditor
-          readOnly={readOnly}
-          mode="dialog"
-          propertyName="beforeGet"
+      <SettingsCollapsiblePanel header="Actions">
+        <SettingsFormItem
           label="On Submit"
-          description="Triggered before retrieving the sub-form object from the back-end"
-          exposedVariables={[
-            {
-              id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-            {
-              id: '27ad7bc6-1b04-4e63-a1a9-6771fae8dd5c',
-              name: 'initialValues',
-              description:
-                "Initial values (from the parent form. It's value is the formData if the is the sub-form of the main form)",
-              type: 'object',
-            },
-            {
-              id: '65b71112-d412-401f-af15-1d3080f85319',
-              name: 'globalState',
-              description: 'The global state',
-              type: 'object',
-            },
-            {
-              id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
-              name: 'queryParams',
-              description: 'Query parameters',
-              type: 'object',
-            },
-          ]}
-        />
-      </SettingsFormItem>
+          name="beforeGet"
+          tooltip="Triggered before retrieving the sub-form object from the back-end"
+        >
+          <CodeEditor
+            readOnly={readOnly}
+            mode="dialog"
+            propertyName="beforeGet"
+            label="On Submit"
+            description="Triggered before retrieving the sub-form object from the back-end"
+            exposedVariables={[
+              {
+                id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
+                name: 'data',
+                description: 'Form data',
+                type: 'object',
+              },
+              {
+                id: '27ad7bc6-1b04-4e63-a1a9-6771fae8dd5c',
+                name: 'initialValues',
+                description:
+                  "Initial values (from the parent form. It's value is the formData if the is the sub-form of the main form)",
+                type: 'object',
+              },
+              {
+                id: '65b71112-d412-401f-af15-1d3080f85319',
+                name: 'globalState',
+                description: 'The global state',
+                type: 'object',
+              },
+              {
+                id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
+                name: 'queryParams',
+                description: 'Query parameters',
+                type: 'object',
+              },
+            ]}
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: 'onBeforeGet'
+            }}
+            availableConstants={onBeforeGetConstants}
+          />
+        </SettingsFormItem>
 
-      <SettingsFormItem
-        label="On Created"
-        name="onCreated"
-        tooltip="Triggered after successfully creating a new sub-form object in the back-end"
-      >
-        <CodeEditor
-          readOnly={readOnly}
-          mode="dialog"
-          propertyName="onCreated"
+        <SettingsFormItem
           label="On Created"
-          description="Triggered after successfully creating a new sub-form object in the back-end"
-          exposedVariables={[
-            {
-              id: 'a4fa029d-731b-4fda-a527-0e109c8c2218',
-              name: 'response',
-              description: 'Submitted data',
-              type: 'object',
-            },
-            {
-              id: 'ab8a5818-00d7-4a4b-a736-9081252d145d',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-            {
-              id: '9fc8c63f-9fd5-48a8-b841-bc804c08ae97',
-              name: 'globalState',
-              description: 'The global state',
-              type: 'object',
-            },
-            {
-              id: '9d75b33e-c247-4465-8cc3-7440d2807c66',
-              name: 'message',
-              description: 'Toast message',
-              type: 'object',
-            },
-            {
-              id: 'ecada650-c940-438c-80ae-8986ba54bce1',
-              name: 'publish',
-              description: 'Event publisher',
-              type: 'function',
-            },
-          ]}
-        />
-      </SettingsFormItem>
+          name="onCreated"
+          tooltip="Triggered after successfully creating a new sub-form object in the back-end"
+        >
+          <CodeEditor
+            readOnly={readOnly}
+            mode="dialog"
+            propertyName="onCreated"
+            label="On Created"
+            description="Triggered after successfully creating a new sub-form object in the back-end"
+            exposedVariables={[
+              {
+                id: 'a4fa029d-731b-4fda-a527-0e109c8c2218',
+                name: 'response',
+                description: 'Submitted data',
+                type: 'object',
+              },
+              {
+                id: 'ab8a5818-00d7-4a4b-a736-9081252d145d',
+                name: 'data',
+                description: 'Form data',
+                type: 'object',
+              },
+              {
+                id: '9fc8c63f-9fd5-48a8-b841-bc804c08ae97',
+                name: 'globalState',
+                description: 'The global state',
+                type: 'object',
+              },
+              {
+                id: '9d75b33e-c247-4465-8cc3-7440d2807c66',
+                name: 'message',
+                description: 'Toast message',
+                type: 'object',
+              },
+              {
+                id: 'ecada650-c940-438c-80ae-8986ba54bce1',
+                name: 'publish',
+                description: 'Event publisher',
+                type: 'function',
+              },
+            ]}
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: 'onCreated'
+            }}
+            availableConstants={onCreatedOrUpdatedConstants}
+          />
+        </SettingsFormItem>
 
-      <SettingsFormItem
-        label="On Updated"
-        name="onUpdated"
-        tooltip="Triggered after successfully creating a new sub-form object in the back-end"
-      >
-        <CodeEditor
-          readOnly={readOnly}
-          mode="dialog"
-          propertyName="onUpdated"
+        <SettingsFormItem
           label="On Updated"
-          description="Triggered after successfully updating the sub-form object in the back-end"
-          exposedVariables={[
-            {
-              id: 'a4fa029d-731b-4fda-a527-0e109c8c2218',
-              name: 'response',
-              description: 'Submitted data',
-              type: 'object',
-            },
-            {
-              id: 'ab8a5818-00d7-4a4b-a736-9081252d145d',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-            {
-              id: '9fc8c63f-9fd5-48a8-b841-bc804c08ae97',
-              name: 'globalState',
-              description: 'The global state',
-              type: 'object',
-            },
-            {
-              id: '9d75b33e-c247-4465-8cc3-7440d2807c66',
-              name: 'message',
-              description: 'Toast message',
-              type: 'object',
-            },
-            {
-              id: 'ecada650-c940-438c-80ae-8986ba54bce1',
-              name: 'publish',
-              description: 'Event publisher',
-              type: 'function',
-            },
-          ]}
-        />
-      </SettingsFormItem>
-</SettingsCollapsiblePanel>
+          name="onUpdated"
+          tooltip="Triggered after successfully creating a new sub-form object in the back-end"
+        >
+          <CodeEditor
+            readOnly={readOnly}
+            mode="dialog"
+            propertyName="onUpdated"
+            label="On Updated"
+            description="Triggered after successfully updating the sub-form object in the back-end"
+            exposedVariables={[
+              {
+                id: 'a4fa029d-731b-4fda-a527-0e109c8c2218',
+                name: 'response',
+                description: 'Submitted data',
+                type: 'object',
+              },
+              {
+                id: 'ab8a5818-00d7-4a4b-a736-9081252d145d',
+                name: 'data',
+                description: 'Form data',
+                type: 'object',
+              },
+              {
+                id: '9fc8c63f-9fd5-48a8-b841-bc804c08ae97',
+                name: 'globalState',
+                description: 'The global state',
+                type: 'object',
+              },
+              {
+                id: '9d75b33e-c247-4465-8cc3-7440d2807c66',
+                name: 'message',
+                description: 'Toast message',
+                type: 'object',
+              },
+              {
+                id: 'ecada650-c940-438c-80ae-8986ba54bce1',
+                name: 'publish',
+                description: 'Event publisher',
+                type: 'function',
+              },
+            ]}
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: 'onUpdated'
+            }}
+            availableConstants={onCreatedOrUpdatedConstants}
+          />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
       <SettingsCollapsiblePanel header="Layout">
 
-      <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
-        <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
-      </SettingsFormItem>
+        <SettingsFormItem name="labelCol" label="Label Col" jsSetting>
+          <InputNumber min={0} max={24} defaultValue={8} step={1} readOnly={readOnly} />
+        </SettingsFormItem>
 
-      <SettingsFormItem name="wrapperCol" label="Wrapper Col" jsSetting>
-        <InputNumber min={0} max={24} defaultValue={16} step={1} readOnly={readOnly} />
-      </SettingsFormItem>
+        <SettingsFormItem name="wrapperCol" label="Wrapper Col" jsSetting>
+          <InputNumber min={0} max={24} defaultValue={16} step={1} readOnly={readOnly} />
+        </SettingsFormItem>
 
-      <SettingsFormItem name="style" label="Style">
-        <CodeEditor
-          readOnly={readOnly}
-          mode="dialog"
-          label="Style"
-          propertyName="style"
-          description="CSS Style"
-          exposedVariables={[
-            {
-              id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-              name: 'data',
-              description: 'Form data',
-              type: 'object',
-            },
-          ]}
-        />
-      </SettingsFormItem>
+        <SettingsFormItem name="style" label="Style">
+          <CodeEditor
+            readOnly={readOnly}
+            mode="dialog"
+            label="Style"
+            propertyName="style"
+            description="CSS Style"
+            exposedVariables={[
+              {
+                id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
+                name: 'data',
+                description: 'Form data',
+                type: 'object',
+              },
+            ]}
+            wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'getStyle'
+              }}
+              availableConstants={getStyleConstants}
+          />
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
   );

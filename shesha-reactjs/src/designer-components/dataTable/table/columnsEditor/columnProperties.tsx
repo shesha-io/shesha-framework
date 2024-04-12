@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { ConfigurableForm } from '@/components';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { Empty, Form } from 'antd';
@@ -18,10 +18,10 @@ import { useColumnsConfigurator } from '@/providers/datatableColumnsConfigurator
 import { useDebouncedCallback } from 'use-debounce';
 import { usePrevious } from 'react-use';
 
-export interface IProps {}
+export interface IProps { }
 
 export const ColumnProperties: FC<IProps> = () => {
-  const { selectedItemId, getItem, updateItem, readOnly,items } = useColumnsConfigurator();
+  const { selectedItemId, getItem, updateItem, readOnly, items } = useColumnsConfigurator();
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const [editor, setEditor] = useState<ReactNode>(<></>);
   const [form] = Form.useForm();
@@ -37,33 +37,29 @@ export const ColumnProperties: FC<IProps> = () => {
     300
   );
 
+  const columnTypeChanged = useMemo(() => {
+
+    if (selectedItemId === null) return false;
+
+    if (previousItems?.length) {
+      const prevItem = getItemById(previousItems, selectedItemId);
+      const latestItem = getItemById(items, selectedItemId);
+      return prevItem?.columnType !== latestItem?.columnType;
+    }
+    return false;
 
 
- const columnTypeChanged=useMemo(()=>{
+  }, [selectedItemId, items, previousItems]);
 
-  if(selectedItemId===null) return false;
+  useEffect(() => {
+    form.resetFields();
 
-  if(previousItems?.length){
-    const prevItem = getItemById(previousItems, selectedItemId);
-    const latestItem = getItemById(items, selectedItemId);
-    return prevItem?.columnType!==latestItem?.columnType;
-  }
-  return false;
+    if (selectedItemId && formRef.current) {
+      const values = form.getFieldsValue();
 
-
- },[selectedItemId,items,previousItems]);
-
-
-
- useEffect(() => {
-  form.resetFields();
-
-  if (selectedItemId && formRef.current) {
-    const values = form.getFieldsValue();
-
-    formRef.current.updateStateFormData({ values, mergeValues: false });
-  }
-}, [form, selectedItemId]);
+      formRef.current.updateStateFormData({ values, mergeValues: false });
+    }
+  }, [form, selectedItemId]);
 
   const getEditor = () => {
     const emptyEditor = null;
@@ -105,7 +101,7 @@ export const ColumnProperties: FC<IProps> = () => {
   useEffect(() => {
     const currentEditor = getEditor();
     setEditor(currentEditor);
-  }, [selectedItemId,columnTypeChanged]);
+  }, [selectedItemId, columnTypeChanged]);
 
   if (!Boolean(selectedItemId)) {
     return (

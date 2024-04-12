@@ -45,6 +45,7 @@ export type CodeLanguages =
   | 'gobstones'
   | 'golang'
   | 'graphqlschema'
+  | 'graphql'
   | 'groovy'
   | 'haml'
   | 'handlebars'
