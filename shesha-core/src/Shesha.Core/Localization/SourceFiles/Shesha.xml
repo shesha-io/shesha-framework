@@ -99,7 +99,7 @@
     <text name="Settings">Settings</text>
     <text name="Filter">Filter</text>
     <text name="Users_ResetPassword">Reset Password</text>
-	  <text name="Hangfire">Hangfire Dashboard</text>
+    <text name="Hangfire">Hangfire Dashboard</text>
 
     <text name="Persons">Persons</text>
     <text name="ShaRoles">Roles</text>
