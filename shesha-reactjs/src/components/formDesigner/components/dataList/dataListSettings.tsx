@@ -18,6 +18,8 @@ import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
 import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
+import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -157,43 +159,61 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
 const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = ({ readOnly }) => {
   const { model } = useSettingsForm<IDataListComponentProps>();
 
-  /*const dataSourcesDict = useDataSources()?.getDataSources() ?? {};
-  const dataSources: IDataSourceDescriptor[] = [];
-  for (let key in dataSourcesDict) {
-    dataSources.push(dataSourcesDict[key] as IDataSourceDescriptor);
-  }*/
-
-  //const [model, setmodel] = usemodel<IDataListComponentProps>(initialmodel);
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map(i => {
       return { value: i };
     })
   );
 
+  const getGroupStyleConstants = useAvailableConstants({
+    standardConstants: [
+      SheshaConstants.globalState, SheshaConstants.formData
+    ]
+  });
+
+  const initNewRowConstants = useAvailableConstants({
+    standardConstants: [
+      SheshaConstants.globalState,
+      { uid: SheshaConstants.formData, name: "formData" },
+      SheshaConstants.http,
+      SheshaConstants.moment,
+      SheshaConstants.contexts
+    ]
+  });
+  const onListItemSaveConstants = useAvailableConstants({
+    standardConstants: [
+      SheshaConstants.globalState,
+      { uid: SheshaConstants.formData, name: "formData" },
+      SheshaConstants.http,
+      SheshaConstants.moment,
+      SheshaConstants.contexts
+    ],
+    onBuild: (builder) => {
+      builder.addObject("data", "Current list item data", undefined);
+    }
+  });
+
+  const formIdExpressionConstants = useAvailableConstants({
+    standardConstants: [
+      SheshaConstants.globalState,
+      SheshaConstants.setGlobalState,
+      SheshaConstants.formData,
+      SheshaConstants.http,
+      SheshaConstants.moment,
+      SheshaConstants.message,
+      SheshaConstants.contexts
+    ],
+    onBuild: (builder) => {
+      builder.addObject("item", "List item", undefined);
+      builder.addObject("selectedListItem", "Selected list item of nearest table (null if not available)", undefined);      
+    }
+  });
+
   return (
     <>
       <SettingsFormItem name="componentName" label="Component name" required>
         <Input readOnly={readOnly} />
       </SettingsFormItem>
-
-      {/*<SettingsFormItem name="dataSource" label="Data Source">
-        <Select disabled={props.readOnly}>
-          <Option key='-1' value={null}>Data context</Option>
-          {dataSources.map((item, index) => {
-            return <Option key={index.toString()} value={`${item.id}_${item.name}`}>{item.name}</Option>
-          })}         
-        </Select>
-        </SettingsFormItem>
-      
-        <Button onClick={toggleColumnsModal}>{props.readOnly ? 'View Properties' : 'Customize Properties'}</Button>
-
-      <SettingsFormItem name="properties">
-        <ColumnsEditorModal
-          visible={model?.showColumnsModal}
-          hideModal={toggleColumnsModal}
-          readOnly={props.readOnly}
-        />
-      </SettingsFormItem>*/}
 
       <SettingsFormItem name="dblClickActionConfiguration">
         <ConfigurableActionConfigurator
@@ -260,8 +280,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                 { name: "item", description: "List item", type: "object" },
                 { name: "data", description: "Selected form values", type: "object" },
                 { name: "contexts", description: "Contexts data", type: "object" },
-                { name: "globalmodel", description: "Global model", type: "object" },
-                { name: "setGlobalmodel", description: "Functiont to set globalmodel", type: "function" },
+                { name: "globalState", description: "The global model of the application", type: "object" },
+                { name: "setGlobalState", description: "Setting the global state of the application", type: "function" },
                 { name: "formMode", description: "Form mode", type: "object" },
                 { name: "form", description: "Form instance", type: "object" },
                 { name: "selectedListItem", description: "Selected list item of nearest table (null if not available)", type: "object" },
@@ -269,6 +289,11 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
                 { name: "http", description: "axiosHttp", type: "object" },
                 { name: "message", description: "message framework", type: "object" },
               ]}
+              wrapInTemplate={true}
+              templateSettings={{
+                functionName: 'formIdExpression',
+              }}
+              availableConstants={formIdExpressionConstants}
             />
           </SettingsFormItem>
         }
@@ -391,6 +416,11 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             label="New list item init"
             description="Specify logic to initialise the object bound to a new list item. This handler should return an object or a Promise<object>."
             exposedVariables={NEW_ROW_EXPOSED_VARIABLES}
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: 'onNewListItemInit',
+            }}
+            availableConstants={initNewRowConstants}
           />
         </SettingsFormItem>
         <SettingsFormItem
@@ -406,6 +436,12 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             label="On list item save"
             description="Allows custom business logic to be executed on saving of new/updated list item (e.g. custom validation / calculations)."
             exposedVariables={ROW_SAVE_EXPOSED_VARIABLES}
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: 'onListItemSave',
+              useAsyncDeclaration: true,
+            }}
+            availableConstants={onListItemSaveConstants}
           />
         </SettingsFormItem>
         <SettingsFormItem
@@ -443,31 +479,35 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             mode="dialog"
             propertyName="groupStyle"
             label="Style of group headers"
-            //description="Enter code to get form identifier. You must return { name: string; module?: string; version?: number; } object. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={[
               { name: "data", description: "Selected form values", type: "object" },
             ]}
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: 'getGroupHeadersStyle',
+            }}
+            availableConstants={getGroupStyleConstants}
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header='Empty List'>
-    <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
-        <Input defaultValue={"No Data"} readOnly={readOnly} />
-      </SettingsFormItem>
-      
-      <SettingsFormItem name="noDataSecondaryText" label="Secondary Text" jsSetting>
-        <Input defaultValue={"No data is available for this data list"} readOnly={readOnly} />
-      </SettingsFormItem>
+        <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
+          <Input defaultValue={"No Data"} readOnly={readOnly} />
+        </SettingsFormItem>
 
-      <SettingsFormItem name="noDataIcon" label="Icon">
-      {(value, onChange)=>
-         <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} /> 
-      }
-      </SettingsFormItem>
+        <SettingsFormItem name="noDataSecondaryText" label="Secondary Text" jsSetting>
+          <Input defaultValue={"No data is available for this data list"} readOnly={readOnly} />
+        </SettingsFormItem>
+
+        <SettingsFormItem name="noDataIcon" label="Icon">
+          {(value, onChange) =>
+            <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} />
+          }
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      
+
     </>
   );
 };

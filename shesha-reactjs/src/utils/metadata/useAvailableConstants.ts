@@ -10,9 +10,15 @@ import { SheshaConstants } from "@/utils/metadata/standardProperties";
 import { TypesImporter } from "./typesImporter";
 import { MetadataBuilder, MetadataBuilderAction } from "./metadataBuilder";
 
+export interface StandardConstantWithCustomName {
+    uid: string;
+    name: string;
+}
+export type StandardConstantInclusionArgs = string | StandardConstantWithCustomName;
+
 export interface AvailableConstantsArgs {
     addGlobalConstants?: boolean;
-    standardConstants?: string[];
+    standardConstants?: StandardConstantInclusionArgs[];
     onBuild?: (metaBuilder: MetadataBuilder) => void;
 }
 
@@ -41,10 +47,10 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
         return formProps ? { name: formProps.name, module: formProps.module } : undefined;
     }, [formProps]);    
     
-    const action = useCallback((metaBuilder) => {
+    const action = useCallback((metaBuilder, name = "data") => {
         if (formId) {
             // add form model definition
-            metaBuilder.addCustom("data", "Form values", ({ typeDefinitionBuilder }) => {
+            metaBuilder.addCustom(name, "Form values", ({ typeDefinitionBuilder }) => {
                 const baseTypeGetter = formMetadata && isEntityMetadata(formMetadata)
                     ? getMetadata({ dataType: DataTypes.entityReference, modelType: formMetadata.entityType })
                         .then(meta => {
@@ -100,8 +106,7 @@ export const useAvailableConstants = ({ addGlobalConstants, onBuild, standardCon
         const metaBuilder = metadataBuilderFactory("constants");
 
         metaBuilder.addStandard(standardConstants);
-        metaBuilder
-            .addGlobalConstants();
+        metaBuilder.addGlobalConstants();
             
         onBuild?.(metaBuilder);
 
