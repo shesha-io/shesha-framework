@@ -8,9 +8,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "Ej-xAcQkLWmpX6ROTnPQj",
@@ -35,7 +34,7 @@
             "propertyName": "label",
             "parentId": "jNmEKg7HtYXwaL9CylTOX",
             "label": "Label",
-            "version": 0,
+            "version": 3,
             "textType": "text"
           },
           {
@@ -57,8 +56,9 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
@@ -66,7 +66,7 @@
             "propertyName": "placeholder",
             "parentId": "jNmEKg7HtYXwaL9CylTOX",
             "label": "Placeholder",
-            "version": 0,
+            "version": 3,
             "textType": "text"
           },
           {
@@ -74,7 +74,8 @@
             "type": "textArea",
             "propertyName": "description",
             "parentId": "jNmEKg7HtYXwaL9CylTOX",
-            "label": "Description"
+            "label": "Description",
+            "version": 2
           },
           {
             "id": "f6f4a345-a529-4720-a90b-d84532e556fb",
@@ -82,7 +83,8 @@
             "propertyName": "highPrecision",
             "parentId": "jNmEKg7HtYXwaL9CylTOX",
             "label": "High precision",
-            "description": "To support high precision decimals support"
+            "description": "To support high precision decimals support",
+            "version": 2
           },
           {
             "id": "874aa450-6274-48d4-8032-395fdd680fa5",
@@ -93,7 +95,12 @@
             "defaultValue": 1,
             "validate": {},
             "settingsValidationErrors": [],
-            "hidden": {"_mode": "code", "_value": null, "_code": "return getSettingValue(data.highPrecision);"}
+            "hidden": {
+              "_mode": "code",
+              "_value": null,
+              "_code": "return getSettingValue(data.highPrecision);"
+            },
+            "version": 2
           },
           {
             "id": "7eef80f0-041c-49bf-a9dd-8ee3dff2ee3f",
@@ -103,8 +110,12 @@
             "label": "Step",
             "initialValue": "0.1",
             "validate": {},
-            "hidden": {"_mode": "code", "_value": null, "_code": "return !getSettingValue(data.highPrecision);"},
-            "version": 0,
+            "hidden": {
+              "_mode": "code",
+              "_value": null,
+              "_code": "return !getSettingValue(data.highPrecision);"
+            },
+            "version": 3,
             "textType": "text"
           },
           {
@@ -112,14 +123,16 @@
             "type": "checkbox",
             "propertyName": "hidden",
             "parentId": "jNmEKg7HtYXwaL9CylTOX",
-            "label": "Hidden"
+            "label": "Hidden",
+            "version": 2
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
             "type": "checkbox",
             "propertyName": "hideLabel",
             "parentId": "jNmEKg7HtYXwaL9CylTOX",
-            "label": "Hide Label"
+            "label": "Hide Label",
+            "version": 2
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -135,7 +148,8 @@
             "label": "Hide border",
             "parentId": "jNmEKg7HtYXwaL9CylTOX",
             "hidden": false,
-            "validate": {}
+            "validate": {},
+            "version": 2
           }
         ]
       },
@@ -152,9 +166,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "VsqIEAoYl23YftXU3OYKo",
@@ -171,7 +184,8 @@
             "label": "Default Value",
             "validate": {},
             "settingsValidationErrors": [],
-            "description": "Enter default value of component. (formData, formMode, globalState) are exposed"
+            "description": "Enter default value of component. (formData, formMode, globalState) are exposed",
+            "version": 2
           }
         ]
       },
@@ -188,9 +202,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "m2nYO2BseUEJ1HBgn0jc3",
@@ -261,7 +274,15 @@
                 "description": "Setting the global state of the application",
                 "type": "(payload: { key: string, data: any } ) => void"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "onChange"
+            },
+            "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addNumber(\"value\", \"Component current value\")\r\n        .build();"
           }
         ]
       },
@@ -278,9 +299,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "dQDnZLCLQSOAt5RXkN5Wx",
@@ -294,7 +314,8 @@
             "type": "checkbox",
             "propertyName": "validate.required",
             "parentId": "8LKFhohv9tVZdWjRew36i",
-            "label": "Required"
+            "label": "Required",
+            "version": 2
           },
           {
             "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
@@ -302,7 +323,8 @@
             "propertyName": "validate.minValue",
             "parentId": "8LKFhohv9tVZdWjRew36i",
             "label": "Min Value",
-            "validate": {}
+            "validate": {},
+            "version": 2
           },
           {
             "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
@@ -310,7 +332,8 @@
             "propertyName": "validate.maxValue",
             "parentId": "8LKFhohv9tVZdWjRew36i",
             "label": "Max Value",
-            "validate": {}
+            "validate": {},
+            "version": 2
           }
         ]
       },
@@ -327,9 +350,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "HHiVdA1MDZzDeceTWF4A1",
@@ -353,7 +375,15 @@
                 "description": "Form values",
                 "type": "object"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -380,8 +410,9 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           }
         ]
       },

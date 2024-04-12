@@ -234,7 +234,7 @@
             "templateSettings": {
               "functionName": "getDefaultValue"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\", \"shesha:http\", \"shesha:message\", \"shesha:moment\", \"shesha:setGlobalState\", \"shesha:contexts\", \"shesha:formContext\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.addAllStandard(\"shesha:selectedRow\").build();"
           },
           {
             "id": "028b4eaf-8830-4dcd-b54f-422c72b25418",
@@ -529,7 +529,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addStandard([\"shesha:formData\", \"shesha:globalState\", \"shesha:http\", \"shesha:message\", \"shesha:moment\", \"shesha:setGlobalState\", \"shesha:contexts\", \"shesha:formContext\"])\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"value\", \"Component current value\")\r\n        .addObject(\"option\", \"Meta data of component current value\")        \t\r\n        .build();"
           },
           {
             "id": "40abba89-228f-41a4-8113-9bd44fe78263",

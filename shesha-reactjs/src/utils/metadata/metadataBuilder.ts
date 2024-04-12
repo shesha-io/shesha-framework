@@ -125,6 +125,14 @@ export class MetadataBuilder implements IMetadataBuilder {
         });
         return this;
     }
+    addAllStandard(exclusions?: string[]): this {
+        this._standardProperties.forEach((item, key) => {
+            if (exclusions?.includes(key))
+                return;
+           item(this, undefined);
+        });
+        return this;
+    }
 
     addRefList(path: string, refListId: IReferenceListIdentifier, label: string) {
         const property = this._createProperty(DataTypes.referenceListItem, path, label);
@@ -154,40 +162,3 @@ export class MetadataBuilder implements IMetadataBuilder {
         return this.metadata;
     }
 }
-
-/*
-Data Types:
-1. object: complex object with child properties
-2. entity: back-end entity defined on the back-end
-3. module: custom entity defined on the back-end that can be represented as object on the front-end
-4. setting: setting defined on the back-end
-
-each data type should be able to specify a custom method of properties fetching (local or from the back-end)
-
-the logic should be serializable to json.
-
-addString(name: string)
-
-base props:
-    label
-    description
-    dataFormat (entity type?)
-    dataType
-    readonly - ?? decide how to handle it
-
-datatype specific properties:
-    entity type (storde in the dataFormat?)
-    referenceListName?: string | null;
-    referenceListModule?: string | null;
-
-validation properties:
-    required?: boolean;
-    minLength?: number | null;
-    maxLength?: number | null;
-    min?: number | null;
-    max?: number | null;
-    validationMessage?: string | null;
-
-functions support ???    
-list of arguments
-*/
