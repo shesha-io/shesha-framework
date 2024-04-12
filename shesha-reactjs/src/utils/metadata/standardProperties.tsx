@@ -41,7 +41,7 @@ export const registerMessageAction: MetadataBuilderAction = (builder, name = "me
 
 export const registerMomentAction: MetadataBuilderAction = (builder, name = "moment") => {
   builder.addCustom(name, "The moment.js object", () => {
-    return fetch("https://unpkg.com/moment@2.25.3/ts3.1-typings/moment.d.ts")
+    return fetch("https://unpkg.com/moment@2.25.3/ts3.1-typings/moment.d.ts", { mode: 'no-cors' })
       .then(response => {
         return response.text();
       })
