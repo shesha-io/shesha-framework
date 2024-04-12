@@ -76,6 +76,14 @@ export class MetadataBuilder implements IMetadataBuilder {
         return this;
     }
 
+    addFunction(path: string, label: string){
+        const nestedObject = this._createProperty(DataTypes.function, path, label);
+        nestedObject.typeDefinitionLoader = (_ctx) => {
+            return Promise.resolve({ typeName: '(...arguments: any) => any;', files: [] });
+        };
+        return this;
+    }
+
     addObject(path: string, label: string, propertiesBuilder: PropertiesBuilder) {
         const nestedObject = this._createProperty(DataTypes.object, path, label);
 

@@ -311,7 +311,8 @@ ${(c) => c.editable(code)}
         return editorRef.current?.getModel()?.uri;
     };
 
-    return isDevmode
+    const showTree = isDevmode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
+    return showTree
         ? (
             <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
                 <div className={styles.sider}>

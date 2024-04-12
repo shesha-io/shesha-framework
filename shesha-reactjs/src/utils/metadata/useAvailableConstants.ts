@@ -77,8 +77,7 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
   }`;
                     return typeDefinitionBuilder.makeFormType(formId, modelDefinition);
                 });
-            })
-                .addStandard([SheshaConstants.form, SheshaConstants.formMode]);
+            });
         };
     }, [formId, formMetadata]);
 
@@ -94,6 +93,8 @@ const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.http,
     SheshaConstants.message,
     SheshaConstants.moment,
+    SheshaConstants.form,
+    SheshaConstants.formMode,
     SheshaConstants.formData,
 ];
 
