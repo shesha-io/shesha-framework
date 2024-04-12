@@ -143,13 +143,55 @@
       }
     },
     {
-      "id": "54bf6-f76d-4139-a850-c99bf06c8111",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlValidation",
-      "label": "JavaScript",
+      "id": "wJB7j7Hgiw7dkmxWvseLRl9UigSB9t",
+      "type": "dropdown",
+      "propertyName": "language",
+      "componentName": "language",
+      "label": "Language",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+      "isDynamic": false,
+      "version": 5,
+      "dataSourceType": "values",
+      "useRawValues": false,
+      "referenceListId": null,
+      "valueFormat": "simple",
+      "settingsValidationErrors": [],
+      "placeholder": "",
+      "description": "",
+      "defaultValue": "",
+      "mode": [
+        "single"
+      ],
+      "values": [
+        {
+          "label": "Json",
+          "value": "json"
+        },
+        {
+          "label": "Markdown",
+          "value": "markdown"
+        },
+        {
+          "label": "TypeScript",
+          "value": "typescript"
+        }
+      ],
+      "validate": {}
+    },
+    {
+      "id": "54bf6-f76d-4139-a850-c99bf06c8111",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlValidation",
+      "label": "JavaScript/TypeScript",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_mode": "code",
+        "_code": "    return data.language !== 'typescript';",
+        "_value": false
+      },
       "isDynamic": false,
       "version": 4,
       "expandIconPosition": "start",

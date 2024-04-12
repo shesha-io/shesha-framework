@@ -40,19 +40,21 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
         return undefined;
 
       const metadataBuilder = metadataBuilderFactory("baseProperties");
-      //const result = executeScriptSync<IObjectMetadata>(model.availableConstantsExpression, { data: formData, metadataBuilder });
       const result = executeScript<IObjectMetadata>(model.availableConstantsExpression, { data: formData, metadataBuilder });
       return result;
     };
 
-    const [availableConstants, setAvailableConstants] = useState<IObjectMetadata>(/*() => getAvailableConstants()*/);
+    const [availableConstants, setAvailableConstants] = useState<IObjectMetadata>();
     useEffect(() => {
-      const constantsPromise = getAvailableConstantsAsync();
-      constantsPromise?.then(constants => {
-        if (!isDeepEqual(availableConstants, constants)) {
-          setAvailableConstants(constants);
-        }
-      });
+      if (model.availableConstants){
+        setAvailableConstants(model.availableConstants);
+      } else {
+        getAvailableConstantsAsync()?.then(constants => {
+          if (!isDeepEqual(availableConstants, constants)) {
+            setAvailableConstants(constants);
+          }
+        });
+      }
     }, [model.availableConstantsExpression, formData]);
 
     return (
@@ -78,6 +80,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     .add<ICodeEditorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ICodeEditorComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ICodeEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
+    .add<ICodeEditorComponentProps>(3, (prev) => ({...prev, language: prev.language ?? "typescript" }))
   ,
   initModel: model => {
     const textAreaModel: ICodeEditorComponentProps = {

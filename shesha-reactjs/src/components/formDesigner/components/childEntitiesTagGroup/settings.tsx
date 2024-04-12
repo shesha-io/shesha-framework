@@ -11,6 +11,7 @@ import { IChildEntitiesTagGroupProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
 
 const { Option } = Select;
 
@@ -19,6 +20,12 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
+  const labelFormatConstants = useAvailableConstants({ 
+    addGlobalConstants: true, 
+    onBuild: (builder) => {
+      builder.addObject("item", "Properties of the edited object", undefined);
+    }
+  });
 
   return (
     <>
@@ -88,7 +95,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
             mode="dialog"
             propertyName="labelFormat"
             label="Label Format"
-            description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+            //description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
             exposedVariables={[
               { name: "item", description: "Properties of the edited object", type: "object" },
               { name: "data", description: "Form values", type: "object" },
@@ -102,6 +109,11 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
               { name: "http", description: "axiosHttp", type: "object" },
               { name: "message", description: "message framework", type: "object" },
             ]}
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: "getFormat",              
+            }}
+            availableConstants={labelFormatConstants}
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>

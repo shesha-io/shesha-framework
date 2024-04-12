@@ -9,8 +9,8 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 2,
-      "expandIconPosition": "left",
+      "version": 4,
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
@@ -26,7 +26,7 @@
             "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bf4",
             "type": "contextPropertyAutocomplete",
             "propertyName": "propertyName",
-            "parentId": "root",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Property name",
             "validate": {
               "required": true
@@ -36,14 +36,16 @@
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
             "type": "textField",
             "propertyName": "label",
-            "parentId": "root",
-            "label": "Label"
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Label",
+            "version": 3,
+            "textType": "text"
           },
           {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
             "type": "dropdown",
             "propertyName": "labelAlign",
-            "parentId": "root",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Label align",
             "values": [
               {
@@ -57,28 +59,35 @@
                 "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
               }
             ],
-            "dataSourceType": "values"
+            "dataSourceType": "values",
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
             "type": "textArea",
             "propertyName": "description",
-            "parentId": "root",
-            "label": "Description"
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Description",
+            "version": 2
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
             "type": "checkbox",
             "propertyName": "hidden",
-            "parentId": "root",
-            "label": "Hidden"
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Hidden",
+            "version": 2
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
             "type": "checkbox",
             "propertyName": "hideLabel",
-            "parentId": "root",
-            "label": "Hide Label"
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Hide Label",
+            "version": 2
           }
         ]
       }
@@ -92,8 +101,8 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 2,
-      "expandIconPosition": "left",
+      "version": 4,
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
@@ -109,8 +118,9 @@
             "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
             "type": "checkbox",
             "propertyName": "validate.required",
-            "parentId": "root",
-            "label": "Required"
+            "parentId": "y9SNudmMM0Wd1Sc_YH1ng",
+            "label": "Required",
+            "version": 2
           }
         ]
       }
@@ -124,8 +134,8 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 2,
-      "expandIconPosition": "left",
+      "version": 4,
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
@@ -141,21 +151,25 @@
             "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
             "type": "textField",
             "propertyName": "height",
-            "parentId": "root",
-            "label": "Height"
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Height",
+            "version": 3,
+            "textType": "text"
           },
           {
             "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
             "type": "textField",
             "propertyName": "width",
-            "parentId": "root",
-            "label": "Width"
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Width",
+            "version": 3,
+            "textType": "text"
           },
           {
             "id": "028b4eaf-8830-4dcd-b54f-422c73b25418",
             "type": "dropdown",
             "propertyName": "dataSource",
-            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
             "label": "Data Source type",
             "dataSourceType": "values",
             "values": [
@@ -169,14 +183,18 @@
                 "value": "url",
                 "id": "e71e4e52-2886-4569-94b4-f47d58602bc2"
               }
-            ]
+            ],
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "06ab0599-914d-4d2d-875c-765a495482f8",
             "type": "codeEditor",
             "propertyName": "url",
             "label": "Url",
-            "parentId": "028b4eaf-8830-4dcd-b54f-422c73b25418",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
             "validate": {},
             "settingsValidationErrors": [],
             "description": "A script that returns the image url as a string. This should return a string",
@@ -191,13 +209,21 @@
               "_code": "return getSettingValue(data?.dataSource) !== 'url';",
               "_mode": "code",
               "_value": false
-            }
+            },
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getUrl"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
             "type": "codeEditor",
             "propertyName": "storedFileId",
-            "parentId": "028b4eaf-8830-4dcd-b54f-422c73b25418",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
             "label": " StoredFile Id",
             "hidden": {
               "_code": "return getSettingValue(data?.dataSource) !== 'storedFileId';",
@@ -213,7 +239,15 @@
                 "description": "Form values",
                 "type": "object"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStoredFileId"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       }
@@ -227,8 +261,8 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 2,
-      "expandIconPosition": "left",
+      "version": 4,
+      "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
@@ -245,7 +279,7 @@
             "type": "codeEditor",
             "propertyName": "style",
             "label": "Style",
-            "parentId": "root",
+            "parentId": "y9SNuvsmMM0Wd1Sc_YI1ng",
             "validate": {},
             "settingsValidationErrors": [],
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
@@ -255,7 +289,15 @@
                 "description": "Form values",
                 "type": "object"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       }

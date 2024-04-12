@@ -159,6 +159,19 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             return null;
     };
 
+    #getArrayType = async (_property: IPropertyMetadata): Promise<TypeAndLocation> => {
+        return { typeName: "any[]" };
+        /* todo: add context and import required types
+        if (property.itemsType){
+            const itemType = await this.#getTypescriptType(property.itemsType);
+
+            return { typeName: `Array<${itemType.typeName}>` };
+        } else {
+            return { typeName: "any[]" };
+        } 
+        */       
+    };
+
     #getEntityPropertyType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
         const typeId = this.#getTypeIdentifier(property);
         return await this.getEntityType(typeId);
@@ -232,6 +245,8 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                 return await this.#getEntityPropertyType(property);
             case DataTypes.object:
                 return await this.#getObjectType(property.path, property.properties);
+            case DataTypes.array:
+                return await this.#getArrayType(property);
             default:
                 return undefined;
         }

@@ -6,6 +6,7 @@ import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { useAvailableConstantsStandard } from '@/utils/metadata/useAvailableConstants';
+import camelcase from 'camelcase';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -67,6 +68,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
@@ -94,6 +96,9 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
             fileName={props.propertyName}
             wrapInTemplate={true}
+            templateSettings={{
+              functionName: functionName
+            }}
             availableConstants={availableConstants}
             exposedVariables={props.exposedVariables !== undefined ? props.exposedVariables : defaultExposedVariables}
           />

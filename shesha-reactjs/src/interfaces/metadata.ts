@@ -132,6 +132,7 @@ export interface IPropertyMetadata extends IMemberMetadata {
   isNullable?: boolean;
   prefix?: string;
   isVisible?: boolean;
+  itemsType?: IPropertyMetadata;
 }
 
 export const isPropertiesArray = (value: NestedProperties): value is IPropertyMetadata[] => {
