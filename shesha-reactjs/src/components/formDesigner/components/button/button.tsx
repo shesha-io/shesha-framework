@@ -8,7 +8,11 @@ import { IButtonComponentProps } from './interfaces';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { IToolboxComponent } from '@/interfaces';
 import { makeDefaultActionConfiguration } from '@/interfaces/configurableAction';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import {
+  migrateCustomFunctions,
+  migratePropertyName,
+  migrateReadOnly,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -20,7 +24,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'button',
   name: 'Button',
   icon: <BorderOutlined />,
-  Factory: ({ model }) => {
+  Factory: ({ model, form }) => {
     const { style, ...restProps } = model;
     const { formMode } = useForm();
     const { data } = useFormData();
@@ -46,13 +50,14 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
           readOnly={model.readOnly}
           block={restProps?.block}
           style={getStyle(style, data)}
+          form={form}
         />
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: data => getSettings(data),
-  validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),
-  initModel: model => {
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  initModel: (model) => {
     const buttonModel: IButtonComponentProps = {
       ...model,
       label: 'Submit',
@@ -61,16 +66,16 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     };
     return buttonModel;
   },
-  migrator: m =>
+  migrator: (m) =>
     m
-      .add<IButtonGroupItemBaseV0>(0, prev => {
+      .add<IButtonGroupItemBaseV0>(0, (prev) => {
         const buttonModel: IButtonGroupItemBaseV0 = {
           ...prev,
           hidden: prev.hidden as boolean,
           label: prev.label ?? 'Submit',
           sortOrder: 0,
           itemType: 'item',
-          name: prev['name']
+          name: prev['name'],
         };
         return buttonModel;
       })
@@ -78,9 +83,11 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(2, migrateV1toV2)
       .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IButtonComponentProps>(4, (prev) => migrateVisibility(prev))
-      .add<IButtonComponentProps>(5, (prev) => ({...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
-      .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
-  ,
+      .add<IButtonComponentProps>(5, (prev) => ({
+        ...prev,
+        actionConfiguration: migrateNavigateAction(prev.actionConfiguration),
+      }))
+      .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable')),
 };
 
 export default ButtonComponent;
