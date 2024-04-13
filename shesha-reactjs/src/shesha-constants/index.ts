@@ -30,3 +30,15 @@ export const LEGACY_REFERENCE_LISTS_MODULE_NAME = '(legacy lists)';
 export const HOME_CACHE_URL = 'HXUL_SRFT';
 
 export const MODAL_DATA = 'Modal_Data';
+
+export const NON_PROGRESSIVE_ACTIONS = [
+  'close dialog',
+  'cancel item version',
+  'cancel edit',
+  'delete item',
+  'toggle debug panel',
+  'reset',
+  'refresh',
+  'back',
+  'cancel',
+];
