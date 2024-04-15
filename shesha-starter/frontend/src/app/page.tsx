@@ -3,10 +3,11 @@
 import Banner from 'src/components/Banner';
 import Card from 'src/components/NavCard';
 import React from 'react';
-import { PageWithLayout } from '@shesha-io/reactjs';
+import { MainLayout, PageWithLayout } from '@shesha-io/reactjs';
 
 const Home: PageWithLayout<{}> = () => {
   return (
+    <MainLayout noPadding>
       <div
         style={{
           padding: "15px",
@@ -47,6 +48,7 @@ const Home: PageWithLayout<{}> = () => {
           />
         </div>
       </div>
+    </MainLayout>
   );
 };
 
