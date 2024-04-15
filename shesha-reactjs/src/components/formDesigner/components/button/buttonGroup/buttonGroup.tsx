@@ -205,7 +205,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
             <div className={noStyles ? null : styles.shaResponsiveButtonGroupInlineContainer}>
                 <Space size={spaceSize}>
                     {filteredItems?.map((item) =>
-                        (<InlineItem item={item} uuid={item.id} size={size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} />)
+                        (<InlineItem item={item} uuid={item.id} size={size} getIsVisible={getIsVisible} appContext={allData} key={item.id} prepareItem={prepareItem} form={form}/>)
                     )}
                 </Space>
             </div>

@@ -47,6 +47,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       size={props?.size}
       disabled={props?.readOnly}
       style={props?.style}
+     
     >
       {props.label}
     </Button>
