@@ -78,7 +78,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       allowReplace: true,
       allowDelete: true,
       allowUpload: true,
-      ownerId: '{data.id}',
+      ownerId: '',
       ownerType: '',
       isDragger: false,
     };
