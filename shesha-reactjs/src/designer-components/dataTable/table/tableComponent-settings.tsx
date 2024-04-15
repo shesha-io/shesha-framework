@@ -2,7 +2,7 @@ import React, { FC, ReactNode } from 'react';
 import { Select, Input, InputNumber } from 'antd';
 import { ITableComponentProps } from './models';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
-import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { ConfigurableActionConfigurator } from '../../configurableActionsConfigurator/configurator';
 import { YesNoInheritJs } from '@/components/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, NewRowCapturePosition } from '@/components/reactTable/interfaces';
