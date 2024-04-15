@@ -152,12 +152,6 @@ export const getSettings = (data: any) =>
                 type: 'object',
               },
               {
-                id: 'ea91590e-57d8-49fe-837a-c09c1e20bb06',
-                name: 'option',
-                description: 'Meta data of component current value',
-                type: 'object',
-              },
-              {
                 id: '8d1541db-2591-4568-b925-d7777cea8f0f',
                 name: 'value',
                 description: 'Component current value',
@@ -176,6 +170,11 @@ export const getSettings = (data: any) =>
                 "type": "(payload: { key: string, data: any } ) => void"
               }
             ],
+            wrapInTemplate: true,
+            templateSettings: {
+              functionName: 'onChange'              
+            },
+            availableConstantsExpression: "return metadataBuilder.addAllStandard([\"shesha:selectedRow\"]).addObject(\"value\", \"Component current value\", undefined).build();"
           }).toJson()
         ]
       }
@@ -198,6 +197,11 @@ export const getSettings = (data: any) =>
             label: 'Style',
             parentId: '3pnl4bf6-f76d-4139-a850-c99bf06c8b69',
             mode: 'dialog',
+            wrapInTemplate: true,
+            templateSettings: {
+              functionName: 'getStyle'
+            },
+            availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
           }).toJson()
         ]
       }

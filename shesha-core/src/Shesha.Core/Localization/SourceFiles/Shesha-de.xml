@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<localizationDictionary culture="en">
+<localizationDictionary culture="de">
   <texts>
     <text name="HomePage" value="Startseite" />
     <text name="About" value="Über" />
@@ -89,7 +89,7 @@
     <text name="Create">Erstellen</text>
     <text name="UserDetails">Benutzerstammdaten</text>
     <text name="UserRoles">Benutzerrollen</text>
-    <text name="ConfirmPassword">Passwort bestätigen/text>
+    <text name="ConfirmPassword">Passwort bestätigen</text>
     <text name="Version">Version</text>
     <text name="On">Ein</text>
     <text name="Off">Aus</text>
