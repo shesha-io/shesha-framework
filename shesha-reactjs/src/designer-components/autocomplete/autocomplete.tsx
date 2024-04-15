@@ -1,7 +1,5 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import { message } from 'antd';
-import camelCaseKeys from 'camelcase-keys';
-import { isEmpty } from 'lodash';
 import moment from 'moment';
 import React, { Key } from 'react';
 import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/autocomplete';
@@ -58,14 +56,12 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const evaluatedFilters = useAsyncMemo(async () => {
       if (!filter) return '';
 
-      const localFormData = !isEmpty(data) ? camelCaseKeys(data, { deep: true, pascalCase: true }) : data;
-
       const response = await evaluateDynamicFilters(
         [{ expression: filter } as any],
         [
           {
             match: 'data',
-            data: localFormData,
+            data: data,
           },
           {
             match: 'globalState',

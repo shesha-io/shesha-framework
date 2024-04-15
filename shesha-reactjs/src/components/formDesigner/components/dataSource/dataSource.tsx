@@ -46,8 +46,6 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
   const debounceEvaluateDynamicFiltersHelper = () => {
-    //const data = Boolean(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
-
     evaluateDynamicFilters(
       filters,
       [
