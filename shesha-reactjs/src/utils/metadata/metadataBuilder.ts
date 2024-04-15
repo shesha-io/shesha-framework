@@ -149,6 +149,13 @@ export class MetadataBuilder implements IMetadataBuilder {
         return this;
     }
 
+    setProperties(properties: IPropertyMetadata[]) {
+        if (this.metadata.properties)
+            throw new Error("Properties can be set only once");
+        
+        this.metadata.properties = [...properties];
+    }
+
     setTypeDefinition(typeDefinitionLoader: TypeDefinitionLoader) {
         this.metadata.typeDefinitionLoader = typeDefinitionLoader;
         return this;
