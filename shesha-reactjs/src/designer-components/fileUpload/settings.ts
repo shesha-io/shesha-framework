@@ -153,12 +153,16 @@ export const getSettings = () =>
             parentId: 'abc8b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
             label: 'Owner Id',
           })
-          .addTextField({
+          .addAutocomplete({
             id: 'c6ecd70c-7419-4ea7-a715-d42699d26e6e',
             propertyName: 'ownerType',
             parentId: 'abc8b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
             label: 'Owner Type',
-          })
+            labelAlign: 'right',
+            dataSourceType: 'url',
+            dataSourceUrl: '/api/services/app/Metadata/EntityTypeAutocomplete',
+            useRawValues: true,
+          })          
           .addEditableTagGroupProps({
             id: nanoid(),
             propertyName: 'allowedFileTypes',
