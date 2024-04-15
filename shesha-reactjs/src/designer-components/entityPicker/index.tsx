@@ -78,7 +78,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.valueFormat === 'entityReference') {
         return !!value
-          ? {id: value.id, _displayName: value[model.displayEntityKey], _className: model.entityType}
+          ? {id: value.id, _displayName: value[model.displayEntityKey] ??  value._displayName, _className: model.entityType}
           : null;
       }
       if (model.valueFormat === 'custom') {
@@ -187,6 +187,18 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       entityType: isEntityReferencePropertyMetadata(propMetadata) ? propMetadata.entityType : undefined,
       valueFormat: 'simple',
     };
+  },
+  getFieldsToFetch: (propertyName, rawModel)  => {
+      if (rawModel.valueFormat === 'entityReference') {
+        return [
+          `${propertyName}.id`,
+          rawModel.displayEntityKey
+            ? `${propertyName}.${rawModel.displayEntityKey}`
+            : `${propertyName}._displayName`,
+          `${propertyName}._className`
+        ];
+      }
+      return null;
   },
 };
 
