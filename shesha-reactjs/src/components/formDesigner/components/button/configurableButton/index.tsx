@@ -13,7 +13,7 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
   form: FormInstance<any>;
 }
 
-export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
+export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const evaluationContext = useApplicationContext();
   const { executeAction } = useConfigurableActionDispatcher();
 

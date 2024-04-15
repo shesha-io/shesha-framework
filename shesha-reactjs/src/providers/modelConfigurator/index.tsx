@@ -68,7 +68,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
     else
       console.error("Failed to fetch a model configuraiton by Id - Id not specified");*/
   };
-
+    
   useEffect(() => {
     load();
   }, [state.id]);

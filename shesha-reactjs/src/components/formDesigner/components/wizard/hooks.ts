@@ -28,7 +28,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
   const allData = useApplicationContext();
   const dataContext = useDataContext();
 
-  const { argumentsEvaluationContext, executeBooleanExpression, executeAction } = useFormExpression();
+  const { argumentsEvaluationContext, executeBooleanExpression, executeAction } =
+    useFormExpression();
 
   const {
     propertyName: actionOwnerName,
@@ -41,7 +42,8 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
 
   const getDefaultStepIndex = (i) => {
     if (i) {
-      const t = tabs[i] ?? tabs?.find((item) => item?.id === i); // for backward compatibility
+      const t = tabs[i]
+        ?? tabs?.find((item) => item?.id === i); // for backward compatibility
       return !!t ? tabs.indexOf(t) : 0;
     }
     return 0;
@@ -63,7 +65,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
 
           return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
         })
-        .map((item) => getActualModel(item, allData) as IWizardStepProps),
+        .map(item => getActualModel(item, allData) as IWizardStepProps),
     [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
   );
 
@@ -79,7 +81,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
     if (!!actionConfiguration?.actionName) {
       executeAction({
         actionConfiguration: actionConfiguration,
-        argumentsEvaluationContext,
+        argumentsEvaluationContext
       });
     }
   }, [current]);
@@ -107,7 +109,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
   const executeActionIfConfigured = (
     beforeAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
     afterAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
-    success?: (actionResponse: any) => void
+    success?: (actionResponse: any) => void,
   ) => {
     const beforeAction = beforeAccessor(currentStep);
 
@@ -121,7 +123,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
           if (!!afterAction?.actionName)
             executeAction({
               actionConfiguration: afterAction,
-              argumentsEvaluationContext,
+              argumentsEvaluationContext
             });
         }
       );
@@ -162,7 +164,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
       executeActionIfConfigured(
         (tab) => tab.beforeBackActionConfiguration,
         (tab) => tab.afterBackActionConfiguration,
-        () => successCallback('back')
+        () => successCallback('back'),
       );
   };
 
@@ -172,23 +174,24 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
       (tab) => tab.afterCancelActionConfiguration
     );
 
-  const done = async () => {
-    try {
-      const currentActionName = tabs[current].beforeNextActionConfiguration.actionName.toLowerCase();
-
-      if (!NON_PROGRESSIVE_ACTIONS.includes(currentActionName)) await form.validateFields();
-
-      executeActionIfConfigured(
-        (tab) => tab.beforeDoneActionConfiguration,
-        (tab) => tab.afterDoneActionConfiguration
-      );
-    } catch (errInfo) {
-      console.log("Could'nt Proceed", errInfo);
-    }
-  };
+    const done = async () => {
+      try {
+        const currentActionName = tabs[current].beforeNextActionConfiguration.actionName.toLowerCase();
+  
+        if (!NON_PROGRESSIVE_ACTIONS.includes(currentActionName)) await form.validateFields();
+  
+        executeActionIfConfigured(
+          (tab) => tab.beforeDoneActionConfiguration,
+          (tab) => tab.afterDoneActionConfiguration
+        );
+      } catch (errInfo) {
+        console.log("Could'nt Proceed", errInfo);
+      }
+    };
 
   const setStep = (stepIndex) => {
-    if (stepIndex < 0 || stepIndex >= visibleSteps.length) throw `Step with index ${stepIndex} is not available`;
+    if (stepIndex < 0 || stepIndex >= visibleSteps.length)
+      throw `Step with index ${stepIndex} is not available`;
     setCurrent(stepIndex);
   };
 
@@ -261,7 +264,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>, form: Form
   }, [current, visibleSteps]);
 
   dataContext.updateApi({ back, cancel, done, content, next, setStep }); // update context api to use relevant State
-
+  
   /* Data Context section */
 
   return { back, components, current, currentStep, cancel, done, content, next, visibleSteps };
