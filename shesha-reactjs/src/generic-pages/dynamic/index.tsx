@@ -33,6 +33,7 @@ import { DynamicFormPubSubConstants } from './pubSub';
 import { useDataContextManager } from '@/providers/dataContextManager/index';
 import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { DataContextProvider } from '@/providers/dataContextProvider';
+import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
 const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
@@ -220,6 +221,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       form,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       formContext: dataContext?.getFull(),
+      application: dcm?.getDataContext(SheshaCommonContexts.ApplicationContext)?.getData(),
       ...context,
     };
 
