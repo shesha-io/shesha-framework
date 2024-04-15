@@ -45,8 +45,8 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
     const formMetadata = meta?.metadata;
     const formId = useMemo(() => {
         return formProps ? { name: formProps.name, module: formProps.module } : undefined;
-    }, [formProps]);    
-    
+    }, [formProps]);
+
     const action = useCallback((metaBuilder, name = "data") => {
         if (formId) {
             // add form model definition
@@ -84,6 +84,23 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
     return action;
 };
 
+export const useAppContextRegistration = (): MetadataBuilderAction => {
+    const { getDataContext } = useDataContextManager();
+
+    const action = useCallback((builder: MetadataBuilder) => {
+        const appContext = getDataContext(SheshaCommonContexts.ApplicationContext);
+        if (appContext?.metadata) {
+            builder.addObject(SheshaCommonContexts.ApplicationContext, "", builder => {
+                if (isPropertiesArray(appContext.metadata.properties))
+                    builder.setProperties(appContext.metadata.properties);
+                return builder;
+            });
+        }
+    }, []);
+
+    return action;
+};
+
 const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.globalState,
     SheshaConstants.setGlobalState,
@@ -107,7 +124,7 @@ export const useAvailableConstantsMetadata = ({ addGlobalConstants, onBuild, sta
         const metaBuilder = metadataBuilderFactory("constants");
 
         metaBuilder.addStandard(standardConstants);
-            
+
         onBuild?.(metaBuilder);
 
         const meta = metaBuilder.build();
