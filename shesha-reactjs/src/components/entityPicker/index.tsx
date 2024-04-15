@@ -12,7 +12,6 @@ import { hasDynamicFilter } from '@/providers/dataTable/utils';
 import { IModalProps } from '@/providers/dynamicModal/models';
 import { useEntitySelectionData } from '@/utils/entity';
 import GlobalTableFilter from '@/components/globalTableFilter';
-import camelCaseKeys from 'camelcase-keys';
 import { DataTable } from '@/components/dataTable';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import TablePager from '@/components/tablePager';
@@ -153,12 +152,10 @@ export const EntityPickerEditableInner = (props: IEntityPickerProps) => {
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
 
   const evaluateDynamicFiltersHelper = () => {
-    const data = !isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
-
     evaluateDynamicFilters(
       filters,
       [
-        { match: 'data', data: data },
+        { match: 'data', data: formData },
         { match: 'globalState', data: globalState },
       ],
       propertyMetadataAccessor

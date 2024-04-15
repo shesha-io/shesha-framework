@@ -1,4 +1,3 @@
-import camelCaseKeys from 'camelcase-keys';
 import React, {
   FC,
   PropsWithChildren,
@@ -539,7 +538,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const changeActionedRow = (val: any) => {
-    dispatch(changeActionedRowAction(val ? camelCaseKeys(val, { deep: true }) : null));
+    dispatch(changeActionedRowAction(val));
   };
 
   const changeSelectedStoredFilterIds = (selectedFilterIds: string[]) => {
