@@ -37,7 +37,8 @@ export const useEvaluatedFilter = (args: UseEvaluatedFilterArgs): string => {
             metadataAccessor
         );
 
-        if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
+        // note: don't return empty filter to take unevaluated filters into account
+        //if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
 
         return JSON.stringify(response[0]?.expression) || '';
     }, useDeepCompareMemoize([filter, mappings]));
