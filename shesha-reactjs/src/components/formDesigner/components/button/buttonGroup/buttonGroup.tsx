@@ -22,7 +22,7 @@ import {
     getActualModel,
     getStyle,
     IApplicationContext,
-    useApplicationContext
+    useAvailableConstantsData
 } from '@/providers/form/utils';
 import { getButtonGroupMenuItem } from './utils';
 import { IButtonGroupProps } from './models';
@@ -137,7 +137,7 @@ type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 
 export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, noStyles, disabled }) => {
     const { styles } = useStyles();
-    const allData = useApplicationContext();
+    const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
 
     const isDesignMode = allData.formMode === 'designer';

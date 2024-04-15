@@ -154,10 +154,6 @@ export class MetadataBuilder implements IMetadataBuilder {
         return this;
     }
 
-    addGlobalConstants() {
-        // todo: implement it as a proxy that allows to include context metadata into the current metadata object
-    };
-
     build(): IObjectMetadata {
         return this.metadata;
     }

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { getActualModel, useApplicationContext } from '@/providers/form/utils';
+import { getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableItemBase, IConfigurableItemGroup } from '@/providers/itemListConfigurator/contexts';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { ListItem } from './listItem';
@@ -17,7 +17,7 @@ export interface IItemListContainerProps {
 export const ItemListContainer: FC<IItemListContainerProps> = ({ index, id, items }) => {
   const { updateChildItems } = useItemListConfigurator();
   const { styles } = useStyles();
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
 
   const actualItems = useDeepCompareMemo(() =>
     items.map((item) => getActualModel(item, allData))

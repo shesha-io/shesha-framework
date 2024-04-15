@@ -12,13 +12,13 @@ import {
   Select
   } from 'antd';
 import { CodeEditor } from '@/components';
-import { getActualModel, useApplicationContext } from '@/providers/form/utils';
+import { getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { getSettings } from './itemSettings';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { nanoid } from '@/utils/uuid';
 import { useDeepCompareMemo } from '@/hooks';
-import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 const { Option } = Select;
@@ -26,7 +26,7 @@ const { Option } = Select;
 const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const allData = useApplicationContext('all');
+  const allData = useAvailableConstantsData('all');
   const { model } = useSettingsForm<IWizardComponentProps>();
 
   /*const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
@@ -69,7 +69,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
   );
   const selectRef = useRef<RefSelectProps>();
 
-  const getStyleConstants = useAvailableConstants({ 
+  const getStyleConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData

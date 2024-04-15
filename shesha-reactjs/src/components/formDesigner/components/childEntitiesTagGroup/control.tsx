@@ -2,7 +2,7 @@ import ChildEntitiesTagGroupModal from './modal';
 import React, { FC, useMemo, useState } from 'react';
 import { Button, Space, message, Modal, Select, Tag } from 'antd';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { executeScriptSync, useApplicationContext } from '@/providers/form/utils';
+import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IChildEntitiesTagGroupProps, IChildEntitiesTagGroupSelectOptions } from './models';
 import { nanoid } from '@/utils/uuid';
 import { SubFormProvider } from '@/providers';
@@ -38,7 +38,7 @@ const ChildEntitiesTagGroupControl: FC<IProps> = ({ onChange, value, model }) =>
   const { activeValue, open } = state;
   const { deleteConfirmationBody, deleteConfirmationTitle, formId, labelFormat, propertyName } = model;
 
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
   const parent = useParent();
 
   const {

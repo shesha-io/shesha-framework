@@ -15,10 +15,10 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { Option } from 'antd/lib/mentions';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
-import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
-interface IEntityReferenceSettingsState extends IAddressCompomentProps {}
+interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
   const { values, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
@@ -26,7 +26,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
 
-  const onChangeOrSelectConstants = useAvailableConstants({
+  const onChangeOrSelectConstants = useAvailableConstantsMetadata({
     standardConstants: [],
     onBuild: (builder) => {
       builder.addAllStandard([SheshaConstants.selectedRow]).addObject("event", "Event callback when user input", undefined);

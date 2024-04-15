@@ -1,4 +1,4 @@
-import { getActualModel, useApplicationContext } from '@/providers/form/utils';
+import { getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
@@ -23,7 +23,7 @@ interface IWizardComponent {
 
 export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
   const dataContext = useDataContext();
 
   const formMode = useForm(false).formMode;

@@ -18,7 +18,7 @@ import { InlineEditMode, InlineSaveMode } from '@/components/dataList/models';
 import { ISettingsFormFactoryArgs, YesNoInherit } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
@@ -165,13 +165,13 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
     })
   );
 
-  const getGroupStyleConstants = useAvailableConstants({
+  const getGroupStyleConstants = useAvailableConstantsMetadata({
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData
     ]
   });
 
-  const initNewRowConstants = useAvailableConstants({
+  const initNewRowConstants = useAvailableConstantsMetadata({
     standardConstants: [
       SheshaConstants.globalState,
       { uid: SheshaConstants.formData, name: "formData" },
@@ -180,7 +180,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
       SheshaConstants.contexts
     ]
   });
-  const onListItemSaveConstants = useAvailableConstants({
+  const onListItemSaveConstants = useAvailableConstantsMetadata({
     standardConstants: [
       SheshaConstants.globalState,
       { uid: SheshaConstants.formData, name: "formData" },
@@ -193,7 +193,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
     }
   });
 
-  const formIdExpressionConstants = useAvailableConstants({
+  const formIdExpressionConstants = useAvailableConstantsMetadata({
     standardConstants: [
       SheshaConstants.globalState,
       SheshaConstants.setGlobalState,
