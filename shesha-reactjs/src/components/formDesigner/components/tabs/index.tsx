@@ -2,7 +2,7 @@ import ComponentsContainer from '../../containers/componentsContainer';
 import React, { Fragment } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
-import { getActualModelWithParent, getLayoutStyle, useApplicationContext } from '@/providers/form/utils';
+import { getActualModelWithParent, getLayoutStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
@@ -22,7 +22,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const allData = useApplicationContext();
+    const allData = useAvailableConstantsData();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 

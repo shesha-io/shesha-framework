@@ -1,6 +1,6 @@
 import { useDeepCompareMemo } from '@/hooks';
 import React, { FC, MutableRefObject } from 'react';
-import { getActualModelWithParent, useApplicationContext } from '@/providers/form/utils';
+import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 
@@ -10,7 +10,7 @@ export interface IFormComponentProps {
 }
 
 const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
   const { getComponentModel, form, getToolboxComponent, isComponentFiltered } = allData.form;
 
   const parent = useParent(false);

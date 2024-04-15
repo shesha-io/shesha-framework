@@ -3,7 +3,7 @@ import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, MetadataProvider, useConfigurableActionDispatcher, useMetadataDispatcher } from "@/providers";
 import { useDataContextManager, useDataContextRegister } from "@/providers/dataContextManager";
 import { setValueByPropertyName } from "@/utils/object";
-import { useApplicationContext } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { getFieldNameFromExpression, IApplicationContext } from '@/providers/form/utils';
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 import { 
@@ -52,7 +52,7 @@ const DataContextBinder: FC<PropsWithChildren<IDataContextBinderProps>> = (props
   const { onChangeContext, onChangeContextData } = useDataContextManager();
   const metadataDispatcher = useMetadataDispatcher();
   const allData = useRef<IApplicationContext>();
-  allData.current = useApplicationContext(id);
+  allData.current = useAvailableConstantsData(id);
 
   const { executeAction } = useConfigurableActionDispatcher();
 

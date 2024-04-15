@@ -5,14 +5,14 @@ import classNames from 'classnames';
 import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
-import { useApplicationContext } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
-  const evaluationContext = useApplicationContext();
+  const evaluationContext = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {

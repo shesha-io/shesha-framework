@@ -11,7 +11,7 @@ import { IChildEntitiesTagGroupProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
-import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 
 const { Option } = Select;
 
@@ -20,7 +20,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
-  const labelFormatConstants = useAvailableConstants({ 
+  const labelFormatConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true, 
     onBuild: (builder) => {
       builder.addObject("item", "Properties of the edited object", undefined);

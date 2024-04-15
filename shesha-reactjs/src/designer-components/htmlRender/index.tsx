@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '@/interfaces';
-import { executeScriptSync, useApplicationContext, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { HighlightOutlined } from '@ant-design/icons';
 import parse from 'html-react-parser';
 import React from 'react';
@@ -13,7 +13,7 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps> = {
   icon: <HighlightOutlined />,
   isInput: true,
   Factory: ({ model }) => {
-    const  ctx = useApplicationContext();    
+    const  ctx = useAvailableConstantsData();    
     return <ConfigurableFormItem model={{...model, hideLabel: true}}>
       {(value) => {
           return parse(model?.renderer

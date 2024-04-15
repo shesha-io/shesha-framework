@@ -7,7 +7,7 @@ import { IIconPickerComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useApplicationContext } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 
@@ -20,7 +20,7 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   canBeJsSetting: true,
   Factory: ({ model }) => {
 
-    const allData = useApplicationContext();
+    const allData = useAvailableConstantsData();
 
     return (
       <ConfigurableFormItem model={model}>

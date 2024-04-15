@@ -9,7 +9,7 @@ import { useConfigurableAction, useConfigurableActionDispatcher } from '@/provid
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
 import { useParent } from '@/providers/parentProvider/index';
 import { useStyles } from '@/components/dataList/styles/styles';
-import { useApplicationContext } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 
@@ -59,7 +59,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
   const parent = useParent(false);
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
   const isDesignMode = allData.formMode === 'designer' || parent?.formMode === 'designer';
 
   const repository = getRepository();

@@ -98,7 +98,7 @@ const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.formData,
 ];
 
-export const useAvailableConstants = ({ addGlobalConstants, onBuild, standardConstants = ALL_STANDARD_CONSTANTS }: AvailableConstantsArgs): IObjectMetadata => {
+export const useAvailableConstantsMetadata = ({ addGlobalConstants, onBuild, standardConstants = ALL_STANDARD_CONSTANTS }: AvailableConstantsArgs): IObjectMetadata => {
     const globalProps = useGlobalConstants();
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
@@ -107,7 +107,6 @@ export const useAvailableConstants = ({ addGlobalConstants, onBuild, standardCon
         const metaBuilder = metadataBuilderFactory("constants");
 
         metaBuilder.addStandard(standardConstants);
-        metaBuilder.addGlobalConstants();
             
         onBuild?.(metaBuilder);
 
@@ -123,8 +122,8 @@ export const useAvailableConstants = ({ addGlobalConstants, onBuild, standardCon
     return response;
 };
 
-export const useAvailableConstantsStandard = (): IObjectMetadata => {
-    const availableConstants = useAvailableConstants({
+export const useAvailableStandardConstantsMetadata = (): IObjectMetadata => {
+    const availableConstants = useAvailableConstantsMetadata({
         addGlobalConstants: true,
     });
     return availableConstants;

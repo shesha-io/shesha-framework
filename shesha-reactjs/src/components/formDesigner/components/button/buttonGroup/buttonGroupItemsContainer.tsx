@@ -8,7 +8,7 @@ import {
   ButtonGroupItemProps,
 } from '@/providers/buttonGroupConfigurator/models';
 import { ReactSortable, ItemInterface } from 'react-sortablejs';
-import { getActualModel, useApplicationContext } from '@/providers/form/utils';
+import { getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
 export interface IButtonGroupItemsContainerProps {
@@ -20,7 +20,7 @@ export interface IButtonGroupItemsContainerProps {
 export const ButtonGroupItemsContainer: FC<IButtonGroupItemsContainerProps> = props => {
   const { styles } = useStyles();
   const { updateChildItems, readOnly } = useButtonGroupConfigurator();
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
   
   const actualItems = useMemo(() => {
     return props.items.map((item) => getActualModel(item, allData));

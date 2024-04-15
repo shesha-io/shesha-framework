@@ -14,7 +14,7 @@ import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCo
 import { IconPicker } from '@/index';
 import { ShaIconTypes } from '@/components/iconPicker';
 import { ColumnsConfig } from './columnsEditor/columnsConfig';
-import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 interface ITypedOption<T = string> {
@@ -165,21 +165,21 @@ export interface IProps {
 const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ readOnly }) => {
   const { model } = useSettingsForm<ITableComponentProps>();
 
-  const crudConstants = useAvailableConstants({ 
-    addGlobalConstants: false,
+  const crudConstants = useAvailableConstantsMetadata({ 
+    addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData, SheshaConstants.moment
     ]
   });
 
-  const onNewRowInitializeConstants = useAvailableConstants({ 
-    addGlobalConstants: false,
+  const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
+    addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, { uid: SheshaConstants.formData, name: "formData" }, SheshaConstants.moment, SheshaConstants.http
     ]
   });
-  const onRowSaveConstants = useAvailableConstants({ 
-    addGlobalConstants: false,
+  const onRowSaveConstants = useAvailableConstantsMetadata({ 
+    addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState, { uid: SheshaConstants.formData, name: "formData" }, SheshaConstants.moment, SheshaConstants.http
     ],
@@ -188,7 +188,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ rea
     }
   });
 
-  const styleConstants = useAvailableConstants({ 
+  const styleConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData

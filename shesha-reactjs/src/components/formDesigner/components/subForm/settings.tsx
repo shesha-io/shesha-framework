@@ -20,7 +20,7 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ISubFormComponentProps } from '.';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
-import { useAvailableConstants } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 
 const Option = Select.Option;
@@ -42,15 +42,15 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
   );
 
   
-  const getStyleConstants = useAvailableConstants({
+  const getStyleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState,
       SheshaConstants.formData,
     ]
   });
-  const commonUrlsConstants = useAvailableConstants({
-    addGlobalConstants: false,
+  const commonUrlsConstants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState,
       SheshaConstants.formData,
@@ -60,20 +60,8 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
     }
   });
 
-  const onBeforeGetConstants = useAvailableConstants({
-    addGlobalConstants: false,
-    standardConstants: [
-      SheshaConstants.globalState,
-      SheshaConstants.formData,
-    ],
-    onBuild: (builder) => {
-      builder.addObject("queryParams", "Query parameters", undefined);
-      builder.addObject("initialValues", "Initial values (from the parent form. It's value is the formData if the is the sub-form of the main form)", undefined);
-    }
-  });
-
-  const onCreatedOrUpdatedConstants = useAvailableConstants({
-    addGlobalConstants: false,
+  const onCreatedOrUpdatedConstants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
     standardConstants: [
       SheshaConstants.globalState,
       SheshaConstants.message,
@@ -393,52 +381,6 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
         </Show>
       </SettingsCollapsiblePanel>
       <SettingsCollapsiblePanel header="Actions">
-        <SettingsFormItem
-          label="On Submit"
-          name="beforeGet"
-          tooltip="Triggered before retrieving the sub-form object from the back-end"
-        >
-          <CodeEditor
-            readOnly={readOnly}
-            mode="dialog"
-            propertyName="beforeGet"
-            label="On Submit"
-            description="Triggered before retrieving the sub-form object from the back-end"
-            exposedVariables={[
-              {
-                id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                name: 'data',
-                description: 'Form data',
-                type: 'object',
-              },
-              {
-                id: '27ad7bc6-1b04-4e63-a1a9-6771fae8dd5c',
-                name: 'initialValues',
-                description:
-                  "Initial values (from the parent form. It's value is the formData if the is the sub-form of the main form)",
-                type: 'object',
-              },
-              {
-                id: '65b71112-d412-401f-af15-1d3080f85319',
-                name: 'globalState',
-                description: 'The global state',
-                type: 'object',
-              },
-              {
-                id: '3633b881-43f4-4779-9f8c-da3de9ecf9b8',
-                name: 'queryParams',
-                description: 'Query parameters',
-                type: 'object',
-              },
-            ]}
-            wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'onBeforeGet'
-            }}
-            availableConstants={onBeforeGetConstants}
-          />
-        </SettingsFormItem>
-
         <SettingsFormItem
           label="On Created"
           name="onCreated"
