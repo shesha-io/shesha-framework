@@ -1,7 +1,7 @@
 /**
  * String Builder
  */
-export class StringBruilder {
+export class StringBuilder {
     readonly content: string[] = [];
     _indent: number = 0;
 

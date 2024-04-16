@@ -47,6 +47,7 @@ import {
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
+import { useApplicationPlugin } from './context/applicationContext';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -205,4 +206,4 @@ const useSheshaApplication = (require: boolean = true): ISheshaApplication => {
   return { ...stateContext, ...actionsContext };
 };
 
-export { ShaApplicationProvider, useSheshaApplication };
+export { ShaApplicationProvider, useSheshaApplication, useApplicationPlugin };

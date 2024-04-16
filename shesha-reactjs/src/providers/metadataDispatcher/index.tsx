@@ -32,7 +32,7 @@ import {
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IDictionary } from '@/interfaces';
 import { MetadataFetcher } from '@/utils/metadata/metadataBuilder';
-import { useEntityMetadataFetcher } from './entities/useEntityMetadataFetcher';
+import { IEntityMetadataFetcher, useEntityMetadataFetcher } from './entities/useEntityMetadataFetcher';
 
 export interface IMetadataDispatcherProviderProps { }
 
@@ -316,4 +316,7 @@ export {
   useMetadataDispatcherState,
   useNestedPropertyMetadatAccessor,
   useMetadataFetcher,
+
+  type IEntityMetadataFetcher,
+  useEntityMetadataFetcher,
 };

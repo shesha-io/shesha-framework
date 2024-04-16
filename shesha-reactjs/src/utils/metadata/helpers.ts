@@ -3,9 +3,9 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import GenericOutlined from '@/icons/genericOutlined';
 import { JsonOutlined } from '@/icons/jsonOutlined';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isEntityReferencePropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { camelcaseDotNotation, getNumberFormat } from '@/utils/string';
-import { toCamelCase } from './string';
+import { toCamelCase } from '../string';
 
 export const getIconByDataType = (dataType: string): IconType => {
   switch (dataType) {
@@ -75,4 +75,18 @@ export const getFormatContent = (content: string, metadata: Pick<IContent, 'data
     default:
       return content;
   }
+};
+
+export const getEntityIdType = (metadata: IModelMetadata): string => {
+  if (!isEntityMetadata(metadata))
+    return undefined;
+
+  return isPropertiesArray(metadata.properties)
+    ? metadata.properties.find(p => p.path?.toLowerCase() === "id")?.dataType
+    : undefined;
+};
+
+export const getEntityIdJsType = (metadata: IModelMetadata): string => {
+  const idType = getEntityIdType(metadata);
+  return idType === DataTypes.guid ? "string" : idType;
 };
