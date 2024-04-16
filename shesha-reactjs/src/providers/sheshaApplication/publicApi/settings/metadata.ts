@@ -4,7 +4,7 @@ import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { SettingConfigurationDto } from "./models";
 import { SettingsManager } from "./manager";
 import { HttpClientApi } from "../http/api";
-import { StringBruilder } from "@/utils/metadata/stringBruilder";
+import { StringBuilder } from "@/utils/metadata/stringBuilder";
 
 type SettingItemType = 'module' | 'category' | 'setting';
 
@@ -104,7 +104,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
         `export interface ${result.typeName} {`,
     ];
 
-    const writeObject = (sb: StringBruilder, property: ISettingPropertyMetadata) => {
+    const writeObject = (sb: StringBuilder, property: ISettingPropertyMetadata) => {
         if (property.description)
             sb.append(`/** ${property.description} */`);
 
@@ -128,7 +128,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
         sb.append("}");
     };
 
-    const sb = new StringBruilder();
+    const sb = new StringBuilder();
     sb.appendLines(content);
 
     const properties = settingsConfigurationToProperties(settings);

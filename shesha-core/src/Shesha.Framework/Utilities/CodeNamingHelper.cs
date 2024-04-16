@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using Shesha.Attributes;
+using Shesha.EntityReferences;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Modules;
@@ -82,6 +83,16 @@ namespace Shesha.Utilities
         {
             var className = type.StripCastleProxyType().GetUnderlyingTypeIfNullable().Name;
             return ClassName2Accessor(className);
+        }
+
+        /// <summary>
+        /// Get fully qualified entity type identifier
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static EntityTypeIndentifier GetEntityTypeIdentifier(this Type type) 
+        {
+            return new EntityTypeIndentifier(type.GetConfigurableModuleInfo()?.GetModuleAccessor(), type.GetTypeAccessor());
         }
 
         private static string ClassName2Accessor(string className) 

@@ -4,8 +4,9 @@ import { EntitiesManager } from "./manager";
 import { HttpClientApi } from "../http/api";
 import { EntityConfigurationDto } from "./models";
 import { DataTypes } from "@/interfaces";
-import { StringBruilder } from "@/utils/metadata/stringBruilder";
+import { StringBuilder } from "@/utils/metadata/stringBuilder";
 import { TypesImporter } from "@/utils/metadata/typesImporter";
+import { getEntityIdJsType } from "@/utils/metadata";
 
 type EntityItemType = 'module' | 'entityType';
 
@@ -74,27 +75,61 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
         typeName: "EntitiesApi",
         files: [apiFile],
     };
+    
     const content = [
         "/*",
         " * Entity with typed id",
         " */",
         "export interface IEntity<TId = string> {",
         "    id: TId;",
+        "};",
+        "",
+        "export interface IDeletionAuditedEntity {",
+        "    /** Deleter User Id */",
+        "    deleterUserId?: number;",
+        "    /** Deletion Time */",
+        "    deletionTime?: Date;",
+        "    /** Is Deleted */",
+        "    isDeleted: boolean;",
         "}",
         "",
+        "export interface ICreationAuditedEntity {",
+        "    /** Creation Time */",
+        "    creationTime: Date;",
+        "    /** Creator User Id */",
+        "    creatorUserId?: number;",
+        "}",
+        "",
+        "export interface IModificationAuditedEntity {",
+        "    /** Last Modification Time */",
+        "    lastModificationTime?: Date;",
+        "    /** Last Modifier User Id */",
+        "    lastModifierUserId?: number;",
+        "}",
+        "",
+        "export interface IFullAudited extends IDeletionAuditedEntity, ICreationAuditedEntity, IModificationAuditedEntity { ",
+        "",
+        "}",
+        "export interface IFullAuditedEntity<TId = string> extends IEntity<TId>, IFullAudited {",
+        "",
+        "}",
+        "",
+        "export type EntityCreatePayload<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> = Omit<TEntity, keyof IFullAuditedEntity<TId>>;",
+        "export type EntityUpdatePayload<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> = Partial<Omit<TEntity, keyof IFullAudited>> & Pick<TEntity, \"id\">",
+        "",
         "export interface EntityAccessor<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> {",
-        "    createAsync: (value: TEntity) => Promise<TEntity>;",
+        "    createAsync: (value: EntityCreatePayload<TId, TEntity>) => Promise<TEntity>;",
         "    getAsync: (id: TId) => Promise<TEntity>;",
-        "    updateAsync: (value: TEntity) => Promise<TEntity>;",
-        "    deleteAsync: (id: TId) => Promise<TEntity>;",
+        "    updateAsync: (value: EntityUpdatePayload<TId, TEntity>) => Promise<TEntity>;",
+        "    deleteAsync: (id: TId) => Promise<void>;",
         "}",
         "",
         `export interface ${result.typeName} {`,
-    ];
+    ];   
 
     const typesBuilder = context.typeDefinitionBuilder;
 
-    const writeObject = async (sb: StringBruilder, typesImporter: TypesImporter, property: IEntityPropertyMetadata): Promise<void> => {
+    const writeObject = async (sb: StringBuilder, typesImporter: TypesImporter, property: IEntityPropertyMetadata): Promise<void> => {
         if (property.description)
             sb.append(`/** ${property.description} */`);
 
@@ -112,9 +147,13 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
                 const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
                 typesImporter.import(typeDef);
 
+                const idType = getEntityIdJsType(typeDef.metadata);
+                if (!idType)
+                    throw new Error(`Failed to identifier type for entity '${prop.entityType}'`);
+
                 if (prop.description)
                     sb.append(`/** ${prop.description} */`);
-                sb.append(`${prop.path}: EntityAccessor<string, ${typeDef.typeName}>;`);
+                sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
             } /*else
                 if (prop.dataType === DataTypes.object) {
                     await writeObject(sb, typesImporter, prop as IEntityPropertyMetadata);
@@ -125,7 +164,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
     };
 
     const typesImporter = new TypesImporter();
-    const sb = new StringBruilder();
+    const sb = new StringBuilder();
     sb.appendLines(content);
 
     const properties = entitiesConfigurationToProperties(configurations);
@@ -133,10 +172,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
     sb.incIndent();
 
     for (const property of properties) {
-        //console.groupCollapsed(`LOG: process property '${property.path}'`);
         await writeObject(sb, typesImporter, property);
-
-        //console.groupEnd();
     }
     sb.decIndent();
 

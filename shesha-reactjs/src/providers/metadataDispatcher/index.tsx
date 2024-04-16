@@ -32,7 +32,7 @@ import {
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IDictionary } from '@/interfaces';
 import { MetadataFetcher } from '@/utils/metadata/metadataBuilder';
-import { useEntityMetadataFetcher } from './entities/useEntityMetadataFetcher';
+import { IEntityMetadataFetcher, useEntityMetadataFetcher } from './entities/useEntityMetadataFetcher';
 import { PropertyMetadataDto, metadataGet } from '@/apis/metadata';
 import { useSheshaApplication } from '../sheshaApplication';
 
@@ -82,12 +82,12 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
               properties,
             };
             return meta;
-          });
+      });
       });
       models.current[payload.modelType] = promise;
       return promise;
     }
-
+    
     return Promise.resolve(null);
   };
 
@@ -342,4 +342,7 @@ export {
   useMetadataDispatcherState,
   useNestedPropertyMetadatAccessor,
   useMetadataFetcher,
+
+  type IEntityMetadataFetcher,
+  useEntityMetadataFetcher,
 };
