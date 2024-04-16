@@ -14,7 +14,8 @@ import {
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
   executeScript,
-  upgradeComponents
+  upgradeComponents,
+  useApplicationContextData
   } from '@/providers/form/utils';
 import { DEFAULT_FORM_SETTINGS } from '../form/models';
 import { EntitiesGetQueryParams } from '@/apis/entities';
@@ -94,6 +95,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const { publish } = usePubSub();
   const { formData = {}, formMode } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
+  const appContextData = useApplicationContextData();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
   
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -112,7 +114,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (!urlExpression) return '';
     return (() => {
       // tslint:disable-next-line:function-constructor
-      return new Function('data, query, globalState', urlExpression)(formData, getQueryParams(), globalState); // Pass data, query, globalState
+      return new Function('data, query, globalState, application', urlExpression)(formData, getQueryParams(), globalState, appContextData); // Pass data, query, globalState
     })();
   };
 
@@ -123,6 +125,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       data: formData,
       query: getQueryParams(),
       globalState: globalState,
+      application: appContextData,
     });
   };
 
@@ -347,12 +350,13 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         if (onCreated) {
           const evaluateOnCreated = () => {
             // tslint:disable-next-line:function-constructor
-            return new Function('data, globalState, submittedValue, message, publish', onCreated)(
+            return new Function('data, globalState, submittedValue, message, publish, application', onCreated)(
               formData,
               globalState,
               submittedValue?.result,
               message,
-              publish
+              publish,
+              appContextData,
             );
           };
 

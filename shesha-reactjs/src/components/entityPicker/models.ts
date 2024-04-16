@@ -18,7 +18,7 @@ export interface ISelectedProps {
   displayName?: string;
 }
 
-interface IAddNewRecordProps {
+export interface IAddNewRecordProps {
   modalFormId?: FormIdentifier;
   modalTitle?: string;
   showModalFooter?: boolean;

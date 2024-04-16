@@ -7,8 +7,8 @@ import FormAutocomplete from '@/components/formAutocomplete';
 import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '@/components/sectionSeparator';
 import Show from '@/components/show';
-import ButtonGroupSettingsModal from '../../../components/formDesigner/components/button/buttonGroup/buttonGroupSettingsModal';
-import { CodeEditor } from '../../../components/formDesigner/components/codeEditor/codeEditor';
+import ButtonGroupSettingsModal from '@/designer-components/button/buttonGroup/buttonGroupSettingsModal';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { IListItemsProps } from './models';
 
 const Option = Select.Option;

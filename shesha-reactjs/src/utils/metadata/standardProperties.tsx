@@ -17,6 +17,7 @@ export const SheshaConstants = {
   form: "shesha:form",
   formMode: "shesha:formMode",
   formData: "shesha:formData",
+  application: "shesha:application",
 };
 
 export const registerHttpAction: MetadataBuilderAction = (builder, name = "http") => {

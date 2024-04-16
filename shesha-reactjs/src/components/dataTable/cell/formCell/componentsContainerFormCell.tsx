@@ -4,7 +4,7 @@ import { IComponentsContainerBaseProps } from '@/interfaces';
 import { removeUndefinedProperties } from '@/utils/array';
 import { useParent } from '@/providers/parentProvider/index';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
-import DynamicComponent from '@/components/formDesigner/components/dynamicView/dynamicComponent';
+import DynamicComponent from '@/designer-components/dynamicView/dynamicComponent';
 
 interface IComponentsContainerFormCellProps extends IComponentsContainerBaseProps, ICommonContainerProps { }
 

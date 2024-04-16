@@ -1,4 +1,4 @@
-import { IContent, formatDateStringAndPrefix } from '@/components/formDesigner/components/text/utils';
+import { IContent, formatDateStringAndPrefix } from '@/designer-components/text/utils';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import GenericOutlined from '@/icons/genericOutlined';
 import { JsonOutlined } from '@/icons/jsonOutlined';

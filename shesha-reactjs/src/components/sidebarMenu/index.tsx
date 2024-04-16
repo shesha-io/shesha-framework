@@ -5,7 +5,7 @@ import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useC
 import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { sidebarMenuItemToMenuItem } from './utils';
-import { useApplicationContext } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useLocalStorage } from '@/hooks';
 import { useSidebarMenu } from '@/providers/sidebarMenu';
 import { useStyles } from './styles/styles';
@@ -21,7 +21,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { getItems, isItemVisible } = useSidebarMenu();
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
-  const executionContext = useApplicationContext();
+  const executionContext = useAvailableConstantsData();
   const { styles } = useStyles();
 
   const currentUrl = normalizeUrl(router?.fullPath);
