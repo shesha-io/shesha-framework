@@ -16,11 +16,10 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const evaluationContext = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
 
-  const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>, actionName: string) => {
+  const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
     try {
       if (props.actionConfiguration) {
-        console.log("validate button-level ::",props?.form.getFieldsValue(),actionName);
         executeAction({
           actionConfiguration: props.actionConfiguration,
           argumentsEvaluationContext: evaluationContext,
@@ -35,7 +34,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     <Button
       title={props.tooltip}
       block={props.block}
-      onClick={(event) => onButtonClick(event, props.actionConfiguration?.actionName)}
+      onClick={(event) => onButtonClick(event)}
       type={props.buttonType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
