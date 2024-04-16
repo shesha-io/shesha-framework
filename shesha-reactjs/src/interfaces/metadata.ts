@@ -21,6 +21,7 @@ export interface TypeDefinition {
 export interface TypeAndLocation {
   typeName: string;
   filePath?: string;
+  metadata?: IModelMetadata;
 }
 
 export interface ITypeDefinitionBuilder {

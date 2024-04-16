@@ -5,14 +5,20 @@ import { getUserApiProperties } from '../publicApi/currentUser/metadata';
 import { useHttpClient } from './http/hooks';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
-//import { getEntitiesApiProperties } from './entities/metadata';
+import { getEntitiesApiProperties } from './entities/metadata';
+import { ApplicationPluginRegistration } from '../context/applicationContext';
+
+
+export interface UseApplicationContextMetadataProps {
+  plugins: ApplicationPluginRegistration[];
+}
 
 /**
  * Generate and return context metadata for the application.
  *
  * @return {Promise<IModelMetadata>} Promise representing the context metadata for the application.
  */
-export const useApplicationContextMetadata = () => {
+export const useApplicationContextMetadata = (props: UseApplicationContextMetadataProps): Promise<IModelMetadata> => {
   const httpClient = useHttpClient();
   const metadataBuilderFactory = useMetadataBuilderFactory();
 
@@ -21,16 +27,18 @@ export const useApplicationContextMetadata = () => {
     builder
       .addObject("user", "Current User", getUserApiProperties)
       .addObject("settings", "Settings", m => getSettingsApiProperties(m, httpClient))
-      //.addObject("entities", "Entities", m => getEntitiesApiProperties(m, httpClient))
+      .addObject("entities", "Entities", m => getEntitiesApiProperties(m, httpClient))
       ;
+
+    props.plugins.forEach(plugin => {
+      plugin.buildMetadata(builder);
+    });
+
     const meta = builder.build();
 
-    /*
-    allow injecting of application metadata to extend application
-    */
-
     return Promise.resolve(meta);
-  }, [httpClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [httpClient, props.plugins]);
 
   return contextMetadata;
 };
