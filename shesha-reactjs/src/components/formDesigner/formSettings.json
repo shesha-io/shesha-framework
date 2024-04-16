@@ -332,6 +332,7 @@
       "mode": "dialog",
       "wrapInTemplate": true,
       "templateSettings": {
+        "useAsyncDeclaration": true,
         "functionName": "onInitialized"
       },
       "availableConstants": {
@@ -402,6 +403,7 @@
       "mode": "dialog",
       "wrapInTemplate": true,
       "templateSettings": {
+        "useAsyncDeclaration": true,
         "functionName": "onDataLoaded"
       },
       "availableConstants": {
