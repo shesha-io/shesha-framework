@@ -262,6 +262,24 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     actionDependencies
   );
 
+  useConfigurableAction(
+    {
+      name: 'Validate',
+      description: 'Validate the form data and show validation errors if any',
+      owner: name,
+      ownerUid: actionsOwnerUid,
+      hasArguments: false,
+      executer: async() => {
+        
+        console.log('validating form-',form);
+        console.log("values-action level ::",form.getFieldsValue());
+        await form.validateFields();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
   //#endregion
 
   const updateVisibleComponents = (formContext: IFormStateInternalContext) => {

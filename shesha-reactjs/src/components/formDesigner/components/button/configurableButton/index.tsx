@@ -21,10 +21,11 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
     try {
       const isFormSubmit = !NON_PROGRESSIVE_ACTIONS.includes(actionName);
-
-      if (isFormSubmit) await props?.form?.validateFields();
+       console.log('isFormSubmit', isFormSubmit);
+      // if (isFormSubmit) await props?.form?.validateFields();
 
       if (props.actionConfiguration) {
+        console.log("values-action level 2::",props?.form.getFieldsValue());
         executeAction({
           actionConfiguration: props.actionConfiguration,
           argumentsEvaluationContext: evaluationContext,
