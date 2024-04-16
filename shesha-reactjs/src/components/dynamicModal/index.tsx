@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { FC } from 'react';
-import { ButtonGroup } from '@/components/formDesigner/components/button/buttonGroup/buttonGroup';
+import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { evaluateString } from '@/providers/form/utils';
 import { Form, Modal } from 'antd';

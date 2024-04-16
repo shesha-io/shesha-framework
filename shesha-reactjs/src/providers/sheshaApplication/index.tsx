@@ -47,6 +47,8 @@ import {
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
+import { DataContextProvider } from '../dataContextProvider';
+import { SheshaCommonContexts } from '../dataContextManager/models';
 import { useApplicationPlugin } from './context/applicationContext';
 
 export interface IShaApplicationProviderProps {
@@ -164,19 +166,26 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
                                 <ApplicationContextsProvider>
+                                  <DataContextProvider
+                                    id={SheshaCommonContexts.AppContext}
+                                    name={SheshaCommonContexts.AppContext}
+                                    description={'Application data store context'}
+                                    type={'root'}
+                                  >
+                                    <CanvasProvider>
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
                                         <DebugPanel>
                                           <ApplicationActionsProcessor>
-                                            <CanvasProvider>
                                               {children}
-                                            </CanvasProvider>
                                           </ApplicationActionsProcessor>
                                         </DebugPanel>
                                       </DynamicModalProvider>
                                     </DataSourcesProvider>
                                   </StackedNavigationProvider>
+                                    </CanvasProvider>
+                                  </DataContextProvider>
                                 </ApplicationContextsProvider>
                               </DataContextManager>
                             </MetadataDispatcherProvider>

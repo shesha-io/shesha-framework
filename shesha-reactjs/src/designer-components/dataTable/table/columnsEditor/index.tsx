@@ -14,6 +14,9 @@ const ColumnsEditorComponent: IToolboxComponent<IColumnsEditorComponentProps> = 
   type: 'columnsEditorComponent',
   name: 'Columns Editor Component',
   icon: <ColumnWidthOutlined />,
+  isInput: true,
+  isOutput: true,
+  canBeJsSetting: true,
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>

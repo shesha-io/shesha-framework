@@ -51,7 +51,9 @@ Begin
     Update @ent Set Processed = 1 Where Id = @Id 
 End
 
-update Frwk_FormConfigurations set Markup = REPLACE(REPLACE(Markup, '/Crud/Crud/', '/Crud/'), 'Crud/Query', 'Crud/Get')
+update fc set Markup = REPLACE(REPLACE(Markup, '/Crud/Crud/', '/Crud/'), 'Crud/Query', 'Crud/Get')
+from Frwk_FormConfigurations fc
+inner join Frwk_ConfigurationItems cii on cii.id = fc.id and cii.IsLast = 1 and cii.IsDeleted = 0
 ");
 
                 // Execute sql only on PostgreSql

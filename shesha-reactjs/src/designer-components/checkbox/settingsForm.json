@@ -8,9 +8,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "2JkE1UV7XdEQgLAcKGSq3",
@@ -35,7 +34,7 @@
             "propertyName": "label",
             "parentId": "V7fTtlRl67ZoKhBMqXwoF",
             "label": "Label",
-            "version": 0,
+            "version": 3,
             "textType": "text"
           },
           {
@@ -57,36 +56,41 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
             "type": "textArea",
             "propertyName": "description",
             "parentId": "V7fTtlRl67ZoKhBMqXwoF",
-            "label": "Description"
+            "label": "Description",
+            "version": 2
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
             "type": "checkbox",
             "propertyName": "hidden",
             "parentId": "V7fTtlRl67ZoKhBMqXwoF",
-            "label": "Hidden"
+            "label": "Hidden",
+            "version": 2
           },
           {
             "id": "f43abbca-082c-11ec-9a03-0242ac130003",
             "type": "checkbox",
             "propertyName": "defaultValue",
             "parentId": "V7fTtlRl67ZoKhBMqXwoF",
-            "label": "Default Checked"
+            "label": "Default Checked",
+            "version": 2
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
             "type": "checkbox",
             "propertyName": "hideLabel",
             "parentId": "V7fTtlRl67ZoKhBMqXwoF",
-            "label": "Hide Label"
+            "label": "Hide Label",
+            "version": 2
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -111,9 +115,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "j1bb12Go1uS5r7uX2HkJf",
@@ -127,7 +130,8 @@
             "type": "checkbox",
             "propertyName": "validate.required",
             "parentId": "6sTFY0v_LGSUK5UVZL1rH",
-            "label": "Required"
+            "label": "Required",
+            "version": 2
           }
         ]
       },
@@ -145,9 +149,11 @@
               "type": "checkbox",
               "propertyName": "validate.required",
               "parentId": "6sTFY0v_LGSUK5UVZL1rH",
-              "label": "Required"
+              "label": "Required",
+              "version": 2
             }
-          ]
+          ],
+          "parentId": "2VH-p2lSBu-0VyxvgRDYD"
         }
       ]
     },
@@ -159,9 +165,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "tv6DDGDXGFTftBG9Uwd-u",
@@ -185,7 +190,15 @@
                 "description": "Form values",
                 "type": "object"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       },
@@ -213,9 +226,18 @@
                   "description": "Form values",
                   "type": "object"
                 }
-              ]
+              ],
+              "version": 3,
+              "language": "typescript",
+              "placeholder": "",
+              "wrapInTemplate": true,
+              "templateSettings": {
+                "functionName": "getStyle"
+              },
+              "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
             }
-          ]
+          ],
+          "parentId": "eGd67Tsl-XNfIh0Jnxapv"
         }
       ]
     }

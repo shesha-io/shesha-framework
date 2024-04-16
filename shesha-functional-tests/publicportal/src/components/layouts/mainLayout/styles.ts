@@ -29,6 +29,47 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
       }
 
       .sha-components-container {
+        &.sha-index-table-control,
+        &.sha-index-toolbar {
+          border: 1px solid ${colors.greyLine};
+          margin-bottom: 12px;
+
+          .${prefixCls}-btn {
+            min-width: unset !important;
+          }
+
+          .${prefixCls}-select {
+            border-width: 1px;
+            height: unset !important;
+          }
+
+          .${prefixCls}-select-selector,
+          .${prefixCls}-input-affix-wrapper {
+            border-width: 1px !important;
+            height: unset !important;
+          }
+        }
+
+        .sha-react-table {
+          font-size: 16px;
+          margin: 0;
+
+          .tr-head {
+            font-weight: bold;
+            font-size: 14px;
+          }
+        }
+
+        .${prefixCls}-pagination {
+          font-size: 16px;
+
+          .${prefixCls}-pagination-options {
+            ${prefixCls}-select-selector {
+              font-size: 16px;
+            }
+          }
+        }
+
         .${prefixCls}-btn {
           border-radius: 5px;
           font-size: 14px;

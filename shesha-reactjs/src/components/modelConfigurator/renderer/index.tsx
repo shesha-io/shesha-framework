@@ -1,7 +1,7 @@
 import ConfigurableForm from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
 import React, { FC } from 'react';
-import { CustomErrorBoundary } from '../..';
+import { CustomErrorBoundary } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { message } from 'antd';
 import { ModelConfiguratorToolbar } from '../toolbar';

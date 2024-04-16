@@ -8,7 +8,7 @@ export const DraggerStub: FC = () => {
   return (
     <div>
         <p className={styles.antUploadDragIcon}>
-          <InboxOutlined />
+          <InboxOutlined className={`${styles.antUploadDragIcon} icon`}/>
         </p>
         <p className={styles.antUploadText}>Click or drag file to this area to upload</p>
         <p className={styles.antUploadHint}>

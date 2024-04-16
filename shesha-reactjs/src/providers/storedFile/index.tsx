@@ -89,9 +89,6 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
   const [state, dispatch] = useReducer(storedFileReducer, {
     ...STORED_FILE_CONTEXT_INITIAL_STATE,
-    ownerId,
-    ownerType,
-    propertyName,
     fileId: fileId ?? (typeof value === 'string' ? value : null),
   });
 
@@ -230,9 +227,9 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
     formData.append('file', file);
     appendIfDefined('id', state.fileId);
-    appendIfDefined('ownerId', state.ownerId);
-    appendIfDefined('ownerType', state.ownerType);
-    appendIfDefined('propertyName', state.propertyName);
+    appendIfDefined('ownerId', ownerId);
+    appendIfDefined('ownerType', ownerType);
+    appendIfDefined('propertyName', propertyName);
 
     const newFile: IStoredFile = {
       uid: '',
@@ -246,7 +243,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
     if (
       !Boolean(state.fileId) &&
-      !(Boolean(state.ownerId) && Boolean(state.propertyName)) &&
+      !(Boolean(ownerId) && Boolean(propertyName)) &&
       typeof addDelayedUpdate !== 'function'
     ) {
       console.error('File component is not configured');

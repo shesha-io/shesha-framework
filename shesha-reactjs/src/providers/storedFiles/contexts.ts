@@ -52,11 +52,6 @@ export interface IDownloadFilePayload {
 
 export interface IStoredFilesStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  ownerId?: string;
-  ownerType?: string;
-  ownerName?: string;
-  filesCategory?: string;
-  propertyName?: string;
   fileList?: IStoredFile[];
   newFile?: IStoredFile;
   fileIdToDelete?: string;

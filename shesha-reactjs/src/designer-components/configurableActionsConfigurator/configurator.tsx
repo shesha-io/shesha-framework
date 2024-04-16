@@ -7,7 +7,7 @@ import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
-import { useAvailableConstantsStandard } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 
 const { Panel } = Collapse;
@@ -37,7 +37,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
 
-  const availableConstants = useAvailableConstantsStandard();
+  const availableConstants = useAvailableStandardConstantsMetadata();
 
   const formValues = useMemo<IActionFormModel>(() => {
     if (!value)

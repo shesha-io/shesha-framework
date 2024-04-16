@@ -48,6 +48,7 @@ namespace Shesha.Sessions
 
                 output.User = new UserLoginInfoDto
                 {
+                    Id = user.Id,
                     AccountFound = true,
                     UserName = user.UserName,
                     FirstName = user.Name,

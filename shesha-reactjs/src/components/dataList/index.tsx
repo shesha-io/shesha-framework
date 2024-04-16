@@ -10,7 +10,7 @@ import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
 import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, Row, RowOrGroup, RowsGroup } from './models';
-import { useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
+import { useAvailableConstantsData, executeScriptSync, getStyle } from '@/providers/form/utils';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
@@ -109,7 +109,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     updateContent();
   }, [selectedRow, selectedRows, selectionMode]);
 
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
   const { configurationItemMode } = useAppConfigurator();
   const { executeAction } = useConfigurableActionDispatcher();
 
