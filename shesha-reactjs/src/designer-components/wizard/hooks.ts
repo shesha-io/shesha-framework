@@ -76,7 +76,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     const properties = [];
     for(var comp in flat.allComponents)
       if (Object.hasOwn(flat.allComponents, comp))
-        properties.push(flat.allComponents[comp].propertyName);
+        properties.push(flat.allComponents[comp].propertyName.split("."));
     return properties;
   }, [currentStep]);
   
