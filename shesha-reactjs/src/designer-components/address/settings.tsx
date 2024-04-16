@@ -71,7 +71,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
 
-        <SettingsFormItem name="readOnly" label="Edit mode" jsSetting>
+        <SettingsFormItem name="editMode" label="Edit mode" jsSetting>
           <ReadOnlyModeSelector readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
