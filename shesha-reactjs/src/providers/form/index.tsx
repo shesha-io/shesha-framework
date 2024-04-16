@@ -226,7 +226,10 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: () => {
+      executer: async() => {
+        console.log("validate-provider form:: ",form.getFieldsValue());
+        await form.validateFields()
+        
         form.submit();
         return Promise.resolve();
       },
