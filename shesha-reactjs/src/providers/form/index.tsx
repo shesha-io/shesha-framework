@@ -35,7 +35,7 @@ import {
   ISetVisibleComponentsPayload,
 } from './contexts';
 import { useFormDesignerComponents } from './hooks';
-import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
+import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings, ISubmitActionArguments } from './models';
 import formReducer from './reducer';
 import { convertActions, convertSectionsToList, getEnabledComponentIds, getFilteredComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
@@ -226,12 +226,14 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: async () => {
-        console.log("validate-provider form:: ",form.getFieldsValue());
-
-        await form.validateFields();
-        
-        form.submit();
+      //argumentsFormMarkup: SubmitActionArgumentsMarkup,
+      executer: async (args: ISubmitActionArguments, actionContext) => {
+        var formInstance = (actionContext?.form?.form ?? form) as FormInstance<any>;
+        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
+        if (args?.validateFields === true || fieldsToValidate?.length > 0) {
+          await formInstance.validateFields(fieldsToValidate);
+        }
+        formInstance.submit();
         return Promise.resolve();
       },
     },
@@ -244,8 +246,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: () => {
-        form.resetFields();
+      executer: (_, actionContext) => {
+        var formInstance = actionContext?.form?.form ?? form;
+        formInstance.resetFields();
         return Promise.resolve();
       },
     },
@@ -273,11 +276,10 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: async() => {
-        
-        console.log('validating form-',form);
-        console.log("values-action level ::",form.getFieldsValue());
-        await form.validateFields();
+      executer: async(_, actionContext) => {
+        var formInstance = actionContext?.form?.form ?? form;
+        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
+        await formInstance.validateFields(fieldsToValidate);
         return Promise.resolve();
       },
     },

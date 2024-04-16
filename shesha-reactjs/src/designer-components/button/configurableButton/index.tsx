@@ -19,7 +19,6 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>, actionName: string) => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
     try {
-     await props?.form.validateFields();
       if (props.actionConfiguration) {
         console.log("validate button-level ::",props?.form.getFieldsValue(),actionName);
         executeAction({

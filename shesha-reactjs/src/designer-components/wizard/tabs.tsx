@@ -20,7 +20,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
-    const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model, form);
+    const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model);
 
     const {
         buttonsLayout = 'spaceBetween',
