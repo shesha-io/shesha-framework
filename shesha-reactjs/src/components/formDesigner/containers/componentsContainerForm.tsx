@@ -1,4 +1,4 @@
-import DynamicComponent from '../components/dynamicView/dynamicComponent';
+import DynamicComponent from '@/designer-components/dynamicView/dynamicComponent';
 import React, {
   FC,
   useCallback,

@@ -1,4 +1,4 @@
-import StatusTagComponent from '@/components/formDesigner/components/statusTag';
+import StatusTagComponent from '@/designer-components/statusTag';
 import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
 import CheckboxComponent from '@/designer-components/checkbox/checkbox';
 import DateFieldComponent from '@/designer-components/dateField/dateField';

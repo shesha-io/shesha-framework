@@ -1,7 +1,7 @@
 import { AutoComplete, Checkbox, Input, InputNumber, Select, Switch, } from 'antd';
 import React, { FC, useState } from 'react';
 import PropertyAutocomplete from '@/components/propertyAutocomplete/propertyAutocomplete';
-import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import Show from '@/components/show';
 import { Autocomplete } from '@/components/autocomplete';
 import FormAutocomplete from '@/components/formAutocomplete';

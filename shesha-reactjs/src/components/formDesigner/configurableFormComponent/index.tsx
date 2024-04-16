@@ -16,7 +16,7 @@ import {
   FunctionOutlined,
   StopOutlined
 } from '@ant-design/icons';
-import { getActualPropertyValue, useApplicationContext } from '@/providers/form/utils';
+import { getActualPropertyValue, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
@@ -48,7 +48,7 @@ interface IConfigurableFormComponentDesignerProps {
 }
 const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
   const { styles } = useStyles();
-  const allData = useApplicationContext('all');
+  const allData = useAvailableConstantsData('all');
   const {
     selectedComponentId,
     readOnly,

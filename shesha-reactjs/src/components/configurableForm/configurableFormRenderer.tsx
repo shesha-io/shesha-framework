@@ -48,6 +48,7 @@ import {
   IMatchData,
 } from '@/providers/form/utils';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -155,9 +156,12 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     if (!expression) {
       return null;
     }
+
+    const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+
     // tslint:disable-next-line:function-constructor
     return new Function(
-      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData, setGlobalState, contexts',
+      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData, setGlobalState, contexts, application',
       expression
     )(
       exposedData || formData,
@@ -172,6 +176,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       setFormData,
       setGlobalState,
       { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
+      application?.getData(),
     );
   };
 

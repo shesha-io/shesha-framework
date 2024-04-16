@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { useAvailableConstantsStandard } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import camelcase from 'camelcase';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
@@ -38,7 +38,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   const { styles } = useStyles();
 
-  const availableConstants = useAvailableConstantsStandard();
+  const availableConstants = useAvailableStandardConstantsMetadata();
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
