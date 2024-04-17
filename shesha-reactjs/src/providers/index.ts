@@ -24,6 +24,7 @@ export * from './scheduledJobExecution';
 export * from './settings';
 export * from './shaRouting';
 export * from './sheshaApplication';
+export * from './sheshaApplication/publicApi';
 export * from './sidebarMenu';
 export * from './sidebarMenuConfigurator';
 export * from './signalR';

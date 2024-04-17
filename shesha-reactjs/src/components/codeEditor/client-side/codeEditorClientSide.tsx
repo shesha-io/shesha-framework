@@ -7,7 +7,7 @@ import { TypesBuilder } from "@/utils/metadata/typesBuilder";
 import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
-import { makeCodeTemplate } from "./utils";
+import { isPosition, isRange, makeCodeTemplate } from "./utils";
 import { useMetadataDispatcher } from "@/providers";
 import { CODE_TEMPLATE_DEFAULTS, ICodeEditorProps } from "../models";
 import { useStyles } from './styles';
@@ -221,7 +221,7 @@ ${(c) => c.editable(code)}
         return result;
     }, [path, fileName]);
 
-    const navigateToModel = (fileUri?: UriComponents) => {
+    const navigateToModel = (fileUri?: UriComponents, selectionOrPosition?: IRange | IPosition) => {
         if (!monacoInst.current || !editorRef.current || !fileUri)
             return;
 
@@ -229,17 +229,28 @@ ${(c) => c.editable(code)}
             ? monacoInst.current.editor.getModel(fileUri)
             : undefined;
         editorRef.current.setModel(model);
+
+        if (isRange(selectionOrPosition)){
+            editorRef.current.setSelection(selectionOrPosition, ''); 
+            editorRef.current.revealLineInCenter(selectionOrPosition.startLineNumber);
+        }
+        if (isPosition(selectionOrPosition)){
+            editorRef.current.setPosition(selectionOrPosition, '');
+            editorRef.current.revealLineInCenter(selectionOrPosition.lineNumber);
+        }
+        
+        editorRef.current.focus();
     };
 
     const initEditor = (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         const localProperties = fetchProperties(availableConstants?.properties ?? []);
 
         monaco.editor.registerEditorOpener({
-            async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, _selectionOrPosition?: IRange | IPosition) {
+            async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
                 if (isDevmode)
                     return false;
                 
-                navigateToModel(resource);
+                navigateToModel(resource, selectionOrPosition);
                 return true;
             }
         });
