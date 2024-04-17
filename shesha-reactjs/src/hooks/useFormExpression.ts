@@ -1,10 +1,12 @@
 import { message } from 'antd';
 import moment from 'moment';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { GenericDictionary, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { GenericDictionary, useDataContextManager, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { IExecuteActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
 import { axiosHttp } from '@/utils/fetchers';
+import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 
 interface IFormExpression {
   argumentsEvaluationContext: GenericDictionary;
@@ -20,6 +22,10 @@ export const useFormExpression = (): IFormExpression => {
   const { backendUrl } = useSheshaApplication();
   const { executeAction: executeConfig } = useConfigurableActionDispatcher();
 
+  const dcm = useDataContextManager(false);
+  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+  const dataContext = useDataContext();
+
   const argumentsEvaluationContext: GenericDictionary = {
     data: formData,
     formMode,
@@ -30,6 +36,9 @@ export const useFormExpression = (): IFormExpression => {
     setGlobalState,
     setFormData,
     moment,
+
+    application: application?.getData(),
+    formContext: dataContext?.getFull(),
   };
 
   const executeAction = (payload: IExecuteActionPayload | IConfigurableActionConfiguration) => {
@@ -51,7 +60,7 @@ export const useFormExpression = (): IFormExpression => {
     }
 
     const evaluated = new Function(
-      'data, formMode, form, globalState, http, message, setGlobalState, setFormData, moment',
+      'data, formMode, form, globalState, http, message, setGlobalState, setFormData, moment, application, formContext',
       expression
     )(
       formData,
@@ -62,14 +71,16 @@ export const useFormExpression = (): IFormExpression => {
       message,
       setGlobalState,
       setFormData,
-      moment
+      moment,
+      argumentsEvaluationContext.application,
+      argumentsEvaluationContext.formContext,
     );
 
     return typeof evaluated === 'boolean' ? evaluated : true;
   };
 
   const executeExpression = (expression: string = '') =>
-    new Function('data, formMode, form, globalState, http, message, setGlobalState, setFormData, moment', expression)(
+    new Function('data, formMode, form, globalState, http, message, setGlobalState, setFormData, moment, application, formContext', expression)(
       formData,
       formMode,
       form,
@@ -78,7 +89,9 @@ export const useFormExpression = (): IFormExpression => {
       message,
       setGlobalState,
       setFormData,
-      moment
+      moment,
+      argumentsEvaluationContext.application,
+      argumentsEvaluationContext.formContext,
     );
 
   return { argumentsEvaluationContext, executeAction, executeBooleanExpression, executeExpression };
