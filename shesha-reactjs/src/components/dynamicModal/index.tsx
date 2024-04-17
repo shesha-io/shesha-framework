@@ -155,6 +155,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     skipFetchData: skipFetchData,
   };
 
+
   return (
     <DynamicModalWithContent
       key={id}
@@ -169,7 +170,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
         <ConfigurableForm {...formProps}>
           <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles />
+              <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
             </div>
           </Show>
         </ConfigurableForm>

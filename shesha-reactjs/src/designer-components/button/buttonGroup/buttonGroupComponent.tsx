@@ -17,14 +17,14 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
   name: 'Button Group',
   icon: <GroupOutlined />,
-  Factory: ({ model }) => {
+  Factory: ({ model ,form}) => {
     const { formMode } = useForm();
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const granted = anyOfPermissionsGranted(model?.permissions || []);
 
     if ((model.hidden || !granted) && formMode !== 'designer') return null;
 
-    return <ButtonGroup {...model} disabled={model.readOnly} />;
+    return <ButtonGroup {...model} disabled={model.readOnly} form={form} />;
   },
   migrator: (m) => m
     .add<IButtonGroupComponentProps>(0, (prev) => {

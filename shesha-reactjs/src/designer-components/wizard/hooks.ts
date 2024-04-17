@@ -1,4 +1,4 @@
-import { getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
+import { componentsTreeToFlatStructure, getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
@@ -8,6 +8,7 @@ import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { useEffect, useMemo, useState } from 'react';
 import { useFormExpression } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { useFormDesignerComponents } from '@/providers/form/hooks';
 
 interface IWizardComponent {
   back: () => void;
@@ -25,11 +26,11 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const allData = useAvailableConstantsData();
   const dataContext = useDataContext();
+  const toolbox = useFormDesignerComponents();
 
   const formMode = useForm(false).formMode;
 
-  const { argumentsEvaluationContext, executeBooleanExpression, executeAction } =
-    useFormExpression();
+  const { executeBooleanExpression, executeAction } = useFormExpression();
 
   const {
     propertyName: actionOwnerName,
@@ -53,8 +54,6 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     return getDefaultStepIndex(defaultActiveStep);
   });
 
-  const [components, setComponents] = useState<IConfigurableFormComponent[]>();
-
   //Remove every tab from the equation that isn't visible either by customVisibility or permissions
   const visibleSteps = useMemo(
     () =>
@@ -70,6 +69,18 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   );
 
   const currentStep = visibleSteps[current];
+  const components = currentStep?.components;
+  const componentsNames = useMemo(() => {
+    if (!components) return null;
+    const flat = componentsTreeToFlatStructure(toolbox, components);
+    const properties = [];
+    for(var comp in flat.allComponents)
+      if (Object.hasOwn(flat.allComponents, comp))
+        properties.push(flat.allComponents[comp].propertyName.split("."));
+    return properties;
+  }, [currentStep]);
+  
+  const argumentsEvaluationContext = {...allData, fieldsToValidate: componentsNames };
 
   useEffect(() => {
     setCurrent(getDefaultStepIndex(defaultActiveStep));
@@ -101,7 +112,6 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       if (step >= 0 && step !== current) {
         setCurrent(step);
       }
-      setComponents(currentStep?.components);
     }, 100); // It is necessary to have time to complete a request
   };
 
@@ -147,13 +157,18 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     });
   };
 
-  const next = () => {
-    if (current < tabs.length - 1)
-      executeActionIfConfigured(
-        (tab) => tab.beforeNextActionConfiguration,
-        (tab) => tab.afterNextActionConfiguration,
-        () => successCallback('next'),
-      );
+  const next = async () => {
+    try {
+      if (current < tabs.length - 1) {
+        executeActionIfConfigured(
+          (tab) => tab.beforeNextActionConfiguration,
+          (tab) => tab.afterNextActionConfiguration,
+          () => successCallback('next')
+        );
+      }
+    } catch (errInfo) {
+      console.log("Could'nt Proceed", errInfo);
+    }
   };
 
   const back = () => {
@@ -171,11 +186,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       (tab) => tab.afterCancelActionConfiguration
     );
 
-  const done = () =>
-    executeActionIfConfigured(
-      (tab) => tab.beforeDoneActionConfiguration,
-      (tab) => tab.afterDoneActionConfiguration
-    );
+    const done = async () => {
+      try { 
+        executeActionIfConfigured(
+          (tab) => tab.beforeDoneActionConfiguration,
+          (tab) => tab.afterDoneActionConfiguration
+        );
+      } catch (errInfo) {
+        console.log("Could'nt Proceed", errInfo);
+      }
+    };
 
   const setStep = (stepIndex) => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
