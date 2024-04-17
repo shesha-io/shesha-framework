@@ -34,7 +34,6 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     const { globalState } = useGlobalState();
 
     const [dataFormat, setDataFormat] = React.useState<string>('');
-      console.log(properties, model?.propertyName)
     useEffect(() => {
     (async () => {
        const data = await getDataProperty(properties, model?.propertyName, metaProperties);
