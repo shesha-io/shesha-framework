@@ -6,7 +6,6 @@ import { useConfigurableActionDispatcher } from '@/providers/configurableActions
 import { IExecuteActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
 import { axiosHttp } from '@/utils/fetchers';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
 
 interface IFormExpression {
   argumentsEvaluationContext: GenericDictionary;
@@ -16,7 +15,7 @@ interface IFormExpression {
 }
 
 export const useFormExpression = (): IFormExpression => {
-  const { form, formMode, setFormData } = useForm();
+  const { form, formContext, formMode, setFormData } = useForm();
   const { data: formData } = useFormData();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
@@ -24,7 +23,6 @@ export const useFormExpression = (): IFormExpression => {
 
   const dcm = useDataContextManager(false);
   const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
-  const dataContext = useDataContext();
 
   const argumentsEvaluationContext: GenericDictionary = {
     data: formData,
@@ -38,7 +36,7 @@ export const useFormExpression = (): IFormExpression => {
     moment,
 
     application: application?.getData(),
-    formContext: dataContext?.getFull(),
+    formContext: formContext?.getFull(),
   };
 
   const executeAction = (payload: IExecuteActionPayload | IConfigurableActionConfiguration) => {

@@ -456,7 +456,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     isComponentFiltered
   };
 
-  const fullState = { ...state, formContext: dataContext?.getFull() };
+  const fullState: IFormStateInternalContext = { ...state, formContext: dataContext };
 
   if (formRef) formRef.current = { ...configurableFormActions, ...fullState, allComponents, componentRelations };
 
