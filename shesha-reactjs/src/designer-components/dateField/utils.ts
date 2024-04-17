@@ -1,6 +1,6 @@
 import moment, { Moment } from 'moment';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { getDataProperty } from '@/utils/metadata';
+import { getDataProperty } from '@/utils';
 import { getMoment } from '@/utils/date';
 import { IDateFieldProps, RangeValue } from './interfaces';
 

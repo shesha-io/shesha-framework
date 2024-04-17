@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Tooltip, Tag } from 'antd';
 import { EyeInvisibleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { getIconByDataType } from '@/utils/metadata';
+import { getIconByDataType } from '@/utils';
 import { ShaIcon } from '../../..';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';

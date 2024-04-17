@@ -6,7 +6,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { camelCase } from 'lodash';
 import { IPropertyMetadata, asPropertiesArray } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
-import { getIconByPropertyMetadata } from '@/utils/metadata';
+import { getIconByPropertyMetadata } from '@/utils';
 
 export interface IPropertyAutocompleteProps {
   id?: string;

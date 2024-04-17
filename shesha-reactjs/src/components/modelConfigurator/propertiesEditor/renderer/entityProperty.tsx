@@ -4,7 +4,7 @@ import { QuestionCircleOutlined, EyeInvisibleOutlined } from '@ant-design/icons'
 import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { getIconByDataType } from '@/utils/metadata';
+import { getIconByDataType } from '@/utils';
 import ShaIcon from '@/components/shaIcon';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import classNames from 'classnames';

@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { BulbOutlined, BulbTwoTone } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { getIconByPropertyMetadata } from '@/utils/metadata';
+import { getIconByPropertyMetadata } from '@/utils';
 import {
   asPropertiesArray,
   IModelMetadata,

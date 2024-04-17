@@ -5,7 +5,7 @@ import { usePropertiesEditor } from '../provider';
 import DragHandle from './dragHandle';
 import classNames from 'classnames';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { getIconByDataType } from '@/utils/metadata';
+import { getIconByDataType } from '@/utils';
 import { ShaIcon } from '../../..';
 import { MetadataSourceType } from '@/interfaces/metadata';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';

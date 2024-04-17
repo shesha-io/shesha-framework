@@ -1,7 +1,7 @@
 import { IModelMetadata } from "@/interfaces";
 import { IPropertyMetadata, asPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import { useMetadata } from "@/providers";
-import { getIconByPropertyMetadata } from "@/utils/metadata";
+import { getIconByPropertyMetadata } from "@/utils";
 import { Cascader, CascaderProps, GetProp } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import React, { CSSProperties, FC, useEffect, useMemo } from "react";

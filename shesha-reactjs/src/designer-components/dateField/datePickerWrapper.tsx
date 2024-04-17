@@ -5,7 +5,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
 import { getMoment } from '@/utils/date';
-import { getDataProperty } from '@/utils/metadata';
+import { getDataProperty } from '@/utils';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import {
     DATE_TIME_FORMATS,

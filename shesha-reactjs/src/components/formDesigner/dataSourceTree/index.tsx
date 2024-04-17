@@ -5,8 +5,9 @@ import { ReactSortable } from 'react-sortablejs';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { useFormDesigner } from '@/providers/formDesigner';
-import { getIconByPropertyMetadata } from '@/utils/metadata';
+
 import { useStyles } from '../styles/styles';
+import { getIconByPropertyMetadata } from '@/utils';
 
 export interface IProps {
   items: IPropertyMetadata[];

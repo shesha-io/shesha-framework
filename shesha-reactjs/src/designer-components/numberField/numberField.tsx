@@ -12,7 +12,7 @@ import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
-import { getDataProperty } from '@/utils/metadata';
+import { getDataProperty } from '@/utils';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { asPropertiesArray } from '@/interfaces/metadata';
 

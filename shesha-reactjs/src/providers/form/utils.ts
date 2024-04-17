@@ -15,7 +15,7 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { Migrator } from '@/utils/fluentMigrator/migrator';
-import { getFullPath } from '@/utils/metadata';
+import { getFullPath } from '@/utils';
 import { IAnyObject } from './../../interfaces/anyObject';
 import { FormMode } from '@/generic-pages/dynamic/interfaces';
 import blankViewMarkup from './defaults/markups/blankView.json';

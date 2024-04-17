@@ -1,4 +1,4 @@
-import { getDataProperty, getFormatContent } from '@/utils/metadata';
+import { getDataProperty, getFormatContent } from '@/utils';
 
 export const compareValueToProperty = (key: string, value: string, properties: Array<{ [key in string]: any }>) => {
   const dataType = getDataProperty(properties, key, 'dataType');
