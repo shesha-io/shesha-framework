@@ -45,7 +45,7 @@ export type ContextGetFieldValue = (name: string) => any;
 export type ContextGetFull = () => IDataContextFull;
 export type ContextGetData = () => any;
 export type ContextSetFieldValue = <T,>(name: string, value: T, refreshContext?: RefreshContext) => void;
-export type ContextSetData = <T,>(changedData: T, refreshContext?: RefreshContext) => void;
+export type ContextSetData = (changedData: any, refreshContext?: RefreshContext) => void;
 export type ContextOnChangeData = <T,>(data: T, changedData: any, refreshContext?: RefreshContext) => void;
 export type RefreshContext = () => void;
 
