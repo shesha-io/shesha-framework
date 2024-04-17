@@ -1,5 +1,5 @@
 import { NumberOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { IToolboxComponent } from '@/interfaces';
@@ -33,6 +33,16 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
 
+    const [dataFormat, setDataFormat] = React.useState<string>('');
+
+    useEffect(() => {
+    (async () => {
+       const data = await getDataProperty(properties, model?.propertyName, metaProperties);
+       setDataFormat(data);
+    })();
+
+  }, [dataFormat]);
+
     return (
       <ConfigurableFormItem
         model={model}
@@ -42,7 +52,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
               type="number"
-              value={getNumberFormat(value, getDataProperty(properties, model.propertyName))}
+              value={getNumberFormat(value, dataFormat)}
             />
           ) : (
             <NumberFieldControl form={form} disabled={model.readOnly} model={model} value={value} onChange={onChange} />

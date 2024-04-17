@@ -3,7 +3,7 @@ import ShaIcon, { IconType } from '@/components/shaIcon';
 import GenericOutlined from '@/icons/genericOutlined';
 import { JsonOutlined } from '@/icons/jsonOutlined';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, NestedProperties, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { camelcaseDotNotation, getNumberFormat } from '@/utils/string';
 import { toCamelCase } from './string';
 
@@ -56,8 +56,25 @@ export const getFullPath = (property: IPropertyMetadata) => {
   return (prefix ?? '') === '' ? camelcaseDotNotation(name) : `${prefix}.${name}`;
 };
 
-export const getDataProperty = (properties: IPropertyMetadata[], name: string, propertyName: string = 'dataFormat') =>
-  properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
+export const getDataProperty = async (properties: IPropertyMetadata[], name: string, metaProperties: NestedProperties, propertyName: string = 'dataFormat') => {
+  const prop = properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
+
+  if (prop) {
+    return prop;
+  }
+
+  const entityIndex = properties.findIndex(p => p.dataType === 'entity');
+  
+  if (entityIndex !== -1) {
+    const entityProperties = await Promise.resolve(metaProperties[entityIndex]?.properties());
+    if (entityProperties) {
+      return entityProperties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
+    }
+  }
+
+  return null;
+};
+
 
 export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>) => {
   const { dataType, dataFormat } = metadata || {};
