@@ -245,7 +245,7 @@
         }
       ],
       "description": "Write a code that allows you to return an object whose values will be merged with the form state before submit. Check the variables tab for exposed variables",
-      "version": 2,
+      "version": 3,
       "settingsValidationErrors": [],
       "placeholder": "",
       "mode": "dialog",
@@ -258,7 +258,8 @@
         "_mode": "code",
         "_code": "    /*\r\n    data // The form data\r\n    moment // The moment.js object\r\n    parentFormValues // Parent form values. The values of the form rendering the dialog.\r\n    globalState // The global state of the application\r\n    initialValues // Initial values\r\n    */\r\n    const trace = (prop, value) => {\r\n        console.log(`CL: ${prop} = '${value}'`);\r\n    };\r\n    //console.log(`CL: data.modelType = '${data.modelType}'`);\r\n    trace(\"data.modelType\", data.modelType);\r\n    trace(\"formMode\", formMode);\r\n    trace(\"application\", application);\r\n    trace(\"moment\", moment);\r\n    trace(\"globalState\", globalState);\r\n    trace(\"initialValues\", initialValues);\r\n    trace(\"parentFormValues\", parentFormValues);\r\n\r\n    /*\r\n    builder.addEntity(data.modelType)\r\n    return builder.build();\r\n    */\r\n\r\n    return undefined;"
       },
-      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    mb.addStandard([\"shesha:globalState\", \"shesha:moment\"]);\r\n    return mb.build();"
+      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    mb.addStandard([\"shesha:globalState\", \"shesha:moment\", \"shesha:application\"]);\r\n    return mb.build();",
+      "language": "typescript"
     },
     {
       "id": "055f85e2-f2f1-4a88-95ad-0d1afb81cae7",
@@ -273,6 +274,16 @@
       "allowClear": false,
       "validate": {},
       "exposedVariables": [
+        {
+          "name": "contexts",
+          "description": "Contexts data",
+          "type": "object"
+        },
+        {
+          "name": "formContext",
+          "description": "Contexts data of current form",
+          "type": "object"
+        },
         {
           "name": "moment",
           "description": "The moment.js object",
@@ -315,19 +326,21 @@
         }
       ],
       "description": "This action will be executed the first time the form loads. Just before any API call has been made. At this stage, the form has no data except for initialValues if passed",
-      "version": 2,
+      "version": 3,
       "settingsValidationErrors": [],
       "placeholder": "",
       "mode": "dialog",
       "wrapInTemplate": true,
       "templateSettings": {
+        "useAsyncDeclaration": true,
         "functionName": "onInitialized"
       },
       "availableConstants": {
         "_mode": "code",
         "_code": "    /*\r\n    moment // The moment.js object\r\n    parentFormValues // Parent form values. The values of the form rendering the dialog.\r\n    globalState // The global state of the application\r\n    initialValues // Initial values\r\n    http //axios instance used to make http requests\r\n    message\r\n    form\r\n    setGlobalState\r\n    */\r\n    return undefined;"
       },
-      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\", \r\n    ]);\r\n    return mb.build();"
+      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:formContext\", \r\n        \"shesha:contexts\", \r\n        \"shesha:moment\", \r\n        \"shesha:application\",\r\n    ]);\r\n    return mb.build();",
+      "language": "typescript"
     },
     {
       "id": "087a4e7d-ff28-4175-9221-61bef0bbaea2",
@@ -358,11 +371,6 @@
           "type": "object"
         },
         {
-          "name": "initialValues",
-          "description": "Initial values",
-          "type": "object"
-        },
-        {
           "name": "http",
           "description": "axios instance used to make http requests",
           "type": "object"
@@ -389,19 +397,21 @@
         }
       ],
       "description": "This action will be executed immediately after the data has been loaded (Fetched from the API)",
-      "version": 2,
+      "version": 3,
       "settingsValidationErrors": [],
       "placeholder": "",
       "mode": "dialog",
       "wrapInTemplate": true,
       "templateSettings": {
+        "useAsyncDeclaration": true,
         "functionName": "onDataLoaded"
       },
       "availableConstants": {
         "_mode": "code",
         "_code": "    /*\r\n    data\r\n    moment // The moment.js object\r\n    globalState // The global state of the application\r\n    initialValues // Initial values\r\n    http //axios instance used to make http requests\r\n    message\r\n    form\r\n    setGlobalState\r\n    */\r\n    return undefined;"
       },
-      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\", \r\n    ]);\r\n    return mb.build();"
+      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\",\r\n        \"shesha:application\",\r\n    ]);\r\n    return mb.build();",
+      "language": "typescript"
     },
     {
       "id": "5092dd2b-c514-4b06-bfb5-546ce94fab97",
@@ -463,7 +473,7 @@
         }
       ],
       "description": "This action will be executed whenever the form updates",
-      "version": 2,
+      "version": 3,
       "settingsValidationErrors": [],
       "placeholder": "",
       "mode": "dialog",
@@ -475,7 +485,8 @@
         "_mode": "code",
         "_code": "    /*\r\n    data\r\n    moment // The moment.js object\r\n    parentFormValues\r\n    globalState // The global state of the application\r\n    initialValues // Initial values\r\n    http //axios instance used to make http requests\r\n    message\r\n    setFormData\r\n    setGlobalState\r\n    */\r\n    return undefined;"
       },
-      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\", \r\n    ]);\r\n    return mb.build();"
+      "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\",\r\n        \"shesha:application\",\r\n    ]);\r\n    return mb.build();",
+      "language": "typescript"
     },
     {
       "id": "Q6s-GKx4El9BhcH9MQ8bj",

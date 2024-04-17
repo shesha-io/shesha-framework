@@ -9,35 +9,35 @@ namespace Shesha.Migrations
         public override void Up()
         {
             Execute.Sql(@"delete from 
-	Frwk_EntityPropertyValues
+	""Frwk_EntityPropertyValues""
 where
-	EntityPropertyId in (
+	""EntityPropertyId"" in (
 		select
-			ep.Id
+			""ep"".""Id""
 		from
-			Frwk_EntityConfigs ec
-			inner join Frwk_EntityProperties ep on ep.EntityConfigId = ec.Id
+			""Frwk_EntityConfigs"" ""ec""
+			inner join ""Frwk_EntityProperties"" ""ep"" on ""ep"".""EntityConfigId"" = ""ec"".""Id""
 		WHERE
-			not exists (select 1 from Frwk_ConfigurationItems where Id = ec.Id)
+			not exists (select 1 from ""Frwk_ConfigurationItems"" where ""Id"" = ""ec"".""Id"")
 	)");
 
             Execute.Sql(@"delete from 
-	Frwk_EntityProperties
+	""Frwk_EntityProperties""
 where
-	EntityConfigId in (
+	""EntityConfigId"" in (
 		select
-			Id
+			""Id""
 		from
-			Frwk_EntityConfigs
+			""Frwk_EntityConfigs""
 		WHERE
-			not exists (select 1 from Frwk_ConfigurationItems where Id = Frwk_EntityConfigs.Id)
+			not exists (select 1 from ""Frwk_ConfigurationItems"" where ""Id"" = ""Frwk_EntityConfigs"".""Id"")
 	)");
 
             Execute.Sql(@"delete
 from
-	Frwk_EntityConfigs
+	""Frwk_EntityConfigs""
 WHERE
-	not exists (select 1 from Frwk_ConfigurationItems where Id = Frwk_EntityConfigs.Id)");
+	not exists (select 1 from ""Frwk_ConfigurationItems"" where ""Id"" = ""Frwk_EntityConfigs"".""Id"")");
 
             Create.ForeignKey("FK_Frwk_EntityConfigs_Frwk_ConfigurationItems_Id")
                 .FromTable("Frwk_EntityConfigs")

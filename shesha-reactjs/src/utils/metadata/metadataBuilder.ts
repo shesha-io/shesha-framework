@@ -1,5 +1,6 @@
 import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
 import { IHasEntityType, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
+import { StandardConstantInclusionArgs } from "./useAvailableConstants";
 
 export interface IMetadataBuilder {
 
@@ -7,7 +8,7 @@ export interface IMetadataBuilder {
 
 export type PropertiesBuilder = (builder: MetadataBuilder) => void;
 export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata>;
-export type MetadataBuilderAction = (builder: MetadataBuilder) => void;
+export type MetadataBuilderAction = (builder: MetadataBuilder, name: string) => void;
 
 export class MetadataBuilder implements IMetadataBuilder {
     readonly metadataFetcher: MetadataFetcher;
@@ -63,17 +64,30 @@ export class MetadataBuilder implements IMetadataBuilder {
     addBoolean(path: string, label: string) {
         return this.add(DataTypes.boolean, path, label);
     }
-    
+
+    addArray(path: string, label: string) {
+        this._createProperty(DataTypes.array, path, label);
+        return this;
+    }
+
     addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader) {
         const nestedObject = this._createProperty(DataTypes.object, path, label);
         nestedObject.typeDefinitionLoader = typeDefinitionLoader;
         return this;
     }
 
+    addFunction(path: string, label: string){
+        const nestedObject = this._createProperty(DataTypes.function, path, label);
+        nestedObject.typeDefinitionLoader = (_ctx) => {
+            return Promise.resolve({ typeName: '(...arguments: any) => any;', files: [] });
+        };
+        return this;
+    }
+
     addObject(path: string, label: string, propertiesBuilder: PropertiesBuilder) {
         const nestedObject = this._createProperty(DataTypes.object, path, label);
 
-        if (propertiesBuilder){
+        if (propertiesBuilder) {
             const builder = new MetadataBuilder(this.metadataFetcher, path);
             propertiesBuilder(builder);
             nestedObject.properties = builder.metadata.properties;
@@ -87,7 +101,7 @@ export class MetadataBuilder implements IMetadataBuilder {
         return this.metadataFetcher({ name: entityType, module: null }).then(response => {
             const nestedObject = this._createProperty(DataTypes.entityReference, path, label);
             nestedObject.dataFormat = entityType;
-    
+
             if (!isEntityMetadata(response))
                 throw new Error(`Failed to resolve entity type '${entityType}'`);
 
@@ -98,10 +112,24 @@ export class MetadataBuilder implements IMetadataBuilder {
             return this;
         });
     }
-    addStandard(key: string | string[]): this {
-        const keys = Array.isArray(key) ? key : [key];
-        keys.forEach(key => {
-            this._standardProperties.get(key)?.(this);
+    addStandard(args: StandardConstantInclusionArgs | StandardConstantInclusionArgs[]): this {
+        const itemsArr = Array.isArray(args) ? args : [args];
+        itemsArr.forEach(item => {
+            const key = typeof (item) === 'string'
+                ? item
+                : item.uid;
+            const name = typeof (item) === 'string'
+                ? undefined
+                : item.name;
+            this._standardProperties.get(key)?.(this, name);
+        });
+        return this;
+    }
+    addAllStandard(exclusions?: string[]): this {
+        this._standardProperties.forEach((item, key) => {
+            if (exclusions?.includes(key))
+                return;
+           item(this, undefined);
         });
         return this;
     }
@@ -109,65 +137,31 @@ export class MetadataBuilder implements IMetadataBuilder {
     addRefList(path: string, refListId: IReferenceListIdentifier, label: string) {
         const property = this._createProperty(DataTypes.referenceListItem, path, label);
         property.referenceListModule = refListId.module;
-        property.referenceListName = refListId.name; 
+        property.referenceListName = refListId.name;
         return this;
     }
 
     setPropertiesLoader(loader: PropertiesLoader) {
-        if  (this.metadata.properties)
+        if (this.metadata.properties)
             throw new Error("Properties loader can be set only once");
 
         this.metadata.properties = loader;
         return this;
     }
-    
+
+    setProperties(properties: IPropertyMetadata[]) {
+        if (this.metadata.properties)
+            throw new Error("Properties can be set only once");
+        
+        this.metadata.properties = [...properties];
+    }
+
     setTypeDefinition(typeDefinitionLoader: TypeDefinitionLoader) {
         this.metadata.typeDefinitionLoader = typeDefinitionLoader;
         return this;
     }
-    
-    addGlobalConstants(){
-        // todo: implement it as a proxy that allows to include context metadata into the current metadata object
-    };
 
     build(): IObjectMetadata {
         return this.metadata;
     }
 }
-
-/*
-Data Types:
-1. object: complex object with child properties
-2. entity: back-end entity defined on the back-end
-3. module: custom entity defined on the back-end that can be represented as object on the front-end
-4. setting: setting defined on the back-end
-
-each data type should be able to specify a custom method of properties fetching (local or from the back-end)
-
-the logic should be serializable to json.
-
-addString(name: string)
-
-base props:
-    label
-    description
-    dataFormat (entity type?)
-    dataType
-    readonly - ?? decide how to handle it
-
-datatype specific properties:
-    entity type (storde in the dataFormat?)
-    referenceListName?: string | null;
-    referenceListModule?: string | null;
-
-validation properties:
-    required?: boolean;
-    minLength?: number | null;
-    maxLength?: number | null;
-    min?: number | null;
-    max?: number | null;
-    validationMessage?: string | null;
-
-functions support ???    
-list of arguments
-*/

@@ -123,11 +123,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         if (!contextId)
             return undefined;
         
-        const data = contexts.current[contextId]?.getData();
-        const api = contexts.current[contextId]?.getApi();
-        if (!!api) 
-          data.api = api;
-        return data;
+        return contexts.current[contextId]?.getFull();
     };
 
     const getDataContextsData =(topId?: string) => {

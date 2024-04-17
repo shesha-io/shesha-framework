@@ -20,7 +20,8 @@ export interface IRegisterDataContextPayload extends IDataContextDescriptor {
 }
 
 export enum SheshaCommonContexts {
-  ApplicationContext = 'application'
+  ApplicationContext = 'application',
+  AppContext = 'appContext'
 }
 
 export const DEFAULT_CONTEXT_METADATA = {

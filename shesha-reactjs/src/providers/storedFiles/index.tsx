@@ -74,11 +74,6 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 }) => {
   const [state, dispatch] = useReducer(storedFilesReducer, {
     ...STORED_FILES_CONTEXT_INITIAL_STATE,
-    ownerId,
-    ownerType,
-    ownerName,
-    filesCategory,
-    propertyName,
   });
 
   const { connection } = useSignalR(false) ?? {};
@@ -149,9 +144,9 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
     const { file } = payload;
 
-    formData.append('ownerId', payload.ownerId || state.ownerId);
-    formData.append('ownerType', payload.ownerType || state.ownerType);
-    formData.append('ownerName', payload.ownerName || state.ownerName);
+    formData.append('ownerId', payload.ownerId || ownerId);
+    formData.append('ownerType', payload.ownerType || ownerType);
+    formData.append('ownerName', payload.ownerName || ownerName);
     formData.append('file', file);
     formData.append('filesCategory', `${filesCategory}`);
     formData.append('propertyName', '');
@@ -159,7 +154,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     // @ts-ignore
     const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
 
-    if (!Boolean(payload.ownerId || state.ownerId) && typeof addDelayedUpdate !== 'function') {
+    if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
       dispatch(
         uploadFileErrorAction({
@@ -182,7 +177,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
         if (responseFile.temporary && typeof addDelayedUpdate === 'function')
           addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
-            ownerName: payload.ownerName || state.ownerName,
+            ownerName: payload.ownerName || ownerName,
           });
       })
       .catch((e) => {
@@ -221,12 +216,12 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     dispatch(downloadZipRequestAction());
     const query = !!payload
       ? payload
-      : !!state.ownerId
+      : !!ownerId
         ? { 
-          ownerId: state.ownerId,
-          ownerType: state.ownerType,
-          filesCategory: state.filesCategory,
-          ownerName: state.ownerName,
+          ownerId: ownerId,
+          ownerType: ownerType,
+          filesCategory: filesCategory,
+          ownerName: ownerName,
         }
         : {
           filesId: state.fileList?.map(x => x.id).filter(x => !!x),

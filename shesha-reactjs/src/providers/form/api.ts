@@ -302,7 +302,8 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
   const resf = (items: IFieldData[]) => {
     let s = '';
     items.forEach((item) => {
-      if (!(!!item.property
+      if (!(item.property
+          || item.name === 'id'
           || item.name === '_className'
           || item.name === '_displayName'
       )) return;

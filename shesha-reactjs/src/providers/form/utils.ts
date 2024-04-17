@@ -61,7 +61,7 @@ import {
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
+import { ContextGetData, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
   IConfigurableActionConfiguration,
   useDataTableStore,
@@ -123,7 +123,7 @@ export function useFormProviderContext(): IApplicationContext {
   };
 }
 
-export function useApplicationContext(topContextId?: string): IApplicationContext {
+export function useAvailableConstantsData(topContextId?: string): IApplicationContext {
   let tcId = useDataContext(false)?.id;
   tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
@@ -137,6 +137,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   return {
     application: applicationData,
     data: useFormData()?.data,
+    formContext: form?.formContext,
     contexts: { ...dcm?.getDataContextsData(tcId) },
     setFormData: form?.setFormData,
     formMode: form?.formMode,
@@ -149,6 +150,12 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
     message,
   };
 }
+
+export const useApplicationContextData = (): ContextGetData => {
+  const dcm = useDataContextManager(false);
+  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+  return application?.getData();
+};
 
 const getSettingValue = (value: any, allData: any, calcFunction: (setting: IPropertySetting, allData: any) => any) => {
   if (!value) return value;
@@ -755,18 +762,22 @@ export function executeScript<TResult = any>(
   return new Promise<TResult>((resolve, reject) => {
     if (!expression) reject('Expression must be defined');
 
-    let argsDefinition = '';
-    const argList: any[] = [];
-    for (const argumentName in expressionArgs) {
-      if (expressionArgs.hasOwnProperty(argumentName)) {
-        argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-        argList.push(expressionArgs[argumentName]);
+    try {
+      let argsDefinition = '';
+      const argList: any[] = [];
+      for (const argumentName in expressionArgs) {
+        if (expressionArgs.hasOwnProperty(argumentName)) {
+          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+          argList.push(expressionArgs[argumentName]);
+        }
       }
-    }
 
-    const asyncFn = new AsyncFunction(argsDefinition, expression);
-    const result = asyncFn.apply(null, argList);
-    resolve(result);
+      const asyncFn = new AsyncFunction(argsDefinition, expression);
+      const result = asyncFn.apply(null, argList);
+      resolve(result);
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 

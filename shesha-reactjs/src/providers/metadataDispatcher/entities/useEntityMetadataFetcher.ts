@@ -9,6 +9,7 @@ export interface IEntityMetadataFetcher {
     syncAll: () => Promise<void>;
     getByTypeId: (typeId: IEntityTypeIndentifier) => Promise<IEntityMetadata>;
     getByClassName: (className: string) => Promise<IEntityMetadata>;
+    isEntity: (className: string) => Promise<boolean>;
 }
 
 type EntityMetadataByClassNameFetcher = (className: string) => Promise<IEntityMetadata>;
@@ -63,10 +64,18 @@ export const useEntityMetadataFetcher = (): IEntityMetadataFetcher => {
         });
     };
 
+    const isEntity = (className: string): Promise<boolean> => {
+        return ensureSynchronized().then(() => {
+            const typeId = syncContext.typesMap.resolve(className);
+            return Boolean(typeId);
+        });
+    };
+
     const fetcher: IEntityMetadataFetcher = {
         syncAll,
         getByTypeId,
         getByClassName,
+        isEntity,
     };
 
     return fetcher;

@@ -5,7 +5,8 @@ import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { useAvailableConstantsStandard } from '@/utils/metadata/useAvailableConstants';
+import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import camelcase from 'camelcase';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -21,6 +22,7 @@ export interface ISettingsControlProps {
 
 const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "data", description: "Selected form values", type: "object" },
+  { name: "formContext", description: "Contexts data of current form", type: "object" },
   { name: "contexts", description: "Contexts data", type: "object" },
   { name: "globalState", description: "Global state", type: "object" },
   { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
@@ -36,7 +38,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   const { styles } = useStyles();
 
-  const availableConstants = useAvailableConstantsStandard();
+  const availableConstants = useAvailableStandardConstantsMetadata();
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
@@ -66,6 +68,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
@@ -93,6 +96,9 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
             fileName={props.propertyName}
             wrapInTemplate={true}
+            templateSettings={{
+              functionName: functionName
+            }}
             availableConstants={availableConstants}
             exposedVariables={props.exposedVariables !== undefined ? props.exposedVariables : defaultExposedVariables}
           />

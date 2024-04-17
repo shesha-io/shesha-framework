@@ -61,7 +61,7 @@ namespace Shesha.Metadata
                 .Select(t =>
                 {
                     var config = _entityConfigurationStore.GetOrNull(t.FullClassName);
-                    return config == null && t.Source == Domain.Enums.MetadataSourceType.ApplicationCode
+                    return t.Source == Domain.Enums.MetadataSourceType.ApplicationCode && (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/)
                         ? null
                         : new EntityModelDto
                         {
