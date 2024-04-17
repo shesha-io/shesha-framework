@@ -39,8 +39,7 @@ import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings, IS
 import formReducer from './reducer';
 import { convertActions, convertSectionsToList, getEnabledComponentIds, getFilteredComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { useDeepCompareMemo } from '@/index';
-import { useDataContext } from '../dataContextProvider/contexts';
+import { useDeepCompareMemo, useNearestDataContext } from '@/index';
 
 export interface IFormProviderProps {
   needDebug?: boolean;
@@ -101,7 +100,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     formMarkup: formMarkup,
   };
 
-  const dataContext = useDataContext();
+  const formContext = useNearestDataContext('form');
 
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
@@ -480,7 +479,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     isComponentFiltered
   };
 
-  const fullState: IFormStateInternalContext = { ...state, formContext: dataContext };
+  const fullState: IFormStateInternalContext = { ...state, formContext: formContext };
 
   if (formRef) formRef.current = { ...configurableFormActions, ...fullState, allComponents, componentRelations };
 
