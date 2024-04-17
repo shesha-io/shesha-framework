@@ -28,7 +28,6 @@ export interface IDataContextProviderActionsContext {
   getFull: ContextGetFull;
   updateApi: (api: object) => any;
   getApi: () => any;
-  updateOnChangeData: (func: ContextOnChangeData) => void;
 }
 
 export interface IDataContextProviderActionsContextOverride extends Partial<IDataContextProviderActionsContext> {}
