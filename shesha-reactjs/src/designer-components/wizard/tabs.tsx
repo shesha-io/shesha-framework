@@ -13,7 +13,7 @@ import { useFormExpression } from '@/hooks/index';
 import { useStyles } from './styles';
 import { useWizard } from './hooks';
 
-export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = (model) => {
+export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
     const { styles } = useStyles();
     const { formMode } = useForm();
     const { executeBooleanExpression } = useFormExpression();

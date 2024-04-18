@@ -1,7 +1,7 @@
 import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { StepProps } from 'antd';
+import { FormInstance, StepProps } from 'antd';
 
 //type ButtonActionType = 'executeScript' | 'dispatchAnEvent';
 
@@ -64,7 +64,7 @@ export interface IStepProps extends StepProps {
 export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'> {
   steps: IWizardStepProps[];
   wizardType?: 'default' | 'navigation';
-  //uniqueStateId?: string;
+  form?: FormInstance<any>;
   permissions?: string[];
   hidden?: boolean;
   customVisibility?: string;

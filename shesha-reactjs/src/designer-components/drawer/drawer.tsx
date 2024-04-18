@@ -1,5 +1,4 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import moment from 'moment';
 import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, Fragment, useState } from 'react';
 import {
@@ -7,14 +6,11 @@ import {
   Button,
   Drawer,
   DrawerProps,
-  message,
   Space
   } from 'antd';
-import { axiosHttp } from '@/utils/fetchers';
-import { executeScriptSync } from '@/providers/form/utils';
+import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDrawerProps } from './models';
-import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
 import {
   useConfigurableAction,
   useConfigurableActionDispatcher,
@@ -43,10 +39,9 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
     okButtonCustomEnabled,
     cancelButtonCustomEnabled,
   } = props;
-  const { backendUrl } = useSheshaApplication();
+
+  const allData = useAvailableConstantsData();
   const [state, setState] = useState<IShaDrawerState>();
-  const { formMode, formData } = useForm();
-  const { globalState, setState: setGlobalState } = useGlobalState();
   const { executeAction } = useConfigurableActionDispatcher();
 
   const openDrawer = () => setState(prev => ({ ...prev, open: true }));
@@ -55,15 +50,6 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
 
   const actionOwnerName = `Drawer (${name})`;
 
-  const actionEvaluationContext = {
-    data: formData,
-    formMode: formMode,
-    globalState,
-    http: axiosHttp(backendUrl),
-    message,
-    setGlobalState,
-    moment: moment,
-  };
 
   /// NAVIGATION
   const executeActionIfConfigured = (actionConfiguration: IConfigurableActionConfiguration) => {
@@ -74,7 +60,7 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
 
     executeAction({
       actionConfiguration: actionConfiguration,
-      argumentsEvaluationContext: actionEvaluationContext,
+      argumentsEvaluationContext: allData,
     });
   };
 
@@ -115,14 +101,14 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
   );
 
   const context = {
-    data: formData,
-    globalState,
+    data: allData.formData,
+    globalState: allData.globalState,
   };
 
   const okButtonDisabled = !!okButtonCustomEnabled ? !executeScriptSync<boolean>(okButtonCustomEnabled, context) : false;
   const cancelButtonDisabled = !!cancelButtonCustomEnabled ? !executeScriptSync<boolean>(cancelButtonCustomEnabled, context) : false;
 
-  if (formMode === 'designer') {
+  if (allData.formMode === 'designer') {
     return (
       <Fragment>
         <Alert
