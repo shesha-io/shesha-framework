@@ -86,6 +86,10 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return definition;
     };
 
+    makeFile = (fileName: string, content: string) => {
+        this.#internalRegisterFile(fileName, content);
+    };
+
     getEntityType = async (typeId: ModelTypeIdentifier): Promise<TypeAndLocation> => {
         if (!typeId)
             return null;
@@ -234,6 +238,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             case DataTypes.boolean:
                 return { typeName: 'boolean' };
             case DataTypes.number:
+            case DataTypes.referenceListItem:
                 return { typeName: 'number' };
             case DataTypes.string:
             case DataTypes.guid:

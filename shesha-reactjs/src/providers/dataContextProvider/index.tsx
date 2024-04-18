@@ -50,19 +50,15 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
       return {...dataRef.current};
     };
 
-    const onChangeDataInteranl = (data: any, changedData: any) => {
-      dataRef.current = data;
+    const onSetDataInteranl = (changedData: any) => {
+      dataRef.current = {...dataRef.current, ...changedData};
 
       if (onChangeData.current)
-        onChangeData.current({...dataRef.current, ...changedData}, {...changedData});
+        onChangeData.current({...dataRef.current}, {...changedData});
       
       onChangeContextData();
     };
 
-    const updateOnChangeData = (func: ContextOnChangeData) => {
-      onChangeData.current = func;
-    };
-  
     return (
       <DataContextBinder
         id={id}
@@ -71,10 +67,9 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
         type={type}
         data={dataRef.current}
         metadata={metadata}
-        onChangeData={onChangeDataInteranl}
+        onSetData={onSetDataInteranl}
         getData={getData}
         onChangeAction={onChangeAction}
-        actionsOverride={{updateOnChangeData}}
       >
         {children}
       </DataContextBinder>

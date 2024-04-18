@@ -27,6 +27,7 @@ export interface TypeAndLocation {
 export interface ITypeDefinitionBuilder {
   getEntityType: (typeId: ModelTypeIdentifier) => Promise<TypeAndLocation>;  
   makeFormType: (formId: FormFullName, content: string) => TypeDefinition;
+  makeFile: (fileName: string, content: string) => void;
 };
 export interface ITypeDefinitionLoadingContext {
   typeDefinitionBuilder: ITypeDefinitionBuilder;
