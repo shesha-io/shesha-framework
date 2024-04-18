@@ -539,4 +539,4 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-publicportal-functional'
       inputs:
-        ArtifactName: publicportal-functional        
+        ArtifactName: publicportal-functional
