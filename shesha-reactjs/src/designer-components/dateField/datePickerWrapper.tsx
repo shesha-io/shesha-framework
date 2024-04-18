@@ -1,6 +1,6 @@
 import { DatePicker } from '@/components/antd';
 import moment, { isMoment } from 'moment';
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
@@ -28,7 +28,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     const { globalState } = useGlobalState();
 
     const {
-        propertyName: name,
+        propertyName: conponentName,
         hideBorder,
         range,
         value,
@@ -47,15 +47,29 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         ...rest
     } = props;
 
-    const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
-    const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
+    const [dataFormat, setDataFormat] = React.useState<string>(props?.dateFormat || DATE_TIME_FORMATS.date);
+    // const [pickerFormat, setPickerFormat] = React.useState<string>(props?.dateFormat || DATE_TIME_FORMATS.date);
 
+
+
+        useEffect(() => {
+            (async () => {
+                await Promise.any([getDataProperty(properties, props.componentName, metaProperties)]).then( data =>{ 
+                    console.log("DATA: ",data)
+                    if(data !== null) setDataFormat(data)
+                    else console.log("NULLLLLLL")})
+            })();
+        },[dataFormat])
+
+        console.log("WATCH ASYNC: ", dataFormat)
+
+    const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
     const defaultFormat = getDefaultFormat(props);
 
     const { formData } = useForm();
 
-    const pickerFormat = getFormat(props, properties);
-    const formattedValue = getMoment(value, pickerFormat);
+    const pickerFormat = getFormat(props, properties, metaProperties);
+    const formattedValue = getMoment(value, pickerFormat.toString());
 
     const handleDatePickerChange = (localValue: any | null, dateString: string) => {
         if (!dateString?.trim()) {
@@ -85,8 +99,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
     if (readOnly) {
         const format = showTime
-            ? `${dateFormat} ${timeFormat}`
-            : dateFormat;
+            ? `${dataFormat} ${timeFormat}`
+            : dataFormat;
 
         return (
             <ReadOnlyDisplayFormItem
@@ -106,9 +120,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 className="sha-range-picker"
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
                 onChange={handleRangePicker}
-                format={pickerFormat}
-                value={getRangePickerValues(value, pickerFormat)}
-                defaultValue={getRangePickerValues(defaultValue, pickerFormat)}
+                format={dataFormat}
+                value={getRangePickerValues(value, dataFormat)}
+                defaultValue={getRangePickerValues(defaultValue, dataFormat)}
                 {...rest}
                 picker={picker}
                 showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
@@ -133,10 +147,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             showToday={showToday}
             showSecond={true}
             picker={picker}
-            format={pickerFormat}
+            format={dataFormat}
             style={evaluatedStyle}
             {...rest}
-            {...getDatePickerValue(props, pickerFormat)}
+            {...getDatePickerValue(props, dataFormat)}
             allowClear
         />
     );

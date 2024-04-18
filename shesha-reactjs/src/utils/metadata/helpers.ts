@@ -4,8 +4,9 @@ import { IContent, formatDateStringAndPrefix } from '@/designer-components/text/
 import GenericOutlined from '@/icons/genericOutlined';
 import { JsonOutlined } from '@/icons/jsonOutlined';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IPropertyMetadata, NestedProperties, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
-import { camelcaseDotNotation, getNumberFormat, toCamelCase } from '@/utils/string';
+import { IModelMetadata, IPropertyMetadata, NestedProperties, isEntityMetadata, isEntityReferencePropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
+import { camelcaseDotNotation, getNumberFormat } from '@/utils/string';
+import { toCamelCase } from '../string';
 
 export const getIconByDataType = (dataType: string): IconType => {
   switch (dataType) {
@@ -57,24 +58,27 @@ export const getFullPath = (property: IPropertyMetadata) => {
 };
 
 export const getDataProperty = async (properties: IPropertyMetadata[], name: string, metaProperties: NestedProperties, propertyName: string = 'dataFormat') => {
+  console.log("GET Format name: ", name)
   const prop = properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
 
   if (prop) {
     return prop;
   }
 
-  const entityIndex = properties.findIndex(p => p.dataType === 'entity');
-  
+  const entity = name.split('.')[0];
+  const property = name.split('.')[1];
+
+  const entityIndex = properties.findIndex(p => p.dataType === 'entity' && toCamelCase(p.path) === entity);
+
   if (entityIndex !== -1) {
-    const entityProperties = await Promise.resolve(metaProperties[entityIndex]?.properties());
+    const entityProperties = await metaProperties[entityIndex]?.properties();
     if (entityProperties) {
-      return entityProperties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
+      return entityProperties.find(({ path }) => toCamelCase(path) === property)?.[propertyName];
     }
   }
 
   return null;
 };
-
 
 export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>) => {
   const { dataType, dataFormat } = metadata || {};
@@ -92,4 +96,18 @@ export const getFormatContent = (content: string, metadata: Pick<IContent, 'data
     default:
       return content;
   }
+};
+
+export const getEntityIdType = (metadata: IModelMetadata): string => {
+  if (!isEntityMetadata(metadata))
+    return undefined;
+
+  return isPropertiesArray(metadata.properties)
+    ? metadata.properties.find(p => p.path?.toLowerCase() === "id")?.dataType
+    : undefined;
+};
+
+export const getEntityIdJsType = (metadata: IModelMetadata): string => {
+  const idType = getEntityIdType(metadata);
+  return idType === DataTypes.guid ? "string" : idType;
 };
