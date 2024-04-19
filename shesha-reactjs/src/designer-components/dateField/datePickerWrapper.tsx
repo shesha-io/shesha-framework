@@ -1,11 +1,10 @@
 import { DatePicker } from '@/components/antd';
 import moment, { isMoment } from 'moment';
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { useForm, useGlobalState, useMetadata } from '@/providers';
+import { useForm, useGlobalState } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
 import { getMoment } from '@/utils/date';
-import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import {
     DATE_TIME_FORMATS,
@@ -15,15 +14,12 @@ import {
     getFormat,
     getRangePickerValues,
 } from './utils';
-import { asPropertiesArray } from '@/interfaces/metadata';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
 const { RangePicker } = DatePicker;
 
 export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
-    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
-    const properties = asPropertiesArray(metaProperties, []);
 
     const { globalState } = useGlobalState();
 
@@ -44,31 +40,17 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         readOnly,
         style,
         defaultToMidnight,
+        propertyName,
+        dateFormat = "DD MMM YYYY",
         ...rest
     } = props;
 
-    const [dataFormat, setDataFormat] = React.useState<string>(props?.dateFormat || DATE_TIME_FORMATS.date);
-    // const [pickerFormat, setPickerFormat] = React.useState<string>(props?.dateFormat || DATE_TIME_FORMATS.date);
-
-
-
-        useEffect(() => {
-            (async () => {
-                await Promise.any([getDataProperty(properties, props.componentName, metaProperties)]).then( data =>{ 
-                    console.log("DATA: ",data)
-                    if(data !== null) setDataFormat(data)
-                    else console.log("NULLLLLLL")})
-            })();
-        },[dataFormat])
-
-        console.log("WATCH ASYNC: ", dataFormat)
 
     const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
     const defaultFormat = getDefaultFormat(props);
-
     const { formData } = useForm();
 
-    const pickerFormat = getFormat(props, properties, metaProperties);
+    const pickerFormat = getFormat(props);
     const formattedValue = getMoment(value, pickerFormat.toString());
 
     const handleDatePickerChange = (localValue: any | null, dateString: string) => {
@@ -77,7 +59,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             return;
         }
 
-        const newValue = isMoment(localValue) ? localValue.format(defaultFormat) : localValue;
+        const newValue = isMoment(localValue) ? localValue.format(dateFormat ? dateFormat : defaultFormat) : localValue;
 
         (onChange as TimePickerChangeEvent)(newValue, dateString);
     };
@@ -89,8 +71,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         }
 
         const dates = (values as []).map((val: any) => {
-            if (isMoment(val)) return val.format(defaultFormat);
-
+            if (isMoment(val)) return val.format(dateFormat? dateFormat : defaultFormat);
             return val;
         });
 
@@ -99,8 +80,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
     if (readOnly) {
         const format = showTime
-            ? `${dataFormat} ${timeFormat}`
-            : dataFormat;
+            ? `${dateFormat} ${timeFormat}`
+            : dateFormat;
 
         return (
             <ReadOnlyDisplayFormItem
@@ -120,9 +101,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 className="sha-range-picker"
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
                 onChange={handleRangePicker}
-                format={dataFormat}
-                value={getRangePickerValues(value, dataFormat)}
-                defaultValue={getRangePickerValues(defaultValue, dataFormat)}
+                format={dateFormat}
+                value={getRangePickerValues(value, dateFormat)}
+                defaultValue={getRangePickerValues(defaultValue, dateFormat)}
                 {...rest}
                 picker={picker}
                 showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
@@ -147,10 +128,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             showToday={showToday}
             showSecond={true}
             picker={picker}
-            format={dataFormat}
+            format={dateFormat}
             style={evaluatedStyle}
             {...rest}
-            {...getDatePickerValue(props, dataFormat)}
+            {...getDatePickerValue(props, dateFormat)}
             allowClear
         />
     );

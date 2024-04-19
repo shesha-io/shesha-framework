@@ -58,22 +58,19 @@ export const getFullPath = (property: IPropertyMetadata) => {
 };
 
 export const getDataProperty = async (properties: IPropertyMetadata[], name: string, metaProperties: NestedProperties, propertyName: string = 'dataFormat') => {
-  console.log("GET Format name: ", name)
-  const prop = properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
+const prop = properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
 
   if (prop) {
     return prop;
   }
 
-  const entity = name.split('.')[0];
-  const property = name.split('.')[1];
+  const entityIndex = properties.findIndex(p => p.dataType === 'entity');
 
-  const entityIndex = properties.findIndex(p => p.dataType === 'entity' && toCamelCase(p.path) === entity);
-
-  if (entityIndex !== -1) {
+  if (entityIndex !== -1 && name) {
     const entityProperties = await metaProperties[entityIndex]?.properties();
+
     if (entityProperties) {
-      return entityProperties.find(({ path }) => toCamelCase(path) === property)?.[propertyName];
+      return entityProperties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
     }
   }
 

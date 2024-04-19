@@ -1,8 +1,6 @@
 import moment, { Moment } from 'moment';
 import { getMoment } from '@/utils/date';
 import { IDateFieldProps, RangeValue } from './interfaces';
-import { getDataProperty } from '@/utils';
-import { IPropertyMetadata } from '@/index';
 
 export const DATE_TIME_FORMATS = {
   time: 'HH:mm:ss',
@@ -38,7 +36,9 @@ export function disabledDate(props: IDateFieldProps, current: Moment, data: obje
   return disabledFunc(current, moment, data, globalState);
 }
 
-export const getDefaultFormat = ({ showTime, resolveToUTC }: IDateFieldProps) => {
+export const getDefaultFormat = ({ showTime, resolveToUTC, dateFormat }: IDateFieldProps) => {
+  if(dateFormat) return dateFormat;
+
   if (!showTime) {
     return 'YYYY-MM-DD';
   }
@@ -50,19 +50,16 @@ export const getDefaultFormat = ({ showTime, resolveToUTC }: IDateFieldProps) =>
   return null;
 };
 
-export const getFormat = async (props: IDateFieldProps, properties: IPropertyMetadata[], metaProperties) => {
-  const { propertyName, picker, showTime } = props || {};
+export const getFormat = async (props: IDateFieldProps) => {
+  const { picker, showTime } = props || {};
 
- const format = await Promise.any([getDataProperty(properties, props.componentName, metaProperties)])
-
-  const dateFormat = props?.dateFormat || format || DATE_TIME_FORMATS.date;
+  const dateFormat = props?.dateFormat || props.dateFormat || DATE_TIME_FORMATS.date;
   const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
   const yearFormat = props?.yearFormat || DATE_TIME_FORMATS.year;
   const quarterFormat = props?.quarterFormat || DATE_TIME_FORMATS.quarter;
   const monthFormat = props?.monthFormat || DATE_TIME_FORMATS.month;
   const weekFormat = props?.weekFormat || DATE_TIME_FORMATS.week;
 
-  console.log("GET FORMAT: ", dateFormat, format)
   switch (picker) {
     case 'date':
       return showTime ? `${dateFormat} ${timeFormat}` : dateFormat;

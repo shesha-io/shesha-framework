@@ -28,8 +28,6 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
 }) => {
   const { styles } = useStyles();
 
-  console.log("FORMAT IN READONLY: ", dateFormat)
-  
   const renderValue = () => {
     if (render) {
       return typeof render === 'function' ? render() : render;
