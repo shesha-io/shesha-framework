@@ -145,15 +145,20 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
                 //console.log(`LOG: process entity '${prop.path}'`, prop);
 
                 const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
-                typesImporter.import(typeDef);
+                if (typeDef){
+                    typesImporter.import(typeDef);
 
-                const idType = getEntityIdJsType(typeDef.metadata);
-                if (!idType)
-                    throw new Error(`Failed to identifier type for entity '${prop.entityType}'`);
-
-                if (prop.description)
-                    sb.append(`/** ${prop.description} */`);
-                sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
+                    const idType = getEntityIdJsType(typeDef.metadata);
+                    if (!idType)
+                        throw new Error(`Failed to identifier type for entity '${prop.entityType}'`);
+    
+                    if (prop.description)
+                        sb.append(`/** ${prop.description} */`);
+                    sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
+                } else {
+                    console.error(`Failed to find entity type '${prop.entityModule}/${prop.entityType}' for (property '${prop.path}')`);
+                    sb.append(`${prop.path}: any;`);
+                }
             } /*else
                 if (prop.dataType === DataTypes.object) {
                     await writeObject(sb, typesImporter, prop as IEntityPropertyMetadata);
