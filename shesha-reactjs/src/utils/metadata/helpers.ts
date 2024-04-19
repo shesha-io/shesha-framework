@@ -60,22 +60,25 @@ export const getFullPath = (property: IPropertyMetadata) => {
 export const getDataProperty = async (properties: IPropertyMetadata[], name: string, metaProperties: NestedProperties, propertyName: string = 'dataFormat') => {
 const property = properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
 
+console.log(property, name, properties)
   if (property) {
     return property;
   }
 
   const entityIndex = properties.findIndex(p => p.dataType === 'entity');
-
   if (entityIndex !== -1 && name) {
     const entityProperties = await metaProperties[entityIndex]?.properties();
-
     if (entityProperties) {
+      
       return entityProperties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
     }
   }
 
   return null;
 };
+
+
+
 
 export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>) => {
   const { dataType, dataFormat } = metadata || {};

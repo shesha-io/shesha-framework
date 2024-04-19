@@ -33,14 +33,23 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
 
-    const [dataFormat, setDataFormat] = React.useState<string>('');
-    
+    const [numberFormat, setNumberFormat] = React.useState<string>('');
+
     useEffect(() => {
-    (async () => {
-       const data = await getDataProperty(properties, model?.propertyName, metaProperties);
-       setDataFormat(data);
-    })();
-  }, [dataFormat]);
+      const getFormat = async () => {
+        try {
+          console.log(model.propertyName)
+          const response = await getDataProperty(properties, model?.propertyName, metaProperties);
+          setNumberFormat(response ? response : numberFormat);
+          console.log(response)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    getFormat();
+  }, []); 
+  
 
     return (
       <ConfigurableFormItem
@@ -51,7 +60,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
               type="number"
-              value={getNumberFormat(value, dataFormat)}
+              value={getNumberFormat(value, numberFormat)}
             />
           ) : (
             <NumberFieldControl form={form} disabled={model.readOnly} model={model} value={value} onChange={onChange} />

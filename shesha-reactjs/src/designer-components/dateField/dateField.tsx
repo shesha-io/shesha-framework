@@ -53,16 +53,20 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
     const properties = asPropertiesArray(metaProperties, []);
     
-    const [dataFormat, setDataFormat] = React.useState<string>(()=> {
-      return model?.dateFormat || DATE_TIME_FORMATS.date});
-
-        useEffect(() => {
-            (async () => {
-                await Promise.any([getDataProperty(properties, model?.propertyName, metaProperties)]).then( data =>{
-                  data ? setDataFormat(data): setDataFormat(dataFormat)
-                })
-            })();
-        },[])
+    const [dateFormat, setDateFormat] = React.useState<string>(model?.dateFormat || DATE_TIME_FORMATS.date);
+                
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getDataProperty(properties, model?.propertyName, metaProperties);
+        setDateFormat(response ? response : dateFormat);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
     return (
       <Fragment>
@@ -75,7 +79,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
                 onChange(...args);
             };
             
-            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} dateFormat={dataFormat}/>;
+            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} dateFormat={dateFormat}/>;
           }}
         </ConfigurableFormItem>
       </Fragment>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import moment from 'moment';
@@ -6,7 +6,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customTimeEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useMetadata, useSheshaApplication } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
@@ -15,6 +15,8 @@ import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ITimePickerProps } from './models';
 import { TimePickerWrapper } from './timePickerWrapper';
+import { getDataProperty } from '@/utils';
+import { asPropertiesArray } from '@/interfaces/metadata';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
@@ -28,12 +30,14 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
   canBeJsSetting: true,
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
-  Factory: ({ model, form }) => {
+  Factory: async ({ model, form }) => {
     const { formMode, setFormData } = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     
+    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
+    const properties = asPropertiesArray(metaProperties, []);
     const eventProps = {
       model,
       form,
@@ -47,16 +51,32 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
       setGlobalState,
     };
 
+      const [dataFormat, setDataFormat] = React.useState<string>(DATE_TIME_FORMAT);
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getDataProperty(properties, model?.propertyName, metaProperties);
+        setDataFormat(response ? response : dataFormat);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []); 
+ 
+
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>  {
           const customEvent =  customTimeEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function') 
+            if (typeof onChange === 'function')
               onChange(...args);
           };
-          return <TimePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
+          return <TimePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} format={dataFormat}/>;
         }}
       </ConfigurableFormItem>
     );
