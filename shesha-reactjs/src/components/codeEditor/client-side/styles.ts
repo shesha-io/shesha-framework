@@ -62,12 +62,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
                     border-radius: 0px;
                     color: ${token.colorTextLightSolid};
                 }
-                /*.${prefixCls}-tree-indent-unit {
-                    width: 10px;
+                .${prefixCls}-tree-indent-unit {
+                    width: 12px;
                 }
                 .${prefixCls}-tree-switcher {
-                    width: 10px;
-                }*/
+                    width: 12px;
+                }
+                .${prefixCls}-tree-iconEle {
+                    svg {
+                        width: 18px;
+                        height: 18px;
+                        padding: 3px;
+                    }
+                }
             }
             .${code} {
                 min-width: 100px;                

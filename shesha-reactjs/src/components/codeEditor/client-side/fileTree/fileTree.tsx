@@ -6,6 +6,7 @@ import { UriComponents } from 'monaco-editor';
 import { DownOutlined } from '@ant-design/icons';
 import { useSourcesTreeNodes } from './hooks';
 import { FileTreeNode } from './models';
+import { getNodeIcon } from './icons';
 
 const { DirectoryTree } = Tree;
 
@@ -45,6 +46,7 @@ export const FileTree: FC<IFileTreeProps> = (props) => {
         }
         return result;
     };
+
     return (
         <>
             <DirectoryTree<FileTreeNode>
@@ -55,6 +57,7 @@ export const FileTree: FC<IFileTreeProps> = (props) => {
                 treeData={treeNodes.nodes}
                 defaultSelectedKeys={props.defaultSelection ? [props.defaultSelection.toString()] : undefined}
                 defaultExpandedKeys={props.defaultSelection ? getParentNodes(props.defaultSelection) : undefined}
+                icon={getNodeIcon}
             />
         </>
     );
