@@ -212,7 +212,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
       onCancel={handleCancel}
       width={isSmall ? '90%' : width}
       okText="Select"
-      footer={footer}
+      footer={modalProps?.showModalFooter == false ? null : footer}
     >
       <>
         <Alert message="Double click an item to select" type="info" />
