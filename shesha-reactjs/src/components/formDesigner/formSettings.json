@@ -376,11 +376,6 @@
           "type": "object"
         },
         {
-          "name": "initialValues",
-          "description": "Initial values passsed to the form. In most cases, it's the selected row in a case where an action column is the one triggering the form displaying on the dialog",
-          "type": "object"
-        },
-        {
           "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
