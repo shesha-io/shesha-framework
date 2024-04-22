@@ -42,7 +42,12 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
 
     return (
       <ParentProvider model={model}>
-        <Card title={title} extra={extra} style={getLayoutStyle(model, { data, globalState })}>
+        <Card
+          className={model.className}
+          title={title}
+          extra={extra}
+          style={getLayoutStyle(model, { data, globalState })}
+        >
           <ComponentsContainer
             containerId={model?.content?.id}
             dynamicComponents={model?.isDynamic ? model?.content.components : []}
