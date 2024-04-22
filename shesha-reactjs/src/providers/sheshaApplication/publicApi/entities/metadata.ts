@@ -163,10 +163,6 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
                     typesImporter.import({ typeName: "EntityAccessor", filePath: BASE_ENTITY_MODULE });
                 }
                 
-                //console.log(`LOG: process entity '${prop.path}'`, prop);
-                if (prop.entityType === "Shesha.Enterprise.Domain.EntitySync.EntitySync")
-                    console.log('!!!');
-
                 const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
                 if (typeDef) {
                     typesImporter.import(typeDef);
@@ -182,10 +178,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
                     console.error(`Failed to find entity type '${prop.entityModule}/${prop.entityType}' for (property '${prop.path}')`);
                     sb.append(`${prop.path}: any;`);
                 }
-            } /*else
-                if (prop.dataType === DataTypes.object) {
-                    await writeObject(sb, typesImporter, prop as IEntityPropertyMetadata);
-                }*/
+            }
         }
         sb.decIndent();
         sb.append("}");
