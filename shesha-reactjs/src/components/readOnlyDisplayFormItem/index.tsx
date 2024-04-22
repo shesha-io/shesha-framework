@@ -14,7 +14,7 @@ type AutocompleteType = ISelectOption<IDtoType>;
 export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
   value,
   type = 'string',
-  dateFormat = 'DD-MM-YYYY',
+  dateFormat = 'DD/MM/YYYY',
   timeFormat = 'hh:mm',
   dropdownDisplayMode = 'raw',
   render,
