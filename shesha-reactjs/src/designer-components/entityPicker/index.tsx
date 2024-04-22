@@ -101,8 +101,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       );
     }
 
-    console.log(model, "ENTITY PICKER MODEL")
-
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
     const computedStyle = getStyle(style, formData) ?? {};
 
