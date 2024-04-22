@@ -21,11 +21,13 @@ export interface TypeDefinition {
 export interface TypeAndLocation {
   typeName: string;
   filePath?: string;
+  metadata?: IModelMetadata;
 }
 
 export interface ITypeDefinitionBuilder {
   getEntityType: (typeId: ModelTypeIdentifier) => Promise<TypeAndLocation>;  
   makeFormType: (formId: FormFullName, content: string) => TypeDefinition;
+  makeFile: (fileName: string, content: string) => void;
 };
 export interface ITypeDefinitionLoadingContext {
   typeDefinitionBuilder: ITypeDefinitionBuilder;
@@ -132,6 +134,7 @@ export interface IPropertyMetadata extends IMemberMetadata {
   isNullable?: boolean;
   prefix?: string;
   isVisible?: boolean;
+  itemsType?: IPropertyMetadata;
 }
 
 export const isPropertiesArray = (value: NestedProperties): value is IPropertyMetadata[] => {

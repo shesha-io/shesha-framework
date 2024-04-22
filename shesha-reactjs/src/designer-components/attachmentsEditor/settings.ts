@@ -189,6 +189,11 @@ export const getSettings = () =>
                 type: '(payload: { key: string, data: any } ) => void',
               },
             ],
+            wrapInTemplate: true,
+            templateSettings: {
+              functionName: 'onFileListChanged',
+              useAsyncDeclaration: true,
+            },
           })
           .toJson()
         ]

@@ -61,7 +61,7 @@ import {
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
+import { ContextGetData, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
   IConfigurableActionConfiguration,
   useDataTableStore,
@@ -123,7 +123,7 @@ export function useFormProviderContext(): IApplicationContext {
   };
 }
 
-export function useApplicationContext(topContextId?: string): IApplicationContext {
+export function useAvailableConstantsData(topContextId?: string): IApplicationContext {
   let tcId = useDataContext(false)?.id;
   tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
@@ -137,7 +137,7 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
   return {
     application: applicationData,
     data: useFormData()?.data,
-    formContext: form?.formContext,
+    formContext: form?.formContext?.getFull(),
     contexts: { ...dcm?.getDataContextsData(tcId) },
     setFormData: form?.setFormData,
     formMode: form?.formMode,
@@ -150,6 +150,12 @@ export function useApplicationContext(topContextId?: string): IApplicationContex
     message,
   };
 }
+
+export const useApplicationContextData = (): ContextGetData => {
+  const dcm = useDataContextManager(false);
+  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+  return application?.getData();
+};
 
 const getSettingValue = (value: any, allData: any, calcFunction: (setting: IPropertySetting, allData: any) => any) => {
   if (!value) return value;

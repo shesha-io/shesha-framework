@@ -25,7 +25,7 @@ import { Form, message, Spin } from 'antd';
 import { filterDataByOutputComponents, FormConfigurationDto, useFormData } from '@/providers/form/api';
 import { getQueryParams } from '@/utils/url';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
-import { IAnyObject, ValidateErrorEntity } from '@/interfaces';
+import { IAnyObject, IDictionary, ValidateErrorEntity } from '@/interfaces';
 import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
 import { nanoid } from '@/utils/uuid';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
@@ -43,11 +43,14 @@ import {
   evaluateKeyValuesToObjectMatchedData,
   evaluateString,
   evaluateValue,
+  executeScript,
   getComponentNames,
   getObjectWithOnlyIncludedKeys,
   IMatchData,
 } from '@/providers/form/utils';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
+import { useDataContext } from '@/providers/dataContextProvider/contexts';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -89,6 +92,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     formSettings;
   const { globalState, setState: setGlobalState } = useGlobalState();
   const dcm = useDataContextManager(false);
+  const dataContext = useDataContext();
 
   const urlEvaluationData: IMatchData[] = [
     { match: 'initialValues', data: initialValues },
@@ -155,24 +159,31 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     if (!expression) {
       return null;
     }
-    // tslint:disable-next-line:function-constructor
-    return new Function(
-      'data, parentFormValues, initialValues, globalState, moment, http, message, shesha, form, setFormData, setGlobalState, contexts',
-      expression
-    )(
-      exposedData || formData,
-      parentFormValues,
-      includeInitialValues ? initialValues : undefined,
-      globalState,
-      includeMoment ? moment : undefined,
-      includeAxios ? axiosHttp(backendUrl) : undefined,
-      includeMessage ? message : undefined,
-      sheshaUtils,
-      form,
-      setFormData,
-      setGlobalState,
-      { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
-    );
+
+    const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+
+    const callArguments: IDictionary<any> = {
+      data: exposedData || formData, 
+      parentFormValues: parentFormValues, 
+      globalState: globalState, 
+      shesha: sheshaUtils, 
+      form: form, 
+      setFormData: setFormData, 
+      setGlobalState: setGlobalState, 
+      contexts: { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate }, 
+      application: application?.getData(),
+      formContext: dataContext?.getFull(),
+    };
+    if (includeInitialValues)
+      callArguments.initialValues = initialValues;
+    if (includeMoment)
+      callArguments.moment = moment;
+    if (includeAxios)
+      callArguments.http = axiosHttp(backendUrl);
+    if (includeMessage)
+      callArguments.message = message;
+
+    return executeScript(expression, callArguments);
   };
 
 

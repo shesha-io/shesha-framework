@@ -36,7 +36,7 @@
                 "required": true
             },
             "settingsValidationErrors": [],
-            "version": 4,
+            "version": 5,
             "useRawValues": false,
             "referenceListId": null,
             "placeholder": "",
@@ -46,7 +46,8 @@
                 "single"
             ],
             "entityTypeShortAlias": "",
-            "dataSourceUrl": ""
+            "dataSourceUrl": "",
+            "valueFormat": "listItem"
         },
         {
             "id": "d2ba51c1-13cc-4952-a25c-5b03442097a0",
@@ -82,40 +83,40 @@
             "flexWrap": "wrap"
         },
         {
-          "id": "135a51c1-13cc-4952-a25c-5b03442097a0",
-          "type": "container",
-          "propertyName": "dataContainerp",
-          "label": "Container3p",
-          "labelAlign": "right",
-          "parentId": "root",
-          "hidden": {
-              "_code": "return  getSettingValue(data?.columnType) !== 'form';",
-              "_mode": "code",
-              "_value": false
-          },
-          "direction": "vertical",
-          "justifyContent": "left",
-          "settingsValidationErrors": [],
-          "components": [
-              {
-                  "id": "5314460d-2e64-4d79-a900-7cd28b0bebd3",
-                  "type": "propertyAutocomplete",
-                  "jsSetting": false,
-                  "propertyName": "propertiesNames",
-                  "label": "Properties to fetch",
-                  "labelAlign": "right",
-                  "parentId": "135a51c1-13cc-4952-a25c-5b03442097a0",
-                  "mode": "multiple",
-                  "hidden": false,
-                  "validate": {},
-                  "settingsValidationErrors": [],
-                  "version": 1
-              }
-          ],
-          "version": 2,
-          "flexWrap": "wrap"
-      },
-      {
+            "id": "135a51c1-13cc-4952-a25c-5b03442097a0",
+            "type": "container",
+            "propertyName": "dataContainerp",
+            "label": "Container3p",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": {
+                "_code": "return  getSettingValue(data?.columnType) !== 'form';",
+                "_mode": "code",
+                "_value": false
+            },
+            "direction": "vertical",
+            "justifyContent": "left",
+            "settingsValidationErrors": [],
+            "components": [
+                {
+                    "id": "5314460d-2e64-4d79-a900-7cd28b0bebd3",
+                    "type": "propertyAutocomplete",
+                    "jsSetting": false,
+                    "propertyName": "propertiesNames",
+                    "label": "Properties to fetch",
+                    "labelAlign": "right",
+                    "parentId": "135a51c1-13cc-4952-a25c-5b03442097a0",
+                    "mode": "multiple",
+                    "hidden": false,
+                    "validate": {},
+                    "settingsValidationErrors": [],
+                    "version": 1
+                }
+            ],
+            "version": 2,
+            "flexWrap": "wrap"
+        },
+        {
             "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
             "type": "textField",
             "jsSetting": false,
@@ -218,20 +219,20 @@
             "version": 2
         },
         {
-          "id": "adc03af1-37fb-4f03-b2b6-727b7f17730c",
-          "type": "numberField",
-          "propertyName": "minHeight",
-          "label": "Min Height",
-          "labelAlign": "right",
-          "parentId": "root",
-          "hidden": {
-            "_code": "return  getSettingValue(data?.columnType) !== 'form';",
-            "_mode": "code",
-            "_value": false
-          },
-          "validate": {},
-          "settingsValidationErrors": [],
-          "version": 2
+            "id": "adc03af1-37fb-4f03-b2b6-727b7f17730c",
+            "type": "numberField",
+            "propertyName": "minHeight",
+            "label": "Min Height",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": {
+                "_code": "return  getSettingValue(data?.columnType) !== 'form';",
+                "_mode": "code",
+                "_value": false
+            },
+            "validate": {},
+            "settingsValidationErrors": [],
+            "version": 2
         },
         {
             "id": "77ceb915-f4f9-4957-b62f-7a4e4ba00846",
@@ -247,25 +248,29 @@
             "version": 2
         },
         {
-          "id": "57a40a33-7e08-4ce4-9f08-a34d24a82338",
-          "type": "dropdown",
-          "propertyName": "anchored",
-          "parentId": "root",
-          "label": "Anchored ",
-          "values": [
-            {
-              "label": "Left",
-              "value": "left",
-              "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
-            },
-            {
-              "label": "Right",
-              "value": "right",
-              "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
-            }
-          ],
-          "allowClear":true,
-          "dataSourceType": "values"
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a82338",
+            "type": "dropdown",
+            "propertyName": "anchored",
+            "parentId": "root",
+            "label": "Anchored ",
+            "values": [
+                {
+                    "label": "Left",
+                    "value": "left",
+                    "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+                },
+                {
+                    "label": "Right",
+                    "value": "right",
+                    "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+                }
+            ],
+            "allowClear": true,
+            "dataSourceType": "values",
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
         },
         {
             "id": "EhERYkBRv066KGKNaRA7j",
@@ -353,59 +358,59 @@
             "settingsValidationErrors": []
         },
         {
-          "id": "dfaRYkBRv066KGKNaRA7j",
-          "type": "container",
-          "propertyName": "container3fp",
-          "label": "Container3",
-          "labelAlign": "right",
-          "parentId": "root",
-          "hidden": {
-              "_code": "return  getSettingValue(data?.columnType) !== 'form';",
-              "_mode": "code",
-              "_value": false
-          },
-          "isDynamic": false,
-          "version": 2,
-          "direction": "vertical",
-          "justifyContent": "left",
-          "display": "block",
-          "flexWrap": "wrap",
-          "components": [
-              {
-                  "id": "1FGIcguhDkag6a801GXSgm",
-                  "type": "formAutocomplete",
-                  "componentName": "displayFormId",
-                  "propertyName": "displayFormId",
-                  "parentId": "dfaRYkBRv066KGKNaRA7j",
-                  "label": "Display form",
-                  "version": 2,
-                  "textType": "text"
-              },
-              {
-                  "id": "1rYYm0wT-TDnBfqmOMVmIX",
-                  "type": "formAutocomplete",
-                  "componentName": "createFormId",
-                  "propertyName": "createFormId",
-                  "parentId": "dfaRYkBRv066KGKNaRA7j",
-                  "label": "Create form",
-                  "version": 2,
-                  "textType": "text"
-              },
-              {
-                  "id": "1L2bRSuStgiAmWfd5Z09CR",
-                  "type": "formAutocomplete",
-                  "componentName": "editFormId",
-                  "propertyName": "editFormId",
-                  "parentId": "dfaRYkBRv066KGKNaRA7j",
-                  "label": "Edit form",
-                  "version": 2,
-                  "textType": "text"
-              }
-          ],
-          "gap": "",
-          "gridColumnsCount": "",
-          "className": "",
-          "settingsValidationErrors": []
+            "id": "dfaRYkBRv066KGKNaRA7j",
+            "type": "container",
+            "propertyName": "container3fp",
+            "label": "Container3",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": {
+                "_code": "return  getSettingValue(data?.columnType) !== 'form';",
+                "_mode": "code",
+                "_value": false
+            },
+            "isDynamic": false,
+            "version": 2,
+            "direction": "vertical",
+            "justifyContent": "left",
+            "display": "block",
+            "flexWrap": "wrap",
+            "components": [
+                {
+                    "id": "1FGIcguhDkag6a801GXSgm",
+                    "type": "formAutocomplete",
+                    "componentName": "displayFormId",
+                    "propertyName": "displayFormId",
+                    "parentId": "dfaRYkBRv066KGKNaRA7j",
+                    "label": "Display form",
+                    "version": 2,
+                    "textType": "text"
+                },
+                {
+                    "id": "1rYYm0wT-TDnBfqmOMVmIX",
+                    "type": "formAutocomplete",
+                    "componentName": "createFormId",
+                    "propertyName": "createFormId",
+                    "parentId": "dfaRYkBRv066KGKNaRA7j",
+                    "label": "Create form",
+                    "version": 2,
+                    "textType": "text"
+                },
+                {
+                    "id": "1L2bRSuStgiAmWfd5Z09CR",
+                    "type": "formAutocomplete",
+                    "componentName": "editFormId",
+                    "propertyName": "editFormId",
+                    "parentId": "dfaRYkBRv066KGKNaRA7j",
+                    "label": "Edit form",
+                    "version": 2,
+                    "textType": "text"
+                }
+            ],
+            "gap": "",
+            "gridColumnsCount": "",
+            "className": "",
+            "settingsValidationErrors": []
         },
         {
             "id": "33IOXJRmPdfU9KLeDUF64",
@@ -417,10 +422,11 @@
             "labelAlign": "right",
             "parentId": "root",
             "hidden": {
-              "_code": "return  getSettingValue(data?.columnType) !== 'data';",
-              "_mode": "code",
-              "_value": false
-            },            "isDynamic": false,
+                "_code": "return  getSettingValue(data?.columnType) !== 'data';",
+                "_mode": "code",
+                "_value": false
+            },
+            "isDynamic": false,
             "version": 2,
             "validate": {},
             "settingsValidationErrors": []
@@ -468,7 +474,14 @@
                     "type": "object"
                 }
             ],
-            "version": 2
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+                "functionName": "customVisibility"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
         },
         {
             "id": "WwHwuygM-SKcqDbHVbPNkoMAcsUHGJ",

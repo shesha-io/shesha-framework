@@ -11,7 +11,7 @@ const NO_MODULE = '[no-module]';
 const wrapModuleName = (name: string) => (name ?? NO_MODULE);
 const unwrapModuleName = (name: string) => (name === NO_MODULE ? null : name);
 
-const CURRENT_SYNC_VERSION = '1';
+const CURRENT_SYNC_VERSION = '2';
 const ENTITIES_SYNC_VERSION_FIELD_NAME = "ENTITIES_SYNC_VERSION";
 
 const URLS = {

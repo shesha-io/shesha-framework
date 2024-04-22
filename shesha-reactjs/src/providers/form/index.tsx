@@ -35,7 +35,7 @@ import {
   ISetVisibleComponentsPayload,
 } from './contexts';
 import { useFormDesignerComponents } from './hooks';
-import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
+import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings, ISubmitActionArguments } from './models';
 import formReducer from './reducer';
 import { convertActions, convertSectionsToList, getEnabledComponentIds, getFilteredComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
@@ -226,8 +226,14 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: () => {
-        form.submit();
+      //argumentsFormMarkup: SubmitActionArgumentsMarkup,
+      executer: async (args: ISubmitActionArguments, actionContext) => {
+        var formInstance = (actionContext?.form?.form ?? form) as FormInstance<any>;
+        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
+        if (args?.validateFields === true || fieldsToValidate?.length > 0) {
+          await formInstance.validateFields(fieldsToValidate);
+        }
+        formInstance.submit();
         return Promise.resolve();
       },
     },
@@ -240,8 +246,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: () => {
-        form.resetFields();
+      executer: (_, actionContext) => {
+        var formInstance = actionContext?.form?.form ?? form;
+        formInstance.resetFields();
         return Promise.resolve();
       },
     },
@@ -257,6 +264,23 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       hasArguments: false,
       executer: () => {
         return fetchData();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Validate',
+      description: 'Validate the form data and show validation errors if any',
+      owner: name,
+      ownerUid: actionsOwnerUid,
+      hasArguments: false,
+      executer: async(_, actionContext) => {
+        var formInstance = actionContext?.form?.form ?? form;
+        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
+        await formInstance.validateFields(fieldsToValidate);
+        return Promise.resolve();
       },
     },
     actionDependencies
@@ -456,7 +480,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     isComponentFiltered
   };
 
-  const fullState = { ...state, formContext: dataContext?.getFull() };
+  const fullState: IFormStateInternalContext = { ...state, formContext: dataContext };
 
   if (formRef) formRef.current = { ...configurableFormActions, ...fullState, allComponents, componentRelations };
 

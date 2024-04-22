@@ -1,4 +1,4 @@
-import { editor } from "monaco-editor";
+import { IPosition, IRange, editor } from "monaco-editor";
 
 export interface ConstrainedInstance {
     initializeIn(editor: editor.IStandaloneCodeEditor): void;
@@ -141,3 +141,11 @@ export const makeCodeTemplate = (strings: TemplateStringsArray, ...expr: (string
 };
 
 export type TemplateEvaluator = (code: string) => TextTemplate;
+
+export const isRange = (value: IRange | IPosition): value is IRange => {
+    return value && (value as IRange).startColumn !== undefined;
+};
+
+export const isPosition = (value: IRange | IPosition): value is IPosition => {
+    return value && (value as IPosition).column !== undefined;
+};

@@ -7,7 +7,7 @@ import { TypesBuilder } from "@/utils/metadata/typesBuilder";
 import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
-import { makeCodeTemplate } from "./utils";
+import { isPosition, isRange, makeCodeTemplate } from "./utils";
 import { useMetadataDispatcher } from "@/providers";
 import { CODE_TEMPLATE_DEFAULTS, ICodeEditorProps } from "../models";
 import { useStyles } from './styles';
@@ -109,7 +109,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
     const { styles } = useStyles();
     const [activePane, setActivePane] = useState(null);
-    const [ isDevmode ] = useLocalStorage('application.isDevMode', false);
+    const [ isDevMode ] = useLocalStorage('application.isDevMode', false);
 
     const { getMetadata } = useMetadataDispatcher();
 
@@ -221,7 +221,7 @@ ${(c) => c.editable(code)}
         return result;
     }, [path, fileName]);
 
-    const navigateToModel = (fileUri?: UriComponents) => {
+    const navigateToModel = (fileUri?: UriComponents, selectionOrPosition?: IRange | IPosition) => {
         if (!monacoInst.current || !editorRef.current || !fileUri)
             return;
 
@@ -229,17 +229,28 @@ ${(c) => c.editable(code)}
             ? monacoInst.current.editor.getModel(fileUri)
             : undefined;
         editorRef.current.setModel(model);
+
+        if (isRange(selectionOrPosition)){
+            editorRef.current.setSelection(selectionOrPosition, ''); 
+            editorRef.current.revealLineInCenter(selectionOrPosition.startLineNumber);
+        }
+        if (isPosition(selectionOrPosition)){
+            editorRef.current.setPosition(selectionOrPosition, '');
+            editorRef.current.revealLineInCenter(selectionOrPosition.lineNumber);
+        }
+        
+        editorRef.current.focus();
     };
 
     const initEditor = (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
         const localProperties = fetchProperties(availableConstants?.properties ?? []);
 
         monaco.editor.registerEditorOpener({
-            async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, _selectionOrPosition?: IRange | IPosition) {
-                if (isDevmode)
+            async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
+                if (!isDevMode)
                     return false;
                 
-                navigateToModel(resource);
+                navigateToModel(resource, selectionOrPosition);
                 return true;
             }
         });
@@ -311,7 +322,8 @@ ${(c) => c.editable(code)}
         return editorRef.current?.getModel()?.uri;
     };
 
-    return isDevmode
+    const showTree = isDevMode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
+    return showTree
         ? (
             <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
                 <div className={styles.sider}>

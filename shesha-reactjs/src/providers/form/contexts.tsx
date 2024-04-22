@@ -15,7 +15,7 @@ import {
   IFormSettings,
   ROOT_COMPONENT_KEY,
 } from './models';
-import { IDataContextFull } from '../dataContextProvider/contexts';
+import { IDataContextFullInstance } from '../dataContextProvider/contexts';
 
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -31,7 +31,7 @@ export interface IFormStateInternalContext {
   sections: IFormSection[];
   context?: any; // todo: make generic
 
-  formContext?: IDataContextFull;
+  formContext?: IDataContextFullInstance;
 
   // runtime props
   formData?: any;

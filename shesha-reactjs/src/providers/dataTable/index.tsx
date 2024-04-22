@@ -1,4 +1,3 @@
-import camelCaseKeys from 'camelcase-keys';
 import React, {
   FC,
   PropsWithChildren,
@@ -539,7 +538,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   };
 
   const changeActionedRow = (val: any) => {
-    dispatch(changeActionedRowAction(val ? camelCaseKeys(val, { deep: true }) : null));
+    dispatch(changeActionedRowAction(val));
   };
 
   const changeSelectedStoredFilterIds = (selectedFilterIds: string[]) => {
@@ -761,7 +760,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   /* Data Context section */
 
-  const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
+  const contextOnSetData = (changedData: IDataTableStateContext) => {
     if (!changedData)
       return;
 
@@ -792,7 +791,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       type='control'
       data={state}
       api={actions}
-      onChangeData={contextOnChangeData}
+      onSetData={contextOnSetData}
     >
       <DataTableStateContext.Provider value={state}>
         <DataTableActionsContext.Provider value={actions}>

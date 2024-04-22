@@ -8,9 +8,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "m2IymxOj5xDPund0VMbp3",
@@ -32,7 +31,7 @@
             "propertyName": "label",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Label",
-            "version": 0,
+            "version": 3,
             "textType": "text"
           },
           {
@@ -42,14 +41,16 @@
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Input Read-Only?",
             "defaultValue": false,
-            "description": "Set the readonly attribute of the input tag (avoids virtual keyboard on touch devices)"
+            "description": "Set the readonly attribute of the input tag (avoids virtual keyboard on touch devices)",
+            "version": 2
           },
           {
             "id": "fb1e8e5b-4eb5-406f-954b-e6bce8d8adb9",
             "type": "checkbox",
             "propertyName": "range",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
-            "label": "Range?"
+            "label": "Range?",
+            "version": 2
           },
           {
             "id": "365ed0ca-a6b5-4f6f-a92e-a72527e7519f",
@@ -57,7 +58,8 @@
             "propertyName": "use12Hours",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Use 12 Hours",
-            "defaultValue": false
+            "defaultValue": false,
+            "version": 2
           },
           {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
@@ -78,8 +80,9 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "110dafeb-ceb7-4158-959b-9a09c76c9035",
@@ -87,7 +90,8 @@
             "propertyName": "allowClear",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Allow Clear",
-            "defaultValue": true
+            "defaultValue": true,
+            "version": 2
           },
           {
             "id": "2d5aa1ed-a5cc-47b4-bc18-8b9a626a7a09",
@@ -95,7 +99,8 @@
             "propertyName": "showNow",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Show Now",
-            "defaultValue": true
+            "defaultValue": true,
+            "version": 2
           },
           {
             "id": "d7afe02d-ce06-42ff-b3f0-ef1acece2785",
@@ -103,7 +108,8 @@
             "propertyName": "autoFocus",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Auto Focus",
-            "defaultValue": false
+            "defaultValue": false,
+            "version": 2
           },
           {
             "id": "73558123-2473-48c4-8f30-4d58181773a2",
@@ -111,7 +117,8 @@
             "propertyName": "hideDisabledOptions",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Hide disabled options",
-            "description": "Whether hide the options that can not be selected"
+            "description": "Whether hide the options that can not be selected",
+            "version": 2
           },
           {
             "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
@@ -119,7 +126,7 @@
             "propertyName": "placeholder",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Placeholder",
-            "version": 0,
+            "version": 3,
             "textType": "text"
           },
           {
@@ -127,21 +134,24 @@
             "type": "textArea",
             "propertyName": "description",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
-            "label": "Description"
+            "label": "Description",
+            "version": 2
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
             "type": "checkbox",
             "propertyName": "hidden",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
-            "label": "Hidden"
+            "label": "Hidden",
+            "version": 2
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
             "type": "checkbox",
             "propertyName": "hideLabel",
             "parentId": "aUt4GeRhocL5W_aGaaR10",
-            "label": "Hide Label"
+            "label": "Hide Label",
+            "version": 2
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -158,7 +168,8 @@
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "hidden": false,
             "validate": {},
-            "description": ""
+            "description": "",
+            "version": 2
           },
           {
             "id": "30b5031e-24f5-4ef7-bede-db90e5914964",
@@ -167,7 +178,7 @@
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Time Format",
             "defaultValue": "HH:mm",
-            "version": 0,
+            "version": 3,
             "textType": "text"
           }
         ]
@@ -186,9 +197,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "i8dLAW_jVLivqO6nDxhaD",
@@ -259,14 +269,26 @@
                 "description": "Setting the global state of the application",
                 "type": "(payload: { key: string, data: any } ) => void"
               }
-            ]
+            ],
+            "version": 3,
+            "componentName": "onChangeCustom",
+            "propertyName": "onChangeCustom",
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "onChange"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addAllStandard(\"shesha:selectedRow\").addObject(\"value\", \"Component current value\", undefined).build();    "
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "settingsValidationErrors": [],
+      "componentName": "pnlEvents",
+      "propertyName": "pnlEvents"
     },
     {
       "id": "xo2WA7pfU4naLdeDng0oJ",
@@ -276,9 +298,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "LOniJ7ukzoZZKq5W3nEXE",
@@ -292,7 +313,8 @@
             "type": "checkbox",
             "propertyName": "validate.required",
             "parentId": "I87o_ZbVziATqjz1dpwFk",
-            "label": "Required"
+            "label": "Required",
+            "version": 2
           }
         ]
       },
@@ -310,9 +332,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "az3XJ1MOV1vR0MQlW0_8C",
@@ -327,7 +348,8 @@
             "propertyName": "hourStep",
             "parentId": "gObp3iAlgae3hRseoTAT6",
             "label": "Hour Step",
-            "min": 1
+            "min": 1,
+            "version": 2
           },
           {
             "id": "d30ff140-74c0-41b5-bf79-1a7733e30982",
@@ -335,7 +357,8 @@
             "propertyName": "minuteStep",
             "parentId": "gObp3iAlgae3hRseoTAT6",
             "label": "Minute Step",
-            "min": 1
+            "min": 1,
+            "version": 2
           },
           {
             "id": "9ddab21e-8afa-434d-8a78-1d8359ea8ad0",
@@ -343,7 +366,8 @@
             "propertyName": "secondStep",
             "parentId": "gObp3iAlgae3hRseoTAT6",
             "label": "Second Step",
-            "min": 1
+            "min": 1,
+            "version": 2
           }
         ]
       },
@@ -361,9 +385,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "ZeuTecxmmp8iiYfppgaEy",
@@ -392,7 +415,15 @@
                 "description": "The global state",
                 "type": "object"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -419,8 +450,9 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           }
         ]
       },

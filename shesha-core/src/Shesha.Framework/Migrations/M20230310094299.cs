@@ -9,9 +9,9 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Execute.Sql(@"delete from Frwk_SettingValues");
-            Execute.Sql(@"delete from Frwk_SettingConfigurations");
-            Execute.Sql(@"delete from Frwk_ConfigurationItems where ItemType = 'setting-configuration'");
+            Execute.Sql(@"delete from ""Frwk_SettingValues""");
+            Execute.Sql(@"delete from ""Frwk_SettingConfigurations""");
+            Execute.Sql(@"delete from ""Frwk_ConfigurationItems"" where ""ItemType"" = 'setting-configuration'");
 
             Delete.Index("IX_Frwk_SettingValues_SettingConfigurationId").OnTable("Frwk_SettingValues");
             Delete.ForeignKey("FK_Frwk_SettingValues_SettingConfigurationId_Frwk_SettingConfigurations_Id").OnTable("Frwk_SettingValues");
