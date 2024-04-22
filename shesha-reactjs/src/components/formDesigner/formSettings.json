@@ -172,7 +172,7 @@
       "type": "labelValueEditor",
       "propertyName": "initialValues",
       "parentId": "root",
-      "label": "Initial Values",
+      "label": "Initial values passsed to the form. In most cases, it's the selected row in a case where an action column is the one triggering the form displaying on the dialog",
       "labelTitle": "Key",
       "labelName": "key",
       "valueTitle": "Value",
