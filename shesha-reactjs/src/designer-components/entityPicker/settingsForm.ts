@@ -278,12 +278,23 @@ export const entityPickerSettings = new DesignerToolbarSettings()
                 },
                 convertToFullId: false,
               })
-              .addCheckbox({
-                id: '43c5fcb7-a2d4-46d7-b671-6eac73e8d95c',
-                propertyName: 'showModalFooter',
-                parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-                label: 'Show Modal Buttons',
-                // "defaultChecked":false
+              .addDropdown({
+                id: nanoid(),
+                propertyName: 'footerButtons',
+                label: 'Buttons type',
+                dataSourceType: 'values',
+                values: [
+                  { id: nanoid(), label: 'Default', value: 'default' },
+                  { id: nanoid(), label: 'Custom', value: 'custom' },
+                  { id: nanoid(), label: 'None', value: 'none' },
+                ],
+                defaultValue: 'default',
+              })
+              .addButtons({
+                id: nanoid(),
+                propertyName: 'buttons',
+                hidden: {_code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false},
+                label: 'Configure Modal Buttons',
               })
               .addDropdown({
                 id: 'ea60aee4-a7aa-4fd6-a641-638a5a609157',
@@ -303,7 +314,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
                   },
                 ],
                 dataSourceType: 'values',
-                hidden: {_code: 'return !getSettingValue(data?.showModalFooter);', _mode: 'code', _value: false} as any,
+                hidden: {_code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default" || !getSettingValue(data?.footerButtons));', _mode: 'code', _value: false},
                 defaultValue: 'POST',
               })
               .addTextField({

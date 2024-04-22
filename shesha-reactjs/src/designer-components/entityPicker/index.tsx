@@ -39,6 +39,8 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent 
   modalWidth?: number | string | 'custom';
   customWidth?: number;
   widthUnits?: string;
+  buttons?: [];
+  footerButtons?: 'default' | 'custom' | 'none';
 }
 
 const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
@@ -49,6 +51,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
+
     const { filters, modalWidth, customWidth, widthUnits, style } = model;
     const { formMode, formData } = useForm();
 
@@ -98,6 +101,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       );
     }
 
+    console.log(model, "ENTITY PICKER MODEL")
+
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
     const computedStyle = getStyle(style, formData) ?? {};
 
@@ -126,6 +131,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
                   submitHttpVerb: model.submitHttpVerb,
                   onSuccessRedirectUrl: model.onSuccessRedirectUrl,
                   modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+                  buttons: model?.buttons,
+                  footerButtons: model?.footerButtons
+                  
                 }
                 : undefined
             }

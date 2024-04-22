@@ -7,7 +7,7 @@ export interface IShowModalActionArguments {
   modalTitle: string;
   formId: FormIdentifier;
   formMode?: 'edit' | 'readonly';
-  showModalFooter: boolean;
+  showModalFooter?: boolean;
   additionalProperties?: IKeyValue[];
   modalWidth?: number | string;
   customWidth?: number;

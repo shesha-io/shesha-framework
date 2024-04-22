@@ -2,7 +2,7 @@ import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
-import { Alert, Button, Modal } from 'antd';
+import { Alert, Button, Modal, Form } from 'antd';
 import { IEntityPickerProps, IEntityPickerState } from './models';
 import { nanoid } from '@/utils/uuid';
 import { IModalProps } from '@/providers/dynamicModal/models';
@@ -31,9 +31,10 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
     width,
     outcomeValueFunc,
     incomeValueFunc,
-    onCloseModal,
+    onCloseModal
   } = props;
 
+  const [form] = Form.useForm();
   const { styles } = useStyles();
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({ showModal: true });
@@ -88,10 +89,12 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
     isVisible: false,
     formId: addNewRecordsProps?.modalFormId,
     title: addNewRecordsProps?.modalTitle,
-    showModalFooter: addNewRecordsProps?.showModalFooter,
+    showModalFooter: false, //doing this allows the modal to depend solely on the footerButtons prop
     submitHttpVerb: addNewRecordsProps?.submitHttpVerb,
     onSuccessRedirectUrl: addNewRecordsProps?.onSuccessRedirectUrl,
     width: addNewRecordsProps?.modalWidth,
+    buttons: addNewRecordsProps?.buttons,
+    footerButtons: addNewRecordsProps?.footerButtons,
     onSubmitted: (localValue: any) => {
       if (onDblClick) {
         onDblClick(localValue);
@@ -212,7 +215,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
       onCancel={handleCancel}
       width={isSmall ? '90%' : width}
       okText="Select"
-      footer={modalProps?.showModalFooter == false ? null : footer}
+      footer={footer}
     >
       <>
         <Alert message="Double click an item to select" type="info" />

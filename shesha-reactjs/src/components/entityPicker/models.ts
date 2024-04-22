@@ -22,9 +22,11 @@ export interface IAddNewRecordProps {
   modalFormId?: FormIdentifier;
   modalTitle?: string;
   showModalFooter?: boolean;
+  footerButtons?: 'default' | 'custom' | 'none';
   submitHttpVerb?: 'POST' | 'PUT';
   onSuccessRedirectUrl?: string;
   modalWidth?: number | string;
+  buttons?: []
 }
 
 export type IncomeValueFunc = (value: any, args: any) => string;
