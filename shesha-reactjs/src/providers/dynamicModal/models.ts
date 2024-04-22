@@ -98,7 +98,7 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
    */
   onSuccessRedirectUrl?: string;
 
-  footerButtons?: 'default' | 'custom' | 'none';
+  footerButtons?: 'none' | 'default' | 'custom';
 
   buttons?: ButtonGroupItemProps[];
 }
