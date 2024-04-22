@@ -2,16 +2,19 @@ import { nanoid } from '@/utils/uuid';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormIdentifier } from '../../form/models';
+import { ButtonGroupItemProps } from '@/index';
 
 export interface IShowModalActionArguments {
   modalTitle: string;
   formId: FormIdentifier;
   formMode?: 'edit' | 'readonly';
-  showModalFooter?: boolean;
   additionalProperties?: IKeyValue[];
   modalWidth?: number | string;
   customWidth?: number;
   widthUnits?: '%' | 'px';
+  buttons?: ButtonGroupItemProps[];
+  footerButtons?: 'default' | 'custom' | 'none';
+  showModalFooter?: boolean;
   /**
    * If specified, the form data will not be fetched, even if the GET Url has query parameters that can be used to fetch the data.
    * This is useful in cases whereby one form is used both for create and edit mode
