@@ -2,7 +2,7 @@ import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
-import { Alert, Button, Modal, Form } from 'antd';
+import { Alert, Button, Modal } from 'antd';
 import { IEntityPickerProps, IEntityPickerState } from './models';
 import { nanoid } from '@/utils/uuid';
 import { IModalProps } from '@/providers/dynamicModal/models';
@@ -34,7 +34,6 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
     onCloseModal
   } = props;
 
-  const [form] = Form.useForm();
   const { styles } = useStyles();
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({ showModal: true });
