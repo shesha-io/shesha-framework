@@ -24,7 +24,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     const { globalState } = useGlobalState();
 
     const {
-        propertyName: conponentName,
         hideBorder,
         range,
         value,
@@ -41,7 +40,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         style,
         defaultToMidnight,
         propertyName,
-        dateFormat = "DD MMM YYYY",
+        dateFormat = "DD/MM/YYYY",
         ...rest
     } = props;
 

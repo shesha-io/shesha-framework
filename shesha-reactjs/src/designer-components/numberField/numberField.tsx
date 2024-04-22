@@ -35,6 +35,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
 
     const [numberFormat, setNumberFormat] = React.useState<string>(null);
 
+
     useEffect(() => {
       (async () => {
         try {
@@ -46,9 +47,8 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
         console.error('Error fetching format data:', error);
       }
     })();
-  }, [numberFormat]); 
+  },[properties, model?.propertyName]);
   
-
     return (
       <ConfigurableFormItem
         model={model}
