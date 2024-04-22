@@ -56,17 +56,21 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     const [dateFormat, setDateFormat] = React.useState<string>(model?.dateFormat || DATE_TIME_FORMATS.date);
                 
     useEffect(() => {
-      const fetchData = async () => {
+      const getDateFormat = async () => {
         try {
           const response = await getDataProperty(properties, model?.propertyName, metaProperties);
         setDateFormat(response ? response : dateFormat);
+        console.log(model.propertyName, ' Date field response: ', response)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
+
+    if(!model?.dateFormat){
+      getDateFormat();
+    }
     
-    fetchData();
-  }, []);
+  }, [dateFormat, model]);
 
     return (
       <Fragment>

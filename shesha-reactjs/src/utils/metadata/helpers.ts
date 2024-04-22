@@ -58,20 +58,27 @@ export const getFullPath = (property: IPropertyMetadata) => {
 };
 
 export const getDataProperty = async (properties: IPropertyMetadata[], name: string, metaProperties: NestedProperties, propertyName: string = 'dataFormat') => {
-const property = properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
+  const property = properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
 
-console.log(property, name, properties)
   if (property) {
     return property;
   }
 
-  const entityIndex = properties.findIndex(p => p.dataType === 'entity');
-  if (entityIndex !== -1 && name) {
-    const entityProperties = await metaProperties[entityIndex]?.properties();
-    if (entityProperties) {
-      
-      return entityProperties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
-    }
+  const entityIndexes = [];
+
+  properties.forEach((prop, i) => {
+    if(prop.dataType === DataTypes.entityReference) entityIndexes.push(i);
+  });
+
+  const entityProperties = [];
+
+  for(let i = 0; i < entityIndexes.length; i++) {
+    const props = await metaProperties[entityIndexes[i]]?.properties();
+    entityProperties.push(...props);
+  }
+  
+  if (entityProperties) {
+    return entityProperties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
   }
 
   return null;

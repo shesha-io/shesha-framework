@@ -33,22 +33,20 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     const { formMode, formData } = useForm();
     const { globalState } = useGlobalState();
 
-    const [numberFormat, setNumberFormat] = React.useState<string>('');
+    const [numberFormat, setNumberFormat] = React.useState<string>(null);
 
     useEffect(() => {
-      const getFormat = async () => {
+      (async () => {
         try {
-          console.log(model.propertyName)
           const response = await getDataProperty(properties, model?.propertyName, metaProperties);
-          setNumberFormat(response ? response : numberFormat);
-          console.log(response)
+          if(response !== null) {
+            setNumberFormat(response);
+          }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching format data:', error);
       }
-    };
-
-    getFormat();
-  }, []); 
+    })();
+  }, [numberFormat]); 
   
 
     return (
