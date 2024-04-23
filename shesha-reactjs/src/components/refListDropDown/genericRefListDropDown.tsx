@@ -50,7 +50,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         : [getLabeledValue(localValue as TValue, allOptions)];
     } else {
       const labeledValue = getLabeledValue(localValue as TValue, allOptions);
-      return {...labeledValue, label: labeledValue.label === 'unknown'? null : labeledValue.label}
+      return {...labeledValue, label: labeledValue.label === 'unknown'? null : labeledValue.label};
     };
   };
 
