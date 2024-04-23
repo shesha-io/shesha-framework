@@ -11,10 +11,7 @@ export const colors = {
   primary: primaryColor,
   success: "#14a38b",
   warning: "#f2ac57",
-};
-
-export const sizesPx = {
-  inputHeight: "50px",
+  greyLine: "#d3d3d3",
 };
 
 export const screenSize = {

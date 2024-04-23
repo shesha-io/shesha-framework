@@ -5,6 +5,8 @@ import formSettingsJson from './formSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { useFormDesigner } from '@/providers/formDesigner';
+import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
+import { useFormPersister } from '@/providers/formPersisterProvider';
 
 export interface IFormSettingsEditorProps {
   isVisible: boolean;
@@ -15,12 +17,15 @@ export interface IFormSettingsEditorProps {
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
   const [form] = Form.useForm();
   const { formSettings, updateFormSettings } = useFormDesigner();
+  const { formProps } = useFormPersister();
 
   const onSave = values => {
     if (!readOnly)
       updateFormSettings(values);
     close();
   };
+  
+  const sourcesFolder = `/forms/${formProps.module}/${formProps.name}`;
 
   return (
     <Modal
@@ -42,16 +47,18 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
             key: "form",
             label: "Form",
             children: (
-              <ConfigurableForm
-                layout="horizontal"
-                labelCol={{ span: 7 }}
-                wrapperCol={{ span: 17 }}
-                mode={readOnly ? 'readonly' : 'edit'}
-                form={form}
-                onFinish={onSave}
-                markup={formSettingsJson as FormMarkup}
-                initialValues={formSettings}
-              />
+              <SourceFilesFolderProvider folder={sourcesFolder}>
+                <ConfigurableForm
+                  layout="horizontal"
+                  labelCol={{ span: 7 }}
+                  wrapperCol={{ span: 17 }}
+                  mode={readOnly ? 'readonly' : 'edit'}
+                  form={form}
+                  onFinish={onSave}
+                  markup={formSettingsJson as FormMarkup}
+                  initialValues={formSettings}
+                />
+              </SourceFilesFolderProvider>
             )
           },
           {

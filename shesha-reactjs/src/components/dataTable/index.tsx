@@ -41,7 +41,7 @@ import {
   standardCellComponentTypes,
 } from '@/providers/datatableColumnsConfigurator/models';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
-import { executeScriptSync } from '@/providers/form/utils';
+import { executeScriptSync, useApplicationContextData } from '@/providers/form/utils';
 import moment from 'moment';
 import { axiosHttp } from '@/utils/fetchers';
 import { IAnyObject } from '@/interfaces';
@@ -106,6 +106,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const store = useDataTableStore();
   const { formMode, formData, setFormData } = useForm(false) ?? { formMode: 'readonly', formData: {} };
   const { globalState, setState: setGlobalState } = useGlobalState();
+  const appContextData = useApplicationContextData();
 
   if (tableRef) tableRef.current = store;
 
@@ -211,7 +212,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const onNewRowInitializeExecuter = useMemo<Function>(() => {
     return props.onNewRowInitialize
-      ? new Function('formData, globalState, http, moment', props.onNewRowInitialize)
+      ? new Function('formData, globalState, http, moment, application', props.onNewRowInitialize)
       : null;
   }, [props.onNewRowInitialize]);
 
@@ -220,7 +221,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ? () => {
           // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
           //return onNewRowInitializeExecuter(formData, globalState);
-          const result = onNewRowInitializeExecuter(formData ?? {}, globalState, axiosHttp(backendUrl), moment);
+          const result = onNewRowInitializeExecuter(formData ?? {}, globalState, axiosHttp(backendUrl), moment, appContextData);
           return Promise.resolve(result);
         }
       : () => {
@@ -251,6 +252,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
             formData: formData,
             globalState: globalState,
             moment: moment,
+            application: appContextData,
           })
         );
       }
@@ -379,9 +381,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave) return (data) => Promise.resolve(data);
 
-    const executer = new Function('data, formData, globalState, http, moment', onRowSave);
+    const executer = new Function('data, formData, globalState, http, moment, application', onRowSave);
     return (data, formData, globalState) => {
-      const preparedData = executer(data, formData, globalState, axiosHttp(backendUrl), moment);
+      const preparedData = executer(data, formData, globalState, axiosHttp(backendUrl), moment, appContextData);
       return Promise.resolve(preparedData);
     };
   }, [onRowSave, backendUrl]);

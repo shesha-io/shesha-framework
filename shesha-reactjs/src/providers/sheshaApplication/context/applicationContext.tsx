@@ -1,20 +1,40 @@
-import React, { FC, PropsWithChildren, useEffect, useState } from 'react';
+import React, { FC, PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { SheshaCommonContexts } from '../../dataContextManager/models';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
-import { ApplicationContext, IApplicationContext } from '../publicApi';
+import { ApplicationApi, IApplicationApi } from '../publicApi/applicationApi';
 import { useApplicationContextMetadata } from '../publicApi/metadata';
 import { useHttpClient } from '../publicApi/http/hooks';
 import { useAuthState } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
+import { useCacheProvider } from '@/hooks/useCache';
+import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/useEntityMetadataFetcher';
+import { MetadataBuilder } from '@/utils/metadata/metadataBuilder';
 
 export interface IApplicationDataProviderProps {
 
 }
 
+export interface ApplicationPluginRegistration {
+  name: string;
+  buildMetadata: (builder: MetadataBuilder) => void;
+  data: any;
+}
+
+export interface IApplicationActionsContext {
+  registerPlugin: (plugin: ApplicationPluginRegistration) => void;
+  unregisterPlugin: (pluginName: string) => void;
+  getPlugin: (pluginName: string) => ApplicationPluginRegistration;
+}
+export const ApplicationActionsContext = createContext<IApplicationActionsContext>(undefined);
+
 export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
-  const contextMetadata = useApplicationContextMetadata();
+  const [plugins, setPlugins] = useState<ApplicationPluginRegistration[]>([]);
   const httpClient = useHttpClient();
-  const [contextData] = useState<IApplicationContext>(() => new ApplicationContext(httpClient));
+  const cacheProvider = useCacheProvider();
+  const metadataFetcher = useEntityMetadataFetcher();
+
+  // inject fields from plugins
+  const [contextData] = useState<IApplicationApi>(() => new ApplicationApi(httpClient, cacheProvider, metadataFetcher));
 
   const { loginInfo } = useAuthState(false) ?? {};
   useEffect(() => {
@@ -30,17 +50,58 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
     contextData.user.setProfileInfo(profile);
   }, [loginInfo, contextData.user]);
 
-  return (
-    <DataContextBinder
-      id={SheshaCommonContexts.ApplicationContext}
-      name={SheshaCommonContexts.ApplicationContext}
-      description={'Application context'}
-      type={'root'}
+  const registerPlugin = useCallback((plugin: ApplicationPluginRegistration) => {
+    setPlugins(p => [...p, plugin]);
+    // register property
+    contextData.addPlugin({ name: plugin.name, data: plugin.data });
+  }, [setPlugins]);
 
-      metadata={contextMetadata}
-      data={contextData}
-    >
-      {children}
-    </DataContextBinder>
+  const unregisterPlugin = useCallback((pluginName: string) => {
+    setPlugins(p => p.filter(p => p.name !== pluginName));
+  }, [setPlugins]);
+
+  const contextMetadata = useApplicationContextMetadata({ plugins }); // inject meta from plugins
+
+  const getPlugin = (name: string) => {
+    return plugins.find(p => p.name === name);
+  };
+
+  return (
+    <ApplicationActionsContext.Provider value={{ registerPlugin, unregisterPlugin, getPlugin }}>
+      <DataContextBinder
+        id={SheshaCommonContexts.ApplicationContext}
+        name={SheshaCommonContexts.ApplicationContext}
+        description={'Application context'}
+        type={'root'}
+
+        metadata={contextMetadata}
+        data={contextData}
+      >
+        {children}
+      </DataContextBinder>
+    </ApplicationActionsContext.Provider>
   );
+};
+
+export const useApplicationActions = (): IApplicationActionsContext => {
+  const context = useContext(ApplicationActionsContext);
+
+  if (context === undefined) {
+    throw new Error('useApplicationActions must be used within a ApplicationActionsContext');
+  }
+
+  return context;
+};
+
+export const useApplicationPlugin = (plugin: ApplicationPluginRegistration) => {
+  const { registerPlugin, unregisterPlugin } = useApplicationActions();
+  useEffect(() => {
+    console.log('LOG: register plugin', plugin);
+    registerPlugin(plugin);
+
+    return () => {
+      console.log('LOG: unregister plugin', plugin.name);
+      unregisterPlugin(plugin.name);
+    };
+  }, [registerPlugin, unregisterPlugin, plugin.name]);
 };

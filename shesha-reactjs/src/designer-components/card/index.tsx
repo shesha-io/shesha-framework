@@ -1,6 +1,5 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { IToolboxComponent } from '@/interfaces';
-import { DataTypes } from '@/interfaces/dataTypes';
 import { useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
 import { getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -16,7 +15,6 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   type: 'card',
   name: 'Card',
   icon: <CodeSandboxSquareFilled />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { formMode, hasVisibleChilds } = useForm();
@@ -35,6 +33,8 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
         />
       ) : null;
 
+    if (model.hidden) return null;
+
     if (model.hideWhenEmpty && formMode !== 'designer') {
       const childsVisible = hasVisibleChilds(model.content.id);
       if (!childsVisible) return null;
@@ -42,7 +42,12 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
 
     return (
       <ParentProvider model={model}>
-        <Card title={title} extra={extra} style={getLayoutStyle(model, { data, globalState })}>
+        <Card
+          className={model.className}
+          title={title}
+          extra={extra}
+          style={getLayoutStyle(model, { data, globalState })}
+        >
           <ComponentsContainer
             containerId={model?.content?.id}
             dynamicComponents={model?.isDynamic ? model?.content.components : []}

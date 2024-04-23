@@ -8,9 +8,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "L3eN-eBeygd1JF9CcFTSb",
@@ -36,7 +35,7 @@
             "propertyName": "label",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "label": "Label",
-            "version": 0,
+            "version": 3,
             "textType": "text"
           },
           {
@@ -58,8 +57,9 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "textType": "text",
@@ -72,7 +72,7 @@
             "hidden": false,
             "validate": {},
             "settingsValidationErrors": [],
-            "version": 0
+            "version": 3
           },
           {
             "id": "vdHXORT_t16LbITksJNtm",
@@ -86,21 +86,24 @@
             "showCount": false,
             "allowClear": false,
             "validate": {},
-            "settingsValidationErrors": []
+            "settingsValidationErrors": [],
+            "version": 2
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
             "type": "checkbox",
             "propertyName": "hidden",
             "parentId": "WngUqinrTrAiWGINTk0z6",
-            "label": "Hidden"
+            "label": "Hidden",
+            "version": 2
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
             "type": "checkbox",
             "propertyName": "hideLabel",
             "parentId": "WngUqinrTrAiWGINTk0z6",
-            "label": "Hide Label"
+            "label": "Hide Label",
+            "version": 2
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -116,7 +119,8 @@
             "label": "Hide border",
             "parentId": "WngUqinrTrAiWGINTk0z6",
             "hidden": false,
-            "validate": {}
+            "validate": {},
+            "version": 2
           }
         ]
       },
@@ -133,9 +137,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "7J3jg3AcmY4j3ssmRvwYK",
@@ -152,7 +155,8 @@
             "label": "Default Value",
             "validate": {},
             "settingsValidationErrors": [],
-            "description": "Enter default value of component. (formData, formMode, globalState) are exposed"
+            "description": "Enter default value of component. (formData, formMode, globalState) are exposed",
+            "version": 2
           },
           {
             "id": "d2648d0e-4664-4fee-ab4a-b14e556d957b",
@@ -181,8 +185,9 @@
             "defaultValue": [
               "single"
             ],
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "bf5660d5-cae0-4df9-99f2-cbaf941ae7c7",
@@ -203,8 +208,9 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           },
           {
             "id": "ELxx5jarWvInJXJF5xHN2",
@@ -213,7 +219,11 @@
             "label": "Container1",
             "labelAlign": "right",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
-            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'referenceList';", "_mode": "code", "_value": false},
+            "hidden": {
+              "_code": "return  getSettingValue(data.dataSourceType) !== 'referenceList';",
+              "_mode": "code",
+              "_value": false
+            },
             "direction": "vertical",
             "justifyContent": "left",
             "settingsValidationErrors": [],
@@ -226,9 +236,8 @@
                 "labelAlign": "right",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
                 "hidden": false,
-
                 "isDynamic": false,
-                "version": 0,
+                "version": 2,
                 "convertToFullId": true,
                 "placeholder": "",
                 "description": "",
@@ -248,7 +257,8 @@
                 "isDynamic": false,
                 "validate": {},
                 "settingsValidationErrors": [],
-                "modelType": "Shesha.Framework.ReferenceListItem"
+                "modelType": "Shesha.Framework.ReferenceListItem",
+                "version": 2
               },
               {
                 "id": "aad660d5-cae0-4df9-99f2-cbaf941ae7c7",
@@ -275,17 +285,22 @@
                 ],
                 "dataSourceType": "values",
                 "defaultValue": "simple",
-                "version": 1,
-                "referenceListId": null
+                "version": 5,
+                "referenceListId": null,
+                "valueFormat": "listItem"
               },
               {
-                "id": "16ab0599-914d-4d2d-875c-765a495472f8", 
+                "id": "16ab0599-914d-4d2d-875c-765a495472f8",
                 "type": "codeEditor",
                 "propertyName": "incomeCustomJs",
                 "label": "Key value",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
                 "validate": {},
-                "hidden": {"_code": "return  getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false},
+                "hidden": {
+                  "_code": "return  getSettingValue(data?.valueFormat) !== 'custom';",
+                  "_mode": "code",
+                  "_value": false
+                },
                 "settingsValidationErrors": [],
                 "description": "Return key from the value",
                 "exposedVariables": [
@@ -294,7 +309,15 @@
                     "description": "Field value",
                     "type": "object"
                   }
-                ]
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getKeyValue"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.addObject(\"value\", \"Field value\tobject\").build();"
               },
               {
                 "id": "26ab0599-914d-4d2d-875c-765a495472f8",
@@ -303,7 +326,11 @@
                 "label": "Custom value",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
                 "validate": {},
-                "hidden": {"_code": "return  getSettingValue(data?.valueFormat) !== 'custom';", "_mode": "code", "_value": false},
+                "hidden": {
+                  "_code": "return  getSettingValue(data?.valueFormat) !== 'custom';",
+                  "_mode": "code",
+                  "_value": false
+                },
                 "settingsValidationErrors": [],
                 "description": "Return value that will be stored as field value",
                 "exposedVariables": [
@@ -312,7 +339,15 @@
                     "description": "Fetched item",
                     "type": "ReferenceListItemDto"
                   }
-                ]
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getCustomValue"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.addObject(\"value\", \"Field value\tobject\").build();"
               },
               {
                 "id": "36ab0599-914d-4d2d-875c-765a495472f8",
@@ -329,7 +364,15 @@
                     "description": "Fetched item",
                     "type": "ReferenceListItemDto"
                   }
-                ]
+                ],
+                "version": 3,
+                "language": "typescript",
+                "placeholder": "",
+                "wrapInTemplate": true,
+                "templateSettings": {
+                  "functionName": "getCustomLabel"
+                },
+                "availableConstantsExpression": "    return metadataBuilder.addObject(\"value\", \"Field value\tobject\").build();"
               },
               {
                 "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
@@ -340,10 +383,11 @@
                 "autoSize": false,
                 "showCount": false,
                 "allowClear": true,
-                "description": "Pass an integer array of values you want to ignore like so: [1, 2, 3]. Each represents ReferenceList.ItemValue"
+                "description": "Pass an integer array of values you want to ignore like so: [1, 2, 3]. Each represents ReferenceList.ItemValue",
+                "version": 2
               }
             ],
-            "version": 0,
+            "version": 2,
             "flexWrap": "wrap"
           },
           {
@@ -352,8 +396,12 @@
             "propertyName": "dataSourceUrl",
             "parentId": "PSXX7u5GWT0W8RXnVW3Ao",
             "label": "Data Source Url",
-            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'url';", "_mode": "code", "_value": false},
-            "version": 0,
+            "hidden": {
+              "_code": "return  getSettingValue(data.dataSourceType) !== 'url';",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 3,
             "textType": "text"
           },
           {
@@ -366,7 +414,13 @@
             "labelName": "label",
             "valueTitle": "Value",
             "valueName": "value",
-            "hidden": {"_code": "return  getSettingValue(data.dataSourceType) !== 'values';", "_mode": "code", "_value": false}
+            "hidden": {
+              "_code": "return  getSettingValue(data.dataSourceType) !== 'values';",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 2,
+            "mode": "dialog"
           }
         ]
       },
@@ -383,9 +437,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "S57wmle4q6DFr4e-EZBRI",
@@ -461,7 +514,15 @@
                 "description": "Setting the global state of the application",
                 "type": "(payload: { key: string, data: any } ) => void"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "onChange"
+            },
+            "availableConstantsExpression": "    return metadataBuilder\r\n        .addStandard([\"shesha:formData\", \"shesha:globalState\", \"shesha:http\", \"shesha:message\", \"shesha:moment\", \"shesha:setGlobalState\", \"shesha:contexts\", \"shesha:formContext\"])\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
           }
         ]
       },
@@ -478,9 +539,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "rE2CibkEdbZsNetuGU3y4",
@@ -494,7 +554,8 @@
             "type": "checkbox",
             "propertyName": "validate.required",
             "parentId": "tGXA95wmOf54IsiPT-WgW",
-            "label": "Required"
+            "label": "Required",
+            "version": 2
           }
         ]
       },
@@ -511,9 +572,8 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
-      "version": 1,
+      "version": 4,
       "expandIconPosition": "start",
       "header": {
         "id": "SQLqOqH5GQNgDUE72HGw5",
@@ -537,7 +597,15 @@
                 "description": "Form values",
                 "type": "object"
               }
-            ]
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -564,8 +632,9 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 1,
-            "referenceListId": null
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
           }
         ]
       },

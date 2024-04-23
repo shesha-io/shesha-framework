@@ -1,4 +1,4 @@
-import { Button, Input, Select } from 'antd';
+import { Button, Space, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
@@ -139,7 +139,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   };
 
   return (
-    <Input.Group>
+    <Space.Compact style={{ width: "100%" }}>
       <Select<string>
         disabled={readOnly}
         options={options}
@@ -163,7 +163,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         onCancel={onCancelConfigureClick}
         propertyFilter={propertyFilter}
       />
-    </Input.Group>
+    </Space.Compact>
   );
 };
 

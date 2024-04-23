@@ -1,6 +1,6 @@
 //export * from '../providers/form/utils';
 export { 
-  useApplicationContext, 
+  useAvailableConstantsData, 
   useFormProviderContext, 
   getActualModel, 
   upgradeComponent, 

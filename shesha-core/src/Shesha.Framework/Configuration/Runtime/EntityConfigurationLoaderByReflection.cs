@@ -5,6 +5,7 @@ using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -66,6 +67,7 @@ namespace Shesha.Configuration.Runtime
                                           : entityAtt.FriendlyName;
             }
 
+            config.Accessor = config.EntityType.GetTypeAccessor();
             config.TypeShortAlias = config.EntityType.GetTypeShortAlias();
 
             LoadChangeLoggingConfiguration(config);

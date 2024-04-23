@@ -235,22 +235,6 @@
             "settingsValidationErrors": []
           },
           {
-            "textType": "text",
-            "id": "b1M4TO4K1t3pl8pyM2mOK",
-            "type": "textField",
-            "propertyName": "className",
-            "componentName": "className",
-            "label": "Custom CSS Class",
-            "labelAlign": "right",
-            "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 2,
-            "description": "Custom CSS Class to add to this component",
-            "validate": {},
-            "settingsValidationErrors": []
-          },
-          {
             "id": "e029c4ed-6415-412f-be9e-73dddff4037c",
             "type": "codeEditor",
             "propertyName": "style",

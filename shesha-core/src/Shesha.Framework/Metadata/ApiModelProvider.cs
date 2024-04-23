@@ -60,7 +60,8 @@ namespace Shesha.Metadata
                         t != typeof(object) &&
                         !t.Namespace.StartsWith("Abp") &&
                         // skip entity types, they shouldn't be returned by the application service at all
-                        !t.IsEntityType())
+                        !t.IsEntityType() && 
+                        !t.IsJsonEntityType())
                     .ToList();
 
                 // List parameters types

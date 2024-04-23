@@ -50,12 +50,15 @@ namespace Shesha.Metadata.Dtos
         /// </summary>
         [JsonProperty("entityType")]
         [JsonPropertyName("entityType")]
-        public string EntityTypeShortAlias { get; set; }
+        public string EntityType { get; set; }
 
         /// <summary>
         /// Module the entity belongs to. Applicable when DataType = <seealso cref="DataTypes.EntityReference"/>
         /// </summary>
         public string EntityModule { get; set; }
+
+        public string TypeAccessor { get; set; }
+        public string ModuleAccessor { get; set; }
 
         [Newtonsoft.Json.JsonIgnore]
         [System.Text.Json.Serialization.JsonIgnore]
