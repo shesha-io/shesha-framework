@@ -1,4 +1,4 @@
-import { colors, sizesPx } from "@/styles/variables";
+import { colors } from "@/styles/variables";
 import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
@@ -18,10 +18,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         display: flex;
         justify-content: space-between;
         background: #fff;
-        height: 80px;
+        height: auto;
         border-bottom: 1px solid #d9d9d9;
         line-height: 80px;
         padding: 0 10%;
+        overflow: hidden;
       }
 
       .${prefixCls}-layout-content {
@@ -99,6 +100,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
         }
 
+        .${prefixCls}-btn-icon-only {
+          margin-left: 6px !important;
+          min-width: 40px !important
+        }
+
         .${prefixCls}-input-affix-wrapper,
         .${prefixCls}-select > .${prefixCls}-select-selector,
         .${prefixCls}-picker,
@@ -107,7 +113,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           border: 2px solid #d8d8d8;
           border-radius: 5px;
           font-size: 18px;
-          height: ${sizesPx.inputHeight};
           padding-left: 22px;
           padding-right: 22px;
 
@@ -124,10 +129,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
         }
 
-        .${prefixCls}-select {
-          height: ${sizesPx.inputHeight};
-        }
-
         .${prefixCls}-input-number-input-wrap {
           height: 100%;
 
@@ -135,11 +136,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             height: 100%;
             padding: 0;
           }
-        }
-
-        .${prefixCls}-input-textarea-affix-wrapper,
-        .${prefixCls}-form-item-control-input-content > textarea {
-          min-height: 180px !important;
         }
 
         .${prefixCls}-input-textarea-affix-wrapper {
@@ -172,23 +168,24 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           padding: 18px 36px;
 
           &.${prefixCls}-alert-error {
-            background-color: ${colors.error};
+            background-color: ${token.colorError};
           }
 
           &.${prefixCls}-alert-info {
-            background-color: ${colors.info};
+            background-color: ${token.colorInfo};
           }
 
           &.${prefixCls}-alert-success {
-            background-color: ${colors.success};
+            background-color: ${token.colorSuccess};
           }
 
           &.${prefixCls}-alert-warning {
-            background-color: ${colors.warning};
+            background-color: ${token.colorWarning};
           }
 
           .${prefixCls}-alert-content {
-            .${prefixCls}-alert-description {
+            .${prefixCls}-alert-description,
+            .${prefixCls}-alert-message {
               color: #fff;
             }
           }

@@ -25,5 +25,10 @@ export const ShaUserIconStyledWrapper = styled(Dropdown)`
     color: #000;
     font-size: 16px;
     margin-right: ${smSpace};
+
+    @media (max-width: 500px) {
+      display: none;
+      visibility: hidden;
+    }
   }
 `;
