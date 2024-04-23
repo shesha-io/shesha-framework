@@ -28,14 +28,16 @@ const formatDate = (dateText: string, dateFormat: string) => {
 };
 
 export const formatDateStringAndPrefix = (content: string, dateFormat: string) => {
-  const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
+  const regex = /^\s*([\S\s]+?)\s+(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3})/;
   const match = content?.match(regex);
 
-  if (match) {
-    const dateString = match[0];
-    return content.replace(regex, formatDate(dateString, dateFormat));
+  if (match && match?.length > 2) {
+    const prefix = match[1] || '';
+    const dateString = match[2] || '';
+
+    return `${prefix} ${formatDate(dateString, dateFormat)}`;
   } else {
-    return content.replace(regex, formatDate(content, dateFormat));
+    return formatDate(content, dateFormat);
   }
 };
 
