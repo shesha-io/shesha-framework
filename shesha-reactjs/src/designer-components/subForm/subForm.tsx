@@ -32,6 +32,8 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     description,
   } = useSubForm();
 
+
+
   const formStatusInfo = versionStatus ? ConfigurationItemVersionStatusMap[versionStatus] : null;
 
   const showFormInfo = hasFetchedConfig && formInfoBlockVisible && Boolean(formStatusInfo && id && name);
@@ -41,7 +43,6 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   }, [loading]);
 
   const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
-
   return (
     <ShaSpin spinning={isLoading}>
       <Show when={showFormInfo}>
@@ -56,8 +57,8 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
           <ComponentsContainerProvider
             ContainerComponent={ComponentsContainerSubForm}
           >
-            <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-              <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly}/>
+            <FormItemProvider  namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol} >
+              <ComponentsContainer  containerId={ROOT_COMPONENT_KEY} readOnly={readOnly} />
             </FormItemProvider>
           </ComponentsContainerProvider>
         </div>

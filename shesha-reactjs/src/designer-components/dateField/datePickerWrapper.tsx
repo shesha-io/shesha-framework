@@ -2,9 +2,10 @@ import { DatePicker } from '@/components/antd';
 import moment, { isMoment } from 'moment';
 import React, { FC } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { useForm, useGlobalState } from '@/providers';
+import { useForm, useGlobalState, useMetadata } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
 import { getMoment } from '@/utils/date';
+import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import {
     DATE_TIME_FORMATS,
@@ -14,16 +15,20 @@ import {
     getFormat,
     getRangePickerValues,
 } from './utils';
+import { asPropertiesArray } from '@/interfaces/metadata';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
 const { RangePicker } = DatePicker;
 
 export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
+    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
+    const properties = asPropertiesArray(metaProperties, []);
 
     const { globalState } = useGlobalState();
 
     const {
+        propertyName: name,
         hideBorder,
         range,
         value,
@@ -39,18 +44,18 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         readOnly,
         style,
         defaultToMidnight,
-        propertyName,
-        dateFormat = "DD/MM/YYYY",
         ...rest
     } = props;
 
-
+    const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
     const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
+
     const defaultFormat = getDefaultFormat(props);
+
     const { formData } = useForm();
 
-    const pickerFormat = getFormat(props);
-    const formattedValue = getMoment(value, pickerFormat.toString());
+    const pickerFormat = getFormat(props, properties);
+    const formattedValue = getMoment(value, pickerFormat);
 
     const handleDatePickerChange = (localValue: any | null, dateString: string) => {
         if (!dateString?.trim()) {
@@ -58,7 +63,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             return;
         }
 
-        const newValue = isMoment(localValue) ? localValue.format(dateFormat ? dateFormat : defaultFormat) : localValue;
+        const newValue = isMoment(localValue) ? localValue.format(defaultFormat) : localValue;
 
         (onChange as TimePickerChangeEvent)(newValue, dateString);
     };
@@ -70,7 +75,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         }
 
         const dates = (values as []).map((val: any) => {
-            if (isMoment(val)) return val.format(dateFormat? dateFormat : defaultFormat);
+            if (isMoment(val)) return val.format(defaultFormat);
+
             return val;
         });
 
@@ -100,9 +106,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 className="sha-range-picker"
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
                 onChange={handleRangePicker}
-                format={dateFormat}
-                value={getRangePickerValues(value, dateFormat)}
-                defaultValue={getRangePickerValues(defaultValue, dateFormat)}
+                format={pickerFormat}
+                value={getRangePickerValues(value, pickerFormat)}
+                defaultValue={getRangePickerValues(defaultValue, pickerFormat)}
                 {...rest}
                 picker={picker}
                 showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
@@ -127,10 +133,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             showToday={showToday}
             showSecond={true}
             picker={picker}
-            format={dateFormat}
             style={evaluatedStyle}
+            format={pickerFormat}
             {...rest}
-            {...getDatePickerValue(props, dateFormat)}
+            {...getDatePickerValue(props, pickerFormat)}
             allowClear
         />
     );

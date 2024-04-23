@@ -1,20 +1,21 @@
-import { NumberOutlined } from '@ant-design/icons';
-import React, { useEffect } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { useEntityProperties } from '@/hooks';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useGlobalState, useMetadata } from '@/providers';
+import { useForm, useGlobalState } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getDataProperty } from '@/utils/metadata';
+import { getNumberFormat } from '@/utils/string';
+import { NumberOutlined } from '@ant-design/icons';
+import React from 'react';
 import NumberFieldControl from './control';
 import { INumberFieldComponentProps } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { getNumberFormat } from '@/utils/string';
-import { getDataProperty } from '@/utils/metadata';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { asPropertiesArray } from '@/interfaces/metadata';
+
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -27,28 +28,15 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
   Factory: ({ model, form }) => {
-    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
-    const properties = asPropertiesArray(metaProperties, []);
+
+
+   const properties= useEntityProperties({dataType:model.type})
 
     const { formMode, formData } = useForm();
+
     const { globalState } = useGlobalState();
 
-    const [numberFormat, setNumberFormat] = React.useState<string>(null);
 
-
-    useEffect(() => {
-      (async () => {
-        try {
-          const response = await getDataProperty(properties, model?.propertyName, metaProperties);
-          if(response !== null) {
-            setNumberFormat(response);
-          }
-      } catch (error) {
-        console.error('Error fetching format data:', error);
-      }
-    })();
-  },[properties, model?.propertyName]);
-  
     return (
       <ConfigurableFormItem
         model={model}
@@ -58,7 +46,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
           return model.readOnly ? (
             <ReadOnlyDisplayFormItem
               type="number"
-              value={getNumberFormat(value, numberFormat)}
+              value={getNumberFormat(value, getDataProperty(properties, model.propertyName))}
             />
           ) : (
             <NumberFieldControl form={form} disabled={model.readOnly} model={model} value={value} onChange={onChange} />

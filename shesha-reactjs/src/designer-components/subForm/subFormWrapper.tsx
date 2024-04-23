@@ -23,7 +23,7 @@ interface ISubFormWrapperProps
 export const SubFormWrapper: FC<ISubFormWrapperProps> = ({ style, ...props }) => {
     return (
         <SubFormProvider {...props} key={props.id}>
-            <SubForm style={style} readOnly={props.readOnly} />
+            <SubForm style={style} readOnly={props.readOnly}  />
         </SubFormProvider>
     );
 };

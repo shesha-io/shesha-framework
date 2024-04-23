@@ -1,19 +1,16 @@
 import { getDataProperty, getFormatContent } from '@/utils/metadata';
 
-export const compareValueToProperty = async (key: string, value: string, properties: Array<{ [key in string]: any }>) => {
-  const dataType = await getDataProperty(properties, key, null, 'dataType');
-  const dataFormat = await getDataProperty(properties, key, null, 'dataFormat');
+export const compareValueToProperty = (key: string, value: string, properties: Array<{ [key in string]: any }>) => {
+  const dataType = getDataProperty(properties, key, 'dataType');
+  const dataFormat = getDataProperty(properties, key, 'dataFormat');
 
   return [key, getFormatContent(value, { dataType, dataFormat })];
 };
 
-export const getQuickViewInitialValues = async (
+export const getQuickViewInitialValues = (
   data: { [key in string]: any },
   properties: Array<{ [key in string]: any }>
-) => {
-  const entries = Object.entries(data || {});
-  const resultPromises = entries.map(([key, value]) => compareValueToProperty(key, value, properties));
-  const results = await Promise.all(resultPromises);
-  
-  return results.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
-};
+) =>
+  Object.entries(data || {})
+    .map(([key, value]) => compareValueToProperty(key, value, properties))
+    .reduce((acc, [key, value]) => ({ ...acc, ...{ [key]: value } }), {});

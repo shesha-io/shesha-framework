@@ -81,7 +81,6 @@ function useMetadata(require: boolean) {
  */
 const useMetaProperties = (dataTypes: ProperyDataType[]): IPropertyMetadata[] => {
   const meta = useMetadata(false);
-
   const properties = useMemo(() => {
     const { properties: metaProperties } = meta?.metadata ?? {};
     const properties = asPropertiesArray(metaProperties, []);

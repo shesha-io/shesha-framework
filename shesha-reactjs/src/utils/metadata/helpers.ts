@@ -1,10 +1,9 @@
-
-import ShaIcon, { IconType } from '@/components/shaIcon';
 import { IContent, formatDateStringAndPrefix } from '@/designer-components/text/utils';
+import ShaIcon, { IconType } from '@/components/shaIcon';
 import GenericOutlined from '@/icons/genericOutlined';
 import { JsonOutlined } from '@/icons/jsonOutlined';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { IModelMetadata, IPropertyMetadata, NestedProperties, isEntityMetadata, isEntityReferencePropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isEntityReferencePropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { camelcaseDotNotation, getNumberFormat } from '@/utils/string';
 import { toCamelCase } from '../string';
 
@@ -57,35 +56,8 @@ export const getFullPath = (property: IPropertyMetadata) => {
   return (prefix ?? '') === '' ? camelcaseDotNotation(name) : `${prefix}.${name}`;
 };
 
-export const getDataProperty = async (properties: IPropertyMetadata[], name: string, metaProperties: NestedProperties, propertyName: string = 'dataFormat') => {
-  const property = properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
-
-  if (property) {
-    return property;
-  }
-
-  const entityIndexes = [];
-
-  properties.forEach((prop, i) => {
-    if(prop.dataType === DataTypes.entityReference) entityIndexes.push(i);
-  });
-
-  const entityProperties = [];
-
-  for(let i = 0; i < entityIndexes.length; i++) {
-    const props = await metaProperties[entityIndexes[i]]?.properties();
-    entityProperties.push(...props);
-  }
-  
-  if (entityProperties) {
-    return entityProperties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
-  }
-
-  return null;
-};
-
-
-
+export const getDataProperty = (properties: IPropertyMetadata[], name: string, propertyName: string = 'dataFormat') =>
+  properties.find(({ path }) => toCamelCase(path) === name)?.[propertyName];
 
 export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>) => {
   const { dataType, dataFormat } = metadata || {};

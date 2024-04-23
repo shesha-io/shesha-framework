@@ -28,7 +28,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
-    const { formMode } = useForm();
+    const { formMode} = useForm();
     const { data: formData } = useFormData();
 
     const { namePrefix } = useFormItem();
@@ -44,7 +44,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
         wrapperCol={{ span: model?.hideLabel ? 24 : model?.wrapperCol }}
       >
         {(value, onChange) => {
-          return <SubFormWrapper {...model} value={value} propertyName={name} style={getStyle(model?.style, formData)} onChange={onChange} />;
+          return <SubFormWrapper {...model} value={value} propertyName={name}  style={getStyle(model?.style, formData)} onChange={onChange} />;
         }}
       </ConfigurableFormItem>
     );

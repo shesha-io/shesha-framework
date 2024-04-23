@@ -23,6 +23,7 @@ import { FormIdentifier } from '@/providers/form/models';
 import { get } from '@/utils/fetchers';
 import { getQuickViewInitialValues } from './utils';
 import { useStyles } from '../entityReference/styles/styles';
+import { useEntityProperties } from '@/hooks';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -145,6 +146,8 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   const { getEntityFormId } = useConfigurationItemsLoader();
   const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier);
+  const properties=useEntityProperties({dataType:props.className})
+
 
   useEffect(() => {
     if (props.className && !formConfig)
@@ -153,8 +156,9 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
       });
   }, [props.className, props.formType, formConfig]);
 
+  
   return formConfig ? (
-    <QuickView {...props} formIdentifier={formConfig} />
+    <QuickView {...props} formIdentifier={formConfig} dataProperties={properties} />
   ) : (
     <Button type="link">
       <span>

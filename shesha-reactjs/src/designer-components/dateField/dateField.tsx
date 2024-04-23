@@ -1,12 +1,12 @@
 import { CalendarOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import moment from 'moment';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDateEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useMetadata, useSheshaApplication } from '@/providers';
+import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
@@ -18,8 +18,8 @@ import {
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { DatePickerWrapper } from './datePickerWrapper';
+import { useEntityProperties } from '@/hooks';
 import { getDataProperty } from '@/utils';
-import { asPropertiesArray } from '@/interfaces/metadata';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -36,6 +36,8 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
+    const properties= useEntityProperties({dataType:model.type})
+
 
     const eventProps = {
       model,
@@ -50,23 +52,9 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       setGlobalState,
     };
 
-    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
-    const properties = asPropertiesArray(metaProperties, []);
-    
-    const [dateFormat, setDateFormat] = React.useState<string>(null);
-                
+    console.log("properties", properties)
 
-    useEffect(() => {
-      (async () => {
-        try {
-          const response = await getDataProperty(properties, model?.propertyName, metaProperties);
-          setDateFormat(response && !model.dateFormat? response : model.dateFormat || DATE_TIME_FORMATS.date);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    })();
-  },[properties, model?.propertyName, metaProperties]);
-    
+    const globalDateFormat=getDataProperty(properties, model.propertyName);
 
     return (
       <Fragment>
@@ -79,7 +67,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
                 onChange(...args);
             };
             
-            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} dateFormat={dateFormat}/>;
+            return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} dateFormat={model?.dateFormat||globalDateFormat} />;
           }}
         </ConfigurableFormItem>
       </Fragment>
