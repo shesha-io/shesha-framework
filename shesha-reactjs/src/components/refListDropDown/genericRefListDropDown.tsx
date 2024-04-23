@@ -48,7 +48,10 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
             return getLabeledValue(o, allOptions);
           })
         : [getLabeledValue(localValue as TValue, allOptions)];
-    } else return getLabeledValue(localValue as TValue, allOptions);
+    } else {
+      const labeledValue = getLabeledValue(localValue as TValue, allOptions);
+      return {...labeledValue, label: labeledValue.label === 'unknown'? null : labeledValue.label}
+    };
   };
 
   const options = useMemo<ISelectOption<TValue>[]>(() => {

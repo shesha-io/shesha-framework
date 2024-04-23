@@ -54,7 +54,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
       } else {
         result.push(column.propertiesToFetch);
         // special handling for entity references: expand properties list to include `id` and `_displayName`
-        if (column.isEnitty) {
+        if (column.isEntity) {
           const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
           requiredProps.forEach(rp => {
             if (!result.includes(rp))

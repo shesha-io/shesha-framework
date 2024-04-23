@@ -220,7 +220,7 @@ export const prepareColumn = (
       propertyName: column.propertyName,
       
       propertiesToFetch: column.propertyName,
-      isEnitty: srvColumn?.dataType === 'entity',
+      isEntity: srvColumn?.dataType === 'entity',
 
       createComponent: column.createComponent,
       editComponent: column.editComponent,
