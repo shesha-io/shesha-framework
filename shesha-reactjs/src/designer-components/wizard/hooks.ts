@@ -74,13 +74,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     if (!components) return null;
     const flat = componentsTreeToFlatStructure(toolbox, components);
     const properties = [];
-    for(var comp in flat.allComponents)
-      if (Object.hasOwn(flat.allComponents, comp))
-        properties.push(flat.allComponents[comp].propertyName.split("."));
+    for (var comp in flat.allComponents)
+      if (Object.hasOwn(flat.allComponents, comp)) {
+        const component = flat.allComponents[comp];
+        if (component.propertyName)
+          properties.push(component.propertyName.split("."));
+      }
     return properties;
   }, [currentStep]);
-  
-  const argumentsEvaluationContext = {...allData, fieldsToValidate: componentsNames };
+
+  const argumentsEvaluationContext = { ...allData, fieldsToValidate: componentsNames };
 
   useEffect(() => {
     setCurrent(getDefaultStepIndex(defaultActiveStep));
@@ -186,16 +189,16 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       (tab) => tab.afterCancelActionConfiguration
     );
 
-    const done = async () => {
-      try { 
-        executeActionIfConfigured(
-          (tab) => tab.beforeDoneActionConfiguration,
-          (tab) => tab.afterDoneActionConfiguration
-        );
-      } catch (errInfo) {
-        console.log("Could'nt Proceed", errInfo);
-      }
-    };
+  const done = async () => {
+    try {
+      executeActionIfConfigured(
+        (tab) => tab.beforeDoneActionConfiguration,
+        (tab) => tab.afterDoneActionConfiguration
+      );
+    } catch (errInfo) {
+      console.log("Could'nt Proceed", errInfo);
+    }
+  };
 
   const setStep = (stepIndex) => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
@@ -272,7 +275,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   }, [current, visibleSteps]);
 
   dataContext.updateApi({ back, cancel, done, content, next, setStep }); // update context api to use relevant State
-  
+
   /* Data Context section */
 
   return { back, components, current, currentStep, cancel, done, content, next, visibleSteps };
