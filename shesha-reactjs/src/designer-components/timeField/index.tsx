@@ -35,7 +35,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
-    const properties= useEntityProperties({dataType:model.type})
+    const properties = useEntityProperties({dataType:model.type});
 
     
     const eventProps = {
@@ -51,7 +51,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
       setGlobalState,
     };
 
-    const globalFormat=getDataProperty(properties, model.propertyName);
+    const globalFormat = getDataProperty(properties, model.propertyName);
 
     return (
       <ConfigurableFormItem model={model}>

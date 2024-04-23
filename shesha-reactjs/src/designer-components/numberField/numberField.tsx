@@ -30,7 +30,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   Factory: ({ model, form }) => {
 
 
-   const properties= useEntityProperties({dataType:model.type})
+   const properties = useEntityProperties({dataType:model.type});
 
     const { formMode, formData } = useForm();
 

@@ -36,7 +36,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
-    const properties= useEntityProperties({dataType:model.type})
+    const properties = useEntityProperties({dataType:model.type});
 
 
     const eventProps = {
@@ -52,9 +52,8 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       setGlobalState,
     };
 
-    console.log("properties", properties)
 
-    const globalDateFormat=getDataProperty(properties, model.propertyName);
+    const globalDateFormat = getDataProperty(properties, model.propertyName);
 
     return (
       <Fragment>
