@@ -5,6 +5,8 @@ import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier } from '@/providers/form/models';
 import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
+import { ModalFooterButtons } from '@/providers/dynamicModal/models';
+import { ButtonGroupItemProps } from '@/index';
 
 interface IWrappedEntityPickerProps {
   entityType?: string;
@@ -22,11 +24,11 @@ export interface IAddNewRecordProps {
   modalFormId?: FormIdentifier;
   modalTitle?: string;
   showModalFooter?: boolean;
-  footerButtons?: 'default' | 'custom' | 'none';
+  footerButtons?: ModalFooterButtons;
   submitHttpVerb?: 'POST' | 'PUT';
   onSuccessRedirectUrl?: string;
   modalWidth?: number | string;
-  buttons?: []
+  buttons?: ButtonGroupItemProps[];
 }
 
 export type IncomeValueFunc = (value: any, args: any) => string;

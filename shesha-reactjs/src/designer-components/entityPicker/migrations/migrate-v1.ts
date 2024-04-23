@@ -89,8 +89,7 @@ const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0)
         formId: oldColumn.modalFormId,
         additionalProperties: oldColumn.additionalProperties,
         modalWidth: oldColumn.modalWidth,
-        buttons: convertedProps.buttons,
-        footerButtons: convertedProps.footerButtons,
+        showModalFooter: convertedProps?.showModalFooter ?? false,
         skipFetchData: convertedProps?.skipFetchData,
         submitHttpVerb: convertedProps?.submitHttpVerb,
     };

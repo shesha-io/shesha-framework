@@ -3,6 +3,7 @@ import { IKeyValue } from '@/interfaces/keyValue';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormIdentifier } from '../../form/models';
 import { ButtonGroupItemProps } from '@/index';
+import { ModalFooterButtons } from '../models';
 
 export interface IShowModalActionArguments {
   modalTitle: string;
@@ -13,7 +14,7 @@ export interface IShowModalActionArguments {
   customWidth?: number;
   widthUnits?: '%' | 'px';
   buttons?: ButtonGroupItemProps[];
-  footerButtons?: 'default' | 'custom' | 'none';
+  footerButtons?: ModalFooterButtons;
   showModalFooter?: boolean;
   /**
    * If specified, the form data will not be fetched, even if the GET Url has query parameters that can be used to fetch the data.

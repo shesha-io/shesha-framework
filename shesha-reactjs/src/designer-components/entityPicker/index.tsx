@@ -5,7 +5,7 @@ import { EntityPicker } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useForm } from '@/providers';
+import { ButtonGroupItemProps, useForm } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -17,6 +17,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
+import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -39,8 +40,8 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent 
   modalWidth?: number | string | 'custom';
   customWidth?: number;
   widthUnits?: string;
-  buttons?: [];
-  footerButtons?: 'default' | 'custom' | 'none';
+  buttons?: ButtonGroupItemProps[];
+  footerButtons?: ModalFooterButtons;
 }
 
 const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
@@ -183,6 +184,12 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
           : prev['useRawValue'] === true 
             ? 'simple' 
             : 'entityReference',
+    }))
+    .add<IEntityPickerComponentProps>(8, (prev, context) => ({
+      ...prev,
+      footerButtons: context.isNew
+        ? 'default'
+        : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
   ,
   settingsFormMarkup: entityPickerSettings,

@@ -31,7 +31,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
     width,
     outcomeValueFunc,
     incomeValueFunc,
-    onCloseModal
+    onCloseModal,
   } = props;
 
   const { styles } = useStyles();

@@ -27,6 +27,8 @@ export interface IModalBaseProps {
   onCancel?: () => void;
 }
 
+export type ModalFooterButtons = 'default' | 'custom' | 'none';
+
 export interface IModalWithConfigurableFormProps extends IModalBaseProps {
   /**
    * Id of the form to be rendered on the markup
@@ -98,7 +100,7 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
    */
   onSuccessRedirectUrl?: string;
 
-  footerButtons?: 'none' | 'default' | 'custom';
+  footerButtons?: ModalFooterButtons;
 
   buttons?: ButtonGroupItemProps[];
 }
