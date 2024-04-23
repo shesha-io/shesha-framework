@@ -64,7 +64,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           font-size: 16px;
 
           .${prefixCls}-pagination-options {
-            ${prefixCls}-select-selector {
+            .${prefixCls}-select-selector {
               font-size: 16px;
             }
           }
@@ -247,6 +247,30 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
               height: 30px;
               width: 30px;
             }
+          }
+        }
+
+        .${prefixCls}-card {
+          .${prefixCls}-card-head {
+            background: ${token.colorPrimary};
+            padding: 30px 0;
+            border-bottom: none;
+  
+            .${prefixCls}-card-head-wrapper {
+              .${prefixCls}-card-head-title {
+                text-align: center;
+                font-size: 32px;
+                font-weight: bold;
+              }
+  
+              .${prefixCls}-card-extra {
+                display: none;
+              }
+            }
+          }
+  
+          .${prefixCls}-card-body {
+            border: 2px solid ${token.colorPrimary};
           }
         }
       }

@@ -3,6 +3,7 @@ import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload } from "./models";
+import { DataContextType, useDataContext } from "../dataContextProvider/contexts";
 
 export const RootContexts: string[] = [];
 
@@ -21,6 +22,7 @@ export interface IDataContextManagerActionsContext {
     getDataContexts: (topId?: string) => IDataContextDescriptor[];
     getDataContextsData: (topId?: string) => IDataContextsData;
     getDataContext: (contextId: string) => IDataContextDescriptor;
+    getNearestDataContext: (topId: string, type: DataContextType) => IDataContextDescriptor;
     getDataContextData: (contextId: string) => any;
     onChangeContext: (dataContext: IDataContextDescriptor) => void;
     onChangeContextData: () => void;
@@ -112,6 +114,11 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         return ctxs;
     };
 
+    const getNearestDataContext = (topId: string, type: DataContextType) => {
+      const dataContexts = getDataContexts(topId);
+      return dataContexts.find(x => x.type === type);
+    };
+
     const getDataContext = (contextId: string) => {
         if (!contextId)
             return undefined;
@@ -164,6 +171,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         unregisterDataContext,
         getDataContexts,
         getDataContextsData,
+        getNearestDataContext,
         getDataContext,
         getDataContextData,
         onChangeContext,
@@ -210,4 +218,15 @@ const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: Rea
     }, deps);
 };
 
-export { DataContextManager, useDataContextManager, useDataContextRegister };
+function useNearestDataContext(type: DataContextType): IDataContextDescriptor {
+  const currentDataContext = useDataContext(false);
+  const dcm = useDataContextManager();
+
+  if (!currentDataContext)
+    return null;
+
+  const nearestDataContext = dcm?.getNearestDataContext(currentDataContext.id, type);
+  return nearestDataContext;
+}
+
+export { DataContextManager, useDataContextManager, useDataContextRegister, useNearestDataContext };

@@ -14,7 +14,7 @@ export interface IApplicationApi {
     user: IInternalCurrentUserApi;
     settings: ISettingsApi;
     entities: IEntitiesApi;
-    
+
     addPlugin: (plugin: IApplicationPlugin) => void;
     removePlugin: (pluginName: string) => void;
 }
@@ -39,9 +39,19 @@ export class ApplicationApi implements IApplicationApi {
         if (this.#plugins.has(plugin.name))
             throw new Error(`Plugin with name '${plugin.name}' already registered`);
         this.#plugins.set(plugin.name, plugin);
+
+        Object.defineProperty(this, plugin.name, {
+            get() {
+                return plugin.data;
+            }
+        });
     }
 
     removePlugin(pluginName: string) {
+        if (!this.#plugins.has(pluginName))
+            throw new Error(`Plugin with name '${pluginName}' is not registered`);
+
         this.#plugins.delete(pluginName);
+        delete this[pluginName];
     }
 }

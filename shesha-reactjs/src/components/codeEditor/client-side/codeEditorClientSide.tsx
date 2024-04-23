@@ -109,7 +109,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
     const { styles } = useStyles();
     const [activePane, setActivePane] = useState(null);
-    const [ isDevmode ] = useLocalStorage('application.isDevMode', false);
+    const [ isDevMode ] = useLocalStorage('application.isDevMode', false);
 
     const { getMetadata } = useMetadataDispatcher();
 
@@ -247,7 +247,7 @@ ${(c) => c.editable(code)}
 
         monaco.editor.registerEditorOpener({
             async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
-                if (isDevmode)
+                if (!isDevMode)
                     return false;
                 
                 navigateToModel(resource, selectionOrPosition);
@@ -322,7 +322,7 @@ ${(c) => c.editable(code)}
         return editorRef.current?.getModel()?.uri;
     };
 
-    const showTree = isDevmode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
+    const showTree = isDevMode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
     return showTree
         ? (
             <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>

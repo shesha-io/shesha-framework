@@ -1,3 +1,6 @@
+import { useApplicationContextData } from './form/utils';
+import { useApplicationContextMetadata } from './sheshaApplication/publicApi/metadata';
+
 export * from './appConfigurator';
 export * from './auth';
 export * from './buttonGroupConfigurator';
@@ -38,3 +41,5 @@ export * from './dynamicActions';
 export * from './dynamicActionsDispatcher';
 export * from './dataContextManager';
 export * from './canvasConfig';
+
+export { useApplicationContextData, useApplicationContextMetadata };

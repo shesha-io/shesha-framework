@@ -14,7 +14,6 @@ import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/co
 import { FormProvider } from '@/providers/form';
 import { MetadataProvider } from '@/providers';
 import { ResultStatusType } from 'antd/lib/result';
-import { DataContextProvider } from '@/providers/dataContextProvider';
 
 export interface IFormProviderWrapperProps extends PropsWithChildren {
   formId: FormIdentifier;
@@ -61,17 +60,14 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
             return (
               <FormMarkupConverter markup={formStore.markup} formSettings={{ ...formStore.formSettings, isSettingsForm: false }}>
                 {flatComponents => (
-                  /* formContext added to customize the form */
                   <FormDesignerProvider
                     flatComponents={flatComponents}
                     formSettings={formStore.formSettings}
                     readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
                   >
-                    <DataContextProvider id={'formContext'} name={'formContext'} type={'form'}>
                       <FormProviderWrapperInner form={form}>
                         {children}
                       </FormProviderWrapperInner>
-                    </DataContextProvider>
                   </FormDesignerProvider>
                 )}
               </FormMarkupConverter>
