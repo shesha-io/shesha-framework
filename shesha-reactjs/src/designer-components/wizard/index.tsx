@@ -19,15 +19,16 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
-  Factory: ({ model }) => {
+  Factory: ({ model,form }) => {
     return (
       <DataContextProvider
         id={'ctx_' + model.id}
         name={model.componentName}
         description={`Wizard context for ${model.componentName}`}
-        type='control'
+        type="control"
+        
       >
-        <Tabs {...model} />
+        <Tabs {...model} form={form} />
       </DataContextProvider>
     );
   },

@@ -20,7 +20,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'button',
   name: 'Button',
   icon: <BorderOutlined />,
-  Factory: ({ model }) => {
+  Factory: ({ model ,form}) => {
     const { style, ...restProps } = model;
     const { formMode } = useForm();
     const { data } = useFormData();
@@ -46,6 +46,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
           readOnly={model.readOnly}
           block={restProps?.block}
           style={getStyle(style, data)}
+          form={form}
         />
       </ConfigurableFormItem>
     );

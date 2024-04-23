@@ -18,12 +18,8 @@ export class EntitiesManager {
     static #configurationsPromise: Promise<EntityConfigurationDto[]> = undefined;
 
     createEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIndentifier, value: TEntity): Promise<TEntity> => {
-        //console.log("EntitiesManager.createEntityAsync:", typeAccessor, value);
-        
         const meta = await this.#resolveEntityTypeAsync(typeAccessor);
         const endpoint = this.#getApiEndpoint(meta, StandardEntityActions.create);
-
-        //console.log("EntitiesManager.createEntityAsync resolved endpoint", typeAccessor, endpoint);
 
         const response = await this._httpClient.post<IAjaxResponse<TEntity>>(endpoint.url, value);
         if (response.status !== 200 || !response.data.success) 
@@ -33,11 +29,8 @@ export class EntitiesManager {
     };
 
     getEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIndentifier, id: TId): Promise<TEntity> => {
-        //console.log("EntitiesManager.getEntityAsync:", typeAccessor, id);
-
         const meta = await this.#resolveEntityTypeAsync(typeAccessor);
         const endpoint = this.#getApiEndpoint(meta, StandardEntityActions.read);
-        //console.log("EntitiesManager.getEntityAsync resolved endpoint", typeAccessor, id, endpoint);
 
         const requestParams = { id: id };
         const url = `${endpoint.url}?${qs.stringify(requestParams)}`;
@@ -49,12 +42,8 @@ export class EntitiesManager {
     };
 
     updateEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIndentifier, value: TEntity): Promise<TEntity> => {
-        //console.log("EntitiesManager.updateEntityAsync:", typeAccessor, value);
-        
         const meta = await this.#resolveEntityTypeAsync(typeAccessor);
         const endpoint = this.#getApiEndpoint(meta, StandardEntityActions.update);
-
-        //console.log("EntitiesManager.updateEntityAsync resolved endpoint", typeAccessor, endpoint);
 
         const requestParams = { id: value.id };
         const url = `${endpoint.url}?${qs.stringify(requestParams)}`;
@@ -66,12 +55,8 @@ export class EntitiesManager {
     };
 
     deleteEntityAsync = async <TId>(typeAccessor: IEntityTypeIndentifier, id: TId): Promise<void> => {
-        //console.log("EntitiesManager.deleteEntityAsync:", typeAccessor, id);
-        
         const meta = await this.#resolveEntityTypeAsync(typeAccessor);
         const endpoint = this.#getApiEndpoint(meta, StandardEntityActions.delete);
-
-        //console.log("EntitiesManager.deleteEntityAsync resolved endpoint", typeAccessor, id, endpoint);
 
         const requestParams = { id: id };
         const url = `${endpoint.url}?${qs.stringify(requestParams)}`;

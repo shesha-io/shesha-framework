@@ -137,7 +137,7 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
   return {
     application: applicationData,
     data: useFormData()?.data,
-    formContext: form?.formContext,
+    formContext: form?.formContext?.getFull(),
     contexts: { ...dcm?.getDataContextsData(tcId) },
     setFormData: form?.setFormData,
     formMode: form?.formMode,

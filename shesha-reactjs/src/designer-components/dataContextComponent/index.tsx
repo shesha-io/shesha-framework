@@ -29,7 +29,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
       }, [model.id, model.componentName, model.items]);
 
       return (
-        <DataContextProvider {...model} name={model.componentName} metadata={metadata} type='form'>
+        <DataContextProvider {...model} name={model.componentName} metadata={metadata} type='control'>
             <ComponentsContainer containerId={model.id} />
         </DataContextProvider>
       );

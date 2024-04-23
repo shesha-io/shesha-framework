@@ -3,14 +3,17 @@ import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models'
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { ImageField, ImageStorageFormat } from './image';
+import { ImageStorageFormat } from './image';
+import { Alert } from 'antd';
+import { StoredFileProvider, useForm, useFormData, useSheshaApplication } from '@/providers';
+import FileView from '@/components/fileView';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height: number | string;
@@ -31,8 +34,9 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   isInput: true,
 
   Factory: ({ model }) => {
-    /*
+    const { data: formData } = useFormData();
     const { formMode } = useForm();
+    const { backendUrl } = useSheshaApplication();
 
     const hasDimensions = model?.height && model?.width;
 
@@ -46,19 +50,10 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         />
       );
     }
-*/
+
     return (
       <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
-          return (
-            <ImageField 
-              storageFormat={model.storageFormat}
-              value={value}
-              onChange={onChange} 
-              readOnly={model.readOnly}
-            />
-          );
-          /*
+        {(value) => {
           const url: string = getString(model.url, formData);
           const storedFileId: string = getString(model.storedFileId, formData) || (value?.id || value);
 
@@ -74,7 +69,6 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               />
             </StoredFileProvider>
           );
-          */
         }}
       </ConfigurableFormItem>
     );
