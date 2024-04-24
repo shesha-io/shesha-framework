@@ -14,7 +14,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
 
       .${prefixCls}-layout-header {
         border: none;
-        box-shadow: 1px 1px 5px 2px #d7d7d7;
+        box-shadow: 1px 1px 5px 2px ${colors.grey};
         display: flex;
         justify-content: space-between;
         background: #fff;
@@ -91,9 +91,24 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
 
         .${prefixCls}-btn {
           border-radius: 5px;
+          box-shadow: 1px 1px 1px 1px ${colors.grey};
           font-size: 14px;
           min-height: 30px;
           min-width: 100px;
+
+          &.${prefixCls}-btn-default:not(.${prefixCls}-btn-dangerous) {
+            border: 1px solid ${token.colorPrimary};
+            color: ${token.colorPrimary};
+          }
+
+          &.${prefixCls}-btn-text:not(.${prefixCls}-btn-dangerous) {
+            background: #fff;
+            color: ${token.colorPrimary};
+          }
+
+          &.${prefixCls}-btn-ghost {
+            color: ${colors.grey};
+          }
 
           &.${prefixCls}-btn-primary,
           &.${prefixCls}-btn-ghost,
