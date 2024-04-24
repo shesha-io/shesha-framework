@@ -11,6 +11,7 @@ import { AppProgressBar } from "next-nprogress-bar";
 import { useTheme } from "antd-style";
 import { MainLayout } from "@/components";
 import { LOGO } from "@/app-constants";
+import { GlobalPublicPortalStyles } from "@/styles/global";
 /* NEW_TOOLBOXCOMPONENT_IMPORT_GOES_HERE */
 
 export interface IAppProviderProps {
@@ -47,6 +48,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({
           ]
         }
       >
+        <GlobalPublicPortalStyles />
         <StoredFilesProvider baseUrl={backendUrl} ownerId={""} ownerType={""}>
           {noAuth ? (
             <>{children}</>
