@@ -146,7 +146,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   const { getEntityFormId } = useConfigurationItemsLoader();
   const [formConfig, setFormConfig] = useState<FormIdentifier>(props.formIdentifier);
-  const properties = useEntityProperties({dataType:props.className});
+  const properties = useEntityProperties({});
 
 
   useEffect(() => {

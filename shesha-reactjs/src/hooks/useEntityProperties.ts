@@ -5,23 +5,24 @@ import { useForm, useMetadataDispatcher } from '@/providers';
 import { IGetMetadataPayload } from '@/providers/metadataDispatcher/contexts';
 
 async function fetchMetadata(dataType: string, getMetadata: Function, entityType: string) {
-    const meta = await getMetadata({ dataType, modelType: entityType });
+    const meta = await getMetadata({ modelType: entityType,dataType:dataType });
     return asPropertiesArray(meta?.properties, []);
 }
 
-export function useEntityProperties({ dataType }: Partial<Omit<IGetMetadataPayload,'modelType'>>): IPropertyMetadata[] {
+export function useEntityProperties({ dataType=null }: Partial<Omit<IGetMetadataPayload,'modelType'>>): IPropertyMetadata[] {
     const { getMetadata } = useMetadataDispatcher();
     const {formSettings: subFormSettings } = useContext(SubFormContext);
     const {formSettings}=useForm();
     const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
 
+ 
+
     useEffect(() => {
         const entityType = subFormSettings?.modelType || formSettings?.modelType;
 
-        // Call the separate function and handle the Promise in useEffect
         fetchMetadata(dataType, getMetadata, entityType)
             .then(properties => setProperties(properties));
-
+            
     }, [dataType, getMetadata, formSettings]);
 
     return properties;
