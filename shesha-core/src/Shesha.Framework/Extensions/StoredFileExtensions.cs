@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Shesha.Domain;
 using Shesha.Services;
+using Shesha.Services.Urls;
 
 namespace Shesha.Extensions
 {
@@ -29,10 +30,7 @@ namespace Shesha.Extensions
         /// <returns></returns>
         public static string GetFileUrl(this StoredFile storedFile)
         {
-            var httpContextAccessor = StaticContext.IocManager.Resolve<IHttpContextAccessor>();
-            var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
-
-            return linkGenerator.GetUriByAction(httpContextAccessor.HttpContext, "Download", "StoredFile", new { Id = storedFile.Id });
+            return GetUrl("Download", "StoredFile", new { Id = storedFile.Id });
         }
 
         /// <summary>
@@ -42,10 +40,22 @@ namespace Shesha.Extensions
         /// <returns></returns>
         public static string GetFileVersionUrl(this StoredFileVersion storedFileVersion)
         {
-            var httpContextAccessor = StaticContext.IocManager.Resolve<IHttpContextAccessor>();
+            return GetUrl("Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
+        }
+
+        private static string GetUrl(string action = default, string controller = default, object values = default) 
+        {
+            var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
 
-            return linkGenerator.GetUriByAction(httpContextAccessor.HttpContext, "Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
+            return linkGenerator.GetUriByAction(
+                action, 
+                controller, 
+                values,
+                linkGeneratorContext.State.Scheme,
+                new HostString(linkGeneratorContext.State.Host, linkGeneratorContext.State.Port),
+                linkGeneratorContext.State.PathBase
+            );
         }
     }
 }
