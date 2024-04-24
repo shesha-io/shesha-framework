@@ -60,19 +60,12 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
   };
   
   const getMetadata = (payload: IGetMetadataPayload): Promise<IModelMetadata> => {
-
-    
     const { modelType, dataType } = payload;
-    console.log("modelType",modelType)
     const loadedModel = models.current[payload.modelType]; // todo: split list by types
     if (loadedModel) return loadedModel;
-    console.log("modelType--02",modelType,dataType)
-    if (dataType === DataTypes.entityReference || dataType === DataTypes.objectReference || dataType === null) {
-      
 
-     
+    if (dataType === DataTypes.entityReference || dataType === DataTypes.objectReference || dataType === null) {
       const promise = entityMetaFetcher.isEntity(modelType).then(isEntity => {
-        
         if (isEntity)
           return entityMetaFetcher.getByClassName(modelType);
 
@@ -80,7 +73,7 @@ const MetadataDispatcherProvider: FC<PropsWithChildren<IMetadataDispatcherProvid
           .then(response => {
             if (!response.success)
               throw new Error(`Failed to fetch metadata for model type: '${modelType}'`, { cause: response.error });
-            console.log('response', response?.result);
+
             const properties = response.result.properties.map<IPropertyMetadata>(p => mapProperty(p));
             const meta: IModelMetadata = {
               entityType: payload.modelType,
