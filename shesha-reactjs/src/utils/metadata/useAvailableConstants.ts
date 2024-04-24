@@ -106,7 +106,7 @@ const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.setGlobalState,
     SheshaConstants.selectedRow,
     SheshaConstants.contexts,
-    SheshaConstants.formContext,
+    SheshaConstants.pageContext,
     SheshaConstants.http,
     SheshaConstants.message,
     SheshaConstants.moment,

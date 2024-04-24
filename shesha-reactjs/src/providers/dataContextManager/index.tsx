@@ -28,8 +28,8 @@ export interface IDataContextManagerActionsContext {
     onChangeContextData: () => void;
     setActiveContext: (contextId: string) => void;
     getActiveContext: () => IDataContextDescriptor;
-    updateFormInstance: (form: ConfigurableFormInstance) => void;
-    getFormInstance: () => ConfigurableFormInstance;
+    updatePageFormInstance: (form: ConfigurableFormInstance) => void;
+    getPageFormInstance: () => ConfigurableFormInstance;
 }
 
 export interface IDataContextManagerFullInstance extends IDataContextManagerStateContext, IDataContextManagerActionsContext{
@@ -57,12 +57,12 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
       setState({...state, lastUpdate: new Date().toJSON()});
     };
 
-    const updateFormInstance = (form: ConfigurableFormInstance) => {
+    const updatePageFormInstance = (form: ConfigurableFormInstance) => {
         formInstance.current = form;
         setState({...state, lastUpdate: new Date().toJSON() });
     };
 
-    const getFormInstance = () => {
+    const getPageFormInstance = () => {
         return formInstance.current;
     };
 
@@ -178,8 +178,8 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         onChangeContextData,
         setActiveContext,
         getActiveContext,
-        updateFormInstance,
-        getFormInstance,
+        updatePageFormInstance,
+        getPageFormInstance,
     };
 
     return (

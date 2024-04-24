@@ -39,7 +39,7 @@ import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings, IS
 import formReducer from './reducer';
 import { convertActions, convertSectionsToList, getEnabledComponentIds, getFilteredComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { useDeepCompareMemo, useNearestDataContext } from '@/index';
+import { useDeepCompareMemo } from '@/index';
 
 export interface IFormProviderProps {
   needDebug?: boolean;
@@ -99,8 +99,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     formSettings: formSettings,
     formMarkup: formMarkup,
   };
-
-  const formContext = useNearestDataContext('form');
 
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
@@ -479,19 +477,17 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     isComponentFiltered
   };
 
-  const fullState: IFormStateInternalContext = { ...state, formContext: formContext };
-
-  if (formRef) formRef.current = { ...configurableFormActions, ...fullState, allComponents, componentRelations };
+  if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
 
 
   useDeepCompareEffect(() => {
     // set main form if empty
     if (needDebug)
-      formProviderContext.contextManager?.updateFormInstance({...fullState, ...configurableFormActions} as ConfigurableFormInstance);
+      formProviderContext.contextManager?.updatePageFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
   }, [state]);
 
   return (
-    <FormStateContext.Provider value={{ ...fullState, allComponents, componentRelations }}>
+    <FormStateContext.Provider value={{ ...state, allComponents, componentRelations }}>
       <FormActionsContext.Provider value={configurableFormActions}>
         <DelayedUpdateProvider>{children}</DelayedUpdateProvider>
       </FormActionsContext.Provider>

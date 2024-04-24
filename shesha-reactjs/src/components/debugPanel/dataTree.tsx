@@ -8,7 +8,7 @@ import { DebugDataTreeProp } from "./debugDataTreeProp";
 import { DebugDataTreeFunc } from "./debugDataTreeFunc";
 import { useLocalStorage } from "@/hooks";
 
-export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, metadata, onChange}) => {
+export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, lastUpdated, metadata, onChange}) => {
     const metadataProperties = isPropertiesArray(metadata?.properties) ? metadata.properties : undefined;
 
     const title = name + (metadata?.name ? `(${metadata?.name})` : '');
@@ -143,7 +143,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, met
             updateTreeData(n.children, data);
         }
         setTreeData([n]);
-    }, [data, metadata]);
+    }, [data, metadata, lastUpdated]);
 
     return (
         <Tree

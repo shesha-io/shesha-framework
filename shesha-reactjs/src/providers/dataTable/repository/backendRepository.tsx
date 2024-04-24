@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { useMetadataDispatcher, useSheshaApplication } from "@/providers";
+import { IHasEntityDataSourceConfig, useMetadataDispatcher, useSheshaApplication } from "@/providers";
 import { IResult } from "@/interfaces/result";
 import { IHttpHeadersDictionary } from "@/providers/sheshaApplication/contexts";
 import qs from "qs";
@@ -375,9 +375,11 @@ export const useBackendRepository = (args: IWithBackendRepositoryArgs): IBackend
     return repository;
 };
 
-export function withBackendRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithBackendRepositoryArgs): FC<WrappedProps> {
+export function withBackendRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>): FC<WrappedProps> {
     return props => {
-        const repository = useBackendRepository(args);
-        return (<WrappedComponent {...props} repository={repository} modelType={args.entityType} />);
+        const { entityType, getDataPath } = props as IHasEntityDataSourceConfig;
+
+        const repository = useBackendRepository({ entityType, getListUrl: getDataPath });
+        return (<WrappedComponent {...props} repository={repository} modelType={entityType} />);
     };
 };
