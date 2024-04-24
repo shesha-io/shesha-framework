@@ -131,7 +131,7 @@ interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBasePr
 interface IHasDataSourceType {
   sourceType: 'Form' | 'Entity' | 'Url';
 }
-interface IHasFormDataSourceConfig {
+export interface IHasFormDataSourceConfig {
   propertyName: string;
   getFieldValue?: (propertyName: string) => object[];
   onChange?: (...args: any[]) => void;
@@ -140,7 +140,7 @@ interface IUrlDataSourceConfig {
   getDataPath?: string;
   getExportToExcelPath?: string;
 }
-interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
+export interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
   /** Type of entity */
   entityType: string;
 }
@@ -809,17 +809,13 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
   const { sourceType } = props;
   switch (sourceType) {
     case 'Entity': {
-      const { entityType, getDataPath } = props as IHasEntityDataSourceConfig;
-      return withBackendRepository(DataTableProviderWithRepository, { entityType, getListUrl: getDataPath });
+      return withBackendRepository(DataTableProviderWithRepository);
     }
     case 'Form': {
-      const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
-
-      return withFormFieldRepository(DataTableProviderWithRepository, { propertyName, getFieldValue, onChange });
+      return withFormFieldRepository(DataTableProviderWithRepository);
     };
     case 'Url':
-      const { getDataPath } = props as IHasEntityDataSourceConfig;
-      return withUrlRepository(DataTableProviderWithRepository, { getListUrl: getDataPath });
+      return withUrlRepository(DataTableProviderWithRepository);
     default: {
       return withNullRepository(DataTableProviderWithRepository, {});
     }

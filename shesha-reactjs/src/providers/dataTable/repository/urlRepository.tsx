@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useMetadataDispatcher, useSheshaApplication } from '@/providers';
+import { IHasEntityDataSourceConfig, useMetadataDispatcher, useSheshaApplication } from '@/providers';
 import { IResult } from '@/interfaces/result';
 import { IHttpHeadersDictionary } from '@/providers/sheshaApplication/contexts';
 import qs from 'qs';
@@ -180,11 +180,12 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
 };
 
 export function withUrlRepository<WrappedProps>(
-  WrappedComponent: ComponentType<WrappedProps & IHasRepository>,
-  args: IWithUrlRepositoryArgs
+  WrappedComponent: ComponentType<WrappedProps & IHasRepository>
 ): FC<WrappedProps> {
   return (props) => {
-    const repository = useUrlRepository(args);
+    const { getDataPath } = props as IHasEntityDataSourceConfig;
+    const repository = useUrlRepository({ getListUrl: getDataPath });
+
     return <WrappedComponent {...props} repository={repository} />;
   };
 }
