@@ -23,3 +23,7 @@ export const screenSize = {
   laptopL: "1440px",
   desktop: "2560px",
 };
+
+export const fontSize = {
+  main: "18px",
+};
