@@ -60,7 +60,7 @@ export const getDataProperty = (properties: IPropertyMetadata[], name: string, p
   const nestedDepth = name.split('.').length - 1;
   const nestedName = name.split('.')[nestedDepth];
 
-  return (properties.find(({ path }) => toCamelCase(path) === nestedName))[propertyName];
+  return (properties.find(({ path }) => toCamelCase(path) === nestedName))?.[propertyName];
 };
 
 export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>) => {
