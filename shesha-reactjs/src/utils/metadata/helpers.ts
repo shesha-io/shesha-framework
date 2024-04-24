@@ -56,14 +56,12 @@ export const getFullPath = (property: IPropertyMetadata) => {
   return (prefix ?? '') === '' ? camelcaseDotNotation(name) : `${prefix}.${name}`;
 };
 
-export const getDataProperty = (properties: IPropertyMetadata[], name: string, propertyName: string = 'dataFormat') =>{
-  
-  const nestedDepth = name.split('.').length-1;
-
+export const getDataProperty = (properties: IPropertyMetadata[], name: string, propertyName: string = 'dataFormat') => {
+  const nestedDepth = name.split('.').length - 1;
   const nestedName = name.split('.')[nestedDepth];
 
- return  properties.find(({ path }) => toCamelCase(path) === nestedName)?.[propertyName];
-}
+  return (properties.find(({ path }) => toCamelCase(path) === nestedName))[propertyName];
+};
 
 export const getFormatContent = (content: string, metadata: Pick<IContent, 'dataFormat' | 'dataType'>) => {
   const { dataType, dataFormat } = metadata || {};
