@@ -43,7 +43,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { router } = useShaRouting();
   const { configurationItemMode } = useAppConfigurator();
   const dcm = useDataContextManager(false);
-  const formContext = useNearestDataContext('form');
+  const pageContext = useNearestDataContext('page');
 
   const { publish } = usePubSub();
 
@@ -220,7 +220,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       query: getQueryParams(),
       form,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
-      formContext: formContext?.getFull(),
+      pageContext: pageContext?.getFull(),
       application: dcm?.getDataContext(SheshaCommonContexts.ApplicationContext)?.getData(),
       ...context,
     };
@@ -347,7 +347,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
 export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   return (
-    <DataContextProvider id={'formContext'} name={'formContext'} type={'form'}>
+    <DataContextProvider id={'pageContext'} name={'pageContext'} type={'page'}>
       <DynamicPageInternal {...props}/>
     </DataContextProvider> 
   );
