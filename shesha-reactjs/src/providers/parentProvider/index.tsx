@@ -44,12 +44,13 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
   const formModeLocal = formMode ?? parent?.formMode;
   const subFormIdPrefixLocal = subFormIdPrefix ?? parent?.subFormIdPrefix;
   const flatComponentsStructureLocal = flatComponentsStructure ?? parent?.flatComponentsStructure;
+  const contextLocal = context ?? parent?.context;
 
   const value: IParentProviderStateContext = useMemo(() => {
     return {
       formMode: formModeLocal,
       subFormIdPrefix: subFormIdPrefixLocal,
-      context,
+      context: contextLocal,
       flatComponentsStructure: flatComponentsStructureLocal,
       model: {...parent?.model, ...model},
       getChildComponents: (componentId: string): IConfigurableFormComponent[] => {
@@ -64,7 +65,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
         return null;
       },
     };
-  }, [formModeLocal, subFormIdPrefixLocal, context, flatComponentsStructureLocal, model, parent?.model]);
+  }, [formModeLocal, subFormIdPrefixLocal, contextLocal, flatComponentsStructureLocal, model, parent?.model]);
 
   return (
     <ParentProviderStateContext.Provider value={value}>

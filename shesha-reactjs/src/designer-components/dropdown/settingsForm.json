@@ -522,7 +522,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addStandard([\"shesha:formData\", \"shesha:globalState\", \"shesha:http\", \"shesha:message\", \"shesha:moment\", \"shesha:setGlobalState\", \"shesha:contexts\", \"shesha:formContext\"])\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
+            "availableConstantsExpression": "    return metadataBuilder\r\n        .addStandard([\"shesha:formData\", \"shesha:globalState\", \"shesha:http\", \"shesha:message\", \"shesha:moment\", \"shesha:setGlobalState\", \"shesha:contexts\", \"shesha:pageContext\"])\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
           }
         ]
       },

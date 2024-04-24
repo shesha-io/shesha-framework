@@ -52,7 +52,7 @@ export const getSettings = (data: any) =>
               availableConstantsExpression: '    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    if (modelType){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n' +
                 '        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n'+
                 '    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n' +
-                '        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:formContext\", \r\n        \"shesha:contexts\", \r\n        \"shesha:moment\", \r\n    ]);\r\n    return mb.build();'
+                '        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:pageContext\", \r\n        \"shesha:contexts\", \r\n        \"shesha:moment\", \r\n    ]);\r\n    return mb.build();'
             })
             .addCheckbox({
               id: nanoid(),

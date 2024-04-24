@@ -3,6 +3,7 @@ import React, { ComponentType, useCallback, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
 import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
+import { IHasFormDataSourceConfig } from "@/providers";
 
 export interface IWithInMemoryRepositoryArgs {
     valueAccessor: () => object[];
@@ -142,10 +143,10 @@ export interface IWithFormFieldRepositoryArgs {
     getFieldValue?: (propertyName: string) => object[];
     onChange?: (...args: any[]) => void;
 }
-export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithFormFieldRepositoryArgs): FC<WrappedProps> {
-    const { propertyName, getFieldValue, onChange } = args;
-
+export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>): FC<WrappedProps> {
     return props => {
+        const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
+        
         const valueAccessor = useCallback(() => getFieldValue(propertyName), [propertyName]);
         const onChangeAccessor = useCallback((newValue: object[]) => {
             if (onChange)
