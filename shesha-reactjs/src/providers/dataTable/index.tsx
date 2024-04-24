@@ -760,7 +760,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   /* Data Context section */
 
-  const contextOnSetData = (changedData: IDataTableStateContext) => {
+  const contextOnChangeData = (_, changedData: IDataTableStateContext) => {
     if (!changedData)
       return;
 
@@ -791,7 +791,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       type='control'
       data={state}
       api={actions}
-      onSetData={contextOnSetData}
+      onChangeData={contextOnChangeData}
     >
       <DataTableStateContext.Provider value={state}>
         <DataTableActionsContext.Provider value={actions}>

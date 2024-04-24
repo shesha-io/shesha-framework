@@ -10,16 +10,16 @@ const DebugPanelDataContent: FC = () => {
     const globalState = useGlobalState();
 
     const contextManager = useDataContextManager();
-    const formInstance = contextManager.getFormInstance();
+    const pageInstance = contextManager.getPageFormInstance();
     const designer = useFormDesigner(false);
 
-    const modelType = formInstance?.formSettings?.modelType ?? designer?.formSettings?.modelType;
+    const modelType = pageInstance?.formSettings?.modelType ?? designer?.formSettings?.modelType;
     const [formMetadata, setFormMetadata] = useState<IModelMetadata>(null);
     const metadataDispatcher = useMetadataDispatcher(false);
     useEffect(() => {
       if (metadataDispatcher && modelType && !formMetadata)
         metadataDispatcher
-          .getMetadata({modelType: formInstance.formSettings.modelType, dataType: 'entity'})
+          .getMetadata({modelType: pageInstance.formSettings.modelType, dataType: 'entity'})
           .then(r => {
             setFormMetadata(r);
           });
@@ -55,7 +55,7 @@ const DebugPanelDataContent: FC = () => {
         prop[pName[pName.length - 1]] = val;
       }
   
-      formInstance?.setFormData({ values: changedData, mergeValues: true });
+      pageInstance?.setFormData({ values: changedData, mergeValues: true });
     };
   
     //console.log('debug rerender');
@@ -69,9 +69,9 @@ const DebugPanelDataContent: FC = () => {
             name={'GlobalState (obsolete)'}
           />
         }
-        {formInstance &&
+        {pageInstance &&
           <DebugDataTree 
-            data={formInstance?.formData}
+            data={pageInstance?.formData}
             metadata={formMetadata}
             editAll
             onChange={(propName, val) => onChangeFormData(propName, val)}
@@ -79,10 +79,11 @@ const DebugPanelDataContent: FC = () => {
           />
         }
         {contexts.map((item) => {
-          const ctxData = contextManager.getDataContextData(item.id);
+          const ctxData = item.getFull();
           return <DebugDataTree
             key={item.id}
             data={ctxData}
+            lastUpdated={contextManager.lastUpdate}
             onChange={(propName, val) => onChangeContext(item.id, propName, val)}
             name={item.name}
           />;
