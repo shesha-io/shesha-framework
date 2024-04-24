@@ -24,7 +24,7 @@ namespace Shesha.Extensions
         }
 
         /// <summary>
-        /// Get url for downloading of the StoredFile
+        /// Get absolute url for downloading of the StoredFile
         /// </summary>
         /// <param name="storedFile"></param>
         /// <returns></returns>
@@ -34,7 +34,7 @@ namespace Shesha.Extensions
         }
 
         /// <summary>
-        /// Get url for downloading of the StoredFileVersion
+        /// Get absolute url for downloading of the StoredFileVersion
         /// </summary>
         /// <param name="storedFileVersion"></param>
         /// <returns></returns>
@@ -56,6 +56,33 @@ namespace Shesha.Extensions
                 new HostString(linkGeneratorContext.State.Host, linkGeneratorContext.State.Port),
                 linkGeneratorContext.State.PathBase
             );
+        }
+
+        private static string GetPath(string action = default, string controller = default, object values = default) 
+        {
+            var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
+
+            return linkGenerator.GetPathByAction(action, controller, values);
+        }
+
+        /// <summary>
+        /// Get relative path for downloading of the StoredFile
+        /// </summary>
+        /// <param name="storedFile"></param>
+        /// <returns></returns>
+        public static string GetFilePath(this StoredFile storedFile)
+        {
+            return GetPath("Download", "StoredFile", new { Id = storedFile.Id });
+        }
+
+        /// <summary>
+        /// Get relative path for downloading of the StoredFileVersion
+        /// </summary>
+        /// <param name="storedFileVersion"></param>
+        /// <returns></returns>
+        public static string GetFileVersionPath(this StoredFileVersion storedFileVersion)
+        {
+            return GetPath("Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
         }
     }
 }
