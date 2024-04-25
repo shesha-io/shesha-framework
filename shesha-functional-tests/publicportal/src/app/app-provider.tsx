@@ -9,6 +9,7 @@ import {
 } from "@shesha-io/reactjs";
 import { AppProgressBar } from "next-nprogress-bar";
 import { useTheme } from "antd-style";
+import { GlobalPublicPortalStyles } from "@/styles/global";
 
 export interface IAppProviderProps {
   backendUrl: string;
@@ -24,11 +25,14 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({
   return (
     <GlobalStateProvider>
       <AppProgressBar height="4px" color={theme.colorPrimary} shallowRouting />
+
       <ShaApplicationProvider
         backendUrl={backendUrl}
         router={nextRouter}
         noAuth={nextRouter.path?.includes("/no-auth")}
       >
+        <GlobalPublicPortalStyles />
+
         <StoredFilesProvider baseUrl={backendUrl} ownerId={""} ownerType={""}>
           {children}
         </StoredFilesProvider>
