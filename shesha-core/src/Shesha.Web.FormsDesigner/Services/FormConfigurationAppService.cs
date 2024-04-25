@@ -316,8 +316,23 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             CheckUpdatePermission();
 
+            var validationResults = new List<ValidationResult>();
+
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
+            if (alreadyExist)
+                validationResults.Add(new ValidationResult(
+                    input.ModelType != null
+                        ? $"Form with name `{input.Name}` already exists in module `{input.ModelType}`"
+                        : $"Form with name `{input.Name}` already exists"
+                    )
+                );
+
+            if (validationResults.Any())
+                throw new AbpValidationException("Please correct the errors and try again", validationResults);
+
             var entity = await GetEntityByIdAsync(input.Id);
 
+            entity.Name = input.Name;
             entity.Label = input.Label;
             entity.Description = input.Description;
             entity.Markup = input.Markup;
