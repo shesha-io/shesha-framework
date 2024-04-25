@@ -355,6 +355,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               border: 1px dashed #61affe;
               box-sizing: border-box;
             }
+            &:not(:hover) {
+                .${shaComponentControls} {
+                    display: none;
+                }
+            
+                .${componentDragHandle} {
+                    border: 1px solid white;
+                }
+            }
         
             .${shaComponentIndicator} {
               display: inline-block;
@@ -387,7 +396,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
               .${componentDragHandle} {
                 background-color: transparent;
-                border: none;
               }
             }
           }
