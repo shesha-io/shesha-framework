@@ -362,8 +362,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             
                 .${componentDragHandle} {
-                    background-color: green;
-                    border: 1px dashed black; // Change this line
+                    border: 1px solid white;
                 }
             }
             .${shaComponentIndicator} {
