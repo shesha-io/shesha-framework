@@ -318,7 +318,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
+            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
