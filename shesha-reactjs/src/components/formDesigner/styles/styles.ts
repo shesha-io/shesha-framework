@@ -314,7 +314,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
              position: relative;
              margin: 4px;
              margin-left: 10px;
-             border: 1px solid whredite;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
@@ -396,7 +395,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
               .${componentDragHandle} {
                 background-color: transparent;
-                border: 1px solid white;
               }
             }
           }
