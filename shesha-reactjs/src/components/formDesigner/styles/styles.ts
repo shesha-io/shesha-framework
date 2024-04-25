@@ -137,8 +137,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${componentDragHandle} {
-             top: 0px;
-             left: 0px;
+            top: 0px;
+            left: 0px;
         }
         .${sidebarContainerMainAreaBody} {
             .content-heading {
@@ -311,9 +311,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             opacity: 0.7;
         }
         .${shaComponent} {
-             position: relative;
-             margin: 4px;
-             margin-left: 10px;
+            position: relative;
+            margin: 4px;
+            margin-left: 10px;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
@@ -349,7 +349,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               visibility: visible;
               border-radius: 2px;
               width: 100%;
-              height: 100%
+              height: 100%;
               position: relative;
               cursor: grab;
               border: 1px dashed #61affe;
@@ -364,6 +364,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                     border: 1px solid white;
                 }
             }
+        
             .${shaComponentIndicator} {
               display: inline-block;
               align-items: center;
