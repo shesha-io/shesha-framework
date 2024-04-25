@@ -1,5 +1,6 @@
 import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { EXPOSED_VARIABLES } from './utils';
 
 export const entityPickerSettings = new DesignerToolbarSettings()
   .addCollapsiblePanel({
@@ -467,4 +468,57 @@ export const entityPickerSettings = new DesignerToolbarSettings()
       ]
     }
   })
+  .addCollapsiblePanel({
+    id: '3335bfe4-ee69-431e-931b-b0e0b9cexe6f',
+    propertyName: 'pnlEvents',
+    parentId: 'root',
+    label: 'Events',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    collapsible: 'header',
+    content: {
+      id:'pnl44bf6-f76d-4139-a853-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()    
+        .addCodeEditor({
+          id: '06ab0599-914d-4d2d-875k-765a495472f8',
+          propertyName: "onChangeCustom",
+          mode: "dialog",
+          label: "On Change",
+          description: "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
+          parentId: 'pnl44bf6-f76d-4139-a850-c99bf06c8b69',
+          validate: {},
+          settingsValidationErrors: [],
+          exposedVariables: EXPOSED_VARIABLES,
+          templateSettings: {
+              functionName: 'onChange'
+          },
+          wrapInTemplate: true
+          
+        })
+        .toJson()
+      ]
+    }
+  })
   .toJson();
+
+  // <SettingsCollapsiblePanel header="Events">
+  //       <SettingsFormItem
+  //         label="On Change"
+  //         name="onChangeCustom"
+  //         tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+  //       >
+  //         <CodeEditor
+  //           propertyName="onChangeCustom"
+  //           readOnly={readOnly}
+  //           mode="dialog"
+  //           label="On Change"
+  //           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
+  //           exposedVariables={EXPOSED_VARIABLES}
+  //           wrapInTemplate={true}
+  //           templateSettings={{
+  //             functionName: 'onChange'
+  //           }}
+  //           availableConstants={onChangeOrSelectConstants}
+  //         />
+  //       </SettingsFormItem>
