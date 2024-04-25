@@ -6,7 +6,7 @@ export const primaryColor = "#ff6600";
 
 export const colors = {
   error: "#ff7171",
-  grey: "#c1c1c1",
+  grey: "#d7d7d7",
   info: "#2b78e4",
   primary: primaryColor,
   success: "#14a38b",
