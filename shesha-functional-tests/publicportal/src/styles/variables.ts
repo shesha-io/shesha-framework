@@ -14,10 +14,6 @@ export const colors = {
   greyLine: "#d3d3d3",
 };
 
-export const sizesPx = {
-  inputHeight: "50px",
-};
-
 export const screenSize = {
   mobileS: "320px",
   mobileM: "375px",
@@ -26,4 +22,8 @@ export const screenSize = {
   laptop: "1024px",
   laptopL: "1440px",
   desktop: "2560px",
+};
+
+export const fontSize = {
+  main: "18px",
 };

@@ -4,6 +4,7 @@ export interface IDebugDataTreeProps {
     name: string;
     data: any;
     metadata?: IModelMetadata;
+    lastUpdated?: string;
     editAll?: boolean;
     onChange: (propName: string, val: any) => void;
     onFunctionExecute?: (path: string) => void;

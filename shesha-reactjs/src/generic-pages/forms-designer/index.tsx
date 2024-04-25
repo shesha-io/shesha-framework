@@ -11,8 +11,8 @@ export interface IFormsDesignerPagePageProps {
 
 export const FormsDesignerPage: PageWithLayout<IFormsDesignerPagePageProps> = (props) => {
   return (
-    /* formContext has added only to customize the designed form. It is not used as a data context.*/
-    <DataContextProvider id={'formContext'} name={'formContext'} type={'form'}>
+    /* pageContext has added only to customize the designed form. It is not used as a data context.*/
+    <DataContextProvider id={'pageContext'} name={'pageContext'} type={'page'}>
       <FormDesigner formId={props.formId} />
     </DataContextProvider>
   );

@@ -1,4 +1,4 @@
-import { colors, sizesPx } from "@/styles/variables";
+import { colors, fontSize } from "@/styles/variables";
 import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
@@ -18,10 +18,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         display: flex;
         justify-content: space-between;
         background: #fff;
-        height: 80px;
+        height: auto;
         border-bottom: 1px solid #d9d9d9;
         line-height: 80px;
         padding: 0 10%;
+        overflow: hidden;
       }
 
       .${prefixCls}-layout-content {
@@ -40,16 +41,21 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
 
           .${prefixCls}-select {
             border-width: 1px;
-            height: unset !important;
           }
 
           .${prefixCls}-select-selector,
           .${prefixCls}-input-affix-wrapper {
             border-width: 1px !important;
-            height: unset !important;
           }
         }
 
+
+        .sha-global-table-filter {
+          .${prefixCls}-input-search-button {
+            height: 28px;
+          }
+        }
+        
         .sha-react-table {
           font-size: 16px;
           margin: 0;
@@ -57,6 +63,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           .tr-head {
             font-weight: bold;
             font-size: 14px;
+          }
+
+          .tbody {
+            .${prefixCls}-input,
+            .${prefixCls}-picker {
+              padding-top: 0;
+              padding-bottom: 0;
+            }
+
+            .${prefixCls}-btn {
+              margin-left: unset !important;
+              min-width: unset !important;
+            }
           }
         }
 
@@ -89,7 +108,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
 
           &.${prefixCls}-btn-lg {
-            font-size: 18px;
+            font-size: ${fontSize.main};
             min-height: 45px;
             min-width: 150px;
           }
@@ -99,20 +118,28 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
         }
 
+        .${prefixCls}-btn-icon-only {
+          margin-left: 6px !important;
+          min-width: 40px !important;
+          min-height: unset !important;
+        }
+
+        .${prefixCls}-input-search-button {
+          height: 32px;
+        }
+        
         .${prefixCls}-input-affix-wrapper,
         .${prefixCls}-select > .${prefixCls}-select-selector,
         .${prefixCls}-picker,
-        .${prefixCls}-input-number,
         .${prefixCls}-form-item-control-input-content > .${prefixCls}-input {
           border: 2px solid #d8d8d8;
           border-radius: 5px;
-          font-size: 18px;
-          height: ${sizesPx.inputHeight};
+          font-size: ${fontSize.main};
           padding-left: 22px;
           padding-right: 22px;
 
           input {
-            font-size: 18px;
+            font-size: ${fontSize.main};
           }
 
           &:focus {
@@ -124,22 +151,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
         }
 
-        .${prefixCls}-select {
-          height: ${sizesPx.inputHeight};
-        }
-
-        .${prefixCls}-input-number-input-wrap {
-          height: 100%;
-
+        .${prefixCls}-input-number {
+          border: 2px solid #d8d8d8;
+          border-radius: 5px;
+          font-size: ${fontSize.main};
+          
           .${prefixCls}-input-number-input {
-            height: 100%;
-            padding: 0;
+            padding-left: 22px;
+            padding-right: 22px;
           }
-        }
-
-        .${prefixCls}-input-textarea-affix-wrapper,
-        .${prefixCls}-form-item-control-input-content > textarea {
-          min-height: 180px !important;
         }
 
         .${prefixCls}-input-textarea-affix-wrapper {
@@ -169,26 +189,27 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         .${prefixCls}-alert {
           border: none;
           border-radius: 8px;
-          padding: 18px 36px;
+          padding: ${fontSize.main} 36px;
 
           &.${prefixCls}-alert-error {
-            background-color: ${colors.error};
+            background-color: ${token.colorError};
           }
 
           &.${prefixCls}-alert-info {
-            background-color: ${colors.info};
+            background-color: ${token.colorInfo};
           }
 
           &.${prefixCls}-alert-success {
-            background-color: ${colors.success};
+            background-color: ${token.colorSuccess};
           }
 
           &.${prefixCls}-alert-warning {
-            background-color: ${colors.warning};
+            background-color: ${token.colorWarning};
           }
 
           .${prefixCls}-alert-content {
-            .${prefixCls}-alert-description {
+            .${prefixCls}-alert-description,
+            .${prefixCls}-alert-message {
               color: #fff;
             }
           }
@@ -264,7 +285,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
               }
   
               .${prefixCls}-card-extra {
-                display: none;
+                position: absolute;
+                right: 40px;
+                top: 40px;
               }
             }
           }

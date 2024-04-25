@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Shesha.Domain;
 using Shesha.Services;
+using Shesha.Services.Urls;
 
 namespace Shesha.Extensions
 {
@@ -23,29 +24,65 @@ namespace Shesha.Extensions
         }
 
         /// <summary>
-        /// Get url for downloading of the StoredFile
+        /// Get absolute url for downloading of the StoredFile
         /// </summary>
         /// <param name="storedFile"></param>
         /// <returns></returns>
         public static string GetFileUrl(this StoredFile storedFile)
         {
-            var httpContextAccessor = StaticContext.IocManager.Resolve<IHttpContextAccessor>();
-            var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
-
-            return linkGenerator.GetUriByAction(httpContextAccessor.HttpContext, "Download", "StoredFile", new { Id = storedFile.Id });
+            return GetUrl("Download", "StoredFile", new { Id = storedFile.Id });
         }
 
         /// <summary>
-        /// Get url for downloading of the StoredFileVersion
+        /// Get absolute url for downloading of the StoredFileVersion
         /// </summary>
         /// <param name="storedFileVersion"></param>
         /// <returns></returns>
         public static string GetFileVersionUrl(this StoredFileVersion storedFileVersion)
         {
-            var httpContextAccessor = StaticContext.IocManager.Resolve<IHttpContextAccessor>();
+            return GetUrl("Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
+        }
+
+        private static string GetUrl(string action = default, string controller = default, object values = default) 
+        {
+            var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
 
-            return linkGenerator.GetUriByAction(httpContextAccessor.HttpContext, "Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
+            return linkGenerator.GetUriByAction(
+                action, 
+                controller, 
+                values,
+                linkGeneratorContext.State.Scheme,
+                new HostString(linkGeneratorContext.State.Host, linkGeneratorContext.State.Port),
+                linkGeneratorContext.State.PathBase
+            );
+        }
+
+        private static string GetPath(string action = default, string controller = default, object values = default) 
+        {
+            var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
+
+            return linkGenerator.GetPathByAction(action, controller, values);
+        }
+
+        /// <summary>
+        /// Get relative path for downloading of the StoredFile
+        /// </summary>
+        /// <param name="storedFile"></param>
+        /// <returns></returns>
+        public static string GetFilePath(this StoredFile storedFile)
+        {
+            return GetPath("Download", "StoredFile", new { Id = storedFile.Id });
+        }
+
+        /// <summary>
+        /// Get relative path for downloading of the StoredFileVersion
+        /// </summary>
+        /// <param name="storedFileVersion"></param>
+        /// <returns></returns>
+        public static string GetFileVersionPath(this StoredFileVersion storedFileVersion)
+        {
+            return GetPath("Download", "StoredFile", new { Id = storedFileVersion.File.Id, versionNo = storedFileVersion.VersionNo });
         }
     }
 }

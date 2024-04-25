@@ -57,6 +57,7 @@ import {
   IDataContextsData,
   RootContexts,
   useDataContextManager,
+  useNearestDataContext,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
@@ -79,6 +80,7 @@ import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { IParentProviderProps } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
+import { useDeepCompareMemo } from '@/hooks';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -105,6 +107,9 @@ export interface IApplicationContext {
   message: MessageInstance;
   /** Other data */
   [key: string]: any;
+
+  /** Last updated date */
+  lastUpdated?: Date;
 }
 
 export function useFormProviderContext(): IApplicationContext {
@@ -125,29 +130,38 @@ export function useFormProviderContext(): IApplicationContext {
 
 export function useAvailableConstantsData(topContextId?: string): IApplicationContext {
   let tcId = useDataContext(false)?.id;
+  const pc = useNearestDataContext('page');
   tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
   const dcm = useDataContextManager(false);
-  const form = useForm(false) ?? dcm.getFormInstance();
+  const form = useForm(false) ?? dcm.getPageFormInstance();
+  const formMode = form?.formMode;
+  const pageContext = pc?.getFull();
   const { globalState, setState: setGlobalState } = useGlobalState();
-
+  const data = useFormData()?.data;
+  const contexts = { ...dcm?.getDataContextsData(tcId) };
   const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
   const applicationData = application?.getData();
+  const selectedRow = useDataTableStore(false)?.selectedRow;
+
+  const lastUpdated = useDeepCompareMemo(() => new Date()
+    , [data, contexts.lastUpdate, formMode, globalState, selectedRow]);
 
   return {
     application: applicationData,
-    data: useFormData()?.data,
-    formContext: form?.formContext?.getFull(),
-    contexts: { ...dcm?.getDataContextsData(tcId) },
+    data,
+    pageContext,
+    contexts,
     setFormData: form?.setFormData,
-    formMode: form?.formMode,
+    formMode,
     globalState,
     setGlobalState,
     form,
-    selectedRow: useDataTableStore(false)?.selectedRow,
+    selectedRow,
     moment: moment,
     http: axiosHttp(backendUrl),
     message,
+    lastUpdated
   };
 }
 
