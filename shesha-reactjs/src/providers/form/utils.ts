@@ -81,6 +81,7 @@ import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { IParentProviderProps } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { useDeepCompareMemo } from '@/hooks';
+import { removeGhostKeys } from '@/utils/form';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -138,7 +139,7 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
   const formMode = form?.formMode;
   const pageContext = pc?.getFull();
   const { globalState, setState: setGlobalState } = useGlobalState();
-  const data = useFormData()?.data;
+  const data = removeGhostKeys(useFormData()?.data); // ToDo: replace GhostKeys
   const contexts = { ...dcm?.getDataContextsData(tcId) };
   const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
   const applicationData = application?.getData();

@@ -32,7 +32,7 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { useAppConfigurator, useSheshaApplication } from '@/providers';
+import { MetadataProvider, useAppConfigurator, useSheshaApplication } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -50,6 +50,7 @@ import {
   setMarkupWithSettingsAction,
 } from './actions';
 import ParentProvider from '../parentProvider/index';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -545,9 +546,14 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           getChildComponents,
         }}
       >
-        <ParentProvider model={props} subFormIdPrefix={id} context={context}>
-          {children}
-        </ParentProvider>
+        <ConditionalWrap
+          condition={Boolean(state.formSettings?.modelType)}
+          wrap={(children) => <MetadataProvider modelType={state.formSettings.modelType}>{children}</MetadataProvider>}
+        >
+          <ParentProvider model={props} subFormIdPrefix={id} context={context}>
+            {children}
+          </ParentProvider>
+        </ConditionalWrap>
       </SubFormActionsContext.Provider>
     </SubFormContext.Provider>
   );

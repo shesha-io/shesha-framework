@@ -15,12 +15,10 @@ using Shesha.JsonEntities;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
-using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
@@ -35,7 +33,7 @@ namespace Shesha.DynamicEntities
         // todo: remove usage of IEntityConfigurationStore
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IAssemblyFinder _assembleFinder;
-        private readonly IMetadataProvider _metadataProvider;
+        private readonly IHardcodeMetadataProvider _metadataProvider;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
@@ -44,7 +42,7 @@ namespace Shesha.DynamicEntities
             IEntityConfigurationStore entityConfigurationStore,
             IAssemblyFinder assembleFinder,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
-            IMetadataProvider metadataProvider,
+            IHardcodeMetadataProvider metadataProvider,
             IModuleManager moduleManager,
             IUnitOfWorkManager unitOfWorkManager)
         {
@@ -135,7 +133,7 @@ namespace Shesha.DynamicEntities
                 {
                     Config = config,
                     Properties = codeProperties,
-                    PropertiesMD5 = GetPropertiesMD5(codeProperties),
+                    PropertiesMD5 = PropertyMetadataDto.GetPropertiesMD5(codeProperties),
                 };
             }).ToList();
 
@@ -173,7 +171,7 @@ namespace Shesha.DynamicEntities
                         c.db.Accessor != c.code.Config.Accessor ||
                         c.db.TypeShortAlias != c.code.Config.SafeTypeShortAlias ||
                         c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
-                        c.db.PropertiesMD5 != c.code.PropertiesMD5 ||
+                        c.db.HardcodedPropertiesMD5 != c.code.PropertiesMD5 ||
                         c.db.Module != module ||
                         c.attr != null
                             && c.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
@@ -201,7 +199,7 @@ namespace Shesha.DynamicEntities
 
                 await _entityConfigRepository.UpdateAsync(config.db);
 
-                if (config.db.PropertiesMD5 != config.code.PropertiesMD5)
+                if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5)
                     await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
 
             }
@@ -253,42 +251,6 @@ namespace Shesha.DynamicEntities
 
                 await UpdatePropertiesAsync(ec, config.Config.EntityType, config.Properties, config.PropertiesMD5);
             }
-        }
-
-        private string GetPropertiesMD5(List<PropertyMetadataDto> dtos)
-        {
-            var propertyProps = typeof(PropertyMetadataDto).GetProperties().OrderBy(p => p.Name).ToList();
-
-            Action<List<PropertyMetadataDto>, List<PropertyMetadataDto>> expr = null;
-            expr = (List<PropertyMetadataDto> l, List<PropertyMetadataDto> props) =>
-            {
-                foreach (var prop in props)
-                {
-                    l.Add(prop);
-                    if (prop.Properties?.Any() ?? false)
-                    {
-                        expr(l, prop.Properties);
-                    }
-                }
-            };
-
-            var newDtos = new List<PropertyMetadataDto>();
-            expr(newDtos, dtos);
-
-            var ordered = newDtos.OrderBy(p => p.Path).ToList();
-
-            var sb = new StringBuilder();
-            foreach (var dto in ordered)
-            {
-                foreach (var prop in propertyProps)
-                {
-                    var propValue = prop.GetValue(dto)?.ToString();
-                    sb.Append(propValue);
-                    sb.Append(";");
-                }
-                sb.AppendLine();
-            }
-            return sb.ToString().ToMd5Fingerprint();
         }
 
         private async Task UpdatePropertiesAsync(
@@ -377,7 +339,7 @@ namespace Shesha.DynamicEntities
                 await UpdatePropertiesAsync(entityConfig, codeProperties, dbProperties);
 
                 // update properties MD5 to prevent unneeded updates in future
-                entityConfig.PropertiesMD5 = propertiesMD5;
+                entityConfig.HardcodedPropertiesMD5 = propertiesMD5;
                 await _entityConfigRepository.UpdateAsync(entityConfig);
             }
             catch (Exception)

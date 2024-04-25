@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace Shesha.Metadata.Exceptions
+namespace Shesha.Configuration.Runtime.Exceptions
 {
     /// <summary>
     /// Duplicate models exception
     /// </summary>
-    public class DuplicateModelsException: Exception
+    public class DuplicateModelsException : Exception
     {
         public List<ModelDto> Duplicates { get; set; } = new List<ModelDto>();
 

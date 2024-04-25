@@ -1,7 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Dependency;
 using Abp.Domain.Entities;
-using Abp.Domain.Repositories;
 using Abp.ObjectMapping;
 using GraphQL;
 using GraphQL.Execution;
@@ -11,18 +9,16 @@ using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
-using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
+using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
-using Shesha.Settings.Dto;
 using Shesha.Specifications;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 

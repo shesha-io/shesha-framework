@@ -47,7 +47,8 @@ namespace Shesha.Domain
         /// MD5 hash of the hardcoded properties, is used for performance optimization of the bootstrapper
         /// </summary>
         [StringLength(40)]
-        public virtual string PropertiesMD5 { get; set; }
+        [Column("PropertiesMD5")]
+        public virtual string HardcodedPropertiesMD5 { get; set; }
 
         public override string ItemType => ItemTypeName;
 
