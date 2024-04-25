@@ -2,8 +2,11 @@
 using Abp.Domain.Entities.Auditing;
 using Newtonsoft.Json;
 using Shesha.Domain.Enums;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Shesha.Metadata.Dtos
@@ -100,5 +103,41 @@ namespace Shesha.Metadata.Dtos
         /// If true, indicates that the property is nullable
         /// </summary>
         public bool IsNullable { get; set; }
+
+        public static string GetPropertiesMD5(List<PropertyMetadataDto> dtos)
+        {
+            var propertyProps = typeof(PropertyMetadataDto).GetProperties().OrderBy(p => p.Name).ToList();
+
+            Action<List<PropertyMetadataDto>, List<PropertyMetadataDto>> expr = null;
+            expr = (List<PropertyMetadataDto> l, List<PropertyMetadataDto> props) =>
+            {
+                foreach (var prop in props)
+                {
+                    l.Add(prop);
+                    if (prop.Properties?.Any() ?? false)
+                    {
+                        expr(l, prop.Properties);
+                    }
+                }
+            };
+
+            var newDtos = new List<PropertyMetadataDto>();
+            expr(newDtos, dtos);
+
+            var ordered = newDtos.OrderBy(p => p.Path).ToList();
+
+            var sb = new StringBuilder();
+            foreach (var dto in ordered)
+            {
+                foreach (var prop in propertyProps)
+                {
+                    var propValue = prop.GetValue(dto)?.ToString();
+                    sb.Append(propValue);
+                    sb.Append(";");
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString().ToMd5Fingerprint();
+        }
     }
 }

@@ -194,25 +194,25 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
 
             if (backendModule != null) 
             {
-                foreach (var entity in backendModule.Entities) 
+                foreach (var entity in module.Entities) 
                 {
                     var backendEntity = backendModule.Entities.FirstOrDefault(e => e.Accessor == entity.Accessor);
                     if (backendEntity != null)
                     {
-                        if (backendEntity.MD5 == entity.MD5 && backendEntity.ModificationTime == entity.ModificationTime)
+                        if (backendEntity.Md5 == entity.Md5 && backendEntity.ModificationTime == entity.ModificationTime)
                         {
-                            responseModule.Entities.Add(new BaseEntitySyncResponse
+                            /*responseModule.Entities.Add(new BaseEntitySyncResponse
                             {
                                 Accessor = entity.Accessor,
                                 Status = SyncStatus.UpToDate,
-                            });
+                            });*/
                         }
                         else {
                             responseModule.Entities.Add(new OutOfDateEntitySyncResponse
                             {
                                 Accessor = entity.Accessor,
                                 Status = SyncStatus.OutOfDate,
-                                Metadata = await metadataService.GetAsync(backendEntity.ClassName),
+                                Metadata = backendEntity.Metadata,
                             });
                         }
                     } else {

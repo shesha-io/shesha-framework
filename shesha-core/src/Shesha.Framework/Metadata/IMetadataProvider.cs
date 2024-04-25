@@ -1,7 +1,7 @@
 ﻿using Shesha.Metadata.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.Metadata
 {
@@ -10,33 +10,16 @@ namespace Shesha.Metadata
     /// </summary>
     public interface IMetadataProvider
     {
-        /// <summary>
-        /// Get metadata of specified property
-        /// </summary>
-        /// <param name="property">Property to get metadata for</param>
-        /// <param name="context">Metadata context</param>
-        /// <returns></returns>
-        PropertyMetadataDto GetPropertyMetadata(PropertyInfo property, MetadataContext context);
+        Task<MetadataDto> GetAsync(string container);
+
+        Task<Dictionary<string, ApiEndpointDto>> GetApiEndpoints(Type containerType);
 
         /// <summary>
-        /// Get properties metadata of the specified <paramref name="type"/>
+        /// Get specifications available for the specified entityType
         /// </summary>
-        /// <param name="type">Type</param>
-        /// <param name="context">Metadata context</param>
         /// <returns></returns>
-        List<PropertyMetadataDto> GetProperties(Type type, MetadataContext context = null);
+        Task<List<SpecificationDto>> GetSpecificationsAsync(Type entityType);
 
-        /// <summary>
-        /// Get data type of the specified property
-        /// </summary>
-        /// <returns></returns>
-        DataTypeInfo GetDataType(PropertyInfo propInfo);
-
-        /// <summary>
-        /// Returns true if the property is a framework related one
-        /// </summary>
-        /// <param name="property"></param>
-        /// <returns></returns>
-        bool IsFrameworkRelatedProperty(PropertyInfo property);
+        Task<List<PropertyMetadataDto>> GetPropertiesAsync(Type containerType, string containerName);
     }
 }

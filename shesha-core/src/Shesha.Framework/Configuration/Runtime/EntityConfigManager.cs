@@ -113,7 +113,7 @@ namespace Shesha.Configuration.Runtime
             dest.GenerateAppService = src.GenerateAppService;
             dest.Source = src.Source;
             dest.EntityConfigType = src.EntityConfigType;
-            dest.PropertiesMD5 = src.PropertiesMD5;
+            dest.HardcodedPropertiesMD5 = src.HardcodedPropertiesMD5;
 
             dest.ViewConfigurations = src.ViewConfigurations.ToList();
 
