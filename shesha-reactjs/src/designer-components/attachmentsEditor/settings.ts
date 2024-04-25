@@ -140,12 +140,6 @@ export const getSettings = () =>
                 type: 'FormInstance',
               },
               {
-                id: 'fa7cec46-48e3-4be0-9e74-a594c65b5e07',
-                name: 'formMode',
-                description: 'Selected form values',
-                type: "'edit' | 'readonly' | 'designer'",
-              },
-              {
                 id: '2f0ea080-82d4-4aa0-8732-181c7dab9db6',
                 name: 'formMode',
                 description: 'The form mode',
