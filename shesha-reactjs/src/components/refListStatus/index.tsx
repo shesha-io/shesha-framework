@@ -6,6 +6,7 @@ import { DescriptionTooltip } from './tooltip';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { useStyles } from './styles/styles';
+import ShaSpin from '../shaSpin';
 
 export interface IRefListStatusProps {
   referenceListId: IReferenceListIdentifier;
@@ -49,8 +50,9 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
   if (!itemData?.itemValue && !listItem?.loading) return null;
 
+  console.log("List item: ", listItem)
   return listItem?.loading ? (
-    <Skeleton.Button />
+    <ShaSpin spinning={listItem.loading}/>
   ) : (
    
     <div className={styles.shaStatusTagContainer}>
