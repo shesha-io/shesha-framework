@@ -12,6 +12,8 @@ Shesha builds on top of other excellent frameworks and libraries (most notably A
 
 In fact, in our experience, you will likely need **>80% less code** for most typical business applications.
 
+👾 Embark on an adventure and explore the boundless possibilities of Shesha at our [tutorial site](https://tutorial.shesha.dev/)! It's not just a playground; it's a vibrant universe where you can interact with the framework and witness its magic unfold.
+
 More info from the [Shesha website](https://shesha.io/).
 
 # Features
