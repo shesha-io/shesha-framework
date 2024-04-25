@@ -30,7 +30,7 @@ import StackedNavigationModal from './navigation/stackedNavigationModal';
 import { useStackedModal } from './navigation/stackedNavigationModalProvider';
 import { useStackedNavigation } from './navigation/stakedNavigation';
 import { DynamicFormPubSubConstants } from './pubSub';
-import { useDataContextManager, useNearestDataContext } from '@/providers/dataContextManager/index';
+import { useDataContextManager } from '@/providers/dataContextManager/index';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { executeScript } from '@/providers/form/utils';
@@ -43,7 +43,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { router } = useShaRouting();
   const { configurationItemMode } = useAppConfigurator();
   const dcm = useDataContextManager(false);
-  const pageContext = useNearestDataContext('page');
+  const pageContext = dcm.getPageContext();
 
   const { publish } = usePubSub();
 

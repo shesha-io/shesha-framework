@@ -3,7 +3,7 @@ import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload } from "./models";
-import { DataContextType, useDataContext } from "../dataContextProvider/contexts";
+import { DataContextType, IDataContextFull, useDataContext } from "../dataContextProvider/contexts";
 
 export const RootContexts: string[] = [];
 
@@ -30,6 +30,7 @@ export interface IDataContextManagerActionsContext {
     getActiveContext: () => IDataContextDescriptor;
     updatePageFormInstance: (form: ConfigurableFormInstance) => void;
     getPageFormInstance: () => ConfigurableFormInstance;
+    getPageContext: () => IDataContextDescriptor;
 }
 
 export interface IDataContextManagerFullInstance extends IDataContextManagerStateContext, IDataContextManagerActionsContext{
@@ -119,14 +120,18 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
       return dataContexts.find(x => x.type === type);
     };
 
-    const getDataContext = (contextId: string) => {
+    const getPageContext = (): IDataContextDescriptor => {
+      return getNearestDataContext('all', 'page');
+    };
+
+    const getDataContext = (contextId: string): IDataContextDescriptor => {
         if (!contextId)
             return undefined;
 
         return contexts.current[contextId];
     };
 
-    const getDataContextData = (contextId: string) => {
+    const getDataContextData = (contextId: string): IDataContextFull => {
         if (!contextId)
             return undefined;
         
@@ -180,6 +185,7 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         getActiveContext,
         updatePageFormInstance,
         getPageFormInstance,
+        getPageContext,
     };
 
     return (
