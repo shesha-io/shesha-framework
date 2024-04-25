@@ -30,7 +30,7 @@ import { IConfigurableFormRendererProps, IDataSourceComponent } from './models';
 import { nanoid } from '@/utils/uuid';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { StandardEntityActions } from '@/interfaces/metadata';
-import { useDataContextManager, useNearestDataContext } from '@/providers/dataContextManager/index';
+import { useDataContextManager } from '@/providers/dataContextManager/index';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { useForm } from '@/providers/form';
 import { useFormDesigner } from '@/providers/formDesigner';
@@ -91,7 +91,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     formSettings;
   const { globalState, setState: setGlobalState } = useGlobalState();
   const dcm = useDataContextManager(false);
-  const pageContext = useNearestDataContext('page');
+  const pageContext = dcm.getPageContext();
 
   const urlEvaluationData: IMatchData[] = [
     { match: 'initialValues', data: initialValues },

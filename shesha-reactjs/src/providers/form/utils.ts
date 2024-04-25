@@ -57,7 +57,6 @@ import {
   IDataContextsData,
   RootContexts,
   useDataContextManager,
-  useNearestDataContext,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
 import { message } from 'antd';
@@ -131,10 +130,10 @@ export function useFormProviderContext(): IApplicationContext {
 
 export function useAvailableConstantsData(topContextId?: string): IApplicationContext {
   let tcId = useDataContext(false)?.id;
-  const pc = useNearestDataContext('page');
+  const dcm = useDataContextManager(false);
+  const pc = dcm.getPageContext();
   tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
-  const dcm = useDataContextManager(false);
   const form = useForm(false) ?? dcm.getPageFormInstance();
   const formMode = form?.formMode;
   const pageContext = pc?.getFull();

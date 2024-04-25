@@ -108,6 +108,10 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     showPickerDialog();
   };
 
+  const onClear = () => {
+    if (onChange) onChange(null, null);
+  };
+
   const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
     let result: DefaultOptionType[] = null;
     if (selection.loading) {
@@ -134,10 +138,11 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           <Space.Compact style={{ width: '100%' }}>
             <Select
               size={size}
-              onClick={() => {
+              onDropdownVisibleChange={(_e) =>{
                 selectRef.current.blur();
                 showPickerDialog();
               }}
+              onClear={onClear}
               value={selection.loading ? undefined : valueId}
               placeholder={selection.loading ? 'Loading...' : placeholder}
               notFoundContent={''}
