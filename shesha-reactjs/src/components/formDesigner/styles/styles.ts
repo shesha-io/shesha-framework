@@ -137,8 +137,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${componentDragHandle} {
-            // top: 0px;
-            // left: 0px;
+             top: 0px;
+             left: 0px;
         }
         .${sidebarContainerMainAreaBody} {
             .content-heading {
@@ -311,9 +311,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             opacity: 0.7;
         }
         .${shaComponent} {
-            position: relative;
-            // margin: 4px;
-            // margin-left: 10px;
+             position: relative;
+             margin: 4px;
+             margin-left: 10px;
              border: 1px solid whredite;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
