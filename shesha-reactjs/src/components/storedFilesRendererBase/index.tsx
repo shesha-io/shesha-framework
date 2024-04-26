@@ -22,6 +22,7 @@ interface IUploaderFileTypes {
 export interface IStoredFilesRendererBaseProps {
   fileList?: IStoredFile[];
   allowUpload?: boolean;
+  allowDelete?: boolean;
   showDragger?: boolean;
   ownerId?: string;
   ownerType?: string;
@@ -67,7 +68,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   isStub = false,
   allowedFileTypes = [],
   maxHeight,
-  downloadZip
+  downloadZip,
+  allowDelete
 }) => {
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
@@ -137,6 +139,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     onPreview: ({ uid, name }) => {
       downloadFile({ fileId: uid, fileName: name });
     },
+    showUploadList: {
+      showRemoveIcon: allowDelete,
+    }
   };
 
   const renderUploadContent = () => {
