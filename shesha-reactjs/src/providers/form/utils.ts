@@ -81,6 +81,7 @@ import { IParentProviderProps } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { useDeepCompareMemo } from '@/hooks';
 import { removeGhostKeys } from '@/utils/form';
+import { useDelayedUpdate } from '../delayedUpdateProvider';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -129,21 +130,37 @@ export function useFormProviderContext(): IApplicationContext {
 }
 
 export function useAvailableConstantsData(topContextId?: string): IApplicationContext {
+  // get delayed update function
+  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
+  // get closest data context Id
   let tcId = useDataContext(false)?.id;
+  // get DataContext Manager
   const dcm = useDataContextManager(false);
+  // get page context
   const pc = dcm.getPageContext();
   tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
+  // get closest form or page form
   const form = useForm(false) ?? dcm.getPageFormInstance();
+  // get form mode
   const formMode = form?.formMode;
+  // get full page context data
   const pageContext = pc?.getFull();
+  // Get global state
   const { globalState, setState: setGlobalState } = useGlobalState();
+  // prepare data to support delayed update
   const data = removeGhostKeys(useFormData()?.data); // ToDo: replace GhostKeys
+  const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
+  if (Boolean(delayedUpdate)) data._delayedUpdate = delayedUpdate;
+  // get list of data contexts
   const contexts = { ...dcm?.getDataContextsData(tcId) };
+  // get application context
   const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
   const applicationData = application?.getData();
+  // get selected row if exists
   const selectedRow = useDataTableStore(false)?.selectedRow;
 
+  // update last update date to to simplify general memoization
   const lastUpdated = useDeepCompareMemo(() => new Date()
     , [data, contexts.lastUpdate, formMode, globalState, selectedRow]);
 
