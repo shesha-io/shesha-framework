@@ -39,6 +39,8 @@ Shesha comes with a range of features that massively reduce the effort required 
   <b><a href="https://www.shesha.io/get-started-with-shesha">Get Started</a></b>
   •
   <b><a href="https://www.youtube.com/@Shesha01">YouTube</a></b>
+    •
+  <b><a href="https://tutorial.shesha.dev/">Demo Site</a></b>
 </h4>
 
 <br />
