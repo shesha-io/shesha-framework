@@ -23,4 +23,40 @@ export const EXPOSED_VARIABLES = [
     description: 'The global state of the application',
     type: 'object',
   },
+  {
+    id: '5a367dfe-70e4-4521-96ba-bdee1336592b',
+    name: "form",
+    description: "Form instance",
+    type: "FormInstance"
+  },
+  {
+    id: '5a367dfe-70e4-4521-96ba-bdee1336592c',
+    name: "globalState",
+    description: "The global state of the application",
+    type: "object"
+  },
+  {
+    id: '5a367dfe-70e4-4521-96ba-bdee1336592d',
+    name: "http",
+    description: "axios instance used to make http requests",
+    type: "object"
+  },
+  {
+    id: '5a367dfe-70e4-4521-96ba-bdee1336592e',
+    name: "message",
+    description: "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+    type: "object"
+  },
+  {
+    id: '5a367dfe-70e4-4521-96ba-bdee1336592f',
+    name: "setFormData",
+    description: "A function used to update the form data",
+    type: "({ values: object, mergeValues: boolean}) => void"
+  },
+  {
+    id: '5a367dfe-70e4-4521-96ba-bdee1336592g',
+    name: "setGlobalState",
+    description: "Setting the global state of the application",
+    type: "(payload: { key: string, data: any } ) => void"
+  }
 ];

@@ -476,49 +476,34 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     labelAlign: "left",
     expandIconPosition: "start",
     ghost: true,
+    version: 4,
     collapsible: 'header',
     content: {
       id:'pnl44bf6-f76d-4139-a853-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()    
-        .addCodeEditor({
-          id: '06ab0599-914d-4d2d-875k-765a495472f8',
-          propertyName: "onChangeCustom",
-          mode: "dialog",
-          label: "On Change",
-          description: "Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.",
-          parentId: 'pnl44bf6-f76d-4139-a850-c99bf06c8b69',
-          validate: {},
-          settingsValidationErrors: [],
-          exposedVariables: EXPOSED_VARIABLES,
-          templateSettings: {
-              functionName: 'onChange'
-          },
-          wrapInTemplate: true
-          
-        })
+        .addCodeEditor(
+          {
+            id: "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
+            propertyName: "onChangeCustom",
+            label: "On Change",
+            labelAlign: "right",
+            parentId: "pnl44bf6-f76d-4139-a853-c99bf06c8b69",
+            hidden: false,
+            description: "Enter custom eventhandler on changing of event. (data, form, event) are exposed",
+            validate: {},
+            settingsValidationErrors: [],
+            exposedVariables: EXPOSED_VARIABLES,
+            version: 3,
+            language: "typescript",
+            wrapInTemplate: true,
+            templateSettings: {
+              functionName: "onChange"
+            },
+            availableConstantsExpression: "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+          }
+        )
         .toJson()
       ]
     }
   })
   .toJson();
-
-  // <SettingsCollapsiblePanel header="Events">
-  //       <SettingsFormItem
-  //         label="On Change"
-  //         name="onChangeCustom"
-  //         tooltip="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-  //       >
-  //         <CodeEditor
-  //           propertyName="onChangeCustom"
-  //           readOnly={readOnly}
-  //           mode="dialog"
-  //           label="On Change"
-  //           description="Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key."
-  //           exposedVariables={EXPOSED_VARIABLES}
-  //           wrapInTemplate={true}
-  //           templateSettings={{
-  //             functionName: 'onChange'
-  //           }}
-  //           availableConstants={onChangeOrSelectConstants}
-  //         />
-  //       </SettingsFormItem>

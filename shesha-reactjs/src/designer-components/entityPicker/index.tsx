@@ -1,11 +1,11 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Alert } from 'antd';
+import { Alert, message } from 'antd';
 import React, { useCallback, useMemo } from 'react';
 import { EntityPicker } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps, useForm } from '@/providers';
+import { ButtonGroupItemProps, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -18,6 +18,9 @@ import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
+import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
+import { axiosHttp } from '@/utils/fetchers';
+import moment from 'moment';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -51,10 +54,24 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-  Factory: ({ model }) => {
-
+   Factory: ({ model, form }) => {
+    const { formMode, setFormData } = useForm();
+    const { globalState, setState: setGlobalState } = useGlobalState();
+    const { backendUrl } = useSheshaApplication();
+    const { data: formData } = useFormData();
+    const eventProps = {
+      model,
+      form,
+      formData,
+      formMode,
+      globalState,
+      http: axiosHttp(backendUrl),
+      message,
+      moment,
+      setFormData,
+      setGlobalState,
+    };
     const { filters, modalWidth, customWidth, widthUnits, style } = model;
-    const { formMode, formData } = useForm();
 
     const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
       return [
@@ -108,6 +125,13 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     return (
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
         {(value, onChange) => {
+
+          const customEvent = customDropDownEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0], args[1]);
+            if (typeof onChange === 'function')
+              onChange(...args);
+          };
           return (
           <EntityPicker
             incomeValueFunc={incomeValueFunc}
@@ -140,7 +164,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
             width={width}
             configurableColumns={model.items ?? []}
             value={value}
-            onChange={onChange}
+            onChange={onChangeInternal}
             size={model.size}
           />
         );
