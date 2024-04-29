@@ -16,14 +16,14 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   isInput: true,
   isOutput: true,
   icon: <HomeOutlined />,
-  Factory: ({ model }) => {
+  Factory: ({ model, form }) => {
     return (
       <AddressEffect externalApiKey={model?.googleMapsApiKey}>
         <ConfigurableFormItem model={model}>
           {(value, onChange) => { 
             return (
               <ReadOnlyDisplayFormItemWrapper value={value} readOnly={model.readOnly}>
-                <AutoCompletePlacesControl {...model} value={value} onChange={onChange}/>
+                <AutoCompletePlacesControl {...{...model, form }} value={value} onChange={onChange}/>
               </ReadOnlyDisplayFormItemWrapper>
             );
           }}
