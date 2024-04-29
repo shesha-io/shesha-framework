@@ -479,7 +479,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     version: 4,
     collapsible: 'header',
     content: {
-      id:'pnl44bf6-f76d-4139-a853-c99bf06c8b69',
+      id:'44bf6-f76d-4139-a853-c99bf06c8b69',
       components: [...new DesignerToolbarSettings()    
         .addCodeEditor(
           {
@@ -487,7 +487,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
             propertyName: "onChangeCustom",
             label: "On Change",
             labelAlign: "right",
-            parentId: "pnl44bf6-f76d-4139-a853-c99bf06c8b69",
+            parentId: "44bf6-f76d-4139-a853-c99bf06c8b69",
             hidden: false,
             description: "Enter custom eventhandler on changing of event. (data, form, event) are exposed",
             validate: {},

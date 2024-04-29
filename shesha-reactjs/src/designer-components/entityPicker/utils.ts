@@ -58,5 +58,11 @@ export const EXPOSED_VARIABLES = [
     name: "setGlobalState",
     description: "Setting the global state of the application",
     type: "(payload: { key: string, data: any } ) => void"
-  }
+  },
+   {
+    id: '5a367dfe-70e4-4521-96ba-bdee1336592h',
+    name: "option",
+    description: "Meta data of component current value",
+    type: "object"
+  },
 ];
