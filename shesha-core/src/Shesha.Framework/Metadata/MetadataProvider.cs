@@ -50,20 +50,13 @@ namespace Shesha.Metadata
             _mapper = mapper;
         }
 
-        public async Task<MetadataDto> GetAsync(string container)
+        // ToDo: support Dynamic entities
+        public async Task<MetadataDto> GetAsync(Type containerType, string containerName)
         {
-            if (string.IsNullOrWhiteSpace(container))
-                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
-
-            // ToDo: show Dynamic entities
-            var containerType = _entityConfigurationStore.Get(container)?.EntityType;
-            if (containerType == null)
-                throw new ArgumentException($"Type `{container}` not found");
-
             var isEntity = containerType.IsEntityType();
             var moduleInfo = containerType.GetConfigurableModuleInfo();
 
-            var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, container);
+            var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, containerName);
 
             var dto = new MetadataDto
             {
@@ -160,7 +153,7 @@ namespace Shesha.Metadata
             return properties;
         }
 
-        private async Task<(DateTime, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type containerType, string containerName)
+        private async Task<(DateTime?, List<PropertyMetadataDto>)> GetPropertiesInternalAsync(Type containerType, string containerName)
         {
             var metadataContext = new MetadataContext(containerType);
             var hardCodedProps = containerType == null
@@ -198,7 +191,7 @@ namespace Shesha.Metadata
             else
                 result = hardCodedProps;
 
-            return (modelConfig.ChangeTime, result);
+            return (modelConfig?.ChangeTime, result);
         }
 
         private PropertyMetadataDto RemoveSuppressed(PropertyMetadataDto prop)
