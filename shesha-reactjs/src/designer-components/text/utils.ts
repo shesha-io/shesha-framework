@@ -25,28 +25,29 @@ export interface IContent {
 }
 
 const formatDate = (dateText: string, dateFormat: string) => {
-  return moment(dateText).isValid() ? moment(dateText).format(dateFormat || 'DD/MM/YYYY HH:mm') : dateText;
+  return moment(dateText).isValid() ? moment(dateText).format(dateFormat) : dateText;
 };
 
 export const formatDateStringAndPrefix = (content: string, dateFormat: string = DATE_TIME_FORMATS.date) => {
-  const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
-  const match = content?.match(regex);
+  const dateTimeRegex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+  const dateRegex = /\d{4}-\d{2}-\d{2}/;
+
+  const match = dateTimeRegex.exec(content) || dateRegex.exec(content);
 
   if (match) {
     const dateString = match[0];
-    return content.replace(regex, formatDate(dateString, dateFormat));
+    return content.replace(dateString, formatDate(dateString, dateFormat));
   } else {
-    return content.replace(regex, formatDate(content, dateFormat));
+    return content;
   }
 };
 
 export const getContent = (content: string, { dataType = 'string', dateFormat, numberFormat }: IContent = {}) => {
   switch (dataType) {
     case 'boolean':
-      return !!content ? 'Yes' : 'No';
+      return content ? 'Yes' : 'No';
     case 'date-time':
       return formatDateStringAndPrefix(content, dateFormat);
-
     case 'number':
       return getNumberFormat(content, numberFormat || 'round');
 
