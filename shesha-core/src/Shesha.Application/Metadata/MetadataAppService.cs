@@ -134,7 +134,15 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<MetadataDto> GetAsync(string container)
         {
-            return await _metadataProvider.GetAsync(container);
+            if (string.IsNullOrWhiteSpace(container))
+                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
+
+            // ToDo: show Dynamic entities
+            var containerType = await GetContainerTypeAsync(container);
+            if (containerType == null)
+                throw new ArgumentException($"Type `{container}` not found");
+
+            return await _metadataProvider.GetAsync(containerType, container);
         }
 
         /// <summary>

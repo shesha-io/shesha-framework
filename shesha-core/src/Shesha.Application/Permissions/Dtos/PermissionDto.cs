@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
@@ -11,6 +12,8 @@ namespace Shesha.Roles.Dto
         {
             Child = new List<PermissionDto>();
         }
+
+        public Guid? ModuleId { get; set; }
 
         public string Name { get; set; }
 

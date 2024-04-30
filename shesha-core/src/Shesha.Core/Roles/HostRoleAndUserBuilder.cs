@@ -5,22 +5,23 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Shesha.Domain;
 using System;
 
-namespace Shesha.Domain
+namespace Shesha.Roles
 {
     /// <summary>
     /// Role and user builder
     /// </summary>
-    public class HostRoleAndUserBuilder: IHostRoleAndUserBuilder, ITransientDependency
+    public class HostRoleAndUserBuilder : IHostRoleAndUserBuilder, ITransientDependency
     {
         private readonly IUnitOfWorkManager _uowManager;
         private readonly IRepository<ShaRole, Guid> _roleRepository;
-        private readonly IRepository<User, Int64> _userRepository;
+        private readonly IRepository<User, long> _userRepository;
         private readonly IRepository<Person, Guid> _personRepository;
-        private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointmentRepository;        
+        private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointmentRepository;
 
-        public HostRoleAndUserBuilder(IUnitOfWorkManager uowManager, IRepository<ShaRole, Guid> roleRepository, IRepository<User, Int64> userRepository, IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository)
+        public HostRoleAndUserBuilder(IUnitOfWorkManager uowManager, IRepository<ShaRole, Guid> roleRepository, IRepository<User, long> userRepository, IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository)
         {
             _uowManager = uowManager;
             _roleRepository = roleRepository;
@@ -53,7 +54,8 @@ namespace Shesha.Domain
 
         private void AddUserToRole(Person person, ShaRole role)
         {
-            var appointment = new ShaRoleAppointedPerson { 
+            var appointment = new ShaRoleAppointedPerson
+            {
                 Role = role,
                 Person = person
             };
@@ -80,17 +82,17 @@ namespace Shesha.Domain
         private void EnsureUserExist(string username, Action<Person> afterCreateAction)
         {
             var user = _userRepository.FirstOrDefault(u => u.TenantId == null && u.UserName == username);
-            if (user == null) 
+            if (user == null)
             {
                 user = User.CreateUser(null, username, $"{username}@host");
                 user.Password = new PasswordHasher<User>(new OptionsWrapper<PasswordHasherOptions>(new PasswordHasherOptions())).HashPassword(user, "123qwe");
                 user.IsEmailConfirmed = true;
                 user.IsActive = true;
-                
+
                 _userRepository.Insert(user);
 
-                var person = new Person 
-                { 
+                var person = new Person
+                {
                     User = user,
                     FirstName = username,
                     LastName = username

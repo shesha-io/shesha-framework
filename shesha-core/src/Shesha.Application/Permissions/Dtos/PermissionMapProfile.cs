@@ -23,6 +23,9 @@ namespace Shesha.Permissions.Dtos
                 .ForMember(e => e.IsDbPermission, c => c.MapFrom(e =>
                     e.Properties != null && e.Properties.ContainsKey("IsDbPermission") && (bool)e.Properties["IsDbPermission"]
                     ))
+                .ForMember(e => e.ModuleId, c => c.MapFrom(e =>
+                    e.Properties != null && e.Properties.ContainsKey("ModuleId") ? (Guid?)e.Properties["ModuleId"] : null
+                    ))
                 ;
         }
     }

@@ -69,7 +69,7 @@ namespace Shesha.Metadata
                         && (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/))
                         return null;
 
-                    var metadata = await _metadataProvider.GetAsync(t.FullClassName);
+                    var metadata = await _metadataProvider.GetAsync(config.EntityType, t.FullClassName);
                     return new EntityModelDto
                     {
                         Suppress = t.Suppress,
