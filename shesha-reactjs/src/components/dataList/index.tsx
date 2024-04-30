@@ -322,7 +322,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     };
   
     return (
-      <div onDoubleClick={dblClick}>
+      <div onDoubleClick={dblClick} style={{display: 'wrap'}}>
         <DataListItemRenderer
           isNewObject={false}
           markup={entityForm?.formConfiguration?.markup}
