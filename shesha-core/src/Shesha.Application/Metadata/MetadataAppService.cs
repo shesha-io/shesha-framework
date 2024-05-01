@@ -34,7 +34,7 @@ namespace Shesha.Metadata
             _modelProviders = modelProviders;
         }
 
-        public async Task<List<ModelDto>> GetAllModelsAsync()
+        private async Task<List<ModelDto>> GetAllModelsAsync()
         {
             var models = new List<ModelDto>();
             foreach (var provider in _modelProviders)
@@ -44,7 +44,7 @@ namespace Shesha.Metadata
             return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
         }
 
-        public async Task<Type> GetContainerTypeAsync(string container)
+        private async Task<Type> GetContainerTypeAsync(string container)
         {
             var allModels = await GetAllModelsAsync();
             var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();

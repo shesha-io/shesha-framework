@@ -30,7 +30,7 @@ interface ISubFormSettingsState extends ISubFormComponentProps { }
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({ readOnly }) => {
-  const { values: formData, onValuesChange } = useSettingsForm<ISubFormComponentProps>();
+  const { values: formData, model, onValuesChange } = useSettingsForm<ISubFormComponentProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -79,7 +79,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={formData}
+          formData={model}
           onValuesChange={onValuesChange}
         />
 

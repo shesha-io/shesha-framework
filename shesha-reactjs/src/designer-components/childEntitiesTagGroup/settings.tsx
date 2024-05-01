@@ -16,7 +16,7 @@ import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableCons
 const { Option } = Select;
 
 const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesTagGroupProps>> = ({ readOnly }) => {
-  const { values, onValuesChange } = useSettingsForm<IChildEntitiesTagGroupProps>();
+  const { model, onValuesChange } = useSettingsForm<IChildEntitiesTagGroupProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -33,7 +33,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
         <ContextPropertyAutocomplete id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={values}
+          formData={model}
           onValuesChange={onValuesChange}
         />
 
