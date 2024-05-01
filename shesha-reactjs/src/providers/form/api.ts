@@ -337,10 +337,14 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
       // and for context = null or empty string (form context)
       if (component?.isInput && !model.context) {
         const propName = model.propertyName;
-        fieldNames.push(propName);
-        const fieldsFunc = component?.getFieldsToFetch;
-        if (typeof fieldsFunc === 'function')
-          fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata) ?? []);
+        
+        // ToDo: AS - calc actual propName from JS setting
+        if (typeof propName === 'string') {
+          fieldNames.push(propName);
+          const fieldsFunc = component?.getFieldsToFetch;
+          if (typeof fieldsFunc === 'function')
+            fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata) ?? []);
+        }
     }
   }
   }

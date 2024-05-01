@@ -12,6 +12,8 @@ import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { PropertyCascaderDotNotation } from '@/components/propertyAutocomplete/propertyCascader';
+import SettingsControl from '../_settings/settingsControl';
+import { getValueFromPropertySettings } from '../_settings/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -91,23 +93,33 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
         >
           <Form.Item {...{ label: propertylabel, readOnly }} >
             {!useCascader && (
-              <PropertyAutocomplete
-                value={state.propertyName}
-                onChange={(value) => {
-                  const changedData = { propertyName: value };
-                  if (state.mode === 'formData')
-                    changedData['componentName'] = value;
-                  setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
-                  onValuesChange(changedData);
+              <SettingsControl
+                  propertyName={'propertyName'}
+                  mode={'value'}
+                  onChange={(value) => {
+                    const changedData = { propertyName: value };
+                    if (state.mode === 'formData') 
+                      changedData['componentName'] = getValueFromPropertySettings(value);
+                    setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
+                    onValuesChange(changedData);
+                  }}
+                  value={state.propertyName as any}
+                  readOnly={readOnly}
+              >
+                {(value, onChange) => {
+                  return <PropertyAutocomplete
+                    value={value}
+                    onChange={onChange}
+                    id={model.id}
+                    style={getStyle(model?.style, formData)}
+                    dropdownStyle={getStyle(model?.dropdownStyle, formData)}
+                    size={model.size}
+                    mode={model.mode}
+                    readOnly={readOnly}
+                    showFillPropsButton={model.showFillPropsButton ?? true}
+                  />;
                 }}
-                id={model.id}
-                style={getStyle(model?.style, formData)}
-                dropdownStyle={getStyle(model?.dropdownStyle, formData)}
-                size={model.size}
-                mode={model.mode}
-                readOnly={readOnly}
-                showFillPropsButton={model.showFillPropsButton ?? true}
-              />
+              </SettingsControl>
             )}
             { useCascader && (
               <PropertyCascaderDotNotation
