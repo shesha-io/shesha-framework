@@ -1,5 +1,6 @@
 import { nanoid } from '@/utils/uuid';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { EXPOSED_VARIABLES } from './utils';
 
 export const entityPickerSettings = new DesignerToolbarSettings()
   .addCollapsiblePanel({
@@ -464,6 +465,44 @@ export const entityPickerSettings = new DesignerToolbarSettings()
           ],
           dataSourceType: 'values',
         }).toJson()
+      ]
+    }
+  })
+  .addCollapsiblePanel({
+    id: '3335bfe4-ee69-431e-931b-b0e0b9cexe6f',
+    propertyName: 'pnlEvents',
+    parentId: 'root',
+    label: 'Events',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    version: 4,
+    collapsible: 'header',
+    content: {
+      id:'44bf6-f76d-4139-a853-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()    
+        .addCodeEditor(
+          {
+            id: "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
+            propertyName: "onChangeCustom",
+            label: "On Change",
+            labelAlign: "right",
+            parentId: "44bf6-f76d-4139-a853-c99bf06c8b69",
+            hidden: false,
+            description: "Enter custom eventhandler on changing of event. (data, form, event) are exposed",
+            validate: {},
+            settingsValidationErrors: [],
+            exposedVariables: EXPOSED_VARIABLES,
+            version: 3,
+            language: "typescript",
+            wrapInTemplate: true,
+            templateSettings: {
+              functionName: "onChange"
+            },
+            availableConstantsExpression: "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+          }
+        )
+        .toJson()
       ]
     }
   })
