@@ -4,7 +4,7 @@ import { useMetadata } from '@/providers';
 import { Button, Tooltip } from 'antd';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useDataContext } from '@/providers/dataContextProvider/contexts';
-import { DeleteFilled } from '@ant-design/icons';
+import { DeleteFilled, FunctionOutlined } from '@ant-design/icons';
 import { useStyles } from '../styles/styles';
 
 interface IDragWrapperProps {
@@ -36,8 +36,13 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
       </div>
       {Boolean(componentModel.propertyName) && (
         <div>
-          <strong>Name:</strong> {componentModel.propertyName}
+          <strong>Property name: </strong> 
+          {typeof(componentModel.propertyName) === 'string' ? componentModel.propertyName : ''}
+          {typeof(componentModel.propertyName) === 'object' && <FunctionOutlined />}
         </div>
+      )}
+      {Boolean(componentModel.componentName) && (
+        <div><strong>Component name: </strong>{componentModel.componentName}</div>
       )}
     </div>
   );
