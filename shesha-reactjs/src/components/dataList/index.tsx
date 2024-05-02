@@ -74,6 +74,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   ...props
 }) => {
 
+
+  console.log(records.length, "CARDS RECORDS LENGTH")
   const { styles } = useStyles();
   //const refreshRef = useRef(0);
 
@@ -186,19 +188,23 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
 
   useEffect(() => {
-    if (measured?.width === 0) return;
-    let res = null;
-    if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
-      res =
-        selectionMode === 'none'
-          ? ({ width: '100%' } as React.CSSProperties)
-          : ({ width: 'calc(100% - 0px)' } as React.CSSProperties);
-    } else {
-      res =
-        listItemWidth === 'custom'
-          ? ({ width: `${customListItemWidth}px` } as React.CSSProperties)
-          : { width: `${(measured?.width - 40) * listItemWidth - (selectionMode === 'none' ? 0 : 28)}px` };
-    }
+    // if (measured?.width === 0) return;
+    // let res = null;
+ 
+      let res = { width: '200px', height: '250px', padding: '10px', backgroundColor: '#ffffff', border: '1px #fff solid', overflow: 'hidden', position: 'relative' } as React.CSSProperties;
+      console.log("WENT INTO FIRST CONDITIONAL");
+    
+    // else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+    //   res =
+    //     selectionMode === 'none'
+    //       ? ({ width: '100%' } as React.CSSProperties)
+    //       : ({ width: 'calc(100% - 0px)' } as React.CSSProperties);
+    // } else {
+    //   res =
+    //     listItemWidth === 'custom'
+    //       ? ({ width: `${customListItemWidth}px` } as React.CSSProperties)
+    //       : { width: `${(measured?.width - 40) * listItemWidth - (selectionMode === 'none' ? 0 : 28)}px` };
+    // }
 
     setItemWidth(res);
   }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
@@ -443,7 +449,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           )}
         >
           <div
-            className={classNames(styles.shaDatalistComponentItem, { selected })}
+            className=""
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
@@ -547,8 +553,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           <Show when={records?.length === 0}>
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
           </Show>
+
+
           <Show when={records?.length > 0}>
+            <div style={{width: '100%', display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))'}}>
             { content }
+            </div>
           </Show>
         </div>
       </ShaSpin>
