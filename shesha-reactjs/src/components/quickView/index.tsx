@@ -47,6 +47,10 @@ export interface IQuickViewProps extends PropsWithChildren {
   initialFormData?: any;
 
   popoverProps?: PopoverProps;
+
+  disabled?: boolean;
+
+  styles: any;
 }
 
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
@@ -61,6 +65,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   width = 600,
   popoverProps,
   dataProperties = [],
+  disabled
 }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
@@ -130,6 +135,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       </Button>
     );
   };
+
+  if (disabled)
+   return (
+    <Button className={styles.entityReferenceBtn} disabled type="link">
+      {formTitle}
+      </Button>
+      );
 
   return (
     <Popover

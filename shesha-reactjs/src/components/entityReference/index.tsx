@@ -209,7 +209,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         </Button>
       );
 
-    if (props.disabled)
+    if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
         <Button className={styles.entityReferenceBtn} disabled type="link">
           {displayText}
@@ -235,6 +235,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           width={props.quickviewWidth}
           formIdentifier={formIdentifier}
           formType={formType}
+          disabled={props.disabled}
+          styles={styles}
         />
       );
 
