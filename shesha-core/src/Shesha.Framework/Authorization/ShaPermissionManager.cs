@@ -184,6 +184,12 @@ namespace Shesha.Authorization
                 throw new EntityNotFoundException("Permission 'name' not found");
             }
 
+            var child = _permissionDefinitionRepository.GetAll().Where(x => x.Parent == name);
+            foreach (var item in child)
+            {
+                await DeletePermissionAsync(item.Name);
+            }
+
             InternalDeletePermission(dbPermission);
 
             if (dbPermission != null)

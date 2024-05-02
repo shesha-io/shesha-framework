@@ -6,6 +6,7 @@ import { evaluateDynamicFilters } from '@/utils';
 import { IDataSourceComponentProps } from './models';
 import {
   MetadataProvider,
+  useDataContextManager,
   useDataTableStore,
   useForm,
   useGlobalState,
@@ -30,6 +31,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
 
   //const { selectedRow } = dataSelection;
   const { globalState } = useGlobalState();
+  const pageContext = useDataContextManager(false)?.getPageContext() ?? {};
 
   const isDesignMode = formMode === 'designer';
 
@@ -50,7 +52,8 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
       filters,
       [
         { match: 'data', data: formData },
-        { match: 'globalState', data: globalState }
+        { match: 'globalState', data: globalState },
+        { match: 'pageContext', data: pageContext },
       ],
       propertyMetadataAccessor
     ).then(evaluatedFilters => {
