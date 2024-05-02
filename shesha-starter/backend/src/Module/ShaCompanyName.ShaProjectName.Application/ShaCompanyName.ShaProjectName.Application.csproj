@@ -4,6 +4,23 @@
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>ShaCompanyName.ShaProjectName.Common</RootNamespace>
     <Nullable>enable</Nullable>
+    <!-- Optional: Embed source files within the PDBs -->
+    <EmbedAllSources>true</EmbedAllSources>
+
+    <!-- Generate full debug information embedded in the DLLs -->
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+
+    <!-- Include DLLs and XML documentation files in the NuGet package output -->
+    <AllowedOutputExtensionsInPackageBuildOutput>.dll;.xml;.pdb</AllowedOutputExtensionsInPackageBuildOutput>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
