@@ -236,7 +236,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           formIdentifier={formIdentifier}
           formType={formType}
           disabled={props.disabled}
-          styles={styles}
         />
       );
 

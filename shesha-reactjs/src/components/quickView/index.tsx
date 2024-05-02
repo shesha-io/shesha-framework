@@ -49,8 +49,6 @@ export interface IQuickViewProps extends PropsWithChildren {
   popoverProps?: PopoverProps;
 
   disabled?: boolean;
-
-  styles: any;
 }
 
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
