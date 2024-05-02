@@ -219,6 +219,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
       form,
+      formMode: formRef?.current?.formMode,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       pageContext: pageContext?.getFull(),
       application: dcm?.getDataContext(SheshaCommonContexts.ApplicationContext)?.getData(),
