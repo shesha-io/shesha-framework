@@ -65,9 +65,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const formInstance = useForm();
   const { styles } = useStyles();
-  //const contextManager = useDataContextManager(false);
-  //if (contextManager)
-  //  contextManager.updateFormInstance(formInstance);
 
   const {
     updateStateFormData,
@@ -166,7 +163,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       parentFormValues: parentFormValues, 
       globalState: globalState, 
       shesha: sheshaUtils, 
-      form: form, 
+      form: formInstance, 
       setFormData: setFormData, 
       setGlobalState: setGlobalState, 
       contexts: { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate }, 

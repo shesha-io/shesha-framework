@@ -9,7 +9,7 @@ import { migrateDynamicExpression } from '@/designer-components/_common-migratio
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { useFormData, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from '@/providers';
+import { useDataContextManager, useFormData, useGlobalState, useNestedPropertyMetadatAccessor, useSheshaApplication } from '@/providers';
 import { useForm } from '@/providers/form';
 import { FormMarkup } from '@/providers/form/models';
 import {
@@ -46,6 +46,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { formMode, setFormData } = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
+    const pageContext = useDataContextManager(false)?.getPageContext() ?? {};
     const { backendUrl } = useSheshaApplication();
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
       model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null
@@ -66,6 +67,10 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           {
             match: 'globalState',
             data: globalState,
+          },
+          {
+            match: 'pageContext',
+            data: pageContext,
           },
         ],
         propertyMetadataAccessor
