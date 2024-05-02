@@ -27,6 +27,7 @@ export interface ISortableRowProps {
   inlineSaveMode?: InlineSaveMode;
   inlineEditorComponents?: IFlatComponentsStructure;
   inlineDisplayComponents?: IFlatComponentsStructure;
+  tableRef: React.MutableRefObject<HTMLDivElement>;
 }
 
 interface RowDragHandleProps {
@@ -48,6 +49,7 @@ export const RowDragHandle: FC<RowDragHandleProps> = () => {
 };
 
 export const TableRow: FC<ISortableRowProps> = (props) => {
+
   const {
     row,
     prepareRow,
@@ -64,11 +66,12 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
     inlineSaveMode,
     inlineEditorComponents,
     inlineDisplayComponents,
+    tableRef
   } = props;
 
   const { styles } = useStyles();
   const { hoverRowId, setHoverRowId, dragState: draggingRowId, setDragState } = useDataTableStore();
-  const tableRef = useRef(null);
+  const rowRef = useRef(null);
   const [selected, setSelected] = useState<Number>(selectedRowIndex);
 
   const handleRowClick = () => {
@@ -88,11 +91,15 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
 
   useEffect(() => {
     const onClickOutside = (event) => {
-      if (tableRef.current && !tableRef.current.contains(event.target)) {
+      if (rowRef.current && !rowRef.current.contains(event.target)) {
         setSelected(-1);
       }
     };
-    document.addEventListener('click', onClickOutside);
+ 
+   
+  tableRef.current.addEventListener('click', onClickOutside);
+
+   
   }, []);
 
   const rowId = row.original.id ?? row.id;
@@ -125,7 +132,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
         onMouseLeave={() => {
           setHoverRowId(null);
         }}
-        ref={tableRef}
+        ref={rowRef}
         onClick={handleRowClick}
         onDoubleClick={handleRowDoubleClick}
         {...row.getRowProps()}
