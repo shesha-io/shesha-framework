@@ -8,6 +8,7 @@ using GraphQL.Types;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.GraphQL.Provider.Schemas;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,7 +90,7 @@ namespace Shesha.GraphQL.Provider
         /// <returns></returns>
         public static string GetEntitySchemaName(string entityTypeName)
         {
-            return entityTypeName.ToCamelCase();
+            return StringHelper.ToCamelCase(entityTypeName);
         }
 
         public virtual Task<ISchema> GetOrDefaultAsync(string schemaName, string defaultSchemaName = null)
