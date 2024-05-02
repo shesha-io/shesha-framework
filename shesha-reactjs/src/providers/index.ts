@@ -41,5 +41,6 @@ export * from './dynamicActions';
 export * from './dynamicActionsDispatcher';
 export * from './dataContextManager';
 export * from './canvasConfig';
+export * from './dataContextProvider';
 
 export { useApplicationContextData, useApplicationContextMetadata };
