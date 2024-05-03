@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 import {
-  IActiveButton,
   IConfigurableActionArguments,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
@@ -10,7 +9,7 @@ import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
 
 export interface IConfigurableActionDispatcherStateContext {
-  activeButton?: IActiveButton[];
+  callers: string[];
 }
 
 export interface IGetConfigurableActionPayload {
@@ -46,13 +45,14 @@ export interface IConfigurableActionDispatcherActionsContext {
   unregisterAction: (actionIdentifier: IConfigurableActionIdentifier) => void;
   prepareArguments: (actionArguments: any) => void;
   executeAction: ConfigurableActionExecuter;
-  registerActiveButton: (button: IActiveButton) => void;
-  unregisterActiveButton: (button: IActiveButton) => void;
+  getExecuting: (callerId: string) => boolean;
 }
 
 /** initial state */
 export const CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE: IConfigurableActionDispatcherStateContext = {
-  activeButton: [],
+  callers: [],
+
+  //activeButton: [],
 };
 
 export const ConfigurableActionDispatcherStateContext = createContext<IConfigurableActionDispatcherStateContext>(

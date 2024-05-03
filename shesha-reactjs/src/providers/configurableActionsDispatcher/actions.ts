@@ -1,18 +1,16 @@
-import { IActiveButton } from '@/interfaces/configurableAction';
 import { createAction } from 'redux-actions';
 
-
 export enum ConfigurableComponentActionEnums {
-    registerActiveButton = 'REGISTER_ACTIVE_BUTTON',
-     unRegisterActiveButton = 'UNREGISTER_ACTIVE_BUTTON'
+  addCaller = 'ADD_CALLER',
+  removeCaller = 'REMOVE_CALLER',
 };
 
-export const registerActiveButtonAction = createAction<IActiveButton, IActiveButton>(
-    ConfigurableComponentActionEnums.registerActiveButton,
-    (p) => p
-  );
+export const addCallerAction = createAction<string, string>(
+  ConfigurableComponentActionEnums.addCaller,
+  (p) => p
+);
 
-  export const unRegisterActiveButtonAction = createAction<IActiveButton, IActiveButton>(
-    ConfigurableComponentActionEnums.unRegisterActiveButton,
-    (p) => p
-  );
+export const removeCallerAction = createAction<string, string>(
+  ConfigurableComponentActionEnums.removeCaller,
+  (p) => p
+);

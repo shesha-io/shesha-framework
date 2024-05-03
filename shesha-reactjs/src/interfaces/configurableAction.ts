@@ -113,7 +113,8 @@ export interface IConfigurableActionConfiguration<TArguments = any> extends IMay
   onSuccess?: IConfigurableActionConfiguration;
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
-  activeButton?: IActiveButton;
+
+  callerId?: string;
 }
 
 /**

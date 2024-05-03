@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC } from 'react';
 import { Button, FormInstance } from 'antd';
 import { ShaIcon, IconType } from '@/components';
 import classNames from 'classnames';
@@ -6,7 +6,6 @@ import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { nanoid } from '@/utils/uuid';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
@@ -15,26 +14,15 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const evaluationContext = useAvailableConstantsData();
-  const { executeAction, registerActiveButton, activeButton } = useConfigurableActionDispatcher();
-  const [isInProgressButton, setButtonActive] = useState<string>();
-  const { loading, disabled } = useMemo(() => ({
-    loading: activeButton.some(x => x?.activeButtonId === isInProgressButton && !x?.activeButtonActionName.includes('Show')),
-    disabled: activeButton.some(x => x?.activeButtonId === isInProgressButton && x?.activeButtonActionName.includes('Show'))
-  }), [activeButton, isInProgressButton]);
+  const { executeAction, getExecuting } = useConfigurableActionDispatcher();
 
   const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    const buttonId = nanoid();
-    setButtonActive(buttonId);
-    registerActiveButton({
-      activeButtonId: buttonId,
-      activeButtonActionName: props.actionConfiguration.actionName
-    });
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
     try {
       if (props.actionConfiguration) {
 
         executeAction({
-          actionConfiguration: { ...props.actionConfiguration, activeButton: { activeButtonId: buttonId, activeButtonActionName: props.actionConfiguration.actionName } },
+          actionConfiguration: { ...props.actionConfiguration, callerId: props.id},
           argumentsEvaluationContext: evaluationContext,
 
         });
@@ -44,6 +32,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     }
   };
 
+  const loading = getExecuting(props.id);
 
   return (
     <Button
@@ -56,7 +45,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
       size={props?.size}
-      disabled={props?.readOnly || disabled}
+      disabled={props?.readOnly}
       style={props?.style}
 
     >
