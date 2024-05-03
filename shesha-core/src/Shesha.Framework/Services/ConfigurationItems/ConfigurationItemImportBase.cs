@@ -5,6 +5,7 @@ using System;
 using Abp.Domain.Repositories;
 using Shesha.Domain.ConfigurationItems;
 using Abp.Domain.Uow;
+using System.Collections.Generic;
 
 namespace Shesha.Services.ConfigurationItems
 {
@@ -76,6 +77,11 @@ namespace Shesha.Services.ConfigurationItems
             }
 
             return application;
+        }
+
+        public virtual Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items)
+        {
+            return Task.FromResult(items);
         }
     }
 }

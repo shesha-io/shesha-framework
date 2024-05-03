@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using NetTopologySuite.Index.HPRtree;
 using Newtonsoft.Json;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems.Distribution;
@@ -9,7 +10,9 @@ using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.Permissions.Distribution.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Distribution
@@ -31,6 +34,33 @@ namespace Shesha.DynamicEntities.Distribution
         {
             _permissionDefinitionRepo = permissionDefinitionRepo;
             _shaPermissionManager = shaPermissionManager;
+        }
+
+        public override Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items)
+        {
+            var loaclItems = items.Select(x =>
+            {
+                if (!(x is DistributedPermissionDefinition itemConfig))
+                    throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {nameof(PermissionDefinition)}. Actual type is {x.GetType().FullName}");
+                return itemConfig;
+            }).ToList();
+
+            var result = new List<DistributedConfigurableItemBase>();
+
+            var addItems = (string parent) => { };
+            addItems = (string parent) =>
+            {
+                var list = loaclItems.Where(x => x.Parent == parent);
+                result.AddRange(list);
+                foreach (var item in list)
+                {
+                    addItems(item.Name);
+                }
+            };
+
+            addItems(null);
+
+            return Task.FromResult(result);
         }
 
         public async Task<ConfigurationItemBase> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
