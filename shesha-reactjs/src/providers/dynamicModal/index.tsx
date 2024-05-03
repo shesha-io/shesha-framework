@@ -114,7 +114,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
           evaluationFilter: (context, _data) => context.path !== 'buttons'
         };
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
-      }
+      },
     },
     actionDependencies,
   );
@@ -131,7 +131,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ) {
         highestIndexKey = keys[i];
       }
-    }
+    };
 
     return highestIndexKey ? instances[highestIndexKey] : null;
   };
@@ -182,8 +182,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             value={{
               instance,
               close: () => {
-                removeModal(instance.id)
-              },
+                removeModal(instance.id);
+              }
             }}
           >
             <DynamicModal {...instanceProps} key={instance.id} id={instance.id} isVisible={instance.isVisible} />

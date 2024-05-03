@@ -16,20 +16,19 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const evaluationContext = useAvailableConstantsData();
   const { executeAction, registerActiveButton, activeButton } = useConfigurableActionDispatcher();
-  const [isInProgressButton, setButtonActive] = useState<string>('');
-
-
-  const { loading, disabled } = useMemo(() => {
-    return ({
-      loading: activeButton.some(x => x.activeButtonId == isInProgressButton && !x.activeButtonActionName.includes('Show')),
-      disabled: activeButton.some(x => x.activeButtonId == isInProgressButton && x.activeButtonActionName.includes('Show'))
-    });
-  }, [activeButton, isInProgressButton]);
+  const [isInProgressButton, setButtonActive] = useState<string>();
+  const { loading, disabled } = useMemo(() => ({
+    loading: activeButton.some(x => x?.activeButtonId === isInProgressButton && !x?.activeButtonActionName.includes('Show')),
+    disabled: activeButton.some(x => x?.activeButtonId === isInProgressButton && x?.activeButtonActionName.includes('Show'))
+  }), [activeButton, isInProgressButton]);
 
   const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     const buttonId = nanoid();
     setButtonActive(buttonId);
-    registerActiveButton({ activeButtonId: buttonId, activeButtonActionName: props.actionConfiguration.actionName });
+    registerActiveButton({
+      activeButtonId: buttonId,
+      activeButtonActionName: props.actionConfiguration.actionName
+    });
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
     try {
       if (props.actionConfiguration) {
@@ -38,14 +37,9 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
           actionConfiguration: { ...props.actionConfiguration, activeButton: { activeButtonId: buttonId, activeButtonActionName: props.actionConfiguration.actionName } },
           argumentsEvaluationContext: evaluationContext,
 
-        }).then(() => {
-          //  console.log('Action executed successfully');
-
-        })
-
+        });
       } else console.error('Action is not configured');
     } catch (error) {
-
       console.error('Validation failed:', error);
     }
   };

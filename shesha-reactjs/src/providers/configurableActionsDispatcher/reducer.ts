@@ -21,31 +21,31 @@ const reducer = handleActions<IConfigurableActionDispatcherStateContext, any>(
       } else {
 
         loadingStack = [payload, ...state.activeButton];
-      }
+      };
 
       return {
         ...state,
-        activeButton: loadingStack,
+        activeButton: loadingStack
       };
     },
     [ConfigurableComponentActionEnums.unRegisterActiveButton]: (state: IConfigurableActionDispatcherStateContext, action: ReduxActions.Action<IActiveButton>) => {
       const { payload } = action;
 
-      if (payload?.activeButtonActionName == 'Close Dialog') {
+      if (payload?.activeButtonActionName === 'Close Dialog') {
 
-        const loadingStack = state.activeButton.slice(0, -1);
+        const loadingStack = state?.activeButton.slice(0, -1);
 
         return {
           ...state,
           activeButton: loadingStack
         };
-      }
+      };
 
       return {
         ...state,
-        activeButton: state.activeButton.filter((b) => b?.activeButtonId !== payload?.activeButtonId),
+        activeButton: state.activeButton?.filter((b) => b?.activeButtonId !== payload?.activeButtonId)
       };
-    }
+    },
 
   },
 
