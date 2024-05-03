@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Abp.Application.Services.Dto;
 using Abp.AutoMapper;
+using Shesha.AutoMapper.Dto;
 
 namespace Shesha.Roles.Dto
 {
@@ -14,6 +15,7 @@ namespace Shesha.Roles.Dto
         }
 
         public Guid? ModuleId { get; set; }
+        public EntityReferenceDto<Guid> Module { get; set; }
 
         public string Name { get; set; }
 
