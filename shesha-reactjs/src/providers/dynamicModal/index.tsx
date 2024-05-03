@@ -48,6 +48,9 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             onOk: () => {
               resolve(true);
             },
+            onCancel: () => {
+              resolve(false);
+            }
           });
         });
       },
@@ -102,7 +105,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
             },
           };
-
+   
           createModal({ ...modalProps, isVisible: true });
         });
       },
@@ -182,9 +185,9 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             key={instance.id}
             value={{
               instance,
-              // show: () => show(instance.id),
-              // hide: () => hide(instance.id),
-              close: () => removeModal(instance.id),
+              close: () =>{
+                 removeModal(instance.id)
+              },
             }}
           >
             <DynamicModal {...instanceProps} key={instance.id} id={instance.id} isVisible={instance.isVisible} />

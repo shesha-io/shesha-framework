@@ -13,14 +13,16 @@ import {
 import { IConfigurableActionGroupDictionary } from './models';
 import metadataReducer from './reducer';
 import {
+  IActiveButton,
   IConfigurableActionArguments,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
 } from '@/interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
+import { registerActiveButtonAction, unRegisterActiveButtonAction } from './actions';
 
-export interface IConfigurableActionDispatcherProviderProps {}
+export interface IConfigurableActionDispatcherProviderProps { }
 
 const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
   children,
@@ -31,7 +33,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
   const actions = useRef<IConfigurableActionGroupDictionary>({});
 
-  const [state] = useThunkReducer(metadataReducer, initial);
+  const [state, dispatch] = useThunkReducer(metadataReducer, initial);
 
   const getConfigurableActionOrNull = (
     payload: IGetConfigurableActionPayload
@@ -61,6 +63,13 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     return actions.current;
   };
 
+  const registerActiveButton = (button: IActiveButton) => {
+    dispatch(registerActiveButtonAction(button));
+  };
+
+  const unregisterActiveButton = (button: IActiveButton) => {
+    dispatch(unRegisterActiveButtonAction(button));
+  }
   const registerAction = (payload: IRegisterActionPayload) => {
     const ownerActions = actions.current[payload.ownerUid] ?? { ownerName: payload.owner, actions: [] };
 
@@ -94,6 +103,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
   };
 
   const executeAction = (payload: IExecuteActionPayload) => {
+
     const { actionConfiguration, argumentsEvaluationContext } = payload;
     if (!actionConfiguration) return Promise.reject('Action configuration is mandatory');
     const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } =
@@ -104,11 +114,10 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     if (!action) return Promise.reject(`Action '${actionOwner}:${actionName}' not found`);
 
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
-
     //console.log('evaluate action arguments', { actionArguments, argumentsEvaluationContext })
-    return argumentsEvaluator(actionArguments, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
+
+    return argumentsEvaluator({ ...actionArguments, activeButton: actionConfiguration?.activeButton }, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
       .then((preparedActionArguments) => {
-        //console.log('preparedActionArguments', preparedActionArguments);
         return action
           .executer(preparedActionArguments, argumentsEvaluationContext)
           .then((actionResponse) => {
@@ -117,23 +126,25 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
               if (onSuccess) {
                 const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
                 executeAction({
-                  actionConfiguration: onSuccess,
+                  actionConfiguration: { ...onSuccess, activeButton: actionConfiguration?.activeButton },
                   argumentsEvaluationContext: onSuccessContext,
                   success: payload.success,
                   fail: payload.fail,
                 });
-              } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+              } else {
+                unregisterActiveButton({ activeButtonId: actionConfiguration?.activeButton?.activeButtonId, activeButtonActionName: actionName });
+                console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+              }
             } else {
               if (payload.success) payload.success(actionResponse);
             }
           })
           .catch((error) => {
-            console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error);
-            if (handleFail) {
+            console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error); if (handleFail) {
               if (onFail) {
                 const onFailContext = { ...argumentsEvaluationContext, actionError: error };
                 executeAction({
-                  actionConfiguration: onFail,
+                  actionConfiguration: { ...onFail, activeButton: actionConfiguration?.activeButton },
                   argumentsEvaluationContext: onFailContext,
                   success: payload.success,
                   fail: payload.fail,
@@ -141,7 +152,10 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
               } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
             } else {
               if (payload.fail) payload.fail(error);
-            }
+            }0
+          }).finally(() => {
+            unregisterActiveButton({ activeButtonId: actionConfiguration?.activeButton?.activeButtonId, activeButtonActionName: actionConfiguration.actionName });
+
           });
       });
   };
@@ -154,7 +168,10 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     getActions,
     prepareArguments,
     executeAction,
+    registerActiveButton,
+    unregisterActiveButton
   };
+
 
   return (
     <ConfigurableActionDispatcherStateContext.Provider value={state}>

@@ -12,7 +12,14 @@ export type IConfigurableActionExecuter<TArguments, TReponse> = (
   context: GenericDictionary
 ) => Promise<TReponse>;
 
-export interface IConfigurableActionArguments { }
+
+export interface IActiveButton {
+  activeButtonId?: string;
+  activeButtonActionName?: string;
+}
+export interface IConfigurableActionArguments {
+
+}
 
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments> {
   model: TModel;
@@ -106,6 +113,7 @@ export interface IConfigurableActionConfiguration<TArguments = any> extends IMay
   onSuccess?: IConfigurableActionConfiguration;
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
+  activeButton?: IActiveButton;
 }
 
 /**

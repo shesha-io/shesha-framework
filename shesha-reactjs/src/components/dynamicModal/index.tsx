@@ -7,7 +7,7 @@ import { Form, Modal } from 'antd';
 import { IModalWithConfigurableFormProps, IModalWithContentProps } from '@/providers/dynamicModal/models';
 import { MODAL_DATA } from '@/shesha-constants';
 import { StandardEntityActions } from '@/interfaces/metadata';
-import { useDynamicModals } from '@/providers';
+import { useConfigurableActionDispatcher, useDynamicModals } from '@/providers';
 import { useGlobalState, useShaRouting } from '@/providers';
 import { useMedia } from 'react-use';
 
@@ -79,6 +79,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const { removeModal } = useDynamicModals();
   const { router } = useShaRouting();
   const { clearState } = useGlobalState();
+  const { unregisterActiveButton } = useConfigurableActionDispatcher();
+
 
   // `showModalFooter` for now is for backward compatibility
   const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
@@ -94,6 +96,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   };
 
   const closeModal = () => {
+    unregisterActiveButton({ activeButtonActionName: "Close Dialog" });
     clearState(MODAL_DATA);
     removeModal(id);
   };
