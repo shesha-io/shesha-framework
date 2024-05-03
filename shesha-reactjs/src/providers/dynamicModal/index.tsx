@@ -20,7 +20,7 @@ import {
 import { IModalProps } from './models';
 import DynamicModalReducer from './reducer';
 
-export interface IDynamicModalProviderProps {}
+export interface IDynamicModalProviderProps { }
 
 const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = ({ children }) => {
   const [state, dispatch] = useReducer(DynamicModalReducer, {
@@ -48,9 +48,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             onOk: () => {
               resolve(true);
             },
-            onCancel: () => {
-              resolve(false);
-            }
           });
         });
       },
@@ -105,18 +102,17 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
             },
           };
-   
+
           createModal({ ...modalProps, isVisible: true });
         });
       },
       argumentsFormMarkup: dialogArgumentsForm,
-      evaluateArguments: (argumentsConfiguration, evaluationData) =>  {
+      evaluateArguments: (argumentsConfiguration, evaluationData) => {
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
           path: '',
           evaluationFilter: (context, _data) => context.path !== 'buttons'
         };
-      
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
       }
     },
@@ -185,8 +181,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             key={instance.id}
             value={{
               instance,
-              close: () =>{
-                 removeModal(instance.id)
+              close: () => {
+                removeModal(instance.id)
               },
             }}
           >

@@ -69,7 +69,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
   const unregisterActiveButton = (button: IActiveButton) => {
     dispatch(unRegisterActiveButtonAction(button));
-  }
+  };
   const registerAction = (payload: IRegisterActionPayload) => {
     const ownerActions = actions.current[payload.ownerUid] ?? { ownerName: payload.owner, actions: [] };
 
@@ -129,18 +129,22 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
                   actionConfiguration: { ...onSuccess, activeButton: actionConfiguration?.activeButton },
                   argumentsEvaluationContext: onSuccessContext,
                   success: payload.success,
-                  fail: payload.fail,
+                  fail: payload.fail
                 });
               } else {
-                unregisterActiveButton({ activeButtonId: actionConfiguration?.activeButton?.activeButtonId, activeButtonActionName: actionName });
                 console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
-              }
+                unregisterActiveButton({
+                  activeButtonId: actionConfiguration?.activeButton?.activeButtonId,
+                  activeButtonActionName: actionConfiguration.actionName
+                });
+              };
             } else {
               if (payload.success) payload.success(actionResponse);
-            }
+            };
           })
           .catch((error) => {
-            console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error); if (handleFail) {
+            console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error);
+            if (handleFail) {
               if (onFail) {
                 const onFailContext = { ...argumentsEvaluationContext, actionError: error };
                 executeAction({
@@ -152,10 +156,12 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
               } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
             } else {
               if (payload.fail) payload.fail(error);
-            }0
+            };
           }).finally(() => {
-            unregisterActiveButton({ activeButtonId: actionConfiguration?.activeButton?.activeButtonId, activeButtonActionName: actionConfiguration.actionName });
-
+            unregisterActiveButton({
+              activeButtonId: actionConfiguration?.activeButton?.activeButtonId,
+              activeButtonActionName: actionConfiguration.actionName
+            });
           });
       });
   };
