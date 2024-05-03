@@ -31,7 +31,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
 
   //const { selectedRow } = dataSelection;
   const { globalState } = useGlobalState();
-  const pageContext = useDataContextManager(false)?.getPageContext() ?? {};
+  const pageContext = useDataContextManager(false)?.getPageContext();
 
   const isDesignMode = formMode === 'designer';
 
@@ -53,7 +53,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
       [
         { match: 'data', data: formData },
         { match: 'globalState', data: globalState },
-        { match: 'pageContext', data: pageContext },
+        { match: 'pageContext', data: {...pageContext.getFull()} ?? {} },
       ],
       propertyMetadataAccessor
     ).then(evaluatedFilters => {
