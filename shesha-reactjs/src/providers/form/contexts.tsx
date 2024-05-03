@@ -100,6 +100,8 @@ export interface IFormActionsContext {
   getToolboxComponent: (type: string) => IToolboxComponent;
 
   isComponentFiltered: (component: IConfigurableFormComponent) => boolean;
+  prepareDataForSubmit: () => Promise<object>;
+  executeExpression: <TResult = any>(expression: string, exposedData?: any) => Promise<TResult>;
 }
 
 /** Form initial state */

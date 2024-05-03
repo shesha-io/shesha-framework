@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Shesha.Application.Services.Dto;
-using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace Shesha.EntityHistory
 
         public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrail(FilteredPagedAndSortedResultRequestDto input, string entityId, string entityTypeFullName)
         {
-            var history = _entityHistoryProvider.GetAuditTrail(entityId, entityTypeFullName);
+            var history = await _entityHistoryProvider.GetAuditTrailAsync(entityId, entityTypeFullName);
 
             var totalRowsBeforeFilter = history.Count();
 
@@ -43,8 +42,6 @@ namespace Shesha.EntityHistory
 
             var takeCount = input.MaxResultCount > -1 ? input.MaxResultCount : int.MaxValue;
             var skipCount = input.SkipCount;
-
-            history = history.OrderBy(x => x.CreationTime).ToList();
 
             // Dynamic order by property name
             /*var sort = input.Sorting.FirstOrDefault();
@@ -81,7 +78,7 @@ namespace Shesha.EntityHistory
                 Items = history
             };
 
-            return await Task.FromResult(result);
+            return result;
         }
     }
 }

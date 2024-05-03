@@ -221,7 +221,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   }, [doSelect]);
 
   const addPermission = (parent: PermissionDto, list: PermissionDto[]) => {
-    const o = {
+    const o: PermissionDto = {
       id: emptyId,
       name: 'NewPermission',
       displayName: 'New permission',
@@ -229,6 +229,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       parentName: parent !== null ? parent.name : null,
       isDbPermission: true,
       parent: null,
+      child: [],
     };
     list.push(o);
     return o;

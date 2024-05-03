@@ -97,6 +97,12 @@ export class MetadataBuilder implements IMetadataBuilder {
         return this;
     }
 
+    isEntityAsync(entityType: string): Promise<boolean> {
+        return this.metadataFetcher({ name: entityType, module: null }).then(response => {
+            return isEntityMetadata(response);
+        });
+    }
+
     addEntityAsync(path: string, label: string, entityType: string): Promise<this> {
         return this.metadataFetcher({ name: entityType, module: null }).then(response => {
             const nestedObject = this._createProperty(DataTypes.entityReference, path, label);

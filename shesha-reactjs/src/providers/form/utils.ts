@@ -71,7 +71,7 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { axiosHttp } from '@/utils/fetchers';
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosResponse } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
@@ -82,6 +82,9 @@ import { SheshaCommonContexts } from '../dataContextManager/models';
 import { useDeepCompareMemo } from '@/hooks';
 import { removeGhostKeys } from '@/utils/form';
 import { useDelayedUpdate } from '../delayedUpdateProvider';
+import qs from 'qs';
+import { FormConfigurationDto } from './api';
+import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -166,19 +169,19 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
 
   return {
     application: applicationData,
-    data,
-    pageContext,
     contexts,
-    setFormData: form?.setFormData,
+    data,
+    form,
     formMode,
     globalState,
-    setGlobalState,
-    form,
-    selectedRow,
-    moment: moment,
     http: axiosHttp(backendUrl),
+    lastUpdated,
     message,
-    lastUpdated
+    moment: moment,
+    pageContext,
+    selectedRow,
+    setFormData: form?.setFormData,
+    setGlobalState,
   };
 }
 
@@ -207,7 +210,7 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
 
     // update setting value to actual
     if (isPropertySettings(value)) {
-      switch(value._mode){
+      switch (value._mode) {
         case 'code':
           return Boolean(value._code) ? calcFunction(value, allData) : undefined;
         case 'value':
@@ -240,7 +243,7 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
       }
     const res = new Function(vars, setting?._code)(...datas);
     return res;
-  } catch(error) {
+  } catch (error) {
     console.error("calcValue failed", error);
     return undefined;
   }
@@ -305,9 +308,9 @@ export const getActualModelWithParent = <T>(
   parent: IParentProviderProps
 ): T => {
   const parentReadOnly =
-    allData.formMode !== 'designer' 
+    allData.formMode !== 'designer'
     && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.formMode === 'readonly'));
-    
+
   const actualModel = getActualModel(model, allData, parentReadOnly);
   // update Id for complex containers (SubForm, DataList item, etc)
   if (!!parent?.subFormIdPrefix) {
@@ -784,7 +787,7 @@ export const getFunctionExecutor = <TResult = any>(
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 
 export function executeScript<TResult = any>(
   expression: string,
@@ -1734,4 +1737,33 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
   });
 
   return componentNames;
+};
+
+
+// todo: move to Shesha API as a separate service and provide type definition
+export const getSheshaFormUtils = (http: AxiosInstance) => {
+  return {
+    prepareTemplate: (templateId: string, replacements: object): Promise<string> => {
+      if (!templateId) return Promise.resolve(null);
+
+      const payload = {
+        id: templateId,
+        properties: 'markup',
+      };
+      const url = `/api/services/Shesha/FormConfiguration/Query?${qs.stringify(payload)}`;
+      return http
+        .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url)
+        .then((response) => {
+          const markup = response.data.result.markup;
+
+          const preparedMarkup = evaluateString(markup, {
+            NEW_KEY: nanoid(),
+            GEN_KEY: nanoid(),
+            ...(replacements ?? {}),
+          });
+
+          return preparedMarkup;
+        });
+    }
+  };
 };

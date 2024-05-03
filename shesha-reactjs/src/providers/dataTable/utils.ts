@@ -264,7 +264,9 @@ export const prepareColumn = (
     const col = column as IFormColumnsProps;
     return {
       ...baseProps,
+      accessor: '',
       propertiesToFetch: col.propertiesNames,
+      propertiesNames: col.propertiesNames,
 
       displayFormId: col.displayFormId,
       createFormId: col.createFormId,

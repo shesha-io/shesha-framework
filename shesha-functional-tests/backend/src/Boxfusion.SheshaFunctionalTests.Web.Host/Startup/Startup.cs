@@ -5,8 +5,9 @@ using Abp.Extensions;
 using Abp.PlugIns;
 using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Castle.Facilities.Logging;
-using ElmahCore;
 using ElmahCore.Mvc;
+using ElmahCore.Postgresql;
+using ElmahCore.Sql;
 using GraphQL;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -60,14 +61,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.AllowSynchronousIO = true;
 			});
 
-			services.AddElmah<XmlFileErrorLog>(options =>
-			{
-				options.Path = @"elmah";
-				options.LogPath = Path.Combine(_hostEnvironment.ContentRootPath, "App_Data", "ElmahLogs");
-				options.Filters.Add(new ElmahFilter());
-			});
+            AddElmah(services);
 
-			services.AddMvcCore(options =>
+            services.AddMvcCore(options =>
 			{
 				options.EnableEndpointRouting = false;
 				options.Conventions.Add(new Shesha.Swagger.ApiExplorerGroupPerControllerConvention());
@@ -253,5 +249,33 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.SubstituteApiVersionInUrl = true;
 			});
 		}
-	}
+
+        private void AddElmah(IServiceCollection services)
+        {
+            var dbms = _appConfiguration.GetDbmsType();
+            switch (dbms)
+            {
+                case DbmsType.SQLServer:
+                    {
+                        services.AddElmah<SqlErrorLog>(options =>
+                        {
+                            options.Path = @"elmah";
+                            options.ConnectionString = _appConfiguration.GetDefaultConnectionString();
+                            options.Filters.Add(new ElmahFilter());
+                        });
+                        break;
+                    }
+                case DbmsType.PostgreSQL:
+                    {
+                        services.AddElmah<PgsqlErrorLog>(options =>
+                        {
+                            options.Path = @"elmah";
+                            options.ConnectionString = _appConfiguration.GetDefaultConnectionString();
+                            options.Filters.Add(new ElmahFilter());
+                        });
+                        break;
+                    }
+            }
+        }
+    }
 }

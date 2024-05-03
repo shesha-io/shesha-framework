@@ -21,7 +21,7 @@ import { SheshaConstants } from '@/utils/metadata/standardProperties';
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
-  const { values, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
+  const { values, model, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -40,7 +40,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
           readOnly={readOnly}
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={values}
+          formData={model}
           onValuesChange={onValuesChange}
         />
 

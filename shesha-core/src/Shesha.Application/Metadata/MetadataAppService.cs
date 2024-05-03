@@ -34,7 +34,7 @@ namespace Shesha.Metadata
             _modelProviders = modelProviders;
         }
 
-        public async Task<List<ModelDto>> GetAllModelsAsync()
+        private async Task<List<ModelDto>> GetAllModelsAsync()
         {
             var models = new List<ModelDto>();
             foreach (var provider in _modelProviders)
@@ -44,7 +44,7 @@ namespace Shesha.Metadata
             return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
         }
 
-        public async Task<Type> GetContainerTypeAsync(string container)
+        private async Task<Type> GetContainerTypeAsync(string container)
         {
             var allModels = await GetAllModelsAsync();
             var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
@@ -134,7 +134,15 @@ namespace Shesha.Metadata
         [HttpGet]
         public async Task<MetadataDto> GetAsync(string container)
         {
-            return await _metadataProvider.GetAsync(container);
+            if (string.IsNullOrWhiteSpace(container))
+                throw new AbpValidationException($"'{nameof(container)}' is mandatory");
+
+            // ToDo: show Dynamic entities
+            var containerType = await GetContainerTypeAsync(container);
+            if (containerType == null)
+                throw new ArgumentException($"Type `{container}` not found");
+
+            return await _metadataProvider.GetAsync(containerType, container);
         }
 
         /// <summary>
