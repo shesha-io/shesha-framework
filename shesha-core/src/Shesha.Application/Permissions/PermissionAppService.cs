@@ -40,13 +40,16 @@ namespace Shesha.Permissions
             _permissionChecker = permissionChecker;
         }
 
-        public Task<PermissionDto> GetAsync(string id)
+        public async Task<PermissionDto> GetAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return Task.FromResult<PermissionDto>(null);
+                return null;
 
             var dto = ObjectMapper.Map<PermissionDto>(PermissionManager.GetPermission(id));
-            return Task.FromResult(dto);
+            dto.Module = dto.ModuleId != null 
+                ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(dto.ModuleId.Value)) 
+                : null;
+            return dto;
         }
 
         public Task<List<PermissionDto>> GetAllAsync()
@@ -54,11 +57,16 @@ namespace Shesha.Permissions
             var permissions = PermissionManager.GetAllPermissions();
 
             var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions)
-                .Select(x => 
+                .Select(async x => 
                 {
                     x.Child = null;
+                    x.Module = x.ModuleId != null
+                        ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(x.ModuleId.Value))
+                        : null;
                     return x;
-                }).OrderBy(p => p.DisplayName).ToList();
+                })
+                .Select(x => x.Result)
+                .OrderBy(p => p.DisplayName).ToList();
 
             return Task.FromResult(dtos);
         }
@@ -67,7 +75,16 @@ namespace Shesha.Permissions
         {
             var permissions = PermissionManager.GetAllPermissions();
 
-            var dtoList = ObjectMapper.Map<List<PermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList();
+            var dtoList = ObjectMapper.Map<List<PermissionDto>>(permissions)
+                .Select(async x =>
+                {
+                    x.Module = x.ModuleId != null
+                        ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(x.ModuleId.Value))
+                        : null;
+                    return x;
+                })
+                .Select(x => x.Result)
+                .OrderBy(p => p.DisplayName).ToList();
 
             var tree =new List<PermissionDto>();
             tree.AddRange(dtoList.Where(x => string.IsNullOrEmpty(x.ParentName)));
@@ -104,7 +121,7 @@ namespace Shesha.Permissions
                 Label = permission.DisplayName,
                 Description = permission.Description,
                 Parent = permission.ParentName ?? permission.Parent?.Name,
-                Module = permission.ModuleId != null ? await _moduleRepository.GetAsync(permission.ModuleId.Value) : null,
+                Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
                 VersionNo = 1,
                 VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live,
             };
@@ -129,7 +146,7 @@ namespace Shesha.Permissions
                 Label = permission.DisplayName,
                 Description = permission.Description,
                 Parent = permission.ParentName ?? permission.Parent?.Name,
-                Module = permission.ModuleId != null ? await _moduleRepository.GetAsync(permission.ModuleId.Value) : null,
+                Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
                 VersionNo = 1,
                 VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live,
             };
@@ -142,7 +159,8 @@ namespace Shesha.Permissions
         [HttpPut] 
         public async Task UpdateParentAsync(PermissionDto permission)
         {
-            await _shaPermissionManager.UpdateParentAsync(permission.Name, permission.ParentName);
+            var module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null;
+            await _shaPermissionManager.UpdateParentAsync(permission.Name, permission.ParentName, module);
         }
 
         [HttpDelete]

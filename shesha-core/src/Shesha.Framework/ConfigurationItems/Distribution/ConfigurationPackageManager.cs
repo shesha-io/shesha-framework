@@ -213,44 +213,63 @@ namespace Shesha.ConfigurationItems.Distribution
                 var rowNo = 1;
                 var totalItems = package.Items.Count();
                 var startTime = Clock.Now;
+                var groups = package.Items.GroupBy(x => x.ItemType);
 
-                foreach (var item in package.Items)
+                foreach (var group in groups)
                 {
-                    context.CancellationToken.ThrowIfCancellationRequested();
-
-                    try
+                    var importer = group.FirstOrDefault().Importer;
+                    var items = new List<DistributedConfigurableItemBase>();
+                    foreach (var item in group)
                     {
-                        using (var jsonStream = item.StreamGetter())
+                        context.CancellationToken.ThrowIfCancellationRequested();
+                        try
                         {
-                            var itemDto = await item.Importer.ReadFromJsonAsync(jsonStream);
-
-                            var shouldImport = context.ShouldImportItem == null || context.ShouldImportItem.Invoke(itemDto);
-
-                            if (shouldImport)
+                            using (var jsonStream = item.StreamGetter())
                             {
-                                await item.Importer.ImportItemAsync(itemDto, context);
-                            }
-                            else
-                                context.Logger.Info($"Item skipped by condition");
+                                var itemDto = await importer.ReadFromJsonAsync(jsonStream);
+                                var shouldImport = context.ShouldImportItem == null || context.ShouldImportItem.Invoke(itemDto);
 
+                                if (shouldImport)
+                                    items.Add(itemDto);
+                                else
+                                    context.Logger.Info($"Item skipped by condition");
+
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            context.Logger.Error($"Item import failed", e);
+                            throw;
                         }
                     }
-                    catch (Exception e)
+
+                    items = await importer.SortItemsAsync(items);
+
+                    foreach (var item in items)
                     {
-                        context.Logger.Error($"Item import failed", e);
-                        throw;
+                        context.CancellationToken.ThrowIfCancellationRequested();
+
+                        try
+                        {
+                            await importer.ImportItemAsync(item, context);
+                        }
+                        catch (Exception e)
+                        {
+                            context.Logger.Error($"Item import failed", e);
+                            throw;
+                        }
+
+                        var span = (Clock.Now - startTime);
+                        var speed = Math.Round(rowNo / (span.TotalSeconds > 0 ? span.TotalSeconds : 1), 2);
+                        //importResult.AvgSpeed = Convert.ToDecimal(speed);
+                        var estimated = new TimeSpan(span.Ticks / rowNo * totalItems);
+                        context.Logger.Info($"processed {rowNo} from {totalItems} ({(double)rowNo / totalItems * 100:0.#}%), estimated time = {estimated.Minutes:D2}:{estimated.Seconds:D2}:{estimated.Milliseconds:D3}, speed = {speed} row/sec");
+                        rowNo++;
+
+                        await updateResultAsync(res => {
+                            res.AvgSpeed = Convert.ToDecimal(speed);
+                        });
                     }
-
-                    var span = (Clock.Now - startTime);
-                    var speed = Math.Round(rowNo / (span.TotalSeconds > 0 ? span.TotalSeconds : 1), 2);
-                    //importResult.AvgSpeed = Convert.ToDecimal(speed);
-                    var estimated = new TimeSpan(span.Ticks / rowNo * totalItems);
-                    context.Logger.Info($"processed {rowNo} from {totalItems} ({(double)rowNo / totalItems * 100:0.#}%), estimated time = {estimated.Minutes:D2}:{estimated.Seconds:D2}:{estimated.Milliseconds:D3}, speed = {speed} row/sec");
-                    rowNo++;
-
-                    await updateResultAsync(res => {
-                        res.AvgSpeed = Convert.ToDecimal(speed);
-                    });
                 }
 
                 context.Logger.Info($"Package imported successfully");

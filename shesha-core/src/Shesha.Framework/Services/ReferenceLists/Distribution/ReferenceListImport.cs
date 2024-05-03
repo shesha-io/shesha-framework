@@ -192,5 +192,10 @@ namespace Shesha.Services.ReferenceLists.Distribution
             refList.VersionStatus = item.VersionStatus;
             refList.Suppress = item.Suppress;
         }
+
+        public Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items)
+        {
+            return Task.FromResult(items);
+        }
     }
 }

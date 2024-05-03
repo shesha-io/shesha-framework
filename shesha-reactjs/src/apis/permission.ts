@@ -1,9 +1,11 @@
 import { useGet, UseGetProps } from '@/hooks/useGet';
 import { useMutateForEndpoint } from '@/hooks/useMutate';
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
+import { GuidEntityReferenceDto } from './common';
 
 export interface PermissionDto {
   id?: string | null;
+  module?: GuidEntityReferenceDto | null;
   name?: string | null;
   displayName?: string | null;
   description?: string | null;
