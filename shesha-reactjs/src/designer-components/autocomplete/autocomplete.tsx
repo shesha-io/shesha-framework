@@ -46,7 +46,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const { formMode, setFormData } = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const pageContext = useDataContextManager(false)?.getPageContext() ?? {};
+    const pageContext = useDataContextManager(false)?.getPageContext();
     const { backendUrl } = useSheshaApplication();
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(
       model.dataSourceType === 'entitiesList' ? model.entityTypeShortAlias : null
@@ -70,7 +70,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           },
           {
             match: 'pageContext',
-            data: pageContext,
+            data: {...pageContext?.getFull()} ?? {},
           },
         ],
         propertyMetadataAccessor

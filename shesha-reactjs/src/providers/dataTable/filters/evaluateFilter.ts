@@ -53,7 +53,7 @@ export interface UseFormEvaluatedFilterArgs {
 export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const pageContext = useDataContextManager(false)?.getPageContext() ?? {};
+    const pageContext = useDataContextManager(false)?.getPageContext();
     
     return useEvaluatedFilter({ 
         ...args, 
@@ -68,7 +68,7 @@ export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs) => {
             },
             {
               match: 'pageContext',
-              data: pageContext,
+              data: {...pageContext?.getFull()} ?? {},
             },
           ]
     });
