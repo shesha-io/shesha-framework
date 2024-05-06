@@ -1,8 +1,7 @@
 import { Modal } from 'antd';
-import { nanoid } from '@/utils/uuid';
-import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, evaluateKeyValuesToObject, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';
@@ -26,8 +25,23 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   const [state, dispatch] = useReducer(DynamicModalReducer, {
     ...DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   });
-
+  const { callers, removeCaller } = useConfigurableActionDispatcher();
+  const modalIdRef = useRef(callers[0]);
   const actionDependencies = [state];
+
+
+  //I am not happy with calling this useEffect every time the callers change even when there is no modal in the stack
+  useEffect(() => {
+    if (callers.length) {
+      modalIdRef.current = callers[callers.length - 1];
+    }
+    return () => modalIdRef.current = null;
+
+  }, [callers]);
+
+
+  const modalId = modalIdRef.current;
+
   useConfigurableAction<IShowConfirmationArguments>(
     {
       name: 'Show Confirmation Dialog',
@@ -45,6 +59,9 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               type: 'primary',
               danger: true,
             },
+            onCancel: () => {
+              resolve(true);
+            },
             onOk: () => {
               resolve(true);
             },
@@ -57,6 +74,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   );
 
   const removeModal = (id: string) => {
+    removeCaller(id);
     dispatch(removeModalAction(id));
   };
 
@@ -71,7 +89,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (actionArgs, context) => {
-        const modalId = nanoid();
 
         const { formMode, ...restArguments } = actionArgs;
 
@@ -89,7 +106,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
           const modalProps: IModalProps = {
             ...restArguments,
             mode: formMode,
-            id: modalId,
+            id: modalIdRef.current,
             title: actionArgs.modalTitle,
             width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
             initialValues: initialValues,
@@ -98,7 +115,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             submitHttpVerb: verb,
             onSubmitted: (values) => {
               removeModal(modalId);
-
               resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
             },
           };
@@ -116,7 +132,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
       },
     },
-    actionDependencies,
+    [...actionDependencies, ...callers]
   );
 
   const getLatestVisibleInstance = () => {

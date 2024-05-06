@@ -46,6 +46,7 @@ export interface IConfigurableActionDispatcherActionsContext {
   prepareArguments: (actionArguments: any) => void;
   executeAction: ConfigurableActionExecuter;
   getExecuting: (callerId: string) => boolean;
+  removeCaller: (callerId: string) => void;
 }
 
 /** initial state */

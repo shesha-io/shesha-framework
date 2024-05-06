@@ -89,6 +89,9 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
       delete actions.current[payload.ownerUid];
     }
   };
+  const removeCaller = (callerId: string) => {
+    dispatch(removeCallerAction(callerId));
+  }
 
   const prepareArguments = (_actionArguments: any) => {
     // nop
@@ -98,9 +101,10 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     if (payload.actionConfiguration.callerId) {
       if (state.callers.indexOf(payload.actionConfiguration.callerId) !== -1)
         return Promise.reject('Action already in progress');
-      
-        dispatch(addCallerAction(payload.actionConfiguration.callerId));
+
+      dispatch(addCallerAction(payload.actionConfiguration.callerId));
     }
+
     const { actionConfiguration, argumentsEvaluationContext } = payload;
     if (!actionConfiguration) return Promise.reject('Action configuration is mandatory');
     const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } =
@@ -111,14 +115,13 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     if (!action) return Promise.reject(`Action '${actionOwner}:${actionName}' not found`);
 
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
-    //console.log('evaluate action arguments', { actionArguments, argumentsEvaluationContext })
 
-    return argumentsEvaluator({ ...actionArguments}, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
+    return argumentsEvaluator({ ...actionArguments }, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
       .then((preparedActionArguments) => {
         return action
           .executer(preparedActionArguments, argumentsEvaluationContext)
           .then((actionResponse) => {
-            //console.log(`Action '${actionOwner}:${actionName}' executed successfully, response:`, actionResponse);
+
             if (handleSuccess) {
               if (onSuccess) {
                 const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
@@ -172,7 +175,8 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     getActions,
     prepareArguments,
     executeAction,
-    getExecuting
+    getExecuting,
+    removeCaller
   };
 
 

@@ -79,7 +79,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const { removeModal } = useDynamicModals();
   const { router } = useShaRouting();
   const { clearState } = useGlobalState();
-  const { unregisterActiveButton } = useConfigurableActionDispatcher();
+  const { removeCaller } = useConfigurableActionDispatcher();
 
 
   // `showModalFooter` for now is for backward compatibility
@@ -96,7 +96,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   };
 
   const closeModal = () => {
-    unregisterActiveButton({ activeButtonActionName: "Close Dialog" });
+    removeCaller(id);
     clearState(MODAL_DATA);
     removeModal(id);
   };
