@@ -23,6 +23,7 @@ import { FormIdentifier } from '@/providers/form/models';
 import { get } from '@/utils/fetchers';
 import { getQuickViewInitialValues } from './utils';
 import { useStyles } from '../entityReference/styles/styles';
+import { getStyle } from '@/providers/form/utils';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -47,6 +48,9 @@ export interface IQuickViewProps extends PropsWithChildren {
   initialFormData?: any;
 
   popoverProps?: PopoverProps;
+
+  disabled?: boolean;
+  style?: string;
 }
 
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
@@ -61,6 +65,8 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   width = 600,
   popoverProps,
   dataProperties = [],
+  disabled,
+  style
 }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
@@ -70,6 +76,8 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { formItemLayout } = useUi();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { styles } = useStyles();
+
+  const cssStyle = getStyle(style, formData);
 
   useEffect(() => {
     if (formIdentifier) {
@@ -117,11 +125,11 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   const render = () => {
     if (children) {
-      return <>{children}</>;
+      return <div style={cssStyle}>{children}</div>;
     }
 
     return (
-      <Button className={styles.entityReferenceBtn} type="link">
+      <Button className={styles.entityReferenceBtn} style={formTitle ? cssStyle : null} type="link">
         {formTitle ?? (
           <span>
             <Spin size="small" /> Loading...
@@ -130,6 +138,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       </Button>
     );
   };
+
+  if (disabled)
+   return (
+    <Button className={styles.entityReferenceBtn} disabled type="link">
+      {formTitle}
+      </Button>
+      );
 
   return (
     <Popover
@@ -154,7 +169,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   }, [props.className, props.formType, formConfig]);
 
   return formConfig ? (
-    <QuickView {...props} formIdentifier={formConfig} />
+    <QuickView {...props} formIdentifier={formConfig}/>
   ) : (
     <Button type="link">
       <span>
