@@ -482,7 +482,7 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       application: application?.getData(),
       contexts: { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
       data: exposedData || state.formData,
-      form: form,
+      form: { ...state, allComponents, componentRelations },
       formMode: state.formMode,
       globalState: formProviderContext.globalState,
       http: formProviderContext.http,

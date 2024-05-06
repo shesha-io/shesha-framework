@@ -218,7 +218,8 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       setGlobalState,
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
-      form,
+      // ToDo: review on Page/Form life cycle
+      form: formRef?.current ?? { formSettings },
       formMode: formRef?.current?.formMode,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       pageContext: pageContext?.getFull(),
