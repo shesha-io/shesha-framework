@@ -9,7 +9,6 @@ import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
 
 export interface IConfigurableActionDispatcherStateContext {
-  callers: string[];
 }
 
 export interface IGetConfigurableActionPayload {
@@ -45,15 +44,10 @@ export interface IConfigurableActionDispatcherActionsContext {
   unregisterAction: (actionIdentifier: IConfigurableActionIdentifier) => void;
   prepareArguments: (actionArguments: any) => void;
   executeAction: ConfigurableActionExecuter;
-  getExecuting: (callerId: string) => boolean;
-  removeCaller: (callerId: string) => void;
 }
 
 /** initial state */
 export const CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE: IConfigurableActionDispatcherStateContext = {
-  callers: [],
-
-  //activeButton: [],
 };
 
 export const ConfigurableActionDispatcherStateContext = createContext<IConfigurableActionDispatcherStateContext>(

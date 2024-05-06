@@ -164,7 +164,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       width={width}
       isVisible={isVisible}
       onOk={onOk}
-      onCancel={closeModal}
+      onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
       content={
         <ConfigurableForm {...formProps}>

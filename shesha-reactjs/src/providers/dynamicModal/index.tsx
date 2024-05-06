@@ -1,7 +1,7 @@
 import { Modal } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
+import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
-import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, evaluateKeyValuesToObject, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';
@@ -18,6 +18,7 @@ import {
 } from './contexts';
 import { IModalProps } from './models';
 import DynamicModalReducer from './reducer';
+import { nanoid } from '@/utils/uuid';
 
 export interface IDynamicModalProviderProps { }
 
@@ -25,22 +26,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   const [state, dispatch] = useReducer(DynamicModalReducer, {
     ...DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   });
-  const { callers, removeCaller } = useConfigurableActionDispatcher();
-  const modalIdRef = useRef(callers[0]);
   const actionDependencies = [state];
-
-
-  //I am not happy with calling this useEffect every time the callers change even when there is no modal in the stack
-  useEffect(() => {
-    if (callers.length) {
-      modalIdRef.current = callers[callers.length - 1];
-    }
-    return () => modalIdRef.current = null;
-
-  }, [callers]);
-
-
-  const modalId = modalIdRef.current;
 
   useConfigurableAction<IShowConfirmationArguments>(
     {
@@ -49,7 +35,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (actionArgs, _context) => {
-        return new Promise((resolve, _reject) => {
+        return new Promise((resolve, reject) => {
           Modal.confirm({
             title: actionArgs.title,
             content: actionArgs.content,
@@ -60,7 +46,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               danger: true,
             },
             onCancel: () => {
-              resolve(true);
+              reject();
             },
             onOk: () => {
               resolve(true);
@@ -74,7 +60,6 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   );
 
   const removeModal = (id: string) => {
-    removeCaller(id);
     dispatch(removeModalAction(id));
   };
 
@@ -90,6 +75,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       hasArguments: true,
       executer: (actionArgs, context) => {
 
+        const modalId = nanoid();
+
         const { formMode, ...restArguments } = actionArgs;
 
         const initialValues = evaluateKeyValuesToObject(actionArgs.additionalProperties, context ?? {});
@@ -97,7 +84,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
         const { modalWidth, customWidth, widthUnits } = actionArgs;
 
-        return new Promise((resolve, _reject) => {
+        return new Promise((resolve, reject) => {
           // fix wrong migration
           const verb = !restArguments.submitHttpVerb || !Array.isArray(restArguments.submitHttpVerb)
             ? restArguments.submitHttpVerb
@@ -106,16 +93,25 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
           const modalProps: IModalProps = {
             ...restArguments,
             mode: formMode,
-            id: modalIdRef.current,
+            id: modalId,
             title: actionArgs.modalTitle,
             width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
             initialValues: initialValues,
             parentFormValues: parentFormValues,
             isVisible: true,
             submitHttpVerb: verb,
+            onCancel: () => {
+              reject();
+            },
             onSubmitted: (values) => {
               removeModal(modalId);
               resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
+            },
+            onClose: (positive = false, result) => {
+                if (positive)
+                  resolve(result);
+                else
+                  reject(result);
             },
           };
 
@@ -165,6 +161,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
           if (latestInstance) {
             removeModal(latestInstance?.id);
+            latestInstance.onClose();
             resolve({});
           } else {
             reject('There is no open dialog to close');

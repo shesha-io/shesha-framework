@@ -112,7 +112,9 @@ export interface IModalWithContentProps extends IModalBaseProps {
 /**
  * Dynamic Modal properties
  */
-export type IModalProps = IModalWithConfigurableFormProps;
+export interface IModalProps extends IModalWithConfigurableFormProps{
+  onClose?: (positive?: boolean, result?: any) => void;
+};
 export type ICommonModalProps = IModalWithContentProps | IModalWithConfigurableFormProps;
 
 /**
@@ -127,6 +129,8 @@ export interface IModalInstance {
    * Useful if you want to close the latest dialog using an action
    */
   index?: number;
+
+  onClose?: (positive?: boolean, result?: any) => void;
 }
 
 /**

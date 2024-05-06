@@ -19,7 +19,6 @@ import {
   IConfigurableActionIdentifier,
 } from '@/interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
-import { addCallerAction, removeCallerAction } from './actions';
 
 export interface IConfigurableActionDispatcherProviderProps { }
 
@@ -32,7 +31,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
   const actions = useRef<IConfigurableActionGroupDictionary>({});
 
-  const [state, dispatch] = useThunkReducer(metadataReducer, initial);
+  const [state] = useThunkReducer(metadataReducer, initial);
 
   const getConfigurableActionOrNull = (
     payload: IGetConfigurableActionPayload
@@ -89,22 +88,12 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
       delete actions.current[payload.ownerUid];
     }
   };
-  const removeCaller = (callerId: string) => {
-    dispatch(removeCallerAction(callerId));
-  };
 
   const prepareArguments = (_actionArguments: any) => {
     // nop
   };
 
   const executeAction = (payload: IExecuteActionPayload) => {
-    if (payload.actionConfiguration.callerId) {
-      if (state.callers.indexOf(payload.actionConfiguration.callerId) !== -1)
-        return Promise.reject('Action already in progress');
-
-      dispatch(addCallerAction(payload.actionConfiguration.callerId));
-    }
-
     const { actionConfiguration, argumentsEvaluationContext } = payload;
     if (!actionConfiguration) return Promise.reject('Action configuration is mandatory');
     const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } =
@@ -120,50 +109,42 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
       .then((preparedActionArguments) => {
         return action
           .executer(preparedActionArguments, argumentsEvaluationContext)
-          .then((actionResponse) => {
+          .then(async (actionResponse) => {
             if (handleSuccess) {
               if (onSuccess) {
                 const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
-                executeAction({
-                  actionConfiguration: { ...onSuccess, callerId: actionConfiguration?.callerId },
+                await executeAction({
+                  actionConfiguration: { ...onSuccess },
                   argumentsEvaluationContext: onSuccessContext,
                   success: payload.success,
                   fail: payload.fail
                 });
               } else {
-                dispatch(removeCallerAction(payload.actionConfiguration.callerId));
                 console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
               };
             } else {
-              dispatch(removeCallerAction(payload.actionConfiguration.callerId));
               if (payload.success) payload.success(actionResponse);
             };
           })
-          .catch((error) => {
+          .catch(async (error) => {
             console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error);
             if (handleFail) {
               if (onFail) {
                 const onFailContext = { ...argumentsEvaluationContext, actionError: error };
-                executeAction({
-                  actionConfiguration: { ...onFail, callerId: actionConfiguration?.callerId },
+                await executeAction({
+                  actionConfiguration: { ...onFail },
                   argumentsEvaluationContext: onFailContext,
                   success: payload.success,
                   fail: payload.fail,
                 });
               } else {
-                dispatch(removeCallerAction(payload.actionConfiguration.callerId));
                 console.warn(`onFail handled is not defined for action '${actionOwner}:${actionName}'`);
               }
             } else {
-              dispatch(removeCallerAction(payload.actionConfiguration.callerId));
               if (payload.fail) payload.fail(error);
             };
           });
       });
-  };
-
-  const getExecuting = (callerId: string) => {
-    return state.callers.indexOf(callerId) !== -1;
   };
 
   const configurableActionActions: IConfigurableActionDispatcherActionsContext = {
@@ -174,8 +155,6 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     getActions,
     prepareArguments,
     executeAction,
-    getExecuting,
-    removeCaller
   };
 
 
