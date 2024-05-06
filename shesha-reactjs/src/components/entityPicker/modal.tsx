@@ -53,7 +53,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
 
   const { globalState } = useGlobalState();
   const { formData } = useForm();
-  const pageContext = useDataContextManager(false)?.getPageContext() ?? {};
+  const pageContext = useDataContextManager(false)?.getPageContext();
   
   useEffect(() => {
     registerConfigurableColumns(modalId, configurableColumns);
@@ -118,7 +118,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
       [
         { match: 'data', data: formData },
         { match: 'globalState', data: globalState },
-        { match: 'pageContext', data: pageContext },
+        { match: 'pageContext', data: {...pageContext.getFull()} ?? {} },
       ],
       propertyMetadataAccessor
     ).then(evaluatedFilters => {

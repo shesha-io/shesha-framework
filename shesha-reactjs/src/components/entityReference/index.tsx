@@ -30,6 +30,7 @@ import {
 } from '@/providers';
 import { useStyles } from './styles/styles';
 import { isPropertiesArray } from '@/interfaces/metadata';
+import { getStyle } from '@/providers/form/utils';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -74,6 +75,7 @@ export interface IEntityReferenceProps {
   onSuccess?: IConfigurableActionConfiguration;
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
+  style?: string;
 }
 
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
@@ -102,6 +104,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const entityId = props.value?.id ?? props.value;
   const entityType = props.entityType ?? props.value?._className;
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
+
+  const style = getStyle(props.style, formData);
 
   useEffect(() => {
     if (
@@ -209,7 +213,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         </Button>
       );
 
-    if (props.disabled)
+    if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
         <Button className={styles.entityReferenceBtn} disabled type="link">
           {displayText}
@@ -218,9 +222,11 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-          {displayText}
-        </ShaLink>
+        <Button className={styles.entityReferenceBtn} style={style} type="link">
+          <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
+            {displayText}
+          </ShaLink>
+        </Button>
       );
 
     if (props.entityReferenceType === 'Quickview')
@@ -235,11 +241,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           width={props.quickviewWidth}
           formIdentifier={formIdentifier}
           formType={formType}
+          disabled={props.disabled}
+          style={props.style}
         />
       );
 
     return (
-      <Button className={styles.entityReferenceBtn} type="link" onClick={dialogExecute}>
+      <Button className={styles.entityReferenceBtn} style={style} type="link" onClick={dialogExecute}>
         {displayText}
       </Button>
     );

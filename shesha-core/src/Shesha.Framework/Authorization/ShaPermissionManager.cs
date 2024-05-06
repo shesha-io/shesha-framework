@@ -7,7 +7,9 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.MultiTenancy;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -142,7 +144,7 @@ namespace Shesha.Authorization
             return GetPermissionOrNull(oldName);
         }
 
-        public async Task UpdateParentAsync(string name, string parentName)
+        public async Task UpdateParentAsync(string name, string parentName, Module module)
         {
             var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == name);
 
@@ -155,6 +157,7 @@ namespace Shesha.Authorization
             InternalDeletePermission(dbPermission);
 
             dbPermission.Parent = parentName;
+            dbPermission.Module = module;
             await _CreatePermissionAsync(dbPermission);
             Permissions.AddAllPermissions();
 

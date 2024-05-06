@@ -38,7 +38,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     const { globalState } = useGlobalState();
     const { formData, formMode } = useForm();
     const dataContextManager = useDataContextManager(false);
-    const pageContext = dataContextManager?.getPageContext() ?? {};
+    const pageContext = dataContextManager?.getPageContext();
     const dataContext = useDataContext(false);
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
@@ -56,7 +56,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
         const match = [
             { match: 'data', data: formData },
             { match: 'globalState', data: globalState },
-            { match: 'pageContext', data: pageContext },
+            { match: 'pageContext', data: {...pageContext?.getFull()} ?? {} },
         ];
 
         if (dataContextManager)

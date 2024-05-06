@@ -1,5 +1,6 @@
 ﻿using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -28,6 +29,13 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <returns></returns>
         Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream);
+
+        /// <summary>
+        /// Sort items to import in specific order
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items);
     }
 
     public interface IConfigurableItemImport<TItem> : IConfigurableItemImport where TItem : ConfigurationItemBase 
