@@ -20,7 +20,7 @@ import {
 } from '@/interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
 
-export interface IConfigurableActionDispatcherProviderProps {}
+export interface IConfigurableActionDispatcherProviderProps { }
 
 const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
   children,
@@ -105,43 +105,44 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
 
-    //console.log('evaluate action arguments', { actionArguments, argumentsEvaluationContext })
-    return argumentsEvaluator(actionArguments, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
+    return argumentsEvaluator({ ...actionArguments }, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
       .then((preparedActionArguments) => {
-        //console.log('preparedActionArguments', preparedActionArguments);
         return action
           .executer(preparedActionArguments, argumentsEvaluationContext)
-          .then((actionResponse) => {
-            //console.log(`Action '${actionOwner}:${actionName}' executed successfully, response:`, actionResponse);
+          .then(async (actionResponse) => {
             if (handleSuccess) {
               if (onSuccess) {
                 const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
-                executeAction({
-                  actionConfiguration: onSuccess,
+                await executeAction({
+                  actionConfiguration: { ...onSuccess },
                   argumentsEvaluationContext: onSuccessContext,
                   success: payload.success,
-                  fail: payload.fail,
+                  fail: payload.fail
                 });
-              } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+              } else {
+                console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+              };
             } else {
               if (payload.success) payload.success(actionResponse);
-            }
+            };
           })
-          .catch((error) => {
+          .catch(async (error) => {
             console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error);
             if (handleFail) {
               if (onFail) {
                 const onFailContext = { ...argumentsEvaluationContext, actionError: error };
-                executeAction({
-                  actionConfiguration: onFail,
+                await executeAction({
+                  actionConfiguration: { ...onFail },
                   argumentsEvaluationContext: onFailContext,
                   success: payload.success,
                   fail: payload.fail,
                 });
-              } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+              } else {
+                console.warn(`onFail handled is not defined for action '${actionOwner}:${actionName}'`);
+              }
             } else {
               if (payload.fail) payload.fail(error);
-            }
+            };
           });
       });
   };
@@ -155,6 +156,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     prepareArguments,
     executeAction,
   };
+
 
   return (
     <ConfigurableActionDispatcherStateContext.Provider value={state}>

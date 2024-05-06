@@ -12,7 +12,10 @@ export type IConfigurableActionExecuter<TArguments, TReponse> = (
   context: GenericDictionary
 ) => Promise<TReponse>;
 
-export interface IConfigurableActionArguments { }
+
+export interface IConfigurableActionArguments {
+
+}
 
 export interface ISettingsFormFactoryArgs<TModel = IConfigurableActionArguments> {
   model: TModel;

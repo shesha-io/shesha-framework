@@ -8,12 +8,15 @@ import {
 import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
 
-export interface IConfigurableActionDispatcherStateContext {}
+export interface IConfigurableActionDispatcherStateContext {
+}
 
 export interface IGetConfigurableActionPayload {
   owner: string;
   name: string;
 }
+
+
 
 export interface IExecuteActionPayload {
   actionConfiguration: IConfigurableActionConfiguration;
@@ -23,7 +26,7 @@ export interface IExecuteActionPayload {
 }
 
 export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any>
-  extends IConfigurableActionDescriptor<TArguments, TReponse> {}
+  extends IConfigurableActionDescriptor<TArguments, TReponse> { }
 
 export interface RegisterActionType {
   <TArguments = IConfigurableActionArguments, TResponse = any>(
@@ -44,7 +47,8 @@ export interface IConfigurableActionDispatcherActionsContext {
 }
 
 /** initial state */
-export const CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE: IConfigurableActionDispatcherStateContext = {};
+export const CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE: IConfigurableActionDispatcherStateContext = {
+};
 
 export const ConfigurableActionDispatcherStateContext = createContext<IConfigurableActionDispatcherStateContext>(
   CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE

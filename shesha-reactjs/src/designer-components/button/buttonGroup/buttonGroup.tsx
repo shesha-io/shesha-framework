@@ -113,6 +113,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
                     type={item.buttonType}
                     title={item.tooltip}
                     disabled={item.readOnly}
+        
                 >
                     {item.label}
                     <DownOutlined />
