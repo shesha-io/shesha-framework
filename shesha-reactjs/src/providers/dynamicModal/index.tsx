@@ -132,7 +132,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
       },
     },
-    [...actionDependencies, ...callers]
+    actionDependencies
   );
 
   const getLatestVisibleInstance = () => {

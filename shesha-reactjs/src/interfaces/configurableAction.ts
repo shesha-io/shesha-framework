@@ -13,10 +13,6 @@ export type IConfigurableActionExecuter<TArguments, TReponse> = (
 ) => Promise<TReponse>;
 
 
-export interface IActiveButton {
-  activeButtonId?: string;
-  activeButtonActionName?: string;
-}
 export interface IConfigurableActionArguments {
 
 }
