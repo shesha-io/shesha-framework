@@ -609,11 +609,11 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       >
         {!rest.hideSearch && <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />}
         <Tree
-          disabled={rest.readOnly}
           expandedKeys={expanded}
           defaultExpandAll
           checkable={rest.mode === 'Select'}
-          draggable={rest.mode === 'Edit'}
+          selectable={!rest.readOnly}
+          draggable={rest.mode === 'Edit' && !rest.readOnly}
           onCheck={onCheck}
           onExpand={onExpand}
           onSelect={onSelect}

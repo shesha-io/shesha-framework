@@ -15,7 +15,7 @@ namespace Shesha.Domain
     [DiscriminatorValue(ItemTypeName)]
     public class ShaRole : ConfigurationItemBase
     {
-        public const string ItemTypeName = "shesha-role";
+        public const string ItemTypeName = "role";
 
         public ShaRole()
         {
