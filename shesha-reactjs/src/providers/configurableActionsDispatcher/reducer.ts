@@ -12,7 +12,6 @@ const reducer = handleActions<IConfigurableActionDispatcherStateContext, any>(
     },
 
     [ConfigurableComponentActionEnums.removeCaller]: (state: IConfigurableActionDispatcherStateContext, action: ReduxActions.Action<string>) => {
-      debugger;
       return { ...state, callers: state.callers.filter((c) => c !== action.payload) };
     },
   },

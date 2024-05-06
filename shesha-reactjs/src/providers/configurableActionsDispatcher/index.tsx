@@ -91,7 +91,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
   };
   const removeCaller = (callerId: string) => {
     dispatch(removeCallerAction(callerId));
-  }
+  };
 
   const prepareArguments = (_actionArguments: any) => {
     // nop
@@ -121,7 +121,6 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
         return action
           .executer(preparedActionArguments, argumentsEvaluationContext)
           .then((actionResponse) => {
-
             if (handleSuccess) {
               if (onSuccess) {
                 const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };

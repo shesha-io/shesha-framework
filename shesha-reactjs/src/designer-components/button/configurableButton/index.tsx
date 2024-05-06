@@ -17,7 +17,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const evaluationContext = useAvailableConstantsData();
   const { executeAction, getExecuting } = useConfigurableActionDispatcher();
 
-  const { instances } = useDynamicModals()
+  const { instances } = useDynamicModals();
 
 
   const getLatestVisibleInstance = () => {
@@ -56,14 +56,14 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const loading = getExecuting(props.id);
 
   const isModalOpened = getLatestVisibleInstance()?.id === props.id;
-  
+
   const { loadingButton, disabled } = useMemo(() => {
-    return {
+    return ({
       loadingButton: isModalOpened ? false : loading,
       disabled: isModalOpened
-    }
+    });
 
-  }, [loading, isModalOpened])
+  }, [loading, isModalOpened]);
 
 
   return (
