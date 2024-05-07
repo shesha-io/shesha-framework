@@ -18,6 +18,10 @@ import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/s
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import { useFormDesigner } from '@/providers/formDesigner';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
+import { ButtonGroup } from '../button/buttonGroup/buttonGroup';
+import { nanoid } from '@/utils/uuid';
+import ButtonsComponent from '../button/buttonGroup/buttonsComponent';
+import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -138,18 +142,32 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           <Input readOnly={readOnly} />
         </SettingsFormItem>
 
-        <SettingsFormItem name="showModalFooter" label="Show Modal Buttons" valuePropName="checked" jsSetting>
+        {/*<SettingsFormItem name="showModalFooter" label="Show Modal Buttons" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
-        </SettingsFormItem>
+      </SettingsFormItem>*/}
 
-        {values?.showModalFooter &&
-          <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb" jsSetting>
-            <Select disabled={readOnly}>
-              <Select.Option value="POST">POST</Select.Option>
-              <Select.Option value="PUT">PUT</Select.Option>
-            </Select>
-          </SettingsFormItem>
-        }
+      <SettingsFormItem name="footerButtons" label="Buttons type">
+        <Select>
+          <Select.Option value="default">Default</Select.Option>
+          <Select.Option value="custom">Custom</Select.Option>
+          <Select.Option value="none">None</Select.Option>
+        </Select>
+      </SettingsFormItem>
+
+      <Show when={values?.footerButtons === "custom"}>
+        <SettingsFormItem name="buttons" label="Configure Modal Buttons">
+          <ButtonGroupSettingsModal readOnly={false}></ButtonGroupSettingsModal>
+        </SettingsFormItem>
+      </Show>
+
+      {values?.showModalFooter || values?.footerButtons === "default" &&
+        <SettingsFormItem name="submitHttpVerb" initialValue={'POST'} label="Submit Http Verb" jsSetting>
+          <Select disabled={readOnly}>
+            <Select.Option value="POST">POST</Select.Option>
+            <Select.Option value="PUT">PUT</Select.Option>
+          </Select>
+        </SettingsFormItem>
+      }
         <SettingsFormItem name="additionalProperties" label="Additional properties" jsSetting>
           <LabelValueEditor
             labelName='key'

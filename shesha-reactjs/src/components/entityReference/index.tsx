@@ -20,6 +20,7 @@ import { ShaLink, ValidationErrors } from '@/components';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
+  ButtonGroupItemProps,
   FormIdentifier,
 
   useConfigurableActionDispatcher,
@@ -30,6 +31,7 @@ import {
 } from '@/providers';
 import { useStyles } from './styles/styles';
 import { isPropertiesArray } from '@/interfaces/metadata';
+import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -61,6 +63,8 @@ export interface IEntityReferenceProps {
   modalWidth?: number | string;
   customWidth?: number;
   widthUnits?: '%' | 'px';
+  footerButtons?: ModalFooterButtons;
+  buttons?: ButtonGroupItemProps[];
   /**
    * If specified, the form data will not be fetched, even if the GET Url has query parameters that can be used to fetch the data.
    * This is useful in cases whereby one form is used both for create and edit mode
@@ -169,7 +173,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       actionArguments: {
         formId: formIdentifier,
         modalTitle: props.modalTitle,
-        showModalFooter: props.showModalFooter ?? true,
+        buttons: props.buttons,
+        //showModalFooter: props.showModalFooter ?? true,
+        footerButtons: props?.footerButtons,
         additionalProperties:
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
             ? props.additionalProperties

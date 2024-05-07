@@ -56,6 +56,12 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       onFail: migrateNavigateAction(prev.onFail),
     }))
     .add<IEntityReferenceControlProps>(4, (prev) => migrateReadOnly(prev, 'editable'))
+    .add<IEntityReferenceControlProps>(5, (prev, context) => ({
+      ...prev,
+      footerButtons: context.isNew
+        ? 'default'
+        : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
+    }))
   ,
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
