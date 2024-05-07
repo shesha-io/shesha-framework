@@ -25,7 +25,7 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
 
     .sha-global-table-filter {
       .${(p) => p.theme.prefixCls}-input-search-button {
-        height: 28px;
+        height: 32px;
       }
     }
     
@@ -43,6 +43,15 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
         .${(p) => p.theme.prefixCls}-picker {
           padding-top: 0;
           padding-bottom: 0;
+        }
+
+        .${(p) => p.theme.prefixCls}-tag {
+          padding: 0;
+          border-radius: 10px;
+        }
+
+        .${(p) => p.theme.prefixCls}-btn-link {
+          font-size: 16px;
         }
 
         .${(p) => p.theme.prefixCls}-btn {
@@ -109,7 +118,6 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
     }
 
     .${(p) => p.theme.prefixCls}-btn-icon-only {
-      margin-left: 6px !important;
       min-width: 40px !important;
       min-height: unset !important;
     }
@@ -288,6 +296,14 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
 
       .${(p) => p.theme.prefixCls}-card-body {
         border: 2px solid ${(p) => p.theme.colorPrimary};
+      }
+    }
+
+    .${(p) => p.theme.prefixCls}-collapse {
+      margin-bottom: 12px;
+
+      .${(p) => p.theme.prefixCls}-collapse-header-text {
+        font-weight: bold;
       }
     }
   }
