@@ -1,9 +1,9 @@
 import GooglePlacesAutocomplete, { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import moment from 'moment';
-import React, { FC, Fragment } from 'react';
+import React, { FC, Fragment, useEffect, useState } from 'react';
 import ValidationErrors from '@/components/validationErrors';
 import { axiosHttp } from '@/utils/fetchers';
-import { getAddressValue, getSearchOptions } from './utils';
+import { getAddressValue, getSearchOptions, loadGooglePlaces } from './utils';
 import { IAddressCompomentProps } from './models';
 import { message } from 'antd';
 import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
@@ -17,7 +17,7 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
-  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly } = model;
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -28,6 +28,13 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
   const { form, formMode, formData, setFormData } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
+  const [googlePlaceReady, setGooglePlaceReady] = useState(false);
+
+  useEffect(() => {
+    if (googleMapsApiKey && !window.google) {
+      loadGooglePlaces(googleMapsApiKey, ()=>{setGooglePlaceReady(true)})
+    }
+  }, [googleMapsApiKey, googlePlaceReady]);
 
   const onSelect = (selected: IAddressAndCoords): Promise<IOpenCageResponse | IAddressAndCoords> =>
     new Promise((resolve, reject) => {
@@ -40,7 +47,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
             .catch(reject);
         } else resolve(selected);
       } catch (error) {
-        reject(error);
+        reject(new Error(error));
       }
     });
 
