@@ -9,9 +9,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     const shaDatalistComponentBody = "sha-datalist-component-body";
     const shaDatalistComponentAddItemBtn = "sha-datalist-component-add-item-btn";
     const shaDatalistComponentItem = "sha-datalist-component-item";
+    const shaDatalistWrapParent = "sha-datalist-wrap-parent";
 
     const shaDatalistActions = "sha-datalist-actions";
     const shaDatalistCell = "sha-datalist-cell";
+
+
 
     const shaDatalistComponent = cx("sha-datalist-component", css`
         .${prefixCls}-collapse-extra {
@@ -70,6 +73,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
                 }
             }
         }
+
     
         .${shaDatalistComponentBody} {
             overflow-y: auto;
@@ -110,6 +114,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             left: 5px;
         }
 
+        .${shaDatalistWrapParent} {
+            width: 100%;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
         .${shaDatalistComponentItem} {
             position: relative;
             padding-top: 5px;
@@ -143,5 +154,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         shaDatalistComponentItem,
         shaDatalistActions,
         shaDatalistCell,
+        shaDatalistWrapParent
     };
 });

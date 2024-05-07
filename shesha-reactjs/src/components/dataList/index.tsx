@@ -188,23 +188,24 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
 
   useEffect(() => {
-    // if (measured?.width === 0) return;
-    // let res = null;
- 
-      let res = { width: '200px', height: '250px', padding: '10px', backgroundColor: '#ffffff', border: '1px #fff solid', overflow: 'hidden', position: 'relative' } as React.CSSProperties;
-      console.log("WENT INTO FIRST CONDITIONAL");
-    
-    // else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
-    //   res =
-    //     selectionMode === 'none'
-    //       ? ({ width: '100%' } as React.CSSProperties)
-    //       : ({ width: 'calc(100% - 0px)' } as React.CSSProperties);
-    // } else {
-    //   res =
-    //     listItemWidth === 'custom'
-    //       ? ({ width: `${customListItemWidth}px` } as React.CSSProperties)
-    //       : { width: `${(measured?.width - 40) * listItemWidth - (selectionMode === 'none' ? 0 : 28)}px` };
-    // }
+    if (measured?.width === 0) return;
+     let res = null;
+    if(orientation === 'wrap'){
+      //change second width to height
+      //res = { width: '200px', height: '250px', padding: '10px', backgroundColor: '#ffffff', border: '1px #fff solid', overflow: 'hidden', position: 'relative' } as React.CSSProperties;
+      res = ({ width: `${customListItemWidth}px`, height: `${customListItemWidth}px` } as React.CSSProperties)
+    }  
+    else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+      res =
+        selectionMode === 'none'
+          ? ({ width: '100%' } as React.CSSProperties)
+          : ({ width: 'calc(100% - 0px)' } as React.CSSProperties);
+    } else {
+      res =
+        listItemWidth === 'custom'
+          ? ({ width: `${customListItemWidth}px` } as React.CSSProperties)
+          : { width: `${(measured?.width - 40) * listItemWidth - (selectionMode === 'none' ? 0 : 28)}px` };
+    }
 
     setItemWidth(res);
   }, [measured?.width, listItemWidth, customListItemWidth, orientation]);
@@ -328,7 +329,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     };
   
     return (
-      <div onDoubleClick={dblClick} style={{display: 'wrap'}}>
+      <div onDoubleClick={dblClick}>
         <DataListItemRenderer
           isNewObject={false}
           markup={entityForm?.formConfiguration?.markup}
@@ -556,7 +557,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
 
           <Show when={records?.length > 0}>
-            <div style={{width: '100%', display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))'}}>
+            {/*convert this to not inline css*/}
+            <div className={styles.shaDatalistWrapParent}>
             { content }
             </div>
           </Show>
