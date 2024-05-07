@@ -25,7 +25,9 @@ export const LoginLayoutContainer = styled.div`
     }
 
     .sha-login-layout-sign-in {
-      padding: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       @media (max-width: ${screenSize.laptopL}) {
         padding: 10%;
