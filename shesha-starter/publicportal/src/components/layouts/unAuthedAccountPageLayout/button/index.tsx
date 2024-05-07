@@ -1,9 +1,10 @@
 import { BaseButtonProps } from "antd/lib/button/button";
-import { FC } from "react";
+import { FC, MouseEventHandler } from "react";
 import { ShaButtonStyledWrapper } from "./styles";
 
-interface IProps extends BaseButtonProps {
+interface IProps<T = any> extends BaseButtonProps {
   htmlType?: "button" | "submit" | "reset";
+  onClick?: MouseEventHandler<T> | undefined;
 }
 
 const ShaButton: FC<IProps> = ({ children, ...props }) => (
