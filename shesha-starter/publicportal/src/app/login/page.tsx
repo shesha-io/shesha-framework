@@ -4,7 +4,6 @@ import { LOGO } from "@/app-constants/application";
 import { ShaButton, ShaInput, ShaTitle } from "@/components";
 import { ILoginForm } from "@/models";
 import { URL_FORGOT_PASSWORD } from "@/routes";
-import { FacebookFilled, GoogleOutlined } from "@ant-design/icons";
 import { ValidationErrors, useAuth, useTheme } from "@shesha-io/reactjs";
 import { Checkbox, Form } from "antd";
 import FormItem from "antd/lib/form/FormItem";
@@ -31,16 +30,6 @@ const Login: FC = () => {
     <LoginPageWrapper imgSrc={LOGO.src} imgWidth={350} colorTheme={theme}>
       <Form form={form} onFinish={handleLogin}>
         <ShaTitle title="Sign In" />
-
-        <div className="sha-oauth-btn">
-          <ShaButton className="sha-btn-google" icon={<GoogleOutlined />}>
-            Sign in with Google
-          </ShaButton>
-
-          <ShaButton className="sha-btn-facebook" icon={<FacebookFilled />}>
-            Sign in with Facebook
-          </ShaButton>
-        </div>
 
         <ShaInput
           className="lg-margin-bottom"
