@@ -9,6 +9,7 @@ interface IProps {
   placeholder?: string;
   required?: boolean;
   type?: "text" | "password";
+  disabled?: boolean;
 }
 
 const ShaInput: FC<IProps> = ({ className, name, ...props }) => {
