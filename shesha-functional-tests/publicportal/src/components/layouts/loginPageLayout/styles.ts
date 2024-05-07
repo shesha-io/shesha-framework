@@ -18,9 +18,6 @@ export const LoginLayoutContainer = styled.div`
         justify-content: center;
         align-items: center;
         height: 100%;
-
-        .sha-login-layout-logo-icon {
-        }
       }
     }
 
@@ -29,8 +26,16 @@ export const LoginLayoutContainer = styled.div`
       justify-content: center;
       align-items: center;
 
+      .ant-form {
+        min-width: 600px;
+      }
+
       @media (max-width: ${screenSize.laptopL}) {
         padding: 10%;
+
+        .ant-form {
+          min-width: 80%;
+        }
       }
 
       @media (max-width: ${screenSize.laptop}) {
