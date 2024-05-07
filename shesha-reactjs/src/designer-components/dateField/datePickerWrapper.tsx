@@ -63,7 +63,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             return;
         }
 
-        const newValue = isMoment(localValue) ? localValue.format(defaultFormat) : localValue;
+        const newValue = isMoment(localValue) ? localValue.format(pickerFormat) : localValue;
 
         (onChange as TimePickerChangeEvent)(newValue, dateString);
     };
@@ -73,7 +73,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             (onChange as RangePickerChangeEvent)(null, null);
             return;
         }
-
         const dates = (values as []).map((val: any) => {
             if (isMoment(val)) return val.format(defaultFormat);
 
@@ -98,7 +97,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         );
     }
 
-    const evaluatedStyle = {width: '100%', ...getStyle(style, formData, globalState)};
+    const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
 
     if (range) {
         return (
