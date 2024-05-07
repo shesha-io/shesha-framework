@@ -77,7 +77,7 @@ export interface IFormProviderProps {
   parentFormValues?: Store;
 }
 
-const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
+const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   name,
   children,
   allComponents,
@@ -615,9 +615,19 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   return (
     <FormStateContext.Provider value={{ ...state, allComponents, componentRelations }}>
       <FormActionsContext.Provider value={configurableFormActions}>
-        <DelayedUpdateProvider>{children}</DelayedUpdateProvider>
+        {children}
       </FormActionsContext.Provider>
     </FormStateContext.Provider>
+  );
+};
+
+const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = (props) => {
+  return (
+    <DelayedUpdateProvider>
+      <FormProviderInternal {...props}>
+        {props.children}
+      </FormProviderInternal>
+    </DelayedUpdateProvider>
   );
 };
 
