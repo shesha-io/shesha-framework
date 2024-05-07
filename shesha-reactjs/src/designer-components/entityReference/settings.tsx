@@ -142,10 +142,6 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
           <Input readOnly={readOnly} />
         </SettingsFormItem>
 
-        {/*<SettingsFormItem name="showModalFooter" label="Show Modal Buttons" valuePropName="checked" jsSetting>
-          <Checkbox disabled={readOnly} />
-      </SettingsFormItem>*/}
-
       <SettingsFormItem name="footerButtons" label="Buttons type">
         <Select>
           <Select.Option value="default">Default</Select.Option>

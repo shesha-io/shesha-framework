@@ -174,7 +174,6 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         formId: formIdentifier,
         modalTitle: props.modalTitle,
         buttons: props.buttons,
-        //showModalFooter: props.showModalFooter ?? true,
         footerButtons: props?.footerButtons,
         additionalProperties:
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
