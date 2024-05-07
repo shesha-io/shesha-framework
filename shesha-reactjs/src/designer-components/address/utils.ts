@@ -103,6 +103,7 @@ export const loadGooglePlaces = (googleMapsApiKey: string, callback: Function) =
         const script = document.createElement("script");
         script.src =
             `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
+        script.async = true;
         script.id = "googleMaps";
         document.body.appendChild(script);
         script.onload = () => {
