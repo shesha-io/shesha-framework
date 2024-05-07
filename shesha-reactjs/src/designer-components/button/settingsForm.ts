@@ -185,7 +185,7 @@ export const getSettings = (data: any) =>
       ],
       dataSourceType: 'values',
     })
-    .addEditableTagGroupProps({
+    .addPermissionAutocomplete({
       id: '26c68b22-3211-475d-91e1-0745a4447329',
       propertyName: 'permissions',
       label: 'Permissions',

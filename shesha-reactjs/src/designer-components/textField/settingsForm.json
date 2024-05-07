@@ -503,6 +503,15 @@
               "functionName": "validator"
             },
             "availableConstantsExpression": "    return metadataBuilder\r\n        .addStandard([\"shesha:formData\"])\r\n        .addObject(\"rule\", \"Validate rules, only support customize validator\", undefined)\r\n        .addString(\"value\", \"Component current value\tobject\", undefined)\r\n        .addFunction(\"callback\", \"Callback called by component\", undefined)\r\n        .build();"
+          },
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
           }
         ]
       },
