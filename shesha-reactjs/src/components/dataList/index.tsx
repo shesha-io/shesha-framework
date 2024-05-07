@@ -71,11 +71,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   noDataIcon,
   noDataSecondaryText,
   noDataText,
+  cardHeight,
+  cardMaxWidth,
+  cardMinWidth,
+  showBorder,
+  cardSpacing,
   ...props
 }) => {
 
-
-  console.log(records.length, "CARDS RECORDS LENGTH")
   const { styles } = useStyles();
   //const refreshRef = useRef(0);
 
@@ -191,9 +194,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (measured?.width === 0) return;
      let res = null;
     if(orientation === 'wrap'){
-      //change second width to height
-      //res = { width: '200px', height: '250px', padding: '10px', backgroundColor: '#ffffff', border: '1px #fff solid', overflow: 'hidden', position: 'relative' } as React.CSSProperties;
-      res = ({ width: `${customListItemWidth}px`, height: `${customListItemWidth}px` } as React.CSSProperties)
+      res = ({ width: `${cardMinWidth}px`, minWidth: `${cardMinWidth}px`, maxWidth: `${cardMaxWidth}px`, height: `${cardHeight}px` } as React.CSSProperties)
+
+      if(showBorder === true){
+        res = {...res, border: '1px #d3d3d3 solid'}
+      }
     }  
     else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
@@ -449,17 +454,18 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             </Checkbox>
           )}
         >
+
           <div
-            className=""
+            className={classNames(orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, { selected })}
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={itemWidthCalc}
+            style={orientation === 'wrap' ? {minWidth: `${cardMinWidth}px`, maxWidth: `${cardMaxWidth}px`, height: `${cardHeight}px`, ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>{' '}
-        {!isLastItem && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />}
+        {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
       </div>
     );
   };
@@ -558,7 +564,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
           <Show when={records?.length > 0}>
             {/*convert this to not inline css*/}
-            <div className={styles.shaDatalistWrapParent}>
+            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}px`}}>
             { content }
             </div>
           </Show>

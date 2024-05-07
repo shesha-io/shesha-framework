@@ -302,6 +302,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <Select disabled={readOnly} defaultValue="vertical">
             <Select.Option key={1} value="vertical">Vertical</Select.Option>
             <Select.Option key={2} value="horizontal">Horizontal</Select.Option>
+            <Select.Option key={2} value="wrap">Wrap</Select.Option>
           </Select>
         </SettingsFormItem>
 
@@ -322,6 +323,30 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             </SettingsFormItem>
           </Show>
         </Show>
+
+        <Show when={model?.orientation === 'wrap'}>
+            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width (px)">
+              <InputNumber readOnly={readOnly} />
+            </SettingsFormItem>
+         
+            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width (px)">
+              <InputNumber readOnly={readOnly} />
+            </SettingsFormItem>
+          
+            <SettingsFormItem name="cardHeight" label="Card Height (px)">
+              <InputNumber readOnly={readOnly} />
+            </SettingsFormItem>
+      
+            <SettingsFormItem name="cardSpacing" label="Card Spacing (px)">
+              <InputNumber readOnly={readOnly} />
+            </SettingsFormItem>
+
+            <SettingsFormItem name="showBorder" label="Show Border" valuePropName='checked' jsSetting>
+              <Checkbox disabled={readOnly} />
+            </SettingsFormItem>
+          </Show>
+
+          
 
         <SettingsFormItem name="hidden" label="Hidden" valuePropName='checked' jsSetting>
           <Checkbox disabled={readOnly} />

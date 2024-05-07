@@ -60,6 +60,11 @@ export interface IDataListBaseProps {
   orientation?: Orientation;
   listItemWidth?: ListItemWidth;
   customListItemWidth?: number;
+  cardMinWidth?: number;
+  cardMaxWidth?: number;
+  cardHeight?: number;
+  cardSpacing?: number;
+  showBorder?: boolean;
 
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
 
