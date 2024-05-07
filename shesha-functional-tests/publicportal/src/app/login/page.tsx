@@ -1,16 +1,16 @@
 "use client";
 
+import { LOGO } from "@/app-constants/application";
+import { ShaButton, ShaInput, ShaTitle } from "@/components";
+import { ILoginForm } from "@/models";
+import { URL_FORGOT_PASSWORD } from "@/routes";
 import { FacebookFilled, GoogleOutlined } from "@ant-design/icons";
 import { ValidationErrors, useAuth, useTheme } from "@shesha-io/reactjs";
 import { Checkbox, Form } from "antd";
 import FormItem from "antd/lib/form/FormItem";
-import { ShaButton, ShaTitle, ShaInput } from "@/components";
-import { ILoginForm } from "@/models";
 import Link from "next/link";
 import { FC } from "react";
-import { URL_FORGOT_PASSWORD } from "@/routes";
 import { LoginPageWrapper } from "./styles";
-import { LOGO } from "@/app-constants/application";
 
 const Login: FC = () => {
   const { theme } = useTheme();
@@ -46,14 +46,14 @@ const Login: FC = () => {
           className="lg-margin-bottom"
           name="userNameOrEmailAddress"
           label="Email Address"
-          placeholder="Placeholder"
+          placeholder="Email Address"
         />
 
         <ShaInput
           className="lg-margin-bottom"
           name="password"
           label="Password"
-          placeholder="Placeholder"
+          placeholder="Password"
           type="password"
         />
 
@@ -84,9 +84,7 @@ const Login: FC = () => {
         <div className="sha-space-inline lg-margin-top">
           <span className="sha-dont-have-password">Don't have an account?</span>
 
-          <Link href={URL_FORGOT_PASSWORD} className="sha-forget-password-link">
-            Register
-          </Link>
+          <div className="sha-forget-password-link">Register</div>
         </div>
       </Form>
     </LoginPageWrapper>
