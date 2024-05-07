@@ -65,7 +65,6 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   steps: IWizardStepProps[];
   wizardType?: 'default' | 'navigation';
   form?: FormInstance<any>;
-  permissions?: string[];
   hidden?: boolean;
   customVisibility?: string;
   defaultActiveStep?: string;

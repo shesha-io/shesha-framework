@@ -28,6 +28,7 @@ import { ITextAreaComponentProps } from '@/designer-components/textArea/interfac
 import { IRadioProps } from '@/designer-components/radio/utils';
 import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
+import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -79,6 +80,8 @@ type ConfigurableActionConfiguratorType = ToolbarSettingsProp &
   Omit<IConfigurableActionConfiguratorComponentProps, 'hidden' | 'type'>;
 
 type EditableTagGroupType = ToolbarSettingsProp & Omit<IEditableTagGroupComponentProps, 'hidden' | 'type'>;
+
+type PermissionAutocompleteType = ToolbarSettingsProp & Omit<IPermissionAutocompleteComponentProps, 'hidden' | 'type'>;
 
 type ColorPickerType = ToolbarSettingsProp & Omit<IColorPickerComponentProps, 'hidden' | 'type'>;
 
@@ -219,6 +222,10 @@ export class DesignerToolbarSettings<T> {
 
   public addEditableTagGroupProps(props: EditableTagGroupType | ((data: T) => EditableTagGroupType)) {
     return this.addProperty(props, 'editableTagGroup');
+  }
+
+  public addPermissionAutocomplete(props: PermissionAutocompleteType | ((data: T) => PermissionAutocompleteType)) {
+    return this.addProperty(props, 'permissionAutocomplete');
   }
 
   public addEditMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
