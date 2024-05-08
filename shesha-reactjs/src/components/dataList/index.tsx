@@ -194,13 +194,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (measured?.width === 0) return;
      let res = null;
     if(orientation === 'wrap'){
-      res = ({ width: `${cardMinWidth}px`, minWidth: `${cardMinWidth}px`, maxWidth: `${cardMaxWidth}px`, height: `${cardHeight}px` } as React.CSSProperties)
+      res = ({ width: `${cardMinWidth}px`, minWidth: `${cardMinWidth}px`, maxWidth: `${cardMaxWidth}px`, height: `${cardHeight}px` } as React.CSSProperties);
 
       if(showBorder === true){
-        res = {...res, border: '1px #d3d3d3 solid'}
+        res = {...res, border: '1px #d3d3d3 solid'};
       }
-    }  
-    else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+    } else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
         selectionMode === 'none'
           ? ({ width: '100%' } as React.CSSProperties)
