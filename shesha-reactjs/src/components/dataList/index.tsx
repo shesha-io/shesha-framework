@@ -193,13 +193,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   useEffect(() => {
     if (measured?.width === 0) return;
      let res = null;
-    if(orientation === 'wrap'){
-      res = ({ width: `${cardMinWidth}px`, minWidth: `${cardMinWidth}px`, maxWidth: `${cardMaxWidth}px`, height: `${cardHeight}px` } as React.CSSProperties);
-
-      if(showBorder === true){
-        res = {...res, border: '1px #d3d3d3 solid'};
-      }
-    } else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
         selectionMode === 'none'
           ? ({ width: '100%' } as React.CSSProperties)
@@ -562,7 +556,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
 
           <Show when={records?.length > 0}>
-            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}px`}}>
+            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}px !important`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}px, 1fr))`}}>
             { content }
             </div>
           </Show>

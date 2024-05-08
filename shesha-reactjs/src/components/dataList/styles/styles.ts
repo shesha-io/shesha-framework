@@ -116,10 +116,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         .${shaDatalistWrapParent} {
             width: 100%;
             display: grid;
-            gap: 20px;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             overflow: auto;
-            place-items: center;
             padding: 8px;
         }
 
@@ -128,7 +125,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             background-color: #ffffff;
             border-radius: 5px;
             position: relative;
-            overflow: auto;         
+            overflow: auto;       
         }
 
         .${shaDatalistComponentItem} {
