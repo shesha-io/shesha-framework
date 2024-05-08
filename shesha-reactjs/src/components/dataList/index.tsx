@@ -453,7 +453,7 @@ if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' 
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={orientation === 'wrap' ? {minWidth: `${cardMinWidth}px`, maxWidth: `${cardMaxWidth}px`, height: `${cardHeight}px`, ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
+            style={orientation === 'wrap' ? {minWidth: `${cardMinWidth}`, maxWidth: `${cardMaxWidth}`, height: `${cardHeight}`, ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
@@ -556,7 +556,7 @@ if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' 
 
 
           <Show when={records?.length > 0}>
-            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}px`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}px, 1fr))`}}>
+            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
             { content }
             </div>
           </Show>

@@ -325,20 +325,20 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Show>
 
         <Show when={model?.orientation === 'wrap'}>
-            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width (px)">
-              <InputNumber readOnly={readOnly} />
+            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width">
+              <Input readOnly={readOnly} placeholder="You can use any unit (%, px, hw, etc)"/>
             </SettingsFormItem>
          
-            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width (px)">
-              <InputNumber readOnly={readOnly} />
+            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width">
+              <Input readOnly={readOnly} placeholder="You can use any unit (%, px, hw, etc)"/>
             </SettingsFormItem>
           
-            <SettingsFormItem name="cardHeight" label="Card Height (px)">
-              <InputNumber readOnly={readOnly} />
+            <SettingsFormItem name="cardHeight" label="Card Height">
+              <Input readOnly={readOnly} placeholder="You can use any unit (%, px, hw, etc)"/>
             </SettingsFormItem>
       
-            <SettingsFormItem name="cardSpacing" label="Card Spacing (px)">
-              <InputNumber readOnly={readOnly} />
+            <SettingsFormItem name="cardSpacing" label="Card Spacing">
+              <Input readOnly={readOnly} placeholder="You can use any unit (%, px, hw, etc)"/>
             </SettingsFormItem>
 
             <SettingsFormItem name="showBorder" label="Show Border" valuePropName='checked' jsSetting>
