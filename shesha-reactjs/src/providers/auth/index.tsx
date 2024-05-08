@@ -364,8 +364,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     dispatch(resetPasswordSuccessAction());
   };
 
-  
-
   const showLoader = useMemo(() => {
     return !!(
       (state.isFetchingUserInfo || (!state.isFetchingUserInfo && !state.loginInfo && state.token)) // Done fetching user info but the state is not yet updated
