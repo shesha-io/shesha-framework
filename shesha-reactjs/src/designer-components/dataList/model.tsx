@@ -29,9 +29,9 @@ export interface IDataListInlineEditableProps {
   noDataSecondaryText?: string;
   noDataIcon?: string;
 
-  cardMinWidth?: number;
-  cardMaxWidth?: number;
-  cardHeight?: number;
-  cardSpacing?: number;
+  cardMinWidth?: string;
+  cardMaxWidth?: string;
+  cardHeight?: string;
+  cardSpacing?: string;
   showBorder?: boolean;
 }
