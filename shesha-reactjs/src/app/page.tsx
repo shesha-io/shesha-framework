@@ -29,7 +29,7 @@ const Home: PageWithLayout<{}> = () => {
     return appVersion;
   },[])
 
-  if( navigator.vendor !== "Apple Computer, Inc.") {
+  if((parseInt(getBrowerVersion) <= parseInt(getBrowerVersion) - 3) && navigator.vendor === "Apple Computer, Inc.") {
     return <EmptyState noDataIcon="WarningOutlined" noDataText="Your browser is not supported" noDataSecondaryText={`The version of Safari (${getBrowerVersion}) you are using is not supported. Please update to the latest version.`}/>
   }
 
