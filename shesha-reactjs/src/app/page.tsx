@@ -2,11 +2,12 @@
 
 import { Alert, Card, Col, Row } from 'antd';
 import data from 'public/meta.json';
-import React from 'react';
+import React, {useMemo} from 'react';
 import { CollapsiblePanel } from '@/components';
 import styled from 'styled-components';
 import { PageWithLayout } from '@/interfaces';
 import { MainLayout } from '@/components';
+import {EmptyState} from '@/components';
 
 /**
  * There was an error 
@@ -22,6 +23,16 @@ const StyledAlert: any = styled(Alert)`
 `;
 
 const Home: PageWithLayout<{}> = () => {
+
+  const getBrowerVersion = useMemo(()=>{
+    const appVersion = navigator.appVersion?.split("Version/")[1]?.split(" ")[0];
+    return appVersion;
+  },[])
+
+  if( navigator.vendor !== "Apple Computer, Inc.") {
+    return <EmptyState noDataIcon="WarningOutlined" noDataText="Your browser is not supported" noDataSecondaryText={`The version of Safari (${getBrowerVersion}) you are using is not supported. Please update to the latest version.`}/>
+  }
+
   return (
     <MainLayout noPadding>
       <CollapsiblePanel header="Plugins">
