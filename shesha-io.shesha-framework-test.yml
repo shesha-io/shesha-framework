@@ -198,9 +198,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 20.9.0'
+      displayName: 'Use Node 21.x'
       inputs:
-        versionSpec: 20.9.0
+        versionSpec: 21.x
       retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
@@ -462,9 +462,9 @@ stages:
           write-host "The current version is: $(versionNo)"
         workingDirectory: 'shesha-functional-tests/publicportal'
     - task: NodeTool@0
-      displayName: 'Use Node 20.9.0'
+      displayName: 'Use Node 21.x'
       inputs:
-        versionSpec: 20.9.0
+        versionSpec: 21.x
       retryCountOnTaskFailure: 5
     # - task: Npm@1
     #   displayName: 'Npm Update Version'

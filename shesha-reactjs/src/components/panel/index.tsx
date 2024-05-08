@@ -24,7 +24,16 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   hideCollapseContent?: boolean;
 }
 
-const StyledCollapse = styled(Collapse)<
+/**
+ * There was an error 
+ * TS4023: Exported variable 'xxx' has or is using name 'zzz' from external module "yyy" but cannot be named.
+ * 
+ * found a solution
+ * https://stackoverflow.com/questions/43900035/ts4023-exported-variable-x-has-or-is-using-name-y-from-external-module-but
+ * 
+ */
+
+const StyledCollapse: any = styled(Collapse)<
   Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
 >`
   .ant-collapse-header {

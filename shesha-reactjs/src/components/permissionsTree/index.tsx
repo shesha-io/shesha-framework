@@ -21,19 +21,27 @@ import {
   usePermissionUpdateParent,
   usePermissionDelete,
 } from '@/apis/permission';
+import { GuidEntityReferenceDto } from '@/apis/common';
 
-export interface IDataNode {
+interface IDataNode {
   title: JSX.Element;
   key: string;
   isLeaf?: boolean;
   children?: IDataNode[];
   icon?: ReactNode;
+  checkable?: boolean;
+  selectable?: boolean;
+}
+
+interface IPermissionModule {
+  moduleName: string;
+  permissions: PermissionDto[];
 }
 
 // note: antd types were changed, CustomEventDataNode was added to fix build, to be reviewed later
 interface CustomEventDataNode extends EventDataNode<{}> { }
 
-export interface ICheckInfo {
+interface ICheckInfo {
   event: 'check';
   node: CustomEventDataNode;
   checked: boolean;
@@ -60,9 +68,13 @@ export interface IPermissionsTreeProps {
   readOnly?: boolean;
   height?: number;
   mode: PermissionsTreeMode;
+  
+  hideSearch?: boolean;
+  searchText?: string;
 }
 
 const emptyId = '_';
+const withoutModule = '[no-module]';
 
 export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ...rest }) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissions.toolbox.objects.openedKeys', ['']);
@@ -70,6 +82,9 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
 
   const [visibleNodes, setVisibleNodes] = useState<IDataNode[]>();
   const [allItems, setAllItems] = useState<PermissionDto[]>(null);
+  const [allModules, setAllModules] = useState<GuidEntityReferenceDto[]>(null);
+  const [firstExpand, setFirstExpand] = useState(true);
+
   const [checked, setChecked] = useState<Key[]>([]);
   const [expanded, setExpanded] = useState<Key[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
@@ -87,7 +102,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const { getAction, setFormMode } = useForm(false);
 
   useEffect(() => {
-    if (rest.mode === 'Select' && allItems !== null) return; // skip refetch for selectmode if fetched
+    if (rest.mode === 'Select' && allItems) return; // skip refetch for selectmode if fetched
 
     fetcher.refetch();
     setSearchText('');
@@ -99,29 +114,40 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
 
   // do autoexpand only for new object
   useEffect(() => {
-    if (Boolean(allItems) && Boolean(value)) {
-      const exp = openedKeys;
-      const f = (list: PermissionDto[]) => {
-        list.forEach(item => {
-          const i = item.child.find(c => {
-            return value.find(v => {
-              return v === c.id;
-            });
+    const exp = openedKeys ?? [];
+    const expand = (key: string) => {
+      if (!exp.find(e => e === key)) {
+        exp.push(key);
+      }
+    };
+    if (allItems) {
+      if (value) {
+        const f = (list: PermissionDto[]) => {
+          list.forEach(item => {
+            if (item.child?.length > 0 && item.child.find(c => value.find(v => v === c.id))) {
+              if (exp.find(e => e === item.id))
+              expand(item.id);
+              f(item.child);
+            }
           });
-          if (item.child?.length > 0 && Boolean(i)) {
-            if (
-              !Boolean(
-                exp.find(e => {
-                  return e === item.id;
-                })
-              )
-            )
-              exp.push(item.id);
-            f(item.child);
-          }
-        });
-      };
-      f(allItems);
+        };
+        f(allItems);
+      }
+
+      const modules: GuidEntityReferenceDto[] = [];
+      const sorted = allItems.sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
+  
+      sorted?.forEach(item => {
+        //const module = item.module ? item.module._displayName ?? {withoutModule};
+        if (!modules.find(m => m?.id === item.module?.id))
+          modules.push(item.module);
+      });
+
+      if (firstExpand)
+        modules.forEach(m => expand(m?._displayName ?? withoutModule));
+      setFirstExpand(false);
+
+      setAllModules(modules);
       setExpanded(exp);
       setOpenedKeys(exp);
     }
@@ -154,19 +180,15 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
 
   const onExpand = (keys: Key[]) => {
     setExpanded(keys);
-    setOpenedKeys(
-      keys.map(item => {
-        return item.toString();
-      })
-    );
+    setOpenedKeys(keys.map(item => item.toString()));
   };
 
   const findItem = (items: PermissionDto[], key: string): PermissionDto => {
     let res = null;
     let i = 0;
-    while (items !== null && res === null && i < items.length) {
+    while (items && !res && i < items.length) {
       res = items[i]?.id === key ? items[i] : null;
-      if (res === null) {
+      if (!res) {
         res = findItem(items[i].child, key);
       }
       i++;
@@ -210,7 +232,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   };
 
   useEffect(() => {
-    if (doSelect !== null) {
+    if (doSelect) {
       if (doSelect === '') {
         onSelect([]);
       } else {
@@ -221,14 +243,15 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   }, [doSelect]);
 
   const addPermission = (parent: PermissionDto, list: PermissionDto[]) => {
-    const o = {
+    const o: PermissionDto = {
       id: emptyId,
       name: 'NewPermission',
       displayName: 'New permission',
       description: '',
-      parentName: parent !== null ? parent.name : null,
+      parentName: parent ? parent.name : null,
       isDbPermission: true,
       parent: null,
+      child: [],
     };
     list.push(o);
     return o;
@@ -252,22 +275,207 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     setAllItems([...allItems]);
   };
 
-  const expandParent = (items, item) => {
-    if (Boolean(item.parentName)) {
-      const parent = findItem(items, item.parentName);
-      if (parent !== null) {
-        if (expanded.length === 0 || expanded.find(x => {
-          return x === parent.id;
-        }) === null
-        ) {
-          setExpanded(prev => {
-            return [...prev, parent.id];
-          });
-        }
-        expandParent(items, parent);
+  const expandNode = (key: string) =>{
+    if (expanded.length === 0 || !expanded.find(x => x === key))
+      setExpanded(prev => [...prev, key]);
+  };
+
+  const expandParent = (items: PermissionDto[], item: PermissionDto) => {
+    const parent = item.parentName ? findItem(items, item.parentName) : null;
+    const exp = parent ? parent.id : item.module?._displayName ?? withoutModule;
+    expandNode(exp);
+    if (parent)
+      expandParent(items, parent);
+  };
+
+  useEffect(() => {
+    if (!isDeleting && Boolean(selected[0]) && selected.length > 0) {
+      if (deleteDataError) {
+        message.error(deleteDataError.message);
+      } else {
+        deletePermission();
       }
     }
+  }, [isDeleting, deleteDataError]);
+
+  useEffect(() => {
+    if (!isParentUpdating && Boolean(dragInfo)) {
+      if (updateParentDataError) {
+        message.error(updateParentDataError.message);
+      } else {
+        const newItems = [...allItems];
+        const dragItem = findItem(newItems, dragInfo.dragNode.key);
+
+        // remove from the old place
+        if (Boolean(dragItem.parentName)) {
+          const parent = findItem(newItems, dragItem.parentName);
+          const index = parent.child.indexOf(dragItem);
+          if (index > -1) {
+            parent.child.splice(index, 1);
+          }
+        } else {
+          const index = newItems.indexOf(dragItem);
+          if (index > -1) {
+            newItems.splice(index, 1);
+          }
+        }
+
+        // add to the new place
+
+        const dropItem = findItem(newItems, dragInfo.node.key);
+        // drop to Permission
+        if (dropItem) {
+          if (!dropItem || dragInfo.dropToGap) {
+            newItems.push(dragItem);
+            dragItem.parentName = null;
+          } else {
+            dropItem.child.push(dragItem);
+            dragItem.parentName = dropItem.name;
+          }
+        } else {
+          const dropModule = allModules.find(x => x._displayName === dragInfo.node.key);
+          newItems.push(dragItem);
+          dragItem.parentName = null;
+          dragItem.module = dropModule;
+        }
+
+        expandParent(newItems, dragItem);
+        setDragInfo(null);
+        setAllItems([...newItems]);
+        setDoSelect(dragItem.id);
+      }
+    }
+  }, [isParentUpdating, updateParentDataError]);
+
+  const onDragStart = info => {
+    setSelected([info.node.key]);
   };
+
+  const onDrop = info => {
+    const dropItem = findItem(allItems, info.node.key);
+    const dragItem = findItem(allItems, info.dragNode.key);
+    if (!dragItem) return;
+
+    if (!dragItem.isDbPermission) {
+      message.warning('Permission "' + dragItem.displayName + '" is a system permission and can not be moved!');
+      return;
+    }
+
+    // drop to Permission
+    if (dropItem) {
+      if (dragItem.parentName === dropItem.name || (!dragItem.parentName && info.dropToGap)) return;
+      setDragInfo(info);
+      updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name, module: {...dropItem.module} });
+      return;
+    }
+
+    // drop to module
+    if (info.node.key === withoutModule) {
+      setDragInfo(info);
+      updateParentRequest.mutate({ ...dragItem, parentName: null, module: null });
+      return;
+    }
+    const dropModule = allModules.find(x => x._displayName === info.node.key);
+    if (dropModule) {
+      setDragInfo(info);
+      updateParentRequest.mutate({ ...dragItem, parentName: null, module: {...dropModule} });
+    }
+  };
+
+  const getVisible = (items: PermissionDto[], searchText: string): PermissionDto[] => {
+    const result: PermissionDto[] = [];
+    if (!items) return result;
+
+    items?.forEach(item => {
+      const childItems = getVisible(item.child, searchText);
+      const matched =
+        (searchText ?? '') === '' ||
+        item.displayName?.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.description?.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.name?.toLowerCase().includes(searchText.toLowerCase());
+
+      if (matched || childItems.length > 0) {
+        const filteredItem: PermissionDto = { ...item, child: childItems };
+        result.push(filteredItem);
+      }
+    });
+
+    return result;
+  };
+
+  const getModules = (items: PermissionDto[]): IPermissionModule[] => {
+    const result: IPermissionModule[] = [];
+    if (!items) return result;
+
+    const sorted = items.sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
+
+    sorted?.forEach(item => {
+      const moduleName = item.module?._displayName ?? withoutModule;
+      let m = result.find(m => m.moduleName === moduleName);
+      if (!m) {
+        m = { moduleName: moduleName, permissions: [] };
+        result.push(m);
+      }
+      m.permissions.push(item);
+    });
+
+    return result;
+  };
+
+  const mapItem = (item: IPermissionModule | PermissionDto) => {
+    const p = item as PermissionDto;
+    if (!p.id) {
+      const m = item as IPermissionModule;
+      return {
+        key: m.moduleName,
+        title: <span>{m.moduleName}</span>,
+        children: m.permissions?.map(mapItem),
+        checkable: false,
+        selectable: false,
+      } as IDataNode;
+    }
+    return {
+      key: p.id,
+      title:
+        (Boolean(p.description) && (
+          <Tooltip title={p.description} mouseEnterDelay={1}>
+            <span>
+              {!p.isDbPermission ? <Tag>sys</Tag> : null} {p.displayName ?? p.name}
+            </span>
+          </Tooltip>
+        )) ||
+        (!Boolean(p.description) && (
+          <span>
+            {!p.isDbPermission ? <Tag>sys</Tag> : null} {p.displayName ?? p.name}
+          </span>
+        )),
+      children: p.child?.map(mapItem),
+      checkable: rest.mode === 'Select',
+      selectable: true,
+    } as IDataNode;
+  };
+
+  const updateTree  = () => {
+    const visible = getVisible(allItems, rest.hideSearch ? rest.searchText : searchText);
+    if (searchText || rest.searchText) {
+      const nodes = [];
+      const f = (item: PermissionDto) => {
+        if (item.child.length > 0) {
+          item.child.forEach(f);
+          //nodes.push(...item.child.map(f));
+        } else {
+          nodes.push(item);
+        }
+      };
+      visible.forEach(f);
+      nodes.forEach(n => expandParent(allItems, n));
+    }
+    setVisibleNodes(getModules(visible).map(mapItem));
+  };
+
+  useEffect(() => {
+    updateTree();
+  }, [allItems, searchText, rest.hideSearch, rest.searchText]);
 
   useConfigurableAction(
     {
@@ -279,14 +487,16 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       argumentsFormMarkup: updateItemArgumentsForm,
       executer: (arg: IUpdateItemArguments) => {
         const item = findItem(allItems, selected[0]);
-        if (rest.mode === 'Edit' && item !== null) {
+        if (rest.mode === 'Edit' && item) {
           item.id = arg.name;
           item.name = arg.name;
           item.displayName = arg.displayName;
           item.description = arg.description;
+          item.module = arg.moduleId ? { id: arg.moduleId, _displayName: arg.moduleName } : null;
           setAllItems([...allItems]);
           setSelected([item.id]);
           setSearchText('');
+          updateTree();
         }
 
         return Promise.resolve();
@@ -303,7 +513,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       hasArguments: false,
       executer: () => {
         let s = findItem(allItems, emptyId);
-        if (s === null) {
+        if (!s) {
           setAllItems(prev => {
             addPermission(null, prev);
             return [...prev];
@@ -331,10 +541,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       executer: () => {
         const newItems = [...allItems];
         let s = findItem(newItems, emptyId);
-        if (s === null) {
+        if (!s) {
           s = findItem(newItems, selected[0]);
-          if (s !== null) {
-            if (s.child === null) s.child = [];
+          if (s) {
+            if (!s.child) s.child = [];
             s = addPermission(s, s.child);
             setAllItems([...newItems]);
           }
@@ -360,7 +570,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       hasArguments: false,
       executer: () => {
         const s = findItem(allItems, selected[0]);
-        if (s !== null) {
+        if (s) {
           if (!s.isDbPermission) {
             message.warning('Permission "' + s.displayName + '" is a system permission and can not be deleted!');
             return Promise.resolve();
@@ -377,120 +587,6 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
       },
     }
   );
-
-  useEffect(() => {
-    if (!isDeleting && Boolean(selected[0]) && selected.length > 0) {
-      if (deleteDataError) {
-        message.error(deleteDataError.message);
-      } else {
-        deletePermission();
-      }
-    }
-  }, [isDeleting, deleteDataError]);
-
-  useEffect(() => {
-    if (!isParentUpdating && Boolean(dragInfo)) {
-      if (updateParentDataError) {
-        message.error(updateParentDataError.message);
-      } else {
-        const newItems = [...allItems];
-        const dropItem = findItem(newItems, dragInfo.node.key);
-        const dragItem = findItem(newItems, dragInfo.dragNode.key);
-
-        // remove from the old place
-        if (Boolean(dragItem.parentName)) {
-          const parent = findItem(newItems, dragItem.parentName);
-          const index = parent.child.indexOf(dragItem);
-          if (index > -1) {
-            parent.child.splice(index, 1);
-          }
-        } else {
-          const index = newItems.indexOf(dragItem);
-          if (index > -1) {
-            newItems.splice(index, 1);
-          }
-        }
-
-        // add to the new place
-        if (dragInfo.dropToGap) {
-          newItems.push(dragItem);
-          dragItem.parentName = null;
-        } else {
-          dropItem.child.push(dragItem);
-          dragItem.parentName = dropItem.name;
-        }
-
-        expandParent(newItems, dragItem);
-        setDragInfo(null);
-        setAllItems([...newItems]);
-        setDoSelect(dragItem.id);
-      }
-    }
-  }, [isParentUpdating, updateParentDataError]);
-
-  const onDragStart = info => {
-    setSelected([info.node.key]);
-  };
-
-  const onDrop = info => {
-    const dropItem = findItem(allItems, info.node.key);
-    const dragItem = findItem(allItems, info.dragNode.key);
-
-    if (dragItem.parentName === dropItem.name || (!Boolean(dragItem.parentName) && info.dropToGap)) return;
-
-    if (!dragItem.isDbPermission) {
-      message.warning('Permission "' + dragItem.displayName + '" is a system permission and can not be moved!');
-      return;
-    }
-
-    setDragInfo(info);
-    updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name });
-  };
-
-  const getVisible = (items: PermissionDto[], searchText: string): PermissionDto[] => {
-    const result: PermissionDto[] = [];
-    if (!items) return result;
-
-    items?.forEach(item => {
-      const childItems = getVisible(item.child, searchText);
-      const matched =
-        (searchText ?? '') === '' ||
-        item.displayName?.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.name?.toLowerCase().includes(searchText.toLowerCase());
-
-      if (matched || childItems.length > 0) {
-        const filteredItem: PermissionDto = { ...item, child: childItems };
-        result.push(filteredItem);
-      }
-    });
-
-    return result;
-  };
-
-  const mapItem = (item: PermissionDto) => {
-    return {
-      key: item.id,
-      title:
-        (Boolean(item.description) && (
-          <Tooltip title={item.description} mouseEnterDelay={1}>
-            <span>
-              {!item.isDbPermission ? <Tag>sys</Tag> : null} {item.displayName ?? item.name}
-            </span>
-          </Tooltip>
-        )) ||
-        (!Boolean(item.description) && (
-          <span>
-            {!item.isDbPermission ? <Tag>sys</Tag> : null} {item.displayName ?? item.name}
-          </span>
-        )),
-      children: item.child?.map(mapItem),
-    } as IDataNode;
-  };
-
-  useEffect(() => {
-    setVisibleNodes(getVisible(allItems, searchText).map(mapItem));
-  }, [allItems, searchText]);
 
   const getLoadingHint = () => {
     switch (true) {
@@ -511,13 +607,13 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         tip={getLoadingHint()}
         indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
       >
-        <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />
+        {!rest.hideSearch && <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />}
         <Tree
-          disabled={rest.readOnly}
           expandedKeys={expanded}
           defaultExpandAll
           checkable={rest.mode === 'Select'}
-          draggable={rest.mode === 'Edit'}
+          selectable={!rest.readOnly}
+          draggable={rest.mode === 'Edit' && !rest.readOnly}
           onCheck={onCheck}
           onExpand={onExpand}
           onSelect={onSelect}

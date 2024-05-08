@@ -6,6 +6,23 @@
 	<GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
 	<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
 	<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <!-- Optional: Embed source files within the PDBs -->
+    <EmbedAllSources>true</EmbedAllSources>
+
+    <!-- Generate full debug information embedded in the DLLs -->
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+
+    <!-- Include DLLs and XML documentation files in the NuGet package output -->
+    <AllowedOutputExtensionsInPackageBuildOutput>.dll;.xml;.pdb</AllowedOutputExtensionsInPackageBuildOutput>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,11 +32,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.15" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
-    <PackageReference Include="Shesha.Application" Version="0.32.0-beta.65173" />
-    <PackageReference Include="Shesha.Core" Version="0.32.0-beta.65173" />
-    <PackageReference Include="Shesha.Framework" Version="0.32.0-beta.65173" />
-    <PackageReference Include="Shesha.NHibernate" Version="0.32.0-beta.65173" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.32.0-beta.65173" />
+    <PackageReference Include="Shesha.Application" Version="0.33.0" />
+    <PackageReference Include="Shesha.Core" Version="0.33.0" />
+    <PackageReference Include="Shesha.Framework" Version="0.33.0" />
+    <PackageReference Include="Shesha.NHibernate" Version="0.33.0" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.33.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
   </ItemGroup>
 

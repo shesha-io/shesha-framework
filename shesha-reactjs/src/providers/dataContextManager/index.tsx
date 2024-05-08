@@ -3,6 +3,7 @@ import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import { createContext } from 'react';
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload } from "./models";
+import { DataContextType, IDataContextFull, useDataContext } from "../dataContextProvider/contexts";
 
 export const RootContexts: string[] = [];
 
@@ -21,13 +22,15 @@ export interface IDataContextManagerActionsContext {
     getDataContexts: (topId?: string) => IDataContextDescriptor[];
     getDataContextsData: (topId?: string) => IDataContextsData;
     getDataContext: (contextId: string) => IDataContextDescriptor;
+    getNearestDataContext: (topId: string, type: DataContextType) => IDataContextDescriptor;
     getDataContextData: (contextId: string) => any;
     onChangeContext: (dataContext: IDataContextDescriptor) => void;
     onChangeContextData: () => void;
     setActiveContext: (contextId: string) => void;
     getActiveContext: () => IDataContextDescriptor;
-    updateFormInstance: (form: ConfigurableFormInstance) => void;
-    getFormInstance: () => ConfigurableFormInstance;
+    updatePageFormInstance: (form: ConfigurableFormInstance) => void;
+    getPageFormInstance: () => ConfigurableFormInstance;
+    getPageContext: () => IDataContextDescriptor;
 }
 
 export interface IDataContextManagerFullInstance extends IDataContextManagerStateContext, IDataContextManagerActionsContext{
@@ -55,12 +58,12 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
       setState({...state, lastUpdate: new Date().toJSON()});
     };
 
-    const updateFormInstance = (form: ConfigurableFormInstance) => {
+    const updatePageFormInstance = (form: ConfigurableFormInstance) => {
         formInstance.current = form;
         setState({...state, lastUpdate: new Date().toJSON() });
     };
 
-    const getFormInstance = () => {
+    const getPageFormInstance = () => {
         return formInstance.current;
     };
 
@@ -112,14 +115,23 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         return ctxs;
     };
 
-    const getDataContext = (contextId: string) => {
+    const getNearestDataContext = (topId: string, type: DataContextType) => {
+      const dataContexts = getDataContexts(topId);
+      return dataContexts.find(x => x.type === type);
+    };
+
+    const getPageContext = (): IDataContextDescriptor => {
+      return getNearestDataContext('all', 'page');
+    };
+
+    const getDataContext = (contextId: string): IDataContextDescriptor => {
         if (!contextId)
             return undefined;
 
         return contexts.current[contextId];
     };
 
-    const getDataContextData = (contextId: string) => {
+    const getDataContextData = (contextId: string): IDataContextFull => {
         if (!contextId)
             return undefined;
         
@@ -164,14 +176,16 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         unregisterDataContext,
         getDataContexts,
         getDataContextsData,
+        getNearestDataContext,
         getDataContext,
         getDataContextData,
         onChangeContext,
         onChangeContextData,
         setActiveContext,
         getActiveContext,
-        updateFormInstance,
-        getFormInstance,
+        updatePageFormInstance,
+        getPageFormInstance,
+        getPageContext,
     };
 
     return (
@@ -210,4 +224,15 @@ const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: Rea
     }, deps);
 };
 
-export { DataContextManager, useDataContextManager, useDataContextRegister };
+function useNearestDataContext(type: DataContextType): IDataContextDescriptor {
+  const currentDataContext = useDataContext(false);
+  const dcm = useDataContextManager();
+
+  if (!currentDataContext)
+    return null;
+
+  const nearestDataContext = dcm?.getNearestDataContext(currentDataContext.id, type);
+  return nearestDataContext;
+}
+
+export { DataContextManager, useDataContextManager, useDataContextRegister, useNearestDataContext };

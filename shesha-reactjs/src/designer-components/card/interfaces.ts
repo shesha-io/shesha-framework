@@ -6,6 +6,7 @@ interface ICardContent {
 }
 
 export interface ICardComponentProps extends IConfigurableFormComponent {
+  className?: string;
   content?: ICardContent;
   header?: ICardContent;
   hideHeading?: boolean;

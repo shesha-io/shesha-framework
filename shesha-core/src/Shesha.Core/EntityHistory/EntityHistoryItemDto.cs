@@ -1,11 +1,6 @@
-﻿using System;
+﻿using Abp.Application.Services.Dto;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Application.Services.Dto;
-using Abp.AutoMapper;
-using Abp.EntityHistory;
-using Shesha.Domain;
-using Shesha.Domain.Attributes;
 
 namespace Shesha.EntityHistory
 {

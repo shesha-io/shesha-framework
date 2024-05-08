@@ -15,7 +15,6 @@ import {
   IFormSettings,
   ROOT_COMPONENT_KEY,
 } from './models';
-import { IDataContextFullInstance } from '../dataContextProvider/contexts';
 
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -30,8 +29,6 @@ export interface IFormStateInternalContext {
   actions: IFormAction[];
   sections: IFormSection[];
   context?: any; // todo: make generic
-
-  formContext?: IDataContextFullInstance;
 
   // runtime props
   formData?: any;
@@ -103,6 +100,8 @@ export interface IFormActionsContext {
   getToolboxComponent: (type: string) => IToolboxComponent;
 
   isComponentFiltered: (component: IConfigurableFormComponent) => boolean;
+  prepareDataForSubmit: () => Promise<object>;
+  executeExpression: <TResult = any>(expression: string, exposedData?: any) => Promise<TResult>;
 }
 
 /** Form initial state */

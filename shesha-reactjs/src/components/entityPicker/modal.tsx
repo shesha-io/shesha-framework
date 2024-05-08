@@ -1,4 +1,4 @@
-import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataTable, useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
+import { DataTable, DataTableProvider, GlobalTableFilter, IAnyObject, TablePager, evaluateDynamicFilters, useDataContextManager, useDataTable, useForm, useGlobalState, useModal, useNestedPropertyMetadatAccessor } from '@/index';
 import React, { useEffect, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { useMedia } from 'react-use';
@@ -53,6 +53,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
 
   const { globalState } = useGlobalState();
   const { formData } = useForm();
+  const pageContext = useDataContextManager(false)?.getPageContext();
   
   useEffect(() => {
     registerConfigurableColumns(modalId, configurableColumns);
@@ -117,6 +118,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
       [
         { match: 'data', data: formData },
         { match: 'globalState', data: globalState },
+        { match: 'pageContext', data: {...pageContext.getFull()} ?? {} },
       ],
       propertyMetadataAccessor
     ).then(evaluatedFilters => {

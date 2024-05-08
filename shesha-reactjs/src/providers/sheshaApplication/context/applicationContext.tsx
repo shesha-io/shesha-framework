@@ -96,11 +96,9 @@ export const useApplicationActions = (): IApplicationActionsContext => {
 export const useApplicationPlugin = (plugin: ApplicationPluginRegistration) => {
   const { registerPlugin, unregisterPlugin } = useApplicationActions();
   useEffect(() => {
-    console.log('LOG: register plugin', plugin);
     registerPlugin(plugin);
 
     return () => {
-      console.log('LOG: unregister plugin', plugin.name);
       unregisterPlugin(plugin.name);
     };
   }, [registerPlugin, unregisterPlugin, plugin.name]);

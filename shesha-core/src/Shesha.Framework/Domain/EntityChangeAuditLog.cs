@@ -11,8 +11,12 @@ namespace Shesha.Domain
 {
     [Table("vw_Frwk_EntityChangeAuditLogs")]
     [ImMutable]
-    public class EntityChangeAuditLog: Entity<Guid>
+    public class EntityChangeAuditLog: Entity<long>
     {
+        /// <summary>
+        /// The Id of the Entity of the property that is audited
+        /// </summary>
+        public virtual string EntityId { get; protected set; }
         /// <summary>
         /// The name of the property that is audited
         /// </summary>

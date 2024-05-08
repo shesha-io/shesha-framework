@@ -7,6 +7,7 @@ import { DataTypes } from "@/interfaces";
 import { StringBuilder } from "@/utils/metadata/stringBuilder";
 import { TypesImporter } from "@/utils/metadata/typesImporter";
 import { getEntityIdJsType } from "@/utils/metadata";
+import camelcase from "camelcase";
 
 type EntityItemType = 'module' | 'entityType';
 
@@ -66,16 +67,9 @@ export const fetchEntitiesApiAsMetadataProperties = (httpClient: HttpClientApi):
     return EntitiesManager.fetchConfigurationsAsync(httpClient).then(res => entitiesConfigurationToProperties(res));
 };
 
-const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfigurationDto[], context: ITypeDefinitionLoadingContext): Promise<TypeDefinition> => {
-    const apiFile: SourceFile = {
-        fileName: "apis/entitiesApi.d.ts",
-        content: ""
-    };
-    const result: TypeDefinition = {
-        typeName: "EntitiesApi",
-        files: [apiFile],
-    };
-    
+const BASE_ENTITY_MODULE = "entities/interfaces.ts";
+
+const createEntityBaseModels = (context: ITypeDefinitionLoadingContext) => {
     const content = [
         "/*",
         " * Entity with typed id",
@@ -122,36 +116,61 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
         "    getAsync: (id: TId) => Promise<TEntity>;",
         "    updateAsync: (value: EntityUpdatePayload<TId, TEntity>) => Promise<TEntity>;",
         "    deleteAsync: (id: TId) => Promise<void>;",
-        "}",
-        "",
+        "}"].join('\r\n');
+
+    context.typeDefinitionBuilder.makeFile(BASE_ENTITY_MODULE, content);
+};
+
+const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfigurationDto[], context: ITypeDefinitionLoadingContext): Promise<TypeDefinition> => {
+    const apiFile: SourceFile = {
+        fileName: "apis/entitiesApi.d.ts",
+        content: ""
+    };
+    const result: TypeDefinition = {
+        typeName: "EntitiesApi",
+        files: [apiFile],
+    };
+
+    createEntityBaseModels(context);
+
+    const content = [
         `export interface ${result.typeName} {`,
-    ];   
+    ];
 
     const typesBuilder = context.typeDefinitionBuilder;
 
+    const getModuleTypeName = (property: IEntityPropertyMetadata): string => {
+        return camelcase(property.path, { pascalCase: true });
+    };
+
     const writeObject = async (sb: StringBuilder, typesImporter: TypesImporter, property: IEntityPropertyMetadata): Promise<void> => {
+        //console.log(`LOG: process property '${property.path}'`, property);
         if (property.description)
             sb.append(`/** ${property.description} */`);
 
-        sb.append(`${property.path}: {`);
+        sb.append(`export interface ${getModuleTypeName(property)} {`);
 
         if (!isPropertiesArray(property.properties))
             throw new Error("Something went wrong. Entity properties should be an array of properties");
 
         sb.incIndent();
 
+        let baseTypesImported = false;
+
         for (const prop of property.properties) {
             if ((prop as IEntityPropertyMetadata).entityItemType === 'entityType' && isEntityReferencePropertyMetadata(prop)) {
-                //console.log(`LOG: process entity '${prop.path}'`, prop);
-
+                if (!baseTypesImported){
+                    typesImporter.import({ typeName: "EntityAccessor", filePath: BASE_ENTITY_MODULE });
+                }
+                
                 const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
-                if (typeDef){
+                if (typeDef) {
                     typesImporter.import(typeDef);
 
                     const idType = getEntityIdJsType(typeDef.metadata);
                     if (!idType)
                         throw new Error(`Failed to identifier type for entity '${prop.entityType}'`);
-    
+
                     if (prop.description)
                         sb.append(`/** ${prop.description} */`);
                     sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
@@ -159,10 +178,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
                     console.error(`Failed to find entity type '${prop.entityModule}/${prop.entityType}' for (property '${prop.path}')`);
                     sb.append(`${prop.path}: any;`);
                 }
-            } /*else
-                if (prop.dataType === DataTypes.object) {
-                    await writeObject(sb, typesImporter, prop as IEntityPropertyMetadata);
-                }*/
+            }
         }
         sb.decIndent();
         sb.append("}");
@@ -177,7 +193,26 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
     sb.incIndent();
 
     for (const property of properties) {
-        await writeObject(sb, typesImporter, property);
+        // module
+        const moduleSb = new StringBuilder();
+        const moduleImporter = new TypesImporter();
+
+        await writeObject(moduleSb, moduleImporter, property);
+
+        const moduleExportSection = moduleSb.build();
+        const moduleImportSection = moduleImporter.generateImports();
+        const moduleContent = `${moduleImportSection}\n\n${moduleExportSection}`;
+
+        const moduleFileName = `entities/${property.path}/index.d.ts`;
+
+        typesBuilder.makeFile(moduleFileName, moduleContent);
+
+        const moduleType = getModuleTypeName(property);
+
+        // entities Api
+        typesImporter.import({ typeName: moduleType, filePath: moduleFileName });
+        
+        sb.append(`${property.path}: ${moduleType};`);
     }
     sb.decIndent();
 

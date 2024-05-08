@@ -93,6 +93,7 @@ import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
+import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
 
 export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[] => {
   return [
@@ -202,6 +203,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
       visible: devMode,
       name: 'Dev',
       components: [
+        PermissionAutocompleteComponent,
         EntityPickerColumnsEditor,
         ColumnsEditor, // Hidden
         ReferenceListAutocompleteComponent,

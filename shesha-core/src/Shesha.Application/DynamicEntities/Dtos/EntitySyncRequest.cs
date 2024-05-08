@@ -9,6 +9,6 @@ namespace Shesha.DynamicEntities.Dtos
     {
         public string Accessor { get; set; }
         public string Md5 { get; set; }
-        public DateTime ChangeTime { get; set; }
+        public DateTime ModificationTime { get; set; }
     }
 }

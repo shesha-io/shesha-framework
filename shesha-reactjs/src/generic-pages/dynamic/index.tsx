@@ -31,7 +31,6 @@ import { useStackedModal } from './navigation/stackedNavigationModalProvider';
 import { useStackedNavigation } from './navigation/stakedNavigation';
 import { DynamicFormPubSubConstants } from './pubSub';
 import { useDataContextManager } from '@/providers/dataContextManager/index';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { executeScript } from '@/providers/form/utils';
@@ -44,7 +43,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { router } = useShaRouting();
   const { configurationItemMode } = useAppConfigurator();
   const dcm = useDataContextManager(false);
-  const dataContext = useDataContext();
+  const pageContext = dcm.getPageContext();
 
   const { publish } = usePubSub();
 
@@ -219,9 +218,11 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       setGlobalState,
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
-      form,
+      // ToDo: review on Page/Form life cycle
+      form: formRef?.current ?? { formSettings },
+      formMode: formRef?.current?.formMode,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
-      formContext: dataContext?.getFull(),
+      pageContext: pageContext?.getFull(),
       application: dcm?.getDataContext(SheshaCommonContexts.ApplicationContext)?.getData(),
       ...context,
     };
@@ -348,7 +349,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
 export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   return (
-    <DataContextProvider id={'formContext'} name={'formContext'} type={'form'}>
+    <DataContextProvider id={'pageContext'} name={'pageContext'} type={'page'}>
       <DynamicPageInternal {...props}/>
     </DataContextProvider> 
   );

@@ -22,13 +22,14 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   icon: <LinkExternalOutlined />,
   Factory: ({ model: passedModel }) => {
     const { style, hidden, readOnly, ...model } = passedModel;
+    
     if (hidden)
       return null;
 
     return (
       <ConfigurableFormItem model={model}>
         {(value) => {
-          return <EntityReference {...model} disabled={readOnly} value={value} />;
+          return <EntityReference {...model} disabled={readOnly} value={value} style={style}/>;
         }}
       </ConfigurableFormItem>
     );

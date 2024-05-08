@@ -26,7 +26,7 @@ import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsM
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({readOnly}) => {
-  const { values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
+  const { model, values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -43,7 +43,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly} 
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={values}
+          formData={model}
           onValuesChange={onValuesChange}
         />
 

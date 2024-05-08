@@ -189,7 +189,7 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.GenerateAppService = item.GenerateAppService;
             dbItem.Source = item.Source;
             dbItem.EntityConfigType = item.EntityConfigType;
-            dbItem.PropertiesMD5 = item.PropertiesMD5;
+            dbItem.HardcodedPropertiesMD5 = item.PropertiesMD5;
 
             dbItem.ViewConfigurations = item.ViewConfigurations.ToList();
             
