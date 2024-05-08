@@ -5,6 +5,10 @@ export interface IComponentSettingsDictionary {
   [key: string]: IComponentSettings;
 }
 
+export interface ITargetForm {
+  formName?: string;
+}
+
 export interface IComponentSettings<TSettings = object> {
   id?: string;
   name?: string;

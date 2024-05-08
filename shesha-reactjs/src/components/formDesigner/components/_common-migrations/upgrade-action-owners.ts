@@ -9,8 +9,8 @@ const getActionOwner = (value: string, context: SettingsMigrationContext) => {
     // convert standard actions
     if (value === 'Common')
         return 'shesha.common';
-    if (value === 'Configuration Framework')
-        return 'shesha.configurationFramework';
+    if (value === 'Configuration Items')
+        return 'shesha.configurationItems';
     if (value === 'Form')
         return 'shesha.form';
 

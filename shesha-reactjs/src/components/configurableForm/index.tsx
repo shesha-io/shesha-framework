@@ -92,6 +92,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               isActionsOwner={isActionsOwner}
               propertyFilter={propertyFilter}
             >
+
               <Show when={Boolean(showFormInfo)}>
                 <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
               </Show>

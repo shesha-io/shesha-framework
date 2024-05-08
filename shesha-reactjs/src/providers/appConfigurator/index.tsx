@@ -16,6 +16,7 @@ import { useConfigurableAction } from '@/providers/configurableActionsDispatcher
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import {
+  setTargetFormAction,
   switchApplicationModeAction,
   switchConfigurationItemModeAction,
   toggleCloseEditModeConfirmationAction,
@@ -24,7 +25,7 @@ import {
 } from './actions';
 import { genericItemActionArgumentsForm } from './configurable-actions/generic-item-arguments';
 import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfiguratorStateContext } from './contexts';
-import { ApplicationMode, ConfigurationItemsViewMode } from './models';
+import { ApplicationMode, ConfigurationItemsViewMode} from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
 
@@ -106,9 +107,9 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  //#region Configuration Framework
+  //#region Configuration Items
 
-  const actionsOwner = 'Configuration Framework';
+  const actionsOwner = 'Configuration Items';
 
   const cfArgs: IConfigurationFrameworkHookArguments = { backendUrl: backendUrl, httpHeaders: httpHeaders };
 
@@ -221,6 +222,10 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     dispatch(switchApplicationModeAction(mode));
   };
 
+  const setTargetForm = (formName: string) => {
+    dispatch(setTargetFormAction(formName));
+  }
+
   const switchConfigurationItemMode = (mode: ConfigurationItemsViewMode) => {
     configuratorSettings.setMode(mode);
     dispatch(switchConfigurationItemModeAction(mode));
@@ -243,6 +248,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
           toggleCloseEditModeConfirmation,
           switchConfigurationItemMode,
           toggleShowInfoBlock,
+          setTargetForm
         }}
       >
         {children}

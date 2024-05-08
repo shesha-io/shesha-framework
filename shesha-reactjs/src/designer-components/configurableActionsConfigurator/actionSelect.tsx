@@ -2,6 +2,7 @@ import React, { FC, ReactNode, useMemo } from 'react';
 import { TreeSelect } from 'antd';
 import { IConfigurableActionGroupDictionary } from '@/providers/configurableActionsDispatcher/models';
 import HelpTextPopover from '@/components/helpTextPopover';
+import { useAppConfigurator } from '@/index';
 
 const getConfigurableActionFullName = (owner: string, name: string) => {
     return owner
@@ -23,6 +24,9 @@ interface IActionSelectItem {
     selectable: boolean;
 }
 export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOnly = false }) => {
+    const { mode, targetForm } = useAppConfigurator();
+
+    console.log(targetForm, mode, "TARGET FORM")
 
     const treeData = useMemo<IActionSelectItem[]>(() => {
         const result: IActionSelectItem[] = [];
@@ -50,7 +54,7 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
                     selectable: true,
                 });
             });
-
+            if(mode === "edit" && ownerActions.ownerName === "Common"){
             result.push({
                 title: ownerActions.ownerName,
                 value: owner,
@@ -58,6 +62,7 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
                 children: ownerNodes,
                 selectable: false,
             });
+        }
         }
         return result;
     }, [actions]);

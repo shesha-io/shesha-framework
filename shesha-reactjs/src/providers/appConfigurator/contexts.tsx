@@ -7,6 +7,7 @@ export interface IAppStateContext {
   mode: ApplicationMode;
   configurationItemMode: ConfigurationItemsViewMode;
   formInfoBlockVisible: boolean;
+  targetForm: string;
 }
 
 export interface IAppActionsContext {
@@ -18,6 +19,7 @@ export interface IAppActionsContext {
   // getSettings: (id: string) => IComponentSettings | null;
   // invalidateSettings: (id: string) => void;
   toggleShowInfoBlock: (visible: boolean) => void;
+  setTargetForm: (formName: string) => void;
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }
@@ -28,6 +30,7 @@ export const APP_CONTEXT_INITIAL_STATE: IAppStateContext = {
   mode: 'live',
   configurationItemMode: 'live',
   formInfoBlockVisible: false,
+  targetForm: null,
 };
 
 export const AppConfiguratorStateContext = createContext<IAppStateContext>(APP_CONTEXT_INITIAL_STATE);

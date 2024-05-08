@@ -58,6 +58,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
   };
 
   const getActions = () => {
+    console.log(actions, "CURRENT_ACTIONS")
     return actions.current;
   };
 
