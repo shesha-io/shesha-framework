@@ -453,7 +453,8 @@ if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' 
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={orientation === 'wrap' ? {minWidth: `${Number(cardMinWidth) ? cardMinWidth+'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth+'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight+'px' : cardHeight}`, ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
+            style={orientation === 'wrap' ? {minWidth: `${Number(cardMinWidth) ? cardMinWidth+'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth+'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight+'px' : cardHeight}`,
+            ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
