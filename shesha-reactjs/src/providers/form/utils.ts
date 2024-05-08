@@ -577,8 +577,14 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
         const mathes = x.match(/[\w\.]+/);
         const tag = mathes.length ? mathes[0] : undefined;
 
-        if (!view.hasOwnProperty(tag))
-          view[tag] = new StaticMustacheTag(tag);
+        const parts = tag.split('.');
+        const field = parts.pop();
+        const container = parts.reduce((level, key) => {
+          return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
+        }, view);
+        if (!container.hasOwnProperty(field)){
+          container[field] = new StaticMustacheTag(field);
+        } 
       });
 
       const escape = (value: any): string => {
