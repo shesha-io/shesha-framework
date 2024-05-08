@@ -556,7 +556,7 @@ if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' 
 
 
           <Show when={records?.length > 0}>
-            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}px !important`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}px, 1fr))`}}>
+            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}px`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}px, 1fr))`}}>
             { content }
             </div>
           </Show>
