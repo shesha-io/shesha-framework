@@ -119,6 +119,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             gap: 20px;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             overflow: auto;
+            place-items: center;
+            padding: 8px;
         }
 
         .${shaDatalistCard} {

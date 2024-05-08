@@ -47,7 +47,6 @@ import {
 } from './contexts';
 import { authReducer } from './reducer';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
-import { EmptyState } from '@/components';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -370,28 +369,15 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     );
   }, [state.isFetchingUserInfo, state.loginInfo, state.token]);
 
-  const getBrowerVersion = useMemo(()=>{
-    const appVersion = navigator.appVersion?.split("Version/")[1]?.split(" ")[0];
-    return appVersion;
-  },[])
-  
   //#endregion
 
   const getAccessToken = () => {
     return state.token;
   };
 
-
-  //boolean is flipped for the sake of testing
-  if((parseInt(getBrowerVersion) >= parseInt(getBrowerVersion) - 3) && navigator.vendor === "Apple Computer, Inc.") {
-    return <EmptyState noDataIcon="WarningOutlined" noDataText="Your browser is not supported" noDataSecondaryText={`The version of Safari (${getBrowerVersion}) you are using is not supported. Please update to the latest version.`}/>
-  }
-
   if (showLoader) {
     return <OverlayLoader loading={true} loadingText="Initializing..." />;
   }
-
-
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 

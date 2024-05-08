@@ -563,7 +563,6 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
 
           <Show when={records?.length > 0}>
-            {/*convert this to not inline css*/}
             <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}px`}}>
             { content }
             </div>

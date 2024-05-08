@@ -302,7 +302,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
           <Select disabled={readOnly} defaultValue="vertical">
             <Select.Option key={1} value="vertical">Vertical</Select.Option>
             <Select.Option key={2} value="horizontal">Horizontal</Select.Option>
-            <Select.Option key={2} value="wrap">Wrap</Select.Option>
+            <Select.Option key={3} value="wrap">Wrap</Select.Option>
           </Select>
         </SettingsFormItem>
 
