@@ -325,20 +325,20 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </Show>
 
         <Show when={model?.orientation === 'wrap'}>
-            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width">
-              <Input readOnly={readOnly} placeholder="You can use any unit (%, px, hw, etc)"/>
+            <SettingsFormItem name="cardMinWidth" label="Card Minimum Width" tooltip="You can use any unit (%, px, em, etc)">
+              <Input readOnly={readOnly}/>
             </SettingsFormItem>
          
-            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width">
-              <Input readOnly={readOnly} placeholder="You can use any unit (%, px, hw, etc)"/>
+            <SettingsFormItem name="cardMaxWidth" label="Card Maximum Width" tooltip="You can use any unit (%, px, em, etc)">
+              <Input readOnly={readOnly}/>
             </SettingsFormItem>
           
-            <SettingsFormItem name="cardHeight" label="Card Height">
-              <Input readOnly={readOnly} placeholder="You can use any unit (%, px, hw, etc)"/>
+            <SettingsFormItem name="cardHeight" label="Card Height" tooltip="You can use any unit (%, px, em, etc)">
+              <Input readOnly={readOnly}/>
             </SettingsFormItem>
       
-            <SettingsFormItem name="cardSpacing" label="Card Spacing">
-              <Input readOnly={readOnly} placeholder="You can use any unit (%, px, hw, etc)"/>
+            <SettingsFormItem name="cardSpacing" label="Card Spacing" tooltip="You can use any unit (%, px, em, etc)">
+              <Input readOnly={readOnly}/>
             </SettingsFormItem>
 
             <SettingsFormItem name="showBorder" label="Show Border" valuePropName='checked' jsSetting>
