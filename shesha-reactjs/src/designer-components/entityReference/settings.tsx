@@ -18,9 +18,6 @@ import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/s
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import { useFormDesigner } from '@/providers/formDesigner';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
-import { ButtonGroup } from '../button/buttonGroup/buttonGroup';
-import { nanoid } from '@/utils/uuid';
-import ButtonsComponent from '../button/buttonGroup/buttonsComponent';
 import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
