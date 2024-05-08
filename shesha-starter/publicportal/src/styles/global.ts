@@ -237,6 +237,11 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
           .${(p) => p.theme.prefixCls}-steps-item-icon {
             border: 1px solid ${(p) => p.theme.colorPrimary};
             background: none;
+
+            .${(p) => p.theme.prefixCls}icon {
+              display: flex;
+              padding: 3px;
+            }
           }
         }
 
@@ -244,6 +249,11 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
           .${(p) => p.theme.prefixCls}-steps-item-icon {
             border: 1px solid ${(p) => p.theme.colorTextDescription};
             background: none;
+
+            .${(p) => p.theme.prefixCls}icon {
+              display: flex;
+              padding: 3px;
+            }
           }
         }
 
