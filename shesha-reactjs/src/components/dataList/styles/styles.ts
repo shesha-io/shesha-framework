@@ -9,9 +9,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     const shaDatalistComponentBody = "sha-datalist-component-body";
     const shaDatalistComponentAddItemBtn = "sha-datalist-component-add-item-btn";
     const shaDatalistComponentItem = "sha-datalist-component-item";
-
+    const shaDatalistWrapParent = "sha-datalist-wrap-parent";
+    const shaDatalistCard = "sha-datalist-card";
     const shaDatalistActions = "sha-datalist-actions";
     const shaDatalistCell = "sha-datalist-cell";
+
 
     const shaDatalistComponent = cx("sha-datalist-component", css`
         .${prefixCls}-collapse-extra {
@@ -70,6 +72,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
                 }
             }
         }
+
     
         .${shaDatalistComponentBody} {
             overflow-y: auto;
@@ -110,6 +113,21 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             left: 5px;
         }
 
+        .${shaDatalistWrapParent} {
+            width: 100%;
+            display: grid;
+            overflow: auto;
+            padding: 8px;
+        }
+
+        .${shaDatalistCard} {
+            padding: 10px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            position: relative;
+            overflow: auto;       
+        }
+
         .${shaDatalistComponentItem} {
             position: relative;
             padding-top: 5px;
@@ -143,5 +161,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         shaDatalistComponentItem,
         shaDatalistActions,
         shaDatalistCell,
+        shaDatalistWrapParent,
+        shaDatalistCard
     };
 });
