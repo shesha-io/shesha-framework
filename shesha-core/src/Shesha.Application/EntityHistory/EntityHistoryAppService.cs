@@ -22,9 +22,9 @@ namespace Shesha.EntityHistory
             _entityHistoryProvider = entityHistoryProvider;
         }
 
-        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrail(FilteredPagedAndSortedResultRequestDto input, string entityId, string entityTypeFullName)
+        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrail(FilteredPagedAndSortedResultRequestDto input, string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
         {
-            var history = await _entityHistoryProvider.GetAuditTrailAsync(entityId, entityTypeFullName);
+            var history = await _entityHistoryProvider.GetAuditTrailAsync(entityId, entityTypeFullName, includeEventsOnChildEntities);
 
             var totalRowsBeforeFilter = history.Count();
 
