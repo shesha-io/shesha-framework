@@ -43,7 +43,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
 
     return 'Properties';
   };
-  
+
   return (
     <div className={styles.shaToolbarConfigurator}>
       <Alert message={readOnly ? 'Here you can view buttons configuration.' : 'Here you can configure the button group by adjusting their settings and ordering.'} />
@@ -67,7 +67,11 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
           open: true,
           title,
           content,
+          resizable: true,
+          width: 350
+
         }}
+
       >
         <ButtonGroupItemsContainer items={items} index={[]} />
       </SidebarContainer>

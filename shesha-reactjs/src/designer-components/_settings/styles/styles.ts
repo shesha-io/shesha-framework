@@ -20,9 +20,10 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
 
             // special style when inside the sidebar
             .sidebar-container & {
-                right: 0;
+                right: 12px;
                 left: auto;
                 top: -28px;
+                padding-right:10px ;
             }
         }
     `);
@@ -55,7 +56,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             margin-left: 0;   
         }        
     `);
-    
+
     return {
         jsSwitch,
         contentJs,

@@ -66,17 +66,19 @@ const buildEditor = ({ toolboxComponent, readOnly, metaProvider, componentModel,
   return (
     <MetadataContext.Provider value={metaProvider}>
       <React.Fragment>
-        {settingsFormFactory({
-          readOnly: readOnly,
-          model: componentModel,
-          onSave,
-          onCancel,
-          onValuesChange,
-          toolboxComponent,
-          formRef: formRef,
-          propertyFilter,
-          layoutSettings,
-        })}
+        <div style={{ margin: '-8px' }}>
+          {settingsFormFactory({
+            readOnly: readOnly,
+            model: componentModel,
+            onSave,
+            onCancel,
+            onValuesChange,
+            toolboxComponent,
+            formRef: formRef,
+            propertyFilter,
+            layoutSettings,
+          })}
+        </div>
       </React.Fragment>
     </MetadataContext.Provider>
   );

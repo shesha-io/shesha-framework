@@ -1,38 +1,29 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 import { RightOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
 import { ISidebarProps, SidebarPanelPosition } from './models';
 
-interface SidebarPanelProps extends ISidebarProps {
+export interface SidebarPanelProps extends ISidebarProps {
     side: SidebarPanelPosition;
     allowFullCollapse: boolean;
+    handleClick?: () => void;
+    width?: number;
 }
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     const { styles } = useStyles();
-    const { side, allowFullCollapse } = props;
+    const { side, allowFullCollapse, width } = props;
 
-    const rotation = side === 'right' ? (props?.open ? 0 : 180) : props?.open ? 180 : 0;
+    const { open, title, placeholder, content, className, handleClick } = props;
 
-    const { open, defaultOpen = true, onOpen, title, onClose, placeholder, content, className } = props;
-
-    const isControllable = open !== undefined;
-    const [isOpen, setIsOpen] = useState(isControllable ? open : defaultOpen);
-    const realOpen = isControllable ? open : isOpen;
-
-    const handleClick = () => {
-        const handler = realOpen ? onClose : onOpen;
-        if (handler)
-            handler();
-        if (!isControllable)
-            setIsOpen(!isOpen);
-    };
+    const rotation = side === 'right' ? (open ? 0 : 180) : open ? 180 : 0;
 
     const sideClassName = side === 'right' ? styles.sidebarContainerRight : styles.sidebarContainerLeft;
+
     return (
-        <div className={classNames(sideClassName, { open: realOpen }, { 'allow-full-collapse': allowFullCollapse }, className)}>
-            <div className={styles.sidebarHeader}>
+        <div className={classNames(sideClassName, { open }, { 'allow-full-collapse': allowFullCollapse }, className)}>
+            <div className={styles.sidebarHeader} >
                 <div className={`${styles.sidebarHeaderTitle} ${side}`}>{typeof title === 'function' ? title() : title}</div>
                 <div className={`${styles.sidebarHeaderBtn} ${side}`} onClick={handleClick}>
                     {props.placeholder ? (
@@ -44,11 +35,11 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
                     )}
                 </div>
             </div>
-            <div className={`${styles.sidebarBody} scroll scroll-y`}>
-                <div className={classNames(styles.sidebarBodyContent, { open: realOpen })}>
+            <div className={`${styles.sidebarBody} scroll scroll-y`} style={{ width }}>
+                <div className={classNames(styles.sidebarBodyContent, { open })} >
                     {typeof content === 'function' ? content() : content}
                 </div>
-                {!allowFullCollapse && <div className={classNames(styles.sidebarBodyPlaceholder, { open: realOpen })} />}
+                {!allowFullCollapse && <div className={classNames(styles.sidebarBodyPlaceholder, { open })} />}
             </div>
         </div>
     );
