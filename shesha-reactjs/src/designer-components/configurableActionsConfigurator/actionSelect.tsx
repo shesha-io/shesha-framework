@@ -60,10 +60,10 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
                 displayText: owner,
                 children: ownerNodes,
                 selectable: false,
-            }
+            };
 
             if(mode === "edit" && owner === "shesha.common" && targetForm === "sidebar"){
-                commonSingleAction.push(singleAction)
+                commonSingleAction.push(singleAction);
             }else{
                 result.push(singleAction);
             }

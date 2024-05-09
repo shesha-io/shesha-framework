@@ -224,7 +224,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const setTargetForm = (formName: string) => {
     dispatch(setTargetFormAction(formName));
-  }
+  };
 
   const switchConfigurationItemMode = (mode: ConfigurationItemsViewMode) => {
     configuratorSettings.setMode(mode);

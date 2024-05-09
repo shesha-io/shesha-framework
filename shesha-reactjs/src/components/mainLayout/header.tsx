@@ -96,6 +96,7 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, onSearch, customCompo
           </Dropdown>
 
           <Avatar icon={<UserOutlined />} />
+          {/* <DebugButton/> */}
         </div>
       </div>
     </div>

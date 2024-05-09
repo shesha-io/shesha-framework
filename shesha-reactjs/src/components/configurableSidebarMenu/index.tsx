@@ -53,7 +53,9 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
         migrator={m => m.add(1, prev => migrateToConfigActions(prev))}
       >
         {(componentState, BlockOverlay) => (
-          <div className={`sidebar ${componentState.wrapperClassName}`} onClick={()=>{setTargetForm('sidebar')}}> 
+          <div className={`sidebar ${componentState.wrapperClassName}`} onClick={()=>{
+setTargetForm('sidebar');
+}}> 
             <BlockOverlay>
               <div className='sha-configurable-sidemenu-button-wrapper'>
                 <Button title='Edit sidebar menu' shape='default' icon={<RebaseEditOutlined />} />
