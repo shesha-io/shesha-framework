@@ -66,7 +66,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   initModel: model => ({
     ...model,
-    placeholder: 'Start writing text....',
+    placeholder: 'Start writing text...',
     showCharsCounter: true,
     showWordsCounter: true,
     showXPathInStatusbar: true,
