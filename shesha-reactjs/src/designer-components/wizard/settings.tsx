@@ -1,4 +1,3 @@
-import EditableTagGroup from '@/components/editableTagGroup';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import React, { FC, useRef } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
@@ -20,6 +19,7 @@ import { nanoid } from '@/utils/uuid';
 import { useDeepCompareMemo } from '@/hooks';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
 
@@ -176,7 +176,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
           initialValue={props.model.permissions}
           tooltip="Enter a list of permissions that should be associated with this component"
         >
-          <EditableTagGroup disabled={readOnly} />
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 

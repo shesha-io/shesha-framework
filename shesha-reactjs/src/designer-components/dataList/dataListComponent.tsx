@@ -64,8 +64,19 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       };
     })
     .add<IDataListComponentProps>(6, prev => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))
+    .add<IDataListComponentProps>(7, prev => {
+      return {
+        ...prev,
+        cardMinWidth: "200%",
+        cardMaxWidth: "350px",
+        cardHeight: "250px",
+        cardSpacing: "20px",
+        showBorder: true
+      };
+    })
   ,
   settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
 };
 
 export default DataListComponent;
+

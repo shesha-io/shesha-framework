@@ -4,6 +4,7 @@ import { CustomErrorBoundary } from '@/components';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
+import { useSheshaApplication } from '@/index';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
@@ -11,6 +12,7 @@ export interface IConfigurableFormComponentProps {
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   const allData = useAvailableConstantsData();
+  const { anyOfPermissionsGranted } = useSheshaApplication();
   const { form, getToolboxComponent } = allData.form;
 
   const componentRef = useRef();
@@ -26,7 +28,12 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   if (!toolboxComponent) return null;
 
   // ToDo: AS review hidden and enabled for SubForm
-  actualModel.hidden = allData.formMode !== 'designer' && actualModel.hidden ;// || !isComponentFiltered(model)); // check `model` without modification
+  actualModel.hidden = allData.formMode !== 'designer' 
+    && (
+      actualModel.hidden 
+      || !anyOfPermissionsGranted(actualModel?.permissions || []));
+      // || !isComponentFiltered(model)); // check `model` without modification
+
   actualModel.readOnly = actualModel.readOnly;// || isComponentReadOnly(model); // check `model` without modification
 
   const renderComponent = () => {

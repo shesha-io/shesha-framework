@@ -44,8 +44,13 @@ export const LayoutMenu: FC<IProps> = () => {
     })
   );
 
-  return menuItems.length <= 30 ? (
-    <Menu className={styles.shaMenu} mode="horizontal" items={menuItems} />
+  return menuItems.length <= 20 ? (
+    <Menu
+      className={styles.shaMenu}
+      mode="horizontal"
+      items={menuItems}
+      overflowedIndicator={<MenuOutlined />}
+    />
   ) : (
     <>
       <Button type="link" icon={<MenuOutlined />} onClick={onClick} />

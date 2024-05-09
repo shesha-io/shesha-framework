@@ -94,7 +94,11 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 // add className
                 FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.ClassNameField, "Entity class name",
                     resolve: context => {
-                        return Task.FromResult(typeof(TModel).FullName as object);
+                        var type = context.Source != null
+                            ? context.Source.GetType()
+                            : typeof(TModel);
+
+                        return Task.FromResult(type.FullName as object);
                     }
                 );
 
