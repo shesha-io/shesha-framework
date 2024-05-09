@@ -583,7 +583,7 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
           return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
         }, view);
         if (!container.hasOwnProperty(field)){
-          container[field] = new StaticMustacheTag(field);
+          container[field] = new StaticMustacheTag(tag);
         } 
       });
 
