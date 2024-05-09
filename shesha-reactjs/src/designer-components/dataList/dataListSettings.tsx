@@ -489,7 +489,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Grouping">
+      <Show when={model.orientation === "vertical" }>
+        <SettingsCollapsiblePanel header="Grouping">
         <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
@@ -514,7 +515,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             availableConstants={getGroupStyleConstants}
           />
         </SettingsFormItem>
-      </SettingsCollapsiblePanel>
+        </SettingsCollapsiblePanel>
+      </Show>
 
       <SettingsCollapsiblePanel header='Empty List'>
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
