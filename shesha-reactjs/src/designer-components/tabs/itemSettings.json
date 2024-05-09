@@ -131,14 +131,13 @@
       "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
     },
     {
-      "id": "3d24cc31-a797-40b8-b178-1e77eabb69c4",
-      "type": "editableTagGroup",
+      "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+      "type": "permissionAutocomplete",
       "propertyName": "permissions",
+      "parentId": "SsWPpiJfTbgl4iHlFA_or",
       "label": "Permissions",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "validate": {}
+      "validate": {},
+      "version": 1
     }
   ],
   "formSettings": {

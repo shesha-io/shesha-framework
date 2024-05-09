@@ -198,17 +198,6 @@
             }
           ],
           "version": 0
-        },
-        {
-          "id": "26c68b22-3211-475d-91e1-0745a4447329",
-          "type": "editableTagGroup",
-          "propertyName": "permissions",
-          "label": "Permissions",
-          "labelAlign": "right",
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "validate": {},
-          "version": 0
         }
       ],
       "version": 1,
@@ -255,6 +244,39 @@
           ]
         }
       ],
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
       "settingsValidationErrors": []
     }
   ],
