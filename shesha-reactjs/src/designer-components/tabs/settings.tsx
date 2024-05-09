@@ -12,10 +12,13 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITabPaneProps, ITabsComponentProps } from './models';
 import { nanoid } from '@/utils/uuid';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
 
-const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOnly }) => {
+const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
+  const { readOnly } = props;
+  
   const { model } = useSettingsForm<ITabsComponentProps>();
 
   const onAddNewItem = (_, count: number) => {
@@ -91,18 +94,6 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
       </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-    
-     <SettingsCollapsiblePanel header="Security">
-      <SettingsFormItem
-        label="Permissions"
-        name="permissions"
-        tooltip="Enter a list of permissions that should be associated with this component"
-        jsSetting
-      >
-        <EditableTagGroup />
-      </SettingsFormItem>
-      </SettingsCollapsiblePanel>
-
       <SettingsCollapsiblePanel header="Style" >
       <SettingsFormItem
         label="Style"
@@ -135,6 +126,18 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = ({ readOn
       <SettingsFormItem name="stylingBox">
         <StyleBox />
       </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+      
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
   );

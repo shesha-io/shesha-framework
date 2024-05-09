@@ -8,10 +8,12 @@ import { ButtonGroupSettingsModal } from './buttonGroupSettingsModal';
 import { Checkbox, Input, Select } from 'antd';
 import { IButtonGroupComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
 
-const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = ({ readOnly }) => {
+const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
+  const { readOnly } = props;
 
   return (
     <>
@@ -55,14 +57,15 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header='Security'>
+      <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
+          jsSetting
           label="Permissions"
           name="permissions"
+          initialValue={props.model.permissions}
           tooltip="Enter a list of permissions that should be associated with this component"
-          jsSetting
         >
-          <EditableTagGroup readOnly={readOnly} />
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
