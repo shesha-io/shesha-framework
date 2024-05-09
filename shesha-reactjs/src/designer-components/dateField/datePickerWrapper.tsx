@@ -63,7 +63,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             return;
         }
 
-        const newValue = isMoment(localValue) ? localValue.format(pickerFormat) : localValue;
+        const newValue = isMoment(localValue) ? localValue.format(defaultFormat) : localValue;
 
         (onChange as TimePickerChangeEvent)(newValue, dateString);
     };
@@ -106,8 +106,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
                 onChange={handleRangePicker}
                 format={pickerFormat}
-                value={getRangePickerValues(value, pickerFormat)}
-                defaultValue={getRangePickerValues(defaultValue, pickerFormat)}
+                value={getRangePickerValues(value, defaultFormat)}
+                defaultValue={getRangePickerValues(defaultValue, defaultFormat)}
                 {...rest}
                 picker={picker}
                 showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
@@ -135,7 +135,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             format={pickerFormat}
             style={evaluatedStyle}
             {...rest}
-            {...getDatePickerValue(props, pickerFormat)}
+            {...getDatePickerValue(props, defaultFormat)}
             allowClear
         />
     );
