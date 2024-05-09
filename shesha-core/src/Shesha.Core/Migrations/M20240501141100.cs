@@ -10,11 +10,36 @@ namespace Shesha.Migrations
         {
 
             Execute.Sql(@"
+with data as (
+	select 
+		Id, 
+		Description, 
+		(case when coalesce(Namespace, '') <> '' then CONCAT(Namespace, '.', Name) else Name end) as Name, 
+		1 as VersionNo, 
+		3 as VersionStatusLkp, 
+		(select id from Frwk_Modules where Name = 'Shesha') as ModuleId, 
+		'shesha-role' as ItemType, 
+		1 as IsLast,
+		(case when coalesce(Namespace, '') <> '' then CONCAT(Namespace, '.', Name) else Name end) as Label,
+		Id as OriginId,
+		CreationTime, 
+		CreatorUserId, 
+		LastModificationTime, 
+		LastModifierUserId, 
+		IsDeleted, 
+		DeletionTime, 
+		DeleterUserId
+	from 
+		Core_ShaRoles
+)
 insert into Frwk_ConfigurationItems (Id, Description, Name, VersionNo, VersionStatusLkp, ModuleId, ItemType, IsLast, Label, OriginId,
 	CreationTime, CreatorUserId, LastModificationTime, LastModifierUserId, IsDeleted, DeletionTime, DeleterUserId)
-select Id, Description, Name, 1, 3, (select id from Frwk_Modules where Name = 'Shesha'), 'shesha-role', 1, Name, Id,
+select Id, Description, Name, VersionNo, VersionStatusLkp, ModuleId, ItemType, IsLast, Label, OriginId,
 	CreationTime, CreatorUserId, LastModificationTime, LastModifierUserId, IsDeleted, DeletionTime, DeleterUserId
-from Core_ShaRoles
+from data
+where
+	not exists (select 1 from Frwk_ConfigurationItems ci where ci.Name = data.Name and ci.ItemType = data.ItemType)
+	and not exists (select 1 from data rd where rd.Name = data.Name and data.CreationTime < rd.CreationTime)
 go
 
 DROP INDEX [IX_Core_ShaRoles_CreatorUserId] ON [dbo].[Core_ShaRoles]
