@@ -8,6 +8,7 @@ import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { migrateToConfigActions } from './migrations/migrateToConfigActions';
 import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
 import { Button } from 'antd';
+import { useAppConfigurator } from '@/index';
 
 export interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
@@ -26,6 +27,8 @@ export interface IConfigurableSidebarMenuProps {
 }
 
 export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props => {
+
+  const {setTargetForm} = useAppConfigurator();
   
   const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>) => {
     return (
@@ -50,7 +53,7 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
         migrator={m => m.add(1, prev => migrateToConfigActions(prev))}
       >
         {(componentState, BlockOverlay) => (
-          <div className={`sidebar ${componentState.wrapperClassName}`}>
+          <div className={`sidebar ${componentState.wrapperClassName}`} onClick={()=>{setTargetForm('sidebar')}}> 
             <BlockOverlay>
               <div className='sha-configurable-sidemenu-button-wrapper'>
                 <Button title='Edit sidebar menu' shape='default' icon={<RebaseEditOutlined />} />

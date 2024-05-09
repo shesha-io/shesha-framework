@@ -64,6 +64,17 @@ export default handleActions<IAppStateContext, any>(
         formInfoBlockVisible: payload,
       };
     },
+    [AppConfiguratorActionEnums.SetTargetForm]: (
+      state: IAppStateContext,
+      action: ReduxActions.Action<boolean>
+    ) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        targetForm: payload as unknown as string,
+      };
+    },
   },
 
   APP_CONTEXT_INITIAL_STATE

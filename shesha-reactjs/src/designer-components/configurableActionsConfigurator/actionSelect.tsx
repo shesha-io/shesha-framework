@@ -26,10 +26,9 @@ interface IActionSelectItem {
 export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions, readOnly = false }) => {
     const { mode, targetForm } = useAppConfigurator();
 
-    console.log(targetForm, mode, "TARGET FORM")
-
     const treeData = useMemo<IActionSelectItem[]>(() => {
         const result: IActionSelectItem[] = [];
+        const commonSingleAction: IActionSelectItem[] = [];
 
         for (const owner in actions) {
             if (!actions.hasOwnProperty(owner))
@@ -54,17 +53,23 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
                     selectable: true,
                 });
             });
-            if(mode === "edit" && ownerActions.ownerName === "Common"){
-            result.push({
+            
+            const singleAction = {
                 title: ownerActions.ownerName,
                 value: owner,
                 displayText: owner,
                 children: ownerNodes,
                 selectable: false,
-            });
+            }
+
+            if(mode === "edit" && owner === "shesha.common" && targetForm === "sidebar"){
+                commonSingleAction.push(singleAction)
+            }else{
+                result.push(singleAction);
+            }
+        
         }
-        }
-        return result;
+        return (mode === "edit"  && commonSingleAction[0]?.value === "shesha.common" && targetForm === "sidebar") ? commonSingleAction : result;
     }, [actions]);
 
     return (

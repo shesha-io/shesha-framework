@@ -51,7 +51,6 @@ export const ToolbarItemProperties: FC<IProps> = () => {
 
   useEffect(() => {
     const currentEditor = getEditor();
-    console.log(currentEditor, "EDITOR")
     setEditor(currentEditor);
   }, [selectedItemId]);
 

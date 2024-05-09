@@ -8,7 +8,7 @@ import { useStyles } from './styles/styles';
 export interface IAppEditModeTogglerProps { }
 
 export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
-  const { mode, switchApplicationMode, setTargetForm } = useAppConfigurator();
+  const { mode, switchApplicationMode } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -16,8 +16,6 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   const toggleMode = (checked: boolean, event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     switchApplicationMode(checked ? 'edit' : 'live');
-    setTargetForm('sidebar');
-
     if (checked) {
       messageApi.destroy('editModeMessage');
       messageApi.destroy('liveModeMessage');
