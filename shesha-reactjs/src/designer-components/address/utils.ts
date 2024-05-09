@@ -107,8 +107,8 @@ export const loadGooglePlaces = (googleMapsApiKey: string, callback: Function) =
         script.id = "googleMaps";
         document.body.appendChild(script);
         script.onload = () => {
-            if (callback) callback();
+            if (callback) callback(true);
         };
     }
-    if (existingScript && callback) callback();
+    if (existingScript && callback) callback(true);
   };
