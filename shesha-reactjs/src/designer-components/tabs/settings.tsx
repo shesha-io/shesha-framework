@@ -1,4 +1,3 @@
-import EditableTagGroup from '@/components/editableTagGroup';
 import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import itemSettings from './itemSettings.json';
 import React, { FC } from 'react';
