@@ -67,7 +67,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     .add<IDataListComponentProps>(7, prev => {
       return {
         ...prev,
-        cardMinWidth: "200%",
+        cardMinWidth: "200px",
         cardMaxWidth: "350px",
         cardHeight: "250px",
         cardSpacing: "20px",
