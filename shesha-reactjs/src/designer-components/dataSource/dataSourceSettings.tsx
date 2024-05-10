@@ -14,8 +14,11 @@ import { IDataSourceComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { MetadataProvider } from '@/providers/metadata';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
-const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = ({ readOnly }) => {
+const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
+  const { readOnly } = props;
+  
   const { model: state } = useSettingsForm<IDataSourceComponentProps>();
 
   const settings = (
@@ -48,6 +51,18 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
       <SettingsFormItem name="filters">
         <TableViewSelectorSettingsModal readOnly={readOnly} />
       </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
   );

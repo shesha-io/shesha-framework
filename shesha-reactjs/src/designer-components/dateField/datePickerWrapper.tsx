@@ -1,5 +1,5 @@
 import { DatePicker } from '@/components/antd';
-import moment, { isMoment } from 'moment';
+import moment from 'moment';
 import React, { FC } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
@@ -10,6 +10,7 @@ import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from '
 import {
     DATE_TIME_FORMATS,
     disabledDate,
+    formatToISO,
     getDatePickerValue,
     getDefaultFormat,
     getFormat,
@@ -57,29 +58,24 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     const pickerFormat = getFormat(props, properties);
     const formattedValue = getMoment(value, pickerFormat);
 
-    const handleDatePickerChange = (localValue: any | null, dateString: string) => {
+    const handleDatePickerChange = (_, dateString: string) => {
+
         if (!dateString?.trim()) {
             (onChange as TimePickerChangeEvent)(null, '');
             return;
         }
+        (onChange as TimePickerChangeEvent)(formatToISO(dateString, pickerFormat), dateString);
 
-        const newValue = isMoment(localValue) ? localValue.format(defaultFormat) : localValue;
-
-        (onChange as TimePickerChangeEvent)(newValue, dateString);
     };
 
-    const handleRangePicker = (values: any[], formatString: [string, string]) => {
+    const handleRangePicker = (_, formatString: [string, string]) => {
         if (formatString?.includes('')) {
             (onChange as RangePickerChangeEvent)(null, null);
             return;
         }
-        const dates = (values as []).map((val: any) => {
-            if (isMoment(val)) return val.format(defaultFormat);
+        const formattedDates = formatString.map((date: string) => (formatToISO(date, pickerFormat)));
 
-            return val;
-        });
-
-        (onChange as RangePickerChangeEvent)(dates, formatString);
+        (onChange as RangePickerChangeEvent)(formattedDates, formatString);
     };
 
     if (readOnly) {

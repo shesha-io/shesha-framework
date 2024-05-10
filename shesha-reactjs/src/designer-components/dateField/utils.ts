@@ -14,9 +14,7 @@ export const DATE_TIME_FORMATS = {
 };
 
 export const getDatePickerValue = (props: IDateFieldProps, pickerFormat: string) => {
-  const { value, injectedDefaultValue } = props;
-
-  /** Used to changed value/defaultValue based on whether it's rendered on the table **/
+  const { value, injectedDefaultValue } = props;  /** Used to changed value/defaultValue based on whether it's rendered on the table **/
   if (injectedDefaultValue) {
     return { defaultValue: getMoment(value, pickerFormat) };
   }
@@ -49,6 +47,10 @@ export const getDefaultFormat = ({ showTime, resolveToUTC }: IDateFieldProps) =>
 
   return null;
 };
+
+export const formatToISO = (date: string, format: string) => {
+  return moment(date, format).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+}
 
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]) => {
   const { propertyName, picker, showTime } = props || {};
