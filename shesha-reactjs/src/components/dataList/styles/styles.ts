@@ -125,7 +125,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             background-color: #ffffff;
             border-radius: 5px;
             position: relative;
-            overflow: auto;       
+            overflow: scroll;
         }
 
         .${shaDatalistComponentItem} {
