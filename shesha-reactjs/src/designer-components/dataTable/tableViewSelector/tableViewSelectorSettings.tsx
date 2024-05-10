@@ -3,6 +3,7 @@ import TableViewSelectorSettingsModal from './tableViewSelectorSettingsModal';
 import { Checkbox, Form } from 'antd';
 import { ITableViewSelectorComponentProps } from './models';
 import { SectionSeparator } from '@/components';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 export interface ITableViewSelectorSettingsProps {
   readOnly: boolean;
@@ -29,6 +30,13 @@ function TableViewSelectorSettings(props: ITableViewSelectorSettingsProps) {
       </Form.Item>
       <Form.Item name="hidden" label="Hidden" valuePropName="checked">
         <Checkbox disabled={props.readOnly} />
+      </Form.Item>
+      <Form.Item
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component">
+          <PermissionAutocomplete readOnly={props.readOnly} />
       </Form.Item>
     </Form>
   );

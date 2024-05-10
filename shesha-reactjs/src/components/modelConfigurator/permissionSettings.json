@@ -109,7 +109,7 @@
           },
           {
             "id": "WXaDzSHBAKzkbO18zDotx",
-            "type": "autocompleteTagGroup",
+            "type": "permissionAutocomplete",
             "propertyName": "permissions",
             "label": "Permissions",
             "labelAlign": "right",
@@ -119,6 +119,7 @@
             "autocompleteUrl": "/api/services/app/permission/autocomplete",
             "placeholder": "",
             "validate": {},
+            "version": 1,
             "settingsValidationErrors": []
           },
           {
