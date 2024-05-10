@@ -10,9 +10,10 @@ export interface INotesRendererProps {
   commentListStyles?: CSSProperties;
   buttonPostion?: 'left' | 'right';
   autoSize?: boolean;
+  allowDelete?: boolean;
 }
 
-export const NotesRenderer: FC<INotesRendererProps> = ({ autoSize, buttonPostion, showCommentBox = true }) => {
+export const NotesRenderer: FC<INotesRendererProps> = ({ autoSize, buttonPostion, showCommentBox = true, allowDelete }) => {
   const { notes, deleteNotes, isInProgress, postNotes } = useNotes();
   const { styles } = useStyles();
 
@@ -29,6 +30,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({ autoSize, buttonPostion
         isPostingNotes={isPostingNotes}
         buttonFloatRight={buttonPostion === 'right'}
         autoSize={autoSize}
+        allowDelete={allowDelete}
       />
     </div>
   );
