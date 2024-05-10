@@ -489,7 +489,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <Show when={model.orientation === "vertical" }>
+      <Show when={model.orientation === "vertical" || model.orientation === "horizontal" }>
         <SettingsCollapsiblePanel header="Grouping">
         <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
           <Checkbox disabled={readOnly} />
