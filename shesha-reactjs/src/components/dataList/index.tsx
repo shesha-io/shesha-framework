@@ -555,11 +555,14 @@ if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' 
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
           </Show>
 
-
           <Show when={records?.length > 0}>
-            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
-            { content }
-            </div>
+            {orientation === "wrap" ? 
+              <div className={styles.shaDatalistWrapParent} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
+                {content}
+              </div>
+              :
+              content
+          }
           </Show>
         </div>
       </ShaSpin>
