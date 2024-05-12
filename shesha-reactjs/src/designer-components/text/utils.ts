@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { getNumberFormat } from '@/utils/string';
 import {
   ContentDisplay,
@@ -9,6 +8,7 @@ import {
   TypographyPaddingSize,
 } from './models';
 import { DATE_TIME_FORMATS } from '../dateField/utils';
+import { getMoment } from '@/utils/date';
 
 export const getFontSizeStyle = (key: TypographyFontSize) => FONT_SIZES[key];
 export const getPaddingSizeStyle = (key: TypographyPaddingSize) => PADDING_SIZES[key];
@@ -25,21 +25,34 @@ export interface IContent {
 }
 
 const formatDate = (dateText: string, dateFormat: string) => {
-  return moment(dateText).isValid() ? moment(dateText).format(dateFormat) : dateText;
+  return getMoment(dateText).format(dateFormat);
 };
 
-export const formatDateStringAndPrefix = (content: string, dateFormat: string = DATE_TIME_FORMATS.date) => {
-  const dateTimeRegex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
-  const dateRegex = /\d{4}-\d{2}-\d{2}/;
+export const formatDateStringAndPrefix = (content: string, dateFormat: string) => {
+  const dateTimeRegexes = [
+    /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, // YYYY-MM-DDTHH:mm:ss
+    /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/, // YYYY-MM-DD HH:mm:ss
+    /\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}/, // DD-MM-YYYY HH:mm:ss
+    /\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}/, // DD/MM/YYYY HH:mm:ss
+    /\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}/, // YYYY/MM/DD HH:mm:ss
 
-  const match = dateTimeRegex.exec(content) || dateRegex.exec(content);
+  ];
+  const dateRegexes = [
+    /\d{4}-\d{2}-\d{2}/,
+    /\d{2}\/\d{2}\/\d{4}/,
+    /\d{4}\/\d{2}\/\d{2}/,
+    /\d{2}-\d{2}-\d{4}/,
+  ];
 
-  if (match) {
-    const dateString = match[0];
-    return content.replace(dateString, formatDate(dateString, dateFormat));
-  } else {
-    return content;
+  for (const regex of [...dateTimeRegexes, ...dateRegexes]) {
+    const match = regex.exec(content);
+    if (match) {
+      const dateString = match[0];
+      return formatDate(dateString, dateFormat);
+    }
   }
+
+  return content;
 };
 
 export const getContent = (content: string, { dataType = 'string', dateFormat, numberFormat }: IContent = {}) => {
@@ -47,7 +60,7 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
     case 'boolean':
       return content ? 'Yes' : 'No';
     case 'date-time':
-      return formatDateStringAndPrefix(content, dateFormat);
+      return formatDateStringAndPrefix(content, dateFormat || DATE_TIME_FORMATS.date);
     case 'number':
       return getNumberFormat(content, numberFormat || 'round');
 

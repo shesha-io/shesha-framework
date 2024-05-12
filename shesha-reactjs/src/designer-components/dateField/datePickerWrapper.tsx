@@ -82,6 +82,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             : dateFormat;
 
 
+
+        console.log("new values ::", value, defaultValue)
+
         return (
             <ReadOnlyDisplayFormItem
                 value={formattedValue?.toISOString()}
@@ -93,6 +96,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     }
 
     const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
+
+
+
 
     if (range) {
         return (
