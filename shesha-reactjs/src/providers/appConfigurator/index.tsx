@@ -28,7 +28,7 @@ import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
 
-export interface IAppConfiguratorProviderProps {}
+export interface IAppConfiguratorProviderProps { }
 
 interface IAppConfiguratorModesState {
   mode: ConfigurationItemsViewMode;
@@ -74,23 +74,23 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
 
   const result: IUseAppConfiguratorSettingsResponse = hasRights
     ? {
-        mode: itemMode,
-        isInformerVisible: isFormInfoVisible,
-        setMode: (mode) => {
-          setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
-          setItemMode(mode);
-        },
-        setIsInformerVisible: setIsFormInfoVisible,
-      }
+      mode: itemMode,
+      isInformerVisible: isFormInfoVisible,
+      setMode: (mode) => {
+        setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+        setItemMode(mode);
+      },
+      setIsInformerVisible: setIsFormInfoVisible,
+    }
     : {
-        ...AppConfiguratorModeDefaults,
-        setMode: () => {
-          /*nop*/
-        },
-        setIsInformerVisible: () => {
-          /*nop*/
-        },
-      };
+      ...AppConfiguratorModeDefaults,
+      setMode: () => {
+        /*nop*/
+      },
+      setIsInformerVisible: () => {
+        /*nop*/
+      },
+    };
   return result;
 };
 
@@ -120,7 +120,16 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return createNewVersion({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, _reject) => {
+          createNewVersion({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((e) => {
+              console.error('Failed to create new item version', e);
+              resolve(false);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -134,7 +143,16 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return setItemReady({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, _reject) => {
+          setItemReady({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((e) => {
+              console.error('Failed to set item ready', e);
+              resolve(false);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -148,7 +166,16 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return deleteItem({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, _reject) => {
+          deleteItem({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((e) => {
+              console.error('Failed to delete item', e);
+              resolve(false);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -162,7 +189,18 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return publishItem({ id: actionArgs.itemId, ...cfArgs });
+
+        return new Promise((resolve, _reject) => {
+          publishItem({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((e) => {
+              console.error('Failed to publish item', e);
+              resolve(false);
+            });
+        })
+
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -176,7 +214,17 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return itemCancelVersion({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, _reject) => {
+          itemCancelVersion({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((e) => {
+              console.error('Failed to cancel item version', e);
+              resolve(false);
+            });
+        });
+
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -190,7 +238,16 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return downloadAsJson({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, _reject) => {
+          downloadAsJson({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((e) => {
+              console.error('Failed to download item as JSON', e);
+              resolve(false);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },

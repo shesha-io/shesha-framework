@@ -4,7 +4,7 @@ import React, {
   MutableRefObject,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { Button, message, notification } from 'antd';
 import { ICommonModalProps } from '../../dynamicModal/models';
 import { IErrorInfo } from '@/interfaces/errorInfo';
@@ -24,9 +24,9 @@ interface IConfigurationItemsExportFooterProps {
 
 const displayNotificationError = (message: string, error: IErrorInfo) => {
   notification.error({
-      message: message,
-      icon: null,
-      description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+    message: message,
+    icon: null,
+    description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
   });
 };
 
@@ -70,6 +70,7 @@ export const useConfigurationItemsImportAction = () => {
       return new Promise((resolve, _reject) => {
 
         const hideModal = () => {
+          _reject();
           removeModal(modalId);
         };
 
@@ -83,11 +84,18 @@ export const useConfigurationItemsImportAction = () => {
           id: modalId,
           title: "Import Configuration Items",
           isVisible: true,
+          onClose: (positive, result) => {
+            if (positive) {
+              resolve(result);
+            } else {
+              _reject();
+            }
+          },
           showModalFooter: false,
           content: <ConfigurationItemsImport onImported={onImported} importRef={exporterRef} />,
           footer: <ConfigurationItemsExportFooter hideModal={hideModal} importerRef={exporterRef} />
         };
-        createModal({ ...modalProps, isVisible: true });
+        createModal({ ...modalProps });
       });
     },
   }, [appConfigState]);
