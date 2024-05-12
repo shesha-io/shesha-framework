@@ -93,7 +93,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
         if (typeof value === 'string') {
           return moment(value).format(dateFormat);
         }
-        return getMoment(value, dateFormat)?.toISOString() || '';
+        return getMoment(value)?.format(dateFormat) || '';
       }
       case 'checkbox': {
         return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled />;

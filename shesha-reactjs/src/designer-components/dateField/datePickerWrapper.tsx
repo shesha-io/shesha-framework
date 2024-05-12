@@ -12,7 +12,6 @@ import {
     disabledDate,
     formatToISO,
     getDatePickerValue,
-    getDefaultFormat,
     getFormat,
     getRangePickerValues,
 } from './utils';
@@ -51,12 +50,11 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
     const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
 
-    const defaultFormat = getDefaultFormat(props);
 
     const { formData } = useForm();
 
     const pickerFormat = getFormat(props, properties);
-    const formattedValue = getMoment(value, pickerFormat);
+    const formattedValue = getMoment(value);
 
     const handleDatePickerChange = (_, dateString: string) => {
 
@@ -83,6 +81,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             ? `${dateFormat} ${timeFormat}`
             : dateFormat;
 
+
         return (
             <ReadOnlyDisplayFormItem
                 value={formattedValue?.toISOString()}
@@ -102,8 +101,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
                 onChange={handleRangePicker}
                 format={pickerFormat}
-                value={getRangePickerValues(value, defaultFormat)}
-                defaultValue={getRangePickerValues(defaultValue, defaultFormat)}
+                value={getRangePickerValues(value)}
+                defaultValue={getRangePickerValues(defaultValue)}
                 {...rest}
                 picker={picker}
                 showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
@@ -131,7 +130,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             format={pickerFormat}
             style={evaluatedStyle}
             {...rest}
-            {...getDatePickerValue(props, defaultFormat)}
+            {...getDatePickerValue(props)}
             allowClear
         />
     );

@@ -13,14 +13,14 @@ export const DATE_TIME_FORMATS = {
   year: 'YYYY',
 };
 
-export const getDatePickerValue = (props: IDateFieldProps, pickerFormat: string) => {
+export const getDatePickerValue = (props: IDateFieldProps) => {
   const { value, injectedDefaultValue } = props;  /** Used to changed value/defaultValue based on whether it's rendered on the table **/
   if (injectedDefaultValue) {
-    return { defaultValue: getMoment(value, pickerFormat) };
+    return { defaultValue: getMoment(value) };
   }
 
   /** Used to handle the value based on default date-picker implementation **/
-  return { value: getMoment(value, pickerFormat) };
+  return { value: getMoment(value) };
 };
 
 export function disabledDate(props: IDateFieldProps, current: Moment, data: object, globalState: object) {
@@ -49,8 +49,9 @@ export const getDefaultFormat = ({ showTime, resolveToUTC }: IDateFieldProps) =>
 };
 
 export const formatToISO = (date: string, format: string) => {
+
   return moment(date, format).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
-}
+};
 
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]) => {
   const { propertyName, picker, showTime } = props || {};
@@ -80,7 +81,7 @@ export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[
   }
 };
 
-export const getRangePickerValues = (valueToUse: any, pickerFormat: string) =>
+export const getRangePickerValues = (valueToUse: any) =>
   (Array.isArray(valueToUse) && valueToUse?.length === 2
-    ? valueToUse?.map((v) => moment(new Date(v), pickerFormat))
+    ? valueToUse?.map((v) => moment(new Date(v)))
     : [null, null]) as RangeValue;
