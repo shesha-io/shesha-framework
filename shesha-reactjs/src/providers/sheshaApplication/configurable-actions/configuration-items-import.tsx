@@ -67,10 +67,10 @@ export const useConfigurationItemsImportAction = () => {
     executer: (actionArgs) => {
       const modalId = nanoid();
 
-      return new Promise((resolve, _reject) => {
+      return new Promise((resolve, reject) => {
 
         const hideModal = () => {
-          _reject();
+          reject();
           removeModal(modalId);
         };
 
@@ -88,7 +88,7 @@ export const useConfigurationItemsImportAction = () => {
             if (positive) {
               resolve(result);
             } else {
-              _reject();
+              reject();
             }
           },
           showModalFooter: false,

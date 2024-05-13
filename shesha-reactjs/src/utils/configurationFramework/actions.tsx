@@ -94,7 +94,7 @@ export interface IPublishItemResponse {
 export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemResponse> => {
   if (!payload.id) throw 'Id must not be null';
 
-  return new Promise<IPublishItemResponse>((resolve, _reject) => {
+  return new Promise<IPublishItemResponse>((resolve, reject) => {
     const onOk = () => {
       message.loading('Publishing in progress..', 0);
       updateItemStatus({
@@ -106,7 +106,7 @@ export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemR
           resolve({ id: payload.id });
         },
         onFail: (e) => {
-          _reject(e);
+          reject(e);
         },
 
       });
@@ -117,7 +117,7 @@ export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemR
       content: 'Are you sure you want to publish this item?',
       okText: 'Yes',
       onCancel: () => {
-        _reject();
+        reject();
       },
       cancelText: 'No',
       onOk,
@@ -136,7 +136,7 @@ export interface ISetItemReadyResponse {
 }
 export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemReadyResponse> => {
   if (!payload.id) throw 'Id must not be null';
-  return new Promise<ISetItemReadyResponse>((resolve, _reject) => {
+  return new Promise<ISetItemReadyResponse>((resolve, reject) => {
     const onOk = () => {
       updateItemStatus({
         backendUrl: payload.backendUrl,
@@ -154,7 +154,7 @@ export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemRea
       content: 'Are you sure you want to set this form ready?',
       okText: 'Yes',
       onCancel: () => {
-        _reject();
+        reject();
       },
       cancelText: 'No',
       onOk,
@@ -206,7 +206,7 @@ export const createNewVersionRequest = (
 };
 
 export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise<ICreateNewItemVersionResponse> => {
-  return new Promise<ICreateNewItemVersionResponse>((resolve, _reject) => {
+  return new Promise<ICreateNewItemVersionResponse>((resolve, reject) => {
     // todo: return a promise and handle completion on upper level
     const onOk = () => {
       return createNewVersionRequest(payload)
@@ -226,7 +226,7 @@ export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise
       content: 'Are you sure you want to create new version of the item?',
       okText: 'Yes',
       onCancel: () => {
-        _reject();
+        reject();
       },
       cancelText: 'No',
       onOk,
@@ -244,7 +244,7 @@ export interface ICancelItemVersionResponse {
   id: string;
 }
 export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<ICancelItemVersionResponse> => {
-  return new Promise((resolve, _reject) => {
+  return new Promise((resolve, reject) => {
     const onOk = () => {
       const url = `${payload.backendUrl}/api/services/app/ConfigurationItem/CancelVersion`;
       const httpPayload = {
@@ -270,7 +270,7 @@ export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<I
       content: 'Are you sure you want to cancel current version?',
       okText: 'Yes',
       onCancel: () => {
-        _reject();
+        reject();
       },
       cancelText: 'No',
       onOk,

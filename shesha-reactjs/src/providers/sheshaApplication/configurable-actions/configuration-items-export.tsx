@@ -67,10 +67,10 @@ export const useConfigurationItemsExportAction = () => {
     executer: (actionArgs) => {
       const modalId = nanoid();
 
-      return new Promise((resolve, _reject) => {
+      return new Promise((resolve, reject) => {
 
         const hideModal = () => {
-          _reject();
+          reject();
           removeModal(modalId);
         };
 
@@ -89,7 +89,7 @@ export const useConfigurationItemsExportAction = () => {
             if (positive) {
               resolve(result);
             } else {
-              _reject();
+              reject();
             }
           },
           content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef} />,
