@@ -194,10 +194,10 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     if (measured?.width === 0) return;
      let res = null;
     if(orientation === "horizontal" && listItemWidth !== 'custom'){
-      res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties)
+      res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties);
 
     }else if (orientation === "horizontal" && listItemWidth === "custom") {
-      res = ({width: `${customListItemWidth}px`} as React.CSSProperties)
+      res = ({width: `${customListItemWidth}px`} as React.CSSProperties);
 
     }else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
