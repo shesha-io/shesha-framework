@@ -193,7 +193,13 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   useEffect(() => {
     if (measured?.width === 0) return;
      let res = null;
-if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+    if(orientation === "horizontal" && listItemWidth !== 'custom'){
+      res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties)
+
+    }else if (orientation === "horizontal" && listItemWidth === "custom") {
+      res = ({width: `${customListItemWidth}px`} as React.CSSProperties)
+
+    }else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
         selectionMode === 'none'
           ? ({ width: '100%' } as React.CSSProperties)
@@ -556,13 +562,30 @@ if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' 
           </Show>
 
           <Show when={records?.length > 0}>
-            {orientation === "wrap" ? 
+            {orientation === "wrap" &&
               <div className={styles.shaDatalistWrapParent} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
                 {content}
               </div>
-              :
-              content
-          }
+            }
+
+
+            {orientation === "horizontal" && 
+              <div className={styles.shaDatalistHorizontal}>
+              {React.Children.map(content, child => {
+              return React.cloneElement(child, { style: itemWidthCalc });
+              })}
+              </div>
+            }
+
+            {orientation === "vertical" && 
+              <div style={itemWidthCalc}>
+              {React.Children.map(content, child => {
+              return React.cloneElement(child, { style: itemWidthCalc });
+              })}
+              </div>
+            }
+
+
           </Show>
         </div>
       </ShaSpin>
