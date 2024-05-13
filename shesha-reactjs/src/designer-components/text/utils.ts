@@ -44,8 +44,6 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string) =
     /\d{2}-\d{2}-\d{4}/,
   ];
 
-  console.log('content', content)
-
   for (const regex of [...dateTimeRegexes, ...dateRegexes]) {
     const match = regex.exec(content);
     if (match) {
