@@ -141,27 +141,20 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const showUploadButton = allowUpload && !fileInfo && !isUploading;
   const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
 
-  const uploadButton = (
-    <Button
-      icon={<UploadOutlined />}
-      type="link"
-      ref={uploadButtonRef}
-      style={{ display: !showUploadButton ? 'none' : '' }}
-    >
-      (press to upload)
-    </Button>
-  );
 
   const renderStub = () => {
     if (isDragger) {
       return  <Dragger disabled><DraggerStub /></Dragger>;
     }
 
-    return <div className={classes}></div>;
+    return  (
+    <Button icon={<UploadOutlined />} type="link" ref={uploadButtonRef} disabled>
+      (press to upload)
+    </Button>);
   };
 
   const renderUploader = () => {
-    if (isDragger && allowUpload) {
+    if (isDragger) {
       return (
         <Dragger {...fileProps} className={classes}>
           <span ref={uploadDraggerSpanRef} />
@@ -172,13 +165,15 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
     return (
         <Upload {...fileProps} className={classes}>
-          {allowUpload && uploadButton}
+          <Button icon={<UploadOutlined />} type="link" ref={uploadButtonRef}>
+            (press to upload)
+          </Button>;
         </Upload>
       );
   };
 
 
-  return <span className={styles.shaFileUploadContainer}>{isStub ? renderStub() : renderUploader()}</span>;
+  return <span className={styles.shaFileUploadContainer}>{isStub || !showUploadButton ? renderStub() : renderUploader()}</span>;
 };
 
 export default FileUpload;

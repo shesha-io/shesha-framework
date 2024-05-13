@@ -144,26 +144,25 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
   };
 
-  const renderUploadContent = () => {
-    return (
-      <Button type="link" icon={<UploadOutlined />} style={{ display: disabled ? 'none' : '' }} {...uploadBtnProps}>
+  const uploadbutton = (disabled) =>  (
+      <Button type="link" icon={<UploadOutlined />} {...uploadBtnProps} disabled={disabled}>
         (press to upload)
       </Button>
     );
-  };
+
+  const renderUploadContent = (
+    isDragger ? <Dragger {...props}><DraggerStub /></Dragger>
+    : <Upload {...props}>{uploadbutton(false)}</Upload>
+  )
+
+  const renderStub = (
+    isDragger ? <Dragger disabled><DraggerStub /></Dragger>
+    : <Upload {...props}>{uploadbutton(true)}</Upload>
+  )
 
   return (
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
-      {isStub 
-        ? isDragger
-          ? <Dragger disabled><DraggerStub /></Dragger>
-          : <div>{renderUploadContent()}</div>
-        : props.disabled
-          ? <Upload {...props} />
-          : isDragger
-            ? <Dragger {...props}><DraggerStub /></Dragger>
-            : <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
-      }
+      {isStub || disabled ? renderStub : renderUploadContent }
 
       {fetchFilesError && (
         <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
