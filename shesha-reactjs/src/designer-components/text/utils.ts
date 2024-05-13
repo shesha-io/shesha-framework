@@ -38,6 +38,7 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string) =
     /\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}/, // DD/MM/YYYY HH:mm:ss
     /\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}/, // YYYY/MM/DD HH:mm:ss
   ];
+
   const dateRegexes = [
     /\d{4}-\d{2}-\d{2}/,
     /\d{2}\/\d{2}\/\d{4}/,
@@ -51,7 +52,7 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string) =
       const dateString = match[0];
       return content.replace(dateString, formatDate(dateString, dateFormat));
     }
-  }
+  };
 
   return content;
 };
@@ -61,7 +62,6 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
     case 'boolean':
       return content ? 'Yes' : 'No';
     case 'date-time':
-      debugger
       return formatDateStringAndPrefix(content, dateFormat || DATE_TIME_FORMATS.date);
     case 'number':
       return getNumberFormat(content, numberFormat || 'round');
