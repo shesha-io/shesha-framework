@@ -61,6 +61,7 @@ interface UpdateItemStatusArgs extends IHasHttpSettings {
   id: string;
   status: ConfigurationItemVersionStatus;
   onSuccess?: () => void;
+  onFail?: (e: any) => void;
 }
 export const updateItemStatus = (props: UpdateItemStatusArgs) => {
   const url = `${props.backendUrl}/api/services/app/ConfigurationItem/UpdateStatus`;
@@ -79,6 +80,7 @@ export const updateItemStatus = (props: UpdateItemStatusArgs) => {
     .catch((e) => {
       message.destroy();
       message.error('An error occurred. Message:' + e);
+      if (props.onFail) props.onFail(e);
     });
 };
 
@@ -92,7 +94,7 @@ export interface IPublishItemResponse {
 export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemResponse> => {
   if (!payload.id) throw 'Id must not be null';
 
-  return new Promise<IPublishItemResponse>((resolve) => {
+  return new Promise<IPublishItemResponse>((resolve, reject) => {
     const onOk = () => {
       message.loading('Publishing in progress..', 0);
       updateItemStatus({
@@ -103,6 +105,10 @@ export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemR
         onSuccess: () => {
           resolve({ id: payload.id });
         },
+        onFail: (e) => {
+          reject(e);
+        },
+
       });
     };
     Modal.confirm({
@@ -110,7 +116,9 @@ export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemR
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to publish this item?',
       okText: 'Yes',
-      //okType: 'danger',
+      onCancel: () => {
+        reject();
+      },
       cancelText: 'No',
       onOk,
     });
@@ -128,7 +136,7 @@ export interface ISetItemReadyResponse {
 }
 export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemReadyResponse> => {
   if (!payload.id) throw 'Id must not be null';
-  return new Promise<ISetItemReadyResponse>((resolve) => {
+  return new Promise<ISetItemReadyResponse>((resolve, reject) => {
     const onOk = () => {
       updateItemStatus({
         backendUrl: payload.backendUrl,
@@ -145,7 +153,9 @@ export const setItemReady = (payload: ISetItemReadyPayload): Promise<ISetItemRea
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to set this form ready?',
       okText: 'Yes',
-      //okType: 'danger',
+      onCancel: () => {
+        reject();
+      },
       cancelText: 'No',
       onOk,
     });
@@ -196,7 +206,7 @@ export const createNewVersionRequest = (
 };
 
 export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise<ICreateNewItemVersionResponse> => {
-  return new Promise<ICreateNewItemVersionResponse>((resolve, _reject) => {
+  return new Promise<ICreateNewItemVersionResponse>((resolve, reject) => {
     // todo: return a promise and handle completion on upper level
     const onOk = () => {
       return createNewVersionRequest(payload)
@@ -215,7 +225,9 @@ export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to create new version of the item?',
       okText: 'Yes',
-      //okType: 'danger',
+      onCancel: () => {
+        reject();
+      },
       cancelText: 'No',
       onOk,
     });
@@ -232,7 +244,7 @@ export interface ICancelItemVersionResponse {
   id: string;
 }
 export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<ICancelItemVersionResponse> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const onOk = () => {
       const url = `${payload.backendUrl}/api/services/app/ConfigurationItem/CancelVersion`;
       const httpPayload = {
@@ -257,7 +269,9 @@ export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<I
       icon: <ExclamationCircleOutlined />,
       content: 'Are you sure you want to cancel current version?',
       okText: 'Yes',
-      //okType: 'danger',
+      onCancel: () => {
+        reject();
+      },
       cancelText: 'No',
       onOk,
     });
@@ -290,8 +304,8 @@ export const downloadAsJson = (payload: IDownloadItemAsJsonPayload): Promise<IDo
 //#endregion
 
 export const ConfigurationFrameworkActions = {
-    updateStatus: updateItemStatus,
-    cancelVersion: itemCancelVersion,
-    publish: publishItem,
-    setReady: setItemReady,
+  updateStatus: updateItemStatus,
+  cancelVersion: itemCancelVersion,
+  publish: publishItem,
+  setReady: setItemReady,
 };
