@@ -205,7 +205,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
   if(groupingColumns?.length > 0 && props.orientation === "wrap"){
-    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.'/>
+    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.'/>;
   }
 
   return (
