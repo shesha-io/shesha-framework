@@ -30,12 +30,12 @@ const formatDate = (dateText: string, dateFormat: string) => {
 
 export const formatDateStringAndPrefix = (content: string, dateFormat: string) => {
   const dateTimeRegexes = [
+    /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/, // ISO 8601 format: YYYY-MM-DDTHH:mm:ssZ
     /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, // YYYY-MM-DDTHH:mm:ss
     /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/, // YYYY-MM-DD HH:mm:ss
     /\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}/, // DD-MM-YYYY HH:mm:ss
     /\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}/, // DD/MM/YYYY HH:mm:ss
     /\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}/, // YYYY/MM/DD HH:mm:ss
-
   ];
   const dateRegexes = [
     /\d{4}-\d{2}-\d{2}/,
@@ -44,11 +44,13 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string) =
     /\d{2}-\d{2}-\d{4}/,
   ];
 
+  console.log('content', content)
+
   for (const regex of [...dateTimeRegexes, ...dateRegexes]) {
     const match = regex.exec(content);
     if (match) {
       const dateString = match[0];
-      return formatDate(dateString, dateFormat);
+      return content.replace(dateString, formatDate(dateString, dateFormat));
     }
   }
 
