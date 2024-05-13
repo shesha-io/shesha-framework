@@ -61,6 +61,7 @@ interface UpdateItemStatusArgs extends IHasHttpSettings {
   id: string;
   status: ConfigurationItemVersionStatus;
   onSuccess?: () => void;
+  onFail?: (e: any) => void;
 }
 export const updateItemStatus = (props: UpdateItemStatusArgs) => {
   const url = `${props.backendUrl}/api/services/app/ConfigurationItem/UpdateStatus`;
@@ -79,6 +80,7 @@ export const updateItemStatus = (props: UpdateItemStatusArgs) => {
     .catch((e) => {
       message.destroy();
       message.error('An error occurred. Message:' + e);
+      if (props.onFail) props.onFail(e);
     });
 };
 
@@ -103,6 +105,10 @@ export const publishItem = (payload: IPublishItemPayload): Promise<IPublishItemR
         onSuccess: () => {
           resolve({ id: payload.id });
         },
+        onFail: (e) => {
+          _reject(e);
+        },
+
       });
     };
     Modal.confirm({

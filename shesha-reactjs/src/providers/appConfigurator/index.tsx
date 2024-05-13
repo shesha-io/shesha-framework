@@ -125,9 +125,8 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
             .then(() => {
               resolve(true);
             })
-            .catch((e) => {
-              console.error('Failed to create new item version', e);
-              resolve(false);
+            .catch((error) => {
+              _reject(error);
             });
         });
       },
@@ -148,9 +147,8 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
             .then(() => {
               resolve(true);
             })
-            .catch((e) => {
-              console.error('Failed to set item ready', e);
-              resolve(false);
+            .catch((error) => {
+              _reject(error);
             });
         });
       },
@@ -171,9 +169,8 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
             .then(() => {
               resolve(true);
             })
-            .catch((e) => {
-              console.error('Failed to delete item', e);
-              resolve(false);
+            .catch((error) => {
+              _reject(error);
             });
         });
       },
@@ -195,9 +192,8 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
             .then(() => {
               resolve(true);
             })
-            .catch((e) => {
-              console.error('Failed to publish item', e);
-              resolve(false);
+            .catch((error) => {
+              _reject(error);
             });
         });
 
@@ -219,9 +215,8 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
             .then(() => {
               resolve(true);
             })
-            .catch((e) => {
-              console.error('Failed to cancel item version', e);
-              resolve(false);
+            .catch((error) => {
+              _reject(error);
             });
         });
 
@@ -243,9 +238,8 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
             .then(() => {
               resolve(true);
             })
-            .catch((e) => {
-              console.error('Failed to download item as JSON', e);
-              resolve(false);
+            .catch((error) => {
+              _reject(error);
             });
         });
       },
