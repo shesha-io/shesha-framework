@@ -54,6 +54,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
     const { formData } = useForm();
 
     const pickerFormat = getFormat(props, properties);
+    
     const formattedValue = getMoment(value);
 
     const handleDatePickerChange = (_, dateString: string) => {
@@ -80,10 +81,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         const format = showTime
             ? `${dateFormat} ${timeFormat}`
             : dateFormat;
-
-
-
-        console.log("new values ::", value, defaultValue)
 
         return (
             <ReadOnlyDisplayFormItem
