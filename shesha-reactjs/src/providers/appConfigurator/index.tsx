@@ -199,7 +199,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
               console.error('Failed to publish item', e);
               resolve(false);
             });
-        })
+        });
 
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
