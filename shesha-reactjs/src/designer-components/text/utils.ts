@@ -31,6 +31,7 @@ const formatDate = (dateText: string, dateFormat: string) => {
 export const formatDateStringAndPrefix = (content: string, dateFormat: string) => {
   const dateTimeRegexes = [
     /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/, // ISO 8601 format: YYYY-MM-DDTHH:mm:ssZ
+    /[A-Za-z]{3} [A-Za-z]{3} \d{2} \d{4} \d{2}:\d{2}:\d{2} GMT[+-]\d{4}/, // RFC 2822 format: Mon Jan 02 2006 15:04:05 GMT-0700
     /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, // YYYY-MM-DDTHH:mm:ss
     /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/, // YYYY-MM-DD HH:mm:ss
     /\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}/, // DD-MM-YYYY HH:mm:ss
@@ -60,6 +61,7 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
     case 'boolean':
       return content ? 'Yes' : 'No';
     case 'date-time':
+      debugger
       return formatDateStringAndPrefix(content, dateFormat || DATE_TIME_FORMATS.date);
     case 'number':
       return getNumberFormat(content, numberFormat || 'round');

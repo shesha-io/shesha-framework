@@ -6,7 +6,7 @@ import { IDateFieldProps, RangeValue } from './interfaces';
 
 export const DATE_TIME_FORMATS = {
   time: 'HH:mm:ss',
-  week: 'YYYY-wo',
+  week: 'gggg-[W]ww',
   date: 'DD/MM/YYYY',
   quarter: 'YYYY-\\QQ',
   month: 'YYYY-MM',
@@ -49,8 +49,7 @@ export const getDefaultFormat = ({ showTime, resolveToUTC }: IDateFieldProps) =>
 };
 
 export const formatToISO = (date: string, format: string) => {
-
-  return moment(date, format).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+  return moment(moment(date, format).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'));
 };
 
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]) => {

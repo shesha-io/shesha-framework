@@ -63,6 +63,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             (onChange as TimePickerChangeEvent)(null, '');
             return;
         }
+
         (onChange as TimePickerChangeEvent)(formatToISO(dateString, pickerFormat), dateString);
 
     };
