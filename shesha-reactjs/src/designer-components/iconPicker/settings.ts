@@ -55,13 +55,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     parentId: 'root',
     label: 'Description',
   })
-  .addNumberField({
-    id: nanoid(),
-    propertyName: 'fontSize',
-    label: 'Size',
-    min: 10,
-    defaultValue: 24,
-  })
   .addCodeEditor({
     id: nanoid(),
     propertyName: 'customIcon',
@@ -99,34 +92,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       id: 'pnl64664-cbc9-4cdf-babc-6fbea44cd0ca',
       components: [
         ...new DesignerToolbarSettings()
-  .addColorPicker({
-    id: nanoid(),
-    propertyName: 'color',
-    label: 'Color',
-    title: 'Choose Icon color',
-    allowClear: true,
-    showText: true,
-  })
-  .addCodeEditor({
-    id: nanoid(),
-    propertyName: 'customColor',
-    label: 'Custom Color',
-    labelAlign: 'right',
-    parentId: 'root',
-    hidden: false,
-    description: 'Enter custom color code. The function must return a string representing the color of the icon',
-    validate: {},
-    settingsValidationErrors: [],
-    exposedVariables: [
-      { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
-      { id: nanoid(), name: 'globalState', description: 'The global state', type: 'object' },
-    ],
-    wrapInTemplate: true,
-    templateSettings: {
-      functionName: 'getCustomColor'      
-    },
-    availableConstantsExpression: "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-  })
   .addCheckbox({
     id: nanoid(),
     propertyName: 'hidden',
@@ -169,6 +134,75 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         parentId: 'root',
         hidden: false,
         validate: {},
+      }).toJson()
+    ]
+}
+})
+
+//update all IDs from this point
+.addCollapsiblePanel({
+  id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5091',
+  propertyName: 'pnlStyling',
+  parentId: 'root',
+  label: 'Icon Styling',
+  labelAlign: "left",
+  expandIconPosition: "start",
+  ghost: true,
+  collapsible: 'header',
+  content: {
+    id:'pnl24bf6-f76d-4139-a850-cbf06c8b71',
+    components: [...new DesignerToolbarSettings() 
+      .addColorPicker({
+        id: nanoid(),
+        propertyName: 'color',
+        label: 'Color',
+        title: 'Choose Icon color',
+        allowClear: true,
+        showText: true,
+      })
+      .addCodeEditor({
+        id: nanoid(),
+        propertyName: 'customColor',
+        label: 'Custom Color',
+        labelAlign: 'right',
+        parentId: 'root',
+        hidden: false,
+        description: 'Enter custom color code. The function must return a string representing the color of the icon',
+        validate: {},
+        settingsValidationErrors: [],
+        exposedVariables: [
+          { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
+          { id: nanoid(), name: 'globalState', description: 'The global state', type: 'object' },
+        ],
+        wrapInTemplate: true,
+        templateSettings: {
+          functionName: 'getCustomColor'      
+        },
+        availableConstantsExpression: "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+      })
+      .addNumberField({
+        id: nanoid(),
+        propertyName: 'borderRadius',
+        label: 'Border Radius',
+      })
+      .addColorPicker({
+        id: nanoid(),
+        propertyName: 'borderColor',
+        label: 'Border Color',
+        title: 'Choose Icon Border color',
+        allowClear: true,
+        showText: true,
+      })
+      .addNumberField({
+        id: nanoid(),
+        propertyName: 'borderWidth',
+        label: 'Border Width',
+      }).addNumberField({
+        id: nanoid(),
+        propertyName: 'fontSize',
+        label: 'Size',
+        min: 10,
+        defaultValue: 24,
       }).toJson()
     ]
 }
