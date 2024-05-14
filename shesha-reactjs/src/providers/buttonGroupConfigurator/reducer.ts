@@ -28,7 +28,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       const newItems = [...state.items];
       const parent = state.selectedItemId ? (getItemById(newItems, state.selectedItemId) as IButtonGroup) : null;
       if (parent && parent.itemType === 'group') {
-        buttonProps.name = `button${parent.count + 1}`,
+        buttonProps.name = `button${parent.count + 1}`
         buttonProps.label = `Button ${parent.count + 1}`
         parent.childItems = [...parent.childItems, buttonProps];
         parent.count = parent.count + 1;

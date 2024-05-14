@@ -15,7 +15,7 @@ export interface IUpdateItemSettingsPayload {
 
 export interface IButtonGroupConfiguratorStateContext {
   items: ButtonGroupItemProps[];
-  form?: ConfigurableFormInstance | null | undefined;
+  form: ConfigurableFormInstance | null | undefined;
   selectedItemId?: string;
   buttonCount: number;
   groupCount: number,
@@ -41,6 +41,7 @@ export const BUTTON_GROUP_CONTEXT_INITIAL_STATE: IButtonGroupConfiguratorStateCo
   items: [],
   buttonCount: 0,
   groupCount: 0,
+  form: null,
   readOnly: false,
 };
 
