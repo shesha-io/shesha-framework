@@ -23,6 +23,8 @@ export interface IStoredFilesRendererBaseProps {
   fileList?: IStoredFile[];
   allowUpload?: boolean;
   allowDelete?: boolean;
+  allowReplace?: boolean;
+  allowRename?: boolean;
   showDragger?: boolean;
   ownerId?: string;
   ownerType?: string;

@@ -44,6 +44,8 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
         fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
         allowUpload={false}
         allowDelete={props.allowDelete}
+        allowReplace={props.allowReplace}
+        allowRename={props.allowRename}
         //downloadFile={downloadFile}
         deleteFile={deleteFile}
         uploadFile={props.uploadFile ?? uploadFile}
