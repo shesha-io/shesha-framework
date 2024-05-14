@@ -1,21 +1,21 @@
 import { DatePicker } from '@/components/antd';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import React, { FC } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
 import { getMoment } from '@/utils/date';
-import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import {
     DATE_TIME_FORMATS,
     disabledDate,
-    formatToISO,
     getDatePickerValue,
     getFormat,
     getRangePickerValues,
 } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
+
+moment.tz.setDefault('GMT');
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
@@ -47,45 +47,40 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         ...rest
     } = props;
 
-    const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
     const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
-
 
     const { formData } = useForm();
 
     const pickerFormat = getFormat(props, properties);
 
-    const rawDateValue = getMoment(value);
+    const formattedValue = getMoment(value, pickerFormat);
 
-    const handleDatePickerChange = (_, dateString: string) => {
-
+    const handleDatePickerChange = (localValue: any | null, dateString: string) => {
         if (!dateString?.trim()) {
             (onChange as TimePickerChangeEvent)(null, '');
             return;
         }
 
-        (onChange as TimePickerChangeEvent)(formatToISO(dateString, pickerFormat), dateString);
-
+        (onChange as TimePickerChangeEvent)(localValue, dateString);
     };
 
-    const handleRangePicker = (_, formatString: [string, string]) => {
+    const handleRangePicker = (values: any[], formatString: [string, string]) => {
         if (formatString?.includes('')) {
             (onChange as RangePickerChangeEvent)(null, null);
             return;
         }
-        const formattedDates = formatString.map((date: string) => (formatToISO(date, pickerFormat)));
 
-        (onChange as RangePickerChangeEvent)(formattedDates, formatString);
+        (onChange as RangePickerChangeEvent)(values, formatString);
     };
 
     if (readOnly) {
         const format = showTime
-            ? `${dateFormat} ${timeFormat}`
-            : dateFormat;
+            ? `${pickerFormat} ${timeFormat}`
+            : pickerFormat;
 
         return (
             <ReadOnlyDisplayFormItem
-                value={rawDateValue?.toISOString()}
+                value={formattedValue?.toISOString()}
                 type="datetime"
                 dateFormat={format}
                 timeFormat={timeFormat}
@@ -95,9 +90,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
     const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
 
-
-
-
     if (range) {
         return (
             <RangePicker
@@ -105,8 +97,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
                 onChange={handleRangePicker}
                 format={pickerFormat}
-                value={getRangePickerValues(value)}
-                defaultValue={getRangePickerValues(defaultValue)}
+                value={getRangePickerValues(value, pickerFormat)}
+                defaultValue={getRangePickerValues(defaultValue, pickerFormat)}
                 {...rest}
                 picker={picker}
                 showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
@@ -134,7 +126,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             format={pickerFormat}
             style={evaluatedStyle}
             {...rest}
-            {...getDatePickerValue(props)}
+            {...getDatePickerValue(props, pickerFormat)}
             allowClear
         />
     );

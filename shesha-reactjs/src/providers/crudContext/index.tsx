@@ -94,7 +94,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   useEffect(() => {
     //to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one) 
-    const modeToUse = mode ==='read'?mode:allowChangeMode ? state.mode : mode;
+    const modeToUse = mode === 'read' ? mode : allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
@@ -172,12 +172,15 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           props.editorComponents.allComponents,
           toolboxComponents
         );
+
+        console.log('Data post', postData);
         // send data of stored files
         if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate.current;
 
         const finalDataPromise = onSave ? Promise.resolve(onSave(postData)) : Promise.resolve(postData);
 
         return finalDataPromise.then((finalData) => {
+          console.log('Data final', finalData);
           return processor(finalData)
             .then(() => {
               dispatch(saveSuccessAction());
@@ -290,8 +293,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           mode={state.mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}
         >
-          <ParentProvider model={{readOnly: state.mode === 'read'}} formMode={state.mode === 'read' ? 'readonly' : 'edit'}>
-            <FormWrapper 
+          <ParentProvider model={{ readOnly: state.mode === 'read' }} formMode={state.mode === 'read' ? 'readonly' : 'edit'}>
+            <FormWrapper
               form={form} initialValues={state.initialValues} onValuesChange={onValuesChange}
               formSettings={formSettings} delayedUpdate={delayedUpdate}
             >
