@@ -32,18 +32,18 @@ namespace Shesha.ConfigurationItems.Distribution
 
         public async Task<bool> SeedEmbeddedPackagesAsync(EmbeddedPackageSeedingContext context)
         {
-            context.Logger.Info($"Seed packages for assembly '{context.Assembly.FullName}'");
+            context.Logger.Warn($"Seed packages for assembly '{context.Assembly.FullName}'");
 
             var resources = context.Assembly.GetManifestResourceNames();
             var embeddedPackages = resources.Select(r => TryGetPackageInfo(context.Assembly, r)).Where(p => p != null).OrderBy(p => p.Date).ToList();
 
             if (!embeddedPackages.Any()) 
             {
-                context.Logger.Info($"Embedded packages not found");
+                context.Logger.Warn($"Embedded packages not found");
                 return false;
             }
 
-            context.Logger.Info($"Found {embeddedPackages.Count} embedded packages total");
+            context.Logger.Warn($"Found {embeddedPackages.Count} embedded packages total");
 
             var importedPackages = await _importResultRepository.GetAll()
                 .Where(r => r.IsSuccess && r.ImportedFile != null && r.ImportedFileMD5 != null)
@@ -70,7 +70,7 @@ namespace Shesha.ConfigurationItems.Distribution
                         continue;
                     }
 
-                    context.Logger.Info($"Importing package '{embeddedPackage.ResourceName}'");
+                    context.Logger.Warn($"Importing package '{embeddedPackage.ResourceName}'");
 
                     using (var uow = _unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew)) 
                     {
@@ -101,7 +101,7 @@ namespace Shesha.ConfigurationItems.Distribution
                         }
                         await uow.CompleteAsync();
                     }
-                    context.Logger.Info($"Package '{embeddedPackage.ResourceName}' imported successfully");
+                    context.Logger.Warn($"Package '{embeddedPackage.ResourceName}' imported successfully");
                 }
             }
 
