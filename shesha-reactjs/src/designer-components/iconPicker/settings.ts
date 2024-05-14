@@ -203,6 +203,21 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         label: 'Size',
         min: 10,
         defaultValue: 24,
+      })
+      .addColorPicker({
+        id: nanoid(),
+        propertyName: 'backgroundColor',
+        label: 'Background Color',
+        title: 'Choose Icon background color',
+        allowClear: true,
+        showText: true,
+      }).addStyleBox({
+        id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
+        propertyName: 'stylingBox',
+        parentId: 'root',
+        validate: {},
+        settingsValidationErrors: [],
+        jsSetting: false,
       }).toJson()
     ]
 }

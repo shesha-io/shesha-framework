@@ -10,4 +10,5 @@ export interface IIconPickerComponentProps extends IConfigurableFormComponent {
     borderColor?: string;
     borderRadius?: number;
     backgroundColor?: string;
+    stylingBox?: string;
 }

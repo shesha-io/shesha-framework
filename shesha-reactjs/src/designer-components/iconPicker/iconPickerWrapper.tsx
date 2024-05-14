@@ -5,7 +5,7 @@ import React, {
     ReactNode,
     useMemo
     } from 'react';
-import { executeScriptSync, IApplicationContext } from '@/providers/form/utils';
+import { executeScriptSync, IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
 
 interface IconPickerWrapperProps {
     disabled?: boolean; // todo: move to the model level
@@ -21,9 +21,10 @@ interface IconPickerWrapperProps {
     borderColor?: string;
     borderRadius?: number;
     backgroundColor?: string;
+    stylingBox?: string;
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor } = props;
+    const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox } = props;
     const computedColor = useMemo(() => {
         return customColor
         ? executeScriptSync<string>(customColor, applicationContext)
@@ -46,31 +47,32 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         if (onChange) onChange(iconName);
     };
 
+    const stylingBoxJSON = useMemo(()=>{
+        return pickStyleFromModel(JSON.parse(stylingBox || "{}"));
+    },[stylingBox]);
+
     const style: CSSProperties = {
         fontSize: fontSize || 24,
         color: computedColor,
-        width: '100%',
-        height: '100%',
         zIndex: 1,
         marginLeft: '12px'
-        //backgroundColor: computedBorderColor
     };
-
-    console.log(borderWidth, computedBorderColor)
 
     return (
         <div style={{
+            boxSizing: 'border-box', 
+            zIndex: 2,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            flexDirection: 'row',
+            transition: '.3s',
             width: fontSize+'px',
             height: fontSize+'px',
             border: `${borderWidth}px solid ${computedBorderColor}`,
             borderRadius: borderRadius+'px',
-            boxSizing: 'border-box', 
-            zIndex: 2,
-            padding: `${borderWidth + 23}px ${borderWidth}px`
+            padding: `${stylingBoxJSON["paddingTop"]} ${stylingBoxJSON["paddingRight"]} ${stylingBoxJSON["paddingBottom"]} ${stylingBoxJSON["paddingLeft"]}`,
+            margin: `${stylingBoxJSON["marginTop"]} ${stylingBoxJSON["marginRight"]} ${stylingBoxJSON["marginBottom"]} ${stylingBoxJSON["marginLeft"]}`,
+            backgroundColor: backgroundColor
         }}>
         <div>
         <IconPicker

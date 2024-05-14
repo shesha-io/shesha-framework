@@ -13,7 +13,7 @@ import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrat
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',
-  name: 'Icon Picker',
+  name: 'Icon',
   icon: <HeartOutlined />,
   isInput: true,
   isOutput: true,
@@ -34,7 +34,8 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
     .add<IIconPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IIconPickerComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IIconPickerComponentProps>(2, (prev) => ({ ...prev, color: legacyColor2Hex(prev.color) }))
-  ,
+    .add<IIconPickerComponentProps>(3, (prev) => ({ ...prev, propertyName: 'Icon'}))
+
 };
 
 export default IconPickerComponent;
