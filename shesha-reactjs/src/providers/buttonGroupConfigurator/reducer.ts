@@ -83,7 +83,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
         childItems: [],
         count: 0,
         editMode: 'inherited'
-      }
+      };
       return {
         ...state,
         items: [...state.items, groupProps],
@@ -110,7 +110,6 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       };
 
       const newItems = updateItems(state.items);
-    
       return {
         ...state,
         items: [...newItems],
