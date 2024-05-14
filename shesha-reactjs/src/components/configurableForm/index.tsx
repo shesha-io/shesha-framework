@@ -4,7 +4,7 @@ import ConfigurableFormRenderer from './configurableFormRenderer';
 import EditViewMsg from '../appConfigurator/editViewMsg';
 import FormInfo from './formInfo';
 import ParentProvider from '@/providers/parentProvider';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import Show from '@/components/show';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { convertToMarkupWithSettings } from '@/providers/form/utils';
@@ -46,6 +46,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   } = props;
   const { switchApplicationMode, formInfoBlockVisible } = useAppConfigurator();
   const app = useSheshaApplication();
+  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(false);
 
   const canConfigure = Boolean(app.routes.formsDesigner) && Boolean(formId);
   const { router } = useShaRouting(false) ?? {};
@@ -92,10 +93,14 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               isActionsOwner={isActionsOwner}
               propertyFilter={propertyFilter}
             >
+              
+              <div style={{border: Boolean(showFormInfo) ? '2px #00ffff solid' : 'none', position: 'relative', transition: '.1s'}} onMouseLeave={() => {setFormInfoPanelShowing(false)}} onMouseEnter={()=>{setFormInfoPanelShowing(true)}}>
               <Show when={Boolean(showFormInfo)}>
-                <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
+                <FormInfo formProps={persistedFormProps} visible={formInfoPanelShowing} onMarkupUpdated={onMarkupUpdated} />
               </Show>
-              <ConfigurableFormRenderer {...restProps} />
+                <ConfigurableFormRenderer {...restProps} />
+                
+              </div>
             </FormProvider>
           </ParentProvider>
         )}

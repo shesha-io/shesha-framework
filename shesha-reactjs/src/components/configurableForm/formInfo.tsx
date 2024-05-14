@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { Button, Card } from 'antd';
@@ -6,7 +6,7 @@ import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramewor
 import { getFormFullName } from '@/utils/form';
 import StatusTag from '@/components/statusTag';
 import HelpTextPopover from '@/components/helpTextPopover';
-import { BlockOutlined, CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
 import { useStyles } from './styles/styles';
 
@@ -15,18 +15,20 @@ export interface FormInfoProps {
    * Persisted form props
    */
   formProps: IPersistedFormProps;
+  visible?: boolean;
   /**
    * Is used for update of the form markup. If value of this handler is not defined - the form is read-only
    */
   onMarkupUpdated?: () => void;
 }
 
-export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
+export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visible }) => {
   const { id, versionNo, description, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [open, setOpen] = useState(false);
+  const [panelShowing, setPanelShowing] = useState<boolean>();
 
   const onModalOpen = () => setOpen(true);
   const onUpdated = () => {
@@ -35,19 +37,24 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated }) => {
     setOpen(false);
   };
 
+useEffect(()=>{
+  setPanelShowing(visible)
+  console.log(visible, "VISIBILITY PROP")
+},[visible])
+
   return (
     <Card
       className={styles.shaFormInfoCard}
-      bordered
+      style={{background: '#00ffff', border: 'none', minWidth: '300px', width: '350px', borderRadius: '0px', left: '-2px', top: panelShowing ? '-2px' : '-42px', opacity: panelShowing ? '1' : '0', zIndex: '2', position: 'absolute', transition: '.3s'}}
       title={
         <>
           {id && (
             <Button style={{ padding: 0 }} type="link" onClick={onModalOpen}>
-              <BlockOutlined title="Click to open this form in the designer" />
+              <EditOutlined title="Click to open this form in the designer" />
             </Button>
           )}
           <span className={styles.shaFormInfoCardTitle}>
-            Form: {getFormFullName(module, name)} v{versionNo}
+            {getFormFullName(module, name)} v{versionNo}
           </span>
           {false && <HelpTextPopover content={description}></HelpTextPopover>}
           <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>

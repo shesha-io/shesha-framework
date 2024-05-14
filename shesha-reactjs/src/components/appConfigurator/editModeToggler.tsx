@@ -8,7 +8,7 @@ import { useStyles } from './styles/styles';
 export interface IAppEditModeTogglerProps { }
 
 export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
-  const { mode, switchApplicationMode } = useAppConfigurator();
+  const { mode, switchApplicationMode, toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -43,11 +43,11 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   return (
     <Space>
       {contextHolder}
-      <span className={styles.shaConfigurableModeSwitcherLabel}>{mode === 'edit' ? 'Edit Mode' : 'Live Mode'}</span>
+      <span className={styles.shaConfigurableModeSwitcherLabel}>{Boolean(formInfoBlockVisible) ? 'Edit Mode' : 'Live Mode'}</span>
       <Switch className={styles.shaConfigurableModeSwitcherSwitcher}
-        title={mode === 'edit' ? 'Switch to Live mode' : 'Switch to Edit mode'}
-        checked={mode === 'edit'}
-        onChange={toggleMode}
+        title={Boolean(formInfoBlockVisible) ? 'Switch to Live mode' : 'Switch to Edit mode'}
+        checked={formInfoBlockVisible}
+        onChange={(checked) => {toggleShowInfoBlock(checked)}}
       />
     </Space>
   );

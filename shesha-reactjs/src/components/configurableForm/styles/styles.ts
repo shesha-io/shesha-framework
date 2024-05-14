@@ -8,7 +8,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
     const shaForm = cx("sha-form", css`
         .${shaComponentsContainer} {
-            min-height: 32px;
+            min-height: 28px;
             &.horizontal {
                 .${shaComponentsContainerInner} {
                     display: flex;
