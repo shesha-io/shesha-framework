@@ -1,4 +1,5 @@
 ﻿using Abp.AspNetCore.Mvc.Authorization;
+using Abp.AutoMapper;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
@@ -742,7 +743,7 @@ namespace Shesha.StoredFiles
                 .OrderBy(u => u.CreationTime)
                 .ToListAsync();
 
-            return ObjectMapper.Map<List<StoredFileVersionInfoDto>>(documentUploads);
+            return documentUploads.Select(v => ObjectMapper.Map<StoredFileVersionInfoDto>(v)).ToList();
         }
 
         #endregion
