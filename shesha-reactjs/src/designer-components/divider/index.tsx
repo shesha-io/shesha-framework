@@ -12,13 +12,8 @@ import { getLayoutStyle } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 
 export interface IDividerProps extends IConfigurableFormComponent {
-  container?: boolean;
   dividerType?: 'horizontal' | 'vertical';
-  orientation?: 'left' | 'right' | 'center';
-  orientationMargin?: string | number;
   dashed?: boolean;
-  plain?: boolean;
-  components?: IConfigurableFormComponent[];
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -33,15 +28,10 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
 
     const props: DividerProps = {
       type: model?.dividerType,
-      orientation: model?.orientation,
-      orientationMargin: model?.orientationMargin,
       dashed: model?.dashed,
-      plain: model?.plain,
     };
 
-    return model?.container ? (
-      <ParentProvider model={model}><ComponentsContainer containerId={model.id} render={(components) => <Divider {...props}>{components}</Divider>} /></ParentProvider>
-    ) : (
+    return (
       <Divider style={getLayoutStyle(model, { data, globalState })} {...props} />
     );
   },
@@ -50,9 +40,7 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
   migrator: (m) => m.add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
   initModel: (model) => ({
     dividerType: 'horizontal',
-    orientation: 'center',
     dashed: false,
-    plain: true,
     ...model,
   }),
 };
