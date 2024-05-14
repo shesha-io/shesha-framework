@@ -9,6 +9,7 @@ import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/pr
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
   evaluateValue,
+  executeScript,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import StoredFilesProvider from '@/providers/storedFiles';
@@ -50,23 +51,22 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     const enabled = !model.readOnly;
 
     const onFileListChanged = (fileList: IStoredFile[]) => {
-      const http = axiosHttp(backendUrl);
 
-      const eventFunc = new Function(
-        'fileList',
-        'data',
-        'form',
-        'formMode',
-        'globalState',
-        'http',
-        'message',
-        'moment',
-        'setFormData',
-        'setGlobalState',
-        model.onFileChanged
-      );
+      if (!model.onFileChanged) 
+        return;
 
-      return eventFunc(fileList, data, form, formMode, globalState, http, message, moment, setFormData, setGlobalState);
+      executeScript<void>(model.onFileChanged, {
+        fileList,
+        data,
+        form,
+        formMode,
+        globalState,
+        http: axiosHttp(backendUrl),
+        message,
+        moment,
+        setFormData,
+        setGlobalState
+      });
     };
 
     return (

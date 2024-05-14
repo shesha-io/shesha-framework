@@ -75,7 +75,7 @@ namespace Shesha.DynamicEntities.Distribution
                 GenerateAppService = entityConfig.GenerateAppService,
                 Source = entityConfig.Source,
                 EntityConfigType = entityConfig.EntityConfigType,
-                PropertiesMD5 = entityConfig.PropertiesMD5,
+                PropertiesMD5 = entityConfig.HardcodedPropertiesMD5,
                
                 ViewConfigurations = MapViewConfigurations(entityConfig),
                 Properties = await MapPropertiesAsync(entityConfig),

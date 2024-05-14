@@ -8,6 +8,10 @@ import { nanoid } from '@/utils/uuid';
 import { Item } from '@/components/modelConfigurator/propertiesEditor/renderer-new/item';
 import { ItemsContainer } from '@/components/modelConfigurator/propertiesEditor/renderer-new/itemsContainer';
 import { ModelItemProperties } from '@/components/modelConfigurator/propertiesEditor/renderer-new/modelItemProperties';
+import { Button } from 'antd';
+import { syncEntities } from '@/providers/metadataDispatcher/entities/utils';
+import { useSyncEntitiesContext } from '@/providers/metadataDispatcher/entities/useSyncEntitiesContext';
+import { evaluateString } from '@/formDesignerUtils';
 
 type ItemType = IModelItem;
 
@@ -15,6 +19,7 @@ const Page: PageWithLayout<{}> = () => {
     const [value, setValue] = useState<ItemType[]>();
     const [selectedItem, setSelectedItem] = useState<ItemType>();
     const [readOnly] = useState(false);
+    const syncContext = useSyncEntitiesContext();
 
     const onSelectionChange = (item: ItemType) => {
         setSelectedItem(item);
@@ -27,9 +32,38 @@ const Page: PageWithLayout<{}> = () => {
         setValue([...value]);
     };
 
+    const onSyncClick = () => {
+        console.log('LOG: sync entities...');
+        syncEntities(syncContext).then(response => {
+            console.log('LOG: sync completed', response);
+        });
+    };
+
+    const onTestTemplateClick = () => {
+        const markup = `
+        NEW_KEY: {{NEW_KEY}};
+        GEN_KEY: {{GEN_KEY}};
+        id: {{data.id}};
+        id: {{{data.id}}};
+        modelType: {{form.formSettings.modelType}}
+        `;
+        const preparedMarkup = evaluateString(markup, {
+            NEW_KEY: nanoid(),
+            GEN_KEY: nanoid(),
+          }, true);
+          console.log('LOG: prepared', preparedMarkup);
+    };
+
     return (
         <div>
             <h1>Playground</h1>
+            <div>
+                <Button onClick={onSyncClick}>Sync entities</Button>
+            </div>
+
+            <div>
+                <Button onClick={onTestTemplateClick}>Test Template</Button>
+            </div>
             <div style={{ padding: "10px 100px" }}>
                 <SidebarContainer
                     rightSidebarProps={{

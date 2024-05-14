@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
 using Shesha.Permissions.Dtos;
 using Shesha.Roles.Dto;
 using System;
@@ -18,6 +19,7 @@ namespace Shesha.Permissions
     public class PermissionAppService : SheshaAppServiceBase
     {
         private readonly IRepository<PermissionDefinition, Guid> _permissionDefinitionRepository;
+        private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly ILocalizationContext _localizationContext;
         private IPermissionDefinitionContext _defenitionContext => PermissionManager as IPermissionDefinitionContext;
         private IShaPermissionManager _shaPermissionManager => PermissionManager as IShaPermissionManager;
@@ -27,22 +29,27 @@ namespace Shesha.Permissions
 
         public PermissionAppService(
             IRepository<PermissionDefinition, Guid> permissionDefinitionRepository,
+            IRepository<Module, Guid> moduleRepository,
             ILocalizationContext localizationContext,
             IShaPermissionChecker permissionChecker
             )
         {
             _permissionDefinitionRepository = permissionDefinitionRepository;
+            _moduleRepository = moduleRepository;
             _localizationContext = localizationContext;
             _permissionChecker = permissionChecker;
         }
 
-        public Task<PermissionDto> GetAsync(string id)
+        public async Task<PermissionDto> GetAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return Task.FromResult<PermissionDto>(null);
+                return null;
 
             var dto = ObjectMapper.Map<PermissionDto>(PermissionManager.GetPermission(id));
-            return Task.FromResult(dto);
+            dto.Module = dto.ModuleId != null 
+                ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(dto.ModuleId.Value)) 
+                : null;
+            return dto;
         }
 
         public Task<List<PermissionDto>> GetAllAsync()
@@ -50,11 +57,16 @@ namespace Shesha.Permissions
             var permissions = PermissionManager.GetAllPermissions();
 
             var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions)
-                .Select(x => 
+                .Select(async x => 
                 {
                     x.Child = null;
+                    x.Module = x.ModuleId != null
+                        ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(x.ModuleId.Value))
+                        : null;
                     return x;
-                }).OrderBy(p => p.DisplayName).ToList();
+                })
+                .Select(x => x.Result)
+                .OrderBy(p => p.DisplayName).ToList();
 
             return Task.FromResult(dtos);
         }
@@ -63,7 +75,16 @@ namespace Shesha.Permissions
         {
             var permissions = PermissionManager.GetAllPermissions();
 
-            var dtoList = ObjectMapper.Map<List<PermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList();
+            var dtoList = ObjectMapper.Map<List<PermissionDto>>(permissions)
+                .Select(async x =>
+                {
+                    x.Module = x.ModuleId != null
+                        ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(x.ModuleId.Value))
+                        : null;
+                    return x;
+                })
+                .Select(x => x.Result)
+                .OrderBy(p => p.DisplayName).ToList();
 
             var tree =new List<PermissionDto>();
             tree.AddRange(dtoList.Where(x => string.IsNullOrEmpty(x.ParentName)));
@@ -94,7 +115,20 @@ namespace Shesha.Permissions
         [HttpPost]
         public async Task<PermissionDto> CreateAsync(PermissionDto permission)
         {
-            return ObjectMapper.Map<PermissionDto>(await _shaPermissionManager.CreatePermissionAsync(permission));
+            var dbp = new PermissionDefinition()
+            {
+                Name = permission.Name,
+                Label = permission.DisplayName,
+                Description = permission.Description,
+                Parent = permission.ParentName ?? permission.Parent?.Name,
+                Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
+                VersionNo = 1,
+                VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live,
+            };
+
+            var res = await _shaPermissionManager.CreatePermissionAsync(dbp);
+
+            return ObjectMapper.Map<PermissionDto>(res);
         }
 
         [HttpPut, HttpPost] // ToDo: temporary - Allow HttpPost because permission can be created from edit mode
@@ -106,13 +140,27 @@ namespace Shesha.Permissions
                 return await CreateAsync(permission);
             }
 
-            return ObjectMapper.Map<PermissionDto>(await _shaPermissionManager.EditPermissionAsync(permission));
+            var dbp = new PermissionDefinition()
+            {
+                Name = permission.Name,
+                Label = permission.DisplayName,
+                Description = permission.Description,
+                Parent = permission.ParentName ?? permission.Parent?.Name,
+                Module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null,
+                VersionNo = 1,
+                VersionStatus = Domain.ConfigurationItems.ConfigurationItemVersionStatus.Live,
+            };
+
+            var res = await _shaPermissionManager.EditPermissionAsync(permission.Id, dbp);
+
+            return ObjectMapper.Map<PermissionDto>(res);
         }
 
         [HttpPut] 
         public async Task UpdateParentAsync(PermissionDto permission)
         {
-            await _shaPermissionManager.UpdateParentAsync(permission.Name, permission.ParentName);
+            var module = permission.Module != null ? await _moduleRepository.GetAsync(permission.Module.Id) : null;
+            await _shaPermissionManager.UpdateParentAsync(permission.Name, permission.ParentName, module);
         }
 
         [HttpDelete]

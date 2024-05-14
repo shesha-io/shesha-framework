@@ -1,6 +1,6 @@
 import { EditorProps } from "@monaco-editor/react";
-import { TemplateEvaluator } from "./utils";
-import { CodeLanguages } from "../formDesigner/components/codeEditor/types";
+import { TemplateEvaluator } from "./client-side/utils";
+import { CodeLanguages } from "@/designer-components/codeEditor/types";
 import { IObjectMetadata } from "@/interfaces";
 import { CSSProperties } from "react";
 

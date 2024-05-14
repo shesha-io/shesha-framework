@@ -73,6 +73,7 @@ export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
 export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
+export { default as EmptyState, type IEmptyStateProps } from './emptyState';
 export {
   AppEditModeToggler,
   type IAppEditModeTogglerProps as IEditModeTogglerProps,
@@ -85,7 +86,7 @@ export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 export { default as ConfigurableForm } from './configurableForm';
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';
-export { CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
+export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
@@ -104,7 +105,7 @@ export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
 export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
-export { default as ButtonGroupConfigurator } from './formDesigner/components/button/buttonGroup/configurator';
+export { default as ButtonGroupConfigurator } from '@/designer-components/button/buttonGroup/configurator';
 export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';

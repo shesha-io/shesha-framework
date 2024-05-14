@@ -27,6 +27,8 @@ export interface IModalBaseProps {
   onCancel?: () => void;
 }
 
+export type ModalFooterButtons = 'default' | 'custom' | 'none';
+
 export interface IModalWithConfigurableFormProps extends IModalBaseProps {
   /**
    * Id of the form to be rendered on the markup
@@ -98,19 +100,23 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
    */
   onSuccessRedirectUrl?: string;
 
-  footerButtons?: 'default' | 'custom' | 'none';
+  footerButtons?: ModalFooterButtons;
 
   buttons?: ButtonGroupItemProps[];
+
 }
 
 export interface IModalWithContentProps extends IModalBaseProps {
   footer?: ReactNode;
   content: ReactNode;
+  onClose?: (positive?: boolean, result?: any) => void;
 }
 /**
  * Dynamic Modal properties
  */
-export type IModalProps = IModalWithConfigurableFormProps;
+export interface IModalProps extends IModalWithConfigurableFormProps {
+  onClose?: (positive?: boolean, result?: any) => void;
+};
 export type ICommonModalProps = IModalWithContentProps | IModalWithConfigurableFormProps;
 
 /**
@@ -125,6 +131,8 @@ export interface IModalInstance {
    * Useful if you want to close the latest dialog using an action
    */
   index?: number;
+
+  onClose?: (positive?: boolean, result?: any) => void;
 }
 
 /**

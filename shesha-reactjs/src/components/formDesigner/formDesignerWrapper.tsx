@@ -65,9 +65,9 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
                     formSettings={formStore.formSettings}
                     readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
                   >
-                    <FormProviderWrapperInner form={form}>
-                      {children}
-                    </FormProviderWrapperInner>
+                      <FormProviderWrapperInner form={form}>
+                        {children}
+                      </FormProviderWrapperInner>
                   </FormDesignerProvider>
                 )}
               </FormMarkupConverter>

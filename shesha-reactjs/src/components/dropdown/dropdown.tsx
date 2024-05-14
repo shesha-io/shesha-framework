@@ -156,6 +156,7 @@ export const Dropdown: FC<IDropdownProps> = ({
             mode={selectedMode}
             placeholder={placeholder}
             showSearch
+            style={style}
             size={size}
         >
             {options.map((option, index) => (

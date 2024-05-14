@@ -5,10 +5,12 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityHistory;
 using Abp.Events.Bus.Entities;
-using Abp.Reflection;
+using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Extensions;
+using Shesha.Metadata;
+using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
@@ -19,6 +21,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.EntityHistory
 {
@@ -33,7 +36,9 @@ namespace Shesha.EntityHistory
         private readonly IRepository<EntityHistoryItem, long> _entityHistoryItemRepository;
 
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly ITypeFinder _typeFinder;
+        private readonly IEnumerable<IModelProvider> _modelProviders;
+
+        private List<ModelDto> _models;
 
         public EntityHistoryProvider(
             IDynamicRepository dynamicRepository,
@@ -45,7 +50,7 @@ namespace Shesha.EntityHistory
             IRepository<EntityHistoryItem, long> entityHistoryItemRepository,
             IRepository<Setting, long> settingRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            ITypeFinder typeFinder
+            IEnumerable<IModelProvider> modelProviders
         )
         {
             _dynamicRepository = dynamicRepository;
@@ -56,32 +61,58 @@ namespace Shesha.EntityHistory
             _entityChangeRepository = entityChangeRepository;
             _entityHistoryItemRepository = entityHistoryItemRepository;
             _unitOfWorkManager = unitOfWorkManager;
-            _typeFinder = typeFinder;
+            _modelProviders = modelProviders;
         }
 
-        public List<EntityHistoryItemDto> GetAuditTrail(string entityId, string entityTypeFullName)
+        private async Task<List<ModelDto>> GetAllModelsAsync()
+        {
+            if (_models != null)
+                return _models;
+
+            var models = new List<ModelDto>();
+            foreach (var provider in _modelProviders)
+            {
+                models.AddRange(await provider.GetModelsAsync());
+            }
+
+            return _models = models.Where(x => !x.Suppress).ToList();
+        }
+
+        private async Task<Type> GetContainerTypeAsync(string container)
+        {
+            var allModels = await GetAllModelsAsync();
+            var models = allModels.Where(m => m.Alias == container || m.ClassName == container).ToList();
+
+            if (models.Count() > 1)
+                throw new DuplicateModelsException(models);
+
+            return models.FirstOrDefault()?.Type;
+        }
+
+        public async Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
         {
 
             // disable SoftDeleteFilter to allow get deleted entities
             _unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete);
 
-            var itemType = _typeFinder.Find(t => t.FullName == entityTypeFullName)?.FirstOrDefault();
+            var itemType = await GetContainerTypeAsync(entityTypeFullName);
 
             var history = new List<EntityHistoryItemDto>();
 
-            var maxDate = DateTime.MaxValue;
+            var (audit, maxDate) = await GetEntityAuditAsync(itemType, entityId);
 
             // Add entity history
-            history.AddRange(GetEntityAudit(itemType, entityId, out maxDate));
+            history.AddRange(audit);
 
             // Add many-to-many related entities
-            history.AddRange(GetManyToManyEntitiesAudit(itemType, entityId));
+            history.AddRange(await GetManyToManyEntitiesAuditAsync(itemType, entityId));
 
             // Add many-to-one related entities
-            history.AddRange(GetManyToOneEntitiesAudit(itemType, entityId));
+            history.AddRange(await GetManyToOneEntitiesAuditAsync(itemType, entityId));
 
             // Add child audited properties
-            history.AddRange(GetChildEntitiesAudit(itemType, entityId));
+            if (includeEventsOnChildEntities)
+                history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
 
             // Add generic child entities
             history.AddRange(GetGenericEntitiesAudit(itemType, entityId));
@@ -93,10 +124,12 @@ namespace Shesha.EntityHistory
 
             _unitOfWorkManager.Current.EnableFilter(AbpDataFilters.SoftDelete);
 
+            history = history.OrderBy(x => x.CreationTime).ToList();
+
             return history;
         }
 
-        private List<EntityHistoryItemDto> GetChildEntitiesAudit(Type itemType, string entityId)
+        private async Task<List<EntityHistoryItemDto>> GetChildEntitiesAuditAsync(Type itemType, string entityId)
         {
             var list = new List<EntityHistoryItemDto>();
             // Check if child audited properties should be displayed
@@ -125,7 +158,8 @@ namespace Shesha.EntityHistory
                         }
 
                         var childId = childType.GetProperty("Id")?.GetValue(childItem)?.ToString();
-                        list.AddRange(GetEntityAudit(childType, childId, propDisplayName, attr.AuditedFields));
+                        var (audit, time) = await GetEntityAuditAsync(childType, childId, propDisplayName, attr.AuditedFields);
+                        list.AddRange(audit);
                     }
                 }
             }
@@ -133,16 +167,16 @@ namespace Shesha.EntityHistory
             return list;
         }
 
-        private List<EntityHistoryItemDto> GetEntityAudit(Type entityType, string entityId, string childName = "", string[] fields = null)
+        /*private async Task<List<EntityHistoryItemDto>> GetEntityAuditAsync(Type entityType, string entityId, string childName = "", string[] fields = null)
         {
             var fakeDate = DateTime.MaxValue;
-            return GetEntityAudit(entityType, entityId, out fakeDate, childName, fields);
-        }
+            return await GetEntityAuditAsync(entityType, entityId, out fakeDate, childName, fields);
+        }*/
 
-        private List<EntityHistoryItemDto> GetEntityAudit(Type entityType, string entityId, out DateTime maxDateTime, string childName = "", string[] fields = null)
+        private async Task<(List<EntityHistoryItemDto>, DateTime)> GetEntityAuditAsync(Type entityType, string entityId, string childName = "", string[] fields = null)
         {
 
-            maxDateTime = DateTime.MaxValue;
+            var maxDateTime = DateTime.MaxValue;
             var stopsAttrs = entityType?.GetCustomAttributes<PropertyChangeToStopAuditTrailAttribute>()
                 .ToDictionary(x => x.PropertyName, x => x.PropertyValue)
                 ?? new Dictionary<string, string>();
@@ -164,7 +198,7 @@ namespace Shesha.EntityHistory
                 var changeSet = _entityChangeSetRepository.Get(entityChange.EntityChangeSetId);
                 var username = GetPersonByUserId(changeSet?.UserId);
 
-                entityType ??= _typeFinder.Find(t => t.FullName == entityChange.EntityTypeFullName)?.FirstOrDefault();
+                entityType ??= await GetContainerTypeAsync(entityChange.EntityTypeFullName);
 
                 var changeEvents = _eventRepository.GetAllList(x => x.EntityPropertyChange == null && x.EntityChange == entityChange);
                 foreach (var entityHistoryEvent in changeEvents)
@@ -318,10 +352,10 @@ namespace Shesha.EntityHistory
                 }
             }
 
-            return list;
+            return (list, maxDateTime);
         }
 
-        private List<EntityHistoryItemDto> GetManyToManyEntitiesAudit(Type itemType, string entityId)
+        private async Task<List<EntityHistoryItemDto>> GetManyToManyEntitiesAuditAsync(Type itemType, string entityId)
         {
             var attrs = itemType.GetCustomAttributes<DisplayManyToManyAuditTrailAttribute>().ToList();
 
@@ -444,14 +478,15 @@ namespace Shesha.EntityHistory
                     var fields = new List<string>() { "Updated" };
                     fields.AddRange(attr.AuditedFields ?? new string[0]);
 
-                    list.AddRange(GetEntityAudit(attr.AnyRelatedEntityType ? null : relatedType, childItem.InnerObjectId, displayName, fields.ToArray()));
+                    var (audit, time) = await GetEntityAuditAsync(attr.AnyRelatedEntityType ? null : relatedType, childItem.InnerObjectId, displayName, fields.ToArray());
+                    list.AddRange(audit);
                 }
             }
 
             return list;
         }
 
-        private List<EntityHistoryItemDto> GetManyToOneEntitiesAudit(Type itemType, string entityId)
+        private async Task<List<EntityHistoryItemDto>> GetManyToOneEntitiesAuditAsync(Type itemType, string entityId)
         {
             var attrs = itemType.GetCustomAttributes<DisplayManyToOneAuditTrailAttribute>().ToList();
 
@@ -622,7 +657,8 @@ namespace Shesha.EntityHistory
                     var fields = new List<string>() { "Updated" };
                     fields.AddRange(attr.AuditedFields ?? new string[0]);
 
-                    list.AddRange(GetEntityAudit(manyToOneType, childItem.Id, childItem.Name, fields.ToArray()));
+                    var (audit, time) = await GetEntityAuditAsync(manyToOneType, childItem.Id, childItem.Name, fields.ToArray());
+                    list.AddRange(audit);
                 }
             }
 

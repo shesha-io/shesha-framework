@@ -2,14 +2,23 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ReactNode } from 'react';
-import { IAsyncValidationError } from '@/interfaces';
+import { DesignerToolbarSettings, IAsyncValidationError } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
+import { nanoid } from '@/utils/uuid';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
 export const SILENT_KEY: string = '_#@';
+
+export interface ISubmitActionArguments {
+  validateFields?: boolean;
+}
+
+export const SubmitActionArgumentsMarkup = new DesignerToolbarSettings()
+  .addCheckbox({ id: nanoid(), propertyName: 'validateFields', parentId: 'root', label: 'Validate fields', defaultValue: false})
+  .toJson();
 
 export type FormMode = 'designer' | 'edit' | 'readonly';
 
@@ -173,6 +182,14 @@ export interface IConfigurableFormComponent
 
   /** Default css style applied as string */
   stylingBox?: string;
+  
+  noDataText?: string;
+
+  noDataIcon?: string;
+
+  noDataSecondaryText?: string;
+
+  permissions?: string[];
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

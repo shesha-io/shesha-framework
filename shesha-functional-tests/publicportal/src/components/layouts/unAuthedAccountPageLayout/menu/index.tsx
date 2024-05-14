@@ -3,7 +3,7 @@ import {
   SidebarMenu,
   useConfigurableActionDispatcher,
   IConfigurableActionConfiguration,
-  useApplicationContext,
+  useApplicationContextData,
   useSidebarMenu,
 } from "@shesha-io/reactjs";
 import { Button, Menu } from "antd";
@@ -21,7 +21,7 @@ export const LayoutMenu: FC<IProps> = () => {
   const onClose = () => setState((s) => ({ ...s, open: false }));
 
   const { executeAction } = useConfigurableActionDispatcher();
-  const executionContext = useApplicationContext();
+  const executionContext = useApplicationContextData();
   const { getItems, isItemVisible } = useSidebarMenu();
   const items = getItems();
 
@@ -44,8 +44,13 @@ export const LayoutMenu: FC<IProps> = () => {
     })
   );
 
-  return menuItems.length <= 30 ? (
-    <Menu className={styles.shaMenu} mode="horizontal" items={menuItems} />
+  return menuItems.length <= 20 ? (
+    <Menu
+      className={styles.shaMenu}
+      mode="horizontal"
+      items={menuItems}
+      overflowedIndicator={<MenuOutlined />}
+    />
   ) : (
     <>
       <Button type="link" icon={<MenuOutlined />} onClick={onClick} />

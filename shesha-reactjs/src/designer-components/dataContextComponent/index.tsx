@@ -8,6 +8,7 @@ import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 import { DEFAULT_CONTEXT_METADATA } from '@/providers/dataContextManager/models';
+import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 
 export interface IDataContextComponentProps extends IConfigurableFormComponent {
   items: IPropertyMetadata[];
@@ -24,12 +25,24 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     dataTypeSupported: () => false,
     Factory: ({ model }) => {
 
+      const allData = useAvailableConstantsData(model.id);
+
       const metadata: Promise<IModelMetadata> = useMemo(() => {
         return Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name: model.componentName, properties: model.items ?? []} as IModelMetadata);
       }, [model.id, model.componentName, model.items]);
 
+      const initialData: Promise<any> = useMemo(() => {
+        return allData.formMode === 'designer' ? null : executeScript(model.initialDataCode, allData);
+      }, [model.initialDataCode]);
+
       return (
-        <DataContextProvider {...model} name={model.componentName} metadata={metadata} type='form'>
+        <DataContextProvider 
+          {...model}
+          name={model.componentName} 
+          metadata={metadata}
+          initialData={allData.formMode === 'designer' ? null : initialData}
+          type='control'
+        >
             <ComponentsContainer containerId={model.id} />
         </DataContextProvider>
       );

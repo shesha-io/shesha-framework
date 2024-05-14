@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import camelCaseKeys from 'camelcase-keys';
 import React, { FC, MutableRefObject, useEffect } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
 import { Alert } from 'antd';
@@ -39,6 +38,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     const { globalState } = useGlobalState();
     const { formData, formMode } = useForm();
     const dataContextManager = useDataContextManager(false);
+    const pageContext = dataContextManager?.getPageContext();
     const dataContext = useDataContext(false);
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 
@@ -53,11 +53,10 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
 
     //#region Filters
     const debounceEvaluateDynamicFiltersHelper = () => {
-        const data = !_.isEmpty(formData) ? camelCaseKeys(formData, { deep: true, pascalCase: true }) : formData;
-
         const match = [
-            { match: 'data', data: data },
+            { match: 'data', data: formData },
             { match: 'globalState', data: globalState },
+            { match: 'pageContext', data: {...pageContext?.getFull()} ?? {} },
         ];
 
         if (dataContextManager)

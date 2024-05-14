@@ -1,7 +1,7 @@
 import { Modal } from 'antd';
 import React, { FC } from 'react';
 import { useMedia } from 'react-use';
-import { IEntityPickerComponentProps } from '@/components/formDesigner/components/entityPicker';
+import { IEntityPickerComponentProps } from '@/designer-components/entityPicker';
 import { MetadataProvider, useForm } from '@/providers';
 import {
   ColumnsConfiguratorProvider,

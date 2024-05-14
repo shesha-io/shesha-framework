@@ -10,7 +10,7 @@ import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
 import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, Row, RowOrGroup, RowsGroup } from './models';
-import { useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
+import { useAvailableConstantsData, executeScriptSync, getStyle } from '@/providers/form/utils';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
@@ -21,6 +21,7 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
+import {EmptyState} from "..";
 
 interface EntityForm {
   entityType: string;
@@ -67,8 +68,17 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   inlineEditMode,
   inlineSaveMode,
   actionRef,
+  noDataIcon,
+  noDataSecondaryText,
+  noDataText,
+  cardHeight,
+  cardMaxWidth,
+  cardMinWidth,
+  showBorder,
+  cardSpacing,
   ...props
 }) => {
+
   const { styles } = useStyles();
   //const refreshRef = useRef(0);
 
@@ -104,7 +114,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     updateContent();
   }, [selectedRow, selectedRows, selectionMode]);
 
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
   const { configurationItemMode } = useAppConfigurator();
   const { executeAction } = useConfigurableActionDispatcher();
 
@@ -182,8 +192,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   useEffect(() => {
     if (measured?.width === 0) return;
-    let res = null;
-    if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+     let res = null;
+if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
         selectionMode === 'none'
           ? ({ width: '100%' } as React.CSSProperties)
@@ -283,7 +293,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -335,6 +345,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
           autoSave={inlineSaveMode === 'auto'}
           />
+         
       </div>
     );
   };
@@ -416,6 +427,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
+  
     const selected =
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
@@ -435,17 +447,19 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             </Checkbox>
           )}
         >
+
           <div
-            className={classNames(styles.shaDatalistComponentItem, { selected })}
+            className={classNames(orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, { selected })}
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={itemWidthCalc}
+            style={orientation === 'wrap' ? {minWidth: `${Number(cardMinWidth) ? cardMinWidth+'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth+'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight+'px' : cardHeight}`,
+            ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>{' '}
-        {!isLastItem && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />}
+        {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
       </div>
     );
   };
@@ -536,8 +550,16 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             horizontal: orientation === 'horizontal',
           })}
         >
+
+          <Show when={records?.length === 0}>
+              <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
+          </Show>
+
+
           <Show when={records?.length > 0}>
+            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
             { content }
+            </div>
           </Show>
         </div>
       </ShaSpin>

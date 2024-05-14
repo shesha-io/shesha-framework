@@ -1,60 +1,61 @@
-import Address from '@/components/formDesigner/components/address';
-import Alert from '@/components/formDesigner/components/alert';
-import AutocompleteTagGroup from '@/components/formDesigner/components/autocompleteTagGroup';
-import Button from '@/components/formDesigner/components/button/button';
-import ButtonGroup from '@/components/formDesigner/components/button/buttonGroup/buttonGroupComponent';
-import Buttons from '@/components/formDesigner/components/button/buttonGroup/buttonsComponent';
-import CheckboxGroup from '@/components/formDesigner/components/checkboxGroup/checkboxGroup';
-import ChildEntitiesTagGroup from '@/components/formDesigner/components/childEntitiesTagGroup';
-import CodeEditor from '@/components/formDesigner/components/codeEditor';
-import ColorPickerComponent from '@/components/formDesigner/components/colorPicker';
-import Columns from '@/components/formDesigner/components/columns/columns';
-import DataList from '@/components/formDesigner/components/dataList/dataListComponent';
-import DataSource from '@/components/formDesigner/components/dataSource/dataSourceComponent';
-import Divider from '@/components/formDesigner/components/divider';
-import Drawer from '@/components/formDesigner/components/drawer';
-import DynamicView from '@/components/formDesigner/components/dynamicView';
-import EditableTagGroup from '@/components/formDesigner/components/editableTagGroup';
-import EndpointsAutocompleteComponent from '@/components/formDesigner/components/endpointsAutocomplete/endpointsAutocomplete';
-import EntityPickerComponent from '@/components/formDesigner/components/entityPicker';
-import FormAutocompleteComponent from '@/components/formDesigner/components/formAutocomplete';
-import IconPicker from '@/components/formDesigner/components/iconPicker';
-import Image from '@/components/formDesigner/components/image';
-import ImageAnnotationComponent from '@/components/formDesigner/components/imageAnnotation';
-import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
-import Paragraph from '@/components/formDesigner/components/legacy/paragraph';
-import Title from '@/components/formDesigner/components/legacy/title';
-import Link from '@/components/formDesigner/components/link';
-import List from '@/components/formDesigner/components/listControl';
-import Markdown from '@/components/formDesigner/components/markdown';
-import Notes from '@/components/formDesigner/components/notes/notesComponent';
-import PasswordCombo from '@/components/formDesigner/components/passwordCombo';
-import PermissionTagGroup from '@/components/formDesigner/components/permissions/permissionTagGroup';
-import PermissionedObjectsTree from '@/components/formDesigner/components/permissions/permissionedObjectsTree/permissionedObjectsTree';
-import PermissionsTree from '@/components/formDesigner/components/permissions/permissionsTree/permissionsTree';
-import Progress from '@/components/formDesigner/components/progress';
-import { PropertyAutocompleteComponent } from '@/components/formDesigner/components/propertyAutocomplete';
-import Radio from '@/components/formDesigner/components/radio/radio';
-import Rate from '@/components/formDesigner/components/rate';
-import ReferenceListAutocompleteComponent from '@/components/formDesigner/components/referenceListAutocomplete';
-import RichTextEditor from '@/components/formDesigner/components/richTextEditor';
-import ScheduledJobExecutionLog from '@/components/formDesigner/components/scheduledJobExecutionLog/scheduledJobExecutionLog';
-import Section from '@/components/formDesigner/components/section';
-import SectionSeprator from '@/components/formDesigner/components/sectionSeprator';
-import SizableColumnsComponent from '@/components/formDesigner/components/sizableColumns/sizableColumns';
-import Space from '@/components/formDesigner/components/space';
-import Statistic from '@/components/formDesigner/components/statistic';
-import StatusTag from '@/components/formDesigner/components/statusTag';
-import StyleBox from '@/components/formDesigner/components/styleBox';
-import SubForm from '@/components/formDesigner/components/subForm';
-import Switch from '@/components/formDesigner/components/switch/switch';
-import Tabs from '@/components/formDesigner/components/tabs';
-import Text from '@/components/formDesigner/components/text';
-import ValidationErrors from '@/components/formDesigner/components/validationErrors';
-import Wizard from '@/components/formDesigner/components/wizard';
+import Address from '@/designer-components/address';
+import Alert from '@/designer-components/alert';
+import AutocompleteTagGroup from '@/designer-components/autocompleteTagGroup';
+import Button from '@/designer-components/button/button';
+import ButtonGroup from '@/designer-components/button/buttonGroup/buttonGroupComponent';
+import Buttons from '@/designer-components/button/buttonGroup/buttonsComponent';
+import CheckboxGroup from '@/designer-components/checkboxGroup/checkboxGroup';
+import ChildEntitiesTagGroup from '@/designer-components/childEntitiesTagGroup';
+import CodeEditor from '@/designer-components/codeEditor';
+import ColorPickerComponent from '@/designer-components/colorPicker';
+import Columns from '@/designer-components/columns/columns';
+import DataList from '@/designer-components/dataList/dataListComponent';
+import DataSource from '@/designer-components/dataSource/dataSourceComponent';
+import Divider from '@/designer-components/divider';
+import Drawer from '@/designer-components/drawer';
+import DynamicView from '@/designer-components/dynamicView';
+import EditableTagGroup from '@/designer-components/editableTagGroup';
+import EndpointsAutocompleteComponent from '@/designer-components/endpointsAutocomplete/endpointsAutocomplete';
+import EntityPickerComponent from '@/designer-components/entityPicker';
+import FormAutocompleteComponent from '@/designer-components/formAutocomplete';
+import IconPicker from '@/designer-components/iconPicker';
+import Image from '@/designer-components/image';
+import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
+import Paragraph from '@/designer-components/_legacyComponents/paragraph';
+import Title from '@/designer-components/_legacyComponents/title';
+import Link from '@/designer-components/link';
+import List from '@/designer-components/_legacyComponents/listControl';
+import Markdown from '@/designer-components/markdown';
+import Notes from '@/designer-components/notes/notesComponent';
+import PasswordCombo from '@/designer-components/passwordCombo';
+import PermissionTagGroup from '@/designer-components/permissions/permissionTagGroup';
+import PermissionedObjectsTree from '@/designer-components/permissions/permissionedObjectsTree/permissionedObjectsTree';
+import PermissionsTree from '@/designer-components/permissions/permissionsTree/permissionsTree';
+import Progress from '@/designer-components/progress';
+import { PropertyAutocompleteComponent } from '@/designer-components/propertyAutocomplete';
+import Radio from '@/designer-components/radio/radio';
+import Rate from '@/designer-components/rate';
+import ReferenceListAutocompleteComponent from '@/designer-components/referenceListAutocomplete';
+import RichTextEditor from '@/designer-components/richTextEditor';
+import ScheduledJobExecutionLog from '@/designer-components/scheduledJobExecutionLog/scheduledJobExecutionLog';
+import Section from '@/designer-components/section';
+import SectionSeprator from '@/designer-components/sectionSeprator';
+import SizableColumnsComponent from '@/designer-components/sizableColumns/sizableColumns';
+import Space from '@/designer-components/space';
+import Statistic from '@/designer-components/statistic';
+import StatusTag from '@/designer-components/statusTag';
+import StyleBox from '@/designer-components/styleBox';
+import SubForm from '@/designer-components/subForm';
+import Switch from '@/designer-components/switch/switch';
+import Tabs from '@/designer-components/tabs';
+import Text from '@/designer-components/text';
+import ValidationErrors from '@/designer-components/validationErrors';
+import Wizard from '@/designer-components/wizard';
+import { ComponentSelectorComponent } from '@/designer-components';
 import SettingsComponent from '@/designer-components/_settings/settingsComponent';
 import AttachmentsEditor from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import Autocomplete from '@/designer-components/autocomplete/autocomplete';
+import Card from '@/designer-components/card';
 import Checkbox from '@/designer-components/checkbox/checkbox';
 import CollapsiblePanel from '@/designer-components/collapsiblePanel/collapsiblePanelComponent';
 import ConfigurableActionConfigurator from '@/designer-components/configurableActionsConfigurator';
@@ -74,12 +75,16 @@ import DataTable from '@/designer-components/dataTable/table/tableComponent';
 import TableTemplate from '@/designer-components/dataTable/table/tableTemplateComponent';
 import TableContext from '@/designer-components/dataTable/tableContext/tableContextComponent';
 import TableViewSelector from '@/designer-components/dataTable/tableViewSelector/tableViewSelectorComponent';
-import Toolbar from '@/designer-components/dataTable/toolbar/toolbarComponent';
+import Toolbar from '@/designer-components/_legacyComponents/toolbar/toolbarComponent';
 import DateField from '@/designer-components/dateField/dateField';
 import Dropdown from '@/designer-components/dropdown';
 import { DynamicActionsConfiguratorComponent } from '@/designer-components/dynamicActionsConfigurator/index';
+import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
 import EntityReferenceComponent from '@/designer-components/entityReference/entityReference';
 import FileUpload from '@/designer-components/fileUpload';
+import HtmlRender from '@/designer-components/htmlRender';
+import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
+import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 import NumberFieldComponent from '@/designer-components/numberField/numberField';
 import QueryBuilderComponent from '@/designer-components/queryBuilder/queryBuilderComponent';
 import RefListStatusComponent from '@/designer-components/refListStatus';
@@ -88,9 +93,7 @@ import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
-import { ComponentSelectorComponent } from '@/designer-components';
-import EditModeSelectorComponent from '@/designer-components/editModeSelector/editModeSelector';
-import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
+import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
 
 export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[] => {
   return [
@@ -116,13 +119,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
     {
       name: 'Data display',
       visible: true,
-      components: [
-        Alert,
-        Link,
-        Statistic,
-        Text,
-        ValidationErrors,
-      ],
+      components: [Alert, Link, Statistic, Text, ValidationErrors],
     },
     {
       name: 'Advanced',
@@ -134,6 +131,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         ColorPickerComponent,
         IconPicker,
         EditableTagGroup,
+        HtmlRender,
         Image,
         ImageAnnotationComponent,
         RichTextEditor,
@@ -182,6 +180,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
       name: 'Layout',
       visible: true,
       components: [
+        Card,
         CollapsiblePanel,
         Columns,
         ContainerComponent,
@@ -204,19 +203,20 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
       visible: devMode,
       name: 'Dev',
       components: [
+        PermissionAutocompleteComponent,
         EntityPickerColumnsEditor,
         ColumnsEditor, // Hidden
         ReferenceListAutocompleteComponent,
-        PropertyAutocompleteComponent, 
-        SortingEditorComponent, 
+        PropertyAutocompleteComponent,
+        SortingEditorComponent,
         EditModeSelectorComponent,
         ConfigurableActionConfigurator,
         DynamicActionsConfiguratorComponent,
         PermissionedObjectsTree,
         PermissionsTree,
         LabelValueEditorComponent,
-        DataContextSelector, 
-        ContextPropertyAutocompleteComponent, 
+        DataContextSelector,
+        ContextPropertyAutocompleteComponent,
         SettingsComponent,
         MetadataEditorComponent,
         Buttons,

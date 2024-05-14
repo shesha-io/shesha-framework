@@ -302,7 +302,8 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
   const resf = (items: IFieldData[]) => {
     let s = '';
     items.forEach((item) => {
-      if (!(!!item.property
+      if (!(item.property
+          || item.name === 'id'
           || item.name === '_className'
           || item.name === '_displayName'
       )) return;
@@ -329,16 +330,21 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
   let fieldNames = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-      var component = toolboxComponents[components[key].type];
+      var model = components[key];
+      var component = toolboxComponents[model.type];
       
       // get data only for isInput components
       // and for context = null or empty string (form context)
-      if (component?.isInput && !components[key].context) {
-        const propName = components[key].propertyName;
-        fieldNames.push(propName);
-        const fieldsFunc = component?.getFieldsToFetch;
-        if (typeof fieldsFunc === 'function')
-          fieldNames = fieldNames.concat(fieldsFunc(propName, metadata) ?? []);
+      if (component?.isInput && !model.context) {
+        const propName = model.propertyName;
+        
+        // ToDo: AS - calc actual propName from JS setting
+        if (typeof propName === 'string') {
+          fieldNames.push(propName);
+          const fieldsFunc = component?.getFieldsToFetch;
+          if (typeof fieldsFunc === 'function')
+            fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata) ?? []);
+        }
     }
   }
   }

@@ -1,0 +1,396 @@
+{
+  "components": [
+    {
+      "id": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+      "type": "sectionSeparator",
+      "propertyName": "separator1",
+      "parentId": "root",
+      "label": "Display"
+    },
+    {
+      "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+      "type": "contextPropertyAutocomplete",
+      "propertyName": "propertyName",
+      "parentId": "root",
+      "label": "Property name",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+      "type": "textField",
+      "propertyName": "label",
+      "parentId": "root",
+      "label": "Label"
+    },
+    {
+      "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+      "type": "dropdown",
+      "propertyName": "textType",
+      "parentId": "root",
+      "label": "Type",
+      "values": [
+        {
+          "label": "text",
+          "value": "text",
+          "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+        },
+        {
+          "label": "password",
+          "value": "password",
+          "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
+      "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+      "type": "dropdown",
+      "propertyName": "labelAlign",
+      "parentId": "root",
+      "label": "Label align",
+      "values": [
+        {
+          "label": "left",
+          "value": "left",
+          "id": "2d6411ae-0b56-4b4c-ad7c-fb15aa7fa1f5"
+        },
+        {
+          "label": "right",
+          "value": "right",
+          "id": "9e89461b-f916-4689-8789-1854ccedc666"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
+      "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+      "type": "textField",
+      "propertyName": "placeholder",
+      "parentId": "root",
+      "label": "Placeholder"
+    },
+    {
+      "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+      "type": "textArea",
+      "propertyName": "description",
+      "parentId": "root",
+      "label": "Description"
+    },
+    {
+      "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+      "type": "textField",
+      "propertyName": "prefix",
+      "parentId": "root",
+      "label": "Prefix"
+    },
+    {
+      "id": "d68b1754-682c-4f2c-b49a-a1f250467474",
+      "type": "textField",
+      "propertyName": "suffix",
+      "parentId": "root",
+      "label": "Suffix"
+    },
+    {
+      "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
+      "type": "textField",
+      "propertyName": "initialValue",
+      "parentId": "root",
+      "label": "Default Value",
+      "description": "Enter default value of component. (formData, formMode, globalState) are exposed"
+    },
+    {
+      "id": "0225b82d-19aa-47c7-b665-90508112bd23",
+      "type": "checkbox",
+      "propertyName": "passEmptyStringByDefault",
+      "parentId": "root",
+      "label": "Empty as default",
+      "description": "Whether the component should be initialized with an empty string"
+    },
+    {
+      "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+      "type": "checkbox",
+      "propertyName": "hidden",
+      "parentId": "root",
+      "label": "Hidden"
+    },
+    {
+      "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+      "type": "checkbox",
+      "propertyName": "hideLabel",
+      "parentId": "root",
+      "label": "Hide Label"
+    },
+    {
+      "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+      "type": "editModeSelector",
+      "propertyName": "editMode",
+      "parentId": "root",
+      "label": "Edit mode"
+    },
+
+    {
+      "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+      "type": "checkbox",
+      "propertyName": "hideBorder",
+      "label": "Hide border",
+      "parentId": "root",
+      "hidden": false,
+      "validate": {}
+    },
+    {
+      "id": "990f54ee-b754-479d-8e45-559efbd70c10",
+      "type": "sectionSeparator",
+      "propertyName": "sectionEvent",
+      "parentId": "root",
+      "label": "Events"
+    },
+    {
+      "id": "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
+      "type": "codeEditor",
+      "propertyName": "onChangeCustom",
+      "label": "On Change",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "description": "Enter custom event handler on changing of event. (form, event) are exposed",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "event", "description": "Event callback when user input", "type": "object" },
+        { "name": "form", "description": "Form instance", "type": "FormInstance" },
+        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+        { "name": "globalState", "description": "The global state of the application", "type": "object" },
+        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        },
+        { "name": "moment", "description": "The moment.js object", "type": "object" },
+        {
+          "name": "setFormData",
+          "description": "A function used to update the form data",
+          "type": "({ values: object, mergeValues: boolean}) => void"
+        }
+      ]
+    },
+    {
+      "id": "88c2d96c-b808-4316-8a36-701b09e5f6c7",
+      "type": "codeEditor",
+      "propertyName": "onFocusCustom",
+      "label": "On Focus",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "description": "Enter custom event handler on focus of event. (form, event) are exposed",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "event", "description": "Event callback when user input", "type": "object" },
+        { "name": "form", "description": "Form instance", "type": "FormInstance" },
+        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+        { "name": "globalState", "description": "The global state of the application", "type": "object" },
+        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        },
+        { "name": "moment", "description": "The moment.js object", "type": "object" },
+        {
+          "name": "setFormData",
+          "description": "A function used to update the form data",
+          "type": "({ values: object, mergeValues: boolean}) => void"
+        }
+      ]
+    },
+    {
+      "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
+      "type": "codeEditor",
+      "propertyName": "onBlurCustom",
+      "label": "On Blur",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "description": "Enter custom event handler on blur of event. (form, event) are exposed",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        { "name": "data", "description": "Selected form values", "type": "object" },
+        { "name": "event", "description": "Event callback when user input", "type": "object" },
+        { "name": "form", "description": "Form instance", "type": "FormInstance" },
+        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
+        { "name": "globalState", "description": "The global state of the application", "type": "object" },
+        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
+        {
+          "name": "message",
+          "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
+          "type": "object"
+        },
+        { "name": "moment", "description": "The moment.js object", "type": "object" },
+        {
+          "name": "setFormData",
+          "description": "A function used to update the form data",
+          "type": "({ values: object, mergeValues: boolean}) => void"
+        }
+      ]
+    },
+    {
+      "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
+      "type": "sectionSeparator",
+      "propertyName": "separator2",
+      "parentId": "root",
+      "label": "Validation"
+    },
+    {
+      "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
+      "type": "checkbox",
+      "propertyName": "validate.required",
+      "parentId": "root",
+      "label": "Required"
+    },
+    {
+      "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
+      "type": "numberField",
+      "propertyName": "validate.minLength",
+      "parentId": "root",
+      "label": "Min Length",
+      "validate": {}
+    },
+    {
+      "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
+      "type": "numberField",
+      "propertyName": "validate.maxLength",
+      "parentId": "root",
+      "label": "Max Length",
+      "validate": {}
+    },
+    {
+      "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
+      "type": "textField",
+      "propertyName": "validate.message",
+      "parentId": "root",
+      "label": "Message",
+      "validate": {}
+    },
+    {
+      "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
+      "type": "codeEditor",
+      "propertyName": "validate.validator",
+      "parentId": "root",
+      "label": "Validator",
+      "validate": {},
+      "labelAlign": "right",
+      "hidden": false,
+      "description": "Enter custom validator logic for form.item rules. Returns a Promise",
+      "settingsValidationErrors": [],
+      "exposedVariables": [
+        {
+          "propertyName": "rules",
+          "description": "Validate rules, only support customize validator",
+          "type": "object"
+        },
+        { "name": "value", "description": "Component current value", "type": "object" },
+        { "name": "callback", "description": "Callback called by component", "type": "function" },
+        { "name": "data", "description": "Form values", "type": "object" }
+      ]
+    },
+    {
+      "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
+      "type": "sectionSeparator",
+      "propertyName": "sectionStyle",
+      "parentId": "root",
+      "label": "Style"
+    },
+    {
+      "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+      "type": "codeEditor",
+      "propertyName": "style",
+      "label": "Style",
+      "parentId": "root",
+      "validate": {},
+      "settingsValidationErrors": [],
+      "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+    },
+    {
+      "id": "494e8079-98f6-4a25-b9fd-40a77554ec89",
+      "type": "dropdown",
+      "propertyName": "size",
+      "parentId": "root",
+      "label": "Size",
+      "allowClear": true,
+      "values": [
+        {
+          "label": "Small",
+          "value": "small",
+          "id": "2f56ae38-e5f3-40ff-9830-bc048736ddb4"
+        },
+        {
+          "label": "Middle",
+          "value": "middle",
+          "id": "470d820b-7cd7-439c-8e95-1f5b3134f80c"
+        },
+        {
+          "label": "Large",
+          "value": "large",
+          "id": "1f2ac3db-3b3f-486c-991f-ad703088ab2d"
+        }
+      ],
+      "dataSourceType": "values"
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

@@ -61,7 +61,7 @@ import {
 import moment from 'moment';
 import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
+import { ContextGetData, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
   IConfigurableActionConfiguration,
   useDataTableStore,
@@ -71,7 +71,7 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { axiosHttp } from '@/utils/fetchers';
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosResponse } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { ISetFormDataPayload } from './contexts';
@@ -79,6 +79,12 @@ import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { IParentProviderProps } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
+import { useDeepCompareMemo } from '@/hooks';
+import { removeGhostKeys } from '@/utils/form';
+import { useDelayedUpdate } from '../delayedUpdateProvider';
+import qs from 'qs';
+import { FormConfigurationDto } from './api';
+import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 
 /** Interface to geat all avalilable data */
 export interface IApplicationContext {
@@ -105,6 +111,9 @@ export interface IApplicationContext {
   message: MessageInstance;
   /** Other data */
   [key: string]: any;
+
+  /** Last updated date */
+  lastUpdated?: Date;
 }
 
 export function useFormProviderContext(): IApplicationContext {
@@ -123,32 +132,64 @@ export function useFormProviderContext(): IApplicationContext {
   };
 }
 
-export function useApplicationContext(topContextId?: string): IApplicationContext {
+export function useAvailableConstantsData(topContextId?: string): IApplicationContext {
+  // get delayed update function
+  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
+  // get closest data context Id
   let tcId = useDataContext(false)?.id;
+  // get DataContext Manager
+  const dcm = useDataContextManager(false);
+  // get page context
+  const pc = dcm.getPageContext();
   tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
-  const dcm = useDataContextManager(false);
-  const form = useForm(false) ?? dcm.getFormInstance();
+  // get closest form or page form
+  const form = useForm(false) ?? dcm.getPageFormInstance();
+  // get form mode
+  const formMode = form?.formMode;
+  // get full page context data
+  const pageContext = pc?.getFull();
+  // Get global state
   const { globalState, setState: setGlobalState } = useGlobalState();
-
+  // prepare data to support delayed update
+  const data = removeGhostKeys(useFormData()?.data); // ToDo: replace GhostKeys
+  const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
+  if (Boolean(delayedUpdate)) data._delayedUpdate = delayedUpdate;
+  // get list of data contexts
+  const contexts = { ...dcm?.getDataContextsData(tcId) };
+  // get application context
   const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
   const applicationData = application?.getData();
+  // get selected row if exists
+  const selectedRow = useDataTableStore(false)?.selectedRow;
+
+  // update last update date to to simplify general memoization
+  const lastUpdated = useDeepCompareMemo(() => new Date()
+    , [data, contexts.lastUpdate, formMode, globalState, selectedRow]);
 
   return {
     application: applicationData,
-    data: useFormData()?.data,
-    contexts: { ...dcm?.getDataContextsData(tcId) },
-    setFormData: form?.setFormData,
-    formMode: form?.formMode,
-    globalState,
-    setGlobalState,
+    contexts,
+    data,
     form,
-    selectedRow: useDataTableStore(false)?.selectedRow,
-    moment: moment,
+    formMode,
+    globalState,
     http: axiosHttp(backendUrl),
+    lastUpdated,
     message,
+    moment: moment,
+    pageContext,
+    selectedRow,
+    setFormData: form?.setFormData,
+    setGlobalState,
   };
 }
+
+export const useApplicationContextData = (): ContextGetData => {
+  const dcm = useDataContextManager(false);
+  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+  return application?.getData();
+};
 
 const getSettingValue = (value: any, allData: any, calcFunction: (setting: IPropertySetting, allData: any) => any) => {
   if (!value) return value;
@@ -169,7 +210,7 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
 
     // update setting value to actual
     if (isPropertySettings(value)) {
-      switch(value._mode){
+      switch (value._mode) {
         case 'code':
           return Boolean(value._code) ? calcFunction(value, allData) : undefined;
         case 'value':
@@ -202,7 +243,7 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
       }
     const res = new Function(vars, setting?._code)(...datas);
     return res;
-  } catch(error) {
+  } catch (error) {
     console.error("calcValue failed", error);
     return undefined;
   }
@@ -267,9 +308,9 @@ export const getActualModelWithParent = <T>(
   parent: IParentProviderProps
 ): T => {
   const parentReadOnly =
-    allData.formMode !== 'designer' 
+    allData.formMode !== 'designer'
     && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.formMode === 'readonly'));
-    
+
   const actualModel = getActualModel(model, allData, parentReadOnly);
   // update Id for complex containers (SubForm, DataList item, etc)
   if (!!parent?.subFormIdPrefix) {
@@ -478,6 +519,19 @@ export const upgradeComponentsTree = (
   return componentsFlatStructureToTree(toolboxComponents, flatStructure);
 };
 
+class StaticMustacheTag {
+  #value: string;
+  constructor(value: string) {
+    this.#value = value;
+  }
+  toEscapedString() {
+    return `{{${this.#value}}}`;
+  }
+  toString() {
+    return `{{{${this.#value}}}}`;
+  }
+}
+
 /**
  * Evaluates the string using Mustache template.
  *
@@ -495,7 +549,10 @@ export const upgradeComponentsTree = (
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
-export const evaluateString = (template: string = '', data: any) => {
+export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false) => {
+  if (!template || typeof template !== 'string')
+    return template;
+
   const localData: IAnyObject = data ? { ...data } : undefined;
   // The function throws an exception if the expression passed doesn't have a corresponding curly braces
   try {
@@ -512,7 +569,33 @@ export const evaluateString = (template: string = '', data: any) => {
         };
       };
     }
-    return template && typeof template === 'string' ? Mustache.render(template, localData ?? {}) : template;
+
+    const view = localData ?? {};
+
+    if (skipUnknownTags) {
+      template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
+        const mathes = x.match(/[\w\.]+/);
+        const tag = mathes.length ? mathes[0] : undefined;
+
+        const parts = tag.split('.');
+        const field = parts.pop();
+        const container = parts.reduce((level, key) => {
+          return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
+        }, view);
+        if (!container.hasOwnProperty(field)){
+          container[field] = new StaticMustacheTag(tag);
+        } 
+      });
+
+      const escape = (value: any): string => {
+        return value instanceof StaticMustacheTag
+          ? value.toEscapedString()
+          : value;
+      };
+
+      return Mustache.render(template, view, undefined, { escape });
+    } else
+      return Mustache.render(template, view);
   } catch (error) {
     console.warn('evaluateString ', error);
     return template;
@@ -746,7 +829,7 @@ export const getFunctionExecutor = <TResult = any>(
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 
 export function executeScript<TResult = any>(
   expression: string,
@@ -755,18 +838,22 @@ export function executeScript<TResult = any>(
   return new Promise<TResult>((resolve, reject) => {
     if (!expression) reject('Expression must be defined');
 
-    let argsDefinition = '';
-    const argList: any[] = [];
-    for (const argumentName in expressionArgs) {
-      if (expressionArgs.hasOwnProperty(argumentName)) {
-        argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-        argList.push(expressionArgs[argumentName]);
+    try {
+      let argsDefinition = '';
+      const argList: any[] = [];
+      for (const argumentName in expressionArgs) {
+        if (expressionArgs.hasOwnProperty(argumentName)) {
+          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+          argList.push(expressionArgs[argumentName]);
+        }
       }
-    }
 
-    const asyncFn = new AsyncFunction(argsDefinition, expression);
-    const result = asyncFn.apply(null, argList);
-    resolve(result);
+      const asyncFn = new AsyncFunction(argsDefinition, expression);
+      const result = asyncFn.apply(null, argList);
+      resolve(result);
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 
@@ -1692,4 +1779,33 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
   });
 
   return componentNames;
+};
+
+
+// todo: move to Shesha API as a separate service and provide type definition
+export const getSheshaFormUtils = (http: AxiosInstance) => {
+  return {
+    prepareTemplate: (templateId: string, replacements: object): Promise<string> => {
+      if (!templateId) return Promise.resolve(null);
+
+      const payload = {
+        id: templateId,
+        properties: 'markup',
+      };
+      const url = `/api/services/Shesha/FormConfiguration/Query?${qs.stringify(payload)}`;
+      return http
+        .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url)
+        .then((response) => {
+          const markup = response.data.result.markup;
+
+          const preparedMarkup = evaluateString(markup, {
+            NEW_KEY: nanoid(),
+            GEN_KEY: nanoid(),
+            ...(replacements ?? {}),
+          }, true);
+
+          return preparedMarkup;
+        });
+    }
+  };
 };

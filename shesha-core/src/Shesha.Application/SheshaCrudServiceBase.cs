@@ -359,7 +359,8 @@ namespace Shesha
             {
                 
                 case DataTypes.Array:
-                    if (property.DataFormat == ArrayFormats.ReferenceListItem)
+                    if (property.DataFormat == ArrayFormats.ReferenceListItem
+                        || property.DataFormat == ArrayFormats.ObjectReference)
                     {
                         sb.AppendLine(propertyName);
                         break;
@@ -399,7 +400,8 @@ namespace Shesha
         private async Task<string> GetGqlTopLevelPropertiesAsync(bool fullReference = false)
         {
             var sb = new StringBuilder();
-            var properties = await EntityConfigCache.GetEntityPropertiesAsync(typeof(TEntity));
+            var properties = (await EntityConfigCache.GetEntityPropertiesAsync(typeof(TEntity)))
+                .Where(x => !x.Suppress);
             foreach (var property in properties)
             {
                 AppendProperty(sb, property, fullReference);

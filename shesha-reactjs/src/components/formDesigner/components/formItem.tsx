@@ -2,7 +2,7 @@ import React, { FC, ReactNode, useMemo } from 'react';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ColProps, Form, FormItemProps } from 'antd';
 import { useForm } from '@/providers/form';
-import { getFieldNameFromExpression, getValidationRules, isCommonContext } from '@/providers/form/utils';
+import { getFieldNameFromExpression, getValidationRules } from '@/providers/form/utils';
 import classNames from 'classnames';
 import { useFormItem } from '@/providers';
 import { DataBinder } from '@/hocs/dataBinder';
@@ -30,6 +30,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
+
   const { formData, form } = useForm();
 
   const formItem = useFormItem();
@@ -41,7 +42,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
 
-  const propName = namePrefix && (!model.context || !isCommonContext(model.context))
+  const propName = namePrefix //&& (!model.context || !isCommonContext(model.context))
     ? namePrefix + '.' + model.propertyName 
     : model.propertyName;
 

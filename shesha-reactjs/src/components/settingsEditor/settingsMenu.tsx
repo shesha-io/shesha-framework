@@ -1,4 +1,4 @@
-import { Menu, Collapse, Empty, Spin } from 'antd';
+import { Menu, Collapse, Empty, Spin, Checkbox, Divider } from 'antd';
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from '@/hooks';
 import SearchBox from './searchBox';
@@ -35,6 +35,8 @@ const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication
 };
 
 export const SettingsMenu: FC<ISettingsMenuProps> = () => {
+  const [isDevmode, setDevMode] = useLocalStorage('application.isDevMode', false);
+
   const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('settings-editor.search', '');
   const [menuState, setMenuState] = useState<SettingMenuState>({ groups: [], allSettings: {} });
@@ -138,7 +140,8 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
           </Collapse>
         )}
         {filteredGroups.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Settings not found" />}
-
+        <Divider />
+        <Checkbox checked={isDevmode} onChange={(e) => setDevMode(e.target.checked)}>Developer mode</Checkbox>
       </Spin>
     </div>
   );

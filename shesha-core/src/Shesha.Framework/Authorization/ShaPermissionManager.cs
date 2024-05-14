@@ -7,7 +7,9 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.MultiTenancy;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -75,9 +77,13 @@ namespace Shesha.Authorization
                 if (parent != null)
                 {
                     newPermission = parent.CreateChildPermission(permission.Name,
-                        (permission.DisplayName ?? "").L(),
+                        (permission.Label ?? "").L(),
                         (permission.Description ?? "").L(),
-                        properties: new Dictionary<string, object>() { { "IsDbPermission", true } }
+                        properties: new Dictionary<string, object>() 
+                        { 
+                            { "IsDbPermission", true },
+                            { "ModuleId", permission.Module?.Id },
+                        }
                     );
                 }
             }
@@ -85,9 +91,14 @@ namespace Shesha.Authorization
             {
                 newPermission = CreatePermission(
                     permission.Name,
-                    (permission.DisplayName ?? "").L(),
+                    (permission.Label ?? "").L(),
                     (permission.Description ?? "").L(),
-                    properties: new Dictionary<string, object>() { { "IsDbPermission", true } });
+                    properties: new Dictionary<string, object>()
+                    {
+                        { "IsDbPermission", true },
+                        { "ModuleId", permission.Module?.Id },
+                    }
+                );
             }
 
             return Task.FromResult(newPermission);
@@ -104,13 +115,14 @@ namespace Shesha.Authorization
             }
 
             if (dbPermission.Name != permission.Name
-                || dbPermission.DisplayName != permission.DisplayName
+                || dbPermission.Label != permission.Label
                 || dbPermission.Description != permission.Description
+                || dbPermission.Module != permission.Module
             )
             {
                 dbPermission.Name = permission.Name;
                 dbPermission.Description = permission.Description;
-                dbPermission.DisplayName = permission.DisplayName;
+                dbPermission.Label = permission.Label;
                 dbPermission.Parent = permission.Parent;
 
                 RemovePermission(oldName);
@@ -132,7 +144,7 @@ namespace Shesha.Authorization
             return GetPermissionOrNull(oldName);
         }
 
-        public async Task UpdateParentAsync(string name, string parentName)
+        public async Task UpdateParentAsync(string name, string parentName, Module module)
         {
             var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == name);
 
@@ -145,6 +157,7 @@ namespace Shesha.Authorization
             InternalDeletePermission(dbPermission);
 
             dbPermission.Parent = parentName;
+            dbPermission.Module = module;
             await _CreatePermissionAsync(dbPermission);
             Permissions.AddAllPermissions();
 
@@ -172,6 +185,12 @@ namespace Shesha.Authorization
             {
                 DeleteMissedDbPermissionAsync(name);
                 throw new EntityNotFoundException("Permission 'name' not found");
+            }
+
+            var child = _permissionDefinitionRepository.GetAll().Where(x => x.Parent == name);
+            foreach (var item in child)
+            {
+                await DeletePermissionAsync(item.Name);
             }
 
             InternalDeletePermission(dbPermission);

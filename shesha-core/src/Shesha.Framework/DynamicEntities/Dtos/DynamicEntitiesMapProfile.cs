@@ -60,7 +60,7 @@ namespace Shesha.DynamicEntities.Dtos
                 .ForMember(e => e.Path, c => c.MapFrom(e => e.Name))
                 .ForMember(e => e.IsVisible, c => c.MapFrom(e => !e.Suppress))
                 .ForMember(e => e.OrderIndex, c => c.MapFrom(e => e.SortOrder ?? 0))
-                .ForMember(e => e.EntityTypeShortAlias, c => c.MapFrom(e => e.EntityType))
+                .ForMember(e => e.EntityType, c => c.MapFrom(e => e.EntityType))
                 .ForMember(e => e.EntityModule, c => c.MapFrom(e => e.EntityModule))
                 ;
             

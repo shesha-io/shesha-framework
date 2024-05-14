@@ -1,0 +1,355 @@
+{
+  "components": [
+    {
+      "id": "aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bf4",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Label",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            "type": "dropdown",
+            "propertyName": "labelAlign",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Label align",
+            "values": [
+              {
+                "label": "left",
+                "value": "left",
+                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              },
+              {
+                "label": "right",
+                "value": "right",
+                "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+            "type": "textArea",
+            "propertyName": "description",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Description",
+            "version": 2
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Hidden",
+            "version": 2
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "propertyName": "hideLabel",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Hide Label",
+            "version": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "aIMnm2re1eYM1M7pEEuf9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlValidation",
+      "label": "Validation",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvoIozeq2cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "y9SNudmMM0Wd1Sc_YH1ng",
+        "components": [
+          {
+            "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
+            "type": "checkbox",
+            "propertyName": "validate.required",
+            "parentId": "y9SNudmMM0Wd1Sc_YH1ng",
+            "label": "Required",
+            "version": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "aIMnn1re1exN1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlFiles",
+      "label": "Files",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvkIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "y9SNusmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
+            "type": "textField",
+            "propertyName": "height",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Height",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
+            "type": "textField",
+            "propertyName": "width",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Width",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "028b4eaf-8830-4dcd-b54f-422c73b25418",
+            "type": "dropdown",
+            "propertyName": "dataSource",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Data Source type",
+            "dataSourceType": "values",
+            "values": [
+              {
+                "label": "StoredFile",
+                "value": "storedFileId",
+                "id": "58bd1839-b215-4b7b-b7c7-acf67b52f7af"
+              },
+              {
+                "label": "Url",
+                "value": "url",
+                "id": "e71e4e52-2886-4569-94b4-f47d58602bc2"
+              }
+            ],
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "06ab0599-914d-4d2d-875c-765a495482f8",
+            "type": "codeEditor",
+            "propertyName": "url",
+            "label": "Url",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the image url as a string. This should return a string",
+            "exposedVariables": [
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSource) !== 'url';",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getUrl"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+          },
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "codeEditor",
+            "propertyName": "storedFileId",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": " StoredFile Id",
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSource) !== 'storedFileId';",
+              "_mode": "code",
+              "_value": false
+            },
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the storedFileId as a string. This should return a string",
+            "exposedVariables": [
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStoredFileId"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+          }
+        ]
+      }
+    },
+    {
+      "id": "aIMnm2re1exN1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlData",
+      "label": "Style",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvkIoyeq1cZMqAgbDCC",
+        "components": []
+      },
+      "content": {
+        "id": "y9SNuvsmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "06ab0588-914d-4d2d-875c-765a495472f8",
+            "type": "codeEditor",
+            "propertyName": "style",
+            "label": "Style",
+            "parentId": "y9SNuvsmMM0Wd1Sc_YI1ng",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+            "exposedVariables": [
+              {
+                "propertyName": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+          }
+        ]
+      }
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

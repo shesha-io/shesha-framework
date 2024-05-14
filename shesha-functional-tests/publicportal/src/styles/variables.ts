@@ -6,15 +6,12 @@ export const primaryColor = "#ff6600";
 
 export const colors = {
   error: "#ff7171",
-  grey: "#c1c1c1",
+  grey: "#d7d7d7",
   info: "#2b78e4",
   primary: primaryColor,
   success: "#14a38b",
   warning: "#f2ac57",
-};
-
-export const sizesPx = {
-  inputHeight: "50px",
+  greyLine: "#d3d3d3",
 };
 
 export const screenSize = {
@@ -25,4 +22,8 @@ export const screenSize = {
   laptop: "1024px",
   laptopL: "1440px",
   desktop: "2560px",
+};
+
+export const fontSize = {
+  main: "18px",
 };

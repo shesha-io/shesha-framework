@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using NUglify;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
@@ -24,6 +23,9 @@ namespace Shesha.DynamicEntities.Dtos
         public bool AllowConfigureAppService { get; set; }
 
         public List<ModelPropertyDto> Properties { get; set; }
+
+        public string HardcodedPropertiesMD5 { get; set; }
+        public DateTime ChangeTime { get; set; }
 
         // ConfigurationItem        
         public Guid? ModuleId { get; set; }

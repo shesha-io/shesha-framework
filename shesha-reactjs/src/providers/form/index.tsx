@@ -7,8 +7,9 @@ import {
   IComponentsDictionary,
   IConfigurableFormComponent,
   IFormValidationErrors,
+  IDictionary,
 } from '@/interfaces';
-import { DelayedUpdateProvider } from '@/providers/delayedUpdateProvider';
+import { DelayedUpdateProvider, useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -18,8 +19,6 @@ import {
   setFormControlsDataAction,
   setFormDataAction,
   setFormModeAction,
-  setFormWidthAction,
-  setFormZoomAction,
   setSettingsAction,
   setValidationErrorsAction,
   setVisibleComponentsAction,
@@ -37,11 +36,17 @@ import {
   ISetVisibleComponentsPayload,
 } from './contexts';
 import { useFormDesignerComponents } from './hooks';
-import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings } from './models';
+import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings, ISubmitActionArguments, Store } from './models';
 import formReducer from './reducer';
-import { convertActions, convertSectionsToList, getEnabledComponentIds, getFilteredComponentIds, getVisibleComponentIds, useFormProviderContext } from './utils';
+import { convertActions, convertSectionsToList, evaluateKeyValuesToObjectMatchedData, executeScript, getComponentNames, getEnabledComponentIds, getFilteredComponentIds, getSheshaFormUtils, getVisibleComponentIds, useFormProviderContext } from './utils';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useDeepCompareMemo } from '@/index';
+import cleanDeep from 'clean-deep';
+import { useDataContextManager } from '@/providers/dataContextManager/index';
+import { SheshaCommonContexts } from '../dataContextManager/models';
+import { addFormFieldsList, removeGhostKeys } from '@/utils/form';
+import { filterDataByOutputComponents } from './api';
+import { IDataSourceComponent } from '@/components/configurableForm/models';
 
 export interface IFormProviderProps {
   needDebug?: boolean;
@@ -68,9 +73,11 @@ export interface IFormProviderProps {
   isActionsOwner: boolean;
 
   propertyFilter?: (name: string) => boolean;
+  initialValues?: Store;
+  parentFormValues?: Store;
 }
 
-const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
+const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   name,
   children,
   allComponents,
@@ -133,13 +140,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   const setFormMode = (formMode: FormMode) => {
     dispatch(setFormModeAction(formMode));
-  };
-
-  const  setFormWidth = (width: number) => {
-    dispatch(setFormWidthAction(width));
-  };
-  const  setFormZoom = (zoom: number) => {
-    dispatch(setFormZoomAction(zoom));
   };
 
   const setSettings = (settings: IFormSettings) => {
@@ -232,8 +232,14 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: () => {
-        form.submit();
+      //argumentsFormMarkup: SubmitActionArgumentsMarkup,
+      executer: async (args: ISubmitActionArguments, actionContext) => {
+        var formInstance = (actionContext?.form?.form ?? form) as FormInstance<any>;
+        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
+        if (args?.validateFields === true || fieldsToValidate?.length > 0) {
+          await formInstance.validateFields(fieldsToValidate);
+        }
+        formInstance.submit();
         return Promise.resolve();
       },
     },
@@ -246,8 +252,9 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: () => {
-        form.resetFields();
+      executer: (_, actionContext) => {
+        var formInstance = actionContext?.form?.form ?? form;
+        formInstance.resetFields();
         return Promise.resolve();
       },
     },
@@ -263,6 +270,23 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
       hasArguments: false,
       executer: () => {
         return fetchData();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Validate',
+      description: 'Validate the form data and show validation errors if any',
+      owner: name,
+      ownerUid: actionsOwnerUid,
+      hasArguments: false,
+      executer: async(_, actionContext) => {
+        var formInstance = actionContext?.form?.form ?? form;
+        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
+        await formInstance.validateFields(fieldsToValidate);
+        return Promise.resolve();
       },
     },
     actionDependencies
@@ -441,6 +465,121 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     return visibleChildIndex !== -1;
   };
 
+  const dcm = useDataContextManager(false);
+
+  const executeExpression = <TResult = any>(
+    expression: string,
+    exposedData = null
+  ): Promise<TResult> => {
+    if (!expression) {
+      return null;
+    }
+
+    const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+    const pageContext = dcm.getPageContext();
+
+    const callArguments: IDictionary<any> = {
+      application: application?.getData(),
+      contexts: { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
+      data: exposedData || state.formData,
+      form: { ...state, allComponents, componentRelations },
+      formMode: state.formMode,
+      globalState: formProviderContext.globalState,
+      http: formProviderContext.http,
+      initialValues: props.initialValues,
+      message: formProviderContext.message,
+      moment: formProviderContext.moment,
+      pageContext: pageContext?.getFull(),
+      parentFormValues: props.parentFormValues,
+      setFormData: setFormData,
+      setGlobalState: formProviderContext.setGlobalState,
+      shesha: getSheshaFormUtils(formProviderContext.http),
+    };
+
+    return executeScript<TResult>(expression, callArguments);
+  };
+
+  const getInitialValuesFromFormSettings = () => {
+    const initialValuesFromFormSettings = state.formSettings?.initialValues;
+
+    const values = evaluateKeyValuesToObjectMatchedData(initialValuesFromFormSettings, [
+      { match: 'data', data: state.formData },
+      { match: 'parentFormValues', data: props.parentFormValues },
+      { match: 'globalState', data: formProviderContext.globalState },
+    ]);
+
+    return cleanDeep(values, {
+      // cleanKeys: [], // Don't Remove specific keys, ie: ['foo', 'bar', ' ']
+      // cleanValues: [], // Don't Remove specific values, ie: ['foo', 'bar', ' ']
+      // emptyArrays: false, // Don't Remove empty arrays, ie: []
+      // emptyObjects: false, // Don't Remove empty objects, ie: {}
+      // emptyStrings: false, // Don't Remove empty strings, ie: ''
+      // NaNValues: true, // Remove NaN values, ie: NaN
+      // nullValues: true, // Remove null values, ie: null
+      undefinedValues: true, // Remove undefined values, ie: undefined
+    });
+  };
+
+  const getDynamicPreparedValues = (): Promise<object> => {
+    const { preparedValues } = state.formSettings ?? {};
+
+    return Promise.resolve(preparedValues ? executeExpression(preparedValues) : {});
+  };
+
+  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
+
+  const prepareDataForSubmit = (): Promise<object> => {
+    const initialValuesFromFormSettings = getInitialValuesFromFormSettings();
+    const { formData } = state;
+
+    return getDynamicPreparedValues()
+      .then((dynamicValues) => {
+        const initialValues = getInitialValuesFromFormSettings();
+        const nonFormValues = { ...dynamicValues, ...initialValues };
+        const { excludeFormFieldsInPayload } = state.formSettings ?? {};
+
+        let postData = excludeFormFieldsInPayload
+          ? removeGhostKeys({ ...formData, ...nonFormValues })
+          : removeGhostKeys(addFormFieldsList(formData, nonFormValues, form));
+
+        postData = filterDataByOutputComponents(postData, allComponents, toolboxComponents);
+
+        const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
+        if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate;
+
+        const subFormNamesToIgnore = getComponentNames(
+          allComponents,
+          (component: IDataSourceComponent) =>
+            (component?.type === 'list' || component?.type === 'subForm') && component.dataSource === 'api'
+        );
+
+        if (subFormNamesToIgnore?.length) {
+          subFormNamesToIgnore.forEach((key) => {
+            if (Object.hasOwn(postData, key)) {
+              delete postData[key];
+            }
+          });
+          const isEqualOrStartsWith = (input: string) =>
+            subFormNamesToIgnore?.some((x) => x === input || input.startsWith(`${x}.`));
+
+          postData._formFields = postData._formFields?.filter((x) => !isEqualOrStartsWith(x));
+        }
+
+        if (excludeFormFieldsInPayload) {
+          delete postData._formFields;
+        } else {
+          if (initialValuesFromFormSettings) {
+            postData._formFields = Array.from(
+              new Set<string>([...(postData._formFields || []), ...Object.keys(initialValuesFromFormSettings)])
+            );
+          }
+        }
+
+        return postData;
+      })
+      .catch((error) => console.error(error));
+  };  
+
   const configurableFormActions: IFormActionsContext = {
     ...getFlagSetters(dispatch),
     getComponentModel,
@@ -449,8 +588,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     getChildComponents,
     getChildComponentIds,
     setFormMode,
-    setFormWidth,
-    setFormZoom,
     setVisibleComponents,
     updateStateFormData,
     setFormControlsData,
@@ -461,23 +598,36 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     getToolboxComponent,
     setFormData,
     hasVisibleChilds,
-    isComponentFiltered
+    isComponentFiltered,
+    prepareDataForSubmit,
+    executeExpression,
   };
+
   if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
 
 
   useDeepCompareEffect(() => {
     // set main form if empty
     if (needDebug)
-      formProviderContext.contextManager?.updateFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+      formProviderContext.contextManager?.updatePageFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
   }, [state]);
 
   return (
     <FormStateContext.Provider value={{ ...state, allComponents, componentRelations }}>
       <FormActionsContext.Provider value={configurableFormActions}>
-        <DelayedUpdateProvider>{children}</DelayedUpdateProvider>
+        {children}
       </FormActionsContext.Provider>
     </FormStateContext.Provider>
+  );
+};
+
+const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = (props) => {
+  return (
+    <DelayedUpdateProvider>
+      <FormProviderInternal {...props}>
+        {props.children}
+      </FormProviderInternal>
+    </DelayedUpdateProvider>
   );
 };
 

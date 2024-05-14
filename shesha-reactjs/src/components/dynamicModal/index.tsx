@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { FC } from 'react';
-import { ButtonGroup } from '@/components/formDesigner/components/button/buttonGroup/buttonGroup';
+import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { evaluateString } from '@/providers/form/utils';
 import { Form, Modal } from 'antd';
@@ -18,17 +18,19 @@ export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   onOk?: () => void;
 }
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
-  const { id, title, isVisible, width, onCancel, onOk, content, footer } = props;
+  const { id, title, isVisible, width, onCancel, onOk, content, footer, onClose } = props;
 
   const { removeModal } = useDynamicModals();
   const isSmall = useMedia('(max-width: 480px)');
 
   const hideForm = () => {
+    if (onClose) onClose();
     if (Boolean(onCancel)) {
       onCancel();
     } else {
       removeModal(id);
     }
+
   };
 
   return (
@@ -116,7 +118,6 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
 
   const handleCancel = () => {
     closeModal();
-
     if (onCancel) {
       onCancel();
     }
@@ -155,6 +156,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     skipFetchData: skipFetchData,
   };
 
+
   return (
     <DynamicModalWithContent
       key={id}
@@ -163,13 +165,13 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       width={width}
       isVisible={isVisible}
       onOk={onOk}
-      onCancel={closeModal}
+      onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
       content={
         <ConfigurableForm {...formProps}>
           <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles />
+              <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
             </div>
           </Show>
         </ConfigurableForm>

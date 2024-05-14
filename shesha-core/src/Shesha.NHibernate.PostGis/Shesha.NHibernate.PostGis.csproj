@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\..\common.props" />
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -12,8 +12,8 @@
     <PackageReference Include="NHibernate" Version="5.4.7" />
     <PackageReference Include="NHibernate.Spatial" Version="7.0.0" />
     <PackageReference Include="NHibernate.Spatial.PostGis" Version="7.0.0" />
-    <PackageReference Include="Npgsql" Version="8.0.1" />
-    <PackageReference Include="Npgsql.NetTopologySuite" Version="8.0.1" />
+    <PackageReference Include="Npgsql" Version="8.0.3" />
+    <PackageReference Include="Npgsql.NetTopologySuite" Version="8.0.3" />
   </ItemGroup>
 
   <ItemGroup>

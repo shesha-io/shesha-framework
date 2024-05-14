@@ -32,8 +32,7 @@ namespace Shesha.DynamicEntities
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly ITypeFinder _typeFinder;
-        private readonly IMetadataProvider _metadataProvider;
-        private readonly EntityModelProvider _entityModelProvider;
+        private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IMappingMetadataProvider _mappingMetadataProvider;
         private readonly ICacheManager _cacheManager;
         private readonly IRepository<Domain.ConfigurationItems.Module, Guid> _moduleRepository;
@@ -46,8 +45,7 @@ namespace Shesha.DynamicEntities
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IPermissionedObjectManager permissionedObjectManager,
             ITypeFinder typeFinder,
-            IMetadataProvider metadataProvider,
-            EntityModelProvider entityModelProvider,
+            IHardcodeMetadataProvider metadataProvider,
             IRepository<ConfigurationItem, Guid> configurationItemRepository,
             IMappingMetadataProvider mappingMetadataProvider,
             ICacheManager cacheManager,
@@ -59,7 +57,6 @@ namespace Shesha.DynamicEntities
             _permissionedObjectManager = permissionedObjectManager;
             _typeFinder = typeFinder;
             _metadataProvider = metadataProvider;
-            _entityModelProvider = entityModelProvider;
             _configurationItemRepository = configurationItemRepository;
             _mappingMetadataProvider = mappingMetadataProvider;
             _cacheManager = cacheManager;
@@ -496,9 +493,17 @@ namespace Shesha.DynamicEntities
                         prop.CascadeDeleteUnreferencedHardcoded = hardCodedProp.CascadeDeleteUnreferenced != null;
 
                         prop.EntityModule = hardCodedProp.EntityModule;
+                        prop.ModuleAccessor = hardCodedProp.ModuleAccessor;
+                        prop.TypeAccessor = hardCodedProp.TypeAccessor;
                     }
                 }
             }
+
+            dto.HardcodedPropertiesMD5 = modelConfig.HardcodedPropertiesMD5;
+            
+            var changeDates = properties.Select(p => p.LastModificationTime ?? p.CreationTime).ToList();
+            changeDates.Add(modelConfig.LastModificationTime ?? modelConfig.CreationTime);
+            dto.ChangeTime = changeDates.Max();
 
             dto.Permission = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}");
             dto.PermissionGet = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Get");

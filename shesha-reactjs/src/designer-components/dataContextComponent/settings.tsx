@@ -1,4 +1,4 @@
-import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import React, { FC, useState } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
@@ -10,6 +10,8 @@ import { IModelItem } from '@/interfaces/modelConfigurator';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { PropertiesEditor } from '@/components/modelConfigurator/propertiesEditor';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 interface IDataContextSettingsState extends IDataContextComponentProps { }
 
@@ -29,8 +31,13 @@ const convertModelItemToPropertyMetadata = (item: IModelItem) => {
   return res as IPropertyMetadata;
 };
 
-const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = ({ readOnly }) => {
+const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = (props) => {
+  const { readOnly } = props;
   const { values, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
+
+  const constants = useAvailableConstantsMetadata({ 
+    addGlobalConstants: true, 
+  });
 
   const [open, setOpen] = useState<boolean>(false);
   const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
@@ -76,13 +83,25 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
             label="Initial Data"
             propertyName="initialDataCode"
             description="Initial Data"
+            language='typescript'
+            wrapInTemplate={true}
+            templateSettings={{
+              functionName: 'initData',
+              useAsyncDeclaration: true,
+            }}
+            availableConstants={constants}
             exposedVariables={[
-              {
-                id: '788673a5-5eb9-4a9a-a34b-d8cea9cacb3c',
-                name: 'data',
-                description: 'Form data',
-                type: 'object',
-              },
+              { name: "data", description: "Form values", type: "object" },
+              { name: "contexts", description: "Contexts data", type: "object" },
+              { name: "pageContext", description: "Data of page", type: "object" },
+              { name: "globalState", description: "Global state", type: "object" },
+              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+              { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
+              { name: "form", description: "Form instance", type: "object" },
+              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
+              { name: "moment", description: "moment", type: "object" },
+              { name: "http", description: "axiosHttp", type: "object" },
+              { name: "message", description: "message framework", type: "object" },
             ]}
           />
         </SettingsFormItem>
@@ -108,6 +127,18 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           />
         </SettingsFormItem>
 
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
       <Modal

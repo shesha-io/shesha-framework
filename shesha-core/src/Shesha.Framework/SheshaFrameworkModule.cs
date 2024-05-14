@@ -103,6 +103,10 @@ namespace Shesha
                 .RegisterConfigurableItemImport<EntityConfig, IEntityConfigImport, EntityConfigImport>();
 
             IocManager
+                .RegisterConfigurableItemExport<PermissionDefinition, IPermissionDefinitionExport, PermissionDefinitionExport>()
+                .RegisterConfigurableItemImport<PermissionDefinition, PermissionDefinitionImport, PermissionDefinitionImport>();
+
+            IocManager
                 .RegisterConfigurableItemManager<SettingConfiguration, ISettingStore, SettingStore>()
                 .RegisterConfigurableItemExport<SettingConfiguration, ISettingExport, SettingExport>()
                 .RegisterConfigurableItemImport<SettingConfiguration, ISettingImport, SettingImport>();

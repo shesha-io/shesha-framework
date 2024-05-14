@@ -10,6 +10,7 @@ export interface IGlobalTableFilterBaseProps {
   performQuickSearch?: (val: string) => void;
   quickSearch: string;
   size?: SizeType;
+  block?: boolean;
 }
 
 export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
@@ -18,8 +19,9 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
   performQuickSearch,
   quickSearch,
   size = 'small',
+  block = false,
 }) => {
-  const { styles } = useStyles();
+  const { styles } = useStyles({ block });
   const srcProps: SearchProps = {
     size,
     allowClear: true,
@@ -43,13 +45,13 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
     <div className={styles.shaGlobalTableFilter}>
       <Search
         value={quickSearch}
-        onKeyPress={event => event?.stopPropagation()}
+        onKeyPress={(event) => event?.stopPropagation()}
         onSearch={onSearch}
-        onChange={e => {
+        onChange={(e) => {
           e?.stopPropagation();
           changeQuickSearch(e.target.value);
         }}
-        onClick={event => event?.stopPropagation()}
+        onClick={(event) => event?.stopPropagation()}
         {...srcProps}
       />
     </div>

@@ -1,20 +1,12 @@
-import { CurrentUserApi, IInternalCurrentUserApi } from './currentUser/api';
-import { ISettingsApi, SettingsApi } from './settings/api';
+import { ApplicationApi, IApplicationApi } from './applicationApi';
+import { EntityConfigurationDto } from './entities/models';
 import { HttpClientApi } from './http/api';
+import { useHttpClient } from './http/hooks';
 
-export interface IApplicationContext {
-    user: IInternalCurrentUserApi;
-    settings: ISettingsApi;
-}
-
-export class ApplicationContext implements IApplicationContext {
-    public user: IInternalCurrentUserApi;
-    public settings: ISettingsApi;
-    readonly _httpClient: HttpClientApi;
-
-    constructor(httpClient: HttpClientApi) {
-        this._httpClient = httpClient;
-        this.user = new CurrentUserApi(this._httpClient);
-        this.settings = new SettingsApi(this._httpClient);
-    }
-}
+export { 
+    ApplicationApi, 
+    type IApplicationApi,
+    type HttpClientApi,
+    type EntityConfigurationDto,
+    useHttpClient,
+};

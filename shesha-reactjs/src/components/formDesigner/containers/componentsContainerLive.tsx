@@ -5,6 +5,7 @@ import { IComponentsContainerProps } from './componentsContainer';
 import { useStyles } from '../styles/styles';
 import classNames from 'classnames';
 import { getAlignmentStyle } from './util';
+import { useParent } from '@/providers/parentProvider';
 
 export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const {
@@ -19,8 +20,9 @@ export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerP
   } = props;
   const { styles } = useStyles();
   const { getChildComponents } = useForm();
+  const parent = useParent();
 
-  const components = getChildComponents(containerId);
+  const components = getChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
   const renderComponents = () => {
     const renderedComponents = components.map((c, index) => (

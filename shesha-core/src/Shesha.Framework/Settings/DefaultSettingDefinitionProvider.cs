@@ -79,14 +79,13 @@ namespace Shesha.Settings
 
             var definition = Activator.CreateInstance(definitionType, name, defaultValue, displayName) as SettingDefinition;
 
-            var aliasAttribute = property.GetAttribute<AliasAttribute>();
-            definition.Accessor = CodeNamingHelper.GetAccessor(property.Name, aliasAttribute?.Alias);
+            definition.Accessor = property.GetPropertyAccessor();
 
             definition.Description = ReflectionHelper.GetDescription(property);
             definition.IsClientSpecific = settingAttribute?.IsClientSpecific ?? false;
 
             definition.ModuleName = moduleInfo.Name;
-            definition.ModuleAccessor = CodeNamingHelper.GetAccessor(moduleInfo.Name, moduleInfo.Alias);
+            definition.ModuleAccessor = moduleInfo.GetModuleAccessor();
 
             definition.EditForm = !string.IsNullOrWhiteSpace(settingAttribute?.EditorFormName)
                 ? new SettingConfigurationIdentifier(definition.ModuleName, settingAttribute.EditorFormName)
@@ -101,13 +100,6 @@ namespace Shesha.Settings
         private string UnwrapSettingAccessorName(string name) 
         {
             return name.RemovePostfix("SettingsDefault").RemovePostfix("SettingDefault");
-            /*
-            var regex = new Regex(@"I(?<name>[\w]+)SettingsDefault");
-            var match = regex.Match(name);
-            return match.Success
-                ? match.Groups["name"].Value 
-                : name;
-            */
         }
     }
 }

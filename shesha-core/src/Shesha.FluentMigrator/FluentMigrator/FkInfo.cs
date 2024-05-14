@@ -18,5 +18,12 @@
             // NOTE: Don't change this code, it's used in the migrations
             return $"IX_{table}_{column}";
         }
+
+        public FkInfo(string foreignTable, string foreignColumn, string masterTable)
+        {
+            ForeignTable = foreignTable;
+            ForeignColumn = foreignColumn;
+            MasterTable = masterTable;
+        }
     }
 }

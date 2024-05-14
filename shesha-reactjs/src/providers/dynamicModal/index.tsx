@@ -1,5 +1,4 @@
 import { Modal } from 'antd';
-import { nanoid } from '@/utils/uuid';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
@@ -19,15 +18,16 @@ import {
 } from './contexts';
 import { IModalProps } from './models';
 import DynamicModalReducer from './reducer';
+import { nanoid } from '@/utils/uuid';
 
-export interface IDynamicModalProviderProps {}
+export interface IDynamicModalProviderProps { }
 
 const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = ({ children }) => {
   const [state, dispatch] = useReducer(DynamicModalReducer, {
     ...DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   });
-
   const actionDependencies = [state];
+
   useConfigurableAction<IShowConfirmationArguments>(
     {
       name: 'Show Confirmation Dialog',
@@ -35,7 +35,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (actionArgs, _context) => {
-        return new Promise((resolve, _reject) => {
+        return new Promise((resolve, reject) => {
           Modal.confirm({
             title: actionArgs.title,
             content: actionArgs.content,
@@ -44,6 +44,9 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             okButtonProps: {
               type: 'primary',
               danger: true,
+            },
+            onCancel: () => {
+              reject();
             },
             onOk: () => {
               resolve(true);
@@ -71,6 +74,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (actionArgs, context) => {
+
         const modalId = nanoid();
 
         const { formMode, ...restArguments } = actionArgs;
@@ -80,7 +84,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
         const { modalWidth, customWidth, widthUnits } = actionArgs;
 
-        return new Promise((resolve, _reject) => {
+        return new Promise((resolve, reject) => {
           // fix wrong migration
           const verb = !restArguments.submitHttpVerb || !Array.isArray(restArguments.submitHttpVerb)
             ? restArguments.submitHttpVerb
@@ -96,28 +100,35 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             parentFormValues: parentFormValues,
             isVisible: true,
             submitHttpVerb: verb,
+            onCancel: () => {
+              reject();
+            },
             onSubmitted: (values) => {
               removeModal(modalId);
-
               resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
+            },
+            onClose: (positive = false, result) => {
+              if (positive)
+                resolve(result);
+              else
+                reject(result);
             },
           };
 
-          createModal({ ...modalProps, isVisible: true });
+          createModal({ ...modalProps });
         });
       },
       argumentsFormMarkup: dialogArgumentsForm,
-      evaluateArguments: (argumentsConfiguration, evaluationData) =>  {
+      evaluateArguments: (argumentsConfiguration, evaluationData) => {
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
           path: '',
           evaluationFilter: (context, _data) => context.path !== 'buttons'
         };
-      
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
-      }
+      },
     },
-    actionDependencies,
+    actionDependencies
   );
 
   const getLatestVisibleInstance = () => {
@@ -132,7 +143,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ) {
         highestIndexKey = keys[i];
       }
-    }
+    };
 
     return highestIndexKey ? instances[highestIndexKey] : null;
   };
@@ -150,6 +161,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
           if (latestInstance) {
             removeModal(latestInstance?.id);
+            latestInstance.onClose();
             resolve({});
           } else {
             reject('There is no open dialog to close');
@@ -182,9 +194,9 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             key={instance.id}
             value={{
               instance,
-              // show: () => show(instance.id),
-              // hide: () => hide(instance.id),
-              close: () => removeModal(instance.id),
+              close: () => {
+                removeModal(instance.id);
+              }
             }}
           >
             <DynamicModal {...instanceProps} key={instance.id} id={instance.id} isVisible={instance.isVisible} />

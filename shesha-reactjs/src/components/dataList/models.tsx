@@ -7,7 +7,7 @@ import { ISortingItem } from '@/providers/dataTable/interfaces';
 
 export type DataListSelectionMode = 'none' | 'single' | 'multiple';
 export type FormSelectionMode = 'name' | 'view' | 'expression';
-export type Orientation = 'vertical' | 'horizontal';
+export type Orientation = 'vertical' | 'horizontal' | 'wrap';
 export type ListItemWidth = number | 'custom';
 export type InlineEditMode = 'one-by-one' | 'all-at-once';
 export type InlineSaveMode = 'auto' | 'manual';
@@ -33,6 +33,9 @@ export interface IDataListProps extends IDataListBaseProps, IDataListActions {
   actionRef?: MutableRefObject<any>;
 
   modalWidth?: string;
+  noDataText?: string;
+  noDataSecondaryText?: string;
+  noDataIcon?: string;
 }
 
 export interface IDataListBaseProps {
@@ -57,6 +60,11 @@ export interface IDataListBaseProps {
   orientation?: Orientation;
   listItemWidth?: ListItemWidth;
   customListItemWidth?: number;
+  cardMinWidth?: string;
+  cardMaxWidth?: string;
+  cardHeight?: string;
+  cardSpacing?: string;
+  showBorder?: boolean;
 
   dblClickActionConfiguration?: IConfigurableActionConfiguration;
 
@@ -66,6 +74,9 @@ export interface IDataListBaseProps {
 
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
+  noDataText?: string;
+  noDataSecondaryText?: string;
+  noDataIcon?: string;
 
   onNewListItemInitialize?: string;
 }

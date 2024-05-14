@@ -1,0 +1,206 @@
+{
+  "components": [
+    {
+      "id": "aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "textField",
+            "propertyName": "componentName",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Component name",
+            "jsSetting": false,
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Label"
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Hidden"
+          },
+          {
+            "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+            "type": "editModeSelector",
+            "propertyName": "editMode",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Edit mode"
+          }
+        ]
+      }
+    },
+    {
+      "id": "1aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlStyling",
+      "label": "Styling",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "1FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "1y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "a4076447-d2a2-44a9-bf9f-aa799a827cc7",
+            "type": "dropdown",
+            "propertyName": "savePlacement",
+            "parentId": "1y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Save Placement",
+            "description": "This used to place the save button (Left, Right).",
+            "values": [
+              {
+                "label": "Left",
+                "value": "left",
+                "id": "18a25d15-5a3b-43f6-815c-ab50c60c67e2"
+              },
+              {
+                "label": "Right",
+                "value": "right",
+                "id": "ba03eef2-2fc6-4ac9-9f3d-d77952416c84"
+              }
+            ],
+            "defaultValue": "left",
+            "dataSourceType": "values"
+          },
+          {
+            "id": "2fb35552-0dcb-42ec-aee5-0e8ca67127d4",
+            "type": "checkbox",
+            "propertyName": "autoSize",
+            "parentId": "1y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Auto Size"
+          }
+        ]
+      }
+    },
+    {
+      "id": "2aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlNotes",
+      "label": "Notes",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+
+      "isDynamic": false,
+      "version": 2,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "2FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "2y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "417ee22e-a49d-44f2-a1c7-fef32ec87503",
+            "type": "textField",
+            "propertyName": "ownerId",
+            "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Owner Id"
+          },
+          {
+            "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
+            "type": "textField",
+            "propertyName": "ownerType",
+            "parentId": "2y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Owner Type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

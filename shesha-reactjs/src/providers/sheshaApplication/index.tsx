@@ -27,6 +27,7 @@ import {
   AppConfiguratorProvider,
   DynamicModalProvider,
   UiProvider,
+  CanvasProvider,
 } from '@/providers';
 import {
   setBackendUrlAction,
@@ -46,6 +47,9 @@ import {
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
+import { DataContextProvider } from '../dataContextProvider';
+import { SheshaCommonContexts } from '../dataContextManager/models';
+import { useApplicationPlugin } from './context/applicationContext';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -162,15 +166,26 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                             <MetadataDispatcherProvider>
                               <DataContextManager>
                                 <ApplicationContextsProvider>
+                                  <DataContextProvider
+                                    id={SheshaCommonContexts.AppContext}
+                                    name={SheshaCommonContexts.AppContext}
+                                    description={'Application data store context'}
+                                    type={'root'}
+                                  >
+                                    <CanvasProvider>
                                   <StackedNavigationProvider>
                                     <DataSourcesProvider>
                                       <DynamicModalProvider>
                                         <DebugPanel>
-                                          <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                          <ApplicationActionsProcessor>
+                                              {children}
+                                          </ApplicationActionsProcessor>
                                         </DebugPanel>
                                       </DynamicModalProvider>
                                     </DataSourcesProvider>
                                   </StackedNavigationProvider>
+                                    </CanvasProvider>
+                                  </DataContextProvider>
                                 </ApplicationContextsProvider>
                               </DataContextManager>
                             </MetadataDispatcherProvider>
@@ -200,4 +215,4 @@ const useSheshaApplication = (require: boolean = true): ISheshaApplication => {
   return { ...stateContext, ...actionsContext };
 };
 
-export { ShaApplicationProvider, useSheshaApplication };
+export { ShaApplicationProvider, useSheshaApplication, useApplicationPlugin };

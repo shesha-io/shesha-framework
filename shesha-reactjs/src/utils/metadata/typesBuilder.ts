@@ -1,8 +1,8 @@
 import { DataTypes, FormFullName } from "@/interfaces";
-import { IHasEntityType, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
+import { IHasEntityType, IPropertyMetadata, ITypeDefinitionBuilder, ModelTypeIdentifier, NestedProperties, TypeAndLocation, TypeDefinition, isEntityMetadata, isIHasEntityType, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import camelcase from "camelcase";
 import { verifiedCamelCase } from "../string";
-import { StringBruilder } from "./stringBruilder";
+import { StringBuilder } from "./stringBuilder";
 import { TypesImporter } from "./typesImporter";
 import { MetadataFetcher } from "./metadataBuilder";
 
@@ -60,12 +60,12 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return camelcase(entityType, { pascalCase: true });
     };
 
-    #getEntityFileName = (entityType: string, entityModule?: string): string => {
-        const folder = entityModule ?? "[no-module]";
-        return `entities/${folder}/${entityType}.ts`;
+    #getEntityFileName = (typeAccessor: string, moduleAccessor?: string): string => {
+        const folder = moduleAccessor ?? "[no-module]";
+        return `entities/${folder}/${typeAccessor}.ts`;
     };
 
-    #appendCommentBlock = (sb: StringBruilder, lines: string[]) => {
+    #appendCommentBlock = (sb: StringBuilder, lines: string[]) => {
         const filteredLines = lines.filter(l => Boolean(l));
         if (filteredLines.length > 0) {
             filteredLines.forEach((line, index) => {
@@ -86,27 +86,37 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return definition;
     };
 
+    makeFile = (fileName: string, content: string) => {
+        this.#internalRegisterFile(fileName, content);
+    };
+
     getEntityType = async (typeId: ModelTypeIdentifier): Promise<TypeAndLocation> => {
         if (!typeId)
             return null;
 
-        const { module: entityModule, name: entityType } = typeId;
         const entityMetadata = await this.metadataFetcher(typeId);
+        if (!isEntityMetadata(entityMetadata))
+            throw new Error(`Specified type is not an entity: ${typeId}`);
 
-        const fileName = this.#getEntityFileName(entityType, entityModule);
-        const typeName = this.getEntityTypeName(entityType);
+        const { typeAccessor, moduleAccessor } = entityMetadata;
+        if (!moduleAccessor)
+            return null;
+        
+        const fileName = this.#getEntityFileName(typeAccessor, moduleAccessor);
+        const typeName = typeAccessor;
+        const fullName = `${moduleAccessor}/${typeAccessor}`;
 
-        if (this.requestedEntities.has(entityType))
-            return { typeName, filePath: fileName };
-        this.requestedEntities.add(entityType);
+        if (this.requestedEntities.has(fullName))
+            return { typeName: typeAccessor, filePath: fileName, metadata: entityMetadata };
+        this.requestedEntities.add(fullName);
 
         if (this.isFileExists(fileName))
-            return { typeName, filePath: fileName };
+            return { typeName: typeAccessor, filePath: fileName, metadata: entityMetadata };
 
         const typesImporter = new TypesImporter();
-        const sb = new StringBruilder();
-        this.#appendCommentBlock(sb, [entityType]);
-        sb.append(`export interface ${typeName} {`);
+        const sb = new StringBuilder();
+        this.#appendCommentBlock(sb, [entityMetadata.entityType, entityMetadata.description]);
+        sb.append(`export interface ${typeAccessor} {`);
         sb.incIndent();
         await this.#iterateProperties(entityMetadata.properties, async (prop) => {
             const propertyName = verifiedCamelCase(prop.path);
@@ -131,10 +141,10 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
         this.#internalRegisterFile(fileName, content);
 
-        return { typeName, filePath: fileName };
+        return { typeName, filePath: fileName, metadata: entityMetadata };
     };
 
-    #getEntityPropertyType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
+    #getTypeIdentifier = (property: IPropertyMetadata): ModelTypeIdentifier => {
         const { dataFormat } = property;
         // todo: merge entityType and dataFormat
         const entityType = (property as IHasEntityType).entityType ?? dataFormat;
@@ -142,9 +152,33 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         if (!entityType)
             return null;
 
-        const entityModule = (property as IHasEntityType).entityModule;
+        if (isIHasEntityType(property) && entityType){
+            return { 
+                name: entityType,
+                module: property.entityModule,
+                //module: property.moduleAccessor, 
+                //name: property.typeAccessor                 
+            };
+        } else
+            return null;
+    };
 
-        return await this.getEntityType({ module: entityModule, name: entityType });
+    #getArrayType = async (_property: IPropertyMetadata): Promise<TypeAndLocation> => {
+        return { typeName: "any[]" };
+        /* todo: add context and import required types
+        if (property.itemsType){
+            const itemType = await this.#getTypescriptType(property.itemsType);
+
+            return { typeName: `Array<${itemType.typeName}>` };
+        } else {
+            return { typeName: "any[]" };
+        } 
+        */       
+    };
+
+    #getEntityPropertyType = async (property: IPropertyMetadata): Promise<TypeAndLocation> => {
+        const typeId = this.#getTypeIdentifier(property);
+        return await this.getEntityType(typeId);
     };
 
     #generateFileName = (keyType: string) => {
@@ -152,20 +186,33 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
     };
 
     #getObjectType = async (propertyName: string, properties: NestedProperties): Promise<TypeAndLocation> => {
+        if (!properties || properties.length === 0) {
+            return { typeName: "{ [key: string]: any }" };
+        }
         const typeName = camelcase(propertyName, { pascalCase: true });
         const fileName = this.#generateFileName(typeName);
+        
+        const typesImporter = new TypesImporter();
+
         if (!this.isFileExists(fileName)) {
-            const sb = new StringBruilder();
+            const sb = new StringBuilder();
             sb.append(`export interface ${typeName} {`);
             sb.incIndent();
             await this.#iterateProperties(properties, async (prop) => {
                 const dataType = await this.#getTypescriptType(prop);
-                if (dataType)
+                if (dataType){
+                    typesImporter.import(dataType);
                     sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
+                }
             });
             sb.decIndent();
             sb.append("}");
-            const content = sb.build();
+            const exportSection = sb.build();
+            
+            const importSection = typesImporter.generateImports();
+            const content = importSection
+                ? `${importSection}\n\n${exportSection}`
+                : exportSection;
 
             this.#internalRegisterFile(fileName, content);
         }
@@ -191,8 +238,10 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             case DataTypes.boolean:
                 return { typeName: 'boolean' };
             case DataTypes.number:
+            case DataTypes.referenceListItem:
                 return { typeName: 'number' };
             case DataTypes.string:
+            case DataTypes.guid:
                 return { typeName: 'string' };
             case DataTypes.date:
                 return { typeName: 'Date' };
@@ -202,6 +251,8 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                 return await this.#getEntityPropertyType(property);
             case DataTypes.object:
                 return await this.#getObjectType(property.path, property.properties);
+            case DataTypes.array:
+                return await this.#getArrayType(property);
             default:
                 return undefined;
         }
@@ -212,7 +263,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
      */
     async build(properties: NestedProperties): Promise<BuildResult> {
         const typesImporter = new TypesImporter();
-        const sb = new StringBruilder();
+        const sb = new StringBuilder();
 
         await this.#iterateProperties(properties, async (prop) => {
             const dataType = await this.#getTypescriptType(prop);
@@ -225,6 +276,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
                 sb.append(`export const ${prop.path}: ${typeDefinition};`);
             }
         });
+
         const exportSection = sb.build();
 
         const importSection = typesImporter.generateImports();

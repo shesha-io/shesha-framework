@@ -8,7 +8,7 @@ import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components';
 import { DEFAULT_FORM_SETTINGS, useForm } from '@/providers';
-import { getActualModel, upgradeComponent, useApplicationContext } from '@/providers/form/utils';
+import { getActualModel, upgradeComponent, useAvailableConstantsData } from '@/providers/form/utils';
 import { getInjectables } from './utils';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 import { IComponentWrapperProps, IConfigurableCellProps, IDataCellProps } from './interfaces';
@@ -58,7 +58,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   const { columnConfig, propertyMeta, customComponent } = props;
 
   const toolboxComponents = useFormDesignerComponents();
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
 
   const component = toolboxComponents[customComponent.type];
   const injectables = getInjectables(props);

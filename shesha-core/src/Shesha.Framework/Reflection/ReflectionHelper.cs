@@ -349,7 +349,9 @@ namespace Shesha.Reflection
         /// </summary>
         public static bool IsNullable(this PropertyInfo property) 
         {
-            return property.PropertyType.IsNullableType() || property.HasAttribute<System.Runtime.CompilerServices.NullableAttribute>();
+            return property.PropertyType.IsEntityType()
+                ? !property.HasAttribute<System.Runtime.CompilerServices.RequiredMemberAttribute>()
+                : property.PropertyType.IsNullableType() || property.HasAttribute<System.Runtime.CompilerServices.NullableAttribute>();
         }
 
         /// <summary>

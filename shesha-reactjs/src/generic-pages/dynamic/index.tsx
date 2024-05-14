@@ -31,8 +31,11 @@ import { useStackedModal } from './navigation/stackedNavigationModalProvider';
 import { useStackedNavigation } from './navigation/stakedNavigation';
 import { DynamicFormPubSubConstants } from './pubSub';
 import { useDataContextManager } from '@/providers/dataContextManager/index';
+import { DataContextProvider } from '@/providers/dataContextProvider';
+import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
+import { executeScript } from '@/providers/form/utils';
 
-export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
+const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
   const [state, setState] = useState<IDynamicPageState>({});
   const formRef = useRef<ConfigurableFormInstance>();
@@ -40,6 +43,7 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
   const { router } = useShaRouting();
   const { configurationItemMode } = useAppConfigurator();
   const dcm = useDataContextManager(false);
+  const pageContext = dcm.getPageContext();
 
   const { publish } = usePubSub();
 
@@ -214,13 +218,16 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
       setGlobalState,
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
-      form,
+      // ToDo: review on Page/Form life cycle
+      form: formRef?.current ?? { formSettings },
+      formMode: formRef?.current?.formMode,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
+      pageContext: pageContext?.getFull(),
+      application: dcm?.getDataContext(SheshaCommonContexts.ApplicationContext)?.getData(),
       ...context,
     };
 
-    // tslint:disable-next-line:function-constructor
-    return new Function(...Object.keys(localContext), expression)(...Object.values(localContext));
+    return executeScript(expression, localContext);
   };
 
   // effect that executes onDataLoaded handler
@@ -334,8 +341,16 @@ export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
         open={Boolean(navigationState)}
         parentId={state?.stackId}
       >
-        <DynamicPage onCloseDialog={onStackedDialogClose} {...navigationState} />
+        <DynamicPageInternal onCloseDialog={onStackedDialogClose} {...navigationState} />
       </StackedNavigationModal>
     </Fragment>
+  );
+};
+
+export const DynamicPage: PageWithLayout<IDynamicPageProps> = (props) => {
+  return (
+    <DataContextProvider id={'pageContext'} name={'pageContext'} type={'page'}>
+      <DynamicPageInternal {...props}/>
+    </DataContextProvider> 
   );
 };

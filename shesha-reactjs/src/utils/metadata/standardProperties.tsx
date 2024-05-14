@@ -13,12 +13,15 @@ export const SheshaConstants = {
   setGlobalState: "shesha:setGlobalState",
   selectedRow: "shesha:selectedRow",
   contexts: "shesha:contexts",
+  pageContext: "shesha:pageContext",
   form: "shesha:form",
   formMode: "shesha:formMode",
+  formData: "shesha:formData",
+  application: "shesha:application",
 };
 
-export const registerHttpAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("http", "axios instance used to make http requests", () => {
+export const registerHttpAction: MetadataBuilderAction = (builder, name = "http") => {
+  builder.addCustom(name, "axios instance used to make http requests", () => {
     const definition: TypeDefinition = {
       typeName: 'HttpClientApi',
       files: [{ content: httpApiDefinition, fileName: 'apis/http.ts' }],
@@ -27,8 +30,8 @@ export const registerHttpAction: MetadataBuilderAction = (builder) => {
   });
 };
 
-export const registerMessageAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("message", "API for displaying toast messages", () => {
+export const registerMessageAction: MetadataBuilderAction = (builder, name = "message") => {
+  builder.addCustom(name, "API for displaying toast messages", () => {
     const definition: TypeDefinition = {
       typeName: 'MessageApi',
       files: [{ content: messageApiDefinition, fileName: 'apis/message.ts' }],
@@ -37,9 +40,9 @@ export const registerMessageAction: MetadataBuilderAction = (builder) => {
   });
 };
 
-export const registerMomentAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("moment", "The moment.js object", () => {
-    return fetch("https://unpkg.com/moment@2.25.3/ts3.1-typings/moment.d.ts")
+export const registerMomentAction: MetadataBuilderAction = (builder, name = "moment") => {
+  builder.addCustom(name, "The moment.js object", () => {
+    return fetch("https://unpkg.com/moment@2.25.3/ts3.1-typings/moment.d.ts", { mode: 'no-cors' })
       .then(response => {
         return response.text();
       })
@@ -61,8 +64,8 @@ export const registerMomentAction: MetadataBuilderAction = (builder) => {
   });
 };
 
-export const registerGlobalStateAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("globalState", "The global state of the application", () => {
+export const registerGlobalStateAction: MetadataBuilderAction = (builder, name = "globalState") => {
+  builder.addCustom(name, "The global state of the application", () => {
     const definition: TypeDefinition = {
       typeName: 'GlobalStateType',
       files: [{ content: globalStateApiDefinition, fileName: 'apis/globalState.ts' }],
@@ -71,8 +74,8 @@ export const registerGlobalStateAction: MetadataBuilderAction = (builder) => {
   });
 };
 
-export const registerSetGlobalStateAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("setGlobalState", "Setting the global state of the application", () => {
+export const registerSetGlobalStateAction: MetadataBuilderAction = (builder, name = "setGlobalState") => {
+  builder.addCustom(name, "Setting the global state of the application", () => {
     const definition: TypeDefinition = {
       typeName: 'SetGlobalStateType',
       files: [{ content: globalStateApiDefinition, fileName: 'apis/globalState.ts' }],
@@ -81,8 +84,8 @@ export const registerSetGlobalStateAction: MetadataBuilderAction = (builder) => 
   });
 };
 
-export const registerSelectedRowAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("selectedRow", "Selected row of nearest table (null if not available)", () => {
+export const registerSelectedRowAction: MetadataBuilderAction = (builder, name = "selectedRow") => {
+  builder.addCustom(name, "Selected row of nearest table (null if not available)", () => {
     const definition: TypeDefinition = {
       typeName: 'any',
       files: [],
@@ -91,8 +94,8 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder) => {
   });
 };
 
-export const registerContextsAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("contexts", "Contexts data", () => {
+export const registerContextsAction: MetadataBuilderAction = (builder, name = "contexts") => {
+  builder.addCustom(name, "Contexts data", () => {
     const definition: TypeDefinition = {
       typeName: 'any',
       files: [],
@@ -101,8 +104,18 @@ export const registerContextsAction: MetadataBuilderAction = (builder) => {
   });
 };
 
-export const registerFormAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("form", "Form instance API", () => {
+export const registerPageContextAction: MetadataBuilderAction = (builder, name = "pageContext") => {
+  builder.addCustom(name, "Contexts data of current page", () => {
+    const definition: TypeDefinition = {
+      typeName: 'any',
+      files: [],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerFormAction: MetadataBuilderAction = (builder, name = "form") => {
+  builder.addCustom(name, "Form instance API", () => {
     const definition: TypeDefinition = {
       typeName: 'FormApi',
       files: [{ content: formApiDefinition, fileName: 'apis/form.ts' }],
@@ -111,8 +124,8 @@ export const registerFormAction: MetadataBuilderAction = (builder) => {
   });
 };
 
-export const registerFormModeAction: MetadataBuilderAction = (builder) => {
-  builder.addCustom("formMode", "The form mode", () => {
+export const registerFormModeAction: MetadataBuilderAction = (builder, name = "formMode") => {
+  builder.addCustom(name, "The form mode", () => {
     const definition: TypeDefinition = {
       typeName: 'FormMode',
       files: [{ content: formApiDefinition, fileName: 'apis/form.ts' }],

@@ -7,6 +7,9 @@ using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Shesha.ConfigurationItems;
+using Shesha.Domain;
+using Shesha.DynamicEntities.Distribution;
 using Shesha.Localization;
 using Shesha.Modules;
 using Shesha.MultiTenancy;
@@ -42,6 +45,10 @@ namespace Shesha
 
         public override void Initialize()
         {
+            IocManager
+                .RegisterConfigurableItemExport<ShaRole, IShaRoleExport, ShaRoleExport>()
+                .RegisterConfigurableItemImport<ShaRole, ShaRoleImport, ShaRoleImport>();
+
             IocManager.RegisterAssemblyByConvention(typeof(SheshaCoreModule).GetAssembly());
         }
 

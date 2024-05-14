@@ -1,7 +1,7 @@
 import { AutoComplete, Checkbox, Input, InputNumber, Select, Switch, } from 'antd';
 import React, { FC, useState } from 'react';
 import PropertyAutocomplete from '@/components/propertyAutocomplete/propertyAutocomplete';
-import { CodeEditor } from '@/components/formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import Show from '@/components/show';
 import { Autocomplete } from '@/components/autocomplete';
 import FormAutocomplete from '@/components/formAutocomplete';
@@ -18,11 +18,14 @@ import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/s
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import { useFormDesigner } from '@/providers/formDesigner';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
-const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({readOnly}) => {
-  const { values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
+const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
+  const { readOnly } = props;
+
+  const { model, values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
@@ -39,7 +42,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         <ContextPropertyAutocomplete id="fb71cb51-884f-4f34-aa77-820c12276c95"
           readOnly={readOnly} 
           defaultModelType={designerModelType ?? formSettings.modelType}
-          formData={values}
+          formData={model}
           onValuesChange={onValuesChange}
         />
 
@@ -260,6 +263,18 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
     </SettingsCollapsiblePanel>
+    
+    <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
     </>
   );
 };
