@@ -5,11 +5,9 @@ import React from 'react';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { FormMarkup } from '@/providers/form/models';
-import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import { useFormData, useGlobalState } from '@/providers';
 import { getLayoutStyle } from '@/providers/form/utils';
-import ParentProvider from '@/providers/parentProvider/index';
 
 export interface IDividerProps extends IConfigurableFormComponent {
   dividerType?: 'horizontal' | 'vertical';
