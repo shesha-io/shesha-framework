@@ -71,7 +71,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowedFileTypes = [],
   maxHeight,
   downloadZip,
-  allowDelete
+  allowDelete,
+  allowRename,
+  allowReplace
 }) => {
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
@@ -94,7 +96,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     accept: allowedFileTypes?.join(','),
     multiple,
     fileList,
-    disabled,
+    disabled: disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
 
@@ -146,25 +148,27 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
   };
 
-  const uploadbutton = (disabled) =>  (
-      <Button type="link" icon={<UploadOutlined />} {...uploadBtnProps} disabled={disabled}>
+  const uploadButton =(
+    <Upload {...props} disabled={isStub || disabled}>
+      <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
         (press to upload)
       </Button>
-    );
+    </Upload>
+  );
 
-  const renderUploadContent = (
-    isDragger ? <Dragger {...props}><DraggerStub /></Dragger>
-    : <Upload {...props}>{uploadbutton(false)}</Upload>
-  )
-
-  const renderStub = (
-    isDragger ? <Dragger disabled><DraggerStub /></Dragger>
-    : <Upload {...props}>{uploadbutton(true)}</Upload>
-  )
+  const draggeruploader = (
+    isStub? <Dragger openFileDialogOnClick={false} disabled={disabled}> <DraggerStub /></Dragger> :
+    <Dragger {...props}>
+      <DraggerStub />
+    </Dragger>
+  );
 
   return (
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
-      {isStub || disabled ? renderStub : renderUploadContent }
+      {isDragger
+          ?  draggeruploader
+          : uploadButton
+      }
 
       {fetchFilesError && (
         <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />

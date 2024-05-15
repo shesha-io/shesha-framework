@@ -39,7 +39,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
     <div className="stored-files-renderer-wrapper">
       <StoredFilesRendererBase
         isStub={props.isStub}
-        disabled={!props.allowAdd}
+        disabled={!props.allowAdd }
         isDragger={props?.isDragger}
         fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
         allowUpload={false}

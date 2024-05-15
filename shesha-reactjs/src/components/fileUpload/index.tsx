@@ -107,7 +107,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const fileProps: UploadProps = {
     name: 'file',
-    disabled: !allowUpload,
     accept: allowedFileTypes?.join(','),
     multiple: false,
     fileList: fileInfo ? [fileInfo] : [],
@@ -138,42 +137,36 @@ export const FileUpload: FC<IFileUploadProps> = ({
     },
   };
 
-  const showUploadButton = allowUpload && !fileInfo && !isUploading;
   const classes = classNames(styles.shaUpload, { [styles.shaUploadHasFile]: fileInfo || isUploading });
+  const enabled = allowUpload && !fileInfo && !isUploading;
+
+  const uploadButton = (
+    <Upload {...fileProps} className={classes} disabled={ isStub || !enabled }>
+      <Button
+      icon={<UploadOutlined />}
+      type="link"
+      disabled={!enabled}
+      ref={uploadButtonRef}>
+        (press to upload)
+      </Button>
+    </Upload>
+  );
+
+  const draggerUploadButton = (
+    isStub ? 
+    <Dragger openFileDialogOnClick={false} disabled={!enabled}>
+      <DraggerStub />
+    </Dragger> :
+    <Dragger {...fileProps} className={classes} disabled={!enabled}>
+      <span ref={uploadDraggerSpanRef} />
+      <DraggerStub />
+    </Dragger>
+  );
 
 
-  const renderStub = () => {
-    if (isDragger) {
-      return  <Dragger disabled><DraggerStub /></Dragger>;
-    }
-
-    return  (
-    <Button icon={<UploadOutlined />} type="link" ref={uploadButtonRef} disabled>
-      (press to upload)
-    </Button>);
-  };
-
-  const renderUploader = () => {
-    if (isDragger) {
-      return (
-        <Dragger {...fileProps} className={classes}>
-          <span ref={uploadDraggerSpanRef} />
-            <DraggerStub/>
-        </Dragger>
-      );
-    }
-
-    return (
-        <Upload {...fileProps} className={classes}>
-          <Button icon={<UploadOutlined />} type="link" ref={uploadButtonRef}>
-            (press to upload)
-          </Button>;
-        </Upload>
-      );
-  };
-
-
-  return <span className={styles.shaFileUploadContainer}>{isStub || !showUploadButton ? renderStub() : renderUploader()}</span>;
+  return <span className={styles.shaFileUploadContainer}>
+    { isDragger ? draggerUploadButton : uploadButton }
+  </span>;
 };
 
 export default FileUpload;
