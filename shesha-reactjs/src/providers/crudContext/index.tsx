@@ -173,14 +173,12 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           toolboxComponents
         );
 
-        console.log('Data post', postData);
         // send data of stored files
         if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate.current;
 
         const finalDataPromise = onSave ? Promise.resolve(onSave(postData)) : Promise.resolve(postData);
 
         return finalDataPromise.then((finalData) => {
-          console.log('Data final', finalData);
           return processor(finalData)
             .then(() => {
               dispatch(saveSuccessAction());
