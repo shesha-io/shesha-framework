@@ -1,5 +1,5 @@
 import { DatePicker } from '@/components/antd';
-import moment from 'moment-timezone';
+import moment, { Moment } from 'moment';
 import React, { FC } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
@@ -12,10 +12,10 @@ import {
     getDatePickerValue,
     getFormat,
     getRangePickerValues,
+    getUtcAlignedDate,
 } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
 
-moment.tz.setDefault('GMT');
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
@@ -36,7 +36,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         showNow,
         showToday,
         onChange,
-        picker = 'date',
+        picker = "date",
         defaultValue,
         disabledDateMode,
         disabledDateTemplate,
@@ -53,15 +53,14 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
     const pickerFormat = getFormat(props, properties);
 
-    const formattedValue = getMoment(value, pickerFormat);
+    const formattedValue = getMoment(value);
 
-    const handleDatePickerChange = (localValue: any | null, dateString: string) => {
+    const handleDatePickerChange = (localValue: Moment | any, dateString: string) => {
         if (!dateString?.trim()) {
             (onChange as TimePickerChangeEvent)(null, '');
             return;
-        }
-
-        (onChange as TimePickerChangeEvent)(localValue, dateString);
+        };
+        (onChange as TimePickerChangeEvent)(getUtcAlignedDate(localValue), dateString);
     };
 
     const handleRangePicker = (values: any[], formatString: [string, string]) => {
@@ -69,8 +68,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             (onChange as RangePickerChangeEvent)(null, null);
             return;
         }
+        const newUTCValues = values.map((v) => getUtcAlignedDate(v));
 
-        (onChange as RangePickerChangeEvent)(values, formatString);
+        (onChange as RangePickerChangeEvent)(newUTCValues, formatString);
     };
 
     if (readOnly) {
@@ -80,7 +80,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
         return (
             <ReadOnlyDisplayFormItem
-                value={formattedValue?.toISOString()}
+                value={formattedValue}
                 type="datetime"
                 dateFormat={format}
                 timeFormat={timeFormat}
@@ -126,7 +126,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             format={pickerFormat}
             style={evaluatedStyle}
             {...rest}
-            {...getDatePickerValue(props, pickerFormat)}
+            {...getDatePickerValue(props)}
             allowClear
         />
     );

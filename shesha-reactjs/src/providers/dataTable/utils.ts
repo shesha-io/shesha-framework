@@ -1,25 +1,25 @@
 import moment, { Duration, Moment, isDuration, isMoment } from 'moment';
 import { ProperyDataType } from '@/interfaces/metadata';
-import { 
+import {
   IConfigurableColumnsProps,
   IFormColumnsProps,
   isActionColumnProps,
-  isDataColumnProps 
+  isDataColumnProps
 } from '@/providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation } from '@/utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
-import { 
-  ColumnSorting, 
+import {
+  ColumnSorting,
   DataTableColumnDto,
   IColumnSorting,
-  isDataColumn, 
-  isFormColumn, 
-  IStoredFilter, 
-  ITableActionColumn, 
-  ITableColumn, 
-  ITableDataColumn, 
-  ITableFilter, 
-  ITableFormColumn, 
+  isDataColumn,
+  isFormColumn,
+  IStoredFilter,
+  ITableActionColumn,
+  ITableColumn,
+  ITableDataColumn,
+  ITableFilter,
+  ITableFormColumn,
   SortDirection
 } from './interfaces';
 
@@ -218,7 +218,7 @@ export const prepareColumn = (
       id: column.propertyName,
       accessor: camelcaseDotNotation(column?.propertyName),
       propertyName: column.propertyName,
-      
+
       propertiesToFetch: column.propertyName,
       isEnitty: srvColumn?.dataType === 'entity',
 

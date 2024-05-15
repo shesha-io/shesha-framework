@@ -73,7 +73,6 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
             onChange(jsonLogicResult);
         }
     };
-
     return (
         <div className={styles.shaQueryBuilder}>
             {tree && qbConfig && <Query {...qbConfig} value={tree} onChange={handleChange} renderBuilder={renderBuilder} />}

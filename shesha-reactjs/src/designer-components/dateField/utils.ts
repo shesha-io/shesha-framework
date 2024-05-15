@@ -13,16 +13,16 @@ export const DATE_TIME_FORMATS = {
   year: 'YYYY',
 };
 
-export const getDatePickerValue = (props: IDateFieldProps, pickerFormat: string) => {
+export const getDatePickerValue = (props: IDateFieldProps) => {
   const { value, injectedDefaultValue } = props;
 
   /** Used to changed value/defaultValue based on whether it's rendered on the table **/
   if (injectedDefaultValue) {
-    return { defaultValue: getMoment(value, pickerFormat) };
+    return { defaultValue: getMoment(value) };
   }
 
   /** Used to handle the value based on default date-picker implementation **/
-  return { value: getMoment(value, pickerFormat) };
+  return { value: getMoment(value) };
 };
 
 export function disabledDate(props: IDateFieldProps, current: Moment, data: object, globalState: object) {
@@ -82,3 +82,13 @@ export const getRangePickerValues = (valueToUse: any, pickerFormat: string) =>
   (Array.isArray(valueToUse) && valueToUse?.length === 2
     ? valueToUse?.map((v) => moment(new Date(v), pickerFormat))
     : [null, null]) as RangeValue;
+
+export const getUtcAlignedDate = (date: Moment) => {
+  if (date?.isUTC()) {
+    return date;
+  }
+  const offsetHours = date.utcOffset() / 60;
+
+  return date.utc().add(offsetHours, 'hours');
+
+}
