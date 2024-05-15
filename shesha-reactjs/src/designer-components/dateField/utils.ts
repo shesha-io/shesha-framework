@@ -86,9 +86,9 @@ export const getRangePickerValues = (valueToUse: any, pickerFormat: string) =>
 export const getUtcAlignedDate = (date: Moment) => {
   if (date?.isUTC()) {
     return date;
-  }
+  };
   const offsetHours = date.utcOffset() / 60;
 
   return date.utc().add(offsetHours, 'hours');
 
-}
+};
