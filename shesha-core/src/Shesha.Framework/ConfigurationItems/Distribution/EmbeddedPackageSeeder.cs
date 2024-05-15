@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
@@ -19,28 +20,30 @@ namespace Shesha.ConfigurationItems.Distribution
     public class EmbeddedPackageSeeder : IEmbeddedPackageSeeder, ITransientDependency
     {
         private readonly IRepository<ConfigurationPackageImportResult, Guid> _importResultRepository;
-        private readonly IConfigurationPackageManager _packageManager;        
+        private readonly IConfigurationPackageManager _packageManager;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public EmbeddedPackageSeeder(IRepository<ConfigurationPackageImportResult, Guid> importResultRepository, IConfigurationPackageManager packageManager)
+        public EmbeddedPackageSeeder(IRepository<ConfigurationPackageImportResult, Guid> importResultRepository, IConfigurationPackageManager packageManager, IUnitOfWorkManager unitOfWorkManager)
         {
             _importResultRepository = importResultRepository;
             _packageManager = packageManager;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public async Task<bool> SeedEmbeddedPackagesAsync(EmbeddedPackageSeedingContext context)
         {
-            context.Logger.Info($"Seed packages for assembly '{context.Assembly.FullName}'");
+            context.Logger.Warn($"Seed packages for assembly '{context.Assembly.FullName}'");
 
             var resources = context.Assembly.GetManifestResourceNames();
             var embeddedPackages = resources.Select(r => TryGetPackageInfo(context.Assembly, r)).Where(p => p != null).OrderBy(p => p.Date).ToList();
 
             if (!embeddedPackages.Any()) 
             {
-                context.Logger.Info($"Embedded packages not found");
+                context.Logger.Warn($"Embedded packages not found");
                 return false;
             }
 
-            context.Logger.Info($"Found {embeddedPackages.Count} embedded packages total");
+            context.Logger.Warn($"Found {embeddedPackages.Count} embedded packages total");
 
             var importedPackages = await _importResultRepository.GetAll()
                 .Where(r => r.IsSuccess && r.ImportedFile != null && r.ImportedFileMD5 != null)
@@ -67,33 +70,38 @@ namespace Shesha.ConfigurationItems.Distribution
                         continue;
                     }
 
-                    context.Logger.Info($"Importing package '{embeddedPackage.ResourceName}'");
+                    context.Logger.Warn($"Importing package '{embeddedPackage.ResourceName}'");
 
-                    var importResult = await _packageManager.CreateImportResultAsync(stream, embeddedPackage.ResourceName);
-
-                    using (var package = await _packageManager.ReadPackageAsync(stream, readPackageContext)) 
+                    using (var uow = _unitOfWorkManager.Begin(System.Transactions.TransactionScopeOption.RequiresNew)) 
                     {
-                        var packageImportContext = new PackageImportContext() 
-                        { 
-                            CancellationToken= context.CancellationToken,
-                            ImportStatusAs = ConfigurationItemVersionStatus.Live,
-                            CreateFrontEndApplications = true,
-                            CreateModules = false,
-                            Logger = context.Logger,
-                            ImportResult = importResult,
-                        };
-                        try
+                        var importResult = await _packageManager.CreateImportResultAsync(stream, embeddedPackage.ResourceName);
+
+                        using (var package = await _packageManager.ReadPackageAsync(stream, readPackageContext))
                         {
-                            await _packageManager.ImportAsync(package, packageImportContext);
-                            imported = true;
+                            var packageImportContext = new PackageImportContext()
+                            {
+                                CancellationToken = context.CancellationToken,
+                                ImportStatusAs = ConfigurationItemVersionStatus.Live,
+                                CreateFrontEndApplications = true,
+                                CreateModules = false,
+                                Logger = context.Logger,
+                                ImportResult = importResult,
+                            };
+                            try
+                            {
+                                await _packageManager.ImportAsync(package, packageImportContext);
+                                await _unitOfWorkManager.Current.SaveChangesAsync();
+                                imported = true;
+                            }
+                            catch (Exception e)
+                            {
+                                context.Logger.Error($"Package '{embeddedPackage.ResourceName}' import failed", e);
+                                throw;
+                            }
                         }
-                        catch (Exception e) 
-                        {
-                            context.Logger.Error($"Package '{embeddedPackage.ResourceName}' import failed", e);
-                            throw;
-                        }
+                        await uow.CompleteAsync();
                     }
-                    context.Logger.Info($"Package '{embeddedPackage.ResourceName}' imported successfully");
+                    context.Logger.Warn($"Package '{embeddedPackage.ResourceName}' imported successfully");
                 }
             }
 
