@@ -6,5 +6,6 @@
         public string FullName { get; set; }
         public string Version { get; set; }
         public string Architecture { get; set; }
+        public string Description { get; set; }
     }
 }

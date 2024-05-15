@@ -1,5 +1,4 @@
 ﻿using Abp.AspNetCore.Mvc.Authorization;
-using Abp.AutoMapper;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
@@ -36,6 +35,7 @@ namespace Shesha.StoredFiles
         private readonly IRepository<StoredFileVersion, Guid> _fileVersionRepository;
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly IRepository<Person, Guid> _personRepository;
 
         /// <summary>
         /// Reference to the object to object mapper.
@@ -44,13 +44,16 @@ namespace Shesha.StoredFiles
 
         public StoredFileController(IRepository<StoredFile, Guid> fileRepository,
             IRepository<StoredFileVersion, Guid> fileVersionRepository, IStoredFileService fileService,
-            IDynamicRepository dynamicRepository, IUnitOfWorkManager unitOfWorkManager)
+            IDynamicRepository dynamicRepository, 
+            IUnitOfWorkManager unitOfWorkManager,
+            IRepository<Person, Guid> personRepository)
         {
             _fileService = fileService;
             _fileRepository = fileRepository;
             _fileVersionRepository = fileVersionRepository;
             _dynamicRepository = dynamicRepository;
             _unitOfWorkManager = unitOfWorkManager;
+            _personRepository = personRepository;
         }
 
         [HttpGet, Route("Download")]
@@ -744,6 +747,15 @@ namespace Shesha.StoredFiles
                 .ToListAsync();
 
             return documentUploads.Select(v => ObjectMapper.Map<StoredFileVersionInfoDto>(v)).ToList();
+        }
+
+        private string GetUploadedBy(Int64? userId) 
+        {
+            if (userId == null) 
+                return string.Empty;
+
+            var person = _personRepository.GetAll().FirstOrDefault(p => p.User != null && p.User.Id == userId);
+            return person?.FullName;
         }
 
         #endregion
