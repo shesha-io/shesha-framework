@@ -2,29 +2,28 @@ import React, { FC } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { message, Space, Switch } from 'antd';
 import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
-import { CheckCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { useStyles } from './styles/styles';
 
 export interface IAppEditModeTogglerProps { }
 
 export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
-  const { mode, switchApplicationMode, toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
+  const { switchApplicationMode, toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [messageApi, contextHolder] = message.useMessage();
 
   const toggleMode = (checked: boolean, event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    switchApplicationMode(checked ? 'edit' : 'live');
-
+    
     if (checked) {
       messageApi.destroy('editModeMessage');
       messageApi.destroy('liveModeMessage');
       messageApi.open({
         key: 'editModeMessage',
-        content: `You are now in Edit Mode!`,
+        content: `You are now in Edit Mode`,
         duration: 1,
-        icon: <RebaseEditOutlined />,
+        icon: <EditOutlined />,
         className: styles.shaConfigurableModeSwitcherMessageEdit,
       });
     } else {
@@ -32,7 +31,7 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
       messageApi.destroy('editModeMessage');
       messageApi.open({
         key: 'liveModeMessage',
-        content: 'You are now in Live Mode!',
+        content: 'You are now in Live Mode',
         duration: 1,
         icon: <CheckCircleOutlined />,
         className: styles.shaConfigurableModeSwitcherMessageLive,
@@ -47,7 +46,7 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
       <Switch className={styles.shaConfigurableModeSwitcherSwitcher}
         title={Boolean(formInfoBlockVisible) ? 'Switch to Live mode' : 'Switch to Edit mode'}
         checked={formInfoBlockVisible}
-        onChange={(checked) => {toggleShowInfoBlock(checked)}}
+        onChange={(checked, event) => {toggleShowInfoBlock(checked); toggleMode(checked,event)}}
       />
     </Space>
   );

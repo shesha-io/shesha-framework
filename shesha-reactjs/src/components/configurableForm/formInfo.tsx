@@ -52,37 +52,43 @@ useEffect(()=>{
 }, [formInfoBlockVisible])
 
   return (
-    <Card
-      className={styles.shaFormInfoCard}
-      style={{ top: panelShowing ? '-2px' : '-42px', opacity: panelShowing ? '1' : '0', zIndex: '2', position: 'absolute', transition: '.3s'}}
-      title={
-        <div style={{marginTop: "-4px"}}>
-          {id && (
-            <Button style={{ padding: 0 }} type="link" onClick={onModalOpen}>
-              <EditOutlined color='red' title="Click to open this form in the designer" />
-            </Button>
-          )}
-          <span className={styles.shaFormInfoCardTitle}>
-            {getFormFullName(module, name)} v{versionNo}
-          </span>
-          {false && <HelpTextPopover content={description}></HelpTextPopover>}
-          <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
-        </div>
-      }
-      extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}
-      size="small"
-    >
-      <div className={styles.shaCurvedEnd}></div>
+<div
+  className={`${styles.shaFormInfoCard}`}
+  style={{
+    top: panelShowing ? '-2px' : '-42px',
+    opacity: panelShowing ? '1' : '0',
+    zIndex: '2',
+    position: 'absolute',
+    transition: '.3s'
+  }}
+>
+  <div style={{ marginTop: "0px" }}>
+    {id && (
+      <Button className={styles.shaIconBackground} style={{ padding: 0 }} type="link" onClick={onModalOpen}>
+        <EditOutlined title="Click to open this form in the designer" />
+      </Button>
+    )}
+    <span className={styles.shaFormInfoCardTitle}>
+      {getFormFullName(module, name)} v{versionNo}
+    </span>
+    {false && <HelpTextPopover content={description}></HelpTextPopover>}
+    <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
+  </div>
+  
+  <div className={styles.shaCurvedEnd}>
+  <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />
+  </div>
 
-      {id && open && (
-        <QuickEditDialog
-          formId={id}
-          open={open}
-          onCancel={() => setOpen(false)}
-          onUpdated={onUpdated}
-        />
-      )}
-    </Card>
+  {id && open && (
+    <QuickEditDialog
+      formId={id}
+      open={open}
+      onCancel={() => setOpen(false)}
+      onUpdated={onUpdated}
+    />
+  )}
+</div>
+
   );
 };
 

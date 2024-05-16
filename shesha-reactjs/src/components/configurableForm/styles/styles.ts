@@ -1,6 +1,6 @@
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls}) => {
     // .sha-components-container-inner
     const shaComponentsContainerInner = "sha-components-container-inner";
     // .sha-components-container
@@ -36,25 +36,48 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
         background: #10239e;
         border: none;
-        min-width: 300px;
-        width: 350px;
-        height: 32px;
+        border-right: 20px #10239e solid;
+        width: 345px;
         border-radius: 0px;
         position: absolute;
         left: -2px;
         transition: .2s;
+        display: flex;
+        padding: 4px;
+        flex-direction: row;
+        justify-content: space-between;
+        z-index: 3;
+        position: relative;
+        opacity: .5;
     `);
 
     const shaCurvedEnd = cx("sha-curved-end", css`
         height: 32px;
-        width: 30px;
+        width: 60px;
         background-color: #10239e;
         transform: skew(-30deg);
         position: absolute;
-        left: 340px;
+        left: 335px;
         top: 0px;
         border-bottom-right-radius: 7px;
+        z-index: 2;
+        & > :last-child {
+            margin-top: 10px;
+            transform: skew(30deg);
+        }
 `   );
+
+    const shaIconBackground = cx("sha-icon-background", css`
+        background-color: #ffffff;
+        width: 22px;
+        height: 22px;
+        borderRadius: 5px;
+        //position: absolute;
+        //bottom: -32px;
+        //width: 100%;
+        //text-align: center;
+    }`
+    );
 
     const shaEditModeContainer = cx("sha-edit-mode-container", css`
         transition: .1s,
@@ -69,6 +92,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         shaFormInfoCard,
         shaFormInfoCardTitle,
         shaCurvedEnd,
-        shaEditModeContainer
+        shaEditModeContainer,
+        shaIconBackground
     };
 });

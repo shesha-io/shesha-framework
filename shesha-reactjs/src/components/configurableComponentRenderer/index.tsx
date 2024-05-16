@@ -3,6 +3,7 @@ import { useAppConfigurator } from '@/providers';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ISettingsEditor } from '@/components/configurableComponent';
 import { ComponentSettingsModal } from './componentSettingsModal';
+import { useStyles } from './styles/styles';
 
 export interface IComponentStateProps<TSettings = any> {
   isSelected: boolean;
@@ -53,6 +54,8 @@ export const ConfigurableComponentRenderer = <TSettings extends any>({
   const [editorIsVisible, setEditorIsVisible] = useState(false);
   const { mode } = useAppConfigurator();
   const { save, settings } = contextAccessor();
+  const {styles} = useStyles();
+  const {formInfoBlockVisible} = useAppConfigurator();
 
   if (!children) return null;
 
@@ -95,8 +98,10 @@ export const ConfigurableComponentRenderer = <TSettings extends any>({
   return (
     <>
       {children(componentState, ({ children: overlayChildren }) => (
-        <BlockOverlay visible={mode === 'edit'} onClick={onOverlayClick}>
+        <BlockOverlay visible={formInfoBlockVisible === true} onClick={onOverlayClick}>
+          <div className={styles.shaSidebarEditModeContainer}>
           {overlayChildren}
+          </div>
         </BlockOverlay>
       ))}
       {editorIsVisible && Boolean(settingsEditor) && settingsEditor.render({ settings, onSave, onCancel })}
