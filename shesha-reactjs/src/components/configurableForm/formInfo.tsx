@@ -24,11 +24,12 @@ export interface FormInfoProps {
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visible }) => {
   const { id, versionNo, description, versionStatus, name, module } = formProps;
-  const { toggleShowInfoBlock } = useAppConfigurator();
+  const { toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [open, setOpen] = useState(false);
-  const [panelShowing, setPanelShowing] = useState<boolean>();
+  const [panelShowing, setPanelShowing] = useState<boolean>(true);
+  const [allowHidePanel, setAllowHidePanel] = useState<boolean>(false);
 
   const onModalOpen = () => setOpen(true);
   const onUpdated = () => {
@@ -38,19 +39,27 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
   };
 
 useEffect(()=>{
-  setPanelShowing(visible)
-  console.log(visible, "VISIBILITY PROP")
+  if(allowHidePanel === true) {
+    setPanelShowing(visible)
+  }
 },[visible])
+
+useEffect(()=>{
+  if(formInfoBlockVisible === true){
+    setPanelShowing(true);
+    setTimeout(()=>{setPanelShowing(false); setAllowHidePanel(true)},3000)
+  }
+}, [formInfoBlockVisible])
 
   return (
     <Card
       className={styles.shaFormInfoCard}
-      style={{background: '#00ffff', border: 'none', minWidth: '300px', width: '350px', borderRadius: '0px', left: '-2px', top: panelShowing ? '-2px' : '-42px', opacity: panelShowing ? '1' : '0', zIndex: '2', position: 'absolute', transition: '.3s'}}
+      style={{ top: panelShowing ? '-2px' : '-42px', opacity: panelShowing ? '1' : '0', zIndex: '2', position: 'absolute', transition: '.3s'}}
       title={
-        <>
+        <div style={{marginTop: "-4px"}}>
           {id && (
             <Button style={{ padding: 0 }} type="link" onClick={onModalOpen}>
-              <EditOutlined title="Click to open this form in the designer" />
+              <EditOutlined color='red' title="Click to open this form in the designer" />
             </Button>
           )}
           <span className={styles.shaFormInfoCardTitle}>
@@ -58,11 +67,13 @@ useEffect(()=>{
           </span>
           {false && <HelpTextPopover content={description}></HelpTextPopover>}
           <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
-        </>
+        </div>
       }
       extra={<CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />}
       size="small"
     >
+      <div className={styles.shaCurvedEnd}></div>
+
       {id && open && (
         <QuickEditDialog
           formId={id}
