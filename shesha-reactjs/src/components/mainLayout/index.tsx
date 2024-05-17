@@ -24,6 +24,7 @@ import { useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
+import { useAppConfigurator } from '@/providers';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -38,7 +39,6 @@ const MenuTrigger: FC<IMenuTriggerProps> = ({ collapsed }) => {
 export interface IMainLayoutProps extends IHtmlHeadProps {
   breadcrumb?: ReactNodeOrFunc;
   style?: CSSProperties;
-  headerStyle?: CSSProperties;
   contentStyle?: CSSProperties;
   layoutBackgroundStyle?: CSSProperties;
   footerStyle?: CSSProperties;
@@ -78,7 +78,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     breadcrumb,
     children,
     style,
-    headerStyle,
     contentStyle,
     layoutBackgroundStyle = {},
     footer,
@@ -97,6 +96,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const { setGlobalVariables } = useSheshaApplication();
 
   const sideMenuTheme = themeFromStorage?.sidebar;
+  const { formInfoBlockVisible } = useAppConfigurator();
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
@@ -164,9 +164,10 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
       </Sider>
 
       <Layout className={styles.layout}>
-        <Header className={styles.antLayoutHeader} style={headerStyle}>
+        <Header className={styles.antLayoutHeader} style={{height: formInfoBlockVisible ? "85px" : "auto"}}>
           <LayoutHeader collapsed={collapsed} />
         </Header>
+        {formInfoBlockVisible && <div style={{height: "30px"}}></div>}
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <>
             {breadcrumb}

@@ -3,7 +3,7 @@ import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }) => {
   // variables
-  const layoutHeaderHeight = '155px'; // @layout-header-height
+  const layoutHeaderHeight = '55px'; // @layout-header-height
   const layoutTriggerHeight = layoutHeaderHeight; // @layout-trigger-height
   const layoutHeaderBackground = '#fff'; // @layout-header-background
   const shaPageHeadingHeight = '45px'; // @sha-page-heading-height
