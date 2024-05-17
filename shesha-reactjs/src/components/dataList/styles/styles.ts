@@ -126,13 +126,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             background-color: #ffffff;
             border-radius: 5px;
             position: relative;
-            max: 100%;
+            max-width: 100%;
             overflow: auto;
-
         }
 
         .${shaDatalistCard} > * {
-            overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow-wrap: break-word;

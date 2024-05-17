@@ -190,6 +190,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
 
+  //The below forces the card to use max-width, therefore avoiding the issue of having cards
+  //with varying sizes. This is only a problem when selection mode is not "none"
+
+  if(orientation === "wrap" && selectionMode !== "none"){
+    cardMinWidth = cardMaxWidth;
+  }  
+
+
   useEffect(() => {
     if (measured?.width === 0) return;
      let res = null;
