@@ -226,7 +226,7 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         />
       </SettingsFormItem>
 
-      <SettingsFormItem name="selectionMode" label="Selection mode" jsSetting>
+      <SettingsFormItem name="selectionMode" label="Selection mode" tooltip={model.orientation === "wrap" ? "For optimal results, make sure card min-width and card max-width are the same" : null} jsSetting>
         <Select disabled={readOnly} defaultValue={'none'}>
           <Select.Option key='1' value='none'>None</Select.Option>
           <Select.Option key='2' value='single'>Single</Select.Option>
