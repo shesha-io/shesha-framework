@@ -4,7 +4,7 @@ import React, {
   MutableRefObject,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { Button, notification } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import { ICommonModalProps } from '../../dynamicModal/models';
@@ -14,6 +14,7 @@ import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
+import _ from 'lodash';
 
 const actionsOwner = 'Configuration Framework';
 
@@ -24,9 +25,9 @@ interface IConfigurationItemsExportFooterProps {
 
 const displayNotificationError = (message: string, error: IErrorInfo) => {
   notification.error({
-      message: message,
-      icon: null,
-      description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+    message: message,
+    icon: null,
+    description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
   });
 };
 
@@ -66,9 +67,10 @@ export const useConfigurationItemsExportAction = () => {
     executer: (actionArgs) => {
       const modalId = nanoid();
 
-      return new Promise((resolve, _reject) => {
+      return new Promise((resolve, reject) => {
 
         const hideModal = () => {
+          reject();
           removeModal(modalId);
         };
 
@@ -83,11 +85,19 @@ export const useConfigurationItemsExportAction = () => {
           title: "Export Configuration Items",
           isVisible: true,
           showModalFooter: false,
-          content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef}/>,
+          onClose: (positive, result) => {
+            if (positive) {
+              resolve(result);
+            } else {
+              reject();
+            }
+          },
+          content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef} />,
           footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />
         };
-        createModal({ ...modalProps, isVisible: true });
+        createModal({ ...modalProps });
       });
     },
   }, [appConfigState]);
 };
+

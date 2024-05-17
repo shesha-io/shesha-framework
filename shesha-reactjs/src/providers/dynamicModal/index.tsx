@@ -108,14 +108,14 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
             },
             onClose: (positive = false, result) => {
-                if (positive)
-                  resolve(result);
-                else
-                  reject(result);
+              if (positive)
+                resolve(result);
+              else
+                reject(result);
             },
           };
 
-          createModal({ ...modalProps, isVisible: true });
+          createModal({ ...modalProps });
         });
       },
       argumentsFormMarkup: dialogArgumentsForm,

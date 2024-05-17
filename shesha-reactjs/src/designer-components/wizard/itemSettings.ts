@@ -420,7 +420,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       },
       availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
     })
-    .addEditableTagGroupProps({
+    .addPermissionAutocomplete({
       id: '3d24cc31-a797-40b8-b178-1e77eabb69c4',
       propertyName: 'permissions',
       label: 'Permissions',

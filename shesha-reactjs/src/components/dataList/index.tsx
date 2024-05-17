@@ -201,10 +201,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   useEffect(() => {
     if (measured?.width === 0) return;
      let res = null;
-    if(orientation === "wrap" && selectionMode !== "none"){
-      res = ({ width: Number(cardMaxWidth) ? `${cardMaxWidth}px` : cardMaxWidth} as React.CSSProperties);
-
-    }else if(orientation === "horizontal" && listItemWidth !== 'custom'){
+    if(orientation === "horizontal" && listItemWidth !== 'custom'){
       res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties);
 
     }else if (orientation === "horizontal" && listItemWidth === "custom") {
@@ -574,10 +571,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
           <Show when={records?.length > 0}>
             {orientation === "wrap" &&
-              <div className={styles.shaDatalistWrapParent} style={{gap: Number(cardSpacing) ? `${cardSpacing}px` : cardSpacing, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMaxWidth}, 1fr))`}}>
-              {React.Children.map(content, child => {
-              return React.cloneElement(child, { style: itemWidthCalc });
-              })}
+              <div className={styles.shaDatalistWrapParent} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
+                {content}
               </div>
             }
 

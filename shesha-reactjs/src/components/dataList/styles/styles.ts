@@ -144,6 +144,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             overflow-x: scroll;
         }
 
+        .${shaDatalistHorizontal} {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            overflow-x: scroll;
+        }
+
         .${shaDatalistComponentItem} {
             position: relative;
             padding-top: 5px;

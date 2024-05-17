@@ -103,16 +103,18 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
   footerButtons?: ModalFooterButtons;
 
   buttons?: ButtonGroupItemProps[];
+
 }
 
 export interface IModalWithContentProps extends IModalBaseProps {
   footer?: ReactNode;
   content: ReactNode;
+  onClose?: (positive?: boolean, result?: any) => void;
 }
 /**
  * Dynamic Modal properties
  */
-export interface IModalProps extends IModalWithConfigurableFormProps{
+export interface IModalProps extends IModalWithConfigurableFormProps {
   onClose?: (positive?: boolean, result?: any) => void;
 };
 export type ICommonModalProps = IModalWithContentProps | IModalWithConfigurableFormProps;
