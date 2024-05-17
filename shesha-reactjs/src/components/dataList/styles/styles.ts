@@ -13,6 +13,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     const shaDatalistCard = "sha-datalist-card";
     const shaDatalistActions = "sha-datalist-actions";
     const shaDatalistCell = "sha-datalist-cell";
+    const shaDatalistHorizontal = "sha-datalist-horizontal";
 
 
     const shaDatalistComponent = cx("sha-datalist-component", css`
@@ -125,7 +126,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             background-color: #ffffff;
             border-radius: 5px;
             position: relative;
-            overflow: auto;       
+            overflow: scroll;
+        }
+
+        .${shaDatalistHorizontal} {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            overflow-x: scroll;
         }
 
         .${shaDatalistComponentItem} {
@@ -162,6 +170,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         shaDatalistActions,
         shaDatalistCell,
         shaDatalistWrapParent,
-        shaDatalistCard
+        shaDatalistCard,
+        shaDatalistHorizontal
     };
 });
