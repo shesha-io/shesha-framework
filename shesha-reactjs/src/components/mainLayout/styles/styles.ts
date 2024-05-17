@@ -213,7 +213,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         max-height: ${shaPageHeadingHeight};
         border-bottom: 0.5px solid lightgrey;
         background: white;
-        position: relative;
 
         &.fixed-heading {
           position: sticky;

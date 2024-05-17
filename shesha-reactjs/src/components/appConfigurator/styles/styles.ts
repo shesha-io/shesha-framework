@@ -90,26 +90,32 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
               padding: 4px;
               height: 34px;
               overflow-y: hidden;
-              border-radius: 4px;
-              width: calc(100% - 30px);
-              margin-left: 15px;
+              width: 100%
             }
             
             .sha-configurable-view-details {
-              margin-left: 10px;
               background-color: #14A38B;
               color: #ffffff;
             }
             
             .sha-configurable-view-button-wrapper > button {
-              color: #14A38B;
-              background-color: #ffffff;
+              color: #ffffff;
+              background-color: #14A38B;
               height: 28px;
               position: absolute;
               top: 3px;
               left: calc(50% - 14px);
+              border: none;
             }
-            
+
+          .lite{
+            background-color: rgba(0, 0, 250, .05);
+            margin-left: -5%;
+            width: 110%;
+            height: 100%;
+            padding: 20px;
+            padding-top: 10px;
+          } 
       
           .${shaConfigurableComponentOverlay}:after {
             content: '';
@@ -139,7 +145,6 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
             top: 50%;
             margin-left: -100px;
             margin-top: -55px;
-            border-radius: 10px;
             z-index: 1000;
             padding: 15px 5px;
       
