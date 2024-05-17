@@ -47,6 +47,8 @@ export interface IIconPickerProps extends IconBaseProps {
   readOnly?: boolean;
 
   twoToneColor?: string;
+
+  defaultValue?: ShaIconTypes;
 }
 
 interface IOption {
@@ -62,10 +64,12 @@ const IconPicker: FC<IIconPickerProps> = ({
   value,
   onIconChange,
   readOnly = false,
+  defaultValue,
   ...props
 }) => {
+ 
   const { styles } = useStyles();
-  const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes>(value);
+  const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes>(defaultValue);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOption, setSearchOption] = useState<IOption>({
@@ -74,8 +78,9 @@ const IconPicker: FC<IIconPickerProps> = ({
   });
 
   useEffect(() => {
-    setLocalSelectedIcon(value);
-  }, [value]);
+      setLocalSelectedIcon(value || defaultValue);
+  }, [defaultValue, value]);
+
 
   const toggleModalVisibility = () => {
     if (!readOnly) setShowModal(visible => !visible);
@@ -120,12 +125,15 @@ const IconPicker: FC<IIconPickerProps> = ({
           groupItem?.toLowerCase()?.includes(searchQuery?.toLowerCase())
         );
       }
-
       return filteredGroup;
     } else {
       return searchOption?.group;
     }
   }, [searchQuery, searchOption?.group]);
+
+  useEffect(()=>{
+    console.log(localSelectedIcon, "LSE")
+  },[localSelectedIcon])
 
   return (
     <div className={styles.shaIconPicker}>

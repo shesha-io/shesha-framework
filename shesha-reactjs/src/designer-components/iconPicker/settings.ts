@@ -188,10 +188,16 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       }).addStyleBox({
         id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
         propertyName: 'stylingBox',
+        componentName: 'Styling Box',
         parentId: 'root',
         validate: {},
         settingsValidationErrors: [],
         jsSetting: false,
+      }).
+      addIconPicker({
+        id: '152f3d72-68fb-43ab-adf6-8cf7d11fe6e1',
+        propertyName: 'defaultValue',
+        label: 'Default Icon'
       }).toJson()
     ]
 }

@@ -35,6 +35,7 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
     .add<IIconPickerComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IIconPickerComponentProps>(2, (prev) => ({ ...prev, color: legacyColor2Hex(prev.color) }))
     .add<IIconPickerComponentProps>(3, (prev) => ({ ...prev, propertyName: 'Icon'}))
+    .add<IIconPickerComponentProps>(4, (prev) => ({...prev, defaultValue: 'RightOutlined'}))
 
 };
 

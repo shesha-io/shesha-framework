@@ -1,3 +1,4 @@
+import { ShaIconTypes } from '@/components/iconPicker';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IIconPickerComponentProps extends IConfigurableFormComponent {
@@ -11,4 +12,5 @@ export interface IIconPickerComponentProps extends IConfigurableFormComponent {
     borderRadius?: number;
     backgroundColor?: string;
     stylingBox?: string;
+    defaultIcon?: ShaIconTypes;
 }

@@ -22,9 +22,13 @@ interface IconPickerWrapperProps {
     borderRadius?: number;
     backgroundColor?: string;
     stylingBox?: string;
+    defaultValue?: ShaIconTypes;
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox } = props;
+    console.log(props, "ICON PICKER WRAPPER PROPS")
+    const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+
+    console.log(defaultValue, "DEFAULT ICON X3")
     const computedColor = useMemo(() => {
         return customColor
         ? executeScriptSync<string>(customColor, applicationContext)
@@ -81,6 +85,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
             readOnly={readOnly}
             style={style}
             twoToneColor={computedColor}
+            defaultValue={defaultValue as ShaIconTypes}
         />
         </div>
         </div>
