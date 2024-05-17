@@ -39,7 +39,6 @@ const MenuTrigger: FC<IMenuTriggerProps> = ({ collapsed }) => {
 export interface IMainLayoutProps extends IHtmlHeadProps {
   breadcrumb?: ReactNodeOrFunc;
   style?: CSSProperties;
-  headerStyle?: CSSProperties;
   contentStyle?: CSSProperties;
   layoutBackgroundStyle?: CSSProperties;
   footerStyle?: CSSProperties;
@@ -79,7 +78,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     breadcrumb,
     children,
     style,
-    headerStyle,
     contentStyle,
     layoutBackgroundStyle = {},
     footer,
