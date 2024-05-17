@@ -11,10 +11,10 @@ export const EditViewMsg: FC<IEditViewMsgProps> = ({persistedFormProps}) => {
   
   return (
     <div className='sha-configurable-view-button-wrapper'>
+      <Button title='Edit view' shape='default' icon={<RebaseEditOutlined />} />
       <span className='sha-configurable-view-details'>
         Form: {persistedFormProps?.module}\{persistedFormProps?.name} v{persistedFormProps?.versionNo}
       </span>
-      <Button title='Edit view' shape='default' icon={<RebaseEditOutlined />} />
     </div>
   );
 };

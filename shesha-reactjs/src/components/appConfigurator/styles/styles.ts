@@ -84,31 +84,32 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
             }
 
             .sha-configurable-view-button-wrapper {
+              display: flex;
+              align-items: center;
+              background-color: #14A38B;
+              padding: 4px;
+              height: 34px;
+              overflow-y: hidden;
+              border-radius: 4px;
+              width: calc(100% - 30px);
+              margin-left: 15px;
+            }
+            
+            .sha-configurable-view-details {
+              margin-left: 10px;
+              background-color: #14A38B;
+              color: #ffffff;
+            }
+            
+            .sha-configurable-view-button-wrapper > button {
+              color: #14A38B;
+              background-color: #ffffff;
+              height: 28px;
               position: absolute;
-              left: 0px;
-              right: 0px;
-              top: 0px;
-              height: 32px;
-              text-align: center;
-              background-color: #14A38B;
-              z-index: 1001;
-
-              .sha-configurable-view-details {
-                position: absolute;
-                left: 12px;
-                top: 0px;
-                padding-top: 6px;
-                color: white;
-                vertical-align: middle;
-              }
+              top: 3px;
+              left: calc(50% - 14px);
             }
-
-            button, button:hover {
-              background-color: #14A38B;
-              border-color: #14A38B;
-              color: white;
-            }
-          }
+            
       
           .${shaConfigurableComponentOverlay}:after {
             content: '';
