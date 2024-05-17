@@ -11,7 +11,7 @@ import React, {
   ReactElement,
   ReactNode,
   useEffect,
-  useMemo
+  useMemo,
 } from 'react';
 import { IHtmlHeadProps } from '@/components/htmlHead';
 import { Layout } from 'antd';
@@ -51,6 +51,10 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   fixHeading?: boolean;
   showHeading?: boolean;
   noPadding?: boolean;
+  /**
+   * @deprecated
+   * Use headerControls instead
+   */
   customComponent?: ReactNode;
 
   /**
@@ -63,10 +67,6 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
    * Used to display the statuses of the entity as well as the reference numbers
    */
   headerControls?: ReactNodeOrFunc;
-  /**
-   * Used to override image logo src
-   */
-  imgSrc?: string;
 }
 
 const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
@@ -89,8 +89,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     reference,
     noPadding = false,
     headerControls,
-    customComponent,
-    imgSrc,
   } = props;
   const { theme: themeFromStorage } = useTheme();
   const { styles } = useStyles();
@@ -103,8 +101,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
   useEffect(() => {
-    if (!!title)
-      document.title = title;
+    if (!!title) document.title = title;
   }, [title]);
 
   const hasHeading = useMemo(() => {
@@ -168,7 +165,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 
       <Layout className={styles.layout}>
         <Header className={styles.antLayoutHeader} style={headerStyle}>
-          <LayoutHeader collapsed={collapsed} customComponent={customComponent} imgSrc={imgSrc} />
+          <LayoutHeader collapsed={collapsed} />
         </Header>
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <>
