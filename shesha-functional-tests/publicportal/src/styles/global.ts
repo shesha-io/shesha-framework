@@ -46,7 +46,8 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
         }
 
         .${(p) => p.theme.prefixCls}-tag {
-          padding: 0;
+          margin: 0;
+          padding: 0 8px;
           border-radius: 10px;
         }
 
