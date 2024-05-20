@@ -519,6 +519,19 @@ export const upgradeComponentsTree = (
   return componentsFlatStructureToTree(toolboxComponents, flatStructure);
 };
 
+class StaticMustacheTag {
+  #value: string;
+  constructor(value: string) {
+    this.#value = value;
+  }
+  toEscapedString() {
+    return `{{${this.#value}}}`;
+  }
+  toString() {
+    return `{{{${this.#value}}}}`;
+  }
+}
+
 /**
  * Evaluates the string using Mustache template.
  *
@@ -536,7 +549,10 @@ export const upgradeComponentsTree = (
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
-export const evaluateString = (template: string = '', data: any) => {
+export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false) => {
+  if (!template || typeof template !== 'string')
+    return template;
+
   const localData: IAnyObject = data ? { ...data } : undefined;
   // The function throws an exception if the expression passed doesn't have a corresponding curly braces
   try {
@@ -553,7 +569,33 @@ export const evaluateString = (template: string = '', data: any) => {
         };
       };
     }
-    return template && typeof template === 'string' ? Mustache.render(template, localData ?? {}) : template;
+
+    const view = localData ?? {};
+
+    if (skipUnknownTags) {
+      template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
+        const mathes = x.match(/[\w\.]+/);
+        const tag = mathes.length ? mathes[0] : undefined;
+
+        const parts = tag.split('.');
+        const field = parts.pop();
+        const container = parts.reduce((level, key) => {
+          return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
+        }, view);
+        if (!container.hasOwnProperty(field)){
+          container[field] = new StaticMustacheTag(tag);
+        } 
+      });
+
+      const escape = (value: any): string => {
+        return value instanceof StaticMustacheTag
+          ? value.toEscapedString()
+          : value;
+      };
+
+      return Mustache.render(template, view, undefined, { escape });
+    } else
+      return Mustache.render(template, view);
   } catch (error) {
     console.warn('evaluateString ', error);
     return template;
@@ -1760,7 +1802,7 @@ export const getSheshaFormUtils = (http: AxiosInstance) => {
             NEW_KEY: nanoid(),
             GEN_KEY: nanoid(),
             ...(replacements ?? {}),
-          });
+          }, true);
 
           return preparedMarkup;
         });

@@ -7,6 +7,7 @@ using System;
 
 namespace Shesha.EntityReferences
 {
+    [Serializable]
     public class GenericEntityReference : IEquatable<GenericEntityReference>, IGenericEntityReference
     {
         private object _entity;

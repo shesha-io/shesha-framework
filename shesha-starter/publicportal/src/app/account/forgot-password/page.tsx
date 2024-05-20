@@ -1,36 +1,38 @@
 "use client";
 
-import FormItem from 'antd/lib/form/FormItem';
-import React, { useState } from 'react';
-import {
-  Alert,
-  Button,
-  Form,
-  Input
-  } from 'antd';
-import { ForgotPasswordPage, VerifyOtpModal } from './styles';
-import { IdcardOutlined } from '@ant-design/icons';
 import {
   ResetPasswordVerifyOtpInput,
+  UserResetPasswordSendOtpQueryParams,
   useResetPasswordSendOtp,
   useResetPasswordVerifyOtp,
-  UserResetPasswordSendOtpQueryParams
-  } from '@/api/user';
-import { useRouter } from 'next/navigation';
-import { useAuth, ValidationErrors, PageWithLayout } from '@shesha-io/reactjs';
-import { URL_LOGIN_PAGE } from '@/routes';
+} from "@/api/user";
+import { LOGO } from "@/app-constants/application";
+import { LoginPageWrapper } from "@/app/login/styles";
+import { ShaButton, ShaInput, ShaTitle } from "@/components";
+import { URL_LOGIN_PAGE } from "@/routes";
+import {
+  PageWithLayout,
+  ValidationErrors,
+  useAuth,
+  useTheme,
+} from "@shesha-io/reactjs";
+import { Form } from "antd";
+import FormItem from "antd/lib/form/FormItem";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { VerifyOtpModal } from "./styles";
 
-
-interface IProps { }
+interface IProps {}
 
 const ForgotPassword: PageWithLayout<IProps> = () => {
   const router = useRouter();
+  const { theme } = useTheme();
 
   const { verifyOtpSuccess } = useAuth();
 
   const [isVerifyOtpModalVisible, setIsVerifyOtpModalVisible] = useState(false);
 
-  const [operationId, setOperationId] = useState('');
+  const [operationId, setOperationId] = useState("");
 
   const [sentOtpForm] = Form.useForm<UserResetPasswordSendOtpQueryParams>();
 
@@ -42,108 +44,126 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
     loading: isSendingOtp,
   } = useResetPasswordSendOtp();
 
-  const { mutate: verifyOtpHttp, loading: isVerifyingOtp, error: verifyOtpError } = useResetPasswordVerifyOtp();
+  const {
+    mutate: verifyOtpHttp,
+    loading: isVerifyingOtp,
+    error: verifyOtpError,
+  } = useResetPasswordVerifyOtp();
 
-  const handleSendOtpFormFinish = ({ mobileNo }: UserResetPasswordSendOtpQueryParams) => {
+  const toggleVerifyOtpModalVisibility = () =>
+    setIsVerifyOtpModalVisible((visible) => !visible);
+
+  const handleSendOtpFormFinish = ({
+    mobileNo,
+  }: UserResetPasswordSendOtpQueryParams) => {
     if (mobileNo) {
       sendOtpHttp({ mobileNo })
         .then((response) => {
           setOperationId(response?.result?.operationId);
           toggleVerifyOtpModalVisibility();
         })
-        .catch((e) => {
-          console.error('Failed to send OTP:', e);
+        .catch(() => {
           toggleVerifyOtpModalVisibility();
         });
     }
   };
 
   const handleVerifyOtpFormFinish = ({ pin }: ResetPasswordVerifyOtpInput) => {
-    verifyOtpHttp(
-      {
-        mobileNo: sentOtpForm?.getFieldValue('mobileNo'),
-        pin,
-        operationId,
-      }).then((response) => {
-        verifyOtpSuccess(response?.result);
-      });
+    verifyOtpHttp({
+      mobileNo: sentOtpForm?.getFieldValue("mobileNo"),
+      pin,
+      operationId,
+    }).then((response) => {
+      verifyOtpSuccess(response?.result);
+    });
   };
 
-  const toggleVerifyOtpModalVisibility = () => setIsVerifyOtpModalVisible((visible) => !visible);
-
   return (
-    <ForgotPasswordPage
-      className="forgot-password-page"
-      heading="Forgot Password"
-      hint="Please provide your registered cell number"
-    >
-      <ValidationErrors error={sendOtpError?.data} />
-
+    <LoginPageWrapper imgSrc={LOGO.src} imgWidth={350} colorTheme={theme}>
       <Form form={sentOtpForm} onFinish={handleSendOtpFormFinish}>
-        <FormItem name="mobileNo" help="This field is required" rules={[{ required: true }]}>
-          <Input prefix={<IdcardOutlined />} placeholder="Phone number" required />
-        </FormItem>
+        <ShaTitle title="Forgot Password" />
 
-        <FormItem className="un-authed-btn-container">
-          <Button type="primary" htmlType="submit" className="login-form-button" block loading={isSendingOtp}>
-            {isSendingOtp ? 'Sending Otp....' : 'Send Otp'}
-          </Button>
+        <ValidationErrors error={sendOtpError?.data} />
+
+        <ShaInput
+          className="lg-margin-bottom"
+          name="mobileNo"
+          label="Phone number"
+          placeholder="Phone number"
+        />
+
+        <FormItem>
+          <ShaButton
+            type="primary"
+            block
+            loading={isSendingOtp}
+            size="large"
+            htmlType="submit"
+          >
+            {isSendingOtp ? "Sending Otp...." : "Send Otp"}
+          </ShaButton>
         </FormItem>
 
         <FormItem>
-          <Button type="link" block onClick={() => router.push(URL_LOGIN_PAGE)}>
+          <ShaButton
+            type="link"
+            block
+            onClick={() => router.push(URL_LOGIN_PAGE)}
+          >
             Back To Login Page
-          </Button>
+          </ShaButton>
         </FormItem>
+
+        <div className="sha-components-container">
+          <VerifyOtpModal
+            visible={isVerifyOtpModalVisible}
+            className="verify-otp-modal"
+            title="Verify OTP"
+            destroyOnClose
+            onCancel={toggleVerifyOtpModalVisibility}
+            footer={null}
+          >
+            <ValidationErrors error={verifyOtpError?.data as any} />
+
+            <Form form={verifyOtpForm} onFinish={handleVerifyOtpFormFinish}>
+              <ShaInput
+                className="lg-margin-bottom"
+                name="pin"
+                label="OTP"
+                placeholder="One-Time Pin"
+                disabled={isSendingOtp || isVerifyingOtp}
+              />
+
+              <FormItem>
+                <ShaButton
+                  type="primary"
+                  htmlType="submit"
+                  className="login-form-button"
+                  block
+                  loading={isVerifyingOtp}
+                >
+                  {isSendingOtp ? "Verifying Otp...." : "Verify Otp"}
+                </ShaButton>
+              </FormItem>
+
+              <FormItem>
+                <ShaButton
+                  type="link"
+                  htmlType="submit"
+                  className="login-form-button"
+                  block
+                  loading={isSendingOtp}
+                  disabled={isSendingOtp}
+                >
+                  {isSendingOtp ? "Resending Otp...." : "Resend Otp"}
+                </ShaButton>
+              </FormItem>
+            </Form>
+          </VerifyOtpModal>
+        </div>
       </Form>
-
-      <VerifyOtpModal
-        visible={isVerifyOtpModalVisible}
-        className="verify-otp-modal"
-        title="Verify OTP"
-        destroyOnClose
-        onCancel={toggleVerifyOtpModalVisibility}
-        footer={null}
-      >
-        <Alert
-          message={
-            <span>
-              A One-Time Pin has successfully been sent to . Please check your phone and enter the OTP in the text below
-            </span>
-          }
-          type="success"
-        />
-        <ValidationErrors error={verifyOtpError?.data as any} />
-
-        <Form form={verifyOtpForm} onFinish={handleVerifyOtpFormFinish}>
-          <FormItem name="pin" help="This field is required" rules={[{ required: true }]}>
-            <Input placeholder="One-Time Pin" disabled={isSendingOtp || isVerifyingOtp} />
-          </FormItem>
-
-          <FormItem>
-            <Button type="primary" htmlType="submit" className="login-form-button" block loading={isVerifyingOtp}>
-              {isSendingOtp ? 'Verifying Otp....' : 'Verify Otp'}
-            </Button>
-          </FormItem>
-
-          <FormItem>
-            <Button
-              type="link"
-              htmlType="submit"
-              className="login-form-button"
-              block
-              loading={isSendingOtp}
-              disabled={isSendingOtp}
-            >
-              {isSendingOtp ? 'Resending Otp....' : 'Resend Otp'}
-            </Button>
-          </FormItem>
-        </Form>
-      </VerifyOtpModal>
-    </ForgotPasswordPage>
+    </LoginPageWrapper>
   );
 };
-
-ForgotPassword.requireAuth = false;
 
 export default ForgotPassword;

@@ -1,6 +1,8 @@
-﻿using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
+﻿using Abp.Auditing;
+using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain.Enum;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.EntityHistory;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,6 +25,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// The membership number for the Member
         /// </summary>
+        [AuditedAsEvent(typeof(MembershipNumberEventCreator))]
         public virtual string MembershipNumber { get; set; }
         /// <summary>
         /// The Members residential address
@@ -52,6 +55,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// The status of the membership
         /// </summary>
+        [Audited]
         [ReferenceList("SheshaFunctionalTests", "MembershipStatuses")]
         public virtual RefListMembershipStatuses? MembershipStatus { get; set; }
         /// <summary>
@@ -67,6 +71,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary>
         /// 
         /// </summary>
+        [Audited]
         [ReferenceList("SheshaFunctionalTests", "Provinces")]
         public virtual RefListProvinces? Province { get; set; }
         /// <summary> 
@@ -82,11 +87,23 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// <summary> 
         /// 
         /// </summary>
+        [Audited]
         [ReferenceList("SheshaFunctionalTests", "MaritalStatus")]
         public virtual RefListMaritalStatus? MaritalStatus { get; set; }
         /// <summary>
         /// The bank that the Member belongs to
         /// </summary>
+        [DisplayChildAuditTrail]
         public virtual Bank Bank { get; set; }
+        /// <summary>
+        /// This is a custom audit trail event creator for the Membership Number property
+        /// </summary>
+        private class MembershipNumberEventCreator : EntityHistoryEventCreatorBase<Member, string>
+        {
+            public override EntityHistoryEventInfo CreateEvent(EntityChangesInfo<Member, string> change)
+            {
+                return CreateEvent("Custom Event Description", $"Membership number updated from {change.OldValue} to {change.NewValue}");
+            }
+        }
     }
 }

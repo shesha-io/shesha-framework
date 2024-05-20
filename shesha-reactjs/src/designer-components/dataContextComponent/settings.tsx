@@ -11,6 +11,7 @@ import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { PropertiesEditor } from '@/components/modelConfigurator/propertiesEditor';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 interface IDataContextSettingsState extends IDataContextComponentProps { }
 
@@ -30,7 +31,8 @@ const convertModelItemToPropertyMetadata = (item: IModelItem) => {
   return res as IPropertyMetadata;
 };
 
-const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = ({ readOnly }) => {
+const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = (props) => {
+  const { readOnly } = props;
   const { values, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
 
   const constants = useAvailableConstantsMetadata({ 
@@ -125,6 +127,18 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           />
         </SettingsFormItem>
 
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
       <Modal

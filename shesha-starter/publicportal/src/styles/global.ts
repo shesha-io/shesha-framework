@@ -25,12 +25,12 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
 
     .sha-global-table-filter {
       .${(p) => p.theme.prefixCls}-input-search-button {
-        height: 28px;
+        height: 32px;
       }
     }
     
     .sha-react-table {
-      font-size: 16px;
+      font-size: ${fontSize.secondary};
       margin: 0;
 
       .tr-head {
@@ -45,19 +45,39 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
           padding-bottom: 0;
         }
 
+        .${(p) => p.theme.prefixCls}-input-number-input {
+          padding-top: 0;
+          padding-bottom: 0;
+        }
+
+        .${(p) => p.theme.prefixCls}-tag {
+          margin: 0;
+          padding: 0 8px;
+          border-radius: 10px;
+        }
+
+        .${(p) => p.theme.prefixCls}-btn-link {
+          font-size: ${fontSize.secondary};
+        }
+
         .${(p) => p.theme.prefixCls}-btn {
           margin-left: unset !important;
           min-width: unset !important;
+        }
+
+        .sha-upload-list-item-info, 
+        .${(p) => p.theme.prefixCls}-upload-list-item {
+          font-size: ${fontSize.secondary};
         }
       }
     }
 
     .${(p) => p.theme.prefixCls}-pagination {
-      font-size: 16px;
+      font-size: ${fontSize.secondary};
 
       .${(p) => p.theme.prefixCls}-pagination-options {
         .${(p) => p.theme.prefixCls}-select-selector {
-          font-size: 16px;
+          font-size: ${fontSize.secondary};
         }
       }
     }
@@ -109,7 +129,6 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
     }
 
     .${(p) => p.theme.prefixCls}-btn-icon-only {
-      margin-left: 6px !important;
       min-width: 40px !important;
       min-height: unset !important;
     }
@@ -225,20 +244,6 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
 
     .${(p) => p.theme.prefixCls}-steps {
       .${(p) => p.theme.prefixCls}-steps-item {
-        &.${(p) => p.theme.prefixCls}-steps-item-finish {
-          .${(p) => p.theme.prefixCls}-steps-item-icon {
-            border: 1px solid ${(p) => p.theme.colorPrimary};
-            background: none;
-          }
-        }
-
-        &.${(p) => p.theme.prefixCls}-steps-item-wait {
-          .${(p) => p.theme.prefixCls}-steps-item-icon {
-            border: 1px solid ${(p) => p.theme.colorTextDescription};
-            background: none;
-          }
-        }
-
         .${(p) => p.theme.prefixCls}-steps-item-title {
           font-family: arial;
           font-weight: bold;
@@ -288,6 +293,14 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
 
       .${(p) => p.theme.prefixCls}-card-body {
         border: 2px solid ${(p) => p.theme.colorPrimary};
+      }
+    }
+
+    .${(p) => p.theme.prefixCls}-collapse {
+      margin-bottom: 12px;
+
+      .${(p) => p.theme.prefixCls}-collapse-header-text {
+        font-weight: bold;
       }
     }
   }

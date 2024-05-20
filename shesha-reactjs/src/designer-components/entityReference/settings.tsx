@@ -19,10 +19,13 @@ import { ContextPropertyAutocomplete } from '@/designer-components/contextProper
 import { useFormDesigner } from '@/providers/formDesigner';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
-const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = ({readOnly}) => {
+const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceControlProps>> = (props) => {
+  const { readOnly } = props;
+
   const { model, values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
@@ -271,6 +274,18 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
         <Checkbox disabled={readOnly} />
       </SettingsFormItem>
     </SettingsCollapsiblePanel>
+    
+    <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
     </>
   );
 };

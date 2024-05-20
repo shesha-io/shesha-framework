@@ -64,8 +64,9 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       };
     })
     .add<IDataListComponentProps>(6, prev => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))
-  ,
+,
   settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
 };
 
 export default DataListComponent;
+

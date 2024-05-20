@@ -22,6 +22,7 @@ import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const Option = Select.Option;
 
@@ -29,7 +30,9 @@ interface ISubFormSettingsState extends ISubFormComponentProps { }
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
-const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({ readOnly }) => {
+const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (props) => {
+  const { readOnly } = props;
+
   const { values: formData, model, onValuesChange } = useSettingsForm<ISubFormComponentProps>();
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
@@ -514,6 +517,18 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = ({
               }}
               availableConstants={getStyleConstants}
           />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

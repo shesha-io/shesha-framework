@@ -1,49 +1,11 @@
 import { LoginPageLayout } from "@/components";
-import { lgSpace, mdSpace, smSpace } from "@/styles/variables";
 import { getPrimaryColor } from "@/styles/utils";
+import { lgSpace, smSpace } from "@/styles/variables";
 import styled from "styled-components";
 
 export const LoginPageWrapper = styled(LoginPageLayout)`
   * {
     font-family: "Roboto", sans-serif;
-  }
-
-  .sha-oauth-btn {
-    display: flex;
-    gap: ${smSpace};
-    margin: 32px 0;
-
-    .sha-btn-facebook {
-      background: #4267b2;
-      color: #fff;
-      flex: 1;
-      width: 50%;
-    }
-
-    .sha-btn-google {
-      color: #756f86;
-      flex: 1;
-      width: 50%;
-
-      .anticon {
-        color: #de5246;
-      }
-    }
-
-    @media (max-width: 1700px) {
-      display: block;
-
-      .sha-btn-facebook {
-        flex: unset;
-        width: 100%;
-      }
-
-      .sha-btn-google {
-        flex: unset;
-        margin-bottom: ${mdSpace};
-        width: 100%;
-      }
-    }
   }
 
   .sha-error {
