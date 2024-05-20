@@ -64,7 +64,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             ? newValue.startOf('quarter')
             : picker === 'year'
               ? newValue.startOf('year')
-              : newValue;
+              : !showTime
+                ? newValue.startOf('day')
+                : newValue;
       return !resolveToUTC ? val.utc(true) : val.local(true);
     };
 
