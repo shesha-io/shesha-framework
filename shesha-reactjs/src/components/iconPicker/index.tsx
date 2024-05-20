@@ -131,10 +131,6 @@ const IconPicker: FC<IIconPickerProps> = ({
     }
   }, [searchQuery, searchOption?.group]);
 
-  useEffect(()=>{
-    console.log(localSelectedIcon, "LSE")
-  },[localSelectedIcon])
-
   return (
     <div className={styles.shaIconPicker}>
       <div>

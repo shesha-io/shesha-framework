@@ -125,7 +125,12 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
   collapsible: 'header',
   content: {
     id:'pnl24bf6-f76d-4139-a850-cbf06c8b71',
-    components: [...new DesignerToolbarSettings() 
+    components: [...new DesignerToolbarSettings()
+      .addIconPicker({
+        id: '152f3d72-68fb-43ab-adf6-8cf7d11fe6e1',
+        propertyName: 'defaultValue',
+        label: 'Default Icon'
+      })
       .addColorPicker({
         id: nanoid(),
         propertyName: 'color',
@@ -193,11 +198,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         validate: {},
         settingsValidationErrors: [],
         jsSetting: false,
-      }).
-      addIconPicker({
-        id: '152f3d72-68fb-43ab-adf6-8cf7d11fe6e1',
-        propertyName: 'defaultValue',
-        label: 'Default Icon'
       }).toJson()
     ]
 }
