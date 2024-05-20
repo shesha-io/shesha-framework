@@ -224,9 +224,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
             background: ${token.colorPrimary};
             color: white;
-            * {
-              color: white;
-            }
           }
 
           .${prefixCls}-form-item {

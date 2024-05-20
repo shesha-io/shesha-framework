@@ -16,7 +16,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     `
   );
 
+  const shaHamburgerItem = cx(
+    ``,
+    css`
+      .${prefixCls}icon {
+        &.${prefixCls}icon-menu {
+          margin-right: 10px;
+        }
+      }
+    `
+  );
+
   return {
+    shaHamburgerItem,
     shaMenu,
   };
 });

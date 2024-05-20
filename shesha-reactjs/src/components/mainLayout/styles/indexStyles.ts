@@ -45,6 +45,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
     ${sheshaStyles.flexCenterAlignedSpaceBetween}
     width: 100%;
     padding: 0 ${sheshaStyles.paddingLG}px;
+
+    &.sha-paging-height {
+      height: 46px;
+    }
   
     .sha-index-toolbar-left {
       button {
@@ -105,6 +109,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
     .${(p) => p.theme.prefixCls}-alert {
       margin-bottom: 5px;
     }
+  }
+
+  .${(p) => p.theme.prefixCls}-tree-list {
+    padding: 18px 0;
   }
   
   body {
