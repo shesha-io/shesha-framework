@@ -11,7 +11,6 @@ import {
     DATE_TIME_FORMATS,
     disabledDate,
     getDatePickerValue,
-    getDefaultFormat,
     getFormat,
     getRangePickerValues,
 } from './utils';
@@ -44,26 +43,37 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         readOnly,
         style,
         defaultToMidnight,
+        resolveToUTC,
         ...rest
     } = props;
 
     const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
     const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
 
-    const defaultFormat = getDefaultFormat(props);
-
     const { formData } = useForm();
 
     const pickerFormat = getFormat(props, properties);
-    const formattedValue = getMoment(value, pickerFormat);
+
+    const convertValue = (localValue: any) => {
+      const newValue = isMoment(localValue) ? localValue : getMoment(localValue, pickerFormat);
+      const val = picker === 'week'
+        ? newValue.startOf('week')
+        : picker === 'month'
+          ? newValue.startOf('month')
+          : picker === 'quarter'
+            ? newValue.startOf('quarter')
+            : picker === 'year'
+              ? newValue.startOf('year')
+              : newValue;
+      return !resolveToUTC ? val.utc(true) : val.local(true);
+    };
 
     const handleDatePickerChange = (localValue: any | null, dateString: string) => {
         if (!dateString?.trim()) {
             (onChange as TimePickerChangeEvent)(null, '');
             return;
         }
-
-        const newValue = isMoment(localValue) ? localValue.format(pickerFormat) : localValue;
+        const newValue = convertValue(localValue);
 
         (onChange as TimePickerChangeEvent)(newValue, dateString);
     };
@@ -73,29 +83,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             (onChange as RangePickerChangeEvent)(null, null);
             return;
         }
-        const dates = (values as []).map((val: any) => {
-            if (isMoment(val)) return val.format(defaultFormat);
-
-            return val;
-        });
+        const dates = (values as []).map((val: any) => convertValue(val));
 
         (onChange as RangePickerChangeEvent)(dates, formatString);
     };
-
-    if (readOnly) {
-        const format = showTime
-            ? `${dateFormat} ${timeFormat}`
-            : dateFormat;
-
-        return (
-            <ReadOnlyDisplayFormItem
-                value={formattedValue?.toISOString()}
-                type="datetime"
-                dateFormat={format}
-                timeFormat={timeFormat}
-            />
-        );
-    }
 
     const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
 
@@ -120,6 +111,23 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         );
     }
 
+    const momentValue = getMoment(value, pickerFormat);
+
+    if (readOnly) {
+      const format = showTime
+        ? `${dateFormat} ${timeFormat}`
+        : dateFormat;
+
+      return (
+        <ReadOnlyDisplayFormItem
+          value={momentValue?.toISOString()}
+          type="datetime"
+          dateFormat={format}
+          timeFormat={timeFormat}
+        />
+      );
+    }
+
     return (
         <DatePicker
             className="sha-date-picker"
@@ -135,6 +143,7 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             format={pickerFormat}
             style={evaluatedStyle}
             {...rest}
+            value={momentValue}
             {...getDatePickerValue(props, pickerFormat)}
             allowClear
         />
