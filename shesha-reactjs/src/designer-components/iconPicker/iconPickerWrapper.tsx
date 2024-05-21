@@ -67,16 +67,14 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            transition: '.3s',
-            width: fontSize+'px',
-            height: fontSize+'px',
+            width: Number(fontSize) ? `${fontSize}px` : '120px',
+            height: Number(fontSize) ? `${fontSize}px` : '44px',
             border: `${borderWidth}px solid ${computedBorderColor}`,
-            borderRadius: borderRadius+'px',
-            padding: `${stylingBoxJSON["paddingTop"]} ${stylingBoxJSON["paddingRight"]} ${stylingBoxJSON["paddingBottom"]} ${stylingBoxJSON["paddingLeft"]}`,
-            margin: `${stylingBoxJSON["marginTop"]} ${stylingBoxJSON["marginRight"]} ${stylingBoxJSON["marginBottom"]} ${stylingBoxJSON["marginLeft"]}`,
+            borderRadius: `${borderRadius}px`,
+            padding: `${stylingBoxJSON["paddingTop"] || '0px'} ${stylingBoxJSON["paddingRight"] || '0px'} ${stylingBoxJSON["paddingBottom"] || '0px'} ${stylingBoxJSON["paddingLeft"] || '0px'}`,
+            margin: `${stylingBoxJSON["marginTop"] || '0px'} ${stylingBoxJSON["marginRight"] || '0px'} ${stylingBoxJSON["marginBottom"] || '0px'} ${stylingBoxJSON["marginLeft"] || '0px'}`,
             backgroundColor: backgroundColor
         }}>
-        <div>
         <IconPicker
             value={computedIcon as ShaIconTypes}
             onIconChange={onIconChange}
@@ -85,7 +83,6 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
             twoToneColor={computedColor}
             defaultValue={defaultValue as ShaIconTypes}
         />
-        </div>
         </div>
     );
 };

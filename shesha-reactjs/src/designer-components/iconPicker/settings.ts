@@ -127,9 +127,10 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     id:'pnl24bf6-f76d-4139-a850-cbf06c8b71',
     components: [...new DesignerToolbarSettings()
       .addIconPicker({
-        id: '152f3d72-68fb-43ab-adf6-8cf7d11fe6e1',
+        id: nanoid(),
         propertyName: 'defaultValue',
-        label: 'Default Icon'
+        label: 'Default Icon',
+        labelAlign: 'left'
       })
       .addColorPicker({
         id: nanoid(),
@@ -191,7 +192,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         allowClear: true,
         showText: true,
       }).addStyleBox({
-        id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
+        id: nanoid(),
         propertyName: 'stylingBox',
         componentName: 'Styling Box',
         parentId: 'root',
