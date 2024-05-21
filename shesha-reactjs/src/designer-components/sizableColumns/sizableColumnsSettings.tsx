@@ -9,8 +9,11 @@ import { EXPOSED_VARIABLES } from './exposedVariables';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ISizableColumnComponentProps } from './interfaces';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
-const SizableColumnsSettings = ({ readOnly }: ISettingsFormFactoryArgs<ISizableColumnComponentProps>) => {
+const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnComponentProps>) => {
+  const { readOnly } = props;
+
   return (
     <>
       <SettingsFormItem label="Component name" name="componentName" required={true}>
@@ -38,6 +41,18 @@ const SizableColumnsSettings = ({ readOnly }: ISettingsFormFactoryArgs<ISizableC
 
         <SettingsFormItem name="stylingBox">
           <StyleBox />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+      
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

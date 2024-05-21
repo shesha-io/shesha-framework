@@ -20,6 +20,7 @@ import { nanoid } from '@/utils/uuid';
 import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
@@ -156,7 +157,8 @@ const ROW_SAVED_SUCCESS_EXPOSED_VARIABLES = [
   }
 ];
 
-const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = ({ readOnly }) => {
+const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = (props) => {
+  const { readOnly } = props;
   const { model } = useSettingsForm<IDataListComponentProps>();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
@@ -489,7 +491,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Grouping">
+      <Show when={model.orientation === "vertical" || model.orientation === "horizontal" }>
+        <SettingsCollapsiblePanel header="Grouping">
         <SettingsFormItem name="collapsible" label="Collapsible" valuePropName='checked' jsSetting>
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
@@ -514,7 +517,8 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             availableConstants={getGroupStyleConstants}
           />
         </SettingsFormItem>
-      </SettingsCollapsiblePanel>
+        </SettingsCollapsiblePanel>
+      </Show>
 
       <SettingsCollapsiblePanel header='Empty List'>
         <SettingsFormItem name="noDataText" label="Primary Text" jsSetting>
@@ -532,6 +536,17 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
 
     </>
   );

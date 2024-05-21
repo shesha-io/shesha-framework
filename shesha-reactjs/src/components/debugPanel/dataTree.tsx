@@ -84,7 +84,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, las
             pm = pl?.find(x => toCamelCase(x.path) === item);
 
             if (typeof p[item] === 'object') {
-                const n: DataNode = {title: <DebugDataTreeProp name={item} metadata={pm} value={undefined}/>, key, isLeaf: false };
+                const n: DataNode = {title: <DebugDataTreeProp name={item} metadata={pm} value={JSON.stringify(p[item])}/>, key, isLeaf: false };
                 res.push(n);
             } else {
                 const readonly = !editAll && (!pm || isDataPropertyMetadata(pm) && pm?.readonly);

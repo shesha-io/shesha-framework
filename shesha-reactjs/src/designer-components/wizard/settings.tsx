@@ -168,18 +168,6 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsCollapsiblePanel header="Security">
-        <SettingsFormItem
-          jsSetting
-          label="Permissions"
-          name="permissions"
-          initialValue={props.model.permissions}
-          tooltip="Enter a list of permissions that should be associated with this component"
-        >
-          <PermissionAutocomplete readOnly={readOnly} />
-        </SettingsFormItem>
-      </SettingsCollapsiblePanel>
-
       <SettingsCollapsiblePanel header="Style">
         <SettingsFormItem
           label="Style"
@@ -216,6 +204,18 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 
         <SettingsFormItem name="stylingBox">
           <StyleBox />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
