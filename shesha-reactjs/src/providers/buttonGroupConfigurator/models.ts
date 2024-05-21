@@ -61,9 +61,10 @@ export interface IButtonGroup extends IButtonGroupItemBase {
    */
   hideWhenEmpty?: boolean;
   /**
-   * Chid items (buttons or nested groups)
+   * Child items (buttons or nested groups)
    */
   childItems?: ButtonGroupItemProps[];
+  count: number,
 }
 
 export const isGroup = (item: IButtonGroupItemBase): item is IButtonGroup => {

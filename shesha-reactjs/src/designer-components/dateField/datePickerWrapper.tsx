@@ -1,18 +1,16 @@
 import { DatePicker } from '@/components/antd';
 import moment, { isMoment } from 'moment';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
-import { getMoment } from '@/utils/date';
+import { getMoment, getRangeMoment } from '@/utils/date';
 import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import {
     DATE_TIME_FORMATS,
     disabledDate,
-    getDatePickerValue,
     getFormat,
-    getRangePickerValues,
 } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
 
@@ -64,7 +62,9 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             ? newValue.startOf('quarter')
             : picker === 'year'
               ? newValue.startOf('year')
-              : newValue;
+              : !showTime
+                ? newValue.startOf('day')
+                : newValue;
       return !resolveToUTC ? val.utc(true) : val.local(true);
     };
 
@@ -90,6 +90,10 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
 
     const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
 
+    const momentValue = useMemo(() => getMoment(value, pickerFormat), [value, pickerFormat]);
+    const rangeMomentValue = useMemo(() => getRangeMoment(value, pickerFormat), [value, pickerFormat]);
+    const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
+
     if (range) {
         return (
             <RangePicker
@@ -97,8 +101,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
                 onChange={handleRangePicker}
                 format={pickerFormat}
-                value={getRangePickerValues(value, pickerFormat)}
-                defaultValue={getRangePickerValues(defaultValue, pickerFormat)}
+                value={rangeMomentValue}
+                defaultValue={defaultMomentValue}
                 {...rest}
                 picker={picker}
                 showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
@@ -111,16 +115,11 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         );
     }
 
-    const momentValue = getMoment(value, pickerFormat);
-
     if (readOnly) {
-      const format = showTime
-        ? `${dateFormat} ${timeFormat}`
-        : dateFormat;
-
+      const format = showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
       return (
         <ReadOnlyDisplayFormItem
-          value={momentValue?.toISOString()}
+          value={momentValue}
           type="datetime"
           dateFormat={format}
           timeFormat={timeFormat}
@@ -132,7 +131,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         <DatePicker
             className="sha-date-picker"
             disabledDate={(e) => disabledDate(props, e, formData, globalState)}
-            //disabled={disabled}
             onChange={handleDatePickerChange}
             variant={hideBorder ? 'borderless' : undefined}
             showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
@@ -144,7 +142,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             style={evaluatedStyle}
             {...rest}
             value={momentValue}
-            {...getDatePickerValue(props, pickerFormat)}
             allowClear
         />
     );
