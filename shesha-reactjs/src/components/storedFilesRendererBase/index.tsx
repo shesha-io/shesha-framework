@@ -23,8 +23,6 @@ export interface IStoredFilesRendererBaseProps {
   fileList?: IStoredFile[];
   allowUpload?: boolean;
   allowDelete?: boolean;
-  allowReplace?: boolean;
-  allowRename?: boolean;
   showDragger?: boolean;
   ownerId?: string;
   ownerType?: string;
@@ -71,9 +69,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowedFileTypes = [],
   maxHeight,
   downloadZip,
-  allowDelete,
-  allowRename,
-  allowReplace
+  allowDelete
 }) => {
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
@@ -96,7 +92,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     accept: allowedFileTypes?.join(','),
     multiple,
     fileList,
-    disabled: disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
 
