@@ -41,7 +41,7 @@ const ResizableWrapper: FC<ResizableWrapperProps> = ({
 
     return (
         <Resizable
-            minWidth={350}
+            minWidth={365}
             maxWidth={550}
             defaultSize={{ width: 365, height: '100%' }}
             onResize={(_, __, ref) => {
