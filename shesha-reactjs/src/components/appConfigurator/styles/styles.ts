@@ -84,31 +84,38 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
             }
 
             .sha-configurable-view-button-wrapper {
+              display: flex;
+              align-items: center;
+              background-color: #14A38B;
+              padding: 4px;
+              height: 34px;
+              overflow-y: hidden;
+              width: 100%
+            }
+            
+            .sha-configurable-view-details {
+              background-color: #14A38B;
+              color: #ffffff;
+            }
+            
+            .sha-configurable-view-button-wrapper > button {
+              color: #ffffff;
+              background-color: #14A38B;
+              height: 28px;
               position: absolute;
-              left: 0px;
-              right: 0px;
-              top: 0px;
-              height: 32px;
-              text-align: center;
-              background-color: #14A38B;
-              z-index: 1001;
-
-              .sha-configurable-view-details {
-                position: absolute;
-                left: 12px;
-                top: 0px;
-                padding-top: 6px;
-                color: white;
-                vertical-align: middle;
-              }
+              top: 3px;
+              left: calc(50% - 14px);
+              border: none;
             }
 
-            button, button:hover {
-              background-color: #14A38B;
-              border-color: #14A38B;
-              color: white;
-            }
-          }
+          .lite{
+            background-color: rgba(0, 0, 250, .05);
+            margin-left: -5%;
+            width: 110%;
+            height: 100%;
+            padding: 20px;
+            padding-top: 10px;
+          } 
       
           .${shaConfigurableComponentOverlay}:after {
             content: '';
@@ -138,7 +145,6 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
             top: 50%;
             margin-left: -100px;
             margin-top: -55px;
-            border-radius: 10px;
             z-index: 1000;
             padding: 15px 5px;
       
