@@ -148,26 +148,25 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     }
   };
 
-  const uploadButton =(
-    <Upload {...props} disabled={isStub || disabled}>
-      <Button type="link" icon={<UploadOutlined />} disabled={disabled} {...uploadBtnProps}>
+  const renderUploadContent = () => {
+    return (
+      <Button type="link" icon={<UploadOutlined />} style={{ display: disabled ? 'none' : '' }} {...uploadBtnProps}>
         (press to upload)
       </Button>
-    </Upload>
-  );
-
-  const draggeruploader = (
-    isStub? <Dragger openFileDialogOnClick={false} disabled={disabled}> <DraggerStub /></Dragger> :
-    <Dragger {...props}>
-      <DraggerStub />
-    </Dragger>
-  );
+    );
+  };
 
   return (
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
-      {isDragger
-          ?  draggeruploader
-          : uploadButton
+      {isStub 
+        ? isDragger
+          ? <Dragger disabled><DraggerStub /></Dragger>
+          : <div>{renderUploadContent()}</div>
+        : props.disabled
+          ? <Upload {...props} />
+          : isDragger
+            ? <Dragger {...props}><DraggerStub /></Dragger>
+            : <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
       }
 
       {fetchFilesError && (
