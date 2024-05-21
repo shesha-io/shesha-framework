@@ -10,10 +10,11 @@ import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 
 export interface IDesignerMainAreaProps {
+    configurator?: boolean;
 
 }
 
-export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
+export const DesignerMainArea: FC<IDesignerMainAreaProps> = ({ configurator = false }) => {
     const { isDebug, readOnly } = useFormDesigner();
     const { form, formMode } = useForm();
     const { width, zoom } = useCanvasConfig();
@@ -31,6 +32,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                         content: () => <Toolbox />,
                         placeholder: 'Builder Widgets',
                         resizable: true,
+                        configurator
                     }
             }
             rightSidebarProps={{
@@ -38,6 +40,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                 content: () => <ComponentPropertiesPanel />,
                 placeholder: 'Properties',
                 resizable: true,
+                configurator
             }}
         >
             <div style={{ width: `${magnifiedWidth}%`, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>

@@ -51,6 +51,7 @@ const ResizableWrapper: FC<ResizableWrapperProps> = ({
             boundsByDirection
             enable={{ right: true, left: !isLeft }}
         >
+
             <SidebarPanel
                 {...props}
                 handleClick={handleClick}
@@ -59,6 +60,7 @@ const ResizableWrapper: FC<ResizableWrapperProps> = ({
                 width={width}
                 configurator={configurator}
             />
+
         </Resizable>
     );
 };

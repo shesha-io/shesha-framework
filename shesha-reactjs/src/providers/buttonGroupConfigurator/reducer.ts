@@ -31,8 +31,8 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       let count = 0;
 
       if (parent && parent.itemType === 'group') {
-        buttonProps.name = `button${parent.count + 1}`
-        buttonProps.label = `Button ${parent.count + 1}`
+        buttonProps.name = `button${parent.count + 1}`;
+        buttonProps.label = `Button ${parent.count + 1}`;
         parent.childItems = [...parent.childItems, buttonProps];
         parent.count = parent.count + 1;
       } else {
@@ -58,7 +58,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
         return items.filter((item) => {
           if (item.id === payload)
             return false;
-          if (Array.isArray(item['childItems'])){
+          if (Array.isArray(item['childItems'])) {
             item['childItems'] = updateItems(item['childItems']);
           }
           return true;
@@ -106,7 +106,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
         return items.filter((item) => {
           if (item.id === payload)
             return false;
-          if (Array.isArray(item['childItems'])){
+          if (Array.isArray(item['childItems'])) {
             item['childItems'] = updateItems(item['childItems']);
           }
           return true;
@@ -175,7 +175,7 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
 
       return {
         ...state,
-        items: updateBranch(newItems, {id, settings: {}}),
+        items: updateBranch(newItems, { id, settings: {} }),
       };
     },
   },
