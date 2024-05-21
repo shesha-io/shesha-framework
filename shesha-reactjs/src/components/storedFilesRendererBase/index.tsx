@@ -71,7 +71,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   allowedFileTypes = [],
   maxHeight,
   downloadZip,
-  allowDelete
+  allowDelete,
+  allowRename,
+  allowReplace
 }) => {
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
@@ -143,7 +145,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     showUploadList: {
       showRemoveIcon: allowDelete,
-
     }
   };
 
