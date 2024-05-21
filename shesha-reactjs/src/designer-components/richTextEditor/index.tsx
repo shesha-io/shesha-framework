@@ -38,7 +38,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         disablePlugins: model?.disablePlugins?.join(',') || '',
         ...!model.autoHeight && {height: model?.height},
         ...!model.autoWidth && {width: model?.width},
-        placeholder: model?.placeholder || 'Start writing text...',
+        placeholder: model?.placeholder,
         readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
         defaultActionOnPaste: 'insert_as_html',
@@ -52,7 +52,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         askBeforePasteFromWord: model?.askBeforePasteFromWord,
         autofocus: model?.autofocus,
         showCharsCounter: model?.showCharsCounter,
-        showWordsCounter: model?.showWordsCounter
+        showWordsCounter: model?.showWordsCounter,
       };
       return typedConfig;
     }, [model, model.readOnly]);
@@ -66,7 +66,6 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   initModel: model => ({
     ...model,
-    placeholder: 'Start writing text...',
     showCharsCounter: true,
     showWordsCounter: true,
     showXPathInStatusbar: true,
