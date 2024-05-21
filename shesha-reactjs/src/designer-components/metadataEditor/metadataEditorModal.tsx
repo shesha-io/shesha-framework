@@ -36,6 +36,8 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
                 open: true,
                 title: 'Properties',
                 content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
+                resizable: true,
+                configurator: true,
             }}
         >
             <ListEditor<ItemType>

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button} from 'antd';
+import { Button } from 'antd';
 import { SidebarContainer } from '@/components/';
 import { ToolbarItemProperties } from './itemProperties';
 import ItemsContainer from './itemsContainer';
@@ -34,22 +34,24 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
 
   return (
     <div className={styles.shaToolbarConfigurator}>
-    {allowAdd &&
-      <div className={styles.shaActionButtons} style={{ marginBottom: '8px' }}>
-        <Button onClick={onAddClick} type="primary">
-          Add Property
-        </Button>
-      </div>}
+      {allowAdd &&
+        <div className={styles.shaActionButtons} style={{ marginBottom: '8px' }}>
+          <Button onClick={onAddClick} type="primary">
+            Add Property
+          </Button>
+        </div>}
 
-    <SidebarContainer
-      rightSidebarProps={{
-        open: true,
-        title: 'Properties',
-        content: <ToolbarItemProperties />,
-      }}
-    >
-      <ItemsContainer items={items} index={[]} />
-    </SidebarContainer>
-  </div>
+      <SidebarContainer
+        rightSidebarProps={{
+          open: true,
+          title: 'Properties',
+          content: <ToolbarItemProperties />,
+          width: 350,
+          resizable: false,
+        }}
+      >
+        <ItemsContainer items={items} index={[]} />
+      </SidebarContainer>
+    </div>
   );
 };

@@ -16,10 +16,10 @@ export interface IDesignerMainAreaProps {
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { isDebug, readOnly } = useFormDesigner();
     const { form, formMode } = useForm();
-    const {width,zoom}=useCanvasConfig();
+    const { width, zoom } = useCanvasConfig();
     const { styles } = useStyles();
 
-    const magnifiedWidth = useMemo(()=>width * (zoom/100), [width, zoom]);
+    const magnifiedWidth = useMemo(() => width * (zoom / 100), [width, zoom]);
 
     return (
         <SidebarContainer
@@ -30,23 +30,25 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                         title: 'Builder Widgets',
                         content: () => <Toolbox />,
                         placeholder: 'Builder Widgets',
+                        resizable: true,
                     }
             }
             rightSidebarProps={{
                 title: () => <ComponentPropertiesTitle />,
                 content: () => <ComponentPropertiesPanel />,
                 placeholder: 'Properties',
+                resizable: true,
             }}
         >
-          <div style={{ width:`${magnifiedWidth}%`, zoom:`${zoom}%`, overflow:'auto', margin:'0 auto' }}>
-            <ParentProvider model={{}} formMode='designer'>
-                <ConfigurableFormRenderer form={form} skipFetchData={true} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
-                    {isDebug && (
-                        <DebugPanel formData={form.getFieldsValue()} />
-                    )}
-                </ConfigurableFormRenderer>
-            </ParentProvider>
-          </div>
+            <div style={{ width: `${magnifiedWidth}%`, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
+                <ParentProvider model={{}} formMode='designer'>
+                    <ConfigurableFormRenderer form={form} skipFetchData={true} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
+                        {isDebug && (
+                            <DebugPanel formData={form.getFieldsValue()} />
+                        )}
+                    </ConfigurableFormRenderer>
+                </ParentProvider>
+            </div>
         </SidebarContainer>
     );
 };

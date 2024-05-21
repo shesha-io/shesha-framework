@@ -27,6 +27,8 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   sideBarWidth?: number;
 
   allowFullCollapse?: boolean;
+
+
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({

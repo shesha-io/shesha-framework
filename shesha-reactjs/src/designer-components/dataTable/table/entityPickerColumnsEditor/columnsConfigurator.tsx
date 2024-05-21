@@ -6,7 +6,7 @@ import { ColumnProperties } from './columnProperties';
 import ColumnsContainer from './columnsContainer';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
-export interface IColumnsConfiguratorProps {}
+export interface IColumnsConfiguratorProps { }
 
 export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = () => {
   const { styles } = useStyles();
@@ -32,6 +32,8 @@ export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = () => {
           open: true,
           title: () => 'Properties',
           content: () => <ColumnProperties />,
+          resizable: true,
+          configurator: true,
         }}
       >
         <ColumnsContainer items={items} index={[]} />

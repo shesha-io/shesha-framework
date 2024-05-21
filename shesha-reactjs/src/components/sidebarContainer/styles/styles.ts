@@ -70,6 +70,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
               }
             
             }
+          .${sidebarHeaderTitle}{
+            transition: ${sheshaStyles.transition};
+             &.right {
+              width:95%;
+              }
+             &.left {
+              width: 95%;
+             }
+          }
           }
     
           background: white;
@@ -122,11 +131,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             .sidebar-body-content {
               width: 100%;
               display: none;
-    
+     
               &.open {
                 display: block;
                 height: 80vh;
+
+                &.configurator {
+                padding-right: 15px;
+                }
               }
+            }
+            .sidebar-body-content > * {
+              width: 100%;
+              background: white;
             }
     
             .sidebar-body-placeholder {
@@ -189,7 +206,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           overflow-x: auto;
     
           &::not(.no-padding) {
-            padding: ${sheshaStyles.paddingLG}px;
+           padding: ${sheshaStyles.paddingLG}px;
           }
         }
       }    

@@ -5,15 +5,17 @@ import { Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
 import { ISidebarProps, SidebarPanelPosition } from './models';
 
+
 export interface SidebarPanelProps extends ISidebarProps {
     side: SidebarPanelPosition;
     allowFullCollapse: boolean;
     handleClick?: () => void;
     width?: number;
+    configurator?: boolean;
 }
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     const { styles } = useStyles();
-    const { side, allowFullCollapse, width } = props;
+    const { side, allowFullCollapse, width = 350, configurator } = props;
 
     const { open, title, placeholder, content, className, handleClick } = props;
 
@@ -21,9 +23,12 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
 
     const sideClassName = side === 'right' ? styles.sidebarContainerRight : styles.sidebarContainerLeft;
 
+    const panelStyled = open ? { width } : {};
+
+
     return (
-        <div className={classNames(sideClassName, { open }, { 'allow-full-collapse': allowFullCollapse }, className)}>
-            <div className={styles.sidebarHeader} >
+        <div className={classNames(sideClassName, { open }, { 'allow-full-collapse': allowFullCollapse }, className)} >
+            <div className={styles.sidebarHeader} style={{ ...panelStyled }}>
                 <div className={`${styles.sidebarHeaderTitle} ${side}`}>{typeof title === 'function' ? title() : title}</div>
                 <div className={`${styles.sidebarHeaderBtn} ${side}`} onClick={handleClick}>
                     {props.placeholder ? (
@@ -35,12 +40,13 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
                     )}
                 </div>
             </div>
-            <div className={`${styles.sidebarBody} scroll scroll-y`} style={{ width }}>
-                <div className={classNames(styles.sidebarBodyContent, { open })} >
+            <div className={`${styles.sidebarBody} scroll scroll-y`} style={{ ...panelStyled }} >
+                <div className={classNames(styles.sidebarBodyContent, { open, configurator })}>
                     {typeof content === 'function' ? content() : content}
                 </div>
                 {!allowFullCollapse && <div className={classNames(styles.sidebarBodyPlaceholder, { open })} />}
             </div>
+
         </div>
     );
 };

@@ -62,6 +62,8 @@ export const TableViewSelectorConfigurator = forwardRef<
           open: true,
           title: () => 'Properties',
           content: () => <TableViewProperties />,
+          resizable: true,
+          configurator: true,
         }}
       >
         {!readOnly && (

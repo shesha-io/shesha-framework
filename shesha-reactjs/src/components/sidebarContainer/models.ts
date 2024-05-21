@@ -47,4 +47,9 @@ export interface ISidebarProps {
      * Whether the sidebar is resizable
      * */
     resizable?: boolean;
+
+    /**
+     * Whether the sidebar is a configurator
+     * */
+    configurator?: boolean;
 }

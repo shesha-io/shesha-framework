@@ -41,7 +41,7 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
       }
     }
 
-    return 'Properties';
+    return "Properties";
   };
 
   return (
@@ -68,7 +68,8 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
           title,
           content,
           resizable: true,
-          width: 350
+          width: 350,
+          configurator: true,
 
         }}
 

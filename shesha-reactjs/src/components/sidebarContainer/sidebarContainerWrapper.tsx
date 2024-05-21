@@ -3,11 +3,22 @@ import { SidebarPanel, SidebarPanelProps } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { Resizable } from 're-resizable';
 
+interface ResizableWrapperProps extends SidebarPanelProps {
+    configurator?: any;
+    resizable?: boolean;
+}
 
-const ResizableWrapper: FC<SidebarPanelProps> = ({ ...props }) => {
+const ResizableWrapper: FC<ResizableWrapperProps> = ({
+    onOpen,
+    onClose,
+    defaultOpen = true,
+    open,
+    configurator,
+    resizable,
+    side,
+    ...props
+}) => {
     const { styles } = useStyles();
-
-    const { onOpen, onClose, defaultOpen = true, open } = props;
 
     const isControllable = open !== undefined;
 
@@ -16,36 +27,38 @@ const ResizableWrapper: FC<SidebarPanelProps> = ({ ...props }) => {
 
     const realOpen = isControllable ? open : isOpen;
 
-
     const handleClick = () => {
         const handler = realOpen ? onClose : onOpen;
-        if (handler)
-            handler();
-        if (!isControllable)
-            setIsOpen(!isOpen);
+        if (handler) handler();
+        if (!isControllable) setIsOpen(!isOpen);
     };
 
+    if (!resizable || (resizable && !realOpen)) {
+        return <SidebarPanel {...props} side={side} handleClick={handleClick} open={realOpen} />;
+    }
 
-    if (!props.resizable || (props?.resizable && !realOpen)) {
-        return <SidebarPanel {...props} handleClick={handleClick} open={realOpen} />;
-    };
-
-    const isLeft = props.side === 'left';
+    const isLeft = side === 'left';
 
     return (
         <Resizable
-            minWidth={365}
+            minWidth={350}
             maxWidth={550}
             defaultSize={{ width: 365, height: '100%' }}
-            onResize={(_V, _, ref) => {
-                setWidth(() => parseInt(ref.style.width));
+            onResize={(_, __, ref) => {
+                setWidth(parseInt(ref.style.width, 10));
             }}
-            
             className={isLeft ? styles.leftResizer : styles.rightResizer}
-            boundsByDirection={true}
-            enable={{ right: true, left: !isLeft }}>
-            <SidebarPanel {...props} onClose={close} handleClick={handleClick} open={realOpen} width={width} />
-            
+            boundsByDirection
+            enable={{ right: true, left: !isLeft }}
+        >
+            <SidebarPanel
+                {...props}
+                handleClick={handleClick}
+                side={side}
+                open={realOpen}
+                width={width}
+                configurator={configurator}
+            />
         </Resizable>
     );
 };
