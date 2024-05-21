@@ -75,7 +75,7 @@ export const tolocalIsoDate = (dateIsoString: string) => {
 export const getMoment = (value: any, dateFormat: string): Moment => {
   if (value === null || value === undefined) return undefined;
 
-  const values = [isMoment(value) ? value : null, moment(value as string, dateFormat), moment(value as string)];
+  const values = [isMoment(value) ? value : null, moment(value as string), moment(value as string, dateFormat)];
 
   const parsed = values.find((i) => isMoment(i) && i.isValid());
 
