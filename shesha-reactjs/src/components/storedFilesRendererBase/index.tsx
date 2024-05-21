@@ -92,6 +92,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     accept: allowedFileTypes?.join(','),
     multiple,
     fileList,
+    disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
 
