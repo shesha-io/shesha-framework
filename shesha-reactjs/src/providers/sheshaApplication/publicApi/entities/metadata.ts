@@ -169,7 +169,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
 
                     const idType = getEntityIdJsType(typeDef.metadata);
                     if (!idType)
-                        throw new Error(`Failed to identifier type for entity '${prop.entityType}'`);
+                        throw new Error(`Failed to find identifier type for entity '${prop.entityType}'`);
 
                     if (prop.description)
                         sb.append(`/** ${prop.description} */`);

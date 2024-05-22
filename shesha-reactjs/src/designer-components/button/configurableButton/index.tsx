@@ -31,7 +31,9 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
           actionConfiguration: { ...props.actionConfiguration },
           argumentsEvaluationContext: evaluationContext,
         })
-          .finally(() => setLoading(false));
+          .finally(() => {
+            setLoading(false);
+          });
       } else console.error('Action is not configured');
     } catch (error) {
       console.error('Validation failed:', error);

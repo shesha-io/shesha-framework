@@ -16,6 +16,7 @@ import { ShaIconTypes } from '@/components/iconPicker';
 import { ColumnsConfig } from './columnsEditor/columnsConfig';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -162,7 +163,9 @@ export interface IProps {
   onValuesChange?: (changedValues: any, values: ITableComponentProps) => void;
 }
 
-const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ readOnly }) => {
+const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
+  const { readOnly } = props;
+  
   const { model } = useSettingsForm<ITableComponentProps>();
 
   const crudConstants = useAvailableConstantsMetadata({ 
@@ -403,6 +406,18 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ rea
           {(value, onChange) =>
             <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} defaultValue={"RightOutlined"} />
           }
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

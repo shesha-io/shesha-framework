@@ -48,12 +48,16 @@ namespace Shesha.Extensions
             var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
 
+            var port = linkGeneratorContext.State.Port;
+
             return linkGenerator.GetUriByAction(
                 action, 
                 controller, 
                 values,
                 linkGeneratorContext.State.Scheme,
-                new HostString(linkGeneratorContext.State.Host, linkGeneratorContext.State.Port),
+                port > 0 
+                    ? new HostString(linkGeneratorContext.State.Host, port)
+                    : new HostString(linkGeneratorContext.State.Host),
                 linkGeneratorContext.State.PathBase
             );
         }

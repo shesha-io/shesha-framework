@@ -23,7 +23,6 @@ module.exports = {
     '/example/**',
     '/src/apis/*',
     '**/__tests__/**',
-    '/.storybook/**',
     '.eslintrc.js',
     'rollup.config.mjs',
     'next.config.js',
@@ -267,5 +266,5 @@ module.exports = {
     'import/core-modules': [],
     'import/ignore': ['node_modules', '\\.(coffee|scss|css|less|hbs|svg|json)$'],
   },
-  extends: ['plugin:storybook/recommended', 'plugin:react-hooks/recommended', 'plugin:@next/next/recommended'],
+  extends: ['plugin:react-hooks/recommended', 'plugin:@next/next/recommended'],
 };

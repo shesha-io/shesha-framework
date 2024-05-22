@@ -12,6 +12,7 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
 
@@ -115,6 +116,18 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
             }}
             availableConstants={labelFormatConstants}
           />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+      
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

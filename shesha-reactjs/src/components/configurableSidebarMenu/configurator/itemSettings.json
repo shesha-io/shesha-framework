@@ -134,7 +134,7 @@
     },
     {
       "id": "26c68b22-3211-475d-91e1-0745a4447329",
-      "type": "editableTagGroup",
+      "type": "permissionAutocomplete",
       "propertyName": "requiredPermissions",
       "label": "Permissions",
       "labelAlign": "right",

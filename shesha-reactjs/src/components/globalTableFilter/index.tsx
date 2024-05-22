@@ -5,9 +5,10 @@ import { useDataTable } from '@/providers';
 
 export interface IGlobalTableFilterProps {
   searchProps?: SearchProps;
+  block?: boolean;
 }
 
-export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps }) => {
+export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, block }) => {
   const { changeQuickSearch, quickSearch, performQuickSearch } = useDataTable();
 
   const srcProps: SearchProps = {
@@ -16,7 +17,7 @@ export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps }) 
     ...searchProps,
   };
 
-  return <GlobalTableFilterBase {...{ srcProps, changeQuickSearch, performQuickSearch, quickSearch }} />;
+  return <GlobalTableFilterBase {...{ srcProps, changeQuickSearch, performQuickSearch, quickSearch, block }} />;
 };
 
 export default GlobalTableFilter;
