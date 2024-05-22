@@ -23,9 +23,13 @@ namespace Shesha.Exceptions
                 : base.GetStatusCode(context, wrapOnError);
         }
 
-        public new void OnException(ExceptionContext context) 
-        { 
+        protected override void HandleAndWrapException(ExceptionContext context, WrapResultAttribute wrapResultAttribute)
+        {
+            base.HandleAndWrapException(context, wrapResultAttribute);
 
+            // prevent `Writing to the response body is invalid for responses with status code 304.` exception
+            if (context.HttpContext.Response.StatusCode == (int)HttpStatusCode.NotModified)
+                context.Result = null;
         }
     }
 }

@@ -1,10 +1,9 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, CSSProperties, useRef, useState } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'react-places-autocomplete';
 import { Input, notification } from 'antd';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
-import { CSSProperties } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useStyles } from './styles/styles';
 
@@ -212,8 +211,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                       target: { value: realValue },
                     } = e;
                     handleChange(realValue);
-
-                    if (!disableGoogleEvent || !disableGoogleEvent(value)) {
+                    if (!disableGoogleEvent?.(value)) {
                       inputProps.onChange(e);
                     }
                   }

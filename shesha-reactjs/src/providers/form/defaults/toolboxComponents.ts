@@ -94,8 +94,15 @@ import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
+import EditModeToggler from '@/designer-components/editModeToggler';
+import ProfileDropdown from '@/designer-components/profileDropdown';
+import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/contexts';
+import { HEADER_CONFIGURATION } from '@/components/mainLayout/constant';
 
-export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[] => {
+export const getToolboxComponents = (
+  devMode: boolean,
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps' | 'formSettings'>
+): IToolboxComponentGroup[] => {
   return [
     {
       name: 'Data entry',
@@ -231,6 +238,13 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         QueryBuilderComponent,
         ScheduledJobExecutionLog,
       ],
-    }
+    },
+    {
+      name: 'Header Components',
+      visible:
+        formMetadata?.formProps?.module === HEADER_CONFIGURATION.module &&
+        formMetadata?.formProps?.name === HEADER_CONFIGURATION.name,
+      components: [EditModeToggler, ProfileDropdown],
+    },
   ];
 };

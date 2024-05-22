@@ -1,18 +1,18 @@
-import { sheshaStyles } from "@/styles";
-import { createStyles } from "antd-style";
+import { sheshaStyles } from '@/styles';
+import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }) => {
   // variables
   const layoutTriggerHeight = sheshaStyles.layoutHeaderHeight; // @layout-trigger-height
-  const layoutHeaderBackground = "#fff"; // @layout-header-background
-  const shaPageHeadingHeight = "45px"; // @sha-page-heading-height
-  const shaPageToolbarHeight = "33px"; // @sha-page-toolbar-height
-  const backgroundColor = "#f0f2f5"; // @background-color
-  const shaBorder = "1px solid #d3d3d3";
-  const shaSiderExpandedWidth = "250px"; // @sha-sider-expanded-width
-  const shaSiderCollapsedWidth = "60px"; // @sha-sider-collapsed-width
+  const layoutHeaderBackground = '#fff'; // @layout-header-background
+  const shaPageHeadingHeight = '45px'; // @sha-page-heading-height
+  const shaPageToolbarHeight = '33px'; // @sha-page-toolbar-height
+  const backgroundColor = '#f0f2f5'; // @background-color
+  const shaBorder = '1px solid #d3d3d3';
+  const shaSiderExpandedWidth = '250px'; // @sha-sider-expanded-width
+  const shaSiderCollapsedWidth = '60px'; // @sha-sider-collapsed-width
 
-  const shaAntTransition = "all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s"; // @sha-ant-transition
+  const shaAntTransition = 'all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s'; // @sha-ant-transition
   const antdTransition = css`
     transition: ${shaAntTransition};
   `;
@@ -36,9 +36,12 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     align-items: center;
   `;
 
-  const layout = cx("site-layout", css`
+  const layout = cx(
+    'site-layout',
+    css`
         min-height: 100vh;
-    `);
+    `
+  );
   const headerPart = css`
         display: flex;
         align-items: center;
@@ -52,6 +55,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     height: ${sheshaStyles.layoutHeaderHeight};
     line-height: ${sheshaStyles.layoutHeaderHeight};
     background: ${layoutHeaderBackground};
+    overflow: hidden;
   `);
 
   const layoutHeader = cx(css`
@@ -109,7 +113,8 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         }
       }
 
-      .hidden-sm-scr { // @media @phone-lg-size-query
+      .hidden-sm-scr {
+        // @media @phone-lg-size-query
           ${responsive.mobile} {
           display: none;
         }
@@ -141,10 +146,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     }
   `;
 
-
-  const sider = cx(css`
-        
-    `);
+  const sider = cx(css``);
   const content = cx(css`
     ${marginLeftTransition}
     margin-top: ${sheshaStyles.layoutHeaderHeight};
@@ -200,7 +202,9 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     }
   `;
 
-  const shaLayoutHeading = cx("", css`
+  const shaLayoutHeading = cx(
+    '',
+    css`
     &.has-heading {
       ${flexCenterAligned}
 
@@ -215,9 +219,14 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         top: ${sheshaStyles.layoutHeaderHeight};
       }
     }
-  `);
+    `
+  );
 
-  const shaSiteLayoutBackgroundNoPadding = cx(css`
+  const shaSiteLayoutBackgroundNoPadding = cx(css``);
+
+  const headerWrapper = cx(css`
+    background: ${layoutHeaderBackground};
+    width: 100%;
   `);
 
   const shaSiteLayoutBackground = css`
@@ -261,5 +270,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     shaSiteLayoutBackground,
     shaSiteLayoutBackgroundNoPadding,
     customComponents,
+    headerWrapper,
   };
 });

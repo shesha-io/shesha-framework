@@ -552,55 +552,68 @@ class StaticMustacheTag {
  * @returns {string} evaluated string
  */
 export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false) => {
-  if (!template || typeof template !== 'string')
-    return template;
 
-  const localData: IAnyObject = data ? { ...data } : undefined;
-  // The function throws an exception if the expression passed doesn't have a corresponding curly braces
+  // store moment toString function to get ISO format of datetime
+  var toString = moment.prototype.toString;
+  moment.prototype.toString = function () {
+    return this.toISOString();
+  };
+
   try {
-    if (localData) {
-      //adding a function to the data object that will format datetime
 
-      localData.dateFormat = function () {
-        return function (timestamp, render) {
-          return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          });
+    if (!template || typeof template !== 'string')
+      return template;
+
+    const localData: IAnyObject = data ? { ...data } : undefined;
+    // The function throws an exception if the expression passed doesn't have a corresponding curly braces
+    try {
+      if (localData) {
+        //adding a function to the data object that will format datetime
+
+        localData.dateFormat = function () {
+          return function (timestamp, render) {
+            return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            });
+          };
         };
-      };
+      }
+
+      const view = localData ?? {};
+
+      if (skipUnknownTags) {
+        template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
+          const mathes = x.match(/[\w\.]+/);
+          const tag = mathes.length ? mathes[0] : undefined;
+
+          const parts = tag.split('.');
+          const field = parts.pop();
+          const container = parts.reduce((level, key) => {
+            return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
+          }, view);
+          if (!container.hasOwnProperty(field)){
+            container[field] = new StaticMustacheTag(tag);
+          } 
+        });
+
+        const escape = (value: any): string => {
+          return value instanceof StaticMustacheTag
+            ? value.toEscapedString()
+            : value;
+        };
+
+        return Mustache.render(template, view, undefined, { escape });
+      } else
+        return Mustache.render(template, view);
+    } catch (error) {
+      console.warn('evaluateString ', error);
+      return template;
     }
-
-    const view = localData ?? {};
-
-    if (skipUnknownTags) {
-      template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
-        const mathes = x.match(/[\w\.]+/);
-        const tag = mathes.length ? mathes[0] : undefined;
-
-        const parts = tag.split('.');
-        const field = parts.pop();
-        const container = parts.reduce((level, key) => {
-          return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
-        }, view);
-        if (!container.hasOwnProperty(field)){
-          container[field] = new StaticMustacheTag(tag);
-        } 
-      });
-
-      const escape = (value: any): string => {
-        return value instanceof StaticMustacheTag
-          ? value.toEscapedString()
-          : value;
-      };
-
-      return Mustache.render(template, view, undefined, { escape });
-    } else
-      return Mustache.render(template, view);
-  } catch (error) {
-    console.warn('evaluateString ', error);
-    return template;
+  } finally {
+    // restore moment toString function
+    moment.prototype.toString = toString;
   }
 };
 

@@ -25,6 +25,7 @@ export interface INotesRendererBaseProps {
   deleteNotes: (selectedCommentId: string) => void;
   buttonFloatRight?: boolean;
   autoSize?: boolean;
+  allowDelete?: boolean;
 }
 
 export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
@@ -41,6 +42,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   commentListClassName,
   buttonFloatRight,
   autoSize,
+  allowDelete
 }) => {
   const [newComments, setNewComments] = useState('');
   const textRef = useRef(null);
@@ -107,7 +109,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
             style={{ ...commentListStyles }}
             itemLayout="horizontal"
             dataSource={_.orderBy(notes, ['creationTime'], ['desc']).map(({ noteText, author, creationTime, id }) => ({
-              postedBy: (author && author._displayName) || 'Unknown',
+              postedBy: (author?._displayName) || 'Unknown',
               content: (
                 <div>
                   <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: 'more' }}>{noteText}</Paragraph>
@@ -118,7 +120,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
             }))}
             renderItem={({ postedBy, id, content, postedDate }) => (
               <div className={styles.commentItemBody}>
-                <DeleteOutlined className={styles.deleteIcon} onClick={() => deleteNotes(id)} />
+                {allowDelete && <DeleteOutlined className={styles.deleteIcon} onClick={() => deleteNotes(id)} />}
                 <Comment
                   className={styles.commentItem}
                   author={postedBy || 'Anonymous'}

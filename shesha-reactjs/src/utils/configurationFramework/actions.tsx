@@ -260,6 +260,7 @@ export const itemCancelVersion = (payload: ICancelItemVersionPayload): Promise<I
           resolve({ id: response?.data?.result?.id });
         })
         .catch((e) => {
+          reject(e);
           message.destroy();
           message.error('An error occurred. Message:' + e);
         });
