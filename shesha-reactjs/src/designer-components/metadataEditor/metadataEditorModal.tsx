@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { ListEditor, SidebarContainer } from '@/components';
+import { ListEditor } from '@/components';
 import { nanoid } from '@/utils/uuid';
 import { Item } from '@/components/modelConfigurator/propertiesEditor/renderer-new/item';
-import { ItemsContainer } from '@/components/modelConfigurator/propertiesEditor/renderer-new/itemsContainer';
 import { ModelItemProperties } from '@/components/modelConfigurator/propertiesEditor/renderer-new/modelItemProperties';
 import { IMetadataEditorProps } from './interfaces';
+import { ListEditorRenderer } from '@/components/listEditorRenderer';
 
 type ItemType = IModelItem;
 
@@ -19,49 +19,58 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
         setSelectedItem(item);
     };
 
-    const setValue = (value: ItemType[]) => {
-        onChange(value);
-    };
-
     const onItemUpdate = (newValues: ItemType) => {
         if (!selectedItem || selectedItem.id !== newValues.id) return;
 
         Object.assign(selectedItem, newValues);
-        setValue([...value]);
+        onChange([...value]);
+    };
+
+    const makeNewItem = (items: IModelItem[]): IModelItem => {
+        return {
+            id: nanoid(),
+            name: `New Property ${(items ?? []).length + 1}`,
+            label: '',
+        };
     };
 
     return (
-        <SidebarContainer
-            rightSidebarProps={{
-                open: true,
+        <ListEditorRenderer
+            sidebarProps={{
                 title: 'Properties',
                 content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
             }}
         >
             <ListEditor<ItemType>
                 value={value}
-                onChange={setValue}
-                initNewItem={(_items) => ({
-                    id: nanoid(),
-                    name: 'New Property',
-                    label: '',
-                    value: '',
-                })}
+                onChange={onChange}
+                initNewItem={makeNewItem}
                 readOnly={readOnly}
                 selectionType='single'
                 onSelectionChange={onSelectionChange}
             >
-                {({ item, index }) => {
+                {({ item, index, itemOnChange, nestedRenderer }) => {
                     return (
                         <Item
                             itemProps={item}
                             index={[index]}
                             key={item?.id}
-                            containerRendering={(args) => (<ItemsContainer {...args} />)}
+                            onChange={(newValue) => {
+                                itemOnChange({ ...newValue });
+                            }}
+                            containerRendering={(args) => {
+                                return nestedRenderer({
+                                    ...args,
+                                    onChange: function (newValue: IModelItem[]): void {
+                                        args.onChange(newValue);
+                                    },
+                                    initNewItem: makeNewItem,
+                                });
+                            }}
                         />
                     );
                 }}
             </ListEditor>
-        </SidebarContainer>
+        </ListEditorRenderer>
     );
 };

@@ -91,6 +91,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Common\Shesha.Common.csproj" />
     <ProjectReference Include="..\..\..\..\shesha-core\src\Shesha.Framework\Shesha.Framework.csproj" />
     <ProjectReference Include="..\Boxfusion.SheshaFunctionalTests.Web.Core\Boxfusion.SheshaFunctionalTests.Web.Core.csproj" />
   </ItemGroup>

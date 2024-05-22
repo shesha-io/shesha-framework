@@ -27,7 +27,6 @@ namespace Shesha.ConfigurationItems
             var frontEndApp = context.Request.Headers.ContainsKey(FrontEndApplicationHeader)
                 ? context.Request.Headers[FrontEndApplicationHeader].ToString()
                 : null;
-            //context.Request.Headers.TryGetValue(FrontEndApplicationHeader, out var frontEndApp);
 
             context.Request.Headers.TryGetValue(ConfigItemModeHeader, out var modeStr);
             var configItemMode = Enum.TryParse(modeStr, true, out ConfigurationItemViewMode myStatus)

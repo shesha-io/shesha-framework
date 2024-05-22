@@ -210,7 +210,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         }
       })
       .catch((e) => {
-        console.log('failed to fetch user profile', e);
+        console.error('failed to fetch user profile', e);
         dispatch(fetchUserDataActionErrorAction({ message: 'Oops, something went wrong' }));
         redirectToUnauthorized();
       });

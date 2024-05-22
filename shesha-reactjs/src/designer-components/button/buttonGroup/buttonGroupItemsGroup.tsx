@@ -1,49 +1,43 @@
 import React, { FC } from 'react';
-import { Button } from 'antd';
-import { DeleteFilled } from '@ant-design/icons';
 import { ButtonGroupItemProps, IButtonGroup } from '@/providers/buttonGroupConfigurator/models';
-import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
-import DragHandle from './dragHandle';
+import { Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
-import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
-import classNames from 'classnames';
+import { useStyles } from '@/components/listEditor/styles/styles';
 
 export interface IContainerRenderArgs {
   index?: number[];
   id?: string;
   items: ButtonGroupItemProps[];
+
+  onChange: (newValue: ButtonGroupItemProps[]) => void;
 }
 
-export interface IButtonGroupItemsGroupProps extends IButtonGroup {
+export interface IButtonGroupItemsGroupProps {
   index: number[];
+  item: IButtonGroup;
+  onChange: (newValue: IButtonGroup) => void;
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 
-export const ButtonGroupItemsGroup: FC<IButtonGroupItemsGroupProps> = props => {
+export const ButtonGroupItemsGroup: FC<IButtonGroupItemsGroupProps> = ({ item, index, onChange, containerRendering }) => {
   const { styles } = useStyles();
-  const { deleteGroup, selectedItemId, readOnly } = useButtonGroupConfigurator();
-
-  const onDeleteClick = () => {
-    deleteGroup(props.id);
-  };
-
   return (
-    <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })}>
-      <div className={styles.shaToolbarGroupHeader}>
-        <DragHandle id={props.id} />
-        {props.icon && <ShaIcon iconName={props.icon as IconType} />}
-        <span className={styles.shaToolbarItemName}>{props.label || props.name}</span>
-        {!readOnly && (
-          <div className={styles.shaToolbarItemControls}>
-            <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
-          </div>
-        )}
-      </div>
-      <div className={styles.shaToolbarGroupContainer}>
-        {props.containerRendering({ index: props.index, items: props.childItems || [], id: props.id })}
-      </div>
-    </div>
+    <>
+      {item.icon && <ShaIcon iconName={item.icon as IconType} />}
+      <span className={styles.listItemName}>{item.label || item.name}</span>
+      {item.tooltip && (
+        <Tooltip title={item.tooltip}>
+          <QuestionCircleOutlined className={styles.helpIcon} />
+        </Tooltip>
+      )}
+      {containerRendering({
+        index: index,
+        items: item.childItems || [],
+        onChange: (newItems) => {
+          onChange({ ...item, childItems: [...newItems] });
+        }
+      })}
+    </>
   );
 };
-
-export default ButtonGroupItemsGroup;

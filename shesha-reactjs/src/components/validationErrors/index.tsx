@@ -1,11 +1,12 @@
 import React, { FC, Fragment } from 'react';
 import { Alert, AlertProps } from 'antd';
-import { IErrorInfo } from '@/interfaces/errorInfo';
-import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IErrorInfo, isErrorInfo, isHasErrorInfo } from '@/interfaces/errorInfo';
+import { IAjaxResponseBase, isAjaxResponseBase, isAxiosResponse } from '@/interfaces/ajaxResponse';
 import { useStyles } from './styles/styles';
+import { AxiosResponse } from 'axios';
 
 export interface IValidationErrorsProps {
-  error: string | IErrorInfo | IAjaxResponseBase;
+  error: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error;
   renderMode?: 'alert' | 'raw';
   defaultMessage?: string;
 }
@@ -30,7 +31,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({ error, renderMode
         {props?.message}
         {props?.description && (
           <>
-            <br/>
+            <br />
             {props.description}
           </>
         )}
@@ -38,24 +39,21 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({ error, renderMode
     );
   };
 
-  let errorObj = error as IErrorInfo;
-
   if (typeof error === 'string') {
     return renderValidationErrors({ message: error });
   }
 
-  if (Object.keys(error).includes('error')) {
-    errorObj = error['error'] as IErrorInfo;
-  }
-
-  if (Object.keys(error).includes('errorInfo') && error['errorInfo'] && Object.keys(error['errorInfo']).includes('error')) {
-    errorObj = error['errorInfo']['error'] as IErrorInfo;
-  }
-
-  // IAjaxResponseBase
-  if (Object.keys(error).includes('data') && error['data'] && Object.keys(error['data']).includes('error')) {
-    errorObj = error['data']['error'] as IErrorInfo;
-  }
+  const errorObj = error instanceof Error
+    ? { message: error.message } as IErrorInfo
+    : isAxiosResponse(error) && isAjaxResponseBase(error.data)
+      ? error.data.error
+      : isAjaxResponseBase(error)
+        ? error.error
+        : isHasErrorInfo(error)
+          ? error.errorInfo
+          : isErrorInfo(error)
+            ? error
+            : undefined;
 
   const { message, details, validationErrors } = errorObj || {};
 

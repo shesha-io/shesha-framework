@@ -1,4 +1,4 @@
-﻿namespace Shesha.FluentMigrator
+﻿namespace Shesha
 {
     /// <summary>
     /// DBMS type

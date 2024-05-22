@@ -47,6 +47,7 @@ import { SheshaCommonContexts } from '../dataContextManager/models';
 import { addFormFieldsList, removeGhostKeys } from '@/utils/form';
 import { filterDataByOutputComponents } from './api';
 import { IDataSourceComponent } from '@/components/configurableForm/models';
+import { hasPreviousActionError } from '@/interfaces/configurableAction';
 
 export interface IFormProviderProps {
   needDebug?: boolean;
@@ -188,9 +189,12 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     return childIds ?? [];
   };
 
-  //#region Set visible components
   const setVisibleComponents = (payload: ISetVisibleComponentsPayload) => {
     dispatch(setVisibleComponentsAction(payload));
+  };
+
+  const setValidationErrors = (payload: IFormValidationErrors) => {
+    dispatch(setValidationErrorsAction(payload));
   };
 
   //#region configurable actions
@@ -282,7 +286,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: async(_, actionContext) => {
+      executer: async (_, actionContext) => {
         var formInstance = actionContext?.form?.form ?? form;
         var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
         await formInstance.validateFields(fieldsToValidate);
@@ -292,13 +296,46 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     actionDependencies
   );
 
+  useConfigurableAction<{ data: object }>(
+    {
+      name: 'Set validation errors',
+      description: 'Errors are displayed on the Validation Errors component attached to the form',
+      owner: name,
+      ownerUid: actionsOwnerUid,
+      hasArguments: false,
+      executer: async (_args, actionContext) => {
+        if (hasPreviousActionError(actionContext)){
+          const error = actionContext.actionError instanceof Error
+            ? { message: actionContext.actionError.message }
+            : actionContext.actionError;
+
+          setValidationErrors(error);
+        }
+
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Reset validation errors',
+      description: 'Clear errors displayed on the Validation Errors component attached to the form',
+      owner: name,
+      ownerUid: actionsOwnerUid,
+      hasArguments: false,
+      executer: async () => {
+        setValidationErrors(undefined);
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
   //#endregion
 
   const updateVisibleComponents = (formContext: IFormStateInternalContext) => {
-    /*const comps = updateSettingsComponentsDict(
-      toolboxComponents,
-      allComponents
-    );*/
 
     const visibleComponents = getVisibleComponentIds(
       allComponents,
@@ -319,8 +356,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     // delay in ms
     200
   );
-
-  //#endregion
 
   //#region Set enabled components
   const setEnabledComponents = (payload: ISetEnabledComponentsPayload) => {
@@ -374,7 +409,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     // ToDo: Review on next version of Antd
     const values = form?.getFieldValue([]);
     if (!state.formData && !!values) {
-      dispatch(setFormDataAction({values, mergeValues: true}));
+      dispatch(setFormDataAction({ values, mergeValues: true }));
     }
   }, []);
 
@@ -415,10 +450,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       form?.resetFields();
       form?.setFieldsValue(payload?.values);
     }
-  };
-
-  const setValidationErrors = (payload: IFormValidationErrors) => {
-    dispatch(setValidationErrorsAction(payload));
   };
 
   //#region form actions
@@ -578,7 +609,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
         return postData;
       })
       .catch((error) => console.error(error));
-  };  
+  };
 
   const configurableFormActions: IFormActionsContext = {
     ...getFlagSetters(dispatch),
@@ -609,7 +640,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   useDeepCompareEffect(() => {
     // set main form if empty
     if (needDebug)
-      formProviderContext.contextManager?.updatePageFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+      formProviderContext.contextManager?.updatePageFormInstance({ ...state, ...configurableFormActions } as ConfigurableFormInstance);
   }, [state]);
 
   return (
