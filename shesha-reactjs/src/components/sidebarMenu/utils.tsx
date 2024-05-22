@@ -52,12 +52,11 @@ export interface IProps {
   item: ISidebarMenuItem;
   isItemVisible: (item: ISidebarMenuItem) => boolean;
   isRootItem?: boolean;
-  onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;  
+  onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;
   onItemEvaluation?: (item: ISidebarMenuItem) => void;
 }
 
 export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation }: IProps): MenuItem => {
-
   const { id, title, icon, itemType } = item;
 
   const navigationType = item?.actionConfiguration?.actionArguments?.navigationType;
@@ -70,7 +69,7 @@ export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, 
     ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation }))
     : null;
   const hasChildren = Array.isArray(children) && children.length > 0;
-  
+
   const actionConfiguration = isSidebarButton(item) ? item.actionConfiguration : undefined;
 
   const itemEvaluationArguments: IGetItemArgs = {
