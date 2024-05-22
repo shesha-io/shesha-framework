@@ -3,8 +3,7 @@ import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }) => {
   // variables
-  const layoutHeaderHeight = "55px"; // @layout-header-height
-  const layoutTriggerHeight = layoutHeaderHeight; // @layout-trigger-height
+  const layoutTriggerHeight = sheshaStyles.layoutHeaderHeight; // @layout-trigger-height
   const layoutHeaderBackground = "#fff"; // @layout-header-background
   const shaPageHeadingHeight = "45px"; // @sha-page-heading-height
   const shaPageToolbarHeight = "33px"; // @sha-page-toolbar-height
@@ -50,8 +49,8 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     z-index: 3;
     width: 100%;
     padding: unset;
-    height: ${layoutHeaderHeight};
-    line-height: ${layoutHeaderHeight};
+    height: ${sheshaStyles.layoutHeaderHeight};
+    line-height: ${sheshaStyles.layoutHeaderHeight};
     background: ${layoutHeaderBackground};
   `);
 
@@ -70,7 +69,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         .logo {
           height: 100%;
           img {
-            height: calc(${layoutHeaderHeight} - 8px);
+            height: calc(${sheshaStyles.layoutHeaderHeight} - 8px);
           }
         }
 
@@ -148,7 +147,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     `);
   const content = cx(css`
     ${marginLeftTransition}
-    margin-top: ${layoutHeaderHeight};
+    margin-top: ${sheshaStyles.layoutHeaderHeight};
     background: ${backgroundColor};
   `);
 
@@ -213,7 +212,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
       &.fixed-heading {
         position: sticky;
         z-index: 1;
-        top: ${layoutHeaderHeight};
+        top: ${sheshaStyles.layoutHeaderHeight};
       }
     }
   `);

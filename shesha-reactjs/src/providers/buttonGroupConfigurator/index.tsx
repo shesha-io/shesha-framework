@@ -25,8 +25,6 @@ export interface IButtonGroupConfiguratorProviderPropsBase {
 
 export interface IButtonGroupConfiguratorProviderProps {
   items: ButtonGroupItemProps[];
-  value?: any;
-  onChange?: (value: any) => void;
   readOnly: boolean;
 }
 

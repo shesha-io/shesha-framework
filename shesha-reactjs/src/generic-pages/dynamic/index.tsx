@@ -50,7 +50,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { id, formId } = state;
 
   const formWithData = useFormWithData({ formId: formId, dataId: id, configurationItemMode: configurationItemMode });
-  //console.log('PERF: hook', formWithData)
+  
   const formSettings =
     formWithData.loadingState === 'ready' ? formWithData.form?.settings ?? DEFAULT_FORM_SETTINGS : null;
 
@@ -264,8 +264,6 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   //#endregion
 
   const markupErrorCode = formWithData.loadingState === 'failed' ? formWithData.error?.code : null;
-
-  //console.log('PERF: render form', formWithData)
 
   const finalMarkup = useMemo(() => {
     if (!formWithData) return null;

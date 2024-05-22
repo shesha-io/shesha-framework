@@ -231,8 +231,6 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         QueryBuilderComponent,
         ScheduledJobExecutionLog,
       ],
-    },
+    }
   ];
 };
-
-export default getToolboxComponents;

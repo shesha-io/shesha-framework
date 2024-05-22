@@ -63,6 +63,7 @@ import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ContextGetData, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
+  IApplicationApi,
   IConfigurableActionConfiguration,
   useDataTableStore,
   useForm,
@@ -86,8 +87,9 @@ import qs from 'qs';
 import { FormConfigurationDto } from './api';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 
-/** Interface to geat all avalilable data */
+/** Interface to get all avalilable data */
 export interface IApplicationContext {
+  application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   /** Form data */
   data?: any;

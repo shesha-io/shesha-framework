@@ -83,7 +83,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
         }
       }
     } catch (error) {
-      console.log('PlacesAutocomplete._this.handleChange error address: ', localAddress);
+      console.error('PlacesAutocomplete.handleChange error address: ', localAddress);
     }
   };
 
@@ -121,7 +121,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
           console.error('Error no coords', error);
         });
     } catch (error) {
-      console.log('PlacesAutocomplete._this.handleSelect error address: ', value);
+      console.error('PlacesAutocomplete.handleSelect error address: ', value);
     }
   };
 

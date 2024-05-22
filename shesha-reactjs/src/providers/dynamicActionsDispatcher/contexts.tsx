@@ -14,6 +14,7 @@ export interface IRegisterProviderPayload {
 export interface IDynamicActionsDispatcherActionsContext {
   registerProvider: (payload: IRegisterProviderPayload) => void;
   getProviders: () => IProvidersDictionary;
+  getProvider: (providerUid: string) => IDynamicActionsContext | undefined;
 }
 
 export interface IDynamicActionsDispatcherFullInstance extends IDynamicActionsDispatcherStateContext, IDynamicActionsDispatcherActionsContext {}

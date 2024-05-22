@@ -1,4 +1,4 @@
-import ButtonGroupSettingsModal from '../buttonGroupSettingsModal';
+import { ButtonGroupSettingsModal } from '../buttonGroupSettingsModal';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { buttonsSettingsForm } from './settings';

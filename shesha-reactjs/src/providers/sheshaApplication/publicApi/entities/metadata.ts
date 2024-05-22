@@ -121,6 +121,10 @@ const createEntityBaseModels = (context: ITypeDefinitionLoadingContext) => {
     context.typeDefinitionBuilder.makeFile(BASE_ENTITY_MODULE, content);
 };
 
+const sortByPath = <TProp extends IPropertyMetadata = IPropertyMetadata>(arr: TProp[]): TProp[] => {
+    return arr.sort((a, b) => a.path.localeCompare(b.path));
+};
+
 const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfigurationDto[], context: ITypeDefinitionLoadingContext): Promise<TypeDefinition> => {
     const apiFile: SourceFile = {
         fileName: "apis/entitiesApi.d.ts",
@@ -157,7 +161,8 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
 
         let baseTypesImported = false;
 
-        for (const prop of property.properties) {
+        const sortedProps = sortByPath(property.properties);
+        for (const prop of sortedProps) {
             if ((prop as IEntityPropertyMetadata).entityItemType === 'entityType' && isEntityReferencePropertyMetadata(prop)) {
                 if (!baseTypesImported){
                     typesImporter.import({ typeName: "EntityAccessor", filePath: BASE_ENTITY_MODULE });
@@ -192,7 +197,8 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
 
     sb.incIndent();
 
-    for (const property of properties) {
+    const sortedProps = sortByPath(properties);
+    for (const property of sortedProps) {
         // module
         const moduleSb = new StringBuilder();
         const moduleImporter = new TypesImporter();

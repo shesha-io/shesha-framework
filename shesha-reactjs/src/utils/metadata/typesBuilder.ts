@@ -51,8 +51,9 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             : isPropertiesLoader(properties)
                 ? await properties()
                 : [];
+        const sortedProperties = loadedProperties.sort((a, b) => a.path.localeCompare(b.path));
 
-        const promises = loadedProperties.map(prop => propertyHandler(prop));
+        const promises = sortedProperties.map(prop => propertyHandler(prop));
         await Promise.all(promises);
     };
 

@@ -83,11 +83,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { globalState } = useGlobalState();
   const { styles } = useStyles();
 
-  const useFormLocal = useForm(false);
-  // fix for storybook
-  const form = useFormLocal?.form;
-  const formData = useFormLocal?.formData;
-  const formMode = useFormLocal?.formMode;
+  const localForm = useForm(false);
+  const formData = localForm?.formData;
+  const formMode = localForm?.formMode;
 
   const { getEntityFormId } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -190,7 +188,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       entityReference: { id: entityId, entity: props.value },
       data: formData,
       moment: moment,
-      form: form,
+      form: localForm,
       formMode: formMode,
       http: axiosHttp(backendUrl),
       message: message,

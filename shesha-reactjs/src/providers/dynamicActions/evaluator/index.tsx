@@ -86,7 +86,8 @@ const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = ({ item,
 
     // call a hook
     const evaluatedItems = actionsContext.useEvaluator({
-        item
+        item,
+        settings: item?.dynamicItemsConfiguration?.settings
     });
 
     useEffect(() => {

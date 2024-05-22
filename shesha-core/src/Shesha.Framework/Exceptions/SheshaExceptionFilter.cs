@@ -22,5 +22,10 @@ namespace Shesha.Exceptions
                 ? (int)HttpStatusCode.NotModified
                 : base.GetStatusCode(context, wrapOnError);
         }
+
+        public new void OnException(ExceptionContext context) 
+        { 
+
+        }
     }
 }
