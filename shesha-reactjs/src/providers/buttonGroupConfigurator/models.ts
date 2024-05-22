@@ -64,7 +64,7 @@ export interface IButtonGroup extends IButtonGroupItemBase {
    * Child items (buttons or nested groups)
    */
   childItems?: ButtonGroupItemProps[];
-  count: number,
+  count: number;
 }
 
 export const isGroup = (item: IButtonGroupItemBase): item is IButtonGroup => {
