@@ -117,8 +117,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         .${shaDatalistWrapParent} {
             width: 100%;
             display: grid;
-            overflow: auto;
             padding: 8px;
+            overflow-wrap: break-word;
         }
 
         .${shaDatalistCard} {
@@ -126,7 +126,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             background-color: #ffffff;
             border-radius: 5px;
             position: relative;
-            overflow: scroll;
+            max-width: 100%;
+            overflow: auto;
+        }
+
+        .${shaDatalistCard} > * {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow-wrap: break-word;
+            max-width: 100%;
+        }
+
+        .${shaDatalistHorizontal} {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            overflow-x: scroll;
         }
 
         .${shaDatalistHorizontal} {

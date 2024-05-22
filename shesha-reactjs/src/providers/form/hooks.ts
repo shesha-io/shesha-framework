@@ -3,11 +3,14 @@ import { FormIdentifier, useSheshaApplication } from '..';
 import { IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import getDefaultToolboxComponents from './defaults/toolboxComponents';
 import { useLocalStorage } from '@/hooks';
+import { useFormPersister } from '../formPersisterProvider';
 
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
-  const [ isDevmode ] = useLocalStorage('application.isDevMode', false);
-  const defaultToolboxComponents = getDefaultToolboxComponents(isDevmode);
+  const [isDevmode] = useLocalStorage('application.isDevMode', false);
+  const formPersister = useFormPersister(false);
+  const { formId, formProps, formSettings } = formPersister || {};
+  const defaultToolboxComponents = getDefaultToolboxComponents(isDevmode, { formId, formProps, formSettings });
   const appComponentGroups = app?.toolboxComponentGroups;
 
   const toolboxComponentGroups = useMemo(() => {
