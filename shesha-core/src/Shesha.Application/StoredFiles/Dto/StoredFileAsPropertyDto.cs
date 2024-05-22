@@ -13,5 +13,11 @@ namespace Shesha.StoredFiles.Dto
         /// </summary>
         [BindProperty(Name = "propertyName")]
         public string PropertyName { get; set; }
+
+        /// <summary>
+        /// File category for owner entity if property is not set
+        /// </summary>
+        [BindProperty(Name = "fileCategory")]
+        public string FileCategory { get; set; }
     }
 }
