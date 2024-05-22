@@ -38,7 +38,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         disablePlugins: model?.disablePlugins?.join(',') || '',
         ...!model.autoHeight && {height: model?.height},
         ...!model.autoWidth && {width: model?.width},
-        placeholder: model?.placeholder,
+        placeholder: model?.placeholder || 'Start writing text...',
         readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
         defaultActionOnPaste: 'insert_as_html',
@@ -66,7 +66,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   initModel: model => ({
     ...model,
-    placeholder: 'Start writing text....',
+    placeholder: 'Start writing text...',
     showCharsCounter: true,
     showWordsCounter: true,
     showXPathInStatusbar: true,
