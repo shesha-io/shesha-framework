@@ -68,8 +68,6 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   const {styles} = useStyles();
 
-  console.log(styles);
-
   useEffect(() => {
     if (props.defaultSelected && props.defaultSelected !== objectId) setObjectId(props.defaultSelected);
   }, [props.defaultSelected]);
