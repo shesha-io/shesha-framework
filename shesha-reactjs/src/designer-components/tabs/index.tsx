@@ -107,8 +107,8 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(1, (prev) => {
       const newModel = {...prev};
-      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'editable'));
-      return newModel ;
+      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
+      return newModel;
     })
   ,
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,
