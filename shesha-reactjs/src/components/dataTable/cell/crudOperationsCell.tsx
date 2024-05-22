@@ -35,7 +35,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
       await performUpdate();
       switchMode('read');
     } catch (error) {
-      console.log('Update failed: ', error);
+      console.error('Update failed: ', error);
     }
   };
 
@@ -44,7 +44,7 @@ export const CrudOperationsCell = (_props: ICrudOperationsCellProps) => {
       await performCreate();
       await reset();
     } catch (error) {
-      console.log('Create failed: ', error);
+      console.error('Create failed: ', error);
     }
   };
 

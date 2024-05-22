@@ -58,8 +58,6 @@ const DebugPanelDataContent: FC = () => {
       pageInstance?.setFormData({ values: changedData, mergeValues: true });
     };
   
-    //console.log('debug rerender');
-  
     return (
       <>
         {true && globalState &&

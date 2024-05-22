@@ -2,9 +2,9 @@ import { createStyles } from "antd-style";
 import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
-    const leftSidebarWidth = "350px"; // @sha-left-sidebar-width
-    const rightSidebarWidth = leftSidebarWidth; // @sha-right-sidebar-width
-    const sidebarBtnHeight = "35px"; // @sha-collapsible-sidebar-btn-height
+    const leftSidebarWidth = "350px";
+    const rightSidebarWidth = leftSidebarWidth;
+    const sidebarBtnHeight = "35px";
 
     const sidebarContainerHeader = "sidebar-container-header";
     const sidebarContainerBody = "sidebar-container-body";
@@ -49,6 +49,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
     
           &.open {
+            width: ${leftSidebarWidth};
             display: block;
 
             .${sidebarHeader} {

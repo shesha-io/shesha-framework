@@ -116,11 +116,9 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const subscriptions = useRef<IDisposable[]>([]);
     const addSubscription = (subscription: IDisposable) => {
         subscriptions.current.push(subscription);
-        //console.log('LOG: addSubscription', { subscriptions: subscriptions.current.length });
     };
     useEffect(() => {
         return () => {
-            //console.log('LOG: clearing subscriptions: ' + subscriptions.current.length);
             const subsCopy = [...subscriptions.current];
             subsCopy.forEach(s => s.dispose());
         };

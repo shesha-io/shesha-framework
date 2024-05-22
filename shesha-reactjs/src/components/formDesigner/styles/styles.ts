@@ -40,6 +40,8 @@ export const useStyles = () => {
     const shaComponentValidationIcon = "sha-component-validation-icon";
     const shaDesignerHeaderRight = "sha-designer-header-right";
 
+    const mainArea = "sha-designer-main-area";
+
     return {
         styles: {
             shaHelpIcon,
@@ -73,6 +75,7 @@ export const useStyles = () => {
             shaComponentValidationIcon,
             shaDesignerHeaderRight,
             shaForm,
+            mainArea,
         }
     };
 };
@@ -99,7 +102,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaDatasourceTree,
         shaComponentIndicator,
         shaComponentsContainer,
-        //shaComponentsContainerInner,
         shaDropHint,
         designerWorkArea,
         componentPropertiesActions,
@@ -110,6 +112,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaComponentValidationIcon,
         shaDesignerHeaderRight,
         shaForm,
+        //mainArea,
     } = useStyles().styles;
 
     const quickEditModal = cx("sha-designer-modal", css`
@@ -123,7 +126,35 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
     `);
 
-    const formDesigner = cx("sha-form-designer", css`
+    const formDesignerClassName = "sha-form-designer";
+    const designerPage = "sha-designer-page";
+    /*
+    const flexColumns = `
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: stretch;
+        align-content: flex-start;
+    `;
+    const flexFitHorizontal = 'flex-grow: 1;';
+    const designerPage = cx("sha-designer-page", css`
+        ${flexColumns}
+        
+        .${formDesignerClassName} {
+            ${flexFitHorizontal}
+            ${flexColumns}
+
+            .${mainArea} {
+                ${flexFitHorizontal}
+                .sidebar-container {
+                    height: 100%;
+                }
+            }
+        }
+   `);
+    */
+    const formDesigner = cx(formDesignerClassName, css`
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
@@ -406,6 +437,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     `);
 
     return {
+        designerPage,
         formDesigner,
         quickEditModal,
     };
