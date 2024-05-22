@@ -200,7 +200,7 @@
             "description": "A script that returns the image url as a string. This should return a string",
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "Form values",
                 "type": "object"
               }
@@ -235,7 +235,7 @@
             "description": "A script that returns the storedFileId as a string. This should return a string",
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "Form values",
                 "type": "object"
               }
@@ -285,7 +285,7 @@
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "Form values",
                 "type": "object"
               }

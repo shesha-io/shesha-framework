@@ -192,7 +192,7 @@
             "description": "A reducer function for the data returned from the server. The function is responsible for value and label props. The function should return an array of object of this format: { value, label }",
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "An array of items returned from the server",
                 "type": "array"
               }
@@ -367,7 +367,7 @@
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "Form values",
                 "type": "object"
               }
