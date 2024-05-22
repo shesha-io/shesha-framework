@@ -31,8 +31,8 @@ const buttonGroupReducer = handleActions<IButtonGroupConfiguratorStateContext, a
       let count = 0;
 
       if (parent && parent.itemType === 'group') {
-        buttonProps.name = `button${parent.count + 1}`
-        buttonProps.label = `Button ${parent.count + 1}`
+        buttonProps.name = `button${parent.count + 1}`;
+        buttonProps.label = `Button ${parent.count + 1}`;
         parent.childItems = [...parent.childItems, buttonProps];
         parent.count = parent.count + 1;
       } else {
