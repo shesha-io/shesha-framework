@@ -58,9 +58,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
     if (imageSource === 'base64') {
       if (onChange)
         onChange(null);
-      return true;
-    }
-    if (imageSource === 'storedFileId') {
+    } else if (imageSource === 'storedFileId') {
       deleteFile();
     }
 };
@@ -77,9 +75,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
       if (imageSource === 'base64') {
         if (onChange)
           onChange(await toBase64(file));
-        return true;
-      }
-      if (imageSource === 'storedFileId') {
+      } else if (imageSource === 'storedFileId') {
         uploadFile({ file: file }, () => {
           if (value)
             fetchStoredFile();
