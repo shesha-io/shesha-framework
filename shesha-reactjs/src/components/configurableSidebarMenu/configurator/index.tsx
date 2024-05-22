@@ -6,12 +6,12 @@ import SidebarItemsContainer from './sidebarItemsContainer';
 import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 
-export interface ISidebarConfiguratorProps {}
+export interface ISidebarConfiguratorProps { }
 
 const Configurator: FC<ISidebarConfiguratorProps> = () => {
   const { styles } = useStyles();
   const { items, addItem, addGroup } = useSidebarMenuConfigurator();
-  
+
   return (
     <div className={styles.shaToolbarConfigurator}>
       <h4>You can customize the Menu component from this screen.</h4>
@@ -28,6 +28,9 @@ const Configurator: FC<ISidebarConfiguratorProps> = () => {
           open: true,
           title: 'Properties',
           content: <ToolbarItemProperties />,
+          resizable: true,
+          configurator: true,
+
         }}
       >
         <SidebarItemsContainer items={items} index={[]} />

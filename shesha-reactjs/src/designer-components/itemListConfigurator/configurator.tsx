@@ -61,6 +61,8 @@ export const ItemListConfigurator: FC<IItemListConfiguratorProps> = ({ allowAddG
           open: true,
           title,
           content,
+          resizable: true,
+          configurator: true,
         }}
       >
         <ItemListContainer items={items} index={[]} />

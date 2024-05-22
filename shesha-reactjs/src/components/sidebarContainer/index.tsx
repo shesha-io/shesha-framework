@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React, { FC, PropsWithChildren, ReactNode } from 'react';
 import { ISidebarProps, SidebarPanelPosition } from './models';
-import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
+import ResizableWrapper from './sidebarContainerWrapper';
 
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
@@ -27,9 +27,11 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   sideBarWidth?: number;
 
   allowFullCollapse?: boolean;
+
+
 }
 
- export const SidebarContainer: FC<ISidebarContainerProps> = ({
+export const SidebarContainer: FC<ISidebarContainerProps> = ({
   leftSidebarProps,
   rightSidebarProps,
   header,
@@ -38,24 +40,24 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   noPadding,
 }) => {
   const { styles } = useStyles();
-  const renderSidebar = (side: SidebarPanelPosition) => {
+  const RenderSidebar = (side: SidebarPanelPosition) => {
+
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
+
     return sidebarProps
-      ? (<SidebarPanel {...sidebarProps} allowFullCollapse={allowFullCollapse} side={side} />)
+      ? (
+        <ResizableWrapper  {...sidebarProps} allowFullCollapse={allowFullCollapse} side={side} />
+      )
       : null;
   };
-
-
-
-
 
   return (
     <div className={styles.sidebarContainer}>
       {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
 
       <div className={styles.sidebarContainerBody}>
-        {renderSidebar('left')}
 
+        {RenderSidebar('left')}
         <div
           className={classNames(
             styles.sidebarContainerMainArea,
@@ -71,8 +73,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
         >
           <div className={styles.sidebarContainerMainAreaBody}>{children}</div>
         </div>
-
-        {renderSidebar('right')}
+        {RenderSidebar('right')}
       </div>
     </div>
   );

@@ -2,24 +2,26 @@ import { createStyles } from "antd-style";
 import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
-    const leftSidebarWidth = "350px"; // @sha-left-sidebar-width
-    const rightSidebarWidth = leftSidebarWidth; // @sha-right-sidebar-width
-    const sidebarBtnHeight = "35px"; // @sha-collapsible-sidebar-btn-height
+  const leftSidebarWidth = "350px"; // @sha-left-sidebar-width
+  const rightSidebarWidth = leftSidebarWidth; // @sha-right-sidebar-width
+  const sidebarBtnHeight = "35px"; // @sha-collapsible-sidebar-btn-height
 
-    const sidebarContainerHeader = "sidebar-container-header";
-    const sidebarContainerBody = "sidebar-container-body";
-    const sidebarContainerMainArea = "sidebar-container-main-area";
-    const sidebarContainerMainAreaBody = "sidebar-container-main-area-body";
-    const sidebarHeader = "sidebar-header";
-    const sidebarHeaderTitle = "sidebar-header-title";
-    const sidebarHeaderBtn = "sidebar-header-btn";
-    const sidebarBody = "sidebar-body";
-    const sidebarBodyPlaceholder = "sidebar-body-placeholder";
-    const sidebarBodyContent = "sidebar-body-content";    
-    const sidebarContainerLeft = "sidebar-container-left";
-    const sidebarContainerRight = "sidebar-container-right";
+  const sidebarContainerHeader = "sidebar-container-header";
+  const sidebarContainerBody = "sidebar-container-body";
+  const sidebarContainerMainArea = "sidebar-container-main-area";
+  const sidebarContainerMainAreaBody = "sidebar-container-main-area-body";
+  const sidebarHeader = "sidebar-header";
+  const sidebarHeaderTitle = "sidebar-header-title";
+  const sidebarHeaderBtn = "sidebar-header-btn";
+  const sidebarBody = "sidebar-body";
+  const sidebarBodyPlaceholder = "sidebar-body-placeholder";
+  const sidebarBodyContent = "sidebar-body-content";
+  const sidebarContainerLeft = "sidebar-container-left";
+  const sidebarContainerRight = "sidebar-container-right";
+  const leftResizer = "left-resizer";
+  const rightResizer = "right-resizer";
 
-    const sidebarContainer = cx("sidebar-container", css`
+  const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
       overflow-x: hidden;
 
@@ -41,7 +43,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         display: flex;
         position: relative;
         width: 100%;
-    
+         .${leftResizer} {
+          &:hover {
+            cursor: e-resize;
+          
+          }
+         }
+         .${rightResizer} {
+          &:hover {
+            cursor: w-resize;
+          
+          }
+         }
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
           &.allow-full-collapse {
@@ -57,6 +70,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
               }
             
             }
+          .${sidebarHeaderTitle}{
+            transition: ${sheshaStyles.transition};
+             &.right {
+              width:95%;
+              }
+             &.left {
+              width: 95%;
+             }
+          }
           }
     
           background: white;
@@ -109,11 +131,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             .sidebar-body-content {
               width: 100%;
               display: none;
-    
+     
               &.open {
                 display: block;
-                height: 85vh;
+                height: 80vh;
+
+                &.configurator {
+                padding-right: 15px;
+                }
               }
+            }
+            .sidebar-body-content > * {
+              width: 100%;
+              background: white;
             }
     
             .sidebar-body-placeholder {
@@ -176,25 +206,27 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           overflow-x: auto;
     
           &::not(.no-padding) {
-            padding: ${sheshaStyles.paddingLG}px;
+           padding: ${sheshaStyles.paddingLG}px;
           }
         }
       }    
     `);
 
-    return {
-        sidebarContainer,
-        sidebarContainerHeader,
-        sidebarContainerBody,
-        sidebarContainerMainArea,
-        sidebarContainerMainAreaBody,
-        sidebarHeader,
-        sidebarHeaderTitle,
-        sidebarHeaderBtn,
-        sidebarBody,
-        sidebarBodyPlaceholder,
-        sidebarBodyContent,
-        sidebarContainerLeft,
-        sidebarContainerRight,
-    };
+  return {
+    sidebarContainer,
+    sidebarContainerHeader,
+    sidebarContainerBody,
+    sidebarContainerMainArea,
+    sidebarContainerMainAreaBody,
+    sidebarHeader,
+    sidebarHeaderTitle,
+    sidebarHeaderBtn,
+    sidebarBody,
+    sidebarBodyPlaceholder,
+    sidebarBodyContent,
+    sidebarContainerLeft,
+    sidebarContainerRight,
+    leftResizer,
+    rightResizer
+  };
 });

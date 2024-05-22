@@ -11,35 +11,45 @@ export interface ISidebarProps {
      * Whether it's open or not by default. Is used for non-controlled mode
      */
     defaultOpen?: boolean;
-  
+
     width?: number;
-  
+
     /**
      * The title
      */
     title: ReactNode | (() => ReactNode);
-  
+
     /**
      * The content
      */
     content: ReactNode | (() => ReactNode);
-  
+
     /**
      * What should happen when the sidebar opens
      */
     onOpen?: () => void;
-  
+
     /**
      * What should happen when the sidebar closes
      */
     onClose?: () => void;
-  
+
     placeholder?: string;
-  
+
     className?: string;
-  
+
     /**
      * Whether there should no be padding
      */
-     noPadding?: boolean;
-  }
+    noPadding?: boolean;
+
+    /** 
+     * Whether the sidebar is resizable
+     * */
+    resizable?: boolean;
+
+    /**
+     * Whether the sidebar is a configurator
+     * */
+    configurator?: boolean;
+}

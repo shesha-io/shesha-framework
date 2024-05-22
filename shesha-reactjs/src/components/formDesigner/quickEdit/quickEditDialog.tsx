@@ -41,11 +41,11 @@ export const QuickEditDialog: FC<IQuickEditDialogProps> = (props) => {
                         </div>
                     </div>
                     <div className={styles.formDesigner}>
-                        <QuickEditToolbar 
+                        <QuickEditToolbar
                             onUpdated={onUpdated}
                             onNewVersionCreated={onNewVersionCreated}
                         />
-                        <DesignerMainArea />
+                        <DesignerMainArea configurator={true} />
                     </div>
                 </FormDesigner.NonVisual>
             </Modal>
