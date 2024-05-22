@@ -1,4 +1,4 @@
-import React, { FC, useContext, PropsWithChildren } from 'react';
+import React, { useContext, PropsWithChildren } from 'react';
 import metadataReducer from './reducer';
 import {
   DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
@@ -11,23 +11,34 @@ import useThunkReducer from '@/hooks/thunkReducer';
 import { useDynamicActionsDispatcher } from '@/providers/dynamicActionsDispatcher';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { DynamicItemsEvaluationHook, DynamicRenderingHoc } from '@/providers/dynamicActionsDispatcher/models';
+import { IProviderSettingsFormFactory } from '@/designer-components/dynamicActionsConfigurator/interfaces';
+import { FormMarkup } from '@/interfaces';
 
-export interface IDynamicActionsProps {
+export interface IDynamicActionsProps<TSettings> {
   id?: string;
   name: string;
   renderingHoc?: DynamicRenderingHoc;
   useEvaluator: DynamicItemsEvaluationHook;
+  hasArguments?: boolean;
+  /**
+   * Settings form factory
+   */
+  settingsFormFactory?: IProviderSettingsFormFactory<TSettings>;
+  settingsFormMarkup?: FormMarkup;// | FormMarkupFactory;
 }
 export interface IHasActions {
   items: ButtonGroupItemProps[]; // todo: make a generic interface with minimal number of properties, ButtonGroupItemProps will implement/extend this interface
 }
 
-const DynamicActionsProvider: FC<PropsWithChildren<IDynamicActionsProps>> = ({ id, name, useEvaluator, children }) => {
-  const initial: IDynamicActionsStateContext = {
+const DynamicActionsProvider = <TSettings, >({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>) => {
+  const initial: IDynamicActionsStateContext<TSettings> = {
     ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
     id,
     name,
     useEvaluator,
+    hasArguments,
+    settingsFormFactory,
+    settingsFormMarkup,
   };
 
   const [state/*, dispatch*/] = useThunkReducer(metadataReducer, initial);

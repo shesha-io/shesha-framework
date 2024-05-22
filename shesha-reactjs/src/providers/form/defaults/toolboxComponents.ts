@@ -248,5 +248,3 @@ export const getToolboxComponents = (
     },
   ];
 };
-
-export default getToolboxComponents;

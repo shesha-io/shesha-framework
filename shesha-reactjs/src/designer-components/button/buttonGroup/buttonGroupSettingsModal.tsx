@@ -1,73 +1,77 @@
 import React, { FC, Fragment, ReactNode, useState } from 'react';
 import { Button, Modal } from 'antd';
-import {
-  ButtonGroupConfiguratorProvider,
-  useButtonGroupConfigurator,
-} from '@/providers/buttonGroupConfigurator';
-import { ButtonGroupConfigurator } from './configurator';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { useMedia } from 'react-use';
+import { ButtonGroupSettingsEditor } from './buttonGroupSettingsEditor';
 
 export interface IToolbarSettingsModal {
   readOnly: boolean;
-  value?: object;
-  onChange?: any;
-  allowAddGroups?: boolean;
-  render?: ReactNode | (() => ReactNode);
+  value?: ButtonGroupItemProps[];
+  onChange?: (newValue: ButtonGroupItemProps[]) => void;
   title?: ReactNode | string;
-  heading?: ReactNode | (() => ReactNode);
 }
 
-interface IButtonGroupSettingsModalInnerProps extends Omit<IToolbarSettingsModal, 'readOnly'>{
+interface IButtonGroupSettingsModalInnerProps extends IToolbarSettingsModal {
 
 }
 
-export const ButtonGroupSettingsModalInner: FC<IButtonGroupSettingsModalInnerProps> = ({
+const deepCopy = <TValue = any>(value: TValue): TValue => {
+  if (!value)
+    return value;
+
+  return JSON.parse(JSON.stringify(value));
+};
+
+export const ButtonGroupSettingsModal: FC<IButtonGroupSettingsModalInnerProps> = ({
+  value,
   onChange,
-  allowAddGroups,
-  render,
+  readOnly,
   title = 'Buttons Configuration',
-  heading,  
 }) => {
   const isSmall = useMedia('(max-width: 480px)');
   const [showModal, setShowModal] = useState(false);
-  const { items, readOnly } = useButtonGroupConfigurator();
 
-  const toggleModalVisibility = () => setShowModal(prev => !prev);
+  const [localValue, setLocalValue] = useState<ButtonGroupItemProps[]>(deepCopy(value));
+
+  const openModal = () => {
+    setLocalValue(deepCopy(value));
+    setShowModal(true);
+  };
 
   const onOkClick = () => {
-    if (typeof onChange === 'function') onChange(items);
-    toggleModalVisibility();
+    onChange?.(localValue);
+    setShowModal(false);
+  };
+
+  const onCancelClick = () => {
+    setShowModal(false);
   };
 
   return (
     <Fragment>
-      <Button onClick={toggleModalVisibility}>{ readOnly ? 'View Button Group' : 'Customize Button Group' }</Button>
+      <Button onClick={openModal}>{readOnly ? 'View Button Group' : 'Customize Button Group'}</Button>
 
       <Modal
         width={isSmall ? '90%' : '60%'}
+        styles={{ body: { height: '70vh' } }}
+        
         open={showModal}
         title={title}
-        
-        onCancel={toggleModalVisibility}
+
+        onCancel={onCancelClick}
         cancelText={readOnly ? 'Close' : undefined}
-        
+
         okText="Save"
         onOk={onOkClick}
         okButtonProps={{ hidden: readOnly }}
+        destroyOnClose={true}
       >
-        <ButtonGroupConfigurator allowAddGroups={allowAddGroups} heading={heading} render={render} />
+        <ButtonGroupSettingsEditor
+          readOnly={readOnly}
+          value={localValue}
+          onChange={setLocalValue}
+        />
       </Modal>
     </Fragment>
   );
 };
-
-export const ButtonGroupSettingsModal: FC<IToolbarSettingsModal> = props => {
-  return (
-    <ButtonGroupConfiguratorProvider items={(props.value as ButtonGroupItemProps[]) || []} readOnly={props.readOnly}>
-      <ButtonGroupSettingsModalInner {...props} />
-    </ButtonGroupConfiguratorProvider>
-  );
-};
-
-export default ButtonGroupSettingsModal;

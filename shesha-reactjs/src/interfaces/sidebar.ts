@@ -21,6 +21,7 @@ export interface ISidebarMenuItemV0 {
 }
 
 export interface ISidebarMenuItem {
+  actionConfiguration?: IConfigurableActionConfiguration;
   id: string;
   title: string;
   tooltip?: ReactNode | string;

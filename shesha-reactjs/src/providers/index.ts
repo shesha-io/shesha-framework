@@ -40,6 +40,7 @@ export * from './ui';
 export * from './dynamicActions';
 export * from './dynamicActionsDispatcher';
 export * from './dataContextManager';
+export * from './dataContextProvider';
 export * from './canvasConfig';
 export * from './dataContextProvider';
 
