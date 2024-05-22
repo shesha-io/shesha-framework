@@ -34,7 +34,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const tabItems: TabItem[] = [];
 
       (tabs ?? [])?.forEach((item) => {
-        const tabModel = getActualModelWithParent(item, allData, {model: {readOnly: model.readOnly}});
+        const tabModel = getActualModelWithParent(item, allData, { model: { readOnly: model.readOnly } });
         const {
           id,
           key,
