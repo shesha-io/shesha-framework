@@ -16,6 +16,10 @@ export interface StoredFileDeleteQueryParams {
    */
   ownerType?: string;
   /**
+   * File category
+   */
+  fileCategory?: string;
+  /**
    * Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)
    */
   propertyName?: string;
@@ -95,6 +99,10 @@ export interface StoredFileGetEntityPropertyQueryParams {
    * Type short alias of the owner entity
    */
   ownerType: string;
+  /**
+   * File category 
+   */
+  fileCategory?: string;
   /**
    * The requested API version
    */
