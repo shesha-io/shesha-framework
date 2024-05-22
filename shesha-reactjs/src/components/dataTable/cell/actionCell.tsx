@@ -62,7 +62,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const handleURLClick = (e: React.MouseEvent) => {
     e.preventDefault();
     clickHandler(e, props);
-  }
+  };
 
   return (
     <>
