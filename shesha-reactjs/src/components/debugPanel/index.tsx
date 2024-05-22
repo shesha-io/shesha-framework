@@ -114,7 +114,7 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
     }
     <Space>
       <CloseOutlined onClick={onClose}/>
-      <span>Debug bubble</span>
+      <span>Debug</span>
       <Select onChange={onChangePosition} value={position} style={{minWidth: '7em'}}>
         <Select.Option key={'1'} value='top'>Top</Select.Option>
         <Select.Option key={'2'} value='bottom'>Bottom</Select.Option>
