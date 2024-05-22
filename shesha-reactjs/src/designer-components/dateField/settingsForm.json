@@ -493,12 +493,12 @@
             "settingsValidationErrors": [],
             "exposedVariables": [
               {
-                "propertyName": "current",
+                "name": "current",
                 "description": "Component current value",
                 "type": "FormInstance"
               },
               {
-                "propertyName": "moment",
+                "name": "moment",
                 "description": "Instance of moment.js",
                 "type": "object"
               }
@@ -510,7 +510,7 @@
             "templateSettings": {
               "functionName": "isDateDisabled"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addDate(\"value\", \"Component current value\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
+            "availableConstantsExpression": "    return metadataBuilder\r\n        .addDate(\"current\", \"Component current value\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
           }
         ]
       },
@@ -590,7 +590,7 @@
                 "type": "object"
               },
               {
-                "name": "value",
+                "name": "current",
                 "description": "Component current value",
                 "type": "object"
               },
