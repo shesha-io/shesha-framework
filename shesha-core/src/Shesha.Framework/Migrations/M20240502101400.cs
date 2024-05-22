@@ -8,8 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
 alter table Frwk_PermissionDefinitions drop column Name;
 go
 alter table Frwk_PermissionDefinitions drop column Description;

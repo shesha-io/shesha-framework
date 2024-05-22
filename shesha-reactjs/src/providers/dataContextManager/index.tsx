@@ -155,7 +155,6 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
             };
             const changed = !isEqual(existingContext, newCtx);
             if (changed) {
-                //console.log('Update context: ' + contexts.current[payload.id]?.name);
                 contexts.current[payload.id] = newCtx;
                 setState({...state, lastUpdate: new Date().toJSON() });
             }
