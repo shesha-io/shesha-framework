@@ -180,6 +180,15 @@
             "defaultValue": "HH:mm",
             "version": 3,
             "textType": "text"
+          },
+          {
+            "id": "30b5031e-24f5-4ef7-bede-db90e591496a",
+            "type": "timePicker",
+            "propertyName": "defaultValue",
+            "parentId": "aUt4GeRhocL5W_aGaaR10",
+            "label": "Default Value",
+            "version": 3,
+            "textType": "text"
           }
         ]
       },
