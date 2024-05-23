@@ -54,28 +54,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     propertyName: 'description',
     parentId: 'root',
     label: 'Description',
-  })
-  .addCodeEditor({
-    id: nanoid(),
-    propertyName: 'customIcon',
-    label: 'Custom Icon',
-    labelAlign: 'right',
-    parentId: 'root',
-    hidden: false,
-    description: 'Enter custom icon code. The function must return a string representing the name of the icon',
-    validate: {},
-    settingsValidationErrors: [],
-    exposedVariables: [
-      { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
-      { id: nanoid(), name: 'globalState', description: 'The global state', type: 'object' },
-    ],
-    wrapInTemplate: true,
-    templateSettings: {
-      functionName: 'getCustomIcon'      
-    },
-    availableConstantsExpression: "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-  })
-  .toJson(),
+  }).toJson()
 ],
 },
 })
