@@ -11,7 +11,7 @@ export const useFormDesignerComponentGroups = () => {
   const formPersister = useFormPersister(false);
   const { formId, formProps, formSettings } = formPersister || {};
   const defaultToolboxComponents = getToolboxComponents(isDevmode, { formId, formProps, formSettings });
-  const appComponentGroups = app?.toolboxComponentGroups;
+  const appComponentGroups = app?.formDesignerComponentGroups;
 
   const toolboxComponentGroups = useMemo(() => {
     return [...(defaultToolboxComponents || []), ...(appComponentGroups || [])];

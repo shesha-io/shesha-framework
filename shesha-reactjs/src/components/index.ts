@@ -117,3 +117,4 @@ export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';
 
 export { ListEditor } from './listEditor';
+export { ButtonGroupConfigurator } from './buttonGroupConfigurator';
