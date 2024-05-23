@@ -11,7 +11,7 @@ export interface IToolbarSettingsModal {
   title?: ReactNode | string;
 }
 
-interface IButtonGroupSettingsModalInnerProps extends IToolbarSettingsModal {
+interface IButtonGroupConfiguratorProps extends IToolbarSettingsModal {
 
 }
 
@@ -22,7 +22,7 @@ const deepCopy = <TValue = any>(value: TValue): TValue => {
   return JSON.parse(JSON.stringify(value));
 };
 
-export const ButtonGroupSettingsModal: FC<IButtonGroupSettingsModalInnerProps> = ({
+export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   value,
   onChange,
   readOnly,
