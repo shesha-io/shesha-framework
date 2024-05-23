@@ -190,8 +190,11 @@ namespace Shesha.StoredFiles
                         }
                         else
                         {
-                            // otherwise - mark as temporary
-                            file.Temporary = true;
+                            if (!input.OwnerType.IsNullOrEmpty())
+                            { 
+                                // otherwise - mark as temporary
+                                file.Temporary = true;
+                            }
                         }
                         file.Category = input.FilesCategory.ToCamelCase();
                     });
@@ -338,6 +341,8 @@ namespace Shesha.StoredFiles
 
         private StoredFileDto GetFileDto(StoredFile file)
         {
+            if (file == null)
+                return null;
             var dto = new StoredFileDto();
             MapStoredFile(file, dto);
             return dto;
@@ -380,6 +385,7 @@ namespace Shesha.StoredFiles
                 ? await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId)
                 : null;
             if (ownerSpecified && owner == null)
+            if (ownerSpecified && owner == null)
             {
                 ModelState.AddModelError(input.OwnerId, $"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
             }
@@ -404,7 +410,9 @@ namespace Shesha.StoredFiles
                 ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == input.FileId.Value)
                 : property != null
                     ? property.GetValue(owner) as StoredFile
-                    : null;
+                    : !input.FileCategory.IsNullOrWhiteSpace()
+                        ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Owner == null && f.Category == input.FileCategory)
+                        : null;
 
             if (storedFile != null)
             {
@@ -589,12 +597,14 @@ namespace Shesha.StoredFiles
             if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
                 ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified");
 
-            if (input.Id == null && string.IsNullOrWhiteSpace(input.PropertyName))
+            if (input.Id == null && input.PropertyName.IsNullOrWhiteSpace() && !ownerSpecified && input.FilesCategory.IsNullOrWhiteSpace())
             {
                 ModelState.AddModelError(nameof(input.Id), $"Id must not be null");
             }
 
-            var owner = ownerSpecified
+            var hasProperty = !string.IsNullOrWhiteSpace(input.PropertyName);
+
+            var owner = ownerSpecified && hasProperty
                 ? await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId)
                 : null;
             if (ownerSpecified && owner == null)
@@ -602,7 +612,7 @@ namespace Shesha.StoredFiles
                 ModelState.AddModelError(input.OwnerId, $"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
             }
 
-            var uploadAsProperty = owner != null && !string.IsNullOrWhiteSpace(input.PropertyName);
+            var uploadAsProperty = owner != null && hasProperty;
             var property = uploadAsProperty
                 ? ReflectionHelper.GetProperty(owner, input.PropertyName, out owner)
                 : null;
@@ -626,7 +636,9 @@ namespace Shesha.StoredFiles
                     ? await _fileRepository.GetAll().FirstOrDefaultAsync(f => f.Id == input.Id.Value)
                     : property != null && owner != null
                         ? property.GetValue(owner) as StoredFile
-                        : null;
+                        : !input.FilesCategory.IsNullOrWhiteSpace()
+                            ? await _fileRepository.FirstOrDefaultAsync(x => x.Owner == null && x.Category == input.FilesCategory)
+                            : null;
             }
 
             var fileName = input.File.FileName.CleanupFileName();
@@ -648,10 +660,17 @@ namespace Shesha.StoredFiles
                         property.SetValue(owner, storedFile, null);
                         await _dynamicRepository.SaveOrUpdateAsync(owner);
                     }
-                    else if (owner == null && !input.PropertyName.IsNullOrEmpty())
+                    else if (owner == null && hasProperty)
                     {
                         storedFile.Temporary = true;
                     }
+
+                    if (ownerSpecified)
+                    {
+                        storedFile.SetOwner(input.OwnerType, input.OwnerId);
+                    }
+
+                    storedFile.Category = input.FilesCategory;
                 }
             }
             else
@@ -671,6 +690,7 @@ namespace Shesha.StoredFiles
                 // copy to the main todo: remove duplicated properties (filename, filetype), add a link to the last version and update it using triggers
                 storedFile.FileName = version.FileName;
                 storedFile.FileType = version.FileType;
+                storedFile.Category = input.FilesCategory;
                 await _fileRepository.UpdateAsync(storedFile);
             }
 
@@ -702,23 +722,35 @@ namespace Shesha.StoredFiles
         [HttpGet, Route("EntityProperty")]
         public async Task<StoredFileDto> GetEntityPropertyAsync([FromQuery] StoredFileAsPropertyDto input)
         {
-            if (string.IsNullOrWhiteSpace(input.OwnerType) ||
-                string.IsNullOrWhiteSpace(input.OwnerId) ||
-                string.IsNullOrWhiteSpace(input.PropertyName))
+            var hasOwner = !input.OwnerType.IsNullOrWhiteSpace() && !input.OwnerId.IsNullOrWhiteSpace();
+            var hasProperty = !input.PropertyName.IsNullOrWhiteSpace();
+            var hasCategory = !input.FileCategory.IsNullOrWhiteSpace();
+            if ((!hasOwner || !hasProperty) && !hasCategory)
                 return null;
 
-            var entity = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
-            if (entity == null)
-                return null;
+            if (hasOwner)
+            {
+                var entity = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
+                if (entity == null)
+                    return null;
 
-            var property = ReflectionHelper.GetProperty(entity, input.PropertyName, out var owner);
-            if (property == null)
-                throw new Exception($"Property '{input.PropertyName}' not found in the class {owner.GetType().Name}");
+                var property = ReflectionHelper.GetProperty(entity, input.PropertyName, out var owner);
+                if (property == null)
+                    throw new Exception($"Property '{input.PropertyName}' not found in the class {owner.GetType().Name}");
 
-            if (!(property.GetValue(owner) is StoredFile storedFile && !storedFile.IsDeleted))
-                return null;
+                if (!(property.GetValue(owner) is StoredFile storedFile && !storedFile.IsDeleted))
+                    return null;
 
-            return GetFileDto(storedFile);
+                return GetFileDto(storedFile);
+            }
+            else
+            {
+                if (hasCategory)
+                {
+                    return  GetFileDto(await _fileRepository.GetAll().FirstOrDefaultAsync(x => x.Owner == null && x.Category == input.FileCategory));
+                }
+            }
+            return null;
         }
 
         /// <summary>

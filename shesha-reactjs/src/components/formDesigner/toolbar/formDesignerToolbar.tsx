@@ -26,7 +26,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
     if (router)
       router.push(url);
     else
-      console.log('router not available, url: ', url);
+      console.error('router not available, url: ', url);
 
     message.info('New version created successfully', 3);
   };

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Shesha.FluentMigrator;
 
-namespace Boxfusion.SheshaFunctionalTests
+namespace Shesha
 {
     /// <summary>
     /// Dbms configuration helper
@@ -21,7 +20,7 @@ namespace Boxfusion.SheshaFunctionalTests
         /// </summary>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static string GetDefaultConnectionString(this IConfigurationRoot config)
+        public static string? GetDefaultConnectionString(this IConfigurationRoot config)
         {
             return config.GetConnectionString("Default");
         }

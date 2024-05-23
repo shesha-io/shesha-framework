@@ -8,8 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
 with data as (
 	select 
 		Id, 

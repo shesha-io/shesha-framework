@@ -38,6 +38,7 @@ export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }
         form={form}
         initialValues={item}
         onValuesChange={debouncedSave}
+        className='vertical-settings'
       />
     )
     : (

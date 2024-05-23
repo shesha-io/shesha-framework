@@ -10,35 +10,44 @@ import { MetadataSourceType } from '@/interfaces/metadata';
 export interface IContainerRenderArgs {
   index?: number[];
   items: IModelItem[];
+  onChange?: (items: IModelItem[]) => void;
 }
 
 export type ContainerRenderer = (args: IContainerRenderArgs) => React.ReactNode;
 
-export interface IProps extends IModelItem {
+export interface IProps {
   index: number[];
+  data: IModelItem;
   containerRendering: ContainerRenderer;
+  onChange: (newValue: IModelItem) => void;
 }
 
-export const ComplexProperty: FC<IProps> = props => {
+export const ComplexProperty: FC<IProps> = ({ data, index, containerRendering, onChange }) => {
   const { styles } = useStyles();
 
-  const icon = getIconByDataType(props.dataType);
+  const icon = getIconByDataType(data.dataType);
 
   return (
     <div>
-      {props.suppress && <span><EyeInvisibleOutlined /> </span>}
+      {data.suppress && <span><EyeInvisibleOutlined /> </span>}
       {icon && <ShaIcon iconName={icon} />}
-      <span className={styles.shaToolbarItemName}>{props.name}</span>
-      {props.description && (
-        <Tooltip title={props.description}>
+      <span className={styles.shaToolbarItemName}>{data.name}</span>
+      {data.description && (
+        <Tooltip title={data.description}>
           <QuestionCircleOutlined className={styles.shaHelpIcon} />
         </Tooltip>
       )}
       <div className={styles.shaToolbarItemControls}>
-        {props.source === MetadataSourceType.ApplicationCode && (<Tag>APP</Tag>)}
+        {data.source === MetadataSourceType.ApplicationCode && (<Tag>APP</Tag>)}
       </div>
       <div className={styles.shaToolbarGroupContainer}>
-        {props.containerRendering({ index: props.index, items: props.properties || [] })}
+        {containerRendering({
+          index: index,
+          items: data.properties || [],
+          onChange: (newItems) => {
+            onChange({...data, properties: [...newItems]});
+          }
+        })}
       </div>
     </div>
   );
