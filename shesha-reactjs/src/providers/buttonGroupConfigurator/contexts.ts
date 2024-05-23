@@ -18,7 +18,7 @@ export interface IButtonGroupConfiguratorStateContext {
   form: ConfigurableFormInstance | null | undefined;
   selectedItemId?: string;
   buttonCount: number;
-  groupCount: number,
+  groupCount: number;
   readOnly: boolean;
 }
 
