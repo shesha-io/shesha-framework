@@ -18,7 +18,7 @@ import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/s
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
 import { useFormDesigner } from '@/providers/formDesigner';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
-import ButtonGroupSettingsModal from '../button/buttonGroup/buttonGroupSettingsModal';
+import { ButtonGroupConfigurator } from '@/components';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
@@ -152,7 +152,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
 
       <Show when={values?.footerButtons === "custom"}>
         <SettingsFormItem name="buttons" label="Configure Modal Buttons">
-          <ButtonGroupSettingsModal readOnly={false}></ButtonGroupSettingsModal>
+          <ButtonGroupConfigurator readOnly={false}></ButtonGroupConfigurator>
         </SettingsFormItem>
       </Show>
 
