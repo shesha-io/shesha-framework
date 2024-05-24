@@ -46,7 +46,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
       toggleEdit();
       handleSave({ ...record, ...values });
     } catch (errInfo) {
-      console.log('Save failed:', errInfo);
+      console.error('Save failed:', errInfo);
     }
   };
 

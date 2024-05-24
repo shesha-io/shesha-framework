@@ -1,5 +1,4 @@
-import React, { FC, useEffect, useMemo, useRef } from 'react';
-import { useButtonGroupConfigurator } from '@/providers/buttonGroupConfigurator';
+import React, { FC, useMemo, useRef } from 'react';
 import { Empty, Form } from 'antd';
 import itemSettingsJson from './itemSettings.json';
 import itemGroupSettingsJson from './itemGroupSettings.json';
@@ -8,43 +7,40 @@ import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import ConfigurableForm from '@/components/configurableForm';
+import { ButtonGroupItemProps } from '@/providers';
 
-export interface IButtonGroupPropertiesProps { }
+export interface IButtonGroupPropertiesProps {
+  item?: ButtonGroupItemProps;
+  onChange?: (item: ButtonGroupItemProps) => void;
+  readOnly: boolean;
+}
 
-export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
-  const { selectedItemId, getItem, updateItem, readOnly } = useButtonGroupConfigurator();
+export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, onChange, readOnly }) => {
   const [form] = Form.useForm();
 
   const formRef = useRef<ConfigurableFormInstance>(null);
 
   const debouncedSave = useDebouncedCallback(
     values => {
-      updateItem({ id: selectedItemId, settings: values });
+      onChange?.({ ...item, ...values });
     },
     // delay in ms
     300
   );
 
-  useEffect(() => {
-    const values = getItem(selectedItemId);
-    form?.setFieldsValue(values);
-  }, [selectedItemId]);
-
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const editor = useMemo(() => {
     const emptyEditor = null;
-    if (!selectedItemId) return emptyEditor;
-
-    const componentModel = getItem(selectedItemId);
+    if (!item) return emptyEditor;
 
     const markup =
-      componentModel.itemType === 'item'
+      item.itemType === 'item'
         ? (itemSettingsJson as FormMarkup)
-        : componentModel.itemType === 'group'
+        : item.itemType === 'group'
           ? (itemGroupSettingsJson as FormMarkup)
           : [];
     return (
-      <SourceFilesFolderProvider folder={`button-${selectedItemId}`}>
+      <SourceFilesFolderProvider folder={`button-${item.id}`}>
         <ConfigurableForm
           //key={selectedItemId} // rerender for each item to initialize all controls
           formRef={formRef}
@@ -53,14 +49,15 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
           mode={readOnly ? 'readonly' : 'edit'}
           markup={markup}
           form={form}
-          initialValues={componentModel}
+          initialValues={item}
           onValuesChange={debouncedSave}
+          className='vertical-settings'
         />
       </SourceFilesFolderProvider>
     );
-  }, [selectedItemId]);
+  }, [item]);
 
-  if (!Boolean(selectedItemId)) {
+  if (!Boolean(item)) {
     return (
       <div>
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
@@ -70,5 +67,3 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = () => {
 
   return <>{editor}</>;
 };
-
-export default ButtonGroupProperties;

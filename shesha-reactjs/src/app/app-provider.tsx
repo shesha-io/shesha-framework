@@ -16,6 +16,7 @@ export interface IAppProviderProps {
     backendUrl: string;
 }
 
+
 export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl }) => {
     const nextRouter = useNextRouter();
 

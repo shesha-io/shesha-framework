@@ -96,7 +96,7 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
     },
     {
       "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",

@@ -29,7 +29,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
       name: `Tab${count + 1}`,
       key: id,
       title: `Tab ${count + 1}`,
-      editMode: 'editable',
+      editMode: 'inherited',
       selectMode: 'editable',
       components: [],
     };

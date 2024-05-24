@@ -8,8 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
 update ci set ItemType = 'role'
 from Frwk_ConfigurationItems ci
 where ItemType = 'shesha-role'
