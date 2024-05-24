@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -71,6 +71,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
 }) => {
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const toolboxComponents = useFormDesignerComponents();
+  const settingsPanelRef = useRef();
 
   const getToolboxComponent = (type: string) => toolboxComponents[type];
 
@@ -80,6 +81,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     toolboxComponentGroups,
     ...flatComponents,
     formSettings: formSettings,
+    settingsPanelRef: settingsPanelRef,
   };
 
   const { activateProvider } = useMetadataDispatcher(false) ?? {};

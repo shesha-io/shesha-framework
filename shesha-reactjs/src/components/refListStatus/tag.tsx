@@ -5,6 +5,7 @@ import { useStyles } from './styles/styles';
 interface ITagProps {
   color: string;
   icon?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 const RefTag: FC<PropsWithChildren<ITagProps>> = ({ children, ...props }) => {

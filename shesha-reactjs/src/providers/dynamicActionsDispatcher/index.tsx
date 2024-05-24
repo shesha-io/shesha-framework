@@ -1,4 +1,4 @@
-import React, { FC, useContext, PropsWithChildren, useRef } from 'react';
+import React, { FC, useContext, PropsWithChildren, useRef, useCallback } from 'react';
 import metadataReducer from './reducer';
 import {
   DynamicActionsDispatcherActionsContext,
@@ -11,6 +11,7 @@ import {
 } from './contexts';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { DynamicItemsEvaluationHook, IProvidersDictionary } from './models';
+import { IDynamicActionsContext } from '../dynamicActions/contexts';
 
 export interface IDynamicActionsDispatcherProviderProps { }
 
@@ -35,13 +36,18 @@ const DynamicActionsDispatcherProvider: FC<PropsWithChildren<IDynamicActionsDisp
     }
   };
 
-  const getProviders = () => {
+  const getProviders = useCallback(() => {
     return providers.current;
-  };
+  }, []);
+
+  const getProvider = useCallback((providerUid: string): IDynamicActionsContext => {
+    return providers.current[providerUid]?.contextValue;
+  }, []);
 
   const dispatcherActions: IDynamicActionsDispatcherActionsContext = {
     registerProvider,
     getProviders,
+    getProvider,
   };
 
   return (

@@ -49,6 +49,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
 
   const onClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
+
     if (selectedComponentId !== props.componentId)
       setSelectedComponent(
         props.componentId,
@@ -58,13 +59,13 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
       );
   };
 
-  const onMouseOver = (e) => {
-    e.stopPropagation();
+  const onMouseOver = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     setIsOpen(true);
   };
 
-  const onMouseOut = (e) => {
-    e.stopPropagation();
+  const onMouseOut = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     setIsOpen(false);
   };
   const onDeleteClick = () => {

@@ -136,7 +136,8 @@
               "label": "default",
               "value": "default"
             }
-          ]
+          ],
+          "jsSetting": false
         },
         {
           "id": "oXQyiI2WU5P0E4lVO-uLW",
@@ -192,7 +193,7 @@
           "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
           "exposedVariables": [
             {
-              "propertyName": "data",
+              "name": "data",
               "description": "Form values",
               "type": "object"
             }

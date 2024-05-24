@@ -105,7 +105,6 @@ export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
 export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
-export { default as ButtonGroupConfigurator } from '@/designer-components/button/buttonGroup/configurator';
 export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
@@ -118,3 +117,4 @@ export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';
 
 export { ListEditor } from './listEditor';
+export { ButtonGroupConfigurator } from './buttonGroupConfigurator';

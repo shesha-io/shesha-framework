@@ -14,7 +14,6 @@ import { ReferenceListDispatcherProvider } from '@/providers/referenceListDispat
 import { IRouter } from '@/providers/shaRouting';
 import { SettingsProvider } from '@/providers/settings';
 import { StackedNavigationProvider } from '@/generic-pages/dynamic/navigation/stakedNavigation';
-import { useDeepCompareEffect } from 'react-use';
 import {
   FormIdentifier,
   IAuthProviderRefProps,
@@ -30,10 +29,10 @@ import {
   CanvasProvider,
 } from '@/providers';
 import {
+  registerFormDesignerComponentsAction,
   setBackendUrlAction,
   setGlobalVariablesAction,
   setHeadersAction,
-  updateToolboxComponentGroupsAction,
 } from './actions';
 import {
   DEFAULT_ACCESS_TOKEN_NAME,
@@ -56,7 +55,6 @@ export interface IShaApplicationProviderProps {
   applicationName?: string;
   accessTokenName?: string;
   router?: IRouter;
-  toolboxComponentGroups?: IToolboxComponentGroup[];
   unauthorizedRedirectUrl?: string;
   themeProps?: ThemeProviderProps;
   routes?: ISheshaRutes;
@@ -78,7 +76,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     accessTokenName,
     homePageUrl,
     router,
-    toolboxComponentGroups = [],
     unauthorizedRedirectUrl,
     themeProps,
     routes,
@@ -90,22 +87,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     routes: routes ?? DEFAULT_SHESHA_ROUTES,
     backendUrl,
     applicationName,
-    toolboxComponentGroups,
     applicationKey,
     httpHeaders: initialHeaders,
   });
 
   const authRef = useRef<IAuthProviderRefProps>();
-
-  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
-    dispatch(updateToolboxComponentGroupsAction(payload));
-  };
-
-  useDeepCompareEffect(() => {
-    if (toolboxComponentGroups?.length !== 0) {
-      updateToolboxComponentGroups(toolboxComponentGroups);
-    }
-  }, [toolboxComponentGroups]);
 
   const setRequestHeaders = (headers: IRequestHeaders) => {
     dispatch(setHeadersAction(headers));
@@ -126,6 +112,10 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     dispatch(setGlobalVariablesAction(values));
   };
 
+  const registerFormDesignerComponents = (owner: string, components: IToolboxComponentGroup[]) => {
+    dispatch(registerFormDesignerComponentsAction({ owner, components }));
+  };
+
   return (
     <SheshaApplicationStateContext.Provider value={state}>
       <SheshaApplicationActionsContext.Provider
@@ -135,6 +125,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
           // This will always return false if you're not authorized
           anyOfPermissionsGranted: anyOfPermissionsGranted, // NOTE: don't pass ref directly here, it leads to bugs because some of components use old reference even when authRef is updated
           setGlobalVariables,
+          registerFormDesignerComponents,
         }}
       >
         <SettingsProvider>

@@ -1,6 +1,7 @@
 import { createStyles } from "antd-style";
 
 export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
+    const verticalSettings = "vertical-settings";
     const jsSwitch = cx(css`
         &.${prefixCls}-btn {
             position: absolute;
@@ -24,6 +25,11 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
                 left: auto;
                 top: -28px;
             }
+            .${verticalSettings} & {
+                right: 0;
+                left: auto;
+                top: -28px;
+            }
         }
     `);
 
@@ -42,6 +48,9 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         .sidebar-container & {
             padding-top: 4px;
         }
+        .${verticalSettings} & {
+            padding-top: 4px;
+        }
     `);
     const jsContent = cx(css`
         margin-left: 64px;
@@ -52,8 +61,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         // special style when inside the sidebar
         .sidebar-container & {
             margin-right: 0;
-            margin-left: 0;   
-        }        
+            margin-left: 0;
+        }
+        .${verticalSettings} & {
+            margin-right: 0;
+            margin-left: 0;
+        }
     `);
     
     return {
@@ -61,5 +74,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         contentJs,
         contentCode,
         jsContent,
+        verticalSettings,
     };
 });

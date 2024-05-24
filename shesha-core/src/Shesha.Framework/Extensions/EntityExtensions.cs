@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
 
 namespace Shesha.Extensions
 {
@@ -546,10 +547,10 @@ namespace Shesha.Extensions
         /// Get the true, underlying class of a proxied persistent class. This operation
 		/// will initialize a proxy by side-effect.
         /// </summary>
-        public static Type GetRealEntityType<TEntity>(this TEntity entity) where TEntity: IEntity<Guid>
+        public static Type GetRealEntityType<TId>(this IEntity<TId> entity)
         {
             var provider = IocManager.Instance.Resolve<IEntityTypeProvider>();
-            return provider.GetEntityType<TEntity, Guid>(entity);
+            return provider.GetEntityType(entity);
         }        
     }
 }

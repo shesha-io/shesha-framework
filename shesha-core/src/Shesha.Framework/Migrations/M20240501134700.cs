@@ -8,7 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
 insert into Frwk_ConfigurationItems (Id, Description, Name, VersionNo, VersionStatusLkp, ModuleId, ItemType, IsLast, Label, OriginId,
 	CreationTime, CreatorUserId, LastModificationTime, LastModifierUserId, IsDeleted, DeletionTime, DeleterUserId)
 select Id, Description, Name, 1, 3, (select id from Frwk_Modules where Name = 'Shesha'), 'permission-definition', 1, DisplayName, Id,
