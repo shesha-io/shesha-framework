@@ -187,13 +187,13 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "propertyName": "rules",
+          "name": "rules",
           "description": "Validate rules, only support customize validator",
           "type": "object"
         },
-        { "propertyName": "value", "description": "Component current value", "type": "object" },
-        { "propertyName": "callback", "description": "Callback called by component", "type": "function" },
-        { "propertyName": "data", "description": "Form values", "type": "object" }
+        { "name": "value", "description": "Component current value", "type": "object" },
+        { "name": "callback", "description": "Callback called by component", "type": "function" },
+        { "name": "data", "description": "Form values", "type": "object" }
       ]
     }
   ]
@@ -232,7 +232,7 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
     },
     {
       "id": "28242e9f-78d5-4396-859b-d13f88c29101",
