@@ -25,7 +25,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
   return (
     <FormProvider
       needDebug
-      name="Designer Form"
+      name="Form"
       mode="designer"
       allComponents={allComponents}
       componentRelations={componentRelations}
