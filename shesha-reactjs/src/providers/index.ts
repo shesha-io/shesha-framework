@@ -12,6 +12,7 @@ export * from './dynamicModal';
 export * from './form';
 export * from './form/models';
 export { useFormWithData } from './form/api';
+export { useFormDesignerComponents } from './form/hooks';
 export * from './formContext';
 export * from './formItem';
 export * from './globalState';
