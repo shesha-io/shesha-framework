@@ -55,6 +55,7 @@ export interface ISelectOption<TValue = any> {
   value: string | number;
   label: string | React.ReactNode;
   data: TValue;
+  disabled?: boolean;
 }
 
 export type CustomLabeledValue<TValue = any> = LabeledValue & { data: TValue };

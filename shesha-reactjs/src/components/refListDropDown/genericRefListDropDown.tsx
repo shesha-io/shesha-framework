@@ -14,6 +14,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     value,
     includeFilters = false,
     filters = [],
+    ignoredValues,
     width,
     base,
     mode,
@@ -51,6 +52,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     } else return getLabeledValue(localValue as TValue, allOptions);
   };
 
+  const disableValue = (item => ({...item, disabled: ignoredValues.includes(item.value)}));
+
   const options = useMemo<ISelectOption<TValue>[]>(() => {
     const fetchedData = (refList?.items || []).filter(filter);
 
@@ -72,8 +75,9 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       : [];
 
     const result = [...fetchedItems, ...selectedItems];
-    return result;
-  }, [refList, getLabeledValue, getOptionFromFetchedItem, incomeValueFunc, outcomeValueFunc]);
+
+    return ignoredValues.length > 0 ? result.map(disableValue): result;
+  }, [refList, getLabeledValue, getOptionFromFetchedItem, incomeValueFunc, outcomeValueFunc, ignoredValues]);
 
   const handleChange = (_: CustomLabeledValue<TValue>, option: any) => {
     if (!Boolean(onChange)) return;
@@ -133,8 +137,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       value={wrapValue(value, options)}
       mode={mode}
     >
-      {options?.map(({ value: localValue, label, data }, index) => (
-        <Select.Option value={localValue} key={index} data={data}>
+      {options?.map(({ value: localValue, label, data, disabled }, index) => (
+        <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
           {label}
         </Select.Option>
       ))}

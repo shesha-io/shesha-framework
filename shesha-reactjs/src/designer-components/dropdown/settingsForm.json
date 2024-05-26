@@ -375,6 +375,13 @@
                 "availableConstantsExpression": "    return metadataBuilder.addObject(\"value\", \"Field value\tobject\").build();"
               },
               {
+                "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534x0",
+                "type": "checkbox",
+                "propertyName": "disableItemValue",
+                "parentId": "tGXA95wmOf54IsiPT-WgW",
+                "label": "Disable item value"
+              },
+              {
                 "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
                 "type": "textArea",
                 "propertyName": "ignoredValues",
@@ -384,7 +391,12 @@
                 "showCount": false,
                 "allowClear": true,
                 "description": "Pass an integer array of values you want to ignore like so: [1, 2, 3]. Each represents ReferenceList.ItemValue",
-                "version": 2
+                "version": 2,
+                "hidden": {
+                  "_code": "return  !getSettingValue(data.disableItemValue);",
+                  "_mode": "code",
+                  "_value": false
+                }
               }
             ],
             "version": 2,
