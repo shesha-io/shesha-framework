@@ -1,14 +1,13 @@
-import React, { FC, useState, useTransition } from 'react';
+import React, { FC } from 'react';
 import { ButtonGroupItemProps, IButtonGroup, IButtonGroupItem } from '@/providers';
-import { ListEditor } from '@/components';
-import { ListEditorRenderer } from '@/components/listEditorRenderer';
 import { nanoid } from '@/utils/uuid';
 import { ButtonGroupProperties } from './properties';
 import { ButtonGroupListItem } from './buttonGroupListItem';
 import { ListEditorSectionRenderingArgs } from '@/components/listEditor';
-import { Alert, Button, Divider, Skeleton } from 'antd';
+import { Alert, Button, Divider } from 'antd';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { isGroup } from '@/providers/buttonGroupConfigurator/models';
+import { ListEditorWithPropertiesPanel } from '../listEditorWithPropertiesPanel';
 
 export interface ButtonGroupSettingsEditorProps {
   readOnly: boolean;
@@ -68,22 +67,6 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
 };
 
 export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ value, onChange, readOnly }) => {
-  const [selectedItem, setSelectedItem] = useState<ButtonGroupItemProps>();
-  const [isPending, startTransition] = useTransition();
-
-  const onSelectionChange = (item: ButtonGroupItemProps) => {
-    startTransition(() => {
-      setSelectedItem(item);
-    });    
-  };
-
-  const onItemUpdate = (newValues: ButtonGroupItemProps) => {
-    if (!selectedItem || selectedItem.id !== newValues.id) return;
-
-    Object.assign(selectedItem, newValues);
-    onChange([...value]);
-  };
-
   const makeNewItem = (items: ButtonGroupItemProps[]): ButtonGroupItemProps => {
     const itemsCount = (items ?? []).length;
     const itemNo = itemsCount + 1;
@@ -103,33 +86,24 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
   };
 
   return (
-    <ListEditorRenderer
-      sidebarProps={{
-        title: 'Properties',
-        content: isPending ? <Skeleton loading /> : <ButtonGroupProperties item={selectedItem} onChange={onItemUpdate} readOnly={readOnly} />,
-      }}
+    <ListEditorWithPropertiesPanel<ButtonGroupItemProps>
+      value={value}
+      onChange={onChange}
+      initNewItem={makeNewItem}
+      readOnly={readOnly}
+      header={<Alert message={readOnly ? 'Here you can view buttons configuration.' : 'Here you can configure the button group by adjusting their settings and ordering.'} />}
+      itemProperties={(itemProps) => (<ButtonGroupProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
+      groupHeader={ButtonGroupEditorHeader}      
     >
-      <Alert message={readOnly ? 'Here you can view buttons configuration.' : 'Here you can configure the button group by adjusting their settings and ordering.'} />
-
-      <ListEditor<ButtonGroupItemProps>
-        value={value}
-        onChange={onChange}
-        initNewItem={makeNewItem}
-        readOnly={readOnly}
-        selectionType='single'
-        onSelectionChange={onSelectionChange}
-        header={ButtonGroupEditorHeader}
-      >
-        {({ item, itemOnChange, index, nestedRenderer }) => (
-          <ButtonGroupListItem
-            item={item}
-            index={[index]}
-            onChange={itemOnChange}
-            nestedRenderer={nestedRenderer}
-            initNewItem={makeNewItem}
-          />
-        )}
-      </ListEditor>
-    </ListEditorRenderer>
+      {({ item, itemOnChange, index, nestedRenderer }) => (
+        <ButtonGroupListItem
+          item={item}
+          index={[index]}
+          onChange={itemOnChange}
+          nestedRenderer={nestedRenderer}
+          initNewItem={makeNewItem}
+        />
+      )}
+    </ListEditorWithPropertiesPanel>
   );
 };
