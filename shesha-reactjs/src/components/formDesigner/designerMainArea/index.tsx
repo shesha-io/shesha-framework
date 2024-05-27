@@ -1,4 +1,3 @@
-import ComponentPropertiesPanel from '../componentPropertiesPanel';
 import ComponentPropertiesTitle from '../componentPropertiesTitle';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo } from 'react';
@@ -8,6 +7,7 @@ import { DebugPanel } from '../debugPanel';
 import { useCanvasConfig, useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
+import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 
 export interface IDesignerMainAreaProps {
 

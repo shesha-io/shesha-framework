@@ -290,7 +290,7 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "propertyName": "rules",
+          "name": "rules",
           "description": "Validate rules, only support customize validator",
           "type": "object"
         },
