@@ -1,5 +1,5 @@
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState, useRef } from 'react';
 import {
   Alert,
   Button,
@@ -7,7 +7,7 @@ import {
   message,
   notification,
   Upload
-  } from 'antd';
+} from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
 import { FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
@@ -74,6 +74,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
 
+  const [filesClone, setFilesClone] = useState(fileList);
+
   const openFilesZipNotification = () =>
     notification.success({
       message: `Download success!`,
@@ -81,12 +83,34 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       placement: 'topRight',
     });
 
-  useEffect(()=>{
-    console.log(fileList, "FILE FROM LIST OUT OF ITERATION")
-    fileList.forEach(file => {
-      console.log(file, "FILE FROM LIST IN ITERATION");
-    })
-  }, [fileList])
+
+    const processedFiles = useRef(new Set());
+
+    useEffect(() => {
+      fileList.forEach(fileInfo => {
+        if (fileInfo && !processedFiles.current.has(fileInfo.uid)) {
+          processedFiles.current.add(fileInfo.uid);
+          if (allowedFileTypes.length > 0 && !allowedFileTypes.includes(fileInfo.type)) {
+            if(!fileInfo.uid.includes('rc-upload')){
+              message.error(`The uploaded file type ${fileInfo.name.split('.').pop()} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
+              deleteFile(fileInfo.uid);
+            }
+          }
+        }
+      });
+    }, [fileList, allowedFileTypes, deleteFile]);
+
+  const formatNaturalLanguageList = (items: string[]): string => {
+    if (items.length === 0) {
+      return "";
+    } else if (items.length === 1) {
+      return items[0];
+    } else if (items.length === 2) {
+      return `${items[0]} and ${items[1]}`;
+    } else {
+      return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+    }
+  }
 
   useEffect(() => {
     if (isDownloadZipSucceeded) {
@@ -128,7 +152,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
       if (!isValidFileType) {
         const validTypes = validFileTypes.map(({ name }) => name).join(',');
-        
+
         message.error(`You can only upload files of type: (${validTypes})`);
       }
 
@@ -161,7 +185,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   return (
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
-      {isStub 
+      {isStub
         ? isDragger
           ? <Dragger disabled><DraggerStub /></Dragger>
           : <div>{renderUploadContent()}</div>
