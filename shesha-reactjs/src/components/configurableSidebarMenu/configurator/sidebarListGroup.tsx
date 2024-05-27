@@ -6,21 +6,18 @@ import { ISidebarGroup, ISidebarMenuItem } from '@/interfaces/sidebar';
 import { useStyles } from '@/components/listEditor/styles/styles';
 
 export interface IContainerRenderArgs {
-  index?: number[];
   id?: string;
   items: ISidebarMenuItem[];
-
   onChange: (newValue: ISidebarMenuItem[]) => void;
 }
 
 export interface ISidebarMenuGroupProps {
-  index: number[];
   item: ISidebarGroup;
   onChange: (newValue: ISidebarGroup) => void;
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 
-export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, index, onChange, containerRendering }) => {
+export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, onChange, containerRendering }) => {
   const { styles } = useStyles();
   return (
     <>
@@ -32,7 +29,6 @@ export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, index, onCh
         </Tooltip>
       )}
       {containerRendering({
-        index: index,
         items: item.childItems || [],
         onChange: (newItems) => {
           onChange({ ...item, childItems: [...newItems] });

@@ -12,6 +12,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { ConfigurableFormInstance } from '@/interfaces';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
+import { sheshaStyles } from '@/styles';
 
 export interface ISidebarItemPropertiesProps {
   item?: ISidebarMenuItem;
@@ -53,7 +54,7 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
           form={form}
           initialValues={item}
           onValuesChange={debouncedSave}
-          className='vertical-settings'
+          className={sheshaStyles.verticalSettingsClass}
         />
       </SourceFilesFolderProvider>
     );

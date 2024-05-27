@@ -16,10 +16,6 @@ export const ComponentSettingsModal: FC<IProps> = ({ onSave, onCancel, title, se
 
   const [localValue, setLocalValue] = useState<ISidebarMenuItem[]>(deepCopyViaJson(settings.items));
 
-  const onChange = (newValue: ISidebarMenuItem[]) => {
-    setLocalValue(newValue);
-  };
-
   const onOk = () => {
     onSave({ items: localValue });
   };
@@ -36,8 +32,7 @@ export const ComponentSettingsModal: FC<IProps> = ({ onSave, onCancel, title, se
       <SidebarConfigurator
         readOnly={false}
         value={localValue}
-        onChange={onChange}
-        //onChange={setLocalValue}
+        onChange={setLocalValue}
       />
     </Modal>
   );

@@ -7,16 +7,14 @@ import { NestedItemsRenderingArgs } from '@/components/listEditor';
 export interface ISidebarItemCommonProps {
     item: ISidebarMenuItem;
     onChange: (newValue: ISidebarMenuItem) => void;
-    index: number[];
     nestedRenderer?: (args: NestedItemsRenderingArgs<ISidebarMenuItem>) => React.ReactNode | null;
     initNewItem: (items: ISidebarMenuItem[]) => ISidebarMenuItem;
 }
 
-export const SidebarListItemCommon: FC<ISidebarItemCommonProps> = ({ item, onChange, index, nestedRenderer, initNewItem }) => {
+export const SidebarListItemCommon: FC<ISidebarItemCommonProps> = ({ item, onChange, nestedRenderer, initNewItem }) => {
     if (isSidebarGroup(item))
         return (
             <SidebarListGroup
-                index={index}
                 onChange={onChange}
                 key={item.id}
                 item={item}

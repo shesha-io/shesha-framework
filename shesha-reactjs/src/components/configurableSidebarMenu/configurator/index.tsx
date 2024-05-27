@@ -37,10 +37,9 @@ export const SidebarConfigurator: FC<ISidebarConfiguratorProps> = ({ value, onCh
       itemProperties={(itemProps) => (<SidebarItemProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
       groupHeader={ItemGroupHeader}      
     >
-      {({ item, itemOnChange, index, nestedRenderer }) => (
+      {({ item, itemOnChange, nestedRenderer }) => (
         <SidebarListItemCommon
           item={item}
-          index={[index]}
           onChange={itemOnChange}
           nestedRenderer={nestedRenderer}
           initNewItem={makeNewItem}
