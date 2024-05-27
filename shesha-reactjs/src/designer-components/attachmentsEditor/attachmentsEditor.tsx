@@ -88,6 +88,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               onChange={onChange}
               value={value}
             >
+
               <CustomFile
                 isStub={formMode === 'designer'}
                 allowAdd={enabled && model.allowAdd}

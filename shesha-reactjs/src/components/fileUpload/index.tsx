@@ -1,4 +1,4 @@
-import React, { FC, useRef } from 'react';
+import React, { FC, useRef, useEffect } from 'react';
 import { useStoredFile } from '@/providers';
 import { Upload, message, Button } from 'antd';
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
@@ -54,6 +54,26 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const { styles } = useStyles();
   const uploadButtonRef = useRef(null);
   const uploadDraggerSpanRef = useRef(null);
+
+  useEffect(() => {
+    if (fileInfo && !allowedFileTypes.includes(fileInfo?.type) && !fileInfo?.type.includes('/')) {
+      message.error(`The uploaded file type ${fileInfo?.type} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
+      deleteFile();
+    }
+  }, [fileInfo]);
+
+  const formatNaturalLanguageList = (items: string[]): string => {
+    if (items.length === 0) {
+      return "";
+    } else if (items.length === 1) {
+      return items[0];
+    } else if (items.length === 2) {
+      return `${items[0]} and ${items[1]}`;
+    } else {
+      return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+    }
+  }
+
 
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
     // call action from context
@@ -154,7 +174,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const renderStub = () => {
     if (isDragger) {
-      return  <Dragger disabled><DraggerStub /></Dragger>;
+      return <Dragger disabled><DraggerStub /></Dragger>;
     }
 
     return <div className={classes}>{uploadButton}</div>;
@@ -165,16 +185,16 @@ export const FileUpload: FC<IFileUploadProps> = ({
       return (
         <Dragger {...fileProps} className={classes}>
           <span ref={uploadDraggerSpanRef} />
-            <DraggerStub/>
+          <DraggerStub />
         </Dragger>
       );
     }
 
     return (
-        <Upload {...fileProps} className={classes}>
-          {allowUpload && uploadButton}
-        </Upload>
-      );
+      <Upload {...fileProps} className={classes}>
+        {allowUpload && uploadButton}
+      </Upload>
+    );
   };
 
 

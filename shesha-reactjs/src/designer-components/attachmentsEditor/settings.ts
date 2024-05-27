@@ -242,7 +242,7 @@ export const getSettings = () =>
             parentId: 'pnl02942-a0a6-4805-ac47-8f45486a69d4',
             propertyName: 'allowedFileTypes',
             label: 'Allowed File Types',
-            description: 'File types that can be accepted.',
+            description: 'File types that can be accepted. The file type should start with a dot.',
           }).toJson()
         ]
       }

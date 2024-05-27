@@ -81,6 +81,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       placement: 'topRight',
     });
 
+  useEffect(()=>{
+    console.log(fileList, "FILE FROM LIST OUT OF ITERATION")
+    fileList.forEach(file => {
+      console.log(file, "FILE FROM LIST IN ITERATION");
+    })
+  }, [fileList])
+
   useEffect(() => {
     if (isDownloadZipSucceeded) {
       openFilesZipNotification();
@@ -94,7 +101,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fileList,
     disabled,
     onChange(info: UploadChangeParam) {
-      const { status } = info.file;
+      const { status } = info.file
 
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
@@ -121,7 +128,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
       if (!isValidFileType) {
         const validTypes = validFileTypes.map(({ name }) => name).join(',');
-
+        
         message.error(`You can only upload files of type: (${validTypes})`);
       }
 

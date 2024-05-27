@@ -130,7 +130,7 @@
             "propertyName": "allowedFileTypes",
             "label": "Allowed File Types",
             "parentId": "y9SNusmMM0Wd1Sc_YI1ngb",
-            "description": "File types that can be accepted."
+            "description": "File types that can be accepted. The file type should start with a dot."
           },
           {
             "id": "028b4eaf-8830-4dcd-b54f-422c73b25418",
