@@ -15,6 +15,7 @@ import { FileVersionsPopup } from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { formatNaturalLanguageList } from '../storedFilesRendererBase/utils';
 
 const { Dragger } = Upload;
 
@@ -61,18 +62,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
       deleteFile();
     }
   }, [fileInfo]);
-
-  const formatNaturalLanguageList = (items: string[]): string => {
-    if (items.length === 0) {
-      return "";
-    } else if (items.length === 1) {
-      return items[0];
-    } else if (items.length === 2) {
-      return `${items[0]} and ${items[1]}`;
-    } else {
-      return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
-    }
-  }
 
 
   const onCustomRequest = ({ file /*, onError, onSuccess*/ }: RcCustomRequestOptions) => {
