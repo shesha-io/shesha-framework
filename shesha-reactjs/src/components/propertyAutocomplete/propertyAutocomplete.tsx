@@ -107,8 +107,11 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     });
   }, [metadata?.properties, containerPath, containerPathMultiple]);
 
+  const allowAutoLabelling = props.showFillPropsButton !== false && Boolean(form) && !readOnly;
+
+
   useEffect(() => {
-    if (!form || !props.id) {
+    if (!form || !props.id || !allowAutoLabelling) {
       return;
     }
     const action = form.getAction(props.id, 'linkToModelMetadata');
@@ -168,7 +171,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     setState({ properties: state.properties, options: filteredOptions });
   };
 
-  
+
   const onSearch = (data: string) => {
     if (props.onChange) props.onChange(data);
 
@@ -247,37 +250,37 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   return (
     <>
-    {mode === 'single' ? (
-      <>
-        {autoComplete}
-      </>
-    ) : mode === 'multiple' ? (
-      <>
-        <Space.Compact style={{ width: "100%", ...props.style }}>
-          {multiple}
-          <Button
-            icon={<PlusOutlined />}
-            onClick={onAddMultipleClick}
-            disabled={!Boolean(multipleValue)}
-            style={style}
-            size={props.size}
-          />
-        </Space.Compact>
-        <div style={{ marginTop: 16 }}>
-          {tagChild}
-        </div>
-      </>
-    ) :
-      (
-        <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /*showSearch*/ size={props.size} disabled={readOnly}>
-          {state.options.map((option, index) => (
-            <Select.Option key={index} value={camelCase(option.value)}>
-              {option.label}
-            </Select.Option>
-          ))}
-        </Select>
-      )}
-  </>
+      {mode === 'single' ? (
+        <>
+          {autoComplete}
+        </>
+      ) : mode === 'multiple' ? (
+        <>
+          <Space.Compact style={{ width: "100%", ...props.style }}>
+            {multiple}
+            <Button
+              icon={<PlusOutlined />}
+              onClick={onAddMultipleClick}
+              disabled={!Boolean(multipleValue)}
+              style={style}
+              size={props.size}
+            />
+          </Space.Compact>
+          <div style={{ marginTop: 16 }}>
+            {tagChild}
+          </div>
+        </>
+      ) :
+        (
+          <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /*showSearch*/ size={props.size} disabled={readOnly}>
+            {state.options.map((option, index) => (
+              <Select.Option key={index} value={camelCase(option.value)}>
+                {option.label}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+    </>
   );
 };
 
