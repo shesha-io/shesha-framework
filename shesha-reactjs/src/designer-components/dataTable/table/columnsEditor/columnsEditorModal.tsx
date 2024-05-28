@@ -19,7 +19,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
   const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
 
   const onOk = () => {
-    onChange(localValue);
+    onChange?.(localValue);
     hideModal();
   };
 

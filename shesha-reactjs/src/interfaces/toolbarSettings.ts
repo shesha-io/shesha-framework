@@ -85,7 +85,7 @@ type PermissionAutocompleteType = ToolbarSettingsProp & Omit<IPermissionAutocomp
 
 type ColorPickerType = ToolbarSettingsProp & Omit<IColorPickerComponentProps, 'hidden' | 'type'>;
 
-type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
+type ColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
 
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
@@ -126,10 +126,10 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'dropdown');
   }
 
-  public addEntityPickerColumnsEditor(
-    props: EntityPickerColumnsEditorType | ((data: T) => EntityPickerColumnsEditorType)
+  public addColumnsEditor(
+    props: ColumnsEditorType | ((data: T) => ColumnsEditorType)
   ) {
-    return this.addProperty(props, 'entityPickerColumnsEditorComponent');
+    return this.addProperty(props, 'columnsEditorComponent');
   }
 
   public addSectionSeparator(props: SectionSeparatorType | ((data: T) => SectionSeparatorType)) {

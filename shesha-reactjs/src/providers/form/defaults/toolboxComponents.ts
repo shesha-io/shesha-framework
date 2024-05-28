@@ -69,8 +69,7 @@ import Filter from '@/designer-components/dataTable/filter/filterComponent';
 import Pager from '@/designer-components/dataTable/pager/pagerComponent';
 import QuickSearch from '@/designer-components/dataTable/quickSearch/quickSearchComponent';
 import SelectColumnsButton from '@/designer-components/dataTable/selectColumnsButton/selectColumnsButtonComponent';
-import ColumnsEditor from '@/designer-components/dataTable/table/columnsEditor';
-import EntityPickerColumnsEditor from '@/designer-components/dataTable/table/entityPickerColumnsEditor';
+import { ColumnsEditorComponent } from '@/designer-components/dataTable/table/columnsEditor';
 import DataTable from '@/designer-components/dataTable/table/tableComponent';
 import TableTemplate from '@/designer-components/dataTable/table/tableTemplateComponent';
 import TableContext from '@/designer-components/dataTable/tableContext/tableContextComponent';
@@ -211,8 +210,7 @@ export const getToolboxComponents = (
       name: 'Dev',
       components: [
         PermissionAutocompleteComponent,
-        EntityPickerColumnsEditor,
-        ColumnsEditor, // Hidden
+        ColumnsEditorComponent, // Hidden
         ReferenceListAutocompleteComponent,
         PropertyAutocompleteComponent,
         SortingEditorComponent,
