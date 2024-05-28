@@ -1,5 +1,5 @@
 interface SidebarProps {
-    isOpen: boolean;
+
     // Add other properties as needed
 }
 
@@ -9,7 +9,7 @@ function getPanelSizes(
     leftSidebarProps?: SidebarProps,
     rightSidebarProps?: SidebarProps
 ): { sizes: number[], minSize: any } {
-    if (!leftSidebarProps && rightSidebarProps) {
+    if (!leftSidebarProps && !!rightSidebarProps) {
         return {
             sizes: [75, 25],
             minSize: 250,
@@ -24,17 +24,17 @@ function getPanelSizes(
     } else if (!leftOpen && rightOpen) {
         return {
             sizes: [3, 77, 20],
-            minSize: [50, 400, 250],
+            minSize: [50, 850, 250],
         };
     } else if (!rightOpen && leftOpen) {
         return {
             sizes: [20, 77, 3],
-            minSize: [250, 400, 50],
+            minSize: [250, 850, 50],
         };
     } else {
         return {
             sizes: [20, 60, 20],
-            minSize: [250, 400, 250],
+            minSize: [250, 900, 250],
         };
     }
 }

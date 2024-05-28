@@ -53,9 +53,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       : null;
   };
 
-
-  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight), [isOpenRight, isOpenLeft]);
-
+  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps), [isOpenRight, isOpenLeft]);
+  console.log("sizes", sizes);
   return (
     <div className={styles.sidebarContainer}>
       {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
@@ -63,13 +62,14 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       <SizableColumns
         sizes={sizes.sizes}
         minSize={sizes.minSize}
-        expandToMin={false}
+        expandToMin={true}
         gutterSize={8}
         gutterAlign="center"
         snapOffset={30}
         dragInterval={1}
         direction="horizontal"
         cursor="col-resize"
+
         className={classNames(styles.sidebarContainerBody)}
       >
         {renderSidebar('left')}
@@ -92,6 +92,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
         {renderSidebar('right')}
       </SizableColumns>
-    </div>
+    </div >
   );
 };

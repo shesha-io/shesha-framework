@@ -3,7 +3,6 @@ import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const leftSidebarWidth = "550px";
-  const rightSidebarWidth = leftSidebarWidth;
   const sidebarBtnHeight = "35px";
 
   const sidebarContainerHeader = "sidebar-container-header";
@@ -139,7 +138,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerRight} {
           border-left: 1px solid lightgrey;
-          max-width: ${rightSidebarWidth};
           min-height: calc(100vh - 102px);
     
           &.open {
