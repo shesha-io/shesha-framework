@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { TimeRangePicker, TimePicker } from '@/components/antd';
 import moment, { Moment, isMoment } from 'moment';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
@@ -59,6 +59,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   const { styles } = useStyles();
 
   const evaluatedValue = getMoment(value, format);
+  const [asMinutes, setAsMinutes] = useState<string>();
 
   const hourStepLocal = getNumericValue(hourStep);
   const minuteStepLocal = getNumericValue(minuteStep);
@@ -104,6 +105,15 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} />;
   }
 
+  useEffect(()=>{
+    //const am = defaultValue
+    console.log(defaultValue)
+    if(typeof defaultValue == "string" && defaultValue !== undefined){
+      setAsMinutes(defaultValue)
+    }
+  
+  },[defaultValue])
+
   if (range) {
     return (
       <TimeRangePicker
@@ -128,7 +138,8 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
       onChange={handleTimePickerChange}
       onSelect={handleTimePickerSelect}
       format={format}
-      value={evaluatedValue|| (defaultValue && moment(defaultValue))}
+      defaultValue={getMoment(defaultValue, format)}
+      value={evaluatedValue || defaultValue && getMoment(asMinutes, format)}
       {...steps}
       style={getStyle(style, formData)}
       className={styles.shaTimepicker}
