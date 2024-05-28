@@ -3,6 +3,7 @@ import React, { FC, PropsWithChildren, ReactNode } from 'react';
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
+import { SizableColumns } from '../sizableColumns';
 
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
@@ -29,7 +30,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   allowFullCollapse?: boolean;
 }
 
- export const SidebarContainer: FC<ISidebarContainerProps> = ({
+export const SidebarContainer: FC<ISidebarContainerProps> = ({
   leftSidebarProps,
   rightSidebarProps,
   header,
@@ -53,7 +54,18 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
     <div className={styles.sidebarContainer}>
       {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
 
-      <div className={styles.sidebarContainerBody}>
+      <SizableColumns
+        sizes={[75, 25]}
+        minSize={150}
+        expandToMin={false}
+        gutterSize={8}
+        gutterAlign="center"
+        snapOffset={30}
+        dragInterval={1}
+        direction="horizontal"
+        cursor="col-resize"
+        className={classNames(styles.sidebarContainerBody)}
+      >
         {renderSidebar('left')}
 
         <div
@@ -73,7 +85,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
         </div>
 
         {renderSidebar('right')}
-      </div>
+      </SizableColumns>
     </div>
   );
 };

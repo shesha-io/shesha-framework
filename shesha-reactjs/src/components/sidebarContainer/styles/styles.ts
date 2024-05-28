@@ -2,7 +2,7 @@ import { createStyles } from "antd-style";
 import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
-  const leftSidebarWidth = "350px";
+  const leftSidebarWidth = "550px";
   const rightSidebarWidth = leftSidebarWidth;
   const sidebarBtnHeight = "35px";
 
