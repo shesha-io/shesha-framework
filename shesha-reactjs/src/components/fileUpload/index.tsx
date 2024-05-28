@@ -58,7 +58,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   useEffect(() => {
     if (fileInfo && !allowedFileTypes.includes(fileInfo?.type) && !fileInfo?.type.includes('/')) {
-      message.error(`The uploaded file type ${fileInfo?.type} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
+      message.error(`The uploaded file type .${fileInfo?.type} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
       deleteFile();
     }
   }, [fileInfo]);

@@ -1,5 +1,5 @@
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC, useEffect, useState, useRef } from 'react';
 import {
   Alert,
   Button,
@@ -75,6 +75,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
 
+  const [filesClone, setFilesClone] = useState(fileList);
+
   const openFilesZipNotification = () =>
     notification.success({
       message: `Download success!`,
@@ -90,8 +92,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         if (fileInfo && !processedFiles.current.has(fileInfo.uid)) {
           processedFiles.current.add(fileInfo.uid);
           if (allowedFileTypes.length > 0 && !allowedFileTypes.includes(fileInfo.type)) {
-              message.error(`The uploaded file type ${fileInfo.name.split('.').pop()} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
+            if(!fileInfo.uid.includes('rc-upload')){
+              message.error(`The uploaded file type .${fileInfo.name.split('.').pop()} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
               deleteFile(fileInfo.uid);
+            }
           }
         }
       });
