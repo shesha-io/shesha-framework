@@ -14,7 +14,7 @@ import { ITableActionColumn } from '@/providers/dataTable/interfaces';
 import { MODAL_DATA } from '@/shesha-constants';
 import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
-import { normalizeUrl } from '@/index';
+import { evaluateString, normalizeUrl } from '@/index';
 
 
 export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> { }
@@ -35,6 +35,17 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     return data?.cell?.row?.original;
   };
 
+  // todo: implement generic context collector
+  const evaluationContext = {
+    selectedRow: getRowData(props),
+    data: formData,
+    moment: moment,
+    formMode: formMode,
+    http: axiosHttp(backendUrl),
+    message: message,
+    globalState: globalState,
+  };
+
 
   const clickHandler = (event, data) => {
 
@@ -45,18 +56,6 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     if (actionConfiguration) {
       setState({ data: selectedRow, key: MODAL_DATA }); // todo: remove usage of global state
       changeActionedRow(data.row.original);
-
-      // todo: implement generic context collector
-      const evaluationContext = {
-        selectedRow: selectedRow,
-        data: formData,
-        moment: moment,
-        formMode: formMode,
-        http: axiosHttp(backendUrl),
-        message: message,
-        globalState: globalState,
-      };
-
       executeAction({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext: evaluationContext,
@@ -71,15 +70,16 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   }
 
   const getHref = (): string => {
-    const url = getUrlFromNavigationRequest(actionConfiguration.actionArguments);
-    return url && normalizeUrl(url);
+    const string = evaluateString(actionConfiguration.actionArguments.url, evaluationContext);
+    return string;
 
-    //evaluateString(url, actionConfiguration)
   }
+
+  console.log(evaluationContext, actionConfiguration);
 
   return (
     <>
-      {actionConfiguration?.actionArguments?.navigationType === "url" ?
+      {actionConfiguration?.actionArguments?.navigationType === "url" || actionConfiguration?.actionArguments?.navigationType === "form" ?
         <a className="sha-link" href={getHref()} onClick={handleURLClick}>
           {icon && (
             <Tooltip title={description}>
