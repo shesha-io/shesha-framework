@@ -65,7 +65,6 @@ import DataContextComponent from '@/designer-components/dataContextComponent';
 import DataContextSelector from '@/designer-components/dataContextSelector';
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import ChildTable from '@/designer-components/dataTable/childTable';
-import Filter from '@/designer-components/dataTable/filter/filterComponent';
 import Pager from '@/designer-components/dataTable/pager/pagerComponent';
 import QuickSearch from '@/designer-components/dataTable/quickSearch/quickSearchComponent';
 import SelectColumnsButton from '@/designer-components/dataTable/selectColumnsButton/selectColumnsButtonComponent';
@@ -230,7 +229,6 @@ export const getToolboxComponents = (
         CodeEditor,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
-        Filter,
         FormAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
