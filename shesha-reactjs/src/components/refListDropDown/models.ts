@@ -40,6 +40,7 @@ export interface IRefListDropDownProps<TValue = any> extends Omit<SelectProps<an
   base?: string;
   value?: TValue | TValue[];
   ignoredValues?: number[];
+  disabledValues?: number[];
   size?: SizeType;
   onChange?: (value: TValue | TValue[]) => void;
 }

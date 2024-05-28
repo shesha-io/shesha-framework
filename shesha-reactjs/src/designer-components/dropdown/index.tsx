@@ -53,9 +53,6 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     const localStyle = getStyle(model.style, formData);
 
     const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
-    const arrayRegex = /^\[\s*(\d+\s*(,\s*\d+\s*)*)?\]$/;
-
-    const ignoredValues = typeof model.ignoredValues === "object" ? model.ignoredValues : arrayRegex.test(model.ignoredValues) ? JSON.parse(model.ignoredValues) : [];
 
     return (
       <ConfigurableFormItem model={model} {...initialValue}>
@@ -67,7 +64,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
               onChange(...args);
           };
 
-          return <Dropdown {...model} style={localStyle} {...customEvent} value={value} onChange={onChangeInternal} ignoredValues={model.disableItemValue ? ignoredValues : []} />;
+          return <Dropdown {...model} style={localStyle} {...customEvent} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
     );

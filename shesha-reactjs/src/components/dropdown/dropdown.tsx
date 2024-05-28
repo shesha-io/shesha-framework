@@ -18,7 +18,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     incomeCustomJs,
     outcomeCustomJs,
     labelCustomJs,
-    filters,
+
     dataSourceType,
     values,
     onChange,
@@ -29,6 +29,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     defaultValue: defaultVal,
     disableItemValue = false,
     ignoredValues = [],
+    disabledValues = [],
     placeholder,
     readOnly,
     style,
@@ -117,14 +118,14 @@ export const Dropdown: FC<IDropdownProps> = ({
                 variant={hideBorder ? 'borderless' : undefined}
                 defaultValue={defaultValue}
                 mode={selectedMode}
-                filters={filters}
-                includeFilters={false}
+                disabledValues={disableItemValue && typeof disabledValues === 'object' ? disabledValues : []}
+                filters={ignoredValues}
+                includeFilters={ignoredValues.length > 0}
                 placeholder={placeholder}
                 readOnly={readOnly}
                 size={size}
                 style={style}
                 allowClear={allowClear} 
-                ignoredValues={disableItemValue? ignoredValues: []}
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
 

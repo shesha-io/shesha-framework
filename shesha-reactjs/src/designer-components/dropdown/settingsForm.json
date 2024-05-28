@@ -383,7 +383,24 @@
                 "label": "Disable item value"
               },
               {
-                "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
+                "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc9",
+                "type": "textArea",
+                "propertyName": "disabledValues",
+                "parentId": "ELxx5jarWvInJXJF5xHN2",
+                "label": "Disabled Values",
+                "autoSize": false,
+                "showCount": false,
+                "allowClear": true,
+                "description": "Pass an array of positive integers to disable specific values. For example: [1, 2, 3].",
+                "version": 2,
+                "hidden": {
+                  "_code": "return  !getSettingValue(data.disableItemValue);",
+                  "_mode": "code",
+                  "_value": false
+                }
+              },
+              {
+                 "id": "03959ffd-cadb-496c-bf6d-b742f7f6edc5",
                 "type": "textArea",
                 "propertyName": "ignoredValues",
                 "parentId": "ELxx5jarWvInJXJF5xHN2",
@@ -391,13 +408,8 @@
                 "autoSize": false,
                 "showCount": false,
                 "allowClear": true,
-                "description": "Pass an integer array of values you want to ignore like so: [1, 2, 3]. Each represents ReferenceList.ItemValue",
-                "version": 2,
-                "hidden": {
-                  "_code": "return  !getSettingValue(data.disableItemValue);",
-                  "_mode": "code",
-                  "_value": false
-                }
+                "description": "Pass an array of positive integers to ignore specific values. For example: [1, 2, 3].",
+                "version": 2
               }
             ],
             "version": 2,

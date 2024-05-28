@@ -27,9 +27,9 @@ export interface IDropdownProps {
   allowClear?: boolean;
   mode?: 'single' | 'multiple' | 'tags';
   ignoredValues?: number[];
-  disableItemValue?: boolean;
   placeholder?: string;
-  filters?: number[];
+  disabledValues?: number[];
+  disableItemValue?: boolean;
   valueFormat?: 'simple' | 'listItem' | 'custom';
   incomeCustomJs?: string;
   outcomeCustomJs?: string;
