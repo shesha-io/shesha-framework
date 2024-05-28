@@ -34,7 +34,6 @@ export * from './signalR';
 export * from './storedFile';
 export * from './storedFiles';
 export * from './subForm';
-export * from './tableViewSelectorConfigurator';
 export * from './theme';
 export * from './ui';
 export * from './dynamicActions';
