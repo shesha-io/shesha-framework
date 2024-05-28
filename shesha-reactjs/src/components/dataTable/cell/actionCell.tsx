@@ -7,12 +7,15 @@ import {
   useDataTable,
   useForm,
   useGlobalState,
+  useShaRouting,
   useSheshaApplication,
 } from '@/providers';
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
 import { MODAL_DATA } from '@/shesha-constants';
 import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
+import { normalizeUrl } from '@/index';
+
 
 export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> { }
 
@@ -23,6 +26,8 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const { formData, formMode } = useForm();
   const { globalState, setState } = useGlobalState();
   const { executeAction } = useConfigurableActionDispatcher();
+  const { getUrlFromNavigationRequest } = useShaRouting();
+
 
   const { actionConfiguration, icon, description } = columnConfig ?? {};
 
@@ -56,6 +61,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext: evaluationContext,
       });
+
     } else console.error('Action is not configured');
   };
 
@@ -64,10 +70,17 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     clickHandler(e, props);
   }
 
+  const getHref = (): string => {
+    const url = getUrlFromNavigationRequest(actionConfiguration.actionArguments);
+    return url && normalizeUrl(url);
+
+    //evaluateString(url, actionConfiguration)
+  }
+
   return (
     <>
       {actionConfiguration?.actionArguments?.navigationType === "url" ?
-        <a className="sha-link" href={actionConfiguration?.actionArguments?.url} onClick={handleURLClick}>
+        <a className="sha-link" href={getHref()} onClick={handleURLClick}>
           {icon && (
             <Tooltip title={description}>
               <ShaIcon iconName={icon as IconType} />
