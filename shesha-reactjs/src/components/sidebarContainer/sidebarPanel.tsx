@@ -8,14 +8,15 @@ import { ISidebarProps, SidebarPanelPosition } from './models';
 interface SidebarPanelProps extends ISidebarProps {
     side: SidebarPanelPosition;
     allowFullCollapse: boolean;
+    setIsOpenGlobal?: (isOpen: boolean) => void;
 }
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     const { styles } = useStyles();
-    const { side, allowFullCollapse } = props;
+    const { side, allowFullCollapse, setIsOpenGlobal, open } = props;
 
-    const rotation = side === 'right' ? (props?.open ? 0 : 180) : props?.open ? 180 : 0;
+    const rotation = side === 'right' ? (open ? 180 : 0) : open ? 180 : 0;
 
-    const { open, defaultOpen = true, onOpen, title, onClose, placeholder, content, className } = props;
+    const { defaultOpen = true, onOpen, title, onClose, placeholder, content, className } = props;
 
     const isControllable = open !== undefined;
     const [isOpen, setIsOpen] = useState(isControllable ? open : defaultOpen);
@@ -25,8 +26,11 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
         const handler = realOpen ? onClose : onOpen;
         if (handler)
             handler();
-        if (!isControllable)
+        if (!isControllable) {
             setIsOpen(!isOpen);
+            setIsOpenGlobal && setIsOpenGlobal(!isOpen);
+        }
+
     };
 
     const sideClassName = side === 'right' ? styles.sidebarContainerRight : styles.sidebarContainerLeft;

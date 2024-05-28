@@ -1,9 +1,10 @@
 import classNames from 'classnames';
-import React, { FC, PropsWithChildren, ReactNode } from 'react';
+import React, { FC, PropsWithChildren, ReactNode, useMemo, useState } from 'react';
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
+import { getPanelSizes } from './utilis';
 
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
@@ -28,7 +29,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   sideBarWidth?: number;
 
   allowFullCollapse?: boolean;
-}
+};
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
   leftSidebarProps,
@@ -39,24 +40,29 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   noPadding,
 }) => {
   const { styles } = useStyles();
+  const [isOpenLeft, setIsOpenLeft] = useState(true);
+  const [isOpenRight, setIsOpenRight] = useState(true);
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
     return sidebarProps
-      ? (<SidebarPanel {...sidebarProps} allowFullCollapse={allowFullCollapse} side={side} />)
+      ? (<SidebarPanel
+        {...sidebarProps}
+        allowFullCollapse={allowFullCollapse}
+        side={side}
+        setIsOpenGlobal={side == 'left' ? setIsOpenLeft : setIsOpenRight} />)
       : null;
   };
 
 
-
-
+  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight), [isOpenRight, isOpenLeft]);
 
   return (
     <div className={styles.sidebarContainer}>
       {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
 
       <SizableColumns
-        sizes={[75, 25]}
-        minSize={150}
+        sizes={sizes.sizes}
+        minSize={sizes.minSize}
         expandToMin={false}
         gutterSize={8}
         gutterAlign="center"
