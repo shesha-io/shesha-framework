@@ -48,11 +48,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
           &.open {
             width: ${leftSidebarWidth};
+            min-width: 250px;
             display: block;
 
             .${sidebarHeader} {
               .sidebar-header-title {
                 display: flex;
+                width:100%;
               }
             
             }

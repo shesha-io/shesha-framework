@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { RightOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
@@ -9,34 +9,41 @@ interface SidebarPanelProps extends ISidebarProps {
     side: SidebarPanelPosition;
     allowFullCollapse: boolean;
     setIsOpenGlobal?: (isOpen: boolean) => void;
+
 }
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     const { styles } = useStyles();
     const { side, allowFullCollapse, setIsOpenGlobal } = props;
 
-    const rotation = side === 'right' ? (open ? 180 : 0) : open ? 180 : 0;
+    useEffect(() => {
+        setIsOpenGlobal && setIsOpenGlobal(props?.open || props?.defaultOpen || false);
+    }, []);
 
-    const { onOpen, title, onClose, placeholder, content, className } = props;
+    const rotation = side === 'right' ? (props?.open ? 0 : 180) : props?.open ? 180 : 0;
 
-    const isControllable = props?.open !== undefined;
-    const realOpen = isControllable ? props?.open : true;
+    const { open, defaultOpen = true, onOpen, title, onClose, placeholder, content, className } = props;
+
+    const isControllable = open !== undefined;
+    const [isOpen, setIsOpen] = useState(isControllable ? open : defaultOpen);
+    const realOpen = isControllable ? open : isOpen;
 
     const handleClick = () => {
-        const handler = open ? onClose : onOpen;
+        const handler = realOpen ? onClose : onOpen;
         if (handler)
             handler();
         if (!isControllable) {
-            setIsOpenGlobal(!props?.open);
+            setIsOpen(!isOpen);
+            setIsOpenGlobal && setIsOpenGlobal(!isOpen);
         }
 
     };
 
     const sideClassName = side === 'right' ? styles.sidebarContainerRight : styles.sidebarContainerLeft;
-    console.log('sideClassName', allowFullCollapse, title);
+
     return (
         <div className={classNames(sideClassName, { open: realOpen }, { 'allow-full-collapse': allowFullCollapse }, className)}>
             <div className={styles.sidebarHeader}>
-                <div className={`${styles.sidebarHeaderTitle} ${side}`} style={{ width: '100%' }}>{typeof title === 'function' ? title() : title}</div>
+                <div className={`${styles.sidebarHeaderTitle} ${side}`}>{typeof title === 'function' ? title() : title}</div>
                 <div className={`${styles.sidebarHeaderBtn} ${side}`} onClick={handleClick}>
                     {props.placeholder ? (
                         <Tooltip title={placeholder} placement={side === 'left' ? 'right' : 'left'}>

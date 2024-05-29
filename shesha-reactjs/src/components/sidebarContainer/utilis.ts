@@ -1,43 +1,34 @@
-interface SidebarProps {
-
-    // Add other properties as needed
-}
+import { ISidebarProps } from "./models";
+import _ from "lodash";
 
 function getPanelSizes(
     leftOpen: boolean,
     rightOpen: boolean,
-    leftSidebarProps?: SidebarProps,
-    rightSidebarProps?: SidebarProps
-): { sizes: number[], minSize: any } {
+    leftSidebarProps?: ISidebarProps,
+    rightSidebarProps?: ISidebarProps,
+    allowFullCollapse?: boolean
+): number[] {
+    if (allowFullCollapse) {
+        return [100, 0, 0];
+    }
 
-    if (!leftSidebarProps && !!rightSidebarProps) {
-        return {
-            sizes: [75, 25],
-            minSize: [250],
-        };
+    if (!_.isObject(leftSidebarProps) && rightSidebarProps) {
+        return [75, 25];
     }
 
     if (!leftOpen && !rightOpen) {
-        return {
-            sizes: [2, 96, 2],
-            minSize: [50],
-        };
-    } else if (!leftOpen && rightOpen) {
-        return {
-            sizes: [3, 77, 20],
-            minSize: [50, 850, 250],
-        };
-    } else if (!rightOpen && leftOpen) {
-        return {
-            sizes: [20, 77, 3],
-            minSize: [250, 850, 50],
-        };
-    } else {
-        return {
-            sizes: [20, 60, 20],
-            minSize: [250, 600, 250],
-        };
+        return [2, 96, 2];
     }
+
+    if (leftOpen && !rightOpen) {
+        return [20, 77, 3];
+    }
+
+    if (!leftOpen && rightOpen) {
+        return [3, 77, 20];
+    }
+
+    return [20, 70, 20];
 }
 
 export { getPanelSizes };

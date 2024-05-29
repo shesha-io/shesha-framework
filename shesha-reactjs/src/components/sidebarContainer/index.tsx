@@ -5,6 +5,7 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
+import _ from 'lodash';
 
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
@@ -40,31 +41,30 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   noPadding,
 }) => {
   const { styles } = useStyles();
-  const [isOpenLeft, setIsOpenLeft] = useState(true);
-  const [isOpenRight, setIsOpenRight] = useState(true);
+  const [isOpenLeft, setIsOpenLeft] = useState(false);
+  const [isOpenRight, setIsOpenRight] = useState(false);
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
-    return sidebarProps
+
+    return sidebarProps && !allowFullCollapse
       ? (<SidebarPanel
         {...sidebarProps}
         allowFullCollapse={allowFullCollapse}
         side={side}
         setIsOpenGlobal={side == 'left' ? setIsOpenLeft : setIsOpenRight}
-        open={side === 'left' ? isOpenLeft : isOpenRight}
       />)
       : null;
   };
 
-  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps), [isOpenRight, isOpenLeft]);
+  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse), [isOpenRight, isOpenLeft]);
 
-  console.log("containerWidth ::", sizes.minSize.reduce((c, r) => c + r, 0));
   return (
     <div className={styles.sidebarContainer}>
       {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
 
       <SizableColumns
-        sizes={sizes.sizes}
-        minSize={sizes.minSize}
+        sizes={sizes}
+        minSize={50}
         expandToMin={false}
         gutterSize={8}
         gutterAlign="center"
@@ -72,9 +72,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         dragInterval={1}
         direction="horizontal"
         cursor="col-resize"
-
         className={classNames(styles.sidebarContainerBody)}
-        key={sizes.minSize?.reduce((c, r) => c + r, 0)} // Convert the minSize array to a string to use as a key
       >
         {renderSidebar('left')}
 
