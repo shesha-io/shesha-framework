@@ -32,7 +32,7 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     };
 
     const sideClassName = side === 'right' ? styles.sidebarContainerRight : styles.sidebarContainerLeft;
-
+    console.log('sideClassName', allowFullCollapse, title);
     return (
         <div className={classNames(sideClassName, { open: realOpen }, { 'allow-full-collapse': allowFullCollapse }, className)}>
             <div className={styles.sidebarHeader}>
