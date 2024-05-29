@@ -10,9 +10,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             top: 4px;
             font-size: 12px;
             height: 20px;
-            width: 54px;
+            width: 2.5rem;
             margin-left: 5px;
             margin-right: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             ${responsive.mobile} {
                 right: 0;
                 left: auto;
@@ -68,7 +71,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             margin-left: 0;
         }
     `);
-    
+
     return {
         jsSwitch,
         contentJs,

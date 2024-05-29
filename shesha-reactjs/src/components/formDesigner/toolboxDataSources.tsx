@@ -13,7 +13,7 @@ import classNames from 'classnames';
 
 const { Panel } = Collapse;
 
-export interface IToolboxDataSourcesProps {}
+export interface IToolboxDataSourcesProps { }
 
 interface FilteredDataSource {
   datasource: IDataSource;
@@ -78,7 +78,6 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
   };
   return (
     <>
-      <div className="sidebar-subheader">Data</div>
       <SearchBox value={searchText} onChange={setSearchText} placeholder="Search data properties" />
 
       {datasourcesWithVisible.length > 0 && (
@@ -92,7 +91,7 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
                 {shortName}
               </Tooltip>
             );
-      
+
             return visibleItems.length === 0 ? null : (
               <Panel header={header} key={dsIndex.toString()} className={classNames(styles.shaToolboxPanel, { active: ds.datasource.id === activeDataSourceId })}>
                 <DataSourceTree
