@@ -6,7 +6,7 @@ import { Skeleton } from 'antd';
 import { DefaultGroupHeader } from './defaultGroupHeader';
 import { NoSelection } from './noSelection';
 
-interface ItemPropertiesRendererProps<TItem extends ListItem> {
+export interface ItemPropertiesRendererProps<TItem extends ListItem> {
     item: TItem;
     onChange: (newValues: TItem) => void;
     readOnly: boolean;
