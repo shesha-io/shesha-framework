@@ -49,8 +49,6 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
     const count = (items ?? []).length;
     const buttonProps: IWizardStepProps = {
       id: nanoid(),
-      itemType: 'item',
-      sortOrder: count,
       name: `step${count + 1}`,
       label: `Step ${count + 1}`,
       key: `stepKey${count + 1}`,

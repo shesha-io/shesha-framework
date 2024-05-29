@@ -17,7 +17,6 @@ export * from './formContext';
 export * from './formItem';
 export * from './globalState';
 export * from './indexView';
-export * from './itemListConfigurator';
 export * from './listItem';
 export * from './metadata';
 export * from './metadataDispatcher';

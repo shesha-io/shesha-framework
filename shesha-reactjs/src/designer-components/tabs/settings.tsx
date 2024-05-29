@@ -25,8 +25,6 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
     const id = nanoid();
     const buttonProps: ITabPaneProps = {
       id: id,
-      itemType: 'item',
-      sortOrder: count,
       name: `Tab${count + 1}`,
       key: id,
       title: `Tab ${count + 1}`,
