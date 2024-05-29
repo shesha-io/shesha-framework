@@ -49,12 +49,15 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         {...sidebarProps}
         allowFullCollapse={allowFullCollapse}
         side={side}
-        setIsOpenGlobal={side == 'left' ? setIsOpenLeft : setIsOpenRight} />)
+        setIsOpenGlobal={side == 'left' ? setIsOpenLeft : setIsOpenRight}
+        open={side === 'left' ? isOpenLeft : isOpenRight}
+      />)
       : null;
   };
 
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps), [isOpenRight, isOpenLeft]);
-  console.log("sizes", sizes);
+
+  console.log("containerWidth ::", sizes.minSize.reduce((c, r) => c + r, 0));
   return (
     <div className={styles.sidebarContainer}>
       {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
@@ -62,7 +65,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       <SizableColumns
         sizes={sizes.sizes}
         minSize={sizes.minSize}
-        expandToMin={true}
+        expandToMin={false}
         gutterSize={8}
         gutterAlign="center"
         snapOffset={30}
@@ -71,6 +74,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         cursor="col-resize"
 
         className={classNames(styles.sidebarContainerBody)}
+        key={sizes.minSize?.reduce((c, r) => c + r, 0)} // Convert the minSize array to a string to use as a key
       >
         {renderSidebar('left')}
 

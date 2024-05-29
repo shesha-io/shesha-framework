@@ -9,17 +9,18 @@ function getPanelSizes(
     leftSidebarProps?: SidebarProps,
     rightSidebarProps?: SidebarProps
 ): { sizes: number[], minSize: any } {
+
     if (!leftSidebarProps && !!rightSidebarProps) {
         return {
             sizes: [75, 25],
-            minSize: 250,
+            minSize: [250],
         };
     }
 
     if (!leftOpen && !rightOpen) {
         return {
             sizes: [2, 96, 2],
-            minSize: 50,
+            minSize: [50],
         };
     } else if (!leftOpen && rightOpen) {
         return {
@@ -34,7 +35,7 @@ function getPanelSizes(
     } else {
         return {
             sizes: [20, 60, 20],
-            minSize: [250, 900, 250],
+            minSize: [250, 600, 250],
         };
     }
 }

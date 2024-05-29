@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 import { RightOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
@@ -12,32 +12,31 @@ interface SidebarPanelProps extends ISidebarProps {
 }
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     const { styles } = useStyles();
-    const { side, allowFullCollapse, setIsOpenGlobal, open } = props;
+    const { side, allowFullCollapse, setIsOpenGlobal } = props;
 
     const rotation = side === 'right' ? (open ? 180 : 0) : open ? 180 : 0;
 
-    const { defaultOpen = true, onOpen, title, onClose, placeholder, content, className } = props;
+    const { onOpen, title, onClose, placeholder, content, className } = props;
 
-    const isControllable = open !== undefined;
-    const [isOpen, setIsOpen] = useState(isControllable ? open : defaultOpen);
-    const realOpen = isControllable ? open : isOpen;
+    const isControllable = props?.open !== undefined;
+    const realOpen = isControllable ? props?.open : true;
 
     const handleClick = () => {
-        const handler = realOpen ? onClose : onOpen;
+        const handler = open ? onClose : onOpen;
         if (handler)
             handler();
         if (!isControllable) {
-            setIsOpen(!isOpen);
-            setIsOpenGlobal && setIsOpenGlobal(!isOpen);
+            setIsOpenGlobal(!props?.open);
         }
 
     };
 
     const sideClassName = side === 'right' ? styles.sidebarContainerRight : styles.sidebarContainerLeft;
+
     return (
         <div className={classNames(sideClassName, { open: realOpen }, { 'allow-full-collapse': allowFullCollapse }, className)}>
             <div className={styles.sidebarHeader}>
-                <div className={`${styles.sidebarHeaderTitle} ${side}`}>{typeof title === 'function' ? title() : title}</div>
+                <div className={`${styles.sidebarHeaderTitle} ${side}`} style={{ width: '100%' }}>{typeof title === 'function' ? title() : title}</div>
                 <div className={`${styles.sidebarHeaderBtn} ${side}`} onClick={handleClick}>
                     {props.placeholder ? (
                         <Tooltip title={placeholder} placement={side === 'left' ? 'right' : 'left'}>
