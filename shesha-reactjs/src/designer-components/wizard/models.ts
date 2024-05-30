@@ -13,6 +13,7 @@ export interface IWizardStepProps extends IConfigurableItemBase {
   subTitle: string;
   description: string;
   allowCancel?: boolean;
+  status: StepProps['status'];
 
   cancelButtonText?: string;
   nextButtonText?: string;
@@ -34,7 +35,6 @@ export interface IWizardStepProps extends IConfigurableItemBase {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
-  status?: StepProps['status'];
 
   onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
 

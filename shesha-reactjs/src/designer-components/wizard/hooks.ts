@@ -55,6 +55,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   });
 
   //Remove every tab from the equation that isn't visible either by customVisibility or permissions
+  console.log("TABS: ", tabs)
   const visibleSteps = useMemo(
     () =>
       tabs
