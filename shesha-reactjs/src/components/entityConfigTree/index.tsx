@@ -274,7 +274,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
                       : <ClassOutlined />
               }<span style={{paddingRight: '5px'}}> </span>
               <Tag color={versionStatus.color}>{versionStatus.text}</Tag>
-              <span className={styles.shaComponentTitle}> {item.className} Six</span>
+              <span className={styles.shaComponentTitle}> {item.className} </span>
             </div>;
           }}
         />

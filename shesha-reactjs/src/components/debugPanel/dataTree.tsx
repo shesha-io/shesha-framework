@@ -147,7 +147,7 @@ export const DebugDataTree: FC<IDebugDataTreeProps> = ({editAll, name, data, las
 
     return (
         <Tree
-            style={{fontFamily: 'Courier', fontSize: 14}}
+            style={{fontFamily: 'Courier', fontSize: 14, padding: 0}}
             treeData={treeData}
             loadData={onLoadData}
             blockNode
