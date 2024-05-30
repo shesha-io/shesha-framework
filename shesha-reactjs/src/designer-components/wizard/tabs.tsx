@@ -30,8 +30,9 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         wizardType = 'default',
     } = model;
 
-    const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled }, index) => {
-        const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
+    const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status }, index) => {
+
+        const isDisabledByCondition = customEnabled !== undefined || formMode !== 'designer';
 
         const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
@@ -42,6 +43,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
             description: content(description, index),
             disabled: isDisabledByCondition,
             ...iconProps,
+            status: isDisabledByCondition ? 'wait' : status,
             content: (
                 <ComponentsContainer
                     containerId={id}

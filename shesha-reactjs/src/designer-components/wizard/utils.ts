@@ -81,16 +81,17 @@ export const getWizardButtonStyle =
     }
   };
 
-export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next') =>
-  type === 'next'
-    ? steps?.findIndex(({}, index) => index > current)
-    : findLastIndex(steps, ({}, index) => index < current);
+export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next') => {
+  console.log("Steps - finding status: ", steps);
+  return type === 'next'
+    ? steps?.findIndex((step, index) => index > current  && step.status !== 'wait')
+    : findLastIndex(steps, ({status}, index) => index < current && status !== 'wait')};
 
 export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
   if (!args)
     return true;
 
-  var fields = Object.getOwnPropertyNames(args)
+  const fields = Object.getOwnPropertyNames(args)
     .filter((key) => !['handleSuccess', 'handleFail'].includes(key));
   return fields?.length > 0
     ? fields.some((key) => !args[key])

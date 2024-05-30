@@ -60,7 +60,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       tabs
         .filter(({ customVisibility, permissions }) => {
           const granted = anyOfPermissionsGranted(permissions || []);
-          const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
+          const isVisibleByCondition = customVisibility === undefined;
 
           return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
         })
@@ -170,7 +170,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         );
       }
     } catch (errInfo) {
-      console.log("Could'nt Proceed", errInfo);
+      console.log("Couldn't Proceed", errInfo);
     }
   };
 
