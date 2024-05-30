@@ -13,6 +13,9 @@ function getPanelSizes(
     }
 
     if (!_.isObject(leftSidebarProps) && rightSidebarProps) {
+        if (!rightOpen) {
+            return [99, 1];
+        }
         return [75, 25];
     }
 

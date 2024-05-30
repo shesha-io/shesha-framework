@@ -51,8 +51,9 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
   const formWithData = useFormWithData({ formId: formId, dataId: id, configurationItemMode: configurationItemMode });
   
-  const formSettings =
-    formWithData.loadingState === 'ready' ? formWithData.form?.settings ?? DEFAULT_FORM_SETTINGS : null;
+  const formSettings = useMemo(() =>
+     formWithData.loadingState === 'ready' ? formWithData.form?.settings ?? DEFAULT_FORM_SETTINGS : null
+  , [formWithData.loadingState]);
 
   const [form] = Form.useForm();
 
@@ -220,6 +221,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       query: getQueryParams(),
       // ToDo: review on Page/Form life cycle
       form: formRef?.current ?? { formSettings },
+      setFormData: formRef?.current?.setFormData,
       formMode: formRef?.current?.formMode,
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       pageContext: pageContext?.getFull(),
@@ -233,8 +235,8 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   // effect that executes onDataLoaded handler
   useEffect(() => {
     if (formWithData.loadingState === 'ready') {
-      const onDataLoaded = formWithData.form?.settings?.onDataLoaded;
-      const initialValues = formWithData.form?.settings?.initialValues;
+      const onDataLoaded = formSettings?.onDataLoaded;
+      const initialValues = formSettings?.initialValues;
       if (onDataLoaded) {
         executeExpression(onDataLoaded, {
           data: formWithData.fetchedData,
@@ -244,13 +246,13 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
     }
   }, [formWithData.loadingState, formWithData.fetchedData]);
 
-  const previousOnInitialized = usePrevious(formWithData.form?.settings?.onInitialized);
+  const previousOnInitialized = usePrevious(formSettings?.onInitialized);
 
   useEffect(() => {
-    const onInitialized = formWithData?.form?.settings?.onInitialized;
+    const onInitialized = formSettings?.onInitialized;
 
     if (onInitialized && previousOnInitialized !== onInitialized) {
-      const initialValues = formWithData.form?.settings?.initialValues;
+      const initialValues = formSettings?.initialValues;
 
       if (onInitialized) {
         executeExpression(onInitialized, {
@@ -259,7 +261,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
         });
       }
     }
-  }, [formWithData.form]);
+  }, [formSettings?.onInitialized, formRef.current]);
 
   //#endregion
 
