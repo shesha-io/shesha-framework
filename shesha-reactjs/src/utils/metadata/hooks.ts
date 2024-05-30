@@ -11,7 +11,8 @@ import {
     registerMessageAction,
     registerMomentAction,
     registerSelectedRowAction,
-    registerSetGlobalStateAction
+    registerSetGlobalStateAction,
+    registerSetFormDataAction
 } from "@/utils/metadata/standardProperties";
 import { useAppContextRegistration, useFormDataRegistration } from "./useAvailableConstants";
 
@@ -21,7 +22,7 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
     const metadataFetcher = useMetadataFetcher();
     const registerFormDataAction = useFormDataRegistration();
     const registerApplicationAction = useAppContextRegistration();
-    
+
 
     return (name: string, description?: string) => {
         const builder = new MetadataBuilder(metadataFetcher, name, description);
@@ -32,13 +33,15 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.moment, registerMomentAction);
         builder.registerStandardProperty(SheshaConstants.globalState, registerGlobalStateAction);
         builder.registerStandardProperty(SheshaConstants.setGlobalState, registerSetGlobalStateAction);
+        builder.registerStandardProperty(SheshaConstants.setGlobalState, registerSetGlobalStateAction);
+        builder.registerStandardProperty(SheshaConstants.setFormData, registerSetFormDataAction);
         builder.registerStandardProperty(SheshaConstants.selectedRow, registerSelectedRowAction);
         builder.registerStandardProperty(SheshaConstants.contexts, registerContextsAction);
         builder.registerStandardProperty(SheshaConstants.pageContext, registerPageContextAction);
         builder.registerStandardProperty(SheshaConstants.form, registerFormAction);
         builder.registerStandardProperty(SheshaConstants.formMode, registerFormModeAction);
         builder.registerStandardProperty(SheshaConstants.formData, registerFormDataAction);
-        builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);        
+        builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);
 
         return builder;
     };

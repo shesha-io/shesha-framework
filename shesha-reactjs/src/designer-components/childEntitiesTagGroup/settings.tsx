@@ -21,8 +21,8 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
 
   const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
-  const labelFormatConstants = useAvailableConstantsMetadata({ 
-    addGlobalConstants: true, 
+  const labelFormatConstants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
     onBuild: (builder) => {
       builder.addObject("item", "Properties of the edited object", undefined);
     }
@@ -103,6 +103,7 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
               { name: "contexts", description: "Contexts data", type: "object" },
               { name: "globalState", description: "Global state", type: "object" },
               { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+              { name: "setFormData", description: "Function to set form data", type: "function" },
               { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
               { name: "form", description: "Form instance", type: "object" },
               { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
@@ -112,13 +113,13 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
             ]}
             wrapInTemplate={true}
             templateSettings={{
-              functionName: "getFormat",              
+              functionName: "getFormat",
             }}
             availableConstants={labelFormatConstants}
           />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-      
+
       <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting

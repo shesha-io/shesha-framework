@@ -4,6 +4,7 @@ import { httpApiDefinition } from "@/providers/sourceFileManager/api-utils/http"
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
+import { formDataApiDefinition } from '@/providers/sourceFileManager/api-utils/formData';
 
 export const SheshaConstants = {
   http: "shesha:http",
@@ -11,6 +12,7 @@ export const SheshaConstants = {
   moment: "shesha:moment",
   globalState: "shesha:globalState",
   setGlobalState: "shesha:setGlobalState",
+  setFormData: "shesha:setFormData",
   selectedRow: "shesha:selectedRow",
   contexts: "shesha:contexts",
   pageContext: "shesha:pageContext",
@@ -79,6 +81,16 @@ export const registerSetGlobalStateAction: MetadataBuilderAction = (builder, nam
     const definition: TypeDefinition = {
       typeName: 'SetGlobalStateType',
       files: [{ content: globalStateApiDefinition, fileName: 'apis/globalState.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerSetFormDataAction: MetadataBuilderAction = (builder, name = "setFormData") => {
+  builder.addCustom(name, "Setting the FormData", () => {
+    const definition: TypeDefinition = {
+      typeName: 'SetFormDataType',
+      files: [{ content: formDataApiDefinition, fileName: 'apis/formData.ts' }],
     };
     return Promise.resolve(definition);
   });

@@ -26,6 +26,7 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "contexts", description: "Contexts data", type: "object" },
   { name: "globalState", description: "Global state", type: "object" },
   { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+  { name: "setFormData", description: "Function to set form data", type: "function" },
   { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
   { name: "form", description: "Form instance", type: "object" },
   { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
@@ -68,7 +69,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
-  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>

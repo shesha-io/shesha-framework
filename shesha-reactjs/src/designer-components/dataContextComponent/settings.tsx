@@ -35,8 +35,8 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
   const { readOnly } = props;
   const { values, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
 
-  const constants = useAvailableConstantsMetadata({ 
-    addGlobalConstants: true, 
+  const constants = useAvailableConstantsMetadata({
+    addGlobalConstants: true,
   });
 
   const [open, setOpen] = useState<boolean>(false);
@@ -53,7 +53,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
   return (
     <>
       <SettingsCollapsiblePanel header="Data context">
-        <SettingsFormItem 
+        <SettingsFormItem
           name='componentName'
           label="Component name"
           tooltip='This name will be used as identifier and in the code editor'
@@ -96,6 +96,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
               { name: "pageContext", description: "Data of page", type: "object" },
               { name: "globalState", description: "Global state", type: "object" },
               { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+              { name: "setFormData", description: "Function to set form data", type: "function" },
               { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
               { name: "form", description: "Form instance", type: "object" },
               { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
@@ -116,7 +117,8 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
               { name: "data", description: "Selected form values", type: "object" },
               { name: "contexts", description: "Contexts data", type: "object" },
               { name: "globalState", description: "Global state", type: "object" },
-              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
+              { name: "setGlobalState", description: "Function to set globalState", type: "function" },
+              { name: "setFormData", description: "Function to set form data", type: "function" },
               { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
               { name: "form", description: "Form instance", type: "object" },
               { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },

@@ -104,6 +104,7 @@ export const useAppContextRegistration = (): MetadataBuilderAction => {
 const ALL_STANDARD_CONSTANTS = [
     SheshaConstants.globalState,
     SheshaConstants.setGlobalState,
+    SheshaConstants.setFormData,
     SheshaConstants.selectedRow,
     SheshaConstants.contexts,
     SheshaConstants.pageContext,
