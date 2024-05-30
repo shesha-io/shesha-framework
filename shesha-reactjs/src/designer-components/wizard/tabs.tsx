@@ -15,7 +15,6 @@ import { useWizard } from './hooks';
 
 export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
     const { styles } = useStyles();
-    const { formMode } = useForm();
     const { executeBooleanExpression } = useFormExpression();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
@@ -31,8 +30,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     } = model;
 
     const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status }, index) => {
-
-        const isDisabledByCondition = customEnabled !== undefined || formMode !== 'designer';
+        const isDisabledByCondition = !executeBooleanExpression(customEnabled, true);
 
         const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
@@ -42,8 +40,8 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
             subTitle,
             description: content(description, index),
             disabled: isDisabledByCondition,
-            ...iconProps,
             status: isDisabledByCondition ? 'wait' : status,
+            ...iconProps,
             content: (
                 <ComponentsContainer
                     containerId={id}
