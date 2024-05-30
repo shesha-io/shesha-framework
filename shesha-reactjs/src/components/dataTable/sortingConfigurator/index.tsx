@@ -36,7 +36,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                                         if (!Array.isArray(value))
                                             itemOnChange({ ...item, propertyName: value });
                                     }}
-                                    showFillPropsButton={false}
+                                    autoFillProps={false}
                                     size='small'
                                     readOnly={readOnly}
                                 />

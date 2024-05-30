@@ -18,7 +18,7 @@ export interface IPropertyAutocompleteProps {
   onSelect?: (value: string | string[], selectedProperty: IPropertyMetadata) => void;
   onPropertiesLoaded?: (properties: IPropertyMetadata[], prefix: string) => void;
   mode?: 'single' | 'multiple' | 'tags';
-  showFillPropsButton?: boolean;
+  autoFillProps?: boolean;
   readOnly?: boolean;
 }
 
@@ -107,7 +107,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     });
   }, [metadata?.properties, containerPath, containerPathMultiple]);
 
-  const allowAutoLabelling = props.showFillPropsButton !== false && Boolean(form) && !readOnly;
+  const allowAutoLabelling = props.autoFillProps !== false && Boolean(form) && !readOnly;
 
 
   useEffect(() => {
