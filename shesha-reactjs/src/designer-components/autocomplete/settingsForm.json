@@ -376,7 +376,7 @@
                 "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
                 "validate": {},
                 "modelType": "{{data.entityTypeShortAlias}}",
-                "showFillPropsButton": false,
+                "autoFillProps": false,
                 "settingsValidationErrors": [],
                 "version": 1
               },
