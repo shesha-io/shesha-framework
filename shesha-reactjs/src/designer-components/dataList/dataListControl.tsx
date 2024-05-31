@@ -7,7 +7,6 @@ import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
 import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
-import { useParent } from '@/providers/parentProvider/index';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
@@ -59,9 +58,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const { styles } = useStyles();
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
-  const parent = useParent(false);
   const allData = useAvailableConstantsData();
-  const isDesignMode = allData.formMode === 'designer' || parent?.formMode === 'designer';
+  const isDesignMode = allData.formMode === 'designer';
 
   const repository = getRepository();
 

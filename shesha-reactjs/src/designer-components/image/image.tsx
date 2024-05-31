@@ -17,6 +17,7 @@ export interface IImageFieldProps {
   styles: React.CSSProperties;
 
   allowPreview?: boolean;
+  allowedFileTypes?: string[];
 }
 
 export const ImageField: FC<IImageFieldProps> = (props) => {
@@ -71,6 +72,8 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   });
 
   const uploadProps: UploadProps = {
+    accept: props.allowedFileTypes?.join(','),
+    showUploadList: false,
     beforeUpload: async (file) => {
       if (imageSource === 'base64') {
         if (onChange)

@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent } from "@/providers";
-import { ITableViewProps } from "@/providers/tableViewSelectorConfigurator/models";
+import { ITableViewProps } from "@/providers/dataTable/filters/models";
 
 export interface IDataSourceComponentProps extends IConfigurableFormComponent {
     sourceType?: 'Form' | 'Entity' |'Url';

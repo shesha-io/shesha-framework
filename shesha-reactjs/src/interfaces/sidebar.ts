@@ -31,13 +31,6 @@ export interface ISidebarMenuItem {
   isHidden?: boolean;
   visibility?: string;
   requiredPermissions?: string[];
-
-  /*
-  isRootItem?: boolean;
-  buttonAction?: ButtonActionType;
-  target?: string;
-  selected?: boolean;
-  */
 }
 
 export interface ISidebarButton extends ISidebarMenuItem {
@@ -54,4 +47,8 @@ export const isSidebarGroup = (item: ISidebarMenuItem): item is ISidebarGroup =>
 
 export const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
   return item && item.itemType === 'button';
+};
+
+export const isSidebarDivider = (item: ISidebarMenuItem): item is ISidebarButton => {
+  return item && item.itemType === 'divider';
 };

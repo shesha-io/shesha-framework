@@ -33,6 +33,7 @@ scrollbar-width: thin;
     border-radius: 4px;
     background-color: #ccc;
 }`,
+    verticalSettingsClass: 'vertical-settings',
 };
 
 export const getTextHoverEffects = (token: FullToken) => {

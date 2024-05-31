@@ -16,7 +16,7 @@ import { useConfigurableAction } from '@/providers/configurableActionsDispatcher
 import { ValidationErrors } from '@/components';
 import _ from 'lodash';
 
-const actionsOwner = 'Configuration Framework';
+const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;
