@@ -118,9 +118,8 @@ export const Dropdown: FC<IDropdownProps> = ({
                 variant={hideBorder ? 'borderless' : undefined}
                 defaultValue={defaultValue}
                 mode={selectedMode}
-                disabledValues={disableItemValue && typeof disabledValues === 'object' ? disabledValues : []}
+                disabledValues={disableItemValue? disabledValues : [] }
                 filters={ignoredValues}
-                includeFilters={ignoredValues.length > 0}
                 placeholder={placeholder}
                 readOnly={readOnly}
                 size={size}

@@ -34,7 +34,6 @@ export interface IRefListDropDownProps<TValue = any> extends Omit<SelectProps<an
    * How large should the button be?
    */
   filters?: number[];
-  includeFilters?: boolean;
   width?: number;
   style?: CSSProperties;
   base?: string;

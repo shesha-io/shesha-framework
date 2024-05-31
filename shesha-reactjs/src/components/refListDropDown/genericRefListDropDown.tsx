@@ -12,9 +12,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     referenceListId,
     showArrow = true,
     value,
-    includeFilters = false,
     filters,
-    disabledValues = [],
+    disabledValues,
     width,
     base,
     mode,
@@ -32,7 +31,7 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
 
   const filter = ({ itemValue }: ReferenceListItemDto) => {
-    if (!filters?.length) {
+    if (!filters?.length ) {
       return true;
     }
 
