@@ -6,6 +6,7 @@ import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
+import { evaluateString, useShaRouting } from '@/index';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
@@ -15,12 +16,13 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const evaluationContext = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
+  const { getUrlFromNavigationRequest } = useShaRouting();
 
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
   const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
+    event.preventDefault();
     try {
       if (props.actionConfiguration) {
         if (['Show Dialog', 'Show Confirmation Dialog'].includes(props.actionConfiguration?.actionName)) {
@@ -45,13 +47,40 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     buttonDisabled: props?.readOnly || (loading && isModal)
   };
 
+const getSearchParams = (arr):string => {
+    return arr.map(obj => `${encodeURIComponent(obj.key)}=${obj.value}`).join('&');
+}
+
+  const getUrlHref = (): string => {
+    const searchParams = getSearchParams(props?.actionConfiguration?.actionArguments?.queryParameters);
+    const href = evaluateString(props?.actionConfiguration?.actionArguments?.url+'?'+searchParams, evaluationContext);
+    return href;
+  };
+
+  const getFormHref = (): string => {
+    const url = getUrlFromNavigationRequest(props?.actionConfiguration?.actionArguments);
+    const href = evaluateString(decodeURIComponent(url), evaluationContext);
+    return href;
+  };
+
+  const getHrefValue = (navigationType?: string): string => {
+    if (navigationType === "url") {
+      return getUrlHref();
+    } else if (navigationType === "form") {
+      return getFormHref();
+    } else {
+      return null;
+    }
+  };
+
 
   return (
     <Button
+      href={getHrefValue(props?.actionConfiguration?.actionArguments?.navigationType)}
       title={props.tooltip}
       block={props.block}
       loading={buttonLoading}
-      onClick={(event) => onButtonClick(event)}
+      onClick={onButtonClick}
       type={props.buttonType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
@@ -59,7 +88,6 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       size={props?.size}
       disabled={buttonDisabled}
       style={props?.style}
-
     >
       {props.label}
     </Button>

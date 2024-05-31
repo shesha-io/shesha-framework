@@ -7,14 +7,13 @@ import {
   useDataTable,
   useForm,
   useGlobalState,
-  useShaRouting,
   useSheshaApplication,
 } from '@/providers';
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
 import { MODAL_DATA } from '@/shesha-constants';
 import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
-import { evaluateString, normalizeUrl } from '@/index';
+import { evaluateString, useShaRouting } from '@/index';
 
 
 export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> { }
@@ -27,7 +26,6 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const { globalState, setState } = useGlobalState();
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
-
 
   const { actionConfiguration, icon, description } = columnConfig ?? {};
 
@@ -64,38 +62,36 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     } else console.error('Action is not configured');
   };
 
-  const handleURLClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    clickHandler(e, props);
-  }
+  const getUrlHref = (): string => {
+    const href = evaluateString(actionConfiguration?.actionArguments?.url, evaluationContext);
+    return href;
+  };
 
-  const getHref = (): string => {
-    const string = evaluateString(actionConfiguration.actionArguments.url, evaluationContext);
-    return string;
+  const getFormHref = (): string => {
+    const url = getUrlFromNavigationRequest(actionConfiguration?.actionArguments);
+    const href = evaluateString(decodeURIComponent(url), evaluationContext);
+    return href;
+  };
 
-  }
-
-  console.log(evaluationContext, actionConfiguration);
+  const getHrefValue = (navigationType?: string): string => {
+    if (navigationType === "url") {
+      return getUrlHref();
+    } else if (navigationType === "form") {
+      return getFormHref();
+    } else {
+      return null;
+    }
+  };
 
   return (
     <>
-      {actionConfiguration?.actionArguments?.navigationType === "url" || actionConfiguration?.actionArguments?.navigationType === "form" ?
-        <a className="sha-link" href={getHref()} onClick={handleURLClick}>
-          {icon && (
-            <Tooltip title={description}>
-              <ShaIcon iconName={icon as IconType} />
-            </Tooltip>
-          )}
-        </a>
-        :
-        <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
-          {icon && (
-            <Tooltip title={description}>
-              <ShaIcon iconName={icon as IconType} />
-            </Tooltip>
-          )}
-        </a>
-      }
+      <a className="sha-link" href={getHrefValue(actionConfiguration?.actionArguments?.navigationType)} onClick={(e) => clickHandler(e, props)}>
+        {icon && (
+          <Tooltip title={description}>
+            <ShaIcon iconName={icon as IconType} />
+          </Tooltip>
+        )}
+      </a>
     </>);
 };
 
