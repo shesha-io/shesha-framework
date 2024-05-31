@@ -7,6 +7,7 @@ import { Empty, Form } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { IModelItem } from '@/interfaces/modelConfigurator';
+import { sheshaStyles } from '@/styles';
 
 export interface IModelItemProperties {
   item?: IModelItem;
@@ -38,7 +39,7 @@ export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }
         form={form}
         initialValues={item}
         onValuesChange={debouncedSave}
-        className='vertical-settings'
+        className={sheshaStyles.verticalSettingsClass}
       />
     )
     : (
