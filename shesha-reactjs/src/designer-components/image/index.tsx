@@ -27,6 +27,7 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   ownerId?: string;
   fileCategory?: string;
   allowPreview?: boolean;
+  allowedFileTypes?: string[];
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -84,6 +85,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               wrap={fileProvider}
             >
             <ImageField
+              allowedFileTypes={model?.allowedFileTypes}
               height={model.height}
               width={model.width}
               imageSource={model.dataSource}
