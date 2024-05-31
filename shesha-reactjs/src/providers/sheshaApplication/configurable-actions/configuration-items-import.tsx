@@ -15,7 +15,7 @@ import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
 
-const actionsOwner = 'Configuration Framework';
+const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;

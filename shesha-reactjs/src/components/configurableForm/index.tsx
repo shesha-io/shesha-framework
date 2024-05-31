@@ -91,6 +91,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               refetchData={refetchData}
               isActionsOwner={isActionsOwner}
               propertyFilter={propertyFilter}
+              parentFormValues={restProps.parentFormValues}
             >
               <Show when={Boolean(showFormInfo)}>
                 <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />

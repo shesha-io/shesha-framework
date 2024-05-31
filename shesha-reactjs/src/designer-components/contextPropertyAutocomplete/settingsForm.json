@@ -158,8 +158,8 @@
      {
         "id":"hGFqD-MutR75EN0GEInYu",
         "type":"checkbox",
-        "propertyName":"showFillPropsButton",
-        "label":"Show `Fill Props` button",
+        "propertyName":"autoFillProps",
+        "label":"Auto `Fill Props` label",
         "labelAlign":"right",
         "parentId":"root",
         "hidden":false,
