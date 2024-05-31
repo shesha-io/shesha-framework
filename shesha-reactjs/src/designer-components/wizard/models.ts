@@ -13,6 +13,7 @@ export interface IWizardStepProps extends IConfigurableItemBase {
   subTitle: string;
   description: string;
   allowCancel?: boolean;
+  status: StepProps['status'];
 
   cancelButtonText?: string;
   nextButtonText?: string;
@@ -34,7 +35,6 @@ export interface IWizardStepProps extends IConfigurableItemBase {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
-  status?: StepProps['status'];
 
   onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
 
@@ -67,6 +67,7 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   form?: FormInstance<any>;
   hidden?: boolean;
   customVisibility?: string;
+  customEnabled?: string;
   defaultActiveStep?: string;
   defaultActiveValue?: string;
   direction?: 'vertical' | 'horizontal';
@@ -75,4 +76,5 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   buttonsLayout?: 'left' | 'right' | 'spaceBetween';
   showStepStatus?: boolean;
   sequence?: IWizardSequence;
+  status?: StepProps['status'];
 }

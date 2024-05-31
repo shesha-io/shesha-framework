@@ -329,7 +329,7 @@
                 }
               },
               "settingsValidationErrors": [],
-              "showFillPropsButton": false,
+              "autoFillProps": false,
               "modelType": "{{data.entityType}}"
             },
             {
