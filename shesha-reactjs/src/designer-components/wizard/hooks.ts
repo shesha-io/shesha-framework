@@ -41,8 +41,6 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     sequence,
   } = (model as IWizardComponentProps) || {};
 
-
-
   const getDefaultStepIndex = (i) => {
     if (i) {
       const t = tabs[i]
@@ -63,7 +61,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         const granted = anyOfPermissionsGranted(permissions || []);
         const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-        return !((!granted || !isVisibleByCondition));
+        return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
       })
       .map(item => getActualModel<IWizardStepProps>(item, allData))
 
@@ -109,7 +107,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const successCallback = (type: 'back' | 'next') => {
     setTimeout(() => {
-      const step = getWizardStep(visibleSteps, current, type);
+      const step = getWizardStep(visibleSteps?.map(step => executeBooleanExpression(step.customEnabled) ? step : { ...step, status: 'wait' }), current, type);
 
       if (step >= 0 && step !== current) {
         setCurrent(step);
