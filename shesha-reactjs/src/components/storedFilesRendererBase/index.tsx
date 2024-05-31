@@ -83,21 +83,21 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     });
 
 
-    const processedFiles = useRef(new Set());
+  const processedFiles = useRef(new Set());
 
-    useEffect(() => {
-      fileList.forEach(fileInfo => {
-        if (fileInfo && !processedFiles.current.has(fileInfo.uid)) {
-          processedFiles.current.add(fileInfo.uid);
-          if (allowedFileTypes.length > 0 && !allowedFileTypes.includes(fileInfo.type)) {
-            if(!fileInfo.uid.includes('rc-upload')){
-              message.error(`The uploaded file type .${fileInfo.name.split('.').pop()} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
-              deleteFile(fileInfo.uid);
-            }
+  useEffect(() => {
+    fileList.forEach(fileInfo => {
+      if (fileInfo && !processedFiles.current.has(fileInfo.uid)) {
+        processedFiles.current.add(fileInfo.uid);
+        if (allowedFileTypes.length > 0 && !allowedFileTypes.includes(fileInfo.type)) {
+          if (!fileInfo.uid.includes('rc-upload')) {
+            message.error(`The uploaded file type .${fileInfo.name.split('.').pop()} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
+            deleteFile(fileInfo.uid);
           }
         }
-      });
-    }, [fileList, allowedFileTypes, deleteFile]);
+      }
+    });
+  }, [fileList, allowedFileTypes, deleteFile]);
 
   useEffect(() => {
     if (isDownloadZipSucceeded) {
