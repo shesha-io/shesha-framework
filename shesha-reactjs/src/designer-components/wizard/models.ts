@@ -10,8 +10,8 @@ export interface IWizardStepProps {
   subTitle: string;
   description: string;
   allowCancel?: boolean;
-  status: StepProps['status'];
-  
+  status?: StepProps['status'];
+
   label?: string;
   name?: string;
   tooltip?: string;

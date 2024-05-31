@@ -63,7 +63,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
         return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
       })
-      .map(item => getActualModel<IWizardStepProps>(item, allData))
+      .map(item => getActualModel<IWizardStepProps>(item, allData));
 
   const currentStep = visibleSteps[current];
   const components = currentStep?.components;
@@ -167,7 +167,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         );
       }
     } catch (errInfo) {
-      console.log("Could'nt Proceed", errInfo);
+      console.log("Couldn't Proceed", errInfo);
     }
   };
 
@@ -193,7 +193,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         (tab) => tab.afterDoneActionConfiguration
       );
     } catch (errInfo) {
-      console.log("Could'nt Proceed", errInfo);
+      console.log("Couldn't Proceed", errInfo);
     }
   };
 

@@ -31,7 +31,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     } = model;
 
     const steps = visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status }, index) => {
-        const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';;
+        const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
         const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
         return {
