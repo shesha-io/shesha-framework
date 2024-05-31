@@ -41,7 +41,7 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
                 size={model.size}
                 mode={model.mode}
                 readOnly={model.readOnly}
-                showFillPropsButton={model.showFillPropsButton ?? true}
+                autoFillProps={model.autoFillProps ?? true}
                 value={value}
                 onChange={onChange}
               />
@@ -56,5 +56,14 @@ export const PropertyAutocompleteComponent: IToolboxComponent<IPropertyAutocompl
   migrator: (m) => m
     .add<IPropertyAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPropertyAutocompleteComponentProps>(1, (prev) => migrateReadOnly(prev))
+    .add<IPropertyAutocompleteComponentProps>(2, (prev) => {
+      const showFillPropsButton = prev['showFillPropsButton'];
+      if (typeof showFillPropsButton !== 'undefined') {
+        return { ...prev, autoFillProps: showFillPropsButton };
+      } else {
+        return { ...prev };
+      }
+    })
   ,
 };
+
