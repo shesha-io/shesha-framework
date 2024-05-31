@@ -21,7 +21,7 @@ export interface IContextPropertyAutocompleteComponentProps extends IConfigurabl
   dropdownStyle?: string;
   mode?: 'single' | 'multiple';
   modelType?: string;
-  showFillPropsButton?: boolean;
+  autoFillProps?: boolean;
 }
 
 
@@ -88,60 +88,60 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
         }} />
       </Form.Item>
       <ConditionalWrap
-          condition={Boolean(modelType)}
-          wrap={content => <MetadataProvider modelType={modelType} dataType={dataType}>{content}</MetadataProvider>}
-        >
-          <Form.Item {...{ label: propertylabel, readOnly }} >
-            {!useCascader && (
-              <SettingsControl
-                  propertyName={'propertyName'}
-                  mode={'value'}
-                  onChange={(value) => {
-                    const changedData = { propertyName: value };
-                    if (state.mode === 'formData') 
-                      changedData['componentName'] = getValueFromPropertySettings(value);
-                    setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
-                    onValuesChange(changedData);
-                  }}
-                  value={state.propertyName as any}
+        condition={Boolean(modelType)}
+        wrap={content => <MetadataProvider modelType={modelType} dataType={dataType}>{content}</MetadataProvider>}
+      >
+        <Form.Item {...{ label: propertylabel, readOnly }} >
+          {!useCascader && (
+            <SettingsControl
+              propertyName={'propertyName'}
+              mode={'value'}
+              onChange={(value) => {
+                const changedData = { propertyName: value };
+                if (state.mode === 'formData')
+                  changedData['componentName'] = getValueFromPropertySettings(value);
+                setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
+                onValuesChange(changedData);
+              }}
+              value={state.propertyName as any}
+              readOnly={readOnly}
+            >
+              {(value, onChange) => {
+                return <PropertyAutocomplete
+                  value={value}
+                  onChange={onChange}
+                  id={model.id}
+                  style={getStyle(model?.style, formData)}
+                  dropdownStyle={getStyle(model?.dropdownStyle, formData)}
+                  size={model.size}
+                  mode={model.mode}
                   readOnly={readOnly}
-              >
-                {(value, onChange) => {
-                  return <PropertyAutocomplete
-                    value={value}
-                    onChange={onChange}
-                    id={model.id}
-                    style={getStyle(model?.style, formData)}
-                    dropdownStyle={getStyle(model?.dropdownStyle, formData)}
-                    size={model.size}
-                    mode={model.mode}
-                    readOnly={readOnly}
-                    showFillPropsButton={model.showFillPropsButton ?? true}
-                  />;
-                }}
-              </SettingsControl>
-            )}
-            { useCascader && (
-              <PropertyCascaderDotNotation
-                value={state.propertyName}
-                onChange={(value) => {
-                  const changedData = { propertyName: value };
-                  if (state.mode === 'formData')
-                    changedData['componentName'] = value;
-                  setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
-                  onValuesChange(changedData);
-                }}
-                style={getStyle(model?.style, formData)}
-                size={model.size}
-                readOnly={readOnly}
-                // showFillPropsButton={model.showFillPropsButton ?? true}
-                // mode={model.mode}
-                // id={model.id}
-                // dropdownStyle={getStyle(model?.dropdownStyle, formData)}
-              />
-            )}
-          </Form.Item>
-        </ConditionalWrap>
+                  autoFillProps={model.autoFillProps ?? true}
+                />;
+              }}
+            </SettingsControl>
+          )}
+          {useCascader && (
+            <PropertyCascaderDotNotation
+              value={state.propertyName}
+              onChange={(value) => {
+                const changedData = { propertyName: value };
+                if (state.mode === 'formData')
+                  changedData['componentName'] = value;
+                setState(prev => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
+                onValuesChange(changedData);
+              }}
+              style={getStyle(model?.style, formData)}
+              size={model.size}
+              readOnly={readOnly}
+            // autoFillProps={model.autoFillProps ?? true}
+            // mode={model.mode}
+            // id={model.id}
+            // dropdownStyle={getStyle(model?.dropdownStyle, formData)}
+            />
+          )}
+        </Form.Item>
+      </ConditionalWrap>
       <Button type='link' onClick={setFormDataMode} hidden={model.readOnly || state.mode === 'formData'}>
         hide binding option (bind to form data)
       </Button>
@@ -177,6 +177,17 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
   },
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<IContextPropertyAutocompleteComponentProps>(0, (prev) => {
+      const showFillPropsButton = prev['showFillPropsButton'];
+      if (typeof showFillPropsButton !== 'undefined') {
+        return { ...prev, autoFillProps: showFillPropsButton };
+      } else {
+        return { ...prev };
+      }
+    })
+  ,
 };
 
 export default ContextPropertyAutocompleteComponent;
+

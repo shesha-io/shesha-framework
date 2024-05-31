@@ -13,8 +13,8 @@ export const getSettings = () =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-        components: [...new DesignerToolbarSettings()    
+        id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+        components: [...new DesignerToolbarSettings()
           .addPropertyAutocomplete({
             id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
             propertyName: 'componentName',
@@ -93,7 +93,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Add',
             validate: {},
-            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
           })
           .addCheckbox({
             id: '6b3d298a-0e82-4420-ae3c-38bf5a2246d4',
@@ -101,7 +101,7 @@ export const getSettings = () =>
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Allow Remove',
             validate: {},
-            hidden: {_code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false} as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
           })
           .addCheckbox({
             id: '332d298a-0e82-4420-ae3c-38bf5a2246d4',
@@ -203,11 +203,11 @@ export const getSettings = () =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'pnl02942-a0a6-4805-ac47-8f45486a69d4',
-        components: [...new DesignerToolbarSettings()        
+        id: 'pnl02942-a0a6-4805-ac47-8f45486a69d4',
+        components: [...new DesignerToolbarSettings()
           .addPropertyAutocomplete({
             id: '3fe73b1a-04c5-4658-ac0f-cbcbae6b3bd4',
-            showFillPropsButton: false,
+            autoFillProps: false,
             propertyName: 'ownerName',
             parentId: 'pnl02942-a0a6-4805-ac47-8f45486a69d4',
             label: 'Owner',
@@ -257,8 +257,8 @@ export const getSettings = () =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6f',
-        components: [...new DesignerToolbarSettings()     
+        id: 'pnl5bfe4-ee69-431e-931b-b0e0b9ceee6f',
+        components: [...new DesignerToolbarSettings()
           .addCheckbox({
             id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
             propertyName: 'validate.required',
@@ -278,8 +278,8 @@ export const getSettings = () =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-        components: [...new DesignerToolbarSettings() 
+        id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...new DesignerToolbarSettings()
           .addPermissionAutocomplete({
             id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
             propertyName: 'permissions',
@@ -290,6 +290,6 @@ export const getSettings = () =>
             validate: {},
           }).toJson()
         ]
-  }
-  })
+      }
+    })
     .toJson();
