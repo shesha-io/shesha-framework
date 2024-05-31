@@ -3,7 +3,7 @@ import React, { FC, MutableRefObject } from 'react';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
-import { useSheshaApplication } from '@/index';
+import { useForm, useSheshaApplication } from '@/index';
 
 export interface IFormComponentProps {
   id: string;
@@ -11,8 +11,9 @@ export interface IFormComponentProps {
 }
 
 const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
+  const formInstance = useForm();
   const allData = useAvailableConstantsData();
-  const { getComponentModel, form, getToolboxComponent, isComponentFiltered } = allData.form;
+  const { getComponentModel, form, getToolboxComponent, isComponentFiltered } = formInstance;
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const parent = useParent(false);
@@ -30,7 +31,7 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
   actualModel.hidden = allData.formMode !== 'designer' 
     && (
         actualModel.hidden 
-        || !anyOfPermissionsGranted(model?.permissions || [])
+        || !anyOfPermissionsGranted(actualModel?.permissions || [])
         || !isComponentFiltered(model)); // check `model` without modification
   actualModel.readOnly = actualModel.readOnly;// || isComponentReadOnly(model); // check `model` without modification
 
