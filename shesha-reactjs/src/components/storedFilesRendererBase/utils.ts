@@ -8,4 +8,4 @@ export const formatNaturalLanguageList = (items: string[]): string => {
     } else {
       return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
     }
-  }
+  };

@@ -1,5 +1,5 @@
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
-import React, { FC, useEffect, useState, useRef } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import {
   Alert,
   Button,
@@ -75,8 +75,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
 
-  const [filesClone, setFilesClone] = useState(fileList);
-
   const openFilesZipNotification = () =>
     notification.success({
       message: `Download success!`,
@@ -114,7 +112,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     fileList,
     disabled,
     onChange(info: UploadChangeParam) {
-      const { status } = info.file
+      const { status } = info.file;
 
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
