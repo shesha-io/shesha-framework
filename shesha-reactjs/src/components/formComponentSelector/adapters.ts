@@ -46,13 +46,13 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
       'mode',
-      'referenceListId',
-      'dataSourceType',
-      'valueFormat',
+      //'referenceListId',
+      //'dataSourceType',
+      //'valueFormat',
       'incomeCustomJs',
       'outcomeCustomJs',
       'labelCustomJs',
-      'values',
+      //'values',
     ]),
   },
   [AutocompleteComponent.type]: {
