@@ -21,10 +21,10 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const { formMode } = useForm();
   const { data: formData } = useFormData();
 
-  const val = typeof value === 'string' 
+  const val = typeof value === 'string'
     ? value 
     : isMoment(value)
-      ? value.format(dateFormat)
+      ? value.isValid() ? value.format(dateFormat) : ''
       : value?.toString();
 
   const contentEvaluation = evaluateString(val, formData);
