@@ -2,7 +2,6 @@ import EndpointsAutocomplete from '@/components/endpointsAutocomplete/endpointsA
 import React, { FC, useMemo } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
-import TableViewSelectorSettingsModal from '@/designer-components/dataTable/tableViewSelector/tableViewSelectorSettingsModal';
 import { Autocomplete } from '@/components/autocomplete';
 import {
   Divider,
@@ -14,8 +13,12 @@ import { IDataSourceComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { MetadataProvider } from '@/providers/metadata';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
 
-const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = ({ readOnly }) => {
+const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>> = (props) => {
+  const { readOnly } = props;
+
   const { model: state } = useSettingsForm<IDataSourceComponentProps>();
 
   const settings = (
@@ -41,13 +44,25 @@ const DataSourceSettings: FC<ISettingsFormFactoryArgs<IDataSourceComponentProps>
         </SettingsFormItem>
       }
       <SettingsCollapsiblePanel header='Filters'>
-      <SettingsFormItem name="maxResultCount" label='Max result count' tooltip='Leave empty to get all records' jsSetting>
-        <InputNumber min={0} />
-      </SettingsFormItem>
-      <Divider />
-      <SettingsFormItem name="filters">
-        <TableViewSelectorSettingsModal readOnly={readOnly} />
-      </SettingsFormItem>
+        <SettingsFormItem name="maxResultCount" label='Max result count' tooltip='Leave empty to get all records' jsSetting>
+          <InputNumber min={0} />
+        </SettingsFormItem>
+        <Divider />
+        <SettingsFormItem name="filters">
+          <FiltersList readOnly={props.readOnly} />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>
   );

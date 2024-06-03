@@ -3,12 +3,13 @@ import { IWizardStepProps } from './models';
 
 export const getSettings = (_data?: IWizardStepProps) =>
   new DesignerToolbarSettings()
-    .addPropertyAutocomplete({
+    .addTextField({
       id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
       propertyName: 'name',
       label: 'Name',
       labelAlign: 'right',
       parentId: 'root',
+      jsSetting: false,
     })
     .addTextField({
       id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',
@@ -420,7 +421,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       },
       availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
     })
-    .addEditableTagGroupProps({
+    .addPermissionAutocomplete({
       id: '3d24cc31-a797-40b8-b178-1e77eabb69c4',
       propertyName: 'permissions',
       label: 'Permissions',

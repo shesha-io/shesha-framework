@@ -61,7 +61,7 @@ export interface IButtonGroup extends IButtonGroupItemBase {
    */
   hideWhenEmpty?: boolean;
   /**
-   * Chid items (buttons or nested groups)
+   * Child items (buttons or nested groups)
    */
   childItems?: ButtonGroupItemProps[];
 }

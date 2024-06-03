@@ -89,7 +89,7 @@ namespace Shesha.EntityHistory
             return models.FirstOrDefault()?.Type;
         }
 
-        public async Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string entityTypeFullName)
+        public async Task<List<EntityHistoryItemDto>> GetAuditTrailAsync(string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
         {
 
             // disable SoftDeleteFilter to allow get deleted entities
@@ -111,7 +111,8 @@ namespace Shesha.EntityHistory
             history.AddRange(await GetManyToOneEntitiesAuditAsync(itemType, entityId));
 
             // Add child audited properties
-            history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
+            if (includeEventsOnChildEntities)
+                history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
 
             // Add generic child entities
             history.AddRange(GetGenericEntitiesAudit(itemType, entityId));

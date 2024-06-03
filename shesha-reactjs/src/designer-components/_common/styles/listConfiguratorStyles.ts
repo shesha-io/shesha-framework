@@ -1,6 +1,6 @@
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     const shaActionButtons = "sha-action-buttons";
     const sidebarContainerMainArea = "sidebar-container-main-area";
     const shaToolbarConfiguratorAlert = "sha-toolbar-configurator-alert";
@@ -16,10 +16,18 @@ export const useStyles = createStyles(({ css, cx }) => {
     const shaToolbarItemName = "sha-toolbar-item-name";
     const shaHelpIcon = "sha-help-icon";
 
-   const  shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
+    const customActionButtons = cx("sha-action-buttons", css`
+        margin: 8px 0;
+        width: 100%;
+        .${prefixCls}-btn {
+            margin-right: 8px;
+        }
+    `);
+
+    const shaToolbarConfigurator = cx("sha-toolbar-configurator", css`
     .${shaActionButtons} {
         margin: 8px 0;
-        .ant-btn {
+        .${prefixCls}-btn {
             margin-right: 8px;
         }
     }
@@ -113,7 +121,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     }
 `);
 
-   return {
+    return {
         shaToolbarConfigurator,
         shaActionButtons,
         sidebarContainerMainArea,
@@ -129,5 +137,6 @@ export const useStyles = createStyles(({ css, cx }) => {
         shaTooltipIcon,
         shaToolbarItemName,
         shaHelpIcon,
-   };
+        customActionButtons,
+    };
 });

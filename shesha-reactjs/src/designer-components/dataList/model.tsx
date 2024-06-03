@@ -28,4 +28,10 @@ export interface IDataListInlineEditableProps {
   noDataText?: string;
   noDataSecondaryText?: string;
   noDataIcon?: string;
+
+  cardMinWidth?: string;
+  cardMaxWidth?: string;
+  cardHeight?: string;
+  cardSpacing?: string;
+  showBorder?: boolean;
 }

@@ -187,13 +187,13 @@
       "settingsValidationErrors": [],
       "exposedVariables": [
         {
-          "propertyName": "rules",
+          "name": "rules",
           "description": "Validate rules, only support customize validator",
           "type": "object"
         },
-        { "propertyName": "value", "description": "Component current value", "type": "object" },
-        { "propertyName": "callback", "description": "Callback called by component", "type": "function" },
-        { "propertyName": "data", "description": "Form values", "type": "object" }
+        { "name": "value", "description": "Component current value", "type": "object" },
+        { "name": "callback", "description": "Callback called by component", "type": "function" },
+        { "name": "data", "description": "Form values", "type": "object" }
       ]
     }
   ]
@@ -232,7 +232,7 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
     },
     {
       "id": "28242e9f-78d5-4396-859b-d13f88c29101",
@@ -262,8 +262,40 @@
     }
   ]
 }
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
     }
-  
   ],
   "formSettings": {
     "layout": "horizontal",

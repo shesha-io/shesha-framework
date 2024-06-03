@@ -1,11 +1,9 @@
-import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { EditMode, IConfigurableFormComponent } from '@/interfaces';
 
 export interface ITabPaneProps
-  extends IConfigurableItemBase,
-    Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
+  extends Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled'> {
   id: string;
   icon?: string;
   key: string;
@@ -17,6 +15,10 @@ export interface ITabPaneProps
   editMode?: EditMode;
   selectMode?: EditMode;
   readOnly?: boolean;
+
+  label?: string;
+  name?: string;
+  tooltip?: string;
 }
 
 export interface ITabsComponentProps extends IConfigurableFormComponent {

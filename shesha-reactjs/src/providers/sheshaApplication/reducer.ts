@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions';
 import { IToolboxComponentGroup } from '@/interfaces';
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import { SheshaApplicationActionEnums } from './actions';
+import { RegisterFormDesignerComponentsActionPayload, SheshaApplicationActionEnums } from './actions';
 import { ISheshaApplicationStateContext, SHESHA_APPLICATION_CONTEXT_INITIAL_STATE } from './contexts';
 import { FRONT_END_APP_HEADER_NAME } from './models';
 
@@ -45,17 +45,27 @@ export default handleActions<ISheshaApplicationStateContext, any>(
         globalVariables: { ...(state.globalVariables || {}), ...payload },
       };
     },
-    [SheshaApplicationActionEnums.UpdateToolboxComponentGroups]: (
+
+    [SheshaApplicationActionEnums.RegisterFormDesignerComponents]: (
       state: ISheshaApplicationStateContext,
-      action: ReduxActions.Action<IToolboxComponentGroup[]>
+      action: ReduxActions.Action<RegisterFormDesignerComponentsActionPayload>
     ) => {
       const { payload } = action;
 
+      const registrations = { ...state.formDesignerComponentRegistrations, [payload.owner]: payload.components };
+      const componentGroups: IToolboxComponentGroup[] = [];
+      for(const key in registrations){
+        if (registrations.hasOwnProperty(key) && registrations[key]) 
+          componentGroups.push(...registrations[key]);
+      }
+      
       return {
         ...state,
-        toolboxComponentGroups: payload,
+        formDesignerComponentRegistrations: registrations,
+        formDesignerComponentGroups: componentGroups,
       };
     },
+    
   },
 
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE

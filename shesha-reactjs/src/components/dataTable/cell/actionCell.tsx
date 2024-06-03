@@ -14,7 +14,7 @@ import { MODAL_DATA } from '@/shesha-constants';
 import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
 
-export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> {}
+export interface IActionCellProps<D extends object = {}, V = any> extends ICommonCellProps<ITableActionColumn, D, V> { }
 
 export const ActionCell = <D extends object = {}, V = any>(props: IActionCellProps<D, V>) => {
   const { columnConfig } = props;
@@ -30,7 +30,9 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     return data?.cell?.row?.original;
   };
 
+
   const clickHandler = (event, data) => {
+
     event.stopPropagation();
 
     const selectedRow = getRowData(data);
@@ -57,15 +59,31 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     } else console.error('Action is not configured');
   };
 
+  const handleURLClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    clickHandler(e, props);
+  };
+
   return (
-    <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
-      {icon && (
-        <Tooltip title={description}>
-          <ShaIcon iconName={icon as IconType} />
-        </Tooltip>
-      )}
-    </a>
-  );
+    <>
+      {actionConfiguration?.actionArguments?.navigationType === "url" ?
+        <a className="sha-link" href={actionConfiguration?.actionArguments?.url} onClick={handleURLClick}>
+          {icon && (
+            <Tooltip title={description}>
+              <ShaIcon iconName={icon as IconType} />
+            </Tooltip>
+          )}
+        </a>
+        :
+        <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
+          {icon && (
+            <Tooltip title={description}>
+              <ShaIcon iconName={icon as IconType} />
+            </Tooltip>
+          )}
+        </a>
+      }
+    </>);
 };
 
 export default ActionCell;

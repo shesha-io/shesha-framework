@@ -26,4 +26,5 @@ export const screenSize = {
 
 export const fontSize = {
   main: "18px",
+  secondary: "16px",
 };

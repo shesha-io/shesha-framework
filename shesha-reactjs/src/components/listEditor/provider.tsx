@@ -1,6 +1,8 @@
-import React, { Context, PropsWithChildren, useState } from 'react';
+import React, { Context, PropsWithChildren, useReducer, useState } from 'react';
 import { IListEditorStateContext, IListEditorActionsContext } from './contexts';
 import { ValueMutator } from './interfaces';
+
+export type ListItemFactory<TItem = any> = (items: TItem[]) => TItem;
 
 export interface IGenericListEditorProviderProps<TItem extends object> {
     initialState: IListEditorStateContext<TItem>;
@@ -9,7 +11,7 @@ export interface IGenericListEditorProviderProps<TItem extends object> {
     value: TItem[];
     onChange: ValueMutator<TItem[]>;
     onSelectionChange?: (value: TItem) => void;
-    initNewItem: (items: TItem[]) => TItem;
+    initNewItem: ListItemFactory<TItem>;
     readOnly: boolean;
 }
 
@@ -25,6 +27,7 @@ const GenericListEditorProvider = <TItem extends object>({
     readOnly,
 }: PropsWithChildren<IGenericListEditorProviderProps<TItem>>) => {
     const [selectedItem, insernalSetSelectedItem] = useState<TItem>();
+    const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
     const setSelectedItem = (item: TItem) => {
         insernalSetSelectedItem(item);
@@ -45,8 +48,9 @@ const GenericListEditorProvider = <TItem extends object>({
         onChange(newValue);
     };
 
-    const addItem = () => {
-        const newItem = initNewItem(state.value);
+    const addItem = (factory?: ListItemFactory<TItem>) => {
+        const factoryToUse = factory || initNewItem;
+        const newItem = factoryToUse(state.value);
         const newValue = state.value ? [...state.value] : [];
         newValue.push(newItem);
 
@@ -79,6 +83,11 @@ const GenericListEditorProvider = <TItem extends object>({
         onChange(newItems);
     };
 
+    const refresh = () => {
+        onChange(value);
+        forceUpdate();
+    };
+
     const listActions: IListEditorActionsContext<TItem> = {
         /* NEW_ACTION_GOES_HERE */
         deleteItem,
@@ -87,6 +96,7 @@ const GenericListEditorProvider = <TItem extends object>({
         updateItem,
         updateList,
         setSelectedItem,
+        refresh,
     };
 
     return (

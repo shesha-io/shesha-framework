@@ -1,4 +1,5 @@
 import { createStyles } from "antd-style";
+import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
     const jsSwitch = cx(css`
@@ -24,6 +25,11 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
                 left: auto;
                 top: -28px;
             }
+            .${sheshaStyles.verticalSettingsClass} & {
+                right: 0;
+                left: auto;
+                top: -28px;
+            }
         }
     `);
 
@@ -42,6 +48,9 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         .sidebar-container & {
             padding-top: 4px;
         }
+        .${sheshaStyles.verticalSettingsClass} & {
+            padding-top: 4px;
+        }
     `);
     const jsContent = cx(css`
         margin-left: 64px;
@@ -52,8 +61,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         // special style when inside the sidebar
         .sidebar-container & {
             margin-right: 0;
-            margin-left: 0;   
-        }        
+            margin-left: 0;
+        }
+        .${sheshaStyles.verticalSettingsClass} & {
+            margin-right: 0;
+            margin-left: 0;
+        }
     `);
     
     return {

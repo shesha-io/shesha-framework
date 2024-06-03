@@ -6,7 +6,8 @@ import {
   getComponentsFromMarkup,
   getMatchData,
   hasFormIdGotValue,
-  IMatchData
+  IMatchData,
+  updateModelToMoment
 } from './utils';
 import { ConfigurationItemsViewMode } from '../appConfigurator/models';
 import { DataTypes } from '@/interfaces/dataTypes';
@@ -280,7 +281,10 @@ export const filterDataByOutputComponents = (
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
       var component = components[key];
-      if (data.hasOwnProperty(component.propertyName) && !toolboxComponents[component.type].isOutput) {
+      if (component.propertyName 
+          && component.type
+          && data.hasOwnProperty(component.propertyName) 
+          && !toolboxComponents[component.type]?.isOutput) {
          delete data[component.propertyName];
       }
     }
@@ -456,7 +460,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
 
   const formRequestRef = useRef<string>();
 
-  const fetch = (getDataUrl, gqlFields, requestId) => {
+  const fetch = (getDataUrl, gqlFields, requestId, form: IFormDto = null) => {
     // fetch data and resolve
     const queryParams = { properties: gqlFields };
     if (dataId) queryParams['id'] = dataId;
@@ -470,12 +474,40 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
           if (formRequestRef.current !== requestId) return null; // todo: cancel data request
 
           if (dataResponse.success) {
-            setState((prev) => ({
-              ...prev,
-              loadingState: 'ready',
-              loaderHint: null,
-              fetchedData: dataResponse.result,
-            }));
+            const modelType = state.form?.settings?.modelType ?? form?.settings?.modelType;
+            if (modelType) {
+              isEntityType(modelType)
+                .then((isEntity) => {
+                  if (isEntity) {
+                    getMetadata({ dataType: DataTypes.entityReference, modelType })
+                      .then((metadata) => {
+                        updateModelToMoment(dataResponse.result, metadata.properties as IPropertyMetadata[])
+                          .then(data => {
+                            setState((prev) => ({
+                              ...prev,
+                              loadingState: 'ready',
+                              loaderHint: null,
+                              fetchedData: data,
+                            }));
+                          });
+                      });
+                  } else {
+                    setState((prev) => ({
+                      ...prev,
+                      loadingState: 'ready',
+                      loaderHint: null,
+                      fetchedData: dataResponse.result,
+                    }));
+                  }
+                });
+            } else {
+              setState((prev) => ({
+                ...prev,
+                loadingState: 'ready',
+                loaderHint: null,
+                fetchedData: dataResponse.result,
+              }));
+            }
           } else {
             setState((prev) => ({
               ...prev,
@@ -561,7 +593,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
                     setState((prev) => ({ ...prev, gqlFields }));
 
                     if (dataId || !modelIsEntity) {
-                      fetch(getDataUrl, gqlFields, requestId);
+                      fetch(getDataUrl, gqlFields, requestId, form);
                     } else {
                       // data loading is not required
                       setState((prev) => ({ ...prev, loadingState: 'ready', loaderHint: null }));

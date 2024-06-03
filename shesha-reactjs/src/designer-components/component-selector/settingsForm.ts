@@ -100,4 +100,13 @@ export const getSettings = (data: any) =>
         { name: 'globalState', description: 'The global state of the application', type: 'object' },
       ],
     })
+    .addPermissionAutocomplete({
+      id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
+      propertyName: 'permissions',
+      label: 'Permissions',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      validate: {},
+    })
     .toJson();

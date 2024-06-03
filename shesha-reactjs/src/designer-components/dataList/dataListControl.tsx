@@ -7,11 +7,11 @@ import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
 import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
-import { useParent } from '@/providers/parentProvider/index';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
+import { EmptyState } from '@/components';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -58,9 +58,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const { styles } = useStyles();
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
-  const parent = useParent(false);
   const allData = useAvailableConstantsData();
-  const isDesignMode = allData.formMode === 'designer' || parent?.formMode === 'designer';
+  const isDesignMode = allData.formMode === 'designer';
 
   const repository = getRepository();
 
@@ -202,6 +201,10 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     )) return <NotConfiguredWarning />;
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
+
+  if(groupingColumns?.length > 0 && props.orientation === "wrap"){
+    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.'/>;
+  }
 
   return (
     <ConfigurableFormItem

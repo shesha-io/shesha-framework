@@ -7,13 +7,14 @@ import nestedProperty from 'nested-property';
 import { CSSProperties } from 'react';
 import {
   ConfigurableFormInstance,
+  DataTypes,
   IPropertySetting,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
   SettingsMigrationContext,
 } from '@/interfaces';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
 import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { getFullPath } from '@/utils/metadata';
 import { IAnyObject } from './../../interfaces/anyObject';
@@ -63,6 +64,7 @@ import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ContextGetData, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
+  IApplicationApi,
   IConfigurableActionConfiguration,
   useDataTableStore,
   useForm,
@@ -85,9 +87,11 @@ import { useDelayedUpdate } from '../delayedUpdateProvider';
 import qs from 'qs';
 import { FormConfigurationDto } from './api';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
+import { toCamelCase } from '@/utils/string';
 
-/** Interface to geat all avalilable data */
+/** Interface to get all avalilable data */
 export interface IApplicationContext {
+  application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   /** Form data */
   data?: any;
@@ -335,6 +339,31 @@ export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: 
   return { ...model, [propertyName]: getSettingValue(model[propertyName], allData, calcValue) } as T;
 };
 
+  //const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
+export const updateModelToMoment = async (model: any, properties: NestedProperties): Promise<any> => {
+  if (properties === null)
+    return model;
+  const newModel = {...model};
+  const propsPromise = isPropertiesArray(properties)
+    ? Promise.resolve(properties)
+    : isPropertiesLoader(properties)
+      ? properties()
+      : Promise.resolve([]);
+  return await propsPromise.then(async (props: IPropertyMetadata[]) => {
+    for (const key in newModel) {
+      if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
+        const prop = props.find(i => toCamelCase(i.path) === key);
+        if (prop && (prop.dataType === DataTypes.date  || prop.dataType === DataTypes.dateTime))
+        newModel[key] = moment(newModel[key]).utc(true);
+        if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
+          newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);        
+        }
+      }
+    }
+    return newModel;
+  });
+};
+
 /**
  * Convert components tree to flat structure.
  * In flat structure we store components settings and their relations separately:
@@ -519,6 +548,19 @@ export const upgradeComponentsTree = (
   return componentsFlatStructureToTree(toolboxComponents, flatStructure);
 };
 
+class StaticMustacheTag {
+  #value: string;
+  constructor(value: string) {
+    this.#value = value;
+  }
+  toEscapedString() {
+    return `{{${this.#value}}}`;
+  }
+  toString() {
+    return `{{{${this.#value}}}}`;
+  }
+}
+
 /**
  * Evaluates the string using Mustache template.
  *
@@ -536,27 +578,69 @@ export const upgradeComponentsTree = (
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
-export const evaluateString = (template: string = '', data: any) => {
-  const localData: IAnyObject = data ? { ...data } : undefined;
-  // The function throws an exception if the expression passed doesn't have a corresponding curly braces
-  try {
-    if (localData) {
-      //adding a function to the data object that will format datetime
+export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false) => {
 
-      localData.dateFormat = function () {
-        return function (timestamp, render) {
-          return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          });
+  // store moment toString function to get ISO format of datetime
+  var toString = moment.prototype.toString;
+  moment.prototype.toString = function () {
+    return this.toISOString();
+  };
+
+  try {
+
+    if (!template || typeof template !== 'string')
+      return template;
+
+    const localData: IAnyObject = data ? { ...data } : undefined;
+    // The function throws an exception if the expression passed doesn't have a corresponding curly braces
+    try {
+      if (localData) {
+        //adding a function to the data object that will format datetime
+
+        localData.dateFormat = function () {
+          return function (timestamp, render) {
+            return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            });
+          };
         };
-      };
+      }
+
+      const view = localData ?? {};
+
+      if (skipUnknownTags) {
+        template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
+          const mathes = x.match(/[\w\.]+/);
+          const tag = mathes.length ? mathes[0] : undefined;
+
+          const parts = tag.split('.');
+          const field = parts.pop();
+          const container = parts.reduce((level, key) => {
+            return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
+          }, view);
+          if (!container.hasOwnProperty(field)){
+            container[field] = new StaticMustacheTag(tag);
+          } 
+        });
+
+        const escape = (value: any): string => {
+          return value instanceof StaticMustacheTag
+            ? value.toEscapedString()
+            : value;
+        };
+
+        return Mustache.render(template, view, undefined, { escape });
+      } else
+        return Mustache.render(template, view);
+    } catch (error) {
+      console.warn('evaluateString ', error);
+      return template;
     }
-    return template && typeof template === 'string' ? Mustache.render(template, localData ?? {}) : template;
-  } catch (error) {
-    console.warn('evaluateString ', error);
-    return template;
+  } finally {
+    // restore moment toString function
+    moment.prototype.toString = toString;
   }
 };
 
@@ -1760,7 +1844,7 @@ export const getSheshaFormUtils = (http: AxiosInstance) => {
             NEW_KEY: nanoid(),
             GEN_KEY: nanoid(),
             ...(replacements ?? {}),
-          });
+          }, true);
 
           return preparedMarkup;
         });

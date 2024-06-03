@@ -110,13 +110,13 @@ namespace Shesha.Authorization
         #region OTP Login
 
         /// <summary>
-        /// Send authentication one-time pin to the user with a specified <paramref name="mobileNo"/>
+        /// Send authentication one-time pin to the user with a specified <paramref name="userNameOrMobileNo"/>
         /// </summary>
         [AbpAllowAnonymous]
         [HttpPost]
-        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPin(string mobileNo)
+        public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPin(string userNameOrMobileNo)
         {
-            var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == mobileNo).ToListAsync();
+            var persons = await _personRepository.GetAll().Where(u => u.MobileNumber1 == userNameOrMobileNo || u.User.UserName == userNameOrMobileNo).ToListAsync();
             if (!persons.Any())
                 throw new UserFriendlyException("User with the specified mobile number not found");
             if (persons.Count() > 1)
@@ -127,9 +127,10 @@ namespace Shesha.Authorization
             if (person.User == null)
                 throw new UserFriendlyException("User with the specified mobile has no internal account");
 
-            var sendPinResponse = await _logInManager.SendLoginOtpAsync(person.User, mobileNo);
+            var sendPinResponse = await _logInManager.SendLoginOtpAsync(person.User, person.MobileNumber1);
 
-            return new OtpAuthenticateSendPinResponse { 
+            return new OtpAuthenticateSendPinResponse
+            {
                 OperationId = sendPinResponse.OperationId
             };
         }

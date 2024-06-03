@@ -34,7 +34,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       const tabItems: TabItem[] = [];
 
       (tabs ?? [])?.forEach((item) => {
-        const tabModel = getActualModelWithParent(item, allData, {model: {readOnly: model.readOnly}});
+        const tabModel = getActualModelWithParent(item, allData, { model: { readOnly: model.readOnly } });
         const {
           id,
           key,
@@ -95,7 +95,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const tabsModel: ITabsComponentProps = {
       ...model,
       propertyName: 'custom Name',
-      tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [], itemType: 'item' }],
+      tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [] }],
     };
     return tabsModel;
   },
@@ -107,8 +107,8 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     })
     .add<ITabsComponentProps>(1, (prev) => {
       const newModel = {...prev};
-      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'editable'));
-      return newModel ;
+      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
+      return newModel;
     })
   ,
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,

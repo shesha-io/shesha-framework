@@ -17,6 +17,7 @@ import { useForm } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 
@@ -223,6 +224,18 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
       <SettingsCollapsiblePanel header="Validation">
         <SettingsFormItem name="validate.required" label="Required" valuePropName="checked" jsSetting>
           <Checkbox disabled={readOnly} />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+      
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

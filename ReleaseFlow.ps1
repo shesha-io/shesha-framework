@@ -42,6 +42,7 @@ if ("$PipeSourceBranch" -like "*/pull/*"){
         # Write-Host "Tag: $tag"
  
         write-host "##vso[task.setvariable variable=versionNo]$mainVersion"
+		write-host "##vso[task.setvariable variable=assemblyDescription]$mainVersion"
     }
     elseif ("$PipeTargetBranch" -like "releases/*"){
         write-host "PR target is a release branch. Setting currentBranch to refs/heads/$PipeTargetBranch"                  
@@ -82,4 +83,5 @@ elseif ("$PipeSourceBranch" -like "*/main"){
    write-host "Source Branch should be main here: $PipeSourceBranch"
    write-host "##vso[task.setvariable variable=currentBranch]$PipeSourceBranch"
    write-host "##vso[task.setvariable variable=versionNo]$mainVersion"
+   write-host "##vso[task.setvariable variable=assemblyDescription]$mainVersion"
 }

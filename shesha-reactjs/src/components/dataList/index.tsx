@@ -71,6 +71,11 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   noDataIcon,
   noDataSecondaryText,
   noDataText,
+  cardHeight,
+  cardMaxWidth,
+  cardMinWidth,
+  showBorder,
+  cardSpacing,
   ...props
 }) => {
 
@@ -185,10 +190,24 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
 
+  //The below forces the card to use max-width, therefore avoiding the issue of having cards
+  //with varying sizes. This is only a problem when selection mode is not "none"
+
+  if(orientation === "wrap" && selectionMode !== "none"){
+    cardMinWidth = cardMaxWidth;
+  }  
+
+
   useEffect(() => {
     if (measured?.width === 0) return;
-    let res = null;
-    if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+     let res = null;
+    if(orientation === "horizontal" && listItemWidth !== 'custom'){
+      res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties);
+
+    }else if (orientation === "horizontal" && listItemWidth === "custom") {
+      res = ({width: `${customListItemWidth}px`} as React.CSSProperties);
+
+    }else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
         selectionMode === 'none'
           ? ({ width: '100%' } as React.CSSProperties)
@@ -442,17 +461,19 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             </Checkbox>
           )}
         >
+
           <div
-            className={classNames(styles.shaDatalistComponentItem, { selected })}
+            className={classNames(orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, { selected })}
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={itemWidthCalc}
+            style={orientation === 'wrap' ? {minWidth: `${Number(cardMinWidth) ? cardMinWidth+'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth+'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight+'px' : cardHeight}`,
+            ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>{' '}
-        {!isLastItem && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />}
+        {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
       </div>
     );
   };
@@ -547,8 +568,31 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           <Show when={records?.length === 0}>
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
           </Show>
+
           <Show when={records?.length > 0}>
-            { content }
+            {orientation === "wrap" &&
+              <div className={styles.shaDatalistWrapParent} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
+                {content}
+              </div>
+            }
+
+
+            {orientation === "horizontal" && 
+              <div className={styles.shaDatalistHorizontal}>
+              {React.Children.map(content, child => {
+              return React.cloneElement(child, { style: itemWidthCalc });
+              })}
+              </div>
+            }
+
+            {orientation === "vertical" && 
+              <div style={itemWidthCalc}>
+              {React.Children.map(content, child => {
+              return React.cloneElement(child, { style: itemWidthCalc });
+              })}
+              </div>
+            }
+
           </Show>
         </div>
       </ShaSpin>

@@ -13,8 +13,8 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
+      id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
         .addContextPropertyAutocomplete({
           id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
           propertyName: 'propertyName',
@@ -58,11 +58,11 @@ export const entityPickerSettings = new DesignerToolbarSettings()
           label: 'Description',
         })
         .addTextField({
-            id: "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
-            propertyName: "placeholder",
-            parentId: "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
-            label: "Placeholder",
-          })
+          id: "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+          propertyName: "placeholder",
+          parentId: "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+          label: "Placeholder",
+        })
         .addDropdown({
           id: '1692d566-fe48-43bd-84e0-28b7103354c1',
           propertyName: 'mode',
@@ -102,7 +102,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
           id: "pn154bf6-f76d-4139-a850-c99bf06c8b69",
           parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           propertyName: 'filters',
-          hidden: {_code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
           components: new DesignerToolbarSettings()
             .addPropertyAutocomplete({
               id: 'hpm6rN_aj-L_KaG5MLIZt',
@@ -116,7 +116,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
                 'Name of the property that should be displayed in the field. Live empty to use default display property defined on the back-end.',
               validate: {},
               modelType: '{{data.entityType}}',
-              showFillPropsButton: false,
+              autoFillProps: false,
               settingsValidationErrors: [],
             })
             .addSectionSeparator({
@@ -172,8 +172,8 @@ export const entityPickerSettings = new DesignerToolbarSettings()
               validate: {},
               settingsValidationErrors: [],
               description: "Return string value of Id",
-              hidden: {_code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false} as any,
-              exposedVariables: [{name: 'value', type: 'object', description: 'Field value'}],
+              hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false } as any,
+              exposedVariables: [{ name: 'value', type: 'object', description: 'Field value' }],
             })
             .addCodeEditor({
               id: '81fb0599-914d-4d2d-875c-765a495472f8',
@@ -183,15 +183,16 @@ export const entityPickerSettings = new DesignerToolbarSettings()
               validate: {},
               settingsValidationErrors: [],
               description: "Return value that will be stored as field value",
-              hidden: {_code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false} as any,
-              exposedVariables: [{name: 'value', type: 'object', description: 'Selected value'}],
+              hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false } as any,
+              exposedVariables: [{ name: 'value', type: 'object', description: 'Selected value' }],
             })
-            .addEntityPickerColumnsEditor({
+            .addColumnsEditor({
               id: '2a6ee3b0-15f1-4521-cc6e-6a1c9d192ce2',
               propertyName: 'items',
               parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
               label: 'Columns',
               items: [],
+              modelType: '{{data.entityType}}',
             })
             .toJson(),
         })
@@ -233,8 +234,8 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
+      id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
         .addCheckbox({
           id: '0cc0b997-f3f7-4a3d-ba36-8590687af9bd',
           propertyName: 'allowNewRecord',
@@ -247,7 +248,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
           label: 'Dialogue settings',
           labelAlign: 'right',
           parentId: 'pnl24bf6-f76d-4139-a850-c99bf06c8b69',
-          hidden: {_code: 'return !getSettingValue(data?.allowNewRecord);', _mode: 'code', _value: false} as any,
+          hidden: { _code: 'return !getSettingValue(data?.allowNewRecord);', _mode: 'code', _value: false } as any,
           validate: {
             required: false,
           },
@@ -294,7 +295,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
               .addButtons({
                 id: nanoid(),
                 propertyName: 'buttons',
-                hidden: {_code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false},
+                hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false },
                 label: 'Configure Modal Buttons',
               })
               .addDropdown({
@@ -315,7 +316,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
                   },
                 ],
                 dataSourceType: 'values',
-                hidden: {_code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false},
+                hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false },
                 defaultValue: 'POST',
               })
               .addTextField({
@@ -323,7 +324,7 @@ export const entityPickerSettings = new DesignerToolbarSettings()
                 propertyName: 'onSuccessRedirectUrl',
                 parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
                 label: 'Success Redirect URL',
-                hidden: {_code: 'return !getSettingValue(data?.showModalFooter);', _mode: 'code', _value: false} as any,
+                hidden: { _code: 'return !getSettingValue(data?.showModalFooter);', _mode: 'code', _value: false } as any,
                 version: 0,
                 textType: 'text',
               })
@@ -374,13 +375,13 @@ export const entityPickerSettings = new DesignerToolbarSettings()
                   },
                 ],
                 dataSourceType: 'values',
-                hidden: {_code: 'return getSettingValue(data?.modalWidth) !== "custom";', _mode: 'code', _value: false} as any,
+                hidden: { _code: 'return getSettingValue(data?.modalWidth) !== "custom";', _mode: 'code', _value: false } as any,
               })
               .addNumberField({
                 id: nanoid(),
                 propertyName: 'customWidth',
                 label: 'Enter Custom Width',
-                hidden: {_code: 'return getSettingValue(data?.modalWidth) !== "custom" || !getSettingValue(data?.widthUnits);', _mode: 'code', _value: false} as any,
+                hidden: { _code: 'return getSettingValue(data?.modalWidth) !== "custom" || !getSettingValue(data?.widthUnits);', _mode: 'code', _value: false } as any,
                 min: 0,
               })
               .toJson()
@@ -400,8 +401,8 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
+      id: 'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
         .addCheckbox({
           id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
           propertyName: 'validate.required',
@@ -421,8 +422,8 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     ghost: true,
     collapsible: 'header',
     content: {
-      id:'pnl44bf6-f76d-4139-a850-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
+      id: 'pnl44bf6-f76d-4139-a850-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
         .addCodeEditor({
           id: '06ab0599-914d-4d2d-875c-765a495472f8',
           propertyName: 'style',
@@ -479,8 +480,8 @@ export const entityPickerSettings = new DesignerToolbarSettings()
     version: 4,
     collapsible: 'header',
     content: {
-      id:'44bf6-f76d-4139-a853-c99bf06c8b69',
-      components: [...new DesignerToolbarSettings()    
+      id: '44bf6-f76d-4139-a853-c99bf06c8b69',
+      components: [...new DesignerToolbarSettings()
         .addCodeEditor(
           {
             id: "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
@@ -503,6 +504,30 @@ export const entityPickerSettings = new DesignerToolbarSettings()
           }
         )
         .toJson()
+      ]
+    }
+  })
+  .addCollapsiblePanel({
+    id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
+    propertyName: 'pnlSecurity',
+    parentId: 'root',
+    label: 'Security',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    collapsible: 'header',
+    content: {
+      id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+      components: [...new DesignerToolbarSettings()
+        .addPermissionAutocomplete({
+          id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
+          propertyName: 'permissions',
+          label: 'Permissions',
+          labelAlign: 'right',
+          parentId: 'root',
+          hidden: false,
+          validate: {},
+        }).toJson()
       ]
     }
   })
