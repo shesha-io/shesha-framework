@@ -1,41 +1,48 @@
 import { IConfigurableFormComponent } from '@/providers';
 import { Divider, Flex } from 'antd';
-import React, { Key } from 'react'
-import { CSSProperties } from 'styled-components';
+import React, { FC, Key } from 'react'
+import { useStyles } from './style';
+import { getStyle } from '@/providers/form/utils';
 
 interface KeyInformationBarValueProps {
-  value: {label: string, value: string}[];
+  value: {label: string, value: string, style?: string};
 }
 export interface KeyInformationBarProps extends IConfigurableFormComponent {
   className?: string;
-  vertical?: boolean;
+  direction?: string;
+  width?: string;
   value?: Array<KeyInformationBarValueProps>;
+  items?: Array<{label: string, value: string}>;
+  space?: number;
+  formData?: any;
 }
 
-function KeyInformationBar(props) {
 
-  const baseStyle: React.CSSProperties = {
-    width: '25%',
-    height: 54,
+const FlexItem = ({label, value, style}) => {
+    return (
+      <div className={style.flexItem}>
+        <div className={style.label}>{label}</div>
+        <div className={style.value}>{value}</div>
+      </div>
+    );
   };
 
-  const FlexItem = ({label, value}) => {
-    return (<div style={{display: "flex", flexDirection: "row", width: "100%"}}>
-      <Divider type="vertical" style={{height: 52}}/>
-      <div style={{...baseStyle, display: "flex", flexDirection: "column", alignContent: "center"}}>
-        <div style={{textAlign: "center"}}>{label}</div>
-        <div>{value}</div>
-      </div>  
-    </div>);
-  };
-
-  console.log("PROPS:::", props)
+  const KeyInformationBar: FC<KeyInformationBarProps> = (props) => {
+  
+  const {direction, space, items, style, formData } = props;  
+  const {styles} = useStyles();
+  const computedStyle = getStyle(style, formData);
+  const vertical = direction === "vertical";
 
   return (
-    <Flex vertical={props.vertical}>
-      {props.values.map((item) => {
-        return <FlexItem key={item.label} label={item.label} value={item.value} />;
-      })}
+  <Flex vertical={vertical} className={styles.flexContainer} style={computedStyle}>
+    {items?.map((item, i) => {
+      return (
+        <div key={i + "-flexItem"} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper}>
+          <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} className={styles.divider} style={{margin: space}}/>
+          <FlexItem key={item.label} label={item.label} value={item.value} style={styles}/>
+        </div>);
+        })}
     </Flex>
   );
 }

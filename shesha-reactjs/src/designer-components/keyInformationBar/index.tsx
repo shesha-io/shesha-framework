@@ -1,12 +1,13 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { HeartOutlined } from '@ant-design/icons';
-import { formSettings } from './settings';
+import {formSettings} from './settings';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import KeyInformationBar, { KeyInformationBarProps } from '@/components/keyInformationBar';
+import { useForm, useFormData, useGlobalState } from '@/providers';
 
 const KeyInformationBarComponent: IToolboxComponent<KeyInformationBarProps> = {
   type: 'KeyInformationBar',
@@ -15,15 +16,15 @@ const KeyInformationBarComponent: IToolboxComponent<KeyInformationBarProps> = {
   canBeJsSetting: true,
   Factory: ({ model }) => {
 
-    const allData = [ { label: "label1", value: "value1" },
-  { label: "label2", value: "value2" },
-  { label: "label3", value: "value3" },
-  { label: "label4", value: "value4" },
-  { label: "label5", value: "value5" }]
-
+    const { data: formData } = useFormData();
+    const props = {
+      ...model,
+      style: model?.style,
+      formData
+    }
     return (
       <ConfigurableFormItem model={model}>
-        <KeyInformationBar values={allData} {...model}/>
+        <KeyInformationBar {...model} direction={model.direction}/>
       </ConfigurableFormItem>
     );
   },
