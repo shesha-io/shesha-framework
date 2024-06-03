@@ -188,7 +188,12 @@
             "parentId": "aUt4GeRhocL5W_aGaaR10",
             "label": "Default Value",
             "version": 3,
-            "textType": "text"
+            "textType": "text",
+            "hidden": {
+              "_code": "return getSettingValue(data?.range) === true;",
+              "_mode": "code",
+              "_value": false
+            }
           }
         ]
       },
