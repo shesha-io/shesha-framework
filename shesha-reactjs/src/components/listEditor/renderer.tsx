@@ -89,7 +89,7 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
     };
 
     const sortableItems = useMemo(() => {
-        return Boolean(value) && Array.isArray(value) && value.length > 0
+        return Boolean(value) && Array.isArray(value) /*&& value.length > 0*/
             ? value.map<SortableItem<TItem>>((item, index) => ({ data: item, id: index }))
             : undefined;
     }, [value]);
