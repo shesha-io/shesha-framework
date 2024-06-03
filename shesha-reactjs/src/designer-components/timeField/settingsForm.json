@@ -189,6 +189,11 @@
             "label": "Default Value",
             "version": 3,
             "textType": "text",
+            "format": {
+              "_code": "return getSettingValue(data.format);",
+              "_mode": "code",
+              "_value": true
+            },
             "hidden": {
               "_code": "return getSettingValue(data?.range) === true;",
               "_mode": "code",
