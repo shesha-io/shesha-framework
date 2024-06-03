@@ -59,7 +59,6 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
   const { styles } = useStyles();
 
   const evaluatedValue = getMoment(value, format);
-  const [asMinutes, setAsMinutes] = useState<string>();
 
   const hourStepLocal = getNumericValue(hourStep);
   const minuteStepLocal = getNumericValue(minuteStep);
@@ -105,10 +104,6 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     return <ReadOnlyDisplayFormItem value={evaluatedValue} disabled={disabled} type="time" timeFormat={format} />;
   }
 
-  if (typeof defaultValue == "string" && defaultValue !== undefined) {
-    setAsMinutes(defaultValue);
-  }
-
   if (range) {
     return (
       <TimeRangePicker
@@ -134,7 +129,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
       onSelect={handleTimePickerSelect}
       format={format}
       defaultValue={getMoment(defaultValue, format)}
-      value={evaluatedValue || defaultValue && getMoment(asMinutes, format)}
+      value={evaluatedValue}
       {...steps}
       style={getStyle(style, formData)}
       className={styles.shaTimepicker}
