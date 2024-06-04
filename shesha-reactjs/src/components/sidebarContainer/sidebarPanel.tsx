@@ -9,14 +9,13 @@ interface SidebarPanelProps extends ISidebarProps {
     side: SidebarPanelPosition;
     allowFullCollapse: boolean;
     setIsOpenGlobal?: (isOpen: boolean) => void;
-
 }
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     const { styles } = useStyles();
     const { side, allowFullCollapse, setIsOpenGlobal } = props;
 
     useEffect(() => {
-        setIsOpenGlobal && setIsOpenGlobal(props?.open || props?.defaultOpen || false);
+        if (setIsOpenGlobal) setIsOpenGlobal(props?.open || props?.defaultOpen || false);
     }, []);
 
     const rotation = side === 'right' ? (props?.open ? 0 : 180) : props?.open ? 180 : 0;
@@ -29,19 +28,20 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
 
     const handleClick = () => {
         const handler = realOpen ? onClose : onOpen;
-        if (handler)
-            handler();
+        if (handler) handler();
         if (!isControllable) {
             setIsOpen(!isOpen);
-            setIsOpenGlobal && setIsOpenGlobal(!isOpen);
-        }
+            if (setIsOpenGlobal) setIsOpenGlobal(!isOpen);
 
+        };
     };
 
     const sideClassName = side === 'right' ? styles.sidebarContainerRight : styles.sidebarContainerLeft;
 
     return (
-        <div className={classNames(sideClassName, { open: realOpen }, { 'allow-full-collapse': allowFullCollapse }, className)}>
+        <div
+            className={classNames(sideClassName, { open: realOpen }, { 'allow-full-collapse': allowFullCollapse }, className)}
+        >
             <div className={styles.sidebarHeader}>
                 <div className={`${styles.sidebarHeaderTitle} ${side}`}>{typeof title === 'function' ? title() : title}</div>
                 <div className={`${styles.sidebarHeaderBtn} ${side}`} onClick={handleClick}>

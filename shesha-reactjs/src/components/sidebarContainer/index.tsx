@@ -51,7 +51,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         {...sidebarProps}
         allowFullCollapse={allowFullCollapse}
         side={side}
-        setIsOpenGlobal={side == 'left' ? setIsOpenLeft : setIsOpenRight}
+        setIsOpenGlobal={side === 'left' ? setIsOpenLeft : setIsOpenRight}
       />)
       : null;
   };
