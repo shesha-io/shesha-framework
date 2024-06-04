@@ -16,31 +16,21 @@ export interface IFormSettingsEditorProps {
 }
 
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
-  const { theme, changeTheme } = useTheme();
+  const { theme } = useTheme();
   const [form] = Form.useForm();
   const { formSettings, updateFormSettings } = useFormDesigner();
   const { formProps } = useFormPersister();
 
-  formSettings.labelCol = {span: theme.labelSpan};
-  formSettings.wrapperCol = {span: theme.componentSpan};
+  formSettings.labelCol = { span: formSettings?.labelCol?.span || theme.labelSpan };
+  formSettings.wrapperCol = { span: formSettings?.wrapperCol?.span || theme.componentSpan };
 
   const onSave = values => {
-    if (!readOnly){
-
-      const labelCol = values?.labelCol && values?.labelCol?.span;
-      const wrapperCol = values?.wrapperCol &&  values?.wrapperCol?.span;
-
-      changeTheme({
-        ...theme,
-        labelSpan: labelCol,
-        componentSpan: wrapperCol
-      });
-
+    if (!readOnly) {
       updateFormSettings(values);
-    close();
+      close();
     }
   };
-  
+
   const sourcesFolder = `/forms/${formProps.module}/${formProps.name}`;
 
   return (

@@ -1,12 +1,13 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Divider, Form, Radio, Space, Tooltip, InputNumber } from 'antd';
-import React, { FC, Fragment, useCallback, useState, useEffect } from 'react';
+import React, { FC, Fragment, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
 import { useTheme } from '@/providers';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
 import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
+import { formItemLayout } from './form';
 
 interface IThemeConfig {
   name: string;
@@ -16,14 +17,6 @@ interface IThemeConfig {
 
 const ThemeParameters: FC = () => {
   const { theme, changeTheme } = useTheme();
-
-  const [defaultLabelValue, setDefaultLabelValue] = useState<number>(theme?.labelSpan);
-  const [defaultComponentValue, setDefaultComponentValue] = useState<number>(theme?.componentSpan);
-
-  useEffect(()=>{
-    setDefaultComponentValue(theme?.componentSpan);
-    setDefaultLabelValue(theme?.labelSpan);
-  },[theme]);
 
   const mergeThemeSection = (
     section: keyof IConfigurableTheme,
@@ -148,12 +141,21 @@ const ThemeParameters: FC = () => {
 
       <Divider />
 
-      <SectionSeparator title="Form Layout Settings (Span)" />
-      <Form>
-        <Form.Item label="Label">
-          <input defaultValue={defaultLabelValue} style={{display: 'none'}}/>
+      <SectionSeparator title="Form Span Settings" />
+      <Form {...formItemLayout} fields={[
+        {
+          name: ["label"],
+          value: theme?.labelSpan,
+        },
+        {
+        name: ["component"],
+        value: theme?.componentSpan       
+        }
+      ]}
+      >
+        <Form.Item label="Label" name={"label"}>
           <InputNumber placeholder="Label Span"
-            defaultValue={defaultLabelValue}
+          style={{width: "100%"}}
             onChange={(value: number) => {
               changeTheme({
                 ...theme,
@@ -163,10 +165,9 @@ const ThemeParameters: FC = () => {
             }
           />
         </Form.Item>
-        <Form.Item label="Component">
-        <input defaultValue={defaultComponentValue} style={{display: 'none'}}/>
+        <Form.Item label="Component" name={"component"}>
           <InputNumber placeholder="Component Span"
-            defaultValue={defaultComponentValue}
+            style={{width: "100%"}}
             onChange={(value: number) => {
               changeTheme({
                 ...theme,
