@@ -17,7 +17,6 @@ interface IThemeConfig {
 const ThemeParameters: FC = () => {
   const { theme, changeTheme } = useTheme();
 
-  console.log("THEME SPANS::",theme.componentSpan, theme.labelSpan);
   const [defaultLabelValue, setDefaultLabelValue] = useState<number>(theme?.labelSpan);
   const [defaultComponentValue, setDefaultComponentValue] = useState<number>(theme?.componentSpan);
 
@@ -152,6 +151,7 @@ const ThemeParameters: FC = () => {
       <SectionSeparator title="Form Layout Settings (Span)" />
       <Form>
         <Form.Item label="Label">
+          <input defaultValue={defaultLabelValue} style={{display: 'none'}}/>
           <InputNumber placeholder="Label Span"
             defaultValue={defaultLabelValue}
             onChange={(value: number) => {
@@ -164,6 +164,7 @@ const ThemeParameters: FC = () => {
           />
         </Form.Item>
         <Form.Item label="Component">
+        <input defaultValue={defaultComponentValue} style={{display: 'none'}}/>
           <InputNumber placeholder="Component Span"
             defaultValue={defaultComponentValue}
             onChange={(value: number) => {

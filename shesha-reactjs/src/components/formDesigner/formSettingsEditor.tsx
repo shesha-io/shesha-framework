@@ -26,6 +26,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
 
   const onSave = values => {
     if (!readOnly){
+
       const labelCol = values?.labelCol && values?.labelCol?.span;
       const wrapperCol = values?.wrapperCol &&  values?.wrapperCol?.span;
 
