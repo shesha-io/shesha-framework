@@ -263,7 +263,10 @@ namespace Shesha.DynamicEntities
                     : 0;
                 foreach (var cp in codeProperties)
                 {
-                    var dbp = dbProperties.FirstOrDefault(p => p.Name == cp.Path && p.ParentProperty?.Id == parentProp?.Id);
+                    var dbp = dbProperties.Where(p => p.Name == cp.Path && p.ParentProperty?.Id == parentProp?.Id)
+                        .OrderBy(p => !p.IsDeleted ? 0 : 1)
+                        .ThenByDescending(p => p.CreationTime)
+                        .FirstOrDefault();
                     if (dbp == null)
                     {
                         dbp = new EntityProperty
