@@ -14,29 +14,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             display: flex;
             justify-content: center;
             align-items: center;
+            width: max-content;
         }
 
         .${flexItemWrapper} {
             flex-direction: row;
-            width: 100%;
         }
 
         .${flexItemWrapperVertical} {
             flex-direction: column;
-            width: 25%;
         }
 
         .${flexItem} {
             text-align: center;
             display: flex;
-            width: 100%;
             flex-direction: column;
-            flex-grow: 1;
-        }
-    
-        .${label}, ${value} {
-            text-align: center;
-            width: 100%;
+            height: 50px;
         }
 
         .${divider} {

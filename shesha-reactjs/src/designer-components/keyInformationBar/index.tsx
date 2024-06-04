@@ -5,9 +5,8 @@ import {formSettings} from './settings';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import KeyInformationBar, { KeyInformationBarProps } from '@/components/keyInformationBar';
-import { useForm, useFormData, useGlobalState } from '@/providers';
 
 const KeyInformationBarComponent: IToolboxComponent<KeyInformationBarProps> = {
   type: 'KeyInformationBar',
@@ -16,15 +15,10 @@ const KeyInformationBarComponent: IToolboxComponent<KeyInformationBarProps> = {
   canBeJsSetting: true,
   Factory: ({ model }) => {
 
-    const { data: formData } = useFormData();
-    const props = {
-      ...model,
-      style: model?.style,
-      formData
-    }
+    console.log("Model::::", model)
     return (
       <ConfigurableFormItem model={model}>
-        <KeyInformationBar {...model} direction={model.direction}/>
+        <KeyInformationBar {...model} />
       </ConfigurableFormItem>
     );
   },

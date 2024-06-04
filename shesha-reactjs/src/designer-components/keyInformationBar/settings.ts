@@ -52,9 +52,9 @@ export const formSettings = new DesignerToolbarSettings()
     })
     .addCollapsiblePanel({
         id: '11164664-cbc9-4cef-babc-6fbea55cd0ca',
-        propertyName: 'separatorData',
+        propertyName: 'separatorConfigureKeyInformationBar',
         parentId: 'root',
-        label: 'Data',
+        label: 'Configure Key Information Bar',
         labelAlign: 'left',
         expandIconPosition: 'start',
         ghost: true,
@@ -63,128 +63,15 @@ export const formSettings = new DesignerToolbarSettings()
             id: 'pnl64664-cbc9-4cdf-babc-6fbea44cd0ca',
             components: [
                 ...new DesignerToolbarSettings()
-                    .addDropdown({
+                    .addNumberField({
                         id: nanoid(),
-                        propertyName: "dataSourceType",
+                        propertyName: "columns",
                         parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
-                        label: "DataSource Type",
-                        dataSourceType: "values",
-                        values: [
-                            {
-                                id: "9ac725c6-9a45-43d8-ba63-6b3de64f4ef2",
-                                label: "Values",
-                                value: "values"
-                            },
-                            {
-                                id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61e",
-                                label: "Reference List",
-                                value: "referenceList"
-                            },
-                            {
-                                label: "API Url",
-                                value: "url",
-                                id: "02501feb-f369-4306-a0fd-50f8c96410f8"
-                            }
-                        ],
-                        referenceListId: null,
-                        valueFormat: "listItem"
-                    })
-                    .addCodeEditor({
-                        id: nanoid(),
-                        propertyName: "dataSourceUrl",
-                        label: "Data Source Url",
-                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
+                        label: "Number Of Columns",
                         validate: {},
                         settingsValidationErrors: [],
-                        description: "Write a code that returns the URL to be used to fetch data for the Radio.",
-                        exposedVariables: [
-                            {
-                                name: "data",
-                                description: "Form values",
-                                type: "object"
-                            },
-                            {
-                                name: "globalState",
-                                description: "The global state",
-                                type: "object"
-                            }
-                        ],
-                        hidden: {
-                            _code: "return getSettingValue(data.dataSourceType) !== 'url';",
-                            _mode: "code",
-                            _value: false
-                        },
-                        version: 3,
-                        wrapInTemplate: true,
-                        templateSettings: {
-                            functionName: "getDataSourceUrl"
-                        },
-                        availableConstantsExpression: `return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();`
-
-                    })
-                    .addCodeEditor({
-                        id: nanoid(),
-                        propertyName: "reducerFunc",
-                        label: "Reducer function",
-                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
-                        validate: {},
-                        settingsValidationErrors: [],
-                        description: "A reducer function for the data returned from the server. The function is responsible for value and label props. The function should return an array of object of this format: { value, label }",
-                        exposedVariables: [
-                            {
-                                name: "data",
-                                description: "An array of items returned from the server",
-                                type: "array"
-                            }
-                        ],
-                        hidden: {
-                            _code: "return getSettingValue(data.dataSourceType) !== 'url';",
-                            _mode: "code",
-                            _value: false
-                        },
-                        version: 3,
-                        wrapInTemplate: true,
-                        templateSettings: {
-                            functionName: "reducerFunction"
-                        },
-                        availableConstantsExpression: `return metadataBuilder.addArray("data", "An array of items returned from the server").build();`
-
-                    })
-                    .addRefListAutocomplete({
-                        id: nanoid(),
-                        propertyName: "referenceListId",
-                        label: "Reference List",
-                        labelAlign: "right",
-                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
-                        hidden: {
-                            _code: "return getSettingValue(data.dataSourceType) !== 'referenceList';",
-                            _mode: "code",
-                            _value: false
-                        },
-                        isDynamic: false,
-                        version: 2,
-                        description: "",
-                        validate: {
-                            message: ""
-                        },
-                        settingsValidationErrors: []
-                    })
-                    .addLabelValueEditor({
-                        id: nanoid(),
-                        propertyName: "items",
-                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
-                        label: "Items",
-                        labelTitle: "Label",
-                        labelName: "label",
-                        valueTitle: "Value",
-                        valueName: "value",
-                        hidden: {
-                            _code: "return getSettingValue(data.dataSourceType) !== 'values';",
-                            _mode: "code",
-                            _value: false
-                        },
-                        version: 2,
-                        mode: "dialog",
+                        description: "The total number of columns to display the items in.",
+                        defaultValue: 5,
                     })
                     .addDropdown({
                         id: nanoid(),
@@ -209,11 +96,43 @@ export const formSettings = new DesignerToolbarSettings()
                         defaultValue: "horizontal",
                         valueFormat: "listItem"
                     })
+                    .addDropdown({
+                        id: nanoid(),
+                        propertyName: "itemLabelAlign",
+                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
+                        label: "Item Label Align",
+                        dataSourceType: "values",
+                        values: [
+                            {
+                                id: "9ac725c6-9a45-43d8-ba63-6b3de64f4ef2",
+                                label: "Top",
+                                value: "top"
+                            },
+                            {
+                                id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61e",
+                                label: "Left",
+                                value: "left"
+                            }
+                        ],
+                        defaultValue: "top",
+                        referenceListId: null,
+                        valueFormat: "listItem"
+                    })
+                    .addTextField({
+                        id: nanoid(),
+                        propertyName: "labelValueSeparator",
+                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
+                        label: "Label Value Separator",
+                        validate: {},
+                        settingsValidationErrors: [],
+                        description: "The separator between the label and the value.",
+                        defaultValue: ""
+                    })
                     .addNumberField({
                         id: nanoid(),
                         propertyName: "space",
                         parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
-                        label: "space",
+                        label: "Space",
                         validate: {},
                         settingsValidationErrors: [],
                         description: "The space between the items",
