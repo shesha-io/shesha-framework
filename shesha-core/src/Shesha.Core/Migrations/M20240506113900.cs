@@ -13,6 +13,8 @@ update ci set ItemType = 'role'
 from Frwk_ConfigurationItems ci
 where ItemType = 'shesha-role'
 ");
+
+            // not needed for Postgre
         }
     }
 }

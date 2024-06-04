@@ -3,6 +3,7 @@ import { Button, Modal } from 'antd';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { useMedia } from 'react-use';
 import { ButtonGroupSettingsEditor } from './buttonGroupSettingsEditor';
+import { deepCopyViaJson } from '@/utils/object';
 
 export interface IToolbarSettingsModal {
   readOnly: boolean;
@@ -15,13 +16,6 @@ interface IButtonGroupConfiguratorProps extends IToolbarSettingsModal {
 
 }
 
-const deepCopy = <TValue = any>(value: TValue): TValue => {
-  if (!value)
-    return value;
-
-  return JSON.parse(JSON.stringify(value));
-};
-
 export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   value,
   onChange,
@@ -31,10 +25,10 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
   const isSmall = useMedia('(max-width: 480px)');
   const [showModal, setShowModal] = useState(false);
 
-  const [localValue, setLocalValue] = useState<ButtonGroupItemProps[]>(deepCopy(value));
+  const [localValue, setLocalValue] = useState<ButtonGroupItemProps[]>(deepCopyViaJson(value));
 
   const openModal = () => {
-    setLocalValue(deepCopy(value));
+    setLocalValue(deepCopyViaJson(value));
     setShowModal(true);
   };
 

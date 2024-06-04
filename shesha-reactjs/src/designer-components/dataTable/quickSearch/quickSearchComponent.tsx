@@ -16,8 +16,8 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
   type: 'datatable.quickSearch',
   name: 'Quick Search',
   icon: <SearchOutlined />,
-  Factory: ({ model: { block } }) => {
-    return <GlobalTableFilter block={block} />;
+  Factory: ({ model: { block, hidden } }) => {
+    return hidden ? null : <GlobalTableFilter block={block} />;
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {

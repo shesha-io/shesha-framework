@@ -104,7 +104,7 @@ export { default as EditableTagGroup, type IEditableTagGroupProps } from './edit
 export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
-export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
+export { SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';

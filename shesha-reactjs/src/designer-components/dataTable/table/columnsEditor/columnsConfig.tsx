@@ -3,7 +3,7 @@ import React, { FC, Fragment, useState } from 'react';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ColumnsEditorModal } from './columnsEditorModal';
 
-interface IColumnsConfigProps {
+export interface IColumnsConfigProps {
     value?: ColumnsItemProps[];
     onChange?: (value: ColumnsItemProps[]) => void;
     readonly?: boolean;
