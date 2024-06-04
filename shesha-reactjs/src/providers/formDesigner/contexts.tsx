@@ -150,7 +150,7 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   toolboxComponentGroups: [], //defaultToolboxComponents,
   dataSources: [],
   activeDataSourceId: null,
-  readOnly: true,
+  readOnly: true
 };
 
 export const UndoableFormDesignerStateContext = createContext<IUndoableFormDesignerStateContext>({

@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Divider, Form, Radio, Space, Tooltip } from 'antd';
-import React, { FC, Fragment, useCallback } from 'react';
+import { Divider, Form, Radio, Space, Tooltip, InputNumber } from 'antd';
+import React, { FC, Fragment, useCallback, useState, useEffect } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
 import { useTheme } from '@/providers';
@@ -16,6 +16,15 @@ interface IThemeConfig {
 
 const ThemeParameters: FC = () => {
   const { theme, changeTheme } = useTheme();
+
+  console.log("THEME SPANS::",theme.componentSpan, theme.labelSpan);
+  const [defaultLabelValue, setDefaultLabelValue] = useState<number>(theme?.labelSpan);
+  const [defaultComponentValue, setDefaultComponentValue] = useState<number>(theme?.componentSpan);
+
+  useEffect(()=>{
+    setDefaultComponentValue(theme?.componentSpan);
+    setDefaultLabelValue(theme?.labelSpan);
+  },[theme]);
 
   const mergeThemeSection = (
     section: keyof IConfigurableTheme,
@@ -137,6 +146,37 @@ const ThemeParameters: FC = () => {
           </Radio.Group>
         </Form.Item>
       </Form>
+
+      <Divider />
+
+      <SectionSeparator title="Form Layout Settings (Span)" />
+      <Form>
+        <Form.Item label="Label">
+          <InputNumber placeholder="Label Span"
+            defaultValue={defaultLabelValue}
+            onChange={(value: number) => {
+              changeTheme({
+                ...theme,
+                labelSpan: value,
+              });
+            }
+            }
+          />
+        </Form.Item>
+        <Form.Item label="Component">
+          <InputNumber placeholder="Component Span"
+            defaultValue={defaultComponentValue}
+            onChange={(value: number) => {
+              changeTheme({
+                ...theme,
+                componentSpan: value,
+              });
+            }
+            }
+          />
+        </Form.Item>
+      </Form>
+
     </Fragment>
   );
 };
