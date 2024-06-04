@@ -83,20 +83,24 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     }
   };
 
-  const setData = (changedData: any) => {
+  const setDatainternal = (changedData: any) => {
     dataRef.current = {...dataRef.current, ...changedData};
 
     if (onChangeData.current)
       onChangeData.current({...dataRef.current}, {...changedData});
-    
-    onChangeContextData();
+
+      onChangeContextData();
+    };
+
+  const setData = (changedData: any) => {
+    setDatainternal(changedData);
     onChangeAction(changedData);
   };
 
   if (initialData && initialDataRef.current === undefined) {
     initialDataRef.current = initialData;
     initialData.then((data) => {
-      setData(data);
+      setDatainternal(data);
     });
   }
 

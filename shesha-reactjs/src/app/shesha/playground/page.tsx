@@ -3,15 +3,14 @@
 import React, { useState } from 'react';
 import { PageWithLayout } from '@/interfaces';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { ListEditor, SidebarContainer } from '@/components';
+import { ListEditor } from '@/components';
 import { nanoid } from '@/utils/uuid';
 import { Item } from '@/components/modelConfigurator/propertiesEditor/renderer-new/item';
-import { ItemsContainer } from '@/components/modelConfigurator/propertiesEditor/renderer-new/itemsContainer';
 import { ModelItemProperties } from '@/components/modelConfigurator/propertiesEditor/renderer-new/modelItemProperties';
 import { Button } from 'antd';
 import { syncEntities } from '@/providers/metadataDispatcher/entities/utils';
 import { useSyncEntitiesContext } from '@/providers/metadataDispatcher/entities/useSyncEntitiesContext';
-import { evaluateString } from '@/formDesignerUtils';
+import { ListEditorRenderer } from '@/components/listEditorRenderer';
 
 type ItemType = IModelItem;
 
@@ -39,64 +38,65 @@ const Page: PageWithLayout<{}> = () => {
         });
     };
 
-    const onTestTemplateClick = () => {
-        const markup = `
-        NEW_KEY: {{NEW_KEY}};
-        GEN_KEY: {{GEN_KEY}};
-        id: {{data.id}};
-        id: {{{data.id}}};
-        modelType: {{form.formSettings.modelType}}
-        `;
-        const preparedMarkup = evaluateString(markup, {
-            NEW_KEY: nanoid(),
-            GEN_KEY: nanoid(),
-          }, true);
-          console.log('LOG: prepared', preparedMarkup);
-    };
-
     return (
         <div>
             <h1>Playground</h1>
             <div>
                 <Button onClick={onSyncClick}>Sync entities</Button>
             </div>
-
-            <div>
-                <Button onClick={onTestTemplateClick}>Test Template</Button>
-            </div>
-            <div style={{ padding: "10px 100px" }}>
-                <SidebarContainer
-                    rightSidebarProps={{
-                        open: true,
-                        title: 'Properties',
-                        content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
-                    }}
-                >
-                    <ListEditor<ItemType>
-                        value={value}
-                        onChange={setValue}
-                        initNewItem={(_items) => ({
-                            id: nanoid(),
-                            name: 'New Property',
-                            label: '',
-                            value: '',
-                        })}
-                        readOnly={readOnly}
-                        selectionType='single'
-                        onSelectionChange={onSelectionChange}
-                    >
-                        {({ item, index }) => {
-                            return (
-                                <Item
-                                    itemProps={item}
-                                    index={[index]}
-                                    key={item?.id}
-                                    containerRendering={(args) => (<ItemsContainer {...args} />)}
-                                />
-                            );
+            <div style={{ padding: "10px 100px", height: "500px", border: "1px solid lightgray" }}>
+                <div style={{ border: "1px solid lightgray", height: "100%" }}>
+                    <ListEditorRenderer
+                        sidebarProps={{
+                            title: 'Properties',
+                            content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
                         }}
-                    </ListEditor>
-                </SidebarContainer>
+                    >
+                        <ListEditor<ItemType>
+                            value={value}
+                            onChange={setValue}
+                            initNewItem={(_items) => ({
+                                id: nanoid(),
+                                name: 'New Property',
+                                label: '',
+                                value: '',
+                            })}
+                            readOnly={readOnly}
+                            selectionType='single'
+                            onSelectionChange={onSelectionChange}
+                        >
+                            {({ item, index, nestedRenderer, itemOnChange }) => {
+                                return (
+                                    <Item
+                                        itemProps={item}
+                                        index={[index]}
+                                        key={item?.id}
+                                        onChange={(newValue) => {
+                                            //console.log('XX: onChange 2nd level');
+                                            itemOnChange({...newValue});
+                                        }}
+                                        containerRendering={(args) => {
+                                            return nestedRenderer({
+                                                ...args,
+                                                onChange: function (newValue: IModelItem[]): void {
+                                                    //console.log('XX: onChange 1st level');
+                                                    args.onChange(newValue);
+                                                },
+                                                initNewItem: function (_items: IModelItem[]): IModelItem {
+                                                    return {
+                                                        id: nanoid(),
+                                                        name: 'New Property',
+                                                        label: '',
+                                                    };
+                                                }
+                                            });
+                                        }}
+                                    />
+                                );
+                            }}
+                        </ListEditor>
+                    </ListEditorRenderer>
+                </div>
             </div>
         </div>
     );

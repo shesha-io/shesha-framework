@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { ConfigurableApplicationComponent, ISettingsEditorProps } from '@/components/configurableComponent';
 import { SidebarMenu } from '@/components/sidebarMenu';
 import { ISidebarMenuItem, SidebarMenuProvider } from '@/providers/sidebarMenu';
-import ComponentSettingsModal from './settingsModal';
+import { ComponentSettingsModal } from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { migrateToConfigActions } from './migrations/migrateToConfigActions';
@@ -30,6 +30,7 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
   const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>) => {
     return (
       <ComponentSettingsModal
+        title='Sidebar Menu Configuration'
         settings={editorProps.settings ?? EmptySidebarProps}
         onSave={editorProps.onSave}
         onCancel={editorProps.onCancel}

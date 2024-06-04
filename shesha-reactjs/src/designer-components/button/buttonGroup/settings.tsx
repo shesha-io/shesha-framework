@@ -3,7 +3,7 @@ import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
-import { ButtonGroupSettingsModal } from './buttonGroupSettingsModal';
+import { ButtonGroupConfigurator } from '../../../components/buttonGroupConfigurator';
 import { Checkbox, Input, Select } from 'antd';
 import { IButtonGroupComponentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
@@ -52,7 +52,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
 
       <SettingsCollapsiblePanel header='Customization'>
         <SettingsFormItem name="items">
-          <ButtonGroupSettingsModal readOnly={readOnly} />
+          <ButtonGroupConfigurator readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 

@@ -18,7 +18,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   isOutput: true,
   isInput: true,
   Factory: ({ model }) => {
-    return <TableContext {...model} />;
+    return model.hidden ? null : <TableContext {...model} />;
   },
   migrator: (m) =>
     m

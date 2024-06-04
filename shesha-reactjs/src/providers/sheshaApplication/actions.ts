@@ -6,8 +6,7 @@ export enum SheshaApplicationActionEnums {
   SetRequestHeaders = 'SET_REQUEST_HEADERS',
   SetBackendUrl = 'SET_BACKEND_URL',
   SetGlobalVariables = 'SET_GLOBAL_VARIABLES',
-  SetSetToolboxComponents = 'SET_TOOLBOX_COMPONENTS',
-  UpdateToolboxComponentGroups = 'UPDATE_TOOLBOX_COMPONENT_GROUPS',
+  RegisterFormDesignerComponents = 'REGISTER_FORM_DESIGNER_COMPONENTS',
 }
 
 export const setHeadersAction = createAction<IRequestHeaders, IRequestHeaders>(
@@ -22,7 +21,11 @@ export const setGlobalVariablesAction = createAction<{ [x: string]: any }, { [x:
   (p) => p
 );
 
-export const updateToolboxComponentGroupsAction = createAction<IToolboxComponentGroup[], IToolboxComponentGroup[]>(
-  SheshaApplicationActionEnums.UpdateToolboxComponentGroups,
+export interface RegisterFormDesignerComponentsActionPayload {
+  owner: string;
+  components: IToolboxComponentGroup[];
+}
+export const registerFormDesignerComponentsAction = createAction<RegisterFormDesignerComponentsActionPayload, RegisterFormDesignerComponentsActionPayload>(
+  SheshaApplicationActionEnums.RegisterFormDesignerComponents,
   (p) => p
 );

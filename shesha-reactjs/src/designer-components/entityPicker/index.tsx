@@ -9,7 +9,7 @@ import { ButtonGroupItemProps, useForm, useFormData, useGlobalState, useSheshaAp
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
+import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { entityPickerSettings } from './settingsForm';

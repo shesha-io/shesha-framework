@@ -1,10 +1,9 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, CSSProperties, useRef, useState } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'react-places-autocomplete';
 import { Input, notification } from 'antd';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
-import { CSSProperties } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useStyles } from './styles/styles';
 
@@ -83,7 +82,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
         }
       }
     } catch (error) {
-      console.log('PlacesAutocomplete._this.handleChange error address: ', localAddress);
+      console.error('PlacesAutocomplete.handleChange error address: ', localAddress);
     }
   };
 
@@ -121,7 +120,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
           console.error('Error no coords', error);
         });
     } catch (error) {
-      console.log('PlacesAutocomplete._this.handleSelect error address: ', value);
+      console.error('PlacesAutocomplete.handleSelect error address: ', value);
     }
   };
 
@@ -212,8 +211,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                       target: { value: realValue },
                     } = e;
                     handleChange(realValue);
-
-                    if (!disableGoogleEvent || !disableGoogleEvent(value)) {
+                    if (!disableGoogleEvent?.(value)) {
                       inputProps.onChange(e);
                     }
                   }
