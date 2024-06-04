@@ -14,7 +14,6 @@ import { useForm } from '@/providers/form';
 import { FormMarkup } from '@/providers/form/models';
 import {
   evaluateString,
-  evaluateValue,
   getStyle,
   replaceTags,
   validateConfigurableComponentSettings,
