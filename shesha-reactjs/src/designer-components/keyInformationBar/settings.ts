@@ -71,7 +71,7 @@ export const formSettings = new DesignerToolbarSettings()
                         validate: {},
                         settingsValidationErrors: [],
                         description: "The total number of columns to display the items in.",
-                        defaultValue: 5,
+                        defaultValue: 1,
                     })
                     .addDropdown({
                         id: nanoid(),

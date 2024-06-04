@@ -19,17 +19,21 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
 
         .${flexItemWrapper} {
             flex-direction: row;
+            min-width: 100px;
         }
 
         .${flexItemWrapperVertical} {
             flex-direction: column;
+
         }
 
-        .${flexItem} {
-            text-align: center;
-            display: flex;
+        .sha-components-container-inner {
             flex-direction: column;
-            height: 50px;
+            * {
+                margin: 0 !important;
+                padding: 0 !important;
+                min-height: min-content !important;
+            }
         }
 
         .${divider} {

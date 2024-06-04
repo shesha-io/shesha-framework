@@ -42,9 +42,6 @@ const FlexItem = ({model, style, labelAlign, formData, globalState, id}) => {
         <ComponentsContainer
           containerId={id + "label"}
           {...flexAndGridStyles}
-          className={model.className}
-          wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
-          style={getStyle(model?.style, formData)}
           dynamicComponents={model?.isDynamic ? model?.components : []}
         />
       </div>
