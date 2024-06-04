@@ -110,7 +110,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const successCallback = (type: 'back' | 'next') => {
     setTimeout(() => {
-      const step = getWizardStep(visibleSteps?.map(step => executeBooleanExpression(step.customEnabled) ? step : { ...step, status: 'wait' }), current, type);
+      const step = getWizardStep(visibleSteps, current, type);
 
       if (step >= 0 && step !== current) {
         setCurrent(step);
