@@ -15,7 +15,6 @@ const KeyInformationBarComponent: IToolboxComponent<KeyInformationBarProps> = {
   canBeJsSetting: true,
   Factory: ({ model }) => {
 
-    console.log("Model::::", model)
     return (
       <ConfigurableFormItem model={model}>
         <KeyInformationBar {...model} />

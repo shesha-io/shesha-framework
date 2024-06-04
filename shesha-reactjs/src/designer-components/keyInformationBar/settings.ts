@@ -98,20 +98,58 @@ export const formSettings = new DesignerToolbarSettings()
                     })
                     .addDropdown({
                         id: nanoid(),
-                        propertyName: "itemLabelAlign",
+                        propertyName: "alignItems",
                         parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
-                        label: "Item Label Align",
+                        label: "Align Items",
                         dataSourceType: "values",
                         values: [
                             {
                                 id: "9ac725c6-9a45-43d8-ba63-6b3de64f4ef2",
-                                label: "Top",
-                                value: "top"
+                                label: "Flex Start",
+                                value: "flex-start"
                             },
                             {
                                 id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61e",
-                                label: "Left",
-                                value: "left"
+                                label: "Center",
+                                value: "center"
+                            },
+                            {
+                                id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61s",
+                                label: "flex-end",
+                                value: "flex-end"
+                            },
+                            {
+                                id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61d",
+                                label: "Stretch",
+                                value: "stretch"
+                            },
+                            {
+                                id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61f",
+                                label: "Baseline",
+                                value: "baseline"
+                            }
+                        ],
+                        version: 5,
+                        referenceListId: null,
+                        defaultValue: "left",
+                        valueFormat: "listItem"
+                    })
+                    .addDropdown({
+                        id: nanoid(),
+                        propertyName: "itemFlexDirection",
+                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
+                        label: "Item Flex Direction",
+                        dataSourceType: "values",
+                        values: [
+                            {
+                                id: "9ac725c6-9a45-43d8-ba63-6b3de64f4ef2",
+                                label: "Column",
+                                value: "column"
+                            },
+                            {
+                                id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61e",
+                                label: "Row",
+                                value: "row"
                             }
                         ],
                         defaultValue: "top",

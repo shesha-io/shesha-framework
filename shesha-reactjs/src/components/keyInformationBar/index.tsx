@@ -2,7 +2,7 @@ import { IConfigurableFormComponent } from '@/providers';
 import { Divider, Flex } from 'antd';
 import React, { FC } from 'react'
 import { useStyles } from './style';
-import { getLayoutStyle, getStyle } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { ICommonContainerProps } from '@/interfaces';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 
@@ -13,17 +13,16 @@ export interface KeyInformationBarProps extends IConfigurableFormComponent {
   columns?: number;
   space?: number;
   formData?: any;
-  itemLabelAlign?: 'left' | 'top';
-  labelValueSeparator?: string;
+  itemFlexDirection?: 'left' | 'center' | 'right' | 'stretch' | 'baseline' | 'initial' | 'inherit';
   globalState?: any;
 }
 
 
-const FlexItem = ({model, style, labelAlign, formData, globalState, id}) => {
+const FlexItem = ({model, style, formData, globalState, id}) => {
 
   const flexAndGridStyles: ICommonContainerProps = {
       display: model?.display,
-      flexDirection: model?.flexDirection,
+      flexDirection: model?.itemFlexDirection,
       direction: model?.direction,
       justifyContent: model?.justifyContent,
       alignItems: model?.alignItems,
@@ -37,8 +36,9 @@ const FlexItem = ({model, style, labelAlign, formData, globalState, id}) => {
       gap: model?.gap,
     };
 
+    console.log("FlexItem model: ", flexAndGridStyles);
     return (
-      <div className={style.flexItem} style={{flexDirection: labelAlign === 'left'? "row" : "column" }}>
+      <div className={style.flexItem}>
         <ComponentsContainer
           containerId={id + "label"}
           {...flexAndGridStyles}
@@ -50,19 +50,22 @@ const FlexItem = ({model, style, labelAlign, formData, globalState, id}) => {
 
   const KeyInformationBar: FC<KeyInformationBarProps> = (props) => {
   
-  const {direction, space, columns, style, formData, itemLabelAlign, labelValueSeparator, globalState } = props;  
+  const {direction, space, columns, style, formData, globalState, itemFlexDirection } = props;  
   const {styles} = useStyles();
+  console.log("TYPE of style: ", typeof style);
   const computedStyle = getStyle(style, formData);
   const vertical = direction === "vertical";
   const barColumns = new Array(columns).fill(0);
 
+  console.log("Flex Align Items: ", itemFlexDirection);
+  
   return (
-  <Flex vertical={vertical} className={styles.flexContainer} style={computedStyle}>
+  <Flex vertical={vertical}  style={{...computedStyle, alignItems: itemFlexDirection}}>
     {barColumns?.map((_, i) => {
       return (
         <div key={i + "-flexItem"} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper}>
           <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} className={styles.divider} style={{margin: space}}/>
-          <FlexItem model={props} style={styles} labelAlign="top" formData={formData} globalState={globalState} id={i + "containerItem"}/>
+          <FlexItem model={props} style={styles} formData={formData} globalState={globalState} id={i + "containerItem"}/>
         </div>);
         })}
     </Flex>
