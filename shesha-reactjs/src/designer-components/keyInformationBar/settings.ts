@@ -118,16 +118,6 @@ export const formSettings = new DesignerToolbarSettings()
                                 label: "flex-end",
                                 value: "flex-end"
                             },
-                            {
-                                id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61d",
-                                label: "Stretch",
-                                value: "stretch"
-                            },
-                            {
-                                id: "dfe60d27-12a1-4ad6-b30b-791c9cbfe61f",
-                                label: "Baseline",
-                                value: "baseline"
-                            }
                         ],
                         version: 5,
                         referenceListId: null,
@@ -155,6 +145,33 @@ export const formSettings = new DesignerToolbarSettings()
                         defaultValue: "top",
                         referenceListId: null,
                         valueFormat: "listItem"
+                    })
+                    .addNumberField({
+                        id: nanoid(),
+                        propertyName: "height",
+                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
+                        label: "Height",
+                        validate: {},
+                        settingsValidationErrors: [],
+                        description: "The height of the bar",
+                    })
+                    .addNumberField({
+                        id: nanoid(),
+                        propertyName: "width",
+                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
+                        label: "Width",
+                        validate: {},
+                        settingsValidationErrors: [],
+                        description: "The width of the bar",
+                    })
+                    .addNumberField({
+                        id: nanoid(),
+                        propertyName: "dividerHeight",
+                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
+                        label: "Divider Height",
+                        validate: {},
+                        settingsValidationErrors: [],
+                        description: "The height of the bar",
                     })
                     .addTextField({
                         id: nanoid(),
