@@ -39,6 +39,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   children,
   allowFullCollapse = false,
   noPadding,
+
 }) => {
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
@@ -46,7 +47,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
 
-    return sidebarProps && !allowFullCollapse
+    const hideFullCollapse = allowFullCollapse && !sidebarProps?.open;
+
+    return sidebarProps && !hideFullCollapse
       ? (<SidebarPanel
         {...sidebarProps}
         allowFullCollapse={allowFullCollapse}
@@ -59,7 +62,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse), [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]);
 
   return (
-    <div className={styles.sidebarContainer}>
+    <div className={styles.sidebarContainer} >
       {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
 
       <SizableColumns
@@ -73,6 +76,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         direction="horizontal"
         cursor="col-resize"
         className={classNames(styles.sidebarContainerBody)}
+
       >
         {renderSidebar('left')}
 

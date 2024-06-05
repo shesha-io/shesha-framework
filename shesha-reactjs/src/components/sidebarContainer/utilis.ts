@@ -9,7 +9,7 @@ function getPanelSizes(
     allowFullCollapse?: boolean
 ): number[] {
     if (allowFullCollapse) {
-        return [100, 0, 0];
+        return [100];
     }
 
     if (!_.isObject(leftSidebarProps) && rightSidebarProps) {
@@ -28,7 +28,6 @@ function getPanelSizes(
     }
 
     if (!leftOpen && rightOpen) {
-        console.log('right open');
         return [3, 77, 20];
     }
 
