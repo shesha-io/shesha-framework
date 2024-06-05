@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import { AutoComplete, Button, Select, Space, Tag } from 'antd';
-import { PlusOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useForm, useMetadata, useMetadataDispatcher } from '@/providers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { camelCase } from 'lodash';
@@ -18,7 +18,7 @@ export interface IPropertyAutocompleteProps {
   onSelect?: (value: string | string[], selectedProperty: IPropertyMetadata) => void;
   onPropertiesLoaded?: (properties: IPropertyMetadata[], prefix: string) => void;
   mode?: 'single' | 'multiple' | 'tags';
-  showFillPropsButton?: boolean;
+  autoFillProps?: boolean;
   readOnly?: boolean;
 }
 
@@ -92,6 +92,10 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
       : multipleValue.substring(0, lastIdx);
   }, [multipleValue]);
 
+  const getProperty = (path: string): IPropertyMetadata => {
+    return state.properties.find(p => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
+  };
+
   // todo: move to metadata dispatcher
   // todo: add `loadProperties` method with callback:
   //    modelType, properties[] (dot notation props list)
@@ -103,9 +107,21 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     });
   }, [metadata?.properties, containerPath, containerPathMultiple]);
 
-  const getProperty = (path: string): IPropertyMetadata => {
-    return state.properties.find(p => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
-  };
+  const allowAutoLabelling = props.autoFillProps !== false && Boolean(form) && !readOnly;
+
+
+  useEffect(() => {
+    if (!form || !props.id || !allowAutoLabelling) {
+      return;
+    }
+    const action = form.getAction(props.id, 'linkToModelMetadata');
+    const selectedProperty = typeof (props.value) === 'string' ? getProperty(props.value) : null;
+    if (typeof action === 'function' && selectedProperty) {
+      action(selectedProperty, form);
+    }
+  }, [props.value, state.properties]);
+
+
 
   const onSelect = (data: string) => {
     if (props.onChange) props.onChange(data);
@@ -116,18 +132,18 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   };
 
   const selectMultipleVlaue = (data: string) => {
-      var list = props.value
-        ? Array.isArray(props.value) ? props.value : []
-        : [];
+    var list = props.value
+      ? Array.isArray(props.value) ? props.value : []
+      : [];
 
-      list.push(data);
-      setMultipleValue('');
+    list.push(data);
+    setMultipleValue('');
 
-      if (props.onChange) props.onChange(list);
-      if (props.onSelect) {
-        const property = getProperty(data);
-        props.onSelect(list, property);
-      }
+    if (props.onChange) props.onChange(list);
+    if (props.onSelect) {
+      const property = getProperty(data);
+      props.onSelect(list, property);
+    }
   };
 
   const onAddMultipleClick = () => {
@@ -155,11 +171,6 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     setState({ properties: state.properties, options: filteredOptions });
   };
 
-  const selectedProperty = useMemo(() => {
-    return typeof (props.value) === 'string'
-      ? getProperty(props.value)
-      : null;
-  }, [props.value, state.properties]);
 
   const onSearch = (data: string) => {
     if (props.onChange) props.onChange(data);
@@ -175,24 +186,13 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     setState({ properties: state.properties, options: filteredOptions });
   };
 
-  const onFillPropsClick = () => {
-    if (!form || !props.id)
-      return;
-    const action = form.getAction(props.id, 'linkToModelMetadata');
-
-    if (typeof action === 'function') {
-      action(selectedProperty, form);
-    }
-  };
-
-  const showFillPropsButton = props.showFillPropsButton !== false && Boolean(form) && !readOnly;
 
   const autoComplete = (
     <AutoComplete
       disabled={readOnly}
       value={props.value}
       options={state.options}
-      style={showFillPropsButton ? { width: 'calc(100% - 32px)' } : props.style}
+      style={props.style}
       onSelect={onSelect}
       onSearch={onSearch}
       notFoundContent="Not found"
@@ -233,38 +233,27 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   const tagChild = Boolean(props.value) && Array.isArray(props.value) ? props.value?.map(forMap) : null;
 
   const multiple = (
-      <AutoComplete
-        disabled={readOnly}
-        value={multipleValue}
-        options={state.options}
-        style={showFillPropsButton ? { width: 'calc(100% - 32px)' } : props.style}
-        //onChange={setMultipleValue}
-        onSelect={onSelectMultiple}
-        onSearch={onSearchMultiple}
-        notFoundContent="Not found"
-        size={props.size}
-        dropdownStyle={props?.dropdownStyle}
-        popupMatchSelectWidth={false}
-      />
+    <AutoComplete
+      disabled={readOnly}
+      value={multipleValue}
+      options={state.options}
+      style={props.style}
+      //onChange={setMultipleValue}
+      onSelect={onSelectMultiple}
+      onSearch={onSearchMultiple}
+      notFoundContent="Not found"
+      size={props.size}
+      dropdownStyle={props?.dropdownStyle}
+      popupMatchSelectWidth={false}
+    />
   );
 
   return (
     <>
       {mode === 'single' ? (
-        showFillPropsButton
-          ? (
-            <Space.Compact style={{ width: "100%", ...props.style }}>
-              {autoComplete}
-              <Button
-                icon={<ThunderboltOutlined />}
-                onClick={onFillPropsClick}
-                disabled={!Boolean(selectedProperty)}
-                style={style}
-                size={props.size}
-              />
-            </Space.Compact>
-          )
-          : <>{autoComplete}</>
+        <>
+          {autoComplete}
+        </>
       ) : mode === 'multiple' ? (
         <>
           <Space.Compact style={{ width: "100%", ...props.style }}>

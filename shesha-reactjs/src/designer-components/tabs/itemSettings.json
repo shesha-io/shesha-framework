@@ -17,7 +17,6 @@
       "labelAlign": "right",
       "parentId": "root"
     },
-
     {
       "id": "4bb6cdc7-0657-4e41-8c50-effe14d0dc96",
       "type": "textField",
@@ -128,7 +127,7 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "propertyName": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
     },
     {
       "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",

@@ -12,6 +12,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const listItemContent = "sha-list-item-content";
     const listItemControls = "sha-list-item-controls";
     const listItemGhost = "sha-list-item-ghost";
+    const listItemName = "sha-list-item-name";
+    const helpIcon = "sha-help-icon";
     
     const list = cx("sha-list", css`
         padding-left: 4px;
@@ -21,6 +23,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             align-items: flex-end;
             justify-content: flex-end;
             margin: 5px 0;
+            &:empty {
+                margin: 0;
+            }
         }
 
         .${listContainer} {
@@ -79,6 +84,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
                 .${dragHandle} {
                     transition: opacity 0.2s;
+                    opacity: 0;
                     cursor: grab;
 
                     margin-right: 8px;
@@ -88,23 +94,32 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
                 .${listItemContent} {
                     flex: 1;
-                    display: flex;
-                    flex-direction: column;
+
+                    .${listItemName} {
+                        margin-left: 10px;
+                        margin-right: 10px;
+                    }
+                    .${helpIcon} {
+                        cursor: help;
+                        font-size: 14px;
+                        color: #aaa;
+                    }
                 }
 
                 .${listItemControls} {
                     transition: opacity 0.2s;
+                    opacity: 0;
                     display: flex;
                     align-items: center;
                 }
 
-                &:not(:hover) {
-                    .${listItemControls} {
-                        opacity: 0;
+                &:hover:not(:has(.${listContainer}:hover)) {
+                    >.${listItemControls} {
+                        opacity: 1;
                     }
 
-                    .${dragHandle} {
-                        opacity: 0;
+                    >.${dragHandle} {
+                        opacity: 0.8;
                     }
                 }
             }
@@ -124,5 +139,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         listItemContent,
         listItemControls,
         listItemGhost,
+        listItemName,
+        helpIcon,
     };
 });

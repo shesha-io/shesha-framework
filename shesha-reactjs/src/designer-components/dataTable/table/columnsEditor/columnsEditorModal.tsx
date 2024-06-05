@@ -1,53 +1,48 @@
 import { Modal } from 'antd';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useMedia } from 'react-use';
-import {
-  ColumnsConfiguratorProvider,
-  useColumnsConfigurator,
-} from '@/providers/datatableColumnsConfigurator';
-import { IConfigurableColumnsBase } from '@/providers/datatableColumnsConfigurator/models';
+import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ColumnsConfigurator } from './columnsConfigurator';
+import { deepCopyViaJson } from '@/utils/object';
 
 export interface IColumnsEditorModal {
   readOnly: boolean;
   visible: boolean;
   hideModal: () => void;
-  value?: object;
+  value?: ColumnsItemProps[];
   onChange?: any;
 }
 
-export const ColumnsEditorModalInner: FC<IColumnsEditorModal> = ({ visible, onChange, hideModal, readOnly }) => {
+export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, visible, hideModal }) => {
   const isSmall = useMedia('(max-width: 480px)');
-  const { items } = useColumnsConfigurator();
 
-  const onOkClick = () => {
-    if (typeof onChange === 'function') onChange(items);
+  const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
+
+  const onOk = () => {
+    onChange?.(localValue);
     hideModal();
+  };
+
+  const onCancel = () => {
+    hideModal();
+    setLocalValue(deepCopyViaJson(value));
   };
 
   return (
     <Modal
       width={isSmall ? '90%' : '60%'}
-      styles={{ body: { overflowY: 'auto', maxHeight: 'calc(100vh - 250px)' } }}
+      styles={{ body: { height: '80vh' } }}
       open={visible}
-      title="Configure Columns"
-      okText="Save"
-      okButtonProps={{ hidden: readOnly }}
-      cancelText={readOnly ? 'Close' : undefined}
-      onCancel={hideModal}
-      onOk={onOkClick}
+      title="Columns Configuration"
+      onCancel={onCancel}
+      onOk={onOk}
+      destroyOnClose={true}
     >
-      <ColumnsConfigurator />
+      <ColumnsConfigurator
+        readOnly={false}
+        value={localValue}
+        onChange={setLocalValue}
+      />
     </Modal>
   );
 };
-
-export const ColumnsEditorModal: FC<IColumnsEditorModal> = (props) => {
-  return (
-    <ColumnsConfiguratorProvider items={(props.value as IConfigurableColumnsBase[]) || []} readOnly={props.readOnly}>
-      <ColumnsEditorModalInner {...props} />
-    </ColumnsConfiguratorProvider>
-  );
-};
-
-export default IColumnsEditorModal;

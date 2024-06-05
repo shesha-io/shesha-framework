@@ -4,7 +4,6 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import AutoCompletePlacesControl from './control';
-import AddressEffect from './effect';
 import { IAddressCompomentProps } from './models';
 import { AddressSettingsForm } from './settings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -18,7 +17,6 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   icon: <HomeOutlined />,
   Factory: ({ model }) => {
     return (
-      <AddressEffect externalApiKey={model?.googleMapsApiKey}>
         <ConfigurableFormItem model={model}>
           {(value, onChange) => { 
             return (
@@ -28,7 +26,6 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
             );
           }}
         </ConfigurableFormItem>
-      </AddressEffect>
     );
   },
   settingsFormFactory: (props) => (<AddressSettingsForm {...props} />),

@@ -56,6 +56,7 @@ export const MetadataEditor: FC<IMetadataEditorProps> = (props) => {
                     onCancel={onModalCancel}
                     onOk={onModalOk}
                     width="50vw"
+                    styles={{ body: { height: '60vh' } }}
                 >
                     <MetadataEditorModal {...props} value={localValue} onChange={setLocalValue} />
                 </Modal>

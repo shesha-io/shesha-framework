@@ -15,8 +15,9 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const evaluationContext = useAvailableConstantsData();
-  const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
+  const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
+  const dynamicContext = useActionDynamicContext(props.actionConfiguration);
 
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
@@ -31,7 +32,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
         setLoading(true);
         executeAction({
           actionConfiguration: { ...props.actionConfiguration },
-          argumentsEvaluationContext: evaluationContext,
+          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext },
         })
           .finally(() => {
             setLoading(false);

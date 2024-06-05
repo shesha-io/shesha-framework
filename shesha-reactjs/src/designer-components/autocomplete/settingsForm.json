@@ -376,7 +376,7 @@
                 "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
                 "validate": {},
                 "modelType": "{{data.entityTypeShortAlias}}",
-                "showFillPropsButton": false,
+                "autoFillProps": false,
                 "settingsValidationErrors": [],
                 "version": 1
               },
@@ -701,7 +701,7 @@
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
-                "propertyName": "data",
+                "name": "data",
                 "description": "Form values",
                 "type": "object"
               }

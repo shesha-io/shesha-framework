@@ -2,6 +2,8 @@ import { createAction } from 'redux-actions';
 import { IStoredFile, IStoredFileStateContext } from './contexts';
 
 export enum StoredFileActionEnums {
+  SetFileId = 'SET_FILE_ID',
+
   DownloadFileRequest = 'DOWNLOAD_FILE_REQUEST',
   DownloadFileSuccess = 'DOWNLOAD_FILE_SUCCESS',
   DownloadFileError = 'DOWNLOAD_FILE_ERROR',
@@ -20,6 +22,11 @@ export enum StoredFileActionEnums {
   FileViewError = 'FILE_VIEW_ERROR',
   /* NEW_ACTION_TYPE_GOES_HERE */
 }
+
+export const setFileIdAction = createAction<IStoredFileStateContext, string>(
+  StoredFileActionEnums.SetFileId,
+  (fileId) => ({ fileId })
+);
 
 export const downloadFileRequestAction = createAction<IStoredFileStateContext>(
   StoredFileActionEnums.DownloadFileRequest,

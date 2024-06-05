@@ -31,8 +31,8 @@ export interface IHasComponentGroups {
 
 export interface IFormDesignerStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-    IHasComponentGroups,
-    IFlatComponentsStructure {
+  IHasComponentGroups,
+  IFlatComponentsStructure {
   validationErrors?: IFormValidationErrors;
 
   selectedComponentId?: string;
@@ -44,11 +44,13 @@ export interface IFormDesignerStateContext
   isDebug: boolean;
   readOnly: boolean;
 
+  settingsPanelRef?: MutableRefObject<any>;
+
   // todo: move to persister
   formSettings: IFormSettings;
 }
 
-export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> {}
+export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> { }
 
 export interface AddComponentPayloadBase {
   index: number;
@@ -59,7 +61,7 @@ export interface IComponentAddPayload extends AddComponentPayloadBase {
   componentType: string;
 }
 
-export interface IComponentAddFromTemplatePayload extends AddComponentPayloadBase {}
+export interface IComponentAddFromTemplatePayload extends AddComponentPayloadBase { }
 
 export interface IAddDataPropertyPayload {
   propertyMetadata: IPropertyMetadata;
@@ -157,7 +159,7 @@ export const UndoableFormDesignerStateContext = createContext<IUndoableFormDesig
   future: [],
 });
 
-export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext {}
+export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext { }
 
 export const FormDesignerStateContext = createContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE);
 

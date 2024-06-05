@@ -13,12 +13,15 @@ import {
 import { IConfigurableActionGroupDictionary } from './models';
 import metadataReducer from './reducer';
 import {
+  DynamicContextHook,
+  EMPTY_DYNAMIC_CONTEXT_HOOK,
   IConfigurableActionArguments,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
 } from '@/interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
+import { GenericDictionary } from '@/interfaces';
 
 export interface IConfigurableActionDispatcherProviderProps { }
 
@@ -105,11 +108,12 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     if (!action) return Promise.reject(`Action '${actionOwner}:${actionName}' not found`);
 
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
+    const executionContext = argumentsEvaluationContext;
 
     return argumentsEvaluator({ ...actionArguments }, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
       .then((preparedActionArguments) => {
         return action
-          .executer(preparedActionArguments, argumentsEvaluationContext)
+          .executer(preparedActionArguments, executionContext)
           .then(async (actionResponse) => {
             if (handleSuccess) {
               if (onSuccess) {
@@ -148,6 +152,27 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
       });
   };
 
+  const getDynamicContextHook = (actionConfiguration: IConfigurableActionConfiguration): DynamicContextHook => {
+    if (!actionConfiguration)
+      return EMPTY_DYNAMIC_CONTEXT_HOOK;
+
+    const { actionOwner, actionName } = actionConfiguration;
+    if (!actionName)
+      return EMPTY_DYNAMIC_CONTEXT_HOOK;
+
+    const action = getConfigurableActionOrNull({ owner: actionOwner, name: actionName });
+    if (!action)
+      return EMPTY_DYNAMIC_CONTEXT_HOOK;
+
+    return action.useDynamicContextHook ?? EMPTY_DYNAMIC_CONTEXT_HOOK;
+  };
+
+  const useActionDynamicContext = (actionConfiguration: IConfigurableActionConfiguration): GenericDictionary => {
+    const useDynamicData = getDynamicContextHook(actionConfiguration);
+
+    return useDynamicData();
+  };
+
   const configurableActionActions: IConfigurableActionDispatcherActionsContext = {
     registerAction,
     unregisterAction,
@@ -156,6 +181,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     getActions,
     prepareArguments,
     executeAction,
+    useActionDynamicContext,
   };
 
 

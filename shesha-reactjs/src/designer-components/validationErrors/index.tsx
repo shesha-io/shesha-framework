@@ -25,7 +25,8 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
 
     return <ValidationErrors error={validationErrors}/>;
   },
-  settingsFormMarkup: settingsForm,
+  /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
+  // settingsFormMarkup: settingsForm, 
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };
 

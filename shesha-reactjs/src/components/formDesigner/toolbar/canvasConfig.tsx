@@ -24,7 +24,7 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
   return (
     <div className={styles.shaDesignerCanvasConfig}>
       <Radio.Group value={radioValue} buttonStyle="solid" size={'middle'}>
-        <Radio.Button value="desktop" onClick={() => {
+        <Radio.Button className="radio-button" value="desktop" onClick={() => {
           setRadioValue('desktop');
           setCanvasWidth(100);
         }
@@ -32,7 +32,7 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
           title="Desktop">
           <DesktopOutlined />
         </Radio.Button>
-        <Radio.Button value="tablet" onClick={() => {
+        <Radio.Button className="radio-button" value="tablet" onClick={() => {
           setRadioValue('tablet');
           setCanvasWidth(75);
         }}
@@ -40,14 +40,11 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
         >
           <TabletOutlined />
         </Radio.Button>
-        <Radio.Button value="dialog" onClick={() => dialogRef.current.click()} title="Custom-Width">
+        <Radio.Button className="radio-button" value="dialog" onClick={() => dialogRef.current.click()} title="Custom-Width">
           <DialogButton refLink={dialogRef} />
         </Radio.Button>
       </Radio.Group>
     </div>
   );
 };
-
-
-
 
