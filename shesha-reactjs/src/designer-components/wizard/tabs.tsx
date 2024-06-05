@@ -42,11 +42,11 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
             status: isDisabledByCondition ? 'wait' : status,
             ...iconProps,
             content: (
-                <ComponentsContainer
-                    containerId={id}
-                    dynamicComponents={isDynamic ? components : []}
-                    readOnly={isDisabledByCondition}
-                />
+                <ParentProvider model={{...model, readOnly: isDisabledByCondition}}>
+                    <ComponentsContainer
+                        containerId={id}
+                        dynamicComponents={isDynamic ? components : []}/>
+                </ParentProvider>
             ),
         };
     });
