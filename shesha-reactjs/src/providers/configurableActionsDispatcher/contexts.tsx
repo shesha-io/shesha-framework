@@ -7,8 +7,8 @@ import {
 } from '@/interfaces/configurableAction';
 import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
-import { ConfigurableFormInstance } from '@/interfaces';
 import { IApplicationApi } from '../sheshaApplication/publicApi';
+import { FormApi } from '../form/formApi';
 
 export interface IConfigurableActionDispatcherStateContext {
 }
@@ -19,7 +19,7 @@ export interface IGetConfigurableActionPayload {
 }
 
 export interface IArgumentsEvaluationContext extends GenericDictionary {
-  form?: ConfigurableFormInstance;
+  form?: FormApi;
   application?: IApplicationApi;
 }
 

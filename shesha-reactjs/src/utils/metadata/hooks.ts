@@ -5,7 +5,6 @@ import {
     registerContextsAction,
     registerFormAction,
     registerPageContextAction,
-    registerFormModeAction,
     registerGlobalStateAction,
     registerHttpAction,
     registerMessageAction,
@@ -36,7 +35,6 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.contexts, registerContextsAction);
         builder.registerStandardProperty(SheshaConstants.pageContext, registerPageContextAction);
         builder.registerStandardProperty(SheshaConstants.form, registerFormAction);
-        builder.registerStandardProperty(SheshaConstants.formMode, registerFormModeAction);
         builder.registerStandardProperty(SheshaConstants.formData, registerFormDataAction);
         builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);        
 

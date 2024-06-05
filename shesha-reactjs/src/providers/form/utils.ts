@@ -6,18 +6,17 @@ import { nanoid } from '@/utils/uuid';
 import nestedProperty from 'nested-property';
 import { CSSProperties } from 'react';
 import {
-  ConfigurableFormInstance,
+  DataTypes,
   IPropertySetting,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
   SettingsMigrationContext,
 } from '@/interfaces';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
 import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { getFullPath } from '@/utils/metadata';
 import { IAnyObject } from './../../interfaces/anyObject';
-import { FormMode } from '@/generic-pages/dynamic/interfaces';
 import blankViewMarkup from './defaults/markups/blankView.json';
 import dashboardViewMarkup from './defaults/markups/dashboardView.json';
 import detailsViewMarkup from './defaults/markups/detailsView.json';
@@ -75,7 +74,6 @@ import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
-import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { IParentProviderProps } from '../parentProvider/index';
@@ -86,19 +84,17 @@ import { useDelayedUpdate } from '../delayedUpdateProvider';
 import qs from 'qs';
 import { FormConfigurationDto } from './api';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
+import { toCamelCase } from '@/utils/string';
+import { FormApi, getFormApi } from './formApi';
 
 /** Interface to get all avalilable data */
-export interface IApplicationContext {
+export interface IApplicationContext<Value = any> {
   application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   /** Form data */
   data?: any;
-  /** Form mode */
-  formMode?: FormMode;
 
-  setFormData?: (payload: ISetFormDataPayload) => void;
-
-  form?: ConfigurableFormInstance;
+  form?: FormApi<Value>;
   /** Contexts datas */
   contexts: IDataContextsData;
   /** Global state */
@@ -147,8 +143,6 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
   const { backendUrl } = useSheshaApplication();
   // get closest form or page form
   const form = useForm(false) ?? dcm.getPageFormInstance();
-  // get form mode
-  const formMode = form?.formMode;
   // get full page context data
   const pageContext = pc?.getFull();
   // Get global state
@@ -167,14 +161,13 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
 
   // update last update date to to simplify general memoization
   const lastUpdated = useDeepCompareMemo(() => new Date()
-    , [data, contexts.lastUpdate, formMode, globalState, selectedRow]);
+    , [data, contexts.lastUpdate, form?.formMode, globalState, selectedRow]);
 
   return {
     application: applicationData,
     contexts,
     data,
-    form,
-    formMode,
+    form: getFormApi(form),
     globalState,
     http: axiosHttp(backendUrl),
     lastUpdated,
@@ -182,7 +175,6 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
     moment: moment,
     pageContext,
     selectedRow,
-    setFormData: form?.setFormData,
     setGlobalState,
   };
 }
@@ -335,6 +327,31 @@ export const getActualModelWithParent = <T>(
 
 export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
   return { ...model, [propertyName]: getSettingValue(model[propertyName], allData, calcValue) } as T;
+};
+
+  //const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
+export const updateModelToMoment = async (model: any, properties: NestedProperties): Promise<any> => {
+  if (properties === null)
+    return model;
+  const newModel = {...model};
+  const propsPromise = isPropertiesArray(properties)
+    ? Promise.resolve(properties)
+    : isPropertiesLoader(properties)
+      ? properties()
+      : Promise.resolve([]);
+  return await propsPromise.then(async (props: IPropertyMetadata[]) => {
+    for (const key in newModel) {
+      if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
+        const prop = props.find(i => toCamelCase(i.path) === key);
+        if (prop && (prop.dataType === DataTypes.date  || prop.dataType === DataTypes.dateTime))
+        newModel[key] = moment(newModel[key]).utc(true);
+        if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
+          newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);        
+        }
+      }
+    }
+    return newModel;
+  });
 };
 
 /**

@@ -99,7 +99,8 @@
           "hidden": false,
           "isDynamic": false,
           "version": 1,
-          "settingsValidationErrors": []
+          "settingsValidationErrors": [],
+          "allowedActions": ["shesha.common"]
         }
       ],
       "version": 2,

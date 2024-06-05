@@ -15,7 +15,6 @@ import { ICheckboxComponentProps } from '@/designer-components/checkbox/interfac
 import { ICollapsiblePanelComponentProps } from '@/designer-components/collapsiblePanel/interfaces';
 import { IConfigurableActionConfiguratorComponentProps } from '@/designer-components/configurableActionsConfigurator/interfaces';
 import { IContainerComponentProps } from '@/designer-components/container/interfaces';
-import { ICustomFilterComponentProps } from '@/designer-components/dataTable/filter/interfaces';
 import { IColumnsEditorComponentProps } from '@/designer-components/dataTable/table/columnsEditor/interfaces';
 import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
 import { INumberFieldComponentProps } from '@/designer-components/numberField/interfaces';
@@ -74,8 +73,6 @@ type ContainerType = ToolbarSettingsProp & Omit<IContainerComponentProps, 'hidde
 
 type ButtonGroupType = ToolbarSettingsProp & Omit<IButtonsProps, 'hidden' | 'type'>;
 
-type CustomFilterType = ToolbarSettingsProp & Omit<ICustomFilterComponentProps, 'hidden' | 'type'>;
-
 type ConfigurableActionConfiguratorType = ToolbarSettingsProp &
   Omit<IConfigurableActionConfiguratorComponentProps, 'hidden' | 'type'>;
 
@@ -85,7 +82,7 @@ type PermissionAutocompleteType = ToolbarSettingsProp & Omit<IPermissionAutocomp
 
 type ColorPickerType = ToolbarSettingsProp & Omit<IColorPickerComponentProps, 'hidden' | 'type'>;
 
-type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
+type ColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
 
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
@@ -126,10 +123,10 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'dropdown');
   }
 
-  public addEntityPickerColumnsEditor(
-    props: EntityPickerColumnsEditorType | ((data: T) => EntityPickerColumnsEditorType)
+  public addColumnsEditor(
+    props: ColumnsEditorType | ((data: T) => ColumnsEditorType)
   ) {
-    return this.addProperty(props, 'entityPickerColumnsEditorComponent');
+    return this.addProperty(props, 'columnsEditorComponent');
   }
 
   public addSectionSeparator(props: SectionSeparatorType | ((data: T) => SectionSeparatorType)) {
@@ -204,10 +201,6 @@ export class DesignerToolbarSettings<T> {
 
   public addQueryBuilder(props: QueryBuilderType | ((data: T) => QueryBuilderType)) {
     return this.addProperty(props, 'queryBuilder');
-  }
-
-  public addCustomFilter(props: CustomFilterType | ((data: T) => CustomFilterType)) {
-    return this.addProperty(props, 'filter');
   }
 
   public addRadio(props: RadioType | ((data: T) => RadioType)) {

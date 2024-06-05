@@ -50,6 +50,7 @@ interface IConfigurableFormComponentDesignerProps {
 }
 const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
   const { styles } = useStyles();
+  const formInstance = useForm();
   const allData = useAvailableConstantsData('all');
   const {
     selectedComponentId,
@@ -69,8 +70,8 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
     }
   }, []);
 
-  const hiddenByCondition = allData?.form?.visibleComponentIds && !allData.form.visibleComponentIds.includes(componentModel.id);
-  const disabledByCondition = allData?.form?.enabledComponentIds && !allData.form.enabledComponentIds.includes(componentModel.id);
+  const hiddenByCondition = formInstance?.visibleComponentIds && !formInstance.visibleComponentIds.includes(componentModel.id);
+  const disabledByCondition = formInstance?.enabledComponentIds && !formInstance.enabledComponentIds.includes(componentModel.id);
 
   const invalidConfiguration =
     componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;

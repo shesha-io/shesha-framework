@@ -106,9 +106,9 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  //#region Configuration Framework
+  //#region Configuration Framework renamed to Configuration Items
 
-  const actionsOwner = 'Configuration Framework';
+  const actionsOwner = 'Configuration Items';
 
   const cfArgs: IConfigurationFrameworkHookArguments = { backendUrl: backendUrl, httpHeaders: httpHeaders };
 

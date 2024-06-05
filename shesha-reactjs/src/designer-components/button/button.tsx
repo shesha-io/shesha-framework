@@ -13,6 +13,7 @@ import { migrateNavigateAction } from '@/designer-components/_common-migrations/
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useForm, useFormData, useSheshaApplication } from '@/providers';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -38,7 +39,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     if (!grantedPermission && formMode !== 'designer') {
       return null;
     }
-
+    
     return (
       <ConfigurableFormItem model={fieldModel}>
         <ConfigurableButton
@@ -81,6 +82,8 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(4, (prev) => migrateVisibility(prev))
       .add<IButtonComponentProps>(5, (prev) => ({...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
       .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
+      .add<IButtonComponentProps>(7, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+
   ,
 };
 

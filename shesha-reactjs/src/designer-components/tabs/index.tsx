@@ -13,6 +13,7 @@ import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 type TabItem = TabsProps['items'][number];
 
@@ -95,7 +96,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const tabsModel: ITabsComponentProps = {
       ...model,
       propertyName: 'custom Name',
-      tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [], itemType: 'item' }],
+      tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [] }],
     };
     return tabsModel;
   },
@@ -110,6 +111,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
       return newModel;
     })
+    .add<ITabsComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,
   customContainerNames: ['tabs'],

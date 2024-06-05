@@ -12,6 +12,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { useDeepCompareMemoKeepReference } from '@/hooks';
 import { useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -83,6 +84,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   migrator: (m) => m
     .add<IRichTextEditorProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRichTextEditorProps>(1, (prev) => migrateReadOnly(prev))
+    .add<IRichTextEditorProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
 };
 
