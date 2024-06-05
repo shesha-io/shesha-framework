@@ -6,6 +6,7 @@ import React, {
     useMemo
     } from 'react';
 import { executeScriptSync, IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
+import { executeFunction, useFormData, useGlobalState } from '@/index';
 
 interface IconPickerWrapperProps {
     disabled?: boolean; // todo: move to the model level
@@ -26,6 +27,8 @@ interface IconPickerWrapperProps {
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+    const { data } = useFormData();
+    const { globalState } = useGlobalState();
 
     const computedColor = useMemo(() => {
         return customColor
@@ -49,9 +52,12 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         if (onChange) onChange(iconName);
     };
 
-    const stylingBoxJSON = useMemo(()=>{
-        return pickStyleFromModel(JSON.parse(stylingBox || "{}"));
-    },[stylingBox]);
+
+
+    const stylingBoxJSON = JSON.parse(stylingBox || '{}');
+
+
+
 
     const style: CSSProperties = {
         fontSize: fontSize || 24,
@@ -60,21 +66,23 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         marginLeft: '12px'
     };
 
+    const getIconStyle = {
+        boxSizing: 'border-box', 
+        zIndex: 2,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: Number(fontSize) ? `${fontSize}px` : '120px',
+        height: Number(fontSize) ? `${fontSize}px` : '44px',
+        border: `${borderWidth}px solid ${computedBorderColor}`,
+        borderRadius: `${borderRadius}px`,
+        backgroundColor: backgroundColor,
+      ...pickStyleFromModel(stylingBoxJSON),
+      ...(executeFunction("{}", { data, globalState }) || {}),
+    };
+
     return (
-        <div style={{
-            boxSizing: 'border-box', 
-            zIndex: 2,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: Number(fontSize) ? `${fontSize}px` : '120px',
-            height: Number(fontSize) ? `${fontSize}px` : '44px',
-            border: `${borderWidth}px solid ${computedBorderColor}`,
-            borderRadius: `${borderRadius}px`,
-            padding: `${stylingBoxJSON["paddingTop"] || '0px'} ${stylingBoxJSON["paddingRight"] || '0px'} ${stylingBoxJSON["paddingBottom"] || '0px'} ${stylingBoxJSON["paddingLeft"] || '0px'}`,
-            margin: `${stylingBoxJSON["marginTop"] || '0px'} ${stylingBoxJSON["marginRight"] || '0px'} ${stylingBoxJSON["marginBottom"] || '0px'} ${stylingBoxJSON["marginLeft"] || '0px'}`,
-            backgroundColor: backgroundColor
-        }}>
+        <div style={getIconStyle}>
         <IconPicker
             value={computedIcon as ShaIconTypes}
             onIconChange={onIconChange}
