@@ -5,8 +5,7 @@ import React, { ReactNode } from 'react';
 import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
-import { IConfigurableActionConfiguration } from '@/providers/index';
-import { useShaRouting } from '@/providers/index';
+import { IConfigurableActionConfiguration} from '@/providers/index';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -55,10 +54,12 @@ export interface IProps {
   isRootItem?: boolean;
   onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;
   onItemEvaluation?: (item: ISidebarMenuItem) => void;
+  getFormUrl: (args) => string;
+  getUrl: (args) => string;
 }
 
-export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation }: IProps): MenuItem => {
-  const {getUrlFromNavigationRequest} = useShaRouting();
+export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
+
 
   const { id, title, icon, itemType } = item;
 
@@ -67,7 +68,7 @@ export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, 
   if (typeof isItemVisible === 'function' && !isItemVisible(item)) return null;
 
   const children = isSidebarGroup(item)
-    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation }))
+    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation, getFormUrl, getUrl }))
     : null;
   const hasChildren = Array.isArray(children) && children.length > 0;
 
@@ -75,9 +76,9 @@ export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, 
 
   let url;
   if(navigationType === 'form'){
-    url = getUrlFromNavigationRequest(actionConfiguration?.actionArguments);
+    url = getFormUrl(actionConfiguration);
   }else if(navigationType === 'url'){
-    url = actionConfiguration?.actionArguments?.url;
+    url = getUrl(actionConfiguration?.actionArguments?.url);
   }
 
   const itemEvaluationArguments: IGetItemArgs = {
