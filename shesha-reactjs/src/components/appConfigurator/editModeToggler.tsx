@@ -41,7 +41,7 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   };
 
   return (
-    <Space>
+    <Space style={{position: 'relative', zIndex: 1000}}>
       {contextHolder}
       <span className={styles.shaConfigurableModeSwitcherLabel}>{mode === 'edit' ? 'Edit Mode' : 'Live Mode'}</span>
       <Switch className={styles.shaConfigurableModeSwitcherSwitcher}
