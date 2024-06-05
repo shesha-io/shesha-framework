@@ -52,12 +52,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         if (onChange) onChange(iconName);
     };
 
-
-
     const stylingBoxJSON = JSON.parse(stylingBox || '{}');
-
-
-
 
     const style: CSSProperties = {
         fontSize: fontSize,
