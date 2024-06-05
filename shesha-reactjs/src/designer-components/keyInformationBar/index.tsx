@@ -17,7 +17,7 @@ const KeyInformationBarComponent: IToolboxComponent<KeyInformationBarProps> = {
 
     return (
       <ConfigurableFormItem model={model}>
-        <KeyInformationBar {...model} />
+          <KeyInformationBar {...model} />
       </ConfigurableFormItem>
     );
   },

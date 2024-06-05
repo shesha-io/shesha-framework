@@ -73,6 +73,16 @@ export const formSettings = new DesignerToolbarSettings()
                         description: "The total number of columns to display the items in.",
                         defaultValue: 1,
                     })
+                    .addTextField({
+                        id: nanoid(),
+                        propertyName: "columnWidth",
+                        parentId: "pnl64664-cbc9-4cdf-babc-6fbea44cd0ca",
+                        label: "Column Width",
+                        validate: {},
+                        settingsValidationErrors: [],
+                        description: "The width of the bar columns.",
+                        defaultValue: 1,
+                    })
                     .addDropdown({
                         id: nanoid(),
                         propertyName: "direction",
@@ -171,7 +181,8 @@ export const formSettings = new DesignerToolbarSettings()
                         label: "Divider Height",
                         validate: {},
                         settingsValidationErrors: [],
-                        description: "The height of the bar",
+                        description: "The height of the divider",
+                        defaultValue: ""
                     })
                     .addTextField({
                         id: nanoid(),
