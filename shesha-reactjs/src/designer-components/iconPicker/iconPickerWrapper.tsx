@@ -60,25 +60,23 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
 
     const style: CSSProperties = {
-        fontSize: fontSize || 24,
+        fontSize: fontSize,
         color: computedColor,
-        zIndex: 1,
         marginLeft: '12px'
     };
 
     const getIconStyle = {
         boxSizing: 'border-box', 
-        zIndex: 2,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: Number(fontSize) ? `${fontSize}px` : '120px',
-        height: Number(fontSize) ? `${fontSize}px` : '44px',
+        width: Number(fontSize) ? `${fontSize}px` : '180px',
+        height: Number(fontSize) ? `${fontSize}px` : '40px',
         border: `${borderWidth}px solid ${computedBorderColor}`,
         borderRadius: `${borderRadius}px`,
         backgroundColor: backgroundColor,
-      ...pickStyleFromModel(stylingBoxJSON),
-      ...(executeFunction("{}", { data, globalState }) || {}),
+        ...pickStyleFromModel(stylingBoxJSON),
+        ...(executeFunction("{}", { data, globalState }) || {}),
     };
 
     return (
