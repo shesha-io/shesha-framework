@@ -62,7 +62,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           const granted = anyOfPermissionsGranted(permissions || []);
           const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-          return !((!granted || !isVisibleByCondition) && allData.form.formMode !== 'designer');
+          return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
         })
         .map(item => getActualModel(item, allData) as IWizardStepProps),
     [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
