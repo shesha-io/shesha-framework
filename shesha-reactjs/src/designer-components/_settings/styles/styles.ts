@@ -1,7 +1,7 @@
 import { createStyles } from "antd-style";
+import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
-    const verticalSettings = "vertical-settings";
     const jsSwitch = cx(css`
         &.${prefixCls}-btn {
             position: absolute;
@@ -25,7 +25,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
                 left: auto;
                 top: -28px;
             }
-            .${verticalSettings} & {
+            .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
                 left: auto;
                 top: -28px;
@@ -48,7 +48,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         .sidebar-container & {
             padding-top: 4px;
         }
-        .${verticalSettings} & {
+        .${sheshaStyles.verticalSettingsClass} & {
             padding-top: 4px;
         }
     `);
@@ -63,7 +63,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             margin-right: 0;
             margin-left: 0;
         }
-        .${verticalSettings} & {
+        .${sheshaStyles.verticalSettingsClass} & {
             margin-right: 0;
             margin-left: 0;
         }
@@ -74,6 +74,5 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         contentJs,
         contentCode,
         jsContent,
-        verticalSettings,
     };
 });

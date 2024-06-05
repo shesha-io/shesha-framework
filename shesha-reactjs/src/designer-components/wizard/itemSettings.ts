@@ -3,12 +3,13 @@ import { IWizardStepProps } from './models';
 
 export const getSettings = (_data?: IWizardStepProps) =>
   new DesignerToolbarSettings()
-    .addPropertyAutocomplete({
+    .addTextField({
       id: '14817287-cfa6-4f8f-a998-4eb6cc7cb818',
       propertyName: 'name',
       label: 'Name',
       labelAlign: 'right',
       parentId: 'root',
+      jsSetting: false,
     })
     .addTextField({
       id: '02deeaa2-1dc7-439f-8f1a-1f8bec6e8425',

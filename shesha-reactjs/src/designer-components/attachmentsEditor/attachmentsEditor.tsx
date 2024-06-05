@@ -19,6 +19,8 @@ import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -40,9 +42,9 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
   name: 'File list',
   icon: <FolderAddOutlined />,
-  Factory: ({ model, form }) => {
+  Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
-    const { formMode, formSettings, setFormData } = useForm();
+    const form = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
 
@@ -58,13 +60,11 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       executeScript<void>(model.onFileChanged, {
         fileList,
         data,
-        form,
-        formMode,
+        form: getFormApi(form),
         globalState,
         http: axiosHttp(backendUrl),
         message,
         moment,
-        setFormData,
         setGlobalState
       });
     };
@@ -78,7 +78,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             <StoredFilesProvider
               ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
               ownerType={
-                Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
+                Boolean(model.ownerType) ? model.ownerType : Boolean(form?.formSettings?.modelType) ? form?.formSettings?.modelType : ''
               }
               ownerName={model.ownerName}
               filesCategory={model.filesCategory}
@@ -89,7 +89,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
               value={value}
             >
               <CustomFile
-                isStub={formMode === 'designer'}
+                isStub={form?.formMode === 'designer'}
                 allowAdd={enabled && model.allowAdd}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
@@ -126,6 +126,10 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     .add<IAttachmentsEditorProps>(2, (prev) => migrateVisibility(prev))
     .add<IAttachmentsEditorProps>(3, (prev) => migrateReadOnly(prev))
     .add<IAttachmentsEditorProps>(4, (prev) => ({...prev, downloadZip: true}))
+    .add<IAttachmentsEditorProps>(5, (prev) => ({
+      ...migrateFormApi.eventsAndProperties(prev),
+      onFileChanged: migrateFormApi.withoutFormData(prev?.onFileChanged),
+    }))
   ,
 };
 

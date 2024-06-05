@@ -7,12 +7,12 @@ import moment from 'moment';
 import { IDataListWithDataSourceProps } from './model';
 import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
-import { useParent } from '@/providers/parentProvider/index';
 import { useStyles } from '@/components/dataList/styles/styles';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
+import { FormApi } from '@/providers/form/formApi';
 
 export const NotConfiguredWarning: FC = () => {
   return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
@@ -21,11 +21,10 @@ export const NotConfiguredWarning: FC = () => {
 export type OnSaveHandler = (data: object, formData: object, contexts: object, globalState: object) => Promise<object>;
 export type OnSaveSuccessHandler = (
   data: object,
-  formData: object,
+  form: FormApi,
   contexts: object,
   globalState: object,
-  setGlobalState: Function,
-  setFormData: Function
+  setGlobalState: Function
 ) => void;
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
@@ -59,9 +58,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const { styles } = useStyles();
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
-  const parent = useParent(false);
   const allData = useAvailableConstantsData();
-  const isDesignMode = allData.formMode === 'designer' || parent?.formMode === 'designer';
+  const isDesignMode = allData.formMode === 'designer';
 
   const repository = getRepository();
 
@@ -114,14 +112,13 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         //nop
       };
 
-    return (data, formData, contexts, globalState, setGlobalState, setFormData) => {
+    return (data, form, contexts, globalState, setGlobalState) => {
       const evaluationContext = {
         data,
-        formData,
+        form,
         contexts,
         globalState,
         setGlobalState,
-        setFormData,
         http: allData.http,
         moment,
       };
@@ -145,7 +142,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData/*, response*/);
-        performOnRowSaveSuccess(preparedData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
+        performOnRowSaveSuccess(preparedData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
         return response;
       });
     });
@@ -163,7 +160,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
       return repository.performCreate(0, preparedData, options).then(() => {
         dataSource.refreshTable();
-        performOnRowSaveSuccess(preparedData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.setGlobalState, allData.setFormData);
+        performOnRowSaveSuccess(preparedData, allData.form, allData.contexts ?? {}, allData.globalState, allData.setGlobalState);
       });
     });
   };

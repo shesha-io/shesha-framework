@@ -111,7 +111,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
       <component.Factory
         model={componentModel}
         componentRef={componentRef}
-        form={allData.form?.form}
+        form={allData.form?.formInstance}
       />
     </CustomErrorBoundary>
   );
