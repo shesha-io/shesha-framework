@@ -55,18 +55,15 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   });
 
   //Remove every tab from the equation that isn't visible either by customVisibility or permissions
-  const visibleSteps = useMemo(
-    () =>
-      tabs
-        .filter(({ customVisibility, permissions }) => {
-          const granted = anyOfPermissionsGranted(permissions || []);
-          const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
+  const visibleSteps =
+    tabs
+      .filter(({ customVisibility, permissions }) => {
+        const granted = anyOfPermissionsGranted(permissions || []);
+        const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-          return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
-        })
-        .map(item => getActualModel(item, allData) as IWizardStepProps),
-    [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
-  );
+        return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
+      })
+      .map(item => getActualModel<IWizardStepProps>(item, allData));
 
   const currentStep = visibleSteps[current];
   const components = currentStep?.components;
