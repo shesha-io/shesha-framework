@@ -75,7 +75,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     };
 
     return (
-        <div style={getIconStyle}>
+        <div style={computedIcon ? getIconStyle : {}}>
         <IconPicker
             value={computedIcon as ShaIconTypes}
             onIconChange={onIconChange}
