@@ -263,7 +263,10 @@ namespace Shesha.DynamicEntities
                     : 0;
                 foreach (var cp in codeProperties)
                 {
-                    var dbp = dbProperties.FirstOrDefault(p => p.Name == cp.Path && p.ParentProperty?.Id == parentProp?.Id);
+                    var dbp = dbProperties.Where(p => p.Name == cp.Path && p.ParentProperty?.Id == parentProp?.Id)
+                        .OrderBy(p => !p.IsDeleted ? 0 : 1)
+                        .ThenByDescending(p => p.CreationTime)
+                        .FirstOrDefault();
                     if (dbp == null)
                     {
                         dbp = new EntityProperty
@@ -284,7 +287,7 @@ namespace Shesha.DynamicEntities
                         MapProperty(cp, dbp);
                         // update hardcoded part
                         dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
-                            
+
                         // restore property
                         dbp.IsDeleted = false;
                         dbp.DeletionTime = null;
@@ -364,17 +367,20 @@ namespace Shesha.DynamicEntities
             }
             else
             {
-                if (dbp.ItemsType == null)
-                    dbp.ItemsType = new EntityProperty();
+                var itemsTypeProp = dbp.ItemsType ?? (dbp.ItemsType = new EntityProperty());
 
-                dbp.ItemsType.EntityConfig = dbp.EntityConfig;
-                cp.ItemsType.Label = dbp.ItemsType.Label;
-                cp.ItemsType.Description = dbp.ItemsType.Description;
+                itemsTypeProp.EntityConfig = dbp.EntityConfig;
+                // keep label and description???
+                cp.ItemsType.Label = itemsTypeProp.Label;
+                cp.ItemsType.Description = itemsTypeProp.Description;
 
-                MapProperty(cp.ItemsType, dbp.ItemsType);
+                MapProperty(cp.ItemsType, itemsTypeProp);
 
-                dbp.ItemsType.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
-                dbp.ItemsType.SortOrder = 0;
+                itemsTypeProp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
+                itemsTypeProp.SortOrder = 0;
+                itemsTypeProp.ParentProperty = dbp;
+                await _entityPropertyRepository.InsertOrUpdateAsync(itemsTypeProp);
+
                 await _entityPropertyRepository.UpdateAsync(dbp);
             }
         }
@@ -404,7 +410,7 @@ namespace Shesha.DynamicEntities
             // leave validation message from DB property if exists
             // To allow change validation message even it is hardcoded
             dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
-            
+
             dst.CascadeCreate = src.CascadeCreate ?? dst.CascadeCreate;
             dst.CascadeUpdate = src.CascadeUpdate ?? dst.CascadeUpdate;
             dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced ?? dst.CascadeDeleteUnreferenced;

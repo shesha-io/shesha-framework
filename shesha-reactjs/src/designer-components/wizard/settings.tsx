@@ -58,6 +58,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
       nextButtonText: 'Next',
       backButtonText: 'Back',
       components: [],
+      status: undefined,
     };
 
     return buttonProps;
