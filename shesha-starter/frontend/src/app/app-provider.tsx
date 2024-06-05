@@ -29,11 +29,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({
         backendUrl={backendUrl}
         router={nextRouter}
         noAuth={nextRouter.path?.includes('/no-auth')}
-        toolboxComponentGroups={
-          [
-            /* NEW_TOOLBOXCOMPONENT_GOES_HERE */
-          ]
-        }
       >
         <StoredFilesProvider baseUrl={backendUrl} ownerId={""} ownerType={""}>
           {children}
