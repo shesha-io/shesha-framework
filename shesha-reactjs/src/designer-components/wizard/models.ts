@@ -10,7 +10,8 @@ export interface IWizardStepProps {
   subTitle: string;
   description: string;
   allowCancel?: boolean;
-  
+  status?: StepProps['status'];
+
   label?: string;
   name?: string;
   tooltip?: string;
@@ -35,7 +36,6 @@ export interface IWizardStepProps {
   permissions?: string[];
   components?: IConfigurableFormComponent[];
   childItems?: IWizardStepProps[];
-  status?: StepProps['status'];
 
   onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
 

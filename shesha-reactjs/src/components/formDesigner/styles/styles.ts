@@ -219,6 +219,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 gap: 1.5rem;
                 margin: 0 20%;
                 padding-left:5%;
+
                 .radio-button {
                     width: 33%;
                   }
