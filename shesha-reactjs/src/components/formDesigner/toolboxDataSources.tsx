@@ -1,11 +1,10 @@
 import React, { FC, useMemo } from 'react';
 import { Collapse, Empty, Tooltip } from 'antd';
 import { useLocalStorage } from '@/hooks';
-import { useMetadata } from '@/providers';
 import { IDataSource } from '@/providers/formDesigner/models';
 import SearchBox from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';
-import { IPropertyMetadata, isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
+import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
@@ -13,7 +12,9 @@ import classNames from 'classnames';
 
 const { Panel } = Collapse;
 
-export interface IToolboxDataSourcesProps { }
+export interface IToolboxDataSourcesProps {
+  dataSources: IDataSource[];
+}
 
 interface FilteredDataSource {
   datasource: IDataSource;
@@ -42,36 +43,23 @@ const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): I
   return result;
 };
 
-export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
+export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.datasources.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.datasources.search', '');
   const { styles } = useStyles();
 
-  const currentMeta = useMetadata(false);
 
-  const { dataSources: formDs, activeDataSourceId } = useFormDesigner();
-
-  const allDataSources = useMemo<IDataSource[]>(() => {
-    const dataSources = [...formDs];
-    if (isEntityMetadata(currentMeta?.metadata)) dataSources.push({
-      id: currentMeta.id,
-      name: currentMeta.metadata.name,
-      containerType: currentMeta.metadata.entityType,
-      items: isPropertiesArray(currentMeta.metadata.properties) ? currentMeta.metadata.properties : [],
-    });
-
-    return dataSources;
-  }, [formDs, currentMeta?.metadata]);
+  const { activeDataSourceId } = useFormDesigner();
 
   const datasourcesWithVisible = useMemo<FilteredDataSource[]>(() => {
-    const dataSources = allDataSources.map<FilteredDataSource>(ds => ({
+    const dataSourcesX = dataSources.map<FilteredDataSource>(ds => ({
       datasource: ds,
       visibleItems: getVisibleProperties(ds.items, searchText),
     }));
-    return dataSources;
-  }, [allDataSources, searchText]);
+    return dataSourcesX;
 
-  if (allDataSources.length === 0) return null;
+  }, [searchText, dataSources]);
+
 
   const onCollapseChange = (key: string | string[]) => {
     setOpenedKeys(Array.isArray(key) ? key : [key]);

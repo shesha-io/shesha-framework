@@ -28,6 +28,7 @@ function getPanelSizes(
     }
 
     if (!leftOpen && rightOpen) {
+        console.log('right open');
         return [3, 77, 20];
     }
 

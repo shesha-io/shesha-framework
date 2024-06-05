@@ -56,7 +56,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       : null;
   };
 
-  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse), [isOpenRight, isOpenLeft]);
+  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse), [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]);
 
   return (
     <div className={styles.sidebarContainer}>

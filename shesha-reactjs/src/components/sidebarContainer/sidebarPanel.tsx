@@ -8,23 +8,29 @@ import { ISidebarProps, SidebarPanelPosition } from './models';
 interface SidebarPanelProps extends ISidebarProps {
     side: SidebarPanelPosition;
     allowFullCollapse: boolean;
-    setIsOpenGlobal?: (isOpen: boolean) => void;
+    setIsOpenGlobal?: (React.Dispatch<React.SetStateAction<boolean>>) | undefined;
 }
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
     const { styles } = useStyles();
     const { side, allowFullCollapse, setIsOpenGlobal } = props;
 
-    useEffect(() => {
-        if (setIsOpenGlobal) setIsOpenGlobal(props?.open || props?.defaultOpen || false);
-    }, []);
-
-    const rotation = side === 'right' ? (props?.open ? 0 : 180) : props?.open ? 180 : 0;
-
     const { open, defaultOpen = true, onOpen, title, onClose, placeholder, content, className } = props;
 
+
     const isControllable = open !== undefined;
-    const [isOpen, setIsOpen] = useState(isControllable ? open : defaultOpen);
+
+    const initialState = isControllable ? open : defaultOpen;
+
+
+    useEffect(() => {
+        if (setIsOpenGlobal) setIsOpenGlobal(initialState);
+    }, []);
+
+
+    const [isOpen, setIsOpen] = useState(initialState);
     const realOpen = isControllable ? open : isOpen;
+    const rotation = side === 'right' ? (realOpen ? 0 : 180) : realOpen ? 180 : 0;
+
 
     const handleClick = () => {
         const handler = realOpen ? onClose : onOpen;
@@ -32,7 +38,6 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
         if (!isControllable) {
             setIsOpen(!isOpen);
             if (setIsOpenGlobal) setIsOpenGlobal(!isOpen);
-
         };
     };
 
