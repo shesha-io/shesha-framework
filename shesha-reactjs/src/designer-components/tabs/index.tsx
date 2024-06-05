@@ -55,7 +55,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         } = tabModel;
 
         const granted = anyOfPermissionsGranted(permissions || []);
-        if ((!granted || hidden) && allData.formMode !== 'designer') return;
+        if ((!granted || hidden) && allData.form.formMode !== 'designer') return;
 
         const tab: TabItem = {
           key: key,
@@ -86,7 +86,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       });
 
       return tabItems;
-    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.form.formMode, allData.globalState, allData.selectedRow]);
 
     return model.hidden ? null : (
       <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
