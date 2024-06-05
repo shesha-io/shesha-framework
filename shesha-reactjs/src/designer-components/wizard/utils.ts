@@ -85,8 +85,8 @@ export const getWizardButtonStyle =
 export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next') => {
 
   return type === 'next'
-    ? steps.findIndex(({ status }, index) => index > current && status !== 'wait')
-    : findLastIndex(steps, ({ status }, index) => index < current && status !== 'wait');
+    ? steps.findIndex((_, index) => index > current)
+    : findLastIndex(steps, (_, index) => index < current);
 };
 
 export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
