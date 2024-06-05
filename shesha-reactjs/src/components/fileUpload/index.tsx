@@ -59,7 +59,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
   useEffect(() => {
     if (fileInfo && !allowedFileTypes.includes(fileInfo?.type)) {
       if (allowedFileTypes?.length > 0 && !allowedFileTypes?.includes("." + fileInfo?.name?.split('.')?.pop())) {
-        message.error(`The uploaded file type .${fileInfo?.name?.split('.')?.pop()} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
+        if(!fileInfo?.type?.includes("/")){
+          message.error(`The uploaded file type .${fileInfo?.name?.split('.')?.pop()} is not allowed. Only ${formatNaturalLanguageList(allowedFileTypes)} can be uploaded.`);
+        }
         deleteFile();
       }
 
