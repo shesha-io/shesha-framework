@@ -59,7 +59,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const { selectedRow, selectedRows, setSelectedRow, setMultiSelectedRow } = dataSource;
 
   const allData = useAvailableConstantsData();
-  const isDesignMode = allData.formMode === 'designer';
+  const isDesignMode = allData.form.formMode === 'designer';
 
   const repository = getRepository();
 
@@ -210,7 +210,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       model={{ ...props, hideLabel: true }}
       className={classNames(
         styles.shaDatalistComponent,
-        { horizontal: props?.orientation === 'horizontal' && allData.formMode !== 'designer' } //
+        { horizontal: props?.orientation === 'horizontal' && allData.form.formMode !== 'designer' } //
       )}
       wrapperCol={{  md: 24 }}
     >

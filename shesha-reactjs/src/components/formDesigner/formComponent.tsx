@@ -28,7 +28,7 @@ const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
   const toolboxComponent = getToolboxComponent(model.type);
   if (!toolboxComponent) return <div>Component not found</div>;
 
-  actualModel.hidden = allData.formMode !== 'designer' 
+  actualModel.hidden = allData.form.formMode !== 'designer' 
     && (
         actualModel.hidden 
         || !anyOfPermissionsGranted(actualModel?.permissions || [])
