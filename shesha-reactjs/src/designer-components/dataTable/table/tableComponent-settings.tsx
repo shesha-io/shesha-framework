@@ -178,13 +178,13 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
   const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true,
     standardConstants: [
-      SheshaConstants.globalState, { uid: SheshaConstants.formData, name: "formData" }, SheshaConstants.moment, SheshaConstants.http
+      SheshaConstants.globalState, SheshaConstants.moment, SheshaConstants.http
     ]
   });
   const onRowSaveConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true,
     standardConstants: [
-      SheshaConstants.globalState, { uid: SheshaConstants.formData, name: "formData" }, SheshaConstants.moment, SheshaConstants.http
+      SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ],
     onBuild: (builder) => {
       builder.addObject("data", "Current row data", undefined);

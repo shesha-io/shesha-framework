@@ -10,6 +10,7 @@ import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import ParentProvider from '@/providers/parentProvider/index';
 import { SizableColumns } from '@/components/sizableColumns';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
@@ -54,11 +55,10 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     return tabsModel;
   },
   settingsFormFactory: (props) => <SizableColumnsSettingsForm {...props} />,
-  migrator: (m) =>
-    m.add<ISizableColumnComponentProps>(
-      0,
-      (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps
-    ),
+  migrator: (m) =>m
+    .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
+    .add<ISizableColumnComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
   customContainerNames: ['columns'],
 };
 

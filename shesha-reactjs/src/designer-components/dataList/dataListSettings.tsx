@@ -176,7 +176,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
   const initNewRowConstants = useAvailableConstantsMetadata({
     standardConstants: [
       SheshaConstants.globalState,
-      { uid: SheshaConstants.formData, name: "formData" },
       SheshaConstants.http,
       SheshaConstants.moment,
       SheshaConstants.contexts
@@ -185,7 +184,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
   const onListItemSaveConstants = useAvailableConstantsMetadata({
     standardConstants: [
       SheshaConstants.globalState,
-      { uid: SheshaConstants.formData, name: "formData" },
       SheshaConstants.http,
       SheshaConstants.moment,
       SheshaConstants.contexts
