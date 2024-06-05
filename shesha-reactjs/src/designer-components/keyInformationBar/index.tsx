@@ -1,6 +1,6 @@
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import React from 'react';
-import { HeartOutlined } from '@ant-design/icons';
+import { BorderLeftOutlined, HeartOutlined } from '@ant-design/icons';
 import {formSettings} from './settings';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -11,7 +11,7 @@ import KeyInformationBar, { KeyInformationBarProps } from '@/components/keyInfor
 const KeyInformationBarComponent: IToolboxComponent<KeyInformationBarProps> = {
   type: 'KeyInformationBar',
   name: 'Key Information Bar',
-  icon: <HeartOutlined />,
+  icon: <BorderLeftOutlined />,
   canBeJsSetting: true,
   Factory: ({ model }) => {
 
