@@ -52,7 +52,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
         isRootItem: true,
         getFormUrl: (args) => {
           const url = getUrlFromNavigationRequest(args?.actionArguments);
-          const href = evaluateString(decodeURIComponent(url), args);
+          const href = evaluateString(decodeURIComponent(url), evaluationContext);
           return href;
         },
         getUrl: (url) => {
