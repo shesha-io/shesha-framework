@@ -9,6 +9,7 @@ import { IMarkdownProps } from './interfaces';
 import Markdown from './markdown';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -34,6 +35,7 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   }),
   migrator: (m) => m
    .add<IMarkdownProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IMarkdownProps)
+   .add<IMarkdownProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
 };
 

@@ -9,6 +9,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 import { DEFAULT_CONTEXT_METADATA } from '@/providers/dataContextManager/models';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IDataContextComponentProps extends IConfigurableFormComponent {
   items: IPropertyMetadata[];
@@ -53,7 +54,12 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     linkToModelMetadata: (model): IDataContextComponentProps => ({...model}),
     migrator: (m) => m
       .add<IDataContextComponentProps>(0, prev => ({ ...prev, description: prev.description ?? prev.componentName, items: [], initialDataCode: null }))
-      .add<IDataContextComponentProps>(1, prev => ({ ...prev, onChangeAction: migrateNavigateAction(prev.onChangeAction) })),
+      .add<IDataContextComponentProps>(1, prev => ({ ...prev, onChangeAction: migrateNavigateAction(prev.onChangeAction) }))
+      .add<IDataContextComponentProps>(2, (prev) => ({
+        ...migrateFormApi.properties(prev),
+        initialDataCode: migrateFormApi.withoutFormData(prev?.initialDataCode),        
+      }))
+  ,
   };
   
   export default DataContextComponent;

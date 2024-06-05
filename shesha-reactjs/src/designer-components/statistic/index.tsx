@@ -10,6 +10,7 @@ import { useFormData } from '@/providers';
 import _ from 'lodash';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -47,6 +48,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IStatisticComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IStatisticComponentProps)
+    .add<IStatisticComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
 };
 
