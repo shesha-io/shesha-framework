@@ -470,8 +470,12 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             style={orientation === 'wrap' ? {minWidth: `${Number(cardMinWidth) ? cardMinWidth+'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth+'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight+'px' : cardHeight}`,
             ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
           >
+            <div onClick={(event) => {event.stopPropagation()}} onDoubleClick={(event)=>{event.stopPropagation()}}>
+            
             {rows.current?.length > index ? rows.current[index] : null}
+            </div>
           </div>
+
         </ConditionalWrap>{' '}
         {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
       </div>

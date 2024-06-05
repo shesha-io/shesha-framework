@@ -35,7 +35,8 @@ const ActionButton: FC<IActionButtonProps> = ({
         mustConfirm
         ? undefined
         : (e) => {
-          e.stopPropagation();
+          //event.stopPropagation() allows the event to bubble to the checkbox component
+          e.preventDefault();
           executer();
         }
       }
