@@ -2,31 +2,30 @@ import { createStyles } from "antd-style";
 import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
-    const leftSidebarWidth = "350px"; // @sha-left-sidebar-width
-    const rightSidebarWidth = leftSidebarWidth; // @sha-right-sidebar-width
-    const sidebarBtnHeight = "35px"; // @sha-collapsible-sidebar-btn-height
+  const leftSidebarWidth = "350px";
+  const rightSidebarWidth = leftSidebarWidth;
+  const sidebarBtnHeight = "35px";
 
-    const sidebarContainerHeader = "sidebar-container-header";
-    const sidebarContainerBody = "sidebar-container-body";
-    const sidebarContainerMainArea = "sidebar-container-main-area";
-    const sidebarContainerMainAreaBody = "sidebar-container-main-area-body";
-    const sidebarHeader = "sidebar-header";
-    const sidebarHeaderTitle = "sidebar-header-title";
-    const sidebarHeaderBtn = "sidebar-header-btn";
-    const sidebarBody = "sidebar-body";
-    const sidebarBodyPlaceholder = "sidebar-body-placeholder";
-    const sidebarBodyContent = "sidebar-body-content";    
-    const sidebarContainerLeft = "sidebar-container-left";
-    const sidebarContainerRight = "sidebar-container-right";
+  const sidebarContainerHeader = "sidebar-container-header";
+  const sidebarContainerBody = "sidebar-container-body";
+  const sidebarContainerMainArea = "sidebar-container-main-area";
+  const sidebarContainerMainAreaBody = "sidebar-container-main-area-body";
+  const sidebarHeader = "sidebar-header";
+  const sidebarHeaderTitle = "sidebar-header-title";
+  const sidebarHeaderBtn = "sidebar-header-btn";
+  const sidebarBody = "sidebar-body";
+  const sidebarBodyPlaceholder = "sidebar-body-placeholder";
+  const sidebarBodyContent = "sidebar-body-content";
+  const sidebarContainerLeft = "sidebar-container-left";
+  const sidebarContainerRight = "sidebar-container-right";
 
-    const sidebarContainer = cx("sidebar-container", css`
+  const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
       overflow-x: hidden;
 
       .${sidebarContainerMainAreaBody}{
         max-height: 85vh;
-        overflow-y: auto;
-        overflow-x: hidden;
+        overflow: auto;
         margin: 0 auto;
        
       }
@@ -49,6 +48,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
     
           &.open {
+            width: ${leftSidebarWidth};
             display: block;
 
             .${sidebarHeader} {
@@ -182,19 +182,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
       }    
     `);
 
-    return {
-        sidebarContainer,
-        sidebarContainerHeader,
-        sidebarContainerBody,
-        sidebarContainerMainArea,
-        sidebarContainerMainAreaBody,
-        sidebarHeader,
-        sidebarHeaderTitle,
-        sidebarHeaderBtn,
-        sidebarBody,
-        sidebarBodyPlaceholder,
-        sidebarBodyContent,
-        sidebarContainerLeft,
-        sidebarContainerRight,
-    };
+  return {
+    sidebarContainer,
+    sidebarContainerHeader,
+    sidebarContainerBody,
+    sidebarContainerMainArea,
+    sidebarContainerMainAreaBody,
+    sidebarHeader,
+    sidebarHeaderTitle,
+    sidebarHeaderBtn,
+    sidebarBody,
+    sidebarBodyPlaceholder,
+    sidebarBodyContent,
+    sidebarContainerLeft,
+    sidebarContainerRight,
+  };
 });

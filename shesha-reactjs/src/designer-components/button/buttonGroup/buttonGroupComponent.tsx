@@ -16,7 +16,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model ,form}) => {
-    return <ButtonGroup {...model} disabled={model.readOnly} form={form} />;
+    return model.hidden ? null : <ButtonGroup {...model} disabled={model.readOnly} form={form} />;
   },
   migrator: (m) => m
     .add<IButtonGroupComponentProps>(0, (prev) => {

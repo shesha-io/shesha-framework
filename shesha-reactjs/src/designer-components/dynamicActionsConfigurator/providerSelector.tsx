@@ -23,8 +23,6 @@ export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, 
     const treeData = useMemo<ITreeItem[]>(() => {
         const result: ITreeItem[] = [];
     
-        //console.log('build actions', actions)
-    
         for (const owner in providers) {
           if (!providers.hasOwnProperty(owner))
             continue;

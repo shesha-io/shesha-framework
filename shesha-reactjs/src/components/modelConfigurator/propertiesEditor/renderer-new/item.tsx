@@ -10,46 +10,46 @@ import { SimpleProperty } from './simpleProperty';
 export interface IItemProps {
     itemProps: IModelItem;
     index: number[];
-    key: string;
+    onChange: (newValue: IModelItem) => void;
     containerRendering: ContainerRenderer;
 }
 
-export const Item: FC<IItemProps> = ({ itemProps, index, key, containerRendering }) => {
+export const Item: FC<IItemProps> = ({ itemProps, index, containerRendering, onChange }) => {
     if (itemProps.dataType === DataTypes.object || itemProps.dataType === DataTypes.array) {
         return <ComplexProperty
-            id={index}
             index={index}
-            {...itemProps}
-            key={key}
+            data={itemProps}
             containerRendering={containerRendering}
+            onChange={onChange}
+            key={itemProps.id}
         />;
     } else if (itemProps.dataType === DataTypes.objectReference) {
         return <JsonProperty
             id={index}
             index={index}
             {...itemProps}
-            key={key}
+            key={itemProps.id}
         />;
     } else if (itemProps.dataType === DataTypes.entityReference && !itemProps.entityType) {
         return <GenericEntityProperty
             id={index}
             index={index}
             {...itemProps}
-            key={key}
+            key={itemProps.id}
         />;
     } else if (itemProps.dataType === DataTypes.entityReference && itemProps.entityType) {
         return <EntityProperty
             id={index}
             index={index}
             {...itemProps}
-            key={key}
+            key={itemProps.id}
         />;
     } else {
         return <SimpleProperty
             id={index}
             index={index}
             {...itemProps}
-            key={key}
+            key={itemProps.id}
         />;
     }
 };

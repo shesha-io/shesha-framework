@@ -20,6 +20,8 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
   icon: <TableOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
+    if (model.hidden)
+      return null;
     return store ? (
       <TableWrapper {...model} />
     ) : (

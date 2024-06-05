@@ -2,67 +2,71 @@ import groupSettingsJson from './groupSettings.json';
 import itemSettingsJson from './itemSettings.json';
 import React, {
   FC,
-  ReactNode,
-  useEffect,
-  useState
+  useMemo,
+  useRef,
 } from 'react';
 import { ConfigurableForm } from '@/components';
-import { Empty } from 'antd';
+import { Empty, Form } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
-import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
+import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
+import { ConfigurableFormInstance } from '@/interfaces';
+import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
+import { sheshaStyles } from '@/styles';
 
-export interface IProps { }
+export interface ISidebarItemPropertiesProps {
+  item?: ISidebarMenuItem;
+  onChange?: (item: ISidebarMenuItem) => void;
+  readOnly: boolean;
+}
 
-export const ToolbarItemProperties: FC<IProps> = () => {
-  const { selectedItemId, getItem, updateItem } = useSidebarMenuConfigurator();
-  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
-  const [editor, setEditor] = useState<ReactNode>(<></>);
+export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, onChange, readOnly }) => {
+  const [form] = Form.useForm();
+
+  const formRef = useRef<ConfigurableFormInstance>(null);
 
   const debouncedSave = useDebouncedCallback(
     values => {
-      updateItem({ id: selectedItemId, settings: values });
+      onChange?.({ ...item, ...values });
     },
     // delay in ms
     300
   );
 
-  const getEditor = () => {
+  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
+  const editor = useMemo(() => {
     const emptyEditor = null;
-    if (!selectedItemId) return emptyEditor;
+    if (!item) return emptyEditor;
 
-    const componentModel = getItem(selectedItemId);
-
-    //const markup = itemSettingsJson as FormMarkup;
-    const markup =
-      componentModel.itemType === 'group' ? (groupSettingsJson as FormMarkup) : (itemSettingsJson as FormMarkup);
+    const markup = isSidebarGroup(item)
+      ? (groupSettingsJson as FormMarkup)
+      : (itemSettingsJson as FormMarkup);
+      
     return (
-      <ConfigurableForm
-        key={selectedItemId}
-        labelCol={{ span: 24 }}
-        wrapperCol={{ span: 24 }}
-        mode="edit"
-        markup={markup}
-        initialValues={componentModel}
-        onValuesChange={debouncedSave}
-      />
+      <SourceFilesFolderProvider folder={`button-${item.id}`}>
+        <ConfigurableForm
+          //key={selectedItemId} // rerender for each item to initialize all controls
+          formRef={formRef}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          mode={readOnly ? 'readonly' : 'edit'}
+          markup={markup}
+          form={form}
+          initialValues={item}
+          onValuesChange={debouncedSave}
+          className={sheshaStyles.verticalSettingsClass}
+        />
+      </SourceFilesFolderProvider>
     );
-  };
+  }, [item]);
 
-  useEffect(() => {
-    const currentEditor = getEditor();
-    setEditor(currentEditor);
-  }, [selectedItemId]);
-
-  if (!Boolean(selectedItemId)) {
+  if (!Boolean(item)) {
     return (
       <div>
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Please select a component to begin editing" />
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
       </div>
     );
   }
 
   return <>{editor}</>;
 };
-
-export default ToolbarItemProperties;

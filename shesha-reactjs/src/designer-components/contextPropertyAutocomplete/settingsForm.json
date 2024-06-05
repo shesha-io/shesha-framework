@@ -158,8 +158,8 @@
      {
         "id":"hGFqD-MutR75EN0GEInYu",
         "type":"checkbox",
-        "propertyName":"showFillPropsButton",
-        "label":"Show `Fill Props` button",
+        "propertyName":"autoFillProps",
+        "label":"Auto `Fill Props` label",
         "labelAlign":"right",
         "parentId":"root",
         "hidden":false,
@@ -226,7 +226,7 @@
         "description":"A script that returns the style of the element as an object. This should conform to CSSProperties",
         "exposedVariables":[
            {
-              "propertyName":"data",
+              "name":"data",
               "description":"Form values",
               "type":"object"
            }

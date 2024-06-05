@@ -48,6 +48,3 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
   );
 };
 
-
-
-
