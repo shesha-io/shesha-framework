@@ -52,7 +52,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
   const { router } = useShaRouting(false) ?? {};
 
   const formDesignerUrl = useFormDesignerUrl(formId);
-  
+
   const openInDesigner = () => {
     if (formDesignerUrl && router) {
       router.push(formDesignerUrl);
@@ -75,7 +75,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     return (
       <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
         {(flatComponents) => (
-          <ParentProvider model={{}} formMode={mode} flatComponentsStructure={{...flatComponents}}>
+          <ParentProvider model={{}} formMode={mode} flatComponentsStructure={{ ...flatComponents }}>
             <FormProvider
               needDebug={needDebug}
               name="Form"
@@ -93,13 +93,13 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               isActionsOwner={isActionsOwner}
               propertyFilter={propertyFilter}
             >
-              
-              <div style={{border: Boolean(showFormInfo) ? '2px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden'}} onMouseLeave={() => {setFormInfoPanelShowing(false)}} onMouseEnter={()=>{setFormInfoPanelShowing(true)}}>
-              <Show when={Boolean(showFormInfo)}>
-                <FormInfo formProps={persistedFormProps} visible={formInfoPanelShowing} onMarkupUpdated={onMarkupUpdated} />
-              </Show>
+
+              <div style={{ border: Boolean(showFormInfo) ? '2px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={() => { setFormInfoPanelShowing(false) }} onMouseEnter={() => { setFormInfoPanelShowing(true) }}>
+                <Show when={Boolean(showFormInfo)}>
+                  <FormInfo formProps={persistedFormProps} visible={formInfoPanelShowing} onMarkupUpdated={onMarkupUpdated} />
+                </Show>
                 <ConfigurableFormRenderer {...restProps} />
-                
+
               </div>
             </FormProvider>
           </ParentProvider>
@@ -113,7 +113,7 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
       {(componentState, BlockOverlay) => (
         <div className={classNames(componentState.wrapperClassName, props?.className)}>
           <BlockOverlay>
-            <EditViewMsg persistedFormProps={formProps}/>
+            <EditViewMsg persistedFormProps={formProps} />
           </BlockOverlay>
           {markup ? (
             renderWithMarkup({

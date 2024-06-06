@@ -63,8 +63,9 @@ useEffect(()=>{
   }}
 >
   <div style={{ marginTop: "0px" }}>
+
     {id && (
-      <Button className={styles.shaIconBackground} style={{ padding: 0 }} type="link" onClick={onModalOpen}>
+      <Button style={{ padding: 0 }} type="link" onClick={onModalOpen}>
         <EditOutlined title="Click to open this form in the designer" />
       </Button>
     )}
@@ -72,12 +73,11 @@ useEffect(()=>{
       {getFormFullName(module, name)} v{versionNo}
     </span>
     {false && <HelpTextPopover content={description}></HelpTextPopover>}
-    <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
   </div>
-  
-  <div className={styles.shaCurvedEnd}>
+  <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
+
   <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />
-  </div>
+
 
   {id && open && (
     <QuickEditDialog

@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useMemo } from 'react';
+import React, { CSSProperties, FC, useMemo, useState } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
@@ -32,6 +32,9 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     description,
   } = useSubForm();
 
+  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(false);
+
+
   const formStatusInfo = versionStatus ? ConfigurationItemVersionStatusMap[versionStatus] : null;
 
   const showFormInfo = hasFetchedConfig && formInfoBlockVisible && Boolean(formStatusInfo && id && name);
@@ -44,9 +47,11 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
 
   return (
     <ShaSpin spinning={isLoading}>
-      <Show when={showFormInfo}>
-        <FormInfo formProps={persistedFormProps} />
+      <div style={{ border: Boolean(showFormInfo) ? '2px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={(event) => { event.stopPropagation(); setFormInfoPanelShowing(false) }} onMouseEnter={(event) => { event.stopPropagation(); setFormInfoPanelShowing(true) }}>
+      <Show when={Boolean(showFormInfo)}>
+        <FormInfo visible={formInfoPanelShowing} formProps={persistedFormProps} />
       </Show>
+     
       <div style={{ flex: 1 }} data-name={propertyName}>
         {Object.keys(errors).map((error, index) => (
           <ValidationErrors key={index} error={errors[error]} />
@@ -61,6 +66,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
             </FormItemProvider>
           </ComponentsContainerProvider>
         </div>
+      </div>
       </div>
     </ShaSpin>
   );

@@ -29,11 +29,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls}) => {
           padding: unset !important;  
         }
         .${shaFormInfoCardTitle} {
-          margin-left: 10px;
-          margin-left: 10px;
-          color: #fff;
-          font-weight: 400;
+            margin-left: 10px;
+            color: #fff;
+            max-width: 80%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-weight: 400;
         }
+        text-overflow: ellipsis;
         background: #10239e;
         border: none;
         border-right: 20px #10239e solid;
@@ -57,7 +61,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls}) => {
         background-color: #10239e;
         transform: skew(-30deg);
         position: absolute;
-        left: 335px;
+        left: 315px;
         top: 0px;
         border-bottom-right-radius: 7px;
         z-index: 2;
