@@ -2,11 +2,11 @@ import { IConfigurableFormComponent } from '@/providers';
 import { Divider, Flex } from 'antd';
 import React, { FC } from 'react'
 import { useStyles } from './style';
-import { getLayoutStyle, getStyle } from '@/providers/form/utils';
+import {  getStyle } from '@/providers/form/utils';
 import { ICommonContainerProps } from '@/interfaces';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
-import { justify } from 'jodit/esm/plugins/justify/justify';
-
+import ParentProvider from '@/providers/parentProvider';
+import { nanoid } from '@/utils/uuid';
 
 export interface KeyInformationBarProps extends IConfigurableFormComponent {
   direction?: string;
@@ -18,35 +18,19 @@ export interface KeyInformationBarProps extends IConfigurableFormComponent {
   formData?: any;
   alignItems?: string;
   columnWidth?: string;
-  globalState?: any;
 }
 
 
 const FlexItem = ({model, id}) => {
 
-  console.log("ItemFlexDirection: ", model?.itemFlexDirection, model.display);
-
-  const flexAndGridStyles: ICommonContainerProps = {
-      display: "flex",
-      flexDirection: model?.itemFlexDirection,
-      justifyContent: model?.alignItems,
-      alignItems: model?.alignItems,
-      alignSelf: model?.alignSelf,
-      justifyItems: model?.justifyItems,
-      textJustify: model?.textJustify,
-      justifySelf: model?.justifySelf,
-      noDefaultStyling: model?.noDefaultStyling,
-      gridColumnsCount: model?.gridColumnsCount,
-      flexWrap: model?.flexWrap,
-      gap: model?.gap,
-    };
-
     return (
+      <ParentProvider model={model}>
         <ComponentsContainer
-          containerId={id + "label"}
-          {...flexAndGridStyles}
+          containerId={id}
           dynamicComponents={model?.isDynamic ? model?.components : []}
         />
+      </ParentProvider>
+        
     );
   };
 

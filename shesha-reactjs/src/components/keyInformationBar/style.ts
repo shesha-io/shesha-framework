@@ -14,7 +14,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
          display: flex;
          align-items: center;
          width: 100%;
+         max-width: 100%;
          height: 35px;
+         max-height: max-content;
+         overflow: hidden;
 
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;

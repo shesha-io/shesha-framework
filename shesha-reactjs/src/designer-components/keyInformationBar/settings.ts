@@ -131,7 +131,6 @@ export const formSettings = new DesignerToolbarSettings()
                         ],
                         version: 5,
                         referenceListId: null,
-                        defaultValue: "left",
                         valueFormat: "listItem"
                     })
                     .addDropdown({
