@@ -8,7 +8,7 @@ namespace Shesha.Elmah.Migrations
     {
         public override void Up()
         {
-            Execute.Sql(@"create view [elmah].[vw_referenced_errors] as 
+            Execute.Sql(@"create view elmah.vw_referenced_errors as 
 select 
 	ref.id,
 	ref.ref_id, 

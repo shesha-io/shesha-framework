@@ -1,11 +1,8 @@
-import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { FormInstance, StepProps } from 'antd';
 
-//type ButtonActionType = 'executeScript' | 'dispatchAnEvent';
-
-export interface IWizardStepProps extends IConfigurableItemBase {
+export interface IWizardStepProps {
   id: string;
   icon?: string;
   key: string;
@@ -13,7 +10,11 @@ export interface IWizardStepProps extends IConfigurableItemBase {
   subTitle: string;
   description: string;
   allowCancel?: boolean;
-  status: StepProps['status'];
+  status?: StepProps['status'];
+
+  label?: string;
+  name?: string;
+  tooltip?: string;
 
   cancelButtonText?: string;
   nextButtonText?: string;
@@ -67,7 +68,6 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   form?: FormInstance<any>;
   hidden?: boolean;
   customVisibility?: string;
-  customEnabled?: string;
   defaultActiveStep?: string;
   defaultActiveValue?: string;
   direction?: 'vertical' | 'horizontal';
@@ -76,5 +76,4 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   buttonsLayout?: 'left' | 'right' | 'spaceBetween';
   showStepStatus?: boolean;
   sequence?: IWizardSequence;
-  status?: StepProps['status'];
 }

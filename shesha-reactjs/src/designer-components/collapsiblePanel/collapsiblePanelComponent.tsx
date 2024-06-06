@@ -15,6 +15,7 @@ import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } fr
 import settingsFormJson from './settingsForm.json';
 import { executeFunction } from '@/utils';
 import ParentProvider from '@/providers/parentProvider/index';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -130,7 +131,9 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
               ? 'end'
               : prev.expandIconPosition,
       }))
-      .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev)),
+      .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev))
+      .add<ICollapsiblePanelComponentProps>(5, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
   customContainerNames: ['header', 'content'],
 };
 

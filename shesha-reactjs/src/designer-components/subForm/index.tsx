@@ -13,6 +13,7 @@ import {
   useFormData,
 } from '@/providers';
 import { SubFormWrapper } from './subFormWrapper';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface ISubFormComponentProps
   extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol'>,
@@ -54,6 +55,11 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     .add<ISubFormComponentProps>(0, prev => ({ ...prev, apiMode: prev['apiMode'] ?? 'entityName' }))
     .add<ISubFormComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISubFormComponentProps>(2, (prev) => migrateReadOnly(prev))
+    .add<ISubFormComponentProps>(3, (prev) => ({
+      ...migrateFormApi.properties(prev),
+      onCreated: migrateFormApi.withoutFormData(prev?.onCreated),
+      onUpdated: migrateFormApi.withoutFormData(prev?.onUpdated),
+    }))
   ,
   settingsFormFactory: (props) => <SubFormSettingsForm {...props} />,
   initModel: model => {

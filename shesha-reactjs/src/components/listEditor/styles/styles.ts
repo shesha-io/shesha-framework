@@ -23,6 +23,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             align-items: flex-end;
             justify-content: flex-end;
             margin: 5px 0;
+            &:empty {
+                margin: 0;
+            }
         }
 
         .${listContainer} {

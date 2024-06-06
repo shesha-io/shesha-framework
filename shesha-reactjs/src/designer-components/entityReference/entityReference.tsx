@@ -9,6 +9,7 @@ import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -63,6 +64,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
         ? 'default'
         : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
+    .add<IEntityReferenceControlProps>(6, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {

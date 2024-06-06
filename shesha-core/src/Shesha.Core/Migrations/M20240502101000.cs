@@ -18,6 +18,11 @@ go
 alter table Core_ShaRoles drop column Description;
 go
 ");
+
+            IfDatabase("PostgreSql").Execute.Sql(@"
+alter table ""Core_ShaRoles"" drop column ""Name"";
+alter table ""Core_ShaRoles"" drop column ""Description"";
+");
         }
     }
 }

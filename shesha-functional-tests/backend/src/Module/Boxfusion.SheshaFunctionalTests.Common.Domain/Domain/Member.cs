@@ -95,6 +95,10 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         /// </summary>
         [DisplayChildAuditTrail]
         public virtual Bank Bank { get; set; }
+        /// <summary> 
+        /// 
+        /// </summary>
+        public virtual string Base64String { get; set; }
         /// <summary>
         /// This is a custom audit trail event creator for the Membership Number property
         /// </summary>

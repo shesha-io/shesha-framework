@@ -86,7 +86,7 @@ export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 
 
   return type === 'next'
     ? steps.findIndex(({ status }, index) => index > current && status !== 'wait')
-    : findLastIndex(steps, ({ status }, index) => index < current && status !== 'wait')
+    : findLastIndex(steps, ({ status }, index) => index < current && status !== 'wait');
 };
 
 export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {

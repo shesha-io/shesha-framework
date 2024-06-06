@@ -9,6 +9,7 @@ import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusTagProps as ITagProps } 
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, IConfigurableFormComponent {
   mappings?: string;
@@ -99,6 +100,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
             , 'value', 'valueCodeEvaluator')
           , 'color', 'colorCodeEvaluator')
         )))
+    .add<IStatusTagProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
   initModel: (model) => ({
     mappings: JSON.stringify(DEFAULT_STATUS_TAG_MAPPINGS, null, 2) as any,

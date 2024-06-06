@@ -52,12 +52,12 @@ namespace Shesha.Elmah.PostgreSql
 
         public override string Log(Error error)
         {
-            var id = error.Exception.GetExceptionId();
+            var id = error.Exception?.GetExceptionId();
             if (id.HasValue)
                 return id.ToString();
 
             id = Guid.NewGuid();
-            error.Exception.SetExceptionId(id.Value);
+            error.Exception?.SetExceptionId(id.Value);
 
             Log(id.Value, error);
 
@@ -79,7 +79,7 @@ namespace Shesha.Elmah.PostgreSql
 
                 // gather refs and log them
                 var provider = StaticContext.IocManager.Resolve<ILoggingContextCollector>();
-                if (provider.CurrentState != null)
+                if (error.Exception != null && provider.CurrentState != null)
                 {
                     var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
                     if (allRefs.Any())
