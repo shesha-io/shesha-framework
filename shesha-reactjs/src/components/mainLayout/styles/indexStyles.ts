@@ -2,8 +2,27 @@ import { sheshaStyles } from '@/styles';
 import { createGlobalStyle } from 'antd-style';
 
 const shaBorder = '1px solid #d3d3d3'; // @sha-border
+const shaPageHeadingHeight = '45px';
+const layoutHeaderHeight = '55px';
 
 export const GlobalSheshaStyles = createGlobalStyle`
+  .sha-header-configuration {
+    .sha-components-container-inner {
+      display: flex;
+      align-items: center;
+
+      min-height: ${shaPageHeadingHeight};
+      max-height: ${shaPageHeadingHeight};
+      background: white;
+
+      &.fixed-heading {
+        position: sticky;
+        z-index: 1;
+        top: ${layoutHeaderHeight};
+      }
+    }
+  }
+
   .sha-index-table-full {
     .sha-react-table {
       margin-top: ${sheshaStyles.paddingLG}px;
@@ -12,6 +31,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
       margin: 0 ${sheshaStyles.paddingLG}px;
     }
   }
+
   .sha-index-toolbar {
     border-bottom: ${shaBorder};
 
@@ -25,6 +45,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
     ${sheshaStyles.flexCenterAlignedSpaceBetween}
     width: 100%;
     padding: 0 ${sheshaStyles.paddingLG}px;
+
+    &.sha-paging-height {
+      height: 46px;
+    }
   
     .sha-index-toolbar-left {
       button {
@@ -85,6 +109,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
     .${(p) => p.theme.prefixCls}-alert {
       margin-bottom: 5px;
     }
+  }
+
+  .${(p) => p.theme.prefixCls}-tree-list {
+    padding: 18px 0;
   }
   
   body {

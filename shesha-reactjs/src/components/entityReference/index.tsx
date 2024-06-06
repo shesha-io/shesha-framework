@@ -20,6 +20,7 @@ import { ShaLink, ValidationErrors } from '@/components';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
+  ButtonGroupItemProps,
   FormIdentifier,
 
   useConfigurableActionDispatcher,
@@ -30,7 +31,9 @@ import {
 } from '@/providers';
 import { useStyles } from './styles/styles';
 import { isPropertiesArray } from '@/interfaces/metadata';
+import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { getStyle } from '@/providers/form/utils';
+import { getFormApi } from '@/providers/form/formApi';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -62,6 +65,8 @@ export interface IEntityReferenceProps {
   modalWidth?: number | string;
   customWidth?: number;
   widthUnits?: '%' | 'px';
+  footerButtons?: ModalFooterButtons;
+  buttons?: ButtonGroupItemProps[];
   /**
    * If specified, the form data will not be fetched, even if the GET Url has query parameters that can be used to fetch the data.
    * This is useful in cases whereby one form is used both for create and edit mode
@@ -83,11 +88,9 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { globalState } = useGlobalState();
   const { styles } = useStyles();
 
-  const useFormLocal = useForm(false);
-  // fix for storybook
-  const form = useFormLocal?.form;
-  const formData = useFormLocal?.formData;
-  const formMode = useFormLocal?.formMode;
+  const localForm = useForm(false);
+  const formData = localForm?.formData;
+  const formMode = localForm?.formMode;
 
   const { getEntityFormId } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -173,7 +176,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       actionArguments: {
         formId: formIdentifier,
         modalTitle: props.modalTitle,
-        showModalFooter: props.showModalFooter ?? true,
+        buttons: props.buttons,
+        footerButtons: props?.footerButtons,
         additionalProperties:
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
             ? props.additionalProperties
@@ -190,7 +194,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       entityReference: { id: entityId, entity: props.value },
       data: formData,
       moment: moment,
-      form: form,
+      form: getFormApi(localForm),
       formMode: formMode,
       http: axiosHttp(backendUrl),
       message: message,

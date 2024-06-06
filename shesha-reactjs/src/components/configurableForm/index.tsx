@@ -92,14 +92,14 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               refetchData={refetchData}
               isActionsOwner={isActionsOwner}
               propertyFilter={propertyFilter}
+              parentFormValues={restProps.parentFormValues}
             >
 
-              <div style={{ border: Boolean(showFormInfo) ? '2px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={() => { setFormInfoPanelShowing(false) }} onMouseEnter={() => { setFormInfoPanelShowing(true) }}>
+              <div style={{ border: Boolean(showFormInfo) ? '1px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={() => { setFormInfoPanelShowing(false) }} onMouseEnter={() => { setFormInfoPanelShowing(true) }}>
                 <Show when={Boolean(showFormInfo)}>
                   <FormInfo formProps={persistedFormProps} visible={formInfoPanelShowing} onMarkupUpdated={onMarkupUpdated} />
                 </Show>
                 <ConfigurableFormRenderer {...restProps} />
-
               </div>
             </FormProvider>
           </ParentProvider>

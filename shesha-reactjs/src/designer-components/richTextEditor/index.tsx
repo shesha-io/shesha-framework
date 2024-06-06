@@ -12,6 +12,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { useDeepCompareMemoKeepReference } from '@/hooks';
 import { useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -32,13 +33,13 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         preset: model?.preset,
         textIcons: model?.textIcons,
         toolbarButtonSize: model?.toolbarButtonSize,
-        theme: model?.theme,
+        theme: typeof model?.theme === 'string' ? model?.theme : 'default',
         iframe: model?.iframe,
         direction: model?.direction,
         disablePlugins: model?.disablePlugins?.join(',') || '',
         ...!model.autoHeight && {height: model?.height},
         ...!model.autoWidth && {width: model?.width},
-        placeholder: model?.placeholder,
+        placeholder: model?.placeholder ?? '',
         readonly: model?.readOnly,
         style: getStyle(model?.style, formData),
         defaultActionOnPaste: 'insert_as_html',
@@ -52,7 +53,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
         askBeforePasteFromWord: model?.askBeforePasteFromWord,
         autofocus: model?.autofocus,
         showCharsCounter: model?.showCharsCounter,
-        showWordsCounter: model?.showWordsCounter
+        showWordsCounter: model?.showWordsCounter,
       };
       return typedConfig;
     }, [model, model.readOnly]);
@@ -66,7 +67,6 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   initModel: model => ({
     ...model,
-    placeholder: 'Start writing text....',
     showCharsCounter: true,
     showWordsCounter: true,
     showXPathInStatusbar: true,
@@ -83,6 +83,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
   migrator: (m) => m
     .add<IRichTextEditorProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRichTextEditorProps>(1, (prev) => migrateReadOnly(prev))
+    .add<IRichTextEditorProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
 };
 

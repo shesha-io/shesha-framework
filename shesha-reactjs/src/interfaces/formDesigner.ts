@@ -45,16 +45,16 @@ export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = (
   props: ISettingsFormFactoryArgs<TModel>
 ) => ReactNode;
 
-export interface ComponentFactoryArguements<T extends IConfigurableFormComponent = any> {
-  model: T;
+export interface ComponentFactoryArguements<TModel extends IConfigurableFormComponent = any> {
+  model: TModel;
   componentRef: MutableRefObject<any>;
   form: FormInstance<any>;
   children?: JSX.Element;
 }
 
-export type FormFactory<T extends IConfigurableFormComponent = any> = FC<ComponentFactoryArguements<T>>;
+export type FormFactory<TModel extends IConfigurableFormComponent = any> = FC<ComponentFactoryArguements<TModel>>;
 
-export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
+export interface IToolboxComponent<TModel extends IConfigurableFormComponent = any/*, TSettingsContext = any*/> {
   /**
    * Type of the component. Must be unique in the project.
    */
@@ -90,20 +90,20 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Component factory. Renders the component according to the passed model (props)
    */
-  Factory?: FormFactory<T>;
+  Factory?: FormFactory<TModel>;
   /**
    * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form
    */
-  initModel?: (model: T) => T;
+  initModel?: (model: TModel) => TModel;
   /**
    * Link component to a model metadata
    */
-  linkToModelMetadata?: (model: T, metadata: IPropertyMetadata) => T;
+  linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
   /**
    * Returns nested component containers. Is used in the complex components like tabs, panels etc.
    */
-  getContainers?: (model: T) => IFormComponentContainer[];
+  getContainers?: (model: TModel) => IFormComponentContainer[];
   /**
    * Name of the child component containers. Note: may be changed in the future releases
    */
@@ -111,7 +111,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Settings form factory. Renders the component settings form
    */
-  settingsFormFactory?: ISettingsFormFactory<T>;
+  settingsFormFactory?: ISettingsFormFactory<TModel>;
   /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */
@@ -119,7 +119,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Settings validator
    */
-  validateSettings?: (model: T) => Promise<any>;
+  validateSettings?: (model: TModel) => Promise<any>;
 
   /**
    * Return true to indicate that the data type is supported by the component
@@ -132,9 +132,9 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Settings migrations. Returns last version of settings
    */
-  migrator?: SettingsMigrator<T>;
+  migrator?: SettingsMigrator<TModel>;
 
-  getFieldsToFetch?: (propertyName: string, rawModel: T, metadata: IModelMetadata) => string[];
+  getFieldsToFetch?: (propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[];
 }
 
 export interface SettingsMigrationContext {

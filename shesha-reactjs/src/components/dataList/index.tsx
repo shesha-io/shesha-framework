@@ -190,10 +190,24 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
 
+  //The below forces the card to use max-width, therefore avoiding the issue of having cards
+  //with varying sizes. This is only a problem when selection mode is not "none"
+
+  if(orientation === "wrap" && selectionMode !== "none"){
+    cardMinWidth = cardMaxWidth;
+  }  
+
+
   useEffect(() => {
     if (measured?.width === 0) return;
      let res = null;
-if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+    if(orientation === "horizontal" && listItemWidth !== 'custom'){
+      res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties);
+
+    }else if (orientation === "horizontal" && listItemWidth === "custom") {
+      res = ({width: `${customListItemWidth}px`} as React.CSSProperties);
+
+    }else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
         selectionMode === 'none'
           ? ({ width: '100%' } as React.CSSProperties)
@@ -473,14 +487,14 @@ if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' 
 
   const onNewListItemInitializeExecuter = useMemo<Function>(() => {
     return props.onNewListItemInitialize
-      ? new Function('formData, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize)
+      ? new Function('form, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize)
       : null;
   }, [props.onNewListItemInitialize]);
 
   const onNewListItemInitialize = useMemo<NewItemInitializer>(() => {
     return () => Promise.resolve(
       props.onNewListItemInitialize
-        ? onNewListItemInitializeExecuter(allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
+        ? onNewListItemInitializeExecuter(allData.form, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
         : {}
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
@@ -555,11 +569,30 @@ if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' 
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
           </Show>
 
-
           <Show when={records?.length > 0}>
-            <div className={orientation === "wrap" ? `${styles.shaDatalistWrapParent} `  : ""} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
-            { content }
-            </div>
+            {orientation === "wrap" &&
+              <div className={styles.shaDatalistWrapParent} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
+                {content}
+              </div>
+            }
+
+
+            {orientation === "horizontal" && 
+              <div className={styles.shaDatalistHorizontal}>
+              {React.Children.map(content, child => {
+              return React.cloneElement(child, { style: itemWidthCalc });
+              })}
+              </div>
+            }
+
+            {orientation === "vertical" && 
+              <div style={itemWidthCalc}>
+              {React.Children.map(content, child => {
+              return React.cloneElement(child, { style: itemWidthCalc });
+              })}
+              </div>
+            }
+
           </Show>
         </div>
       </ShaSpin>

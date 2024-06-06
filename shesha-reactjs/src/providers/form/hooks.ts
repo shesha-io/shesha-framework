@@ -1,14 +1,17 @@
 import { useMemo } from 'react';
 import { FormIdentifier, useSheshaApplication } from '..';
 import { IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
-import getDefaultToolboxComponents from './defaults/toolboxComponents';
+import { getToolboxComponents } from './defaults/toolboxComponents';
 import { useLocalStorage } from '@/hooks';
+import { useFormPersister } from '../formPersisterProvider';
 
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
   const [ isDevmode ] = useLocalStorage('application.isDevMode', false);
-  const defaultToolboxComponents = getDefaultToolboxComponents(isDevmode);
-  const appComponentGroups = app?.toolboxComponentGroups;
+  const formPersister = useFormPersister(false);
+  const { formId, formProps, formSettings } = formPersister || {};
+  const defaultToolboxComponents = getToolboxComponents(isDevmode, { formId, formProps, formSettings });
+  const appComponentGroups = app?.formDesignerComponentGroups;
 
   const toolboxComponentGroups = useMemo(() => {
     return [...(defaultToolboxComponents || []), ...(appComponentGroups || [])];

@@ -3,13 +3,37 @@ import { ReactNode } from 'react';
 import { FormMarkup, GenericDictionary } from '@/providers/form/models';
 import { StandardNodeTypes } from './formComponent';
 import { IObjectMetadata } from './metadata';
+import { IApplicationApi } from '@/providers';
+import { FormApi } from '@/providers/form/formApi';
+
+export interface IHasPreviousActionResponse {
+  actionResponse?: any;
+}
+export interface IHasPreviousActionError {
+  actionError?: any;
+}
+
+export type HasPreviousActionResult = IHasPreviousActionResponse | IHasPreviousActionError;
+
+export type IActionExecutionContext = GenericDictionary & HasPreviousActionResult & {
+  form?: FormApi;
+  application?: IApplicationApi;
+};
+
+export const hasPreviousActionError = (value: HasPreviousActionResult): value is IHasPreviousActionError => {
+  return value && (value as IHasPreviousActionError).actionError !== undefined;
+};
+
+export const HasPreviousActionResponse = (value: HasPreviousActionResult): value is IHasPreviousActionResponse => {
+  return value && (value as IHasPreviousActionResponse).actionResponse !== undefined;
+};
 
 /**
  * Configuration action executer
  */
 export type IConfigurableActionExecuter<TArguments, TReponse> = (
   actionArguments: TArguments,
-  context: GenericDictionary
+  context: IActionExecutionContext
 ) => Promise<TReponse>;
 
 
@@ -56,6 +80,9 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
   name: string;
 }
 
+export type DynamicContextHook = () => GenericDictionary;
+export const EMPTY_DYNAMIC_CONTEXT_HOOK: DynamicContextHook = () => ({});
+
 /**
  * Configurable action descriptor. Is used to define consigurable actions
  */
@@ -91,6 +118,8 @@ export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionA
    * Action executer
    */
   executer: IConfigurableActionExecuter<TArguments, TReponse>;
+
+  useDynamicContextHook?: DynamicContextHook;
 }
 
 export interface IMayHaveType {

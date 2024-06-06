@@ -172,7 +172,7 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
             </div>
           </Col>
           <Col span="18">
-            <IndexToolbar items={toolbarItems} />
+            <IndexToolbar className='sha-paging-height' items={toolbarItems} />
             <ModelConfigurator id={entityConfigId} configuratorRef={configuratorRef} />
           </Col>
         </Row>

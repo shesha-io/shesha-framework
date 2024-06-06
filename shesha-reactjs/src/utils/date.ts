@@ -1,5 +1,6 @@
 import moment, { isMoment, Moment } from 'moment';
 import { getSafelyTrimmedString } from './index';
+import { RangeValue } from '@/designer-components/dateField/interfaces';
 
 /**
  * Checks if the date provided is within the date range
@@ -75,9 +76,12 @@ export const tolocalIsoDate = (dateIsoString: string) => {
 export const getMoment = (value: any, dateFormat: string): Moment => {
   if (value === null || value === undefined) return undefined;
 
-  const values = [isMoment(value) ? value : null, moment(value as string, dateFormat), moment(value as string)];
-
+  const values = [isMoment(value) ? value : null, moment(value as string), moment(value as string, dateFormat)];
   const parsed = values.find((i) => isMoment(i) && i.isValid());
-
   return parsed;
 };
+
+export const getRangeMoment = (value: any, dateFormat: string): RangeValue =>
+  (Array.isArray(value) && value?.length === 2
+    ? value?.map((v) => getMoment(v, dateFormat))
+    : [null, null]) as RangeValue;

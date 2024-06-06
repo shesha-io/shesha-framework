@@ -36,3 +36,10 @@ export const setValueByPropertyName = (data: any, propertyName: string, value: a
     }
     return resultData;
 };
+
+export const deepCopyViaJson = <TValue = any>(value: TValue): TValue => {
+    if (!value)
+      return value;
+  
+    return JSON.parse(JSON.stringify(value));
+  };

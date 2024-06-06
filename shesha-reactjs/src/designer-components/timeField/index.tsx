@@ -15,6 +15,8 @@ import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ITimePickerProps } from './models';
 import { TimePickerWrapper } from './timePickerWrapper';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const DATE_TIME_FORMAT = 'HH:mm';
 
@@ -28,29 +30,27 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
   canBeJsSetting: true,
   icon: <ClockCircleOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.time,
-  Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
+  Factory: ({ model }) => {
+    const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
 
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>  {
-          const customEvent =  customTimeEventHandler(eventProps);
+          const customEvent = customTimeEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
             if (typeof onChange === 'function') 
@@ -74,6 +74,7 @@ export const TimeFieldComponent: IToolboxComponent<ITimePickerProps> = {
     .add<ITimePickerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITimePickerProps>(1, (prev) => migrateVisibility(prev))
     .add<ITimePickerProps>(2, (prev) => migrateReadOnly(prev))
+    .add<ITimePickerProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   linkToModelMetadata: (model, metadata): ITimePickerProps => {
 

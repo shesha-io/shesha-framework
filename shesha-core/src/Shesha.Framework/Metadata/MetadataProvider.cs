@@ -54,6 +54,8 @@ namespace Shesha.Metadata
         public async Task<MetadataDto> GetAsync(Type containerType, string containerName)
         {
             var isEntity = containerType.IsEntityType();
+            var isJsonEntity = containerType.IsJsonEntityType();
+
             var moduleInfo = containerType.GetConfigurableModuleInfo();
 
             var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, containerName);
@@ -71,15 +73,18 @@ namespace Shesha.Metadata
 
             UpdateMd5(dto);
 
-            if (isEntity)
+            if (isEntity || isJsonEntity)
             {
                 dto.TypeAccessor = containerType.GetTypeAccessor();
                 dto.Module = moduleInfo?.Name;
                 dto.ModuleAccessor = moduleInfo?.GetModuleAccessor();
 
-                var entityConfig = _entityConfigurationStore.Get(containerType);
-                if (entityConfig.HasTypeShortAlias && entityConfig.TypeShortAliasIsValid)
-                    dto.Aliases.Add(entityConfig.TypeShortAlias);
+                if (isEntity) 
+                {
+                    var entityConfig = _entityConfigurationStore.Get(containerType);
+                    if (entityConfig.HasTypeShortAlias && entityConfig.TypeShortAliasIsValid)
+                        dto.Aliases.Add(entityConfig.TypeShortAlias);
+                }
             }
 
             return dto;

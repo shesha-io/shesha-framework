@@ -2,7 +2,7 @@ import moment, { Moment } from 'moment';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { getDataProperty } from '@/utils/metadata';
 import { getMoment } from '@/utils/date';
-import { IDateFieldProps, RangeValue } from './interfaces';
+import { IDateFieldProps } from './interfaces';
 
 export const DATE_TIME_FORMATS = {
   time: 'HH:mm:ss',
@@ -78,7 +78,3 @@ export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[
   }
 };
 
-export const getRangePickerValues = (valueToUse: any, pickerFormat: string) =>
-  (Array.isArray(valueToUse) && valueToUse?.length === 2
-    ? valueToUse?.map((v) => moment(new Date(v), pickerFormat))
-    : [null, null]) as RangeValue;

@@ -49,7 +49,11 @@ export const LayoutMenu: FC<IProps> = () => {
       className={styles.shaMenu}
       mode="horizontal"
       items={menuItems}
-      overflowedIndicator={<MenuOutlined />}
+      overflowedIndicator={
+        <span className={styles.shaHamburgerItem}>
+          <MenuOutlined /> Menu
+        </span>
+      }
     />
   ) : (
     <>

@@ -6,18 +6,17 @@ import { nanoid } from '@/utils/uuid';
 import nestedProperty from 'nested-property';
 import { CSSProperties } from 'react';
 import {
-  ConfigurableFormInstance,
+  DataTypes,
   IPropertySetting,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
   SettingsMigrationContext,
 } from '@/interfaces';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
 import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { getFullPath } from '@/utils/metadata';
 import { IAnyObject } from './../../interfaces/anyObject';
-import { FormMode } from '@/generic-pages/dynamic/interfaces';
 import blankViewMarkup from './defaults/markups/blankView.json';
 import dashboardViewMarkup from './defaults/markups/dashboardView.json';
 import detailsViewMarkup from './defaults/markups/detailsView.json';
@@ -63,6 +62,7 @@ import { message } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ContextGetData, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
+  IApplicationApi,
   IConfigurableActionConfiguration,
   useDataTableStore,
   useForm,
@@ -74,7 +74,6 @@ import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
-import { ISetFormDataPayload } from './contexts';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { IParentProviderProps } from '../parentProvider/index';
@@ -85,18 +84,17 @@ import { useDelayedUpdate } from '../delayedUpdateProvider';
 import qs from 'qs';
 import { FormConfigurationDto } from './api';
 import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
+import { toCamelCase } from '@/utils/string';
+import { FormApi, getFormApi } from './formApi';
 
-/** Interface to geat all avalilable data */
-export interface IApplicationContext {
+/** Interface to get all avalilable data */
+export interface IApplicationContext<Value = any> {
+  application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   /** Form data */
   data?: any;
-  /** Form mode */
-  formMode?: FormMode;
 
-  setFormData?: (payload: ISetFormDataPayload) => void;
-
-  form?: ConfigurableFormInstance;
+  form?: FormApi<Value>;
   /** Contexts datas */
   contexts: IDataContextsData;
   /** Global state */
@@ -145,8 +143,6 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
   const { backendUrl } = useSheshaApplication();
   // get closest form or page form
   const form = useForm(false) ?? dcm.getPageFormInstance();
-  // get form mode
-  const formMode = form?.formMode;
   // get full page context data
   const pageContext = pc?.getFull();
   // Get global state
@@ -165,14 +161,13 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
 
   // update last update date to to simplify general memoization
   const lastUpdated = useDeepCompareMemo(() => new Date()
-    , [data, contexts.lastUpdate, formMode, globalState, selectedRow]);
+    , [data, contexts.lastUpdate, form?.formMode, globalState, selectedRow]);
 
   return {
     application: applicationData,
     contexts,
     data,
-    form,
-    formMode,
+    form: getFormApi(form),
     globalState,
     http: axiosHttp(backendUrl),
     lastUpdated,
@@ -180,7 +175,6 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
     moment: moment,
     pageContext,
     selectedRow,
-    setFormData: form?.setFormData,
     setGlobalState,
   };
 }
@@ -308,8 +302,8 @@ export const getActualModelWithParent = <T>(
   parent: IParentProviderProps
 ): T => {
   const parentReadOnly =
-    allData.formMode !== 'designer'
-    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.formMode === 'readonly'));
+    allData.form?.formMode !== 'designer'
+    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
 
   const actualModel = getActualModel(model, allData, parentReadOnly);
   // update Id for complex containers (SubForm, DataList item, etc)
@@ -333,6 +327,31 @@ export const getActualModelWithParent = <T>(
 
 export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
   return { ...model, [propertyName]: getSettingValue(model[propertyName], allData, calcValue) } as T;
+};
+
+  //const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
+export const updateModelToMoment = async (model: any, properties: NestedProperties): Promise<any> => {
+  if (properties === null)
+    return model;
+  const newModel = {...model};
+  const propsPromise = isPropertiesArray(properties)
+    ? Promise.resolve(properties)
+    : isPropertiesLoader(properties)
+      ? properties()
+      : Promise.resolve([]);
+  return await propsPromise.then(async (props: IPropertyMetadata[]) => {
+    for (const key in newModel) {
+      if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
+        const prop = props.find(i => toCamelCase(i.path) === key);
+        if (prop && (prop.dataType === DataTypes.date  || prop.dataType === DataTypes.dateTime))
+        newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
+        if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
+          newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);        
+        }
+      }
+    }
+    return newModel;
+  });
 };
 
 /**
@@ -550,55 +569,68 @@ class StaticMustacheTag {
  * @returns {string} evaluated string
  */
 export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false) => {
-  if (!template || typeof template !== 'string')
-    return template;
 
-  const localData: IAnyObject = data ? { ...data } : undefined;
-  // The function throws an exception if the expression passed doesn't have a corresponding curly braces
+  // store moment toString function to get ISO format of datetime
+  var toString = moment.prototype.toString;
+  moment.prototype.toString = function () {
+    return this.format('YYYY-MM-DDTHH:mm:ss');
+  };
+
   try {
-    if (localData) {
-      //adding a function to the data object that will format datetime
 
-      localData.dateFormat = function () {
-        return function (timestamp, render) {
-          return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          });
+    if (!template || typeof template !== 'string')
+      return template;
+
+    const localData: IAnyObject = data ? { ...data } : undefined;
+    // The function throws an exception if the expression passed doesn't have a corresponding curly braces
+    try {
+      if (localData) {
+        //adding a function to the data object that will format datetime
+
+        localData.dateFormat = function () {
+          return function (timestamp, render) {
+            return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            });
+          };
         };
-      };
+      }
+
+      const view = localData ?? {};
+
+      if (skipUnknownTags) {
+        template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
+          const mathes = x.match(/[\w\.]+/);
+          const tag = mathes.length ? mathes[0] : undefined;
+
+          const parts = tag.split('.');
+          const field = parts.pop();
+          const container = parts.reduce((level, key) => {
+            return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
+          }, view);
+          if (!container.hasOwnProperty(field)){
+            container[field] = new StaticMustacheTag(tag);
+          } 
+        });
+
+        const escape = (value: any): string => {
+          return value instanceof StaticMustacheTag
+            ? value.toEscapedString()
+            : value;
+        };
+
+        return Mustache.render(template, view, undefined, { escape });
+      } else
+        return Mustache.render(template, view);
+    } catch (error) {
+      console.warn('evaluateString ', error);
+      return template;
     }
-
-    const view = localData ?? {};
-
-    if (skipUnknownTags) {
-      template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
-        const mathes = x.match(/[\w\.]+/);
-        const tag = mathes.length ? mathes[0] : undefined;
-
-        const parts = tag.split('.');
-        const field = parts.pop();
-        const container = parts.reduce((level, key) => {
-          return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
-        }, view);
-        if (!container.hasOwnProperty(field)){
-          container[field] = new StaticMustacheTag(tag);
-        } 
-      });
-
-      const escape = (value: any): string => {
-        return value instanceof StaticMustacheTag
-          ? value.toEscapedString()
-          : value;
-      };
-
-      return Mustache.render(template, view, undefined, { escape });
-    } else
-      return Mustache.render(template, view);
-  } catch (error) {
-    console.warn('evaluateString ', error);
-    return template;
+  } finally {
+    // restore moment toString function
+    moment.prototype.toString = toString;
   }
 };
 
@@ -889,7 +921,7 @@ export const getVisibleComponentIds = (
 
       if (filteredComponents?.includes(component.id)
         && !getActualPropertyValue(component, allData, 'hidden')?.hidden
-        && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode)))
+        && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.form?.formMode)))
         visibleComponents.push(key);
     }
   }
@@ -939,7 +971,7 @@ export const getEnabledComponentIds = (components: IComponentsDictionary, allDat
         !readOnly &&
         (!Boolean(component?.enabledFunc) ||
           (typeof component?.enabledFunc === 'function' &&
-            component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));
+            component?.enabledFunc(allData.data, allData.globalState, allData.form?.formMode)));
 
       if (isEnabled) enabledComponents.push(key);
     }

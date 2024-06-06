@@ -68,7 +68,7 @@ useEffect(()=>{
           <EditOutlined color='#ffffff' style={{filter: 'invert(1) grayscale(100%)', marginLeft: '-10px'}} title="Click to open this form in the designer" />
         </Button>
       )}
-      <span className={styles.shaFormInfoCardTitle} style={{ marginLeft: id ? '-8px' : '0', transform: 'skew(45deg)'}}>
+      <span className={styles.shaFormInfoCardTitle} title={`${getFormFullName(module, name)} v${versionNo}`} style={{ marginLeft: id ? '-8px' : '0', transform: 'skew(45deg)'}}>
         {getFormFullName(module, name)} v{versionNo}
       </span>
       {false && <HelpTextPopover content={description}></HelpTextPopover>}

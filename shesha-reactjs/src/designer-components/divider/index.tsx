@@ -5,20 +5,14 @@ import React from 'react';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { FormMarkup } from '@/providers/form/models';
-import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
 import { useFormData, useGlobalState } from '@/providers';
 import { getLayoutStyle } from '@/providers/form/utils';
-import ParentProvider from '@/providers/parentProvider/index';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IDividerProps extends IConfigurableFormComponent {
-  container?: boolean;
   dividerType?: 'horizontal' | 'vertical';
-  orientation?: 'left' | 'right' | 'center';
-  orientationMargin?: string | number;
   dashed?: boolean;
-  plain?: boolean;
-  components?: IConfigurableFormComponent[];
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -33,26 +27,22 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
 
     const props: DividerProps = {
       type: model?.dividerType,
-      orientation: model?.orientation,
-      orientationMargin: model?.orientationMargin,
       dashed: model?.dashed,
-      plain: model?.plain,
     };
 
-    return model?.container ? (
-      <ParentProvider model={model}><ComponentsContainer containerId={model.id} render={(components) => <Divider {...props}>{components}</Divider>} /></ParentProvider>
-    ) : (
+    return (
       <Divider style={getLayoutStyle(model, { data, globalState })} {...props} />
     );
   },
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: (m) => m.add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
+  migrator: (m) => m
+    .add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDividerProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
   initModel: (model) => ({
     dividerType: 'horizontal',
-    orientation: 'center',
     dashed: false,
-    plain: true,
     ...model,
   }),
 };

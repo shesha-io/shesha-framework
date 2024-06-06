@@ -36,7 +36,7 @@ const CreateModal: FC<ICreateModalProps> = ({
       switchMode('read');
       onToggle(false);
     } catch (error) {
-      console.log('Update failed: ', error);
+      console.error('Update failed: ', error);
     }
 
   };

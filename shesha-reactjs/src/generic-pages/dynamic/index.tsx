@@ -34,6 +34,7 @@ import { useDataContextManager } from '@/providers/dataContextManager/index';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { executeScript } from '@/providers/form/utils';
+import { getFormApi } from '@/providers/form/formApi';
 
 const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
@@ -50,9 +51,10 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { id, formId } = state;
 
   const formWithData = useFormWithData({ formId: formId, dataId: id, configurationItemMode: configurationItemMode });
-  //console.log('PERF: hook', formWithData)
-  const formSettings =
-    formWithData.loadingState === 'ready' ? formWithData.form?.settings ?? DEFAULT_FORM_SETTINGS : null;
+  
+  const formSettings = useMemo(() =>
+     formWithData.loadingState === 'ready' ? formWithData.form?.settings ?? DEFAULT_FORM_SETTINGS : null
+  , [formWithData.loadingState]);
 
   const [form] = Form.useForm();
 
@@ -219,8 +221,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
       // ToDo: review on Page/Form life cycle
-      form: formRef?.current ?? { formSettings },
-      formMode: formRef?.current?.formMode,
+      form: formRef?.current ? getFormApi(formRef.current) : { formSettings },
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       pageContext: pageContext?.getFull(),
       application: dcm?.getDataContext(SheshaCommonContexts.ApplicationContext)?.getData(),
@@ -233,8 +234,8 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   // effect that executes onDataLoaded handler
   useEffect(() => {
     if (formWithData.loadingState === 'ready') {
-      const onDataLoaded = formWithData.form?.settings?.onDataLoaded;
-      const initialValues = formWithData.form?.settings?.initialValues;
+      const onDataLoaded = formSettings?.onDataLoaded;
+      const initialValues = formSettings?.initialValues;
       if (onDataLoaded) {
         executeExpression(onDataLoaded, {
           data: formWithData.fetchedData,
@@ -244,13 +245,13 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
     }
   }, [formWithData.loadingState, formWithData.fetchedData]);
 
-  const previousOnInitialized = usePrevious(formWithData.form?.settings?.onInitialized);
+  const previousOnInitialized = usePrevious(formSettings?.onInitialized);
 
   useEffect(() => {
-    const onInitialized = formWithData?.form?.settings?.onInitialized;
+    const onInitialized = formSettings?.onInitialized;
 
     if (onInitialized && previousOnInitialized !== onInitialized) {
-      const initialValues = formWithData.form?.settings?.initialValues;
+      const initialValues = formSettings?.initialValues;
 
       if (onInitialized) {
         executeExpression(onInitialized, {
@@ -259,13 +260,11 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
         });
       }
     }
-  }, [formWithData.form]);
+  }, [formSettings?.onInitialized, formRef.current]);
 
   //#endregion
 
   const markupErrorCode = formWithData.loadingState === 'failed' ? formWithData.error?.code : null;
-
-  //console.log('PERF: render form', formWithData)
 
   const finalMarkup = useMemo(() => {
     if (!formWithData) return null;

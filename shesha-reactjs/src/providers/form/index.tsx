@@ -47,6 +47,8 @@ import { SheshaCommonContexts } from '../dataContextManager/models';
 import { addFormFieldsList, removeGhostKeys } from '@/utils/form';
 import { filterDataByOutputComponents } from './api';
 import { IDataSourceComponent } from '@/components/configurableForm/models';
+import { hasPreviousActionError } from '@/interfaces/configurableAction';
+import { getFormApi } from './formApi';
 
 export interface IFormProviderProps {
   needDebug?: boolean;
@@ -188,9 +190,12 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     return childIds ?? [];
   };
 
-  //#region Set visible components
   const setVisibleComponents = (payload: ISetVisibleComponentsPayload) => {
     dispatch(setVisibleComponentsAction(payload));
+  };
+
+  const setValidationErrors = (payload: IFormValidationErrors) => {
+    dispatch(setValidationErrorsAction(payload));
   };
 
   //#region configurable actions
@@ -234,7 +239,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       hasArguments: false,
       //argumentsFormMarkup: SubmitActionArgumentsMarkup,
       executer: async (args: ISubmitActionArguments, actionContext) => {
-        var formInstance = (actionContext?.form?.form ?? form) as FormInstance<any>;
+        var formInstance = (actionContext?.form?.formInstance ?? form) as FormInstance<any>;
         var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
         if (args?.validateFields === true || fieldsToValidate?.length > 0) {
           await formInstance.validateFields(fieldsToValidate);
@@ -253,7 +258,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       ownerUid: actionsOwnerUid,
       hasArguments: false,
       executer: (_, actionContext) => {
-        var formInstance = actionContext?.form?.form ?? form;
+        var formInstance = actionContext?.form?.formInstance ?? form;
         formInstance.resetFields();
         return Promise.resolve();
       },
@@ -282,10 +287,47 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       owner: name,
       ownerUid: actionsOwnerUid,
       hasArguments: false,
-      executer: async(_, actionContext) => {
-        var formInstance = actionContext?.form?.form ?? form;
+      executer: async (_, actionContext) => {
+        var formInstance = actionContext?.form?.formInstance ?? form;
         var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
         await formInstance.validateFields(fieldsToValidate);
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction<{ data: object }>(
+    {
+      name: 'Set validation errors',
+      description: 'Errors are displayed on the Validation Errors component attached to the form',
+      owner: name,
+      ownerUid: actionsOwnerUid,
+      hasArguments: false,
+      executer: async (_args, actionContext) => {
+        if (hasPreviousActionError(actionContext)){
+          const error = actionContext.actionError instanceof Error
+            ? { message: actionContext.actionError.message }
+            : actionContext.actionError;
+
+          setValidationErrors(error);
+        }
+
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Reset validation errors',
+      description: 'Clear errors displayed on the Validation Errors component attached to the form',
+      owner: name,
+      ownerUid: actionsOwnerUid,
+      hasArguments: false,
+      executer: async () => {
+        setValidationErrors(undefined);
         return Promise.resolve();
       },
     },
@@ -295,10 +337,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   //#endregion
 
   const updateVisibleComponents = (formContext: IFormStateInternalContext) => {
-    /*const comps = updateSettingsComponentsDict(
-      toolboxComponents,
-      allComponents
-    );*/
 
     const visibleComponents = getVisibleComponentIds(
       allComponents,
@@ -319,8 +357,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     // delay in ms
     200
   );
-
-  //#endregion
 
   //#region Set enabled components
   const setEnabledComponents = (payload: ISetEnabledComponentsPayload) => {
@@ -374,7 +410,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     // ToDo: Review on next version of Antd
     const values = form?.getFieldValue([]);
     if (!state.formData && !!values) {
-      dispatch(setFormDataAction({values, mergeValues: true}));
+      dispatch(setFormDataAction({ values, mergeValues: true }));
     }
   }, []);
 
@@ -415,10 +451,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       form?.resetFields();
       form?.setFieldsValue(payload?.values);
     }
-  };
-
-  const setValidationErrors = (payload: IFormValidationErrors) => {
-    dispatch(setValidationErrorsAction(payload));
   };
 
   //#region form actions
@@ -482,8 +514,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       application: application?.getData(),
       contexts: { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
       data: exposedData || state.formData,
-      form: { ...state, allComponents, componentRelations },
-      formMode: state.formMode,
+      form: getFormApi({...state, setFormData} as ConfigurableFormInstance),
       globalState: formProviderContext.globalState,
       http: formProviderContext.http,
       initialValues: props.initialValues,
@@ -491,7 +522,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       moment: formProviderContext.moment,
       pageContext: pageContext?.getFull(),
       parentFormValues: props.parentFormValues,
-      setFormData: setFormData,
       setGlobalState: formProviderContext.setGlobalState,
       shesha: getSheshaFormUtils(formProviderContext.http),
     };
@@ -578,7 +608,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
         return postData;
       })
       .catch((error) => console.error(error));
-  };  
+  };
 
   const configurableFormActions: IFormActionsContext = {
     ...getFlagSetters(dispatch),
@@ -609,7 +639,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   useDeepCompareEffect(() => {
     // set main form if empty
     if (needDebug)
-      formProviderContext.contextManager?.updatePageFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
+      formProviderContext.contextManager?.updatePageFormInstance({ ...state, ...configurableFormActions } as ConfigurableFormInstance);
   }, [state]);
 
   return (

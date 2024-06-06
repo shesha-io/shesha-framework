@@ -13,6 +13,7 @@ import {
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'> {
   ownerId: string;
@@ -55,7 +56,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               ownerType={
                 Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
               }
-              propertyName={Boolean(model.propertyName) ? model.propertyName : model.propertyName}
+              propertyName={model.propertyName}
               uploadMode={model.useSync ? 'sync' : 'async'}
             >
               <FileUpload
@@ -105,6 +106,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     })
     .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
     .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
+    .add<IFileUploadProps>(5, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

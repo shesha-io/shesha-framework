@@ -18,6 +18,7 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Mapper;
+using Shesha.Elmah;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Services;
@@ -43,6 +44,7 @@ namespace Shesha
 
         public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
         public IObjectValidatorManager ValidatorManager { get; set; }
+        public ILoggingContextCollector LoggingScope { get; set; }
 
         /// <summary>
         /// Reference to the IoC manager.

@@ -15,8 +15,6 @@ const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', ...props }) =>
   const icons = require('@ant-design/icons');
 
   if (!icons[iconName]) {
-    console.log('icon not found:');
-    console.log(iconName);
     return null;
   }
 

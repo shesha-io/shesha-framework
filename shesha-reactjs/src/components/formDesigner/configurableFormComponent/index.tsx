@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useRef
 } from 'react';
+import { createPortal } from 'react-dom';
 import ValidationIcon from './validationIcon';
 import { EditMode, useMetadata } from '@/providers';
 import {
@@ -24,6 +25,7 @@ import { Tooltip } from 'antd';
 import { useComponentModel, useForm } from '@/providers/form';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
+import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 
 export interface IConfigurableFormComponentProps {
   id: string;
@@ -48,25 +50,28 @@ interface IConfigurableFormComponentDesignerProps {
 }
 const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
   const { styles } = useStyles();
+  const formInstance = useForm();
   const allData = useAvailableConstantsData('all');
   const {
     selectedComponentId,
     readOnly,
     activeDataSourceId,
     setActiveDataSource,
+    settingsPanelRef,
   } = useFormDesigner();
 
+  const isSelected = componentModel.id && selectedComponentId === componentModel.id;
   const metadata = useMetadata(false);
   useEffect(() => {
-    if (componentModel.id && selectedComponentId === componentModel.id && metadata && metadata.id !== activeDataSourceId) {
+    if (isSelected && metadata && metadata.id !== activeDataSourceId) {
       // set active data source, 
       // this code is used to correct a current datasource after adding of a  new component to a form
       setActiveDataSource(metadata.id);
     }
   }, []);
 
-  const hiddenByCondition = allData?.form?.visibleComponentIds && !allData.form.visibleComponentIds.includes(componentModel.id);
-  const disabledByCondition = allData?.form?.enabledComponentIds && !allData.form.enabledComponentIds.includes(componentModel.id);
+  const hiddenByCondition = formInstance?.visibleComponentIds && !formInstance.visibleComponentIds.includes(componentModel.id);
+  const disabledByCondition = formInstance?.enabledComponentIds && !formInstance.enabledComponentIds.includes(componentModel.id);
 
   const invalidConfiguration =
     componentModel.settingsValidationErrors && componentModel.settingsValidationErrors.length > 0;
@@ -82,10 +87,19 @@ const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerPr
   return (
     <div
       className={classNames(styles.shaComponent, {
-        selected: selectedComponentId === componentModel.id,
+        selected: isSelected,
         'has-config-errors': invalidConfiguration,
       })}
     >
+      {isSelected && settingsPanelRef.current && createPortal((
+        <div 
+          onClick={(e) => e.stopPropagation()}
+          onMouseOver={(e) => e.stopPropagation()} 
+          onMouseOut={(e) => e.stopPropagation()}
+        >
+          <ComponentProperties />
+        </div>
+      ), settingsPanelRef.current)}
       <span className={styles.shaComponentIndicator}>
         <Show when={hiddenFx || componentEditModeFx}>
           <Tooltip title={`This component is ${actionText1} by condition. It's now ${actionText2} because we're in a designer mode`}>

@@ -4,5 +4,5 @@ export interface IPropertyAutocompleteComponentProps extends IConfigurableFormCo
     dropdownStyle?: string;
     mode?: 'single' | 'multiple';
     modelType?: string;
-    showFillPropsButton?: boolean;
+    autoFillProps?: boolean;
 }
