@@ -487,14 +487,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const onNewListItemInitializeExecuter = useMemo<Function>(() => {
     return props.onNewListItemInitialize
-      ? new Function('formData, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize)
+      ? new Function('form, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize)
       : null;
   }, [props.onNewListItemInitialize]);
 
   const onNewListItemInitialize = useMemo<NewItemInitializer>(() => {
     return () => Promise.resolve(
       props.onNewListItemInitialize
-        ? onNewListItemInitializeExecuter(allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
+        ? onNewListItemInitializeExecuter(allData.form, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
         : {}
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);

@@ -33,7 +33,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
       }, [model.id, model.componentName, model.items]);
 
       const initialData: Promise<any> = useMemo(() => {
-        return allData.formMode === 'designer' ? null : executeScript(model.initialDataCode, allData);
+        return allData.form?.formMode === 'designer' ? null : executeScript(model.initialDataCode, allData);
       }, [model.initialDataCode]);
 
       return (
@@ -41,7 +41,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
           {...model}
           name={model.componentName} 
           metadata={metadata}
-          initialData={allData.formMode === 'designer' ? null : initialData}
+          initialData={allData.form?.formMode === 'designer' ? null : initialData}
           type='control'
         >
             <ComponentsContainer containerId={model.id} />

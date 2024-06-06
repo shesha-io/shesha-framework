@@ -215,7 +215,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const onNewRowInitializeExecuter = useMemo<Function>(() => {
     return props.onNewRowInitialize
-      ? new Function('formData, globalState, http, moment, application', props.onNewRowInitialize)
+      ? new Function('form, globalState, http, moment, application', props.onNewRowInitialize)
       : null;
   }, [props.onNewRowInitialize]);
 
@@ -224,7 +224,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       ? () => {
           // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
           //return onNewRowInitializeExecuter(formData, globalState);
-          const result = onNewRowInitializeExecuter(formData ?? {}, globalState, axiosHttp(backendUrl), moment, appContextData);
+          const result = onNewRowInitializeExecuter(formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
           return Promise.resolve(result);
         }
       : () => {

@@ -178,7 +178,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
   const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true,
     standardConstants: [
-      SheshaConstants.globalState, SheshaConstants.moment, SheshaConstants.http
+      SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
   const onRowSaveConstants = useAvailableConstantsMetadata({ 

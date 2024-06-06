@@ -302,8 +302,8 @@ export const getActualModelWithParent = <T>(
   parent: IParentProviderProps
 ): T => {
   const parentReadOnly =
-    allData.formMode !== 'designer'
-    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.formMode === 'readonly'));
+    allData.form?.formMode !== 'designer'
+    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
 
   const actualModel = getActualModel(model, allData, parentReadOnly);
   // update Id for complex containers (SubForm, DataList item, etc)
@@ -344,7 +344,7 @@ export const updateModelToMoment = async (model: any, properties: NestedProperti
       if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
         const prop = props.find(i => toCamelCase(i.path) === key);
         if (prop && (prop.dataType === DataTypes.date  || prop.dataType === DataTypes.dateTime))
-        newModel[key] = moment(newModel[key]).utc(true);
+        newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
         if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
           newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);        
         }
@@ -573,7 +573,7 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
   // store moment toString function to get ISO format of datetime
   var toString = moment.prototype.toString;
   moment.prototype.toString = function () {
-    return this.toISOString();
+    return this.format('YYYY-MM-DDTHH:mm:ss');
   };
 
   try {
@@ -921,7 +921,7 @@ export const getVisibleComponentIds = (
 
       if (filteredComponents?.includes(component.id)
         && !getActualPropertyValue(component, allData, 'hidden')?.hidden
-        && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode)))
+        && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.form?.formMode)))
         visibleComponents.push(key);
     }
   }
@@ -971,7 +971,7 @@ export const getEnabledComponentIds = (components: IComponentsDictionary, allDat
         !readOnly &&
         (!Boolean(component?.enabledFunc) ||
           (typeof component?.enabledFunc === 'function' &&
-            component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));
+            component?.enabledFunc(allData.data, allData.globalState, allData.form?.formMode)));
 
       if (isEnabled) enabledComponents.push(key);
     }

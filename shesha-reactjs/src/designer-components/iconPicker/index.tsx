@@ -14,7 +14,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',
-  name: 'Icon Picker',
+  name: 'Icon',
   icon: <HeartOutlined />,
   isInput: true,
   isOutput: true,
