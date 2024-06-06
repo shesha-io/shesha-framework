@@ -21,6 +21,7 @@ export const useStyles = () => {
     const shaComponentTitle = "sha-component-title";
     const shaComponentSearch = "sha-component-search";
     const shaToolboxPanel = "sha-toolbox-panel";
+    const shaToolboxPanelItems = "sha-toolbox-panel-items";
 
     const sidebarHeaderTitle = "sidebar-header-title";
     const shaDesignerHeader = "sha-designer-header";
@@ -65,6 +66,7 @@ export const useStyles = () => {
             shaComponentTitle,
             shaComponentSearch,
             shaToolboxPanel,
+            shaToolboxPanelItems,
             shaDatasourceTree,
             shaComponentIndicator,
             shaComponentsContainer,
@@ -105,6 +107,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaComponentTitle,
         shaComponentSearch,
         shaToolboxPanel,
+        shaToolboxPanelItems,
         shaDatasourceTree,
         shaComponentIndicator,
         shaComponentsContainer,
@@ -278,6 +281,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
                 &.active {
                     background-color: #ebf3fb;
+                }
+                .${shaToolboxPanelItems} {
+                    margin:-1rem -0.8rem;
                 }
             }
         

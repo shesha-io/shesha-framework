@@ -82,19 +82,19 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
                     ghostClass={styles.shaComponentGhost}
                     onStart={onDragStart}
                     onEnd={onDragEnd}
+                    className={styles.shaToolboxPanelComponents}
                   >
-                    <div className={styles.shaToolboxPanelComponents}>
-                      {visibleComponents.map((component, componentIndex) => {
-                        idx++;
-                        return (
-                          <ToolboxComponent
-                            key={`Group${groupIndex}:Component${componentIndex}`}
-                            component={component}
-                            index={idx}
-                          />
-                        );
-                      })}
-                    </div>
+
+                    {visibleComponents.map((component, componentIndex) => {
+                      idx++;
+                      return (
+                        <ToolboxComponent
+                          key={`Group${groupIndex}:Component${componentIndex}`}
+                          component={component}
+                          index={idx}
+                        />
+                      );
+                    })}
                   </ReactSortable>
                 </Panel>
               );
