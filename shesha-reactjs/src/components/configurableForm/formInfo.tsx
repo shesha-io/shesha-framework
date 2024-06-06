@@ -62,21 +62,21 @@ useEffect(()=>{
     transition: '.3s'
   }}
 >
-  <div style={{ marginTop: "0px" }}>
+<div style={{ display: 'flex', alignItems: 'center' }}>
+      {id && (
+        <Button type="link" onClick={onModalOpen} style={{transform: 'skew(45deg)'}}>
+          <EditOutlined color='#ffffff' style={{filter: 'invert(1) grayscale(100%)'}} title="Click to open this form in the designer" />
+        </Button>
+      )}
+      <span className={styles.shaFormInfoCardTitle} style={{ marginLeft: id ? '8px' : '0', transform: 'skew(45deg)'}}>
+        {getFormFullName(module, name)} v{versionNo}
+      </span>
+      {false && <HelpTextPopover content={description}></HelpTextPopover>}
+      <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} style={{ marginLeft: '8px', transform: 'skew(45deg)' }}></StatusTag>
+    </div>
 
-    {id && (
-      <Button style={{ padding: 0 }} type="link" onClick={onModalOpen}>
-        <EditOutlined title="Click to open this form in the designer" />
-      </Button>
-    )}
-    <span className={styles.shaFormInfoCardTitle}>
-      {getFormFullName(module, name)} v{versionNo}
-    </span>
-    {false && <HelpTextPopover content={description}></HelpTextPopover>}
-  </div>
-  <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null}></StatusTag>
+    <CloseOutlined color='#ffffff' onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info"  style={{transform: 'skew(45deg)', filter: 'invert(1) grayscale(100%)', marginLeft: '-20px'}}/>
 
-  <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" />
 
 
   {id && open && (
