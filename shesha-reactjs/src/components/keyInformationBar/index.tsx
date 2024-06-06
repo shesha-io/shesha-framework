@@ -3,10 +3,8 @@ import { Divider, Flex } from 'antd';
 import React, { FC } from 'react'
 import { useStyles } from './style';
 import {  getStyle } from '@/providers/form/utils';
-import { ICommonContainerProps } from '@/interfaces';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 import ParentProvider from '@/providers/parentProvider';
-import { nanoid } from '@/utils/uuid';
 
 export interface KeyInformationBarProps extends IConfigurableFormComponent {
   direction?: string;
