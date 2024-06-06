@@ -111,6 +111,8 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     formMarkup: formMarkup,
   };
 
+  let configurableFormActions: IFormActionsContext = null;
+
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
   const toolboxComponents = useFormDesignerComponents();
@@ -336,53 +338,55 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
 
   //#endregion
 
-  const updateVisibleComponents = (formContext: IFormStateInternalContext) => {
+  const updateVisibleComponents = (formContext: IFormStateInternalContext, formActionsContext: IFormActionsContext) => {
 
     const visibleComponents = getVisibleComponentIds(
       allComponents,
       {
         ...formProviderContext,
         data: formContext.formData,
-        formMode: formContext.formMode
+        form: getFormApi({...formContext, ...formActionsContext} as ConfigurableFormInstance)
       },
       filteredComponents.current
     );
     setVisibleComponents({ componentIds: visibleComponents });
   };
 
-  const debouncedUpdateVisibleComponents = useDebouncedCallback<(context: IFormStateInternalContext) => void>(
-    (formContext) => {
-      updateVisibleComponents(formContext);
-    },
-    // delay in ms
-    200
-  );
+  const debouncedUpdateVisibleComponents = 
+    useDebouncedCallback<(context: IFormStateInternalContext, formActionsContext: IFormActionsContext) => void>(
+      (formContext, formActionsContext) => {
+        updateVisibleComponents(formContext,formActionsContext);
+      },
+      // delay in ms
+      200
+    );
 
   //#region Set enabled components
   const setEnabledComponents = (payload: ISetEnabledComponentsPayload) => {
     dispatch(setEnabledComponentsAction(payload));
   };
 
-  const updateEnabledComponents = (formContext: IFormStateInternalContext) => {
+  const updateEnabledComponents = (formContext: IFormStateInternalContext, formActionsContext: IFormActionsContext) => {
     const enabledComponents = getEnabledComponentIds(
       allComponents,
       {
         ...formProviderContext,
         data: formContext.formData,
-        formMode: formContext.formMode
+        form: getFormApi({...formContext, ...formActionsContext} as ConfigurableFormInstance)
       }
     );
 
     setEnabledComponents({ componentIds: enabledComponents });
   };
 
-  const debouncedUpdateEnabledComponents = useDebouncedCallback<(context: IFormStateInternalContext) => void>(
-    (formContext) => {
-      updateEnabledComponents(formContext);
-    },
-    // delay in ms
-    200
-  );
+  const debouncedUpdateEnabledComponents = 
+    useDebouncedCallback<(context: IFormStateInternalContext, formActionsContext: IFormActionsContext) => void>(
+      (formContext, formActionsContext) => {
+        updateEnabledComponents(formContext, formActionsContext);
+      },
+      // delay in ms
+      200
+    );
   //#endregion
 
   useDeepCompareEffect(() => {
@@ -390,8 +394,8 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       const newState = getState();
 
       // Here there's always visibleComponentIds and enabledComponentIds
-      debouncedUpdateVisibleComponents(newState);
-      debouncedUpdateEnabledComponents(newState);
+      debouncedUpdateVisibleComponents(newState, configurableFormActions);
+      debouncedUpdateEnabledComponents(newState, configurableFormActions);
     });
   }, [state.formMode, formProviderContext.globalState, formProviderContext.contexts.lastUpdate]);
 
@@ -400,8 +404,8 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       const newState = getState();
 
       // Here there's always visibleComponentIds and enabledComponentIds
-      updateVisibleComponents(newState);
-      updateEnabledComponents(newState);
+      updateVisibleComponents(newState, configurableFormActions);
+      updateEnabledComponents(newState, configurableFormActions);
     });
   }, [allComponents, componentRelations]);
 
@@ -429,15 +433,15 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
 
       if (!newState.visibleComponentIds || newState.visibleComponentIds.length === 0) {
-        updateVisibleComponents(newState);
+        updateVisibleComponents(newState, configurableFormActions);
       } else {
-        debouncedUpdateVisibleComponents(newState);
+        debouncedUpdateVisibleComponents(newState, configurableFormActions);
       }
       // Update enabled components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
       if (!newState.enabledComponentIds || newState.enabledComponentIds.length === 0) {
-        updateEnabledComponents(newState);
+        updateEnabledComponents(newState, configurableFormActions);
       } else {
-        debouncedUpdateEnabledComponents(newState);
+        debouncedUpdateEnabledComponents(newState, configurableFormActions);
       }
     });
   };
@@ -610,7 +614,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       .catch((error) => console.error(error));
   };
 
-  const configurableFormActions: IFormActionsContext = {
+  configurableFormActions = {
     ...getFlagSetters(dispatch),
     getComponentModel,
     isComponentReadOnly,
