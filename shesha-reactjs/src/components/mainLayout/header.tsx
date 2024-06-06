@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import { ConfigurableForm } from '@/components';
 import { useStyles } from './styles/styles';
 import { HEADER_CONFIGURATION } from './constant';
-import { useAppConfigurator } from '@/index';
 
 interface ILayoutHeaderProps {
   collapsed?: boolean;
@@ -11,10 +10,9 @@ interface ILayoutHeaderProps {
 
 const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed }) => {
   const { styles } = useStyles();
-  const { formInfoBlockVisible } = useAppConfigurator();
 
   return (
-    <div className={classNames(styles.layoutHeader, { collapsed })} style={{height: formInfoBlockVisible ? "110%" : "55px"}}>
+    <div className={classNames(styles.layoutHeader, { collapsed })} style={{height: "auto", width: "auto"}}>
       <div className={styles.headerWrapper}>
         <ConfigurableForm
           mode={'readonly'}

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { IPersistedFormProps } from '@/providers/form/models';
-import { Button, Card } from 'antd';
+import { Button } from 'antd';
 import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
 import { getFormFullName } from '@/utils/form';
 import StatusTag from '@/components/statusTag';
@@ -40,22 +40,24 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
 
 useEffect(()=>{
   if(allowHidePanel === true) {
-    setPanelShowing(visible)
+    setPanelShowing(visible);
   }
-},[visible])
+},[visible]);
 
 useEffect(()=>{
   if(formInfoBlockVisible === true){
     setPanelShowing(true);
-    setTimeout(()=>{setPanelShowing(false); setAllowHidePanel(true)},3000)
+    setTimeout(()=>{
+setPanelShowing(false); setAllowHidePanel(true);
+},3000);
   }
-}, [formInfoBlockVisible])
+}, [formInfoBlockVisible]);
 
   return (
 <div
   className={`${styles.shaFormInfoCard}`}
   style={{
-    top: panelShowing ? '-2px' : '-42px',
+    top: panelShowing ? '-2px' : '-22px',
     opacity: panelShowing ? '1' : '0',
     zIndex: '2',
     position: 'absolute',
@@ -64,20 +66,18 @@ useEffect(()=>{
 >
 <div style={{ display: 'flex', alignItems: 'center' }}>
       {id && (
-        <Button type="link" onClick={onModalOpen} style={{transform: 'skew(45deg)'}}>
-          <EditOutlined color='#ffffff' style={{filter: 'invert(1) grayscale(100%)', marginLeft: '-10px'}} title="Click to open this form in the designer" />
+        <Button type="link" onClick={onModalOpen} style={{transform: 'skew(45deg)', marginLeft: "-10px"}}>
+          <EditOutlined style={{color: "#FFFFFF"}} title="Click to open this form in the designer" />
         </Button>
       )}
-      <span className={styles.shaFormInfoCardTitle} title={`${getFormFullName(module, name)} v${versionNo}`} style={{ marginLeft: id ? '-8px' : '0', transform: 'skew(45deg)'}}>
+      <p className={styles.shaFormInfoCardTitle} title={`${getFormFullName(module, name)} v${versionNo}`} style={{ marginLeft: id ? '-8px' : '0', transform: 'skew(45deg)'}}>
         {getFormFullName(module, name)} v{versionNo}
-      </span>
+      </p>
       {false && <HelpTextPopover content={description}></HelpTextPopover>}
       <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} style={{ marginLeft: '7px', transform: 'skew(45deg)' }}></StatusTag>
     </div>
 
-    <CloseOutlined color='#ffffff' onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info"  style={{transform: 'skew(45deg)', filter: 'invert(1) grayscale(100%)', marginLeft: '0px'}}/>
-
-
+    <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info"  style={{transform: 'skew(45deg)', marginLeft: '0px', color: '#FFFFFF'}}/>
 
   {id && open && (
     <QuickEditDialog

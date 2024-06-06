@@ -31,6 +31,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls}) => {
            }
            .${shaFormInfoCardTitle} {
                color: #fff;
+               font-size: 12px;
                font-weight: 400;
                flex: 1;
                transform: skew(45deg);
@@ -38,42 +39,29 @@ export const useStyles = createStyles(({ css, cx, prefixCls}) => {
                white-space: nowrap;
                overflow: hidden;
                text-overflow: ellipsis;
+               margin: 0px;
+               padding: 0px;
+               text-shadow: 0px 0px 2px #000;
            }
-           background: #10239e;
+           background: rgba(16, 35, 158, .8);
            border: none;
-           border-right: 20px #10239e solid;
            position: absolute;
            left: -22px;
            transition: .2s;
            display: flex;
            padding: 4px;
            padding-left: 30px;
+           padding-right: 20px;
            flex-direction: row;
            justify-content: space-between;
            z-index: 3;
            position: relative;
-           height: 32px;
+           height: 31px;
            transform: skew(-45deg);
            border-bottom-right-radius: 15px;
            width: auto;
        `);
    
-       const shaCurvedEnd = cx("sha-curved-end", css`
-           height: 32px;
-           width: 60px;
-           background-color: #10239e;
-           transform: skew(-30deg);
-           position: absolute;
-           left: 335px;
-           top: 0px;
-           border-bottom-right-radius: 7px;
-           z-index: 2;
-           & > :last-child {
-               margin-top: 10px;
-               transform: skew(30deg);
-           }
-   `   );
-
     const shaIconBackground = cx("sha-icon-background", css`
         width: 22px;
         height: 22px;
@@ -98,7 +86,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls}) => {
         shaComponentsContainerInner,
         shaFormInfoCard,
         shaFormInfoCardTitle,
-        shaCurvedEnd,
         shaEditModeContainer,
         shaIconBackground
     };

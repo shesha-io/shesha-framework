@@ -24,7 +24,6 @@ import { useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
-import { useAppConfigurator } from '@/providers';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -96,7 +95,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const { setGlobalVariables } = useSheshaApplication();
 
   const sideMenuTheme = themeFromStorage?.sidebar;
-  const { formInfoBlockVisible } = useAppConfigurator();
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
@@ -164,10 +162,9 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
       </Sider>
 
       <Layout className={styles.layout}>
-        <Header className={styles.antLayoutHeader} style={{height: formInfoBlockVisible ? "85px" : "auto"}}>
+        <Header className={styles.antLayoutHeader} style={{height: "auto"}}>
           <LayoutHeader collapsed={collapsed} />
         </Header>
-        {formInfoBlockVisible && <div style={{height: "30px"}}></div>}
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <>
             {breadcrumb}

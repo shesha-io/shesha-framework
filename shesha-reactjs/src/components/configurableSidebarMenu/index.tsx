@@ -7,7 +7,6 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { migrateToConfigActions } from './migrations/migrateToConfigActions';
 import { EditOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
 
 export interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
@@ -54,10 +53,10 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
       >
         {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`}>
+            <div className={`sidebar ${componentState.wrapperClassName}`} style={{position: "relative", width: "100%"}}>
               <BlockOverlay>
-                <div className='sha-configurable-sidemenu-button-wrapper'>
-                  <Button title='Edit sidebar menu' shape='default' icon={<EditOutlined />} />
+                <div>
+                <EditOutlined style={{color: "#FFFFFF"}}/>
                 </div>
               </BlockOverlay>
 

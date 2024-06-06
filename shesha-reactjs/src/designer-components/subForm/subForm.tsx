@@ -47,26 +47,31 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
 
   return (
     <ShaSpin spinning={isLoading}>
-      <div style={{ border: Boolean(showFormInfo) ? '1px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={(event) => { event.stopPropagation(); setFormInfoPanelShowing(false) }} onMouseEnter={(event) => { event.stopPropagation(); setFormInfoPanelShowing(true) }}>
-      <Show when={Boolean(showFormInfo)}>
-        <FormInfo visible={formInfoPanelShowing} formProps={persistedFormProps} />
-      </Show>
-     
-      <div style={{ flex: 1 }} data-name={propertyName}>
-        {Object.keys(errors).map((error, index) => (
-          <ValidationErrors key={index} error={errors[error]} />
-        ))}
+      <div style={{ border: Boolean(showFormInfo) ? '1px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={(event) => {
+        event.stopPropagation(); setFormInfoPanelShowing(false);
+      }} onMouseEnter={(event) => {
+        event.stopPropagation(); setFormInfoPanelShowing(true);
+      }}
+      >
+        <Show when={Boolean(showFormInfo)}>
+          <FormInfo visible={formInfoPanelShowing} formProps={persistedFormProps} />
+        </Show>
 
-        <div>
-          <ComponentsContainerProvider
-            ContainerComponent={ComponentsContainerSubForm}
-          >
-            <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
-              <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly}/>
-            </FormItemProvider>
-          </ComponentsContainerProvider>
+        <div style={{ flex: 1 }} data-name={propertyName}>
+          {Object.keys(errors).map((error, index) => (
+            <ValidationErrors key={index} error={errors[error]} />
+          ))}
+
+          <div>
+            <ComponentsContainerProvider
+              ContainerComponent={ComponentsContainerSubForm}
+            >
+              <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+                <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly} />
+              </FormItemProvider>
+            </ComponentsContainerProvider>
+          </div>
         </div>
-      </div>
       </div>
     </ShaSpin>
   );

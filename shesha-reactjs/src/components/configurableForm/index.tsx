@@ -95,7 +95,11 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
               parentFormValues={restProps.parentFormValues}
             >
 
-              <div style={{ border: Boolean(showFormInfo) ? '1px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={() => { setFormInfoPanelShowing(false) }} onMouseEnter={() => { setFormInfoPanelShowing(true) }}>
+              <div style={{ border: Boolean(showFormInfo) ? '1px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={() => {
+                setFormInfoPanelShowing(false);
+              }} onMouseEnter={() => {
+                setFormInfoPanelShowing(true);
+              }}>
                 <Show when={Boolean(showFormInfo)}>
                   <FormInfo formProps={persistedFormProps} visible={formInfoPanelShowing} onMarkupUpdated={onMarkupUpdated} />
                 </Show>

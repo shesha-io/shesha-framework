@@ -1,14 +1,13 @@
 import React, { FC } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { message, Space, Switch } from 'antd';
-import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
 import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { useStyles } from './styles/styles';
 
 export interface IAppEditModeTogglerProps { }
 
 export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
-  const { switchApplicationMode, toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
+  const { toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -46,7 +45,9 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
       <Switch className={styles.shaConfigurableModeSwitcherSwitcher}
         title={Boolean(formInfoBlockVisible) ? 'Switch to Live mode' : 'Switch to Edit mode'}
         checked={formInfoBlockVisible}
-        onChange={(checked, event) => {toggleShowInfoBlock(checked); toggleMode(checked,event)}}
+        onChange={(checked, event) => {
+toggleShowInfoBlock(checked); toggleMode(checked,event);
+}}
       />
     </Space>
   );
