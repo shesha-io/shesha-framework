@@ -8,6 +8,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import AutocompleteTagGroup from '@/components/autocompleteTagGroup';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IAutocompleteTagsOutlinedComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -45,6 +46,10 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
   migrator: (m) => m
     .add<IAutocompleteTagsOutlinedComponentProps>(0, (prev: IAutocompleteTagsOutlinedComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAutocompleteTagsOutlinedComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<IAutocompleteTagsOutlinedComponentProps>(2, (prev) => ({
+      ...migrateFormApi.eventsAndProperties(prev),
+      defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
+    }))
 ,
 };
 

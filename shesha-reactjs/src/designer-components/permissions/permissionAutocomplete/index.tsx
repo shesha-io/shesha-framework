@@ -3,6 +3,7 @@ import { SecurityScanOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/index';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 export interface IPermissionAutocompleteComponentProps extends IConfigurableFormComponent {
   
@@ -23,6 +24,9 @@ const PermissionAutocompleteComponent: IToolboxComponent<IPermissionAutocomplete
       </ConfigurableFormItem>
     );
   },
+  migrator: (m) => m
+    .add<IPermissionAutocompleteComponentProps>(0, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+  ,
 };
 
 export default PermissionAutocompleteComponent;

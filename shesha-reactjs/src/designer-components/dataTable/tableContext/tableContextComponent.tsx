@@ -8,6 +8,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { TableContext } from './tableContext';
 import { ITableContextComponentProps } from './models';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -18,37 +19,18 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   isOutput: true,
   isInput: true,
   Factory: ({ model }) => {
-    return <TableContext {...model} />;
+    return model.hidden ? null : <TableContext {...model} />;
   },
   migrator: (m) =>
     m
-      .add<ITableContextComponentProps>(0, (prev) => {
-        return {
-          ...prev,
-          name: prev['uniqueStateId'] ?? prev['name'],
-        };
-      })
-      .add<ITableContextComponentProps>(1, (prev) => {
-        return {
-          ...prev,
-          sourceType: 'Entity',
-        };
-      })
-      .add<ITableContextComponentProps>(2, (prev) => {
-        return {
-          ...prev,
-          defaultPageSize: 10,
-        };
-      })
-      .add<ITableContextComponentProps>(3, (prev) => {
-        return {
-          ...prev,
-          dataFetchingMode: 'paging',
-        };
-      })
+      .add<ITableContextComponentProps>(0, (prev) => ({...prev, name: prev['uniqueStateId'] ?? prev['name']}))
+      .add<ITableContextComponentProps>(1, (prev) => ({...prev, sourceType: 'Entity'}))
+      .add<ITableContextComponentProps>(2, (prev) => ({...prev, defaultPageSize: 10}))
+      .add<ITableContextComponentProps>(3, (prev) => ({...prev, dataFetchingMode: 'paging'}))
       .add<ITableContextComponentProps>(4, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
       .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
+      .add<ITableContextComponentProps>(7, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

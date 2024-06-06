@@ -186,12 +186,13 @@ export const entityPickerSettings = new DesignerToolbarSettings()
               hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false } as any,
               exposedVariables: [{ name: 'value', type: 'object', description: 'Selected value' }],
             })
-            .addEntityPickerColumnsEditor({
+            .addColumnsEditor({
               id: '2a6ee3b0-15f1-4521-cc6e-6a1c9d192ce2',
               propertyName: 'items',
               parentId: 'pn154bf6-f76d-4139-a850-c99bf06c8b69',
               label: 'Columns',
               items: [],
+              modelType: '{{data.entityType}}',
             })
             .toJson(),
         })

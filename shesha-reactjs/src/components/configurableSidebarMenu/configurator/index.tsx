@@ -1,41 +1,50 @@
-import React, { FC, memo } from 'react';
-import { Button } from 'antd';
-import { SidebarContainer } from '@/components/';
-import { ToolbarItemProperties } from './itemProperties';
-import SidebarItemsContainer from './sidebarItemsContainer';
-import { useSidebarMenuConfigurator } from '@/providers/sidebarMenuConfigurator';
-import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
+import React, { FC } from 'react';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
+import { nanoid } from '@/utils/uuid';
+import { ListEditorWithPropertiesPanel } from '@/components/listEditorWithPropertiesPanel';
+import { ItemGroupHeader } from './itemGroupHeader';
+import { SidebarItemProperties } from './itemProperties';
+import { SidebarListItemCommon } from './sidebarListItemCommon';
+import { Alert } from 'antd';
 
-export interface ISidebarConfiguratorProps {}
+export interface ISidebarConfiguratorProps {
+  readOnly: boolean;
+  value: ISidebarMenuItem[];
+  onChange: (newValue: ISidebarMenuItem[]) => void;
+}
 
-const Configurator: FC<ISidebarConfiguratorProps> = () => {
-  const { styles } = useStyles();
-  const { items, addItem, addGroup } = useSidebarMenuConfigurator();
-  
+export const SidebarConfigurator: FC<ISidebarConfiguratorProps> = ({ value, onChange, readOnly }) => {
+  const makeNewItem = (items: ISidebarMenuItem[]): ISidebarMenuItem => {
+    const itemsCount = (items ?? []).length;
+    const itemNo = itemsCount + 1;
+
+    const newItem: ISidebarMenuItem = {
+      id: nanoid(),
+      itemType: 'button',
+      title: `New item ${itemNo}`,
+    };
+
+    return newItem;
+  };
+
   return (
-    <div className={styles.shaToolbarConfigurator}>
-      <h4>You can customize the Menu component from this screen.</h4>
-      <div className={styles.shaActionButtons}>
-        <Button onClick={addGroup} type="primary">
-          Add Group
-        </Button>
-        <Button onClick={addItem} type="primary">
-          Add New Item
-        </Button>
-      </div>
-      <SidebarContainer
-        rightSidebarProps={{
-          open: true,
-          title: 'Properties',
-          content: <ToolbarItemProperties />,
-        }}
-      >
-        <SidebarItemsContainer items={items} index={[]} />
-      </SidebarContainer>
-    </div>
+    <ListEditorWithPropertiesPanel<ISidebarMenuItem>
+      value={value}
+      onChange={onChange}
+      initNewItem={makeNewItem}
+      readOnly={readOnly}
+      header={<Alert message={readOnly ? 'Here you can view sidebar configuration.' : 'Here you can configure the sidebar menu items by adjusting their settings and ordering.'} />}
+      itemProperties={(itemProps) => (<SidebarItemProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} />)}
+      groupHeader={ItemGroupHeader}      
+    >
+      {({ item, itemOnChange, nestedRenderer }) => (
+        <SidebarListItemCommon
+          item={item}
+          onChange={itemOnChange}
+          nestedRenderer={nestedRenderer}
+          initNewItem={makeNewItem}
+        />
+      )}
+    </ListEditorWithPropertiesPanel>
   );
 };
-
-const SidebarConfigurator = memo(Configurator);
-
-export default SidebarConfigurator;

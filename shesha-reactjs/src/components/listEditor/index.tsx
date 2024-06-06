@@ -32,7 +32,8 @@ export type ListEditorChildrenFn<TItem = any> = (args: ListItemRenderingArgs<TIt
 export interface ListEditorSectionRenderingArgs<TItem = any> {
   contextAccessor: () => IListEditorContext<TItem>;
   parentItem?: TItem;
-  level: number;  
+  level: number;
+  addItemText?: string;
 }
 export type ListEditorSectionRenderingFn<TItem = any> = (args: ListEditorSectionRenderingArgs<TItem>) => React.ReactNode | null;
 

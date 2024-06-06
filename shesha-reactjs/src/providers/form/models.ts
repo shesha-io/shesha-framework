@@ -215,7 +215,7 @@ export interface IFlatComponentsStructure {
   componentRelations: IComponentRelations;
 }
 
-export interface IFormSettings {
+export interface IFormSettings extends IHasVersion {
   modelType?: string;
 
   postUrl?: string;
