@@ -67,7 +67,9 @@ namespace Shesha.Permission
                         .ToList();
                     foreach (var item in toAdd)
                     {
-                        var obj = await _permissionedObjectRepository.InsertAsync(_objectMapper.Map<PermissionedObject>(item));
+                        var dbItem = _objectMapper.Map<PermissionedObject>(item);
+                        dbItem.Module = _moduleReporsitory.FirstOrDefault(x => x.Id == item.ModuleId);
+                        var obj = await _permissionedObjectRepository.InsertAsync(dbItem);
                         foreach (var parameter in item.AdditionalParameters)
                         {
                             await _versionedFieldManager.SetVersionedFieldValueAsync<PermissionedObject, Guid>(obj, parameter.Key, parameter.Value, false);
