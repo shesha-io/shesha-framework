@@ -11,47 +11,28 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
 
     const flexContainer = cx("flex-container", css`
 
-         display: flex;
-         align-items: center;
-         width: 100%;
-         max-width: 100%;
-         min-height: max-content;
-         max-height: max-content;
-         overflow: hidden;
-         height: 35px;
+        width: max-content;
+        * {
+            margin: 0;
+            padding: 0 !important;
+            min-height: min-content !important;
+            width; 100%;
+        }
 
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            width: max-content;
-            height: 100%;
         }
 
         .${flexItemWrapper} {
             flex-direction: row;
-            min-width: 150px;
         }
 
         .${flexItemWrapperVertical} {
             flex-direction: column;
-            min-width: 50px;
-        }
-
-        * {
-            margin: 0 !important;
-            padding: 0 !important;
-            min-height: min-content !important;
-            width: 100% !important;
         }
 
         .${flexItem} {
             text-align: center;
-        }
-
-        .${divider} {
-            margin: 0;
-            height: 100%;
         }
     `);
 
