@@ -68,7 +68,6 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   form?: FormInstance<any>;
   hidden?: boolean;
   customVisibility?: string;
-  customEnabled?: string;
   defaultActiveStep?: string;
   defaultActiveValue?: string;
   direction?: 'vertical' | 'horizontal';
