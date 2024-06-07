@@ -518,7 +518,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       application: application?.getData(),
       contexts: { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
       data: exposedData || state.formData,
-      form: getFormApi({...state, setFormData} as ConfigurableFormInstance),
+      form: getFormApi({...state, ...configurableFormActions} as ConfigurableFormInstance),
       globalState: formProviderContext.globalState,
       http: formProviderContext.http,
       initialValues: props.initialValues,
