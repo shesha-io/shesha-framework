@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from "@/index";
 import { StandardNodeTypes } from "@/interfaces/formComponent";
-import { isPropertySetting } from "@/providers/form/utils";
+import { isPropertySettings } from "../_settings/utils";
 
 const migrateExpression = (expression: string, regexp: RegExp, newValue: string): string => {
   if (!expression)
@@ -24,7 +24,7 @@ const events = <T extends IConfigurableFormComponent,>(model: T): T => ({
 
 const properties = <T,>(model: T): T => {
   const migrateProp = (prop: any) => {
-    if (isPropertySetting(prop)) {
+    if (isPropertySettings(prop)) {
       // migrate JS settings
       return {...prop, _code: withoutFormData(prop?._code)};
     } else if (prop['_type'] === StandardNodeTypes.ConfigurableActionConfig && prop['actionName'] === 'Execute Script') {
