@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Domain.Uow;
@@ -21,6 +20,7 @@ using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
 using Shesha.ConfigurationItems;
+using Shesha.Domain.ConfigurationItems;
 
 namespace Shesha.Permission
 {
@@ -30,22 +30,25 @@ namespace Shesha.Permission
         private readonly IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private readonly IObjectMapper _objectMapper;
         private readonly IVersionedFieldManager _versionedFieldManager;
+        private readonly IRepository<Module, Guid> _moduleReporsitory;
 
         public PermissionedObjectsBootstrapper(
             IRepository<PermissionedObject, Guid> permissionedObjectRepository,
             IObjectMapper objectMapper,
-            IVersionedFieldManager versionedFieldManager)
+            IVersionedFieldManager versionedFieldManager,
+            IRepository<Module, Guid> moduleReporsitory
+        )
         {
             _permissionedObjectRepository = permissionedObjectRepository;
             _objectMapper = objectMapper;
             _versionedFieldManager = versionedFieldManager;
+            _moduleReporsitory = moduleReporsitory;
         }
 
-        public Task ProcessAsync()
+        public async Task ProcessAsync()
         {
             // ToDo: use UOW!!!!!!!!!
-            return Task.CompletedTask;
-            /*
+
             var providers = IocManager.Instance.ResolveAll<IPermissionedObjectProvider>();
             foreach (var permissionedObjectProvider in providers)
             {
@@ -71,14 +74,14 @@ namespace Shesha.Permission
                         }
                     }
 
-                    // ToDo: think how to update Protected objects in th bootstrapper
+                    // ToDo: think how to update Protected objects in the bootstrapper
                     // Update items
                     var toUpdate = dbItems.Where(dbi => items.Any(i => dbi.Object == i.Object)).ToList();
                     foreach (var dbItem in toUpdate)
                     {
                         var item = items.FirstOrDefault(x => x.Object == dbItem.Object);
                         if (item == null) continue;
-                        dbItem.Module = item.Module;
+                        dbItem.Module = _moduleReporsitory.FirstOrDefault(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent;
                         dbItem.Name = item.Name;
                         await _permissionedObjectRepository.UpdateAsync(dbItem);
@@ -96,7 +99,7 @@ namespace Shesha.Permission
                     }
                 }
             }
-            */
+            
             // todo: write changelog
         }
     }

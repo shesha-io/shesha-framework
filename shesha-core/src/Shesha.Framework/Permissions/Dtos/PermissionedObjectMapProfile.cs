@@ -15,10 +15,11 @@ namespace Shesha.Permissions.Dtos
             CreateMap<PermissionedObjectDto, PermissionedObject>()
                 .ForMember(e => e.Permissions, c => c.MapFrom(e => string.Join(",", e.Permissions)));
             CreateMap<PermissionedObject, PermissionedObjectDto>()
-                .ForMember(e => e.Permissions, c => c.MapFrom(e => 
-                    e.Permissions == null 
-                        ? new List<string>() 
-                        : e.Permissions.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList()));
+                .ForMember(e => e.Permissions, c => c.MapFrom(e =>
+                    e.Permissions == null
+                        ? new List<string>()
+                        : e.Permissions.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList()))
+                .ForMember(e => e.ModuleId, c => c.MapFrom(m => (object)(m.Module == null ? null : m.Module.Id)));
         }
     }
 }
