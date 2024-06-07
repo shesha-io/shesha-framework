@@ -1,6 +1,14 @@
 export const formApiDefinition = `/** Form mode */
 export type FormMode = 'readonly' | 'edit' | 'designer';
 
+export interface ISetFormDataPayload {
+  /** form field values */
+  values: any;
+
+  /** if true, previous data will be merged with current values */
+  mergeValues: boolean;
+}
+
 export interface IFormSettings {
   modelType?: string;
 
@@ -9,47 +17,67 @@ export interface IFormSettings {
   deleteUrl?: string;
   getUrl?: string;
 
-  layout: FormLayout;
-  colon: boolean;
-  //labelCol: ColProps;
-  //wrapperCol: ColProps;
-  preparedValues?: string;
-  size?: SizeType;
-  formKeysToPersist?: string[];
   fieldsToFetch?: string[];
-  excludeFormFieldsInPayload?: string;
-  uniqueFormId?: string;
-  onDataLoaded?: string;
-  onInitialized?: string;
-  onUpdate?: string;
-  //initialValues?: IKeyValue[];
 
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean;
-}
+};
 
 /**
-* Form instance API
-*/
+ * Form instance API
+ */
 export interface FormApi<Values = any> {
-   /**
-    * Set field value
-    * @param name field name
-    * @param value field value
-    */
-   setFieldValue: (name: string, value: any) => void;
-   /**
-    * Set fields value
-    * @param values 
-    */
-   setFieldsValue: (values: Values) => void;
-   /**
-    * Submit form
-    */
-   submit: () => void;
+  /**
+   * Set field value
+   * @param name field name
+   * @param value field value
+   */
+  setFieldValue: (name: string, value: any) => void;
+  /**
+   * Set fields value
+   * @param values 
+   */
+  setFieldsValue: (values: Values) => void;
+  /**
+   * Submit form
+   */
+  submit: () => void;
 
-   /**
-    * Configurable form settings)
-    */
-   formSettings: IFormSettings;
-}`;
+  /**
+   * Set form data
+   * @deprecated The method should not be used
+   * @param payload data payload
+   */
+  setFormData: (payload: ISetFormDataPayload) => void;
+
+  /** antd form instance */
+  formInstance?: FormInstance<Values>;
+  /** Configurable form settings */
+  formSettings: IFormSettings;
+  /** Form mode */
+  formMode: FormMode;
+  /** Form data */
+  data: Values;
+};
+
+export const getFormApi = (form: ConfigurableFormInstance): FormApi => {
+  return {
+    setFieldValue: (name: string, value: any) => {
+      form?.setFormData({values: setValueByPropertyName(form.formData, name, value, true), mergeValues: true});
+    },
+    setFieldsValue: (values: any) => {
+      form?.setFormData({values, mergeValues: true});
+    },
+    submit: () => {
+      form?.form?.submit();
+    },
+    setFormData: (payload: ISetFormDataPayload) => {
+      form?.setFormData(payload);
+    },
+
+    formSettings: form?.formSettings,
+    formMode: form?.formMode,
+    data: form?.formData,
+  };
+};
+`;

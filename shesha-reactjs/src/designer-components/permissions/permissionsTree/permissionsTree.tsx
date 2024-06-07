@@ -7,6 +7,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { PermissionsTree, PermissionsTreeMode } from '@/components/permissionsTree';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -78,6 +79,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   migrator: (m) => m
     .add<IPermissionsTreeComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IPermissionsTreeComponentProps)
     .add<IPermissionsTreeComponentProps>(1, (prev) => migrateReadOnly(prev))
+    .add<IPermissionsTreeComponentProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
 };
 

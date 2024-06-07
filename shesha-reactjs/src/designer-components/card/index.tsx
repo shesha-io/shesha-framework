@@ -10,6 +10,7 @@ import { Card } from 'antd';
 import React from 'react';
 import { ICardComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
   type: 'card',
@@ -64,6 +65,8 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   customContainerNames: ['header', 'content'],
+  migrator: (m) => m
+    .add<ICardComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
 };
 
 export default CardComponent;

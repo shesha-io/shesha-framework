@@ -107,10 +107,9 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     });
   }, [metadata?.properties, containerPath, containerPathMultiple]);
 
-  const allowAutoLabelling = props.autoFillProps !== false && Boolean(form) && !readOnly;
+  /*const allowAutoLabelling = props.autoFillProps !== false && Boolean(form) && !readOnly;
 
-
-  useEffect(() => {
+  const linkToModelMetadata = () => {
     if (!form || !props.id || !allowAutoLabelling) {
       return;
     }
@@ -119,15 +118,19 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     if (typeof action === 'function' && selectedProperty) {
       action(selectedProperty, form);
     }
-  }, [props.value, state.properties]);
-
-
+  };*/
 
   const onSelect = (data: string) => {
     if (props.onChange) props.onChange(data);
+    const property = getProperty(data);
     if (props.onSelect) {
-      const property = getProperty(data);
       props.onSelect(data, property);
+    }
+    if (props.autoFillProps !== false && form && !readOnly && property) {
+      const action = form.getAction(props.id, 'linkToModelMetadata');
+      if (typeof action === 'function') {
+        action(property, form);
+      }
     }
   };
 

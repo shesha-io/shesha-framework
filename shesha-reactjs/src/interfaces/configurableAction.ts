@@ -3,8 +3,8 @@ import { ReactNode } from 'react';
 import { FormMarkup, GenericDictionary } from '@/providers/form/models';
 import { StandardNodeTypes } from './formComponent';
 import { IObjectMetadata } from './metadata';
-import { ConfigurableFormInstance } from './formDesigner';
 import { IApplicationApi } from '@/providers';
+import { FormApi } from '@/providers/form/formApi';
 
 export interface IHasPreviousActionResponse {
   actionResponse?: any;
@@ -16,7 +16,7 @@ export interface IHasPreviousActionError {
 export type HasPreviousActionResult = IHasPreviousActionResponse | IHasPreviousActionError;
 
 export type IActionExecutionContext = GenericDictionary & HasPreviousActionResult & {
-  form?: ConfigurableFormInstance;
+  form?: FormApi;
   application?: IApplicationApi;
 };
 

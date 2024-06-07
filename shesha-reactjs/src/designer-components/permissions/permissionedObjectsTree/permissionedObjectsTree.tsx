@@ -5,6 +5,7 @@ import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import PermissionedObjectsTree from '@/components/permissionedObjectsTree';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent { 
   objectsType?: string;
@@ -38,6 +39,9 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
       ...model,
     };
   },
+  migrator: (m) => m
+    .add<IPermissionedObjectsTreeComponentProps>(0, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+  ,
 };
 
 export default PermissionedObjectsTreeComponent;

@@ -51,7 +51,7 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     ) : (
         <React.Suspense fallback={<div>Loading editor...</div>}>
             <JoditEditor
-                value={state.content}
+                value={state.content || value}
                 config={fullConfig}
                 onBlur={handleChange} // preferred to use only this option to update the content for performance reasons
             />

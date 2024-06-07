@@ -15,6 +15,7 @@ import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { ValidationErrors } from '@/components';
 import { ImageField, ImageSourceType } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height?: number | string;
@@ -117,6 +118,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         storedFileId: Boolean(prev.storedFileId) ? {_mode: 'code', _code: prev.storedFileId} : null,
       } as any;
     })
+    .add<IImageProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
