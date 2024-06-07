@@ -23,7 +23,7 @@ interface IGetItemArgs {
 
 function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url }: IGetItemArgs): MenuItem {
   const clickHandler = (event) => {
-    event.stopPropagation();
+    event.preventDefault();
     onClick();
   };
 
