@@ -7,14 +7,12 @@ import StyleBox from '../styleBox/components/box';
 import { Checkbox, Input, InputNumber, Select } from 'antd';
 import { EXPOSED_VARIABLES } from './exposedVariables';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
-import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
-import PermissionAutocomplete from '@/components/permissionAutocomplete';
-import { IColumnsComponentProps } from './interfaces';
 import ColumnsList from './columnsList';
-import { KeyInformationBarProps } from '.';
+import { IKeyInformationBarProps } from '.';
 
-const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<KeyInformationBarProps>> = (props) => {
+const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
     const { readOnly } = props;
+    const { Option } = Select;
 
     return (
         <>
@@ -23,11 +21,11 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<KeyInformationBarPr
             </SettingsFormItem>
 
             <SettingsFormItem name="barHeight" label="Bar Height" jsSetting>
-                <Input readOnly={readOnly} />
+                <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 
             <SettingsFormItem name="barWidth" label="Bar Width" jsSetting>
-                <Input readOnly={readOnly} />
+                <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 
             <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
@@ -41,6 +39,16 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<KeyInformationBarPr
             <SettingsFormItem name="columns" label="Columns">
                 <ColumnsList readOnly={readOnly} />
             </SettingsFormItem>
+            <SettingsFormItem name="alignItems" label="Align Items">
+                <Select >
+                    <Option value="flex-start">Flex Start</Option>
+                    <Option value="flex-end">Flex End</Option>
+                    <Option value="center">Center</Option>
+                    <Option value="baseline">Baseline</Option>
+                    <Option value="stretch">Stretch</Option>
+                </Select>
+            </SettingsFormItem>
+
 
             <SectionSeparator title="Style" />
 
@@ -59,24 +67,13 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<KeyInformationBarPr
                 <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 
+
             <SettingsFormItem name="stylingBox">
                 <StyleBox />
             </SettingsFormItem>
-
-            <SettingsCollapsiblePanel header="Security">
-                <SettingsFormItem
-                    jsSetting
-                    label="Permissions"
-                    name="permissions"
-                    initialValue={props.model.permissions}
-                    tooltip="Enter a list of permissions that should be associated with this component"
-                >
-                    <PermissionAutocomplete readOnly={readOnly} />
-                </SettingsFormItem>
-            </SettingsCollapsiblePanel>
         </>
     );
 };
 
-export const KeyInformationBarSettingsForm: FC<ISettingsFormFactoryArgs<KeyInformationBarProps>> = (props) =>
+export const KeyInformationBarSettingsForm: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) =>
     SettingsForm<any>({ ...props, children: <KeyInformationBarSettings {...props} /> });

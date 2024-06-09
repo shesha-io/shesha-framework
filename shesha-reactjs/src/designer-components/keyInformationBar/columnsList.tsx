@@ -10,10 +10,11 @@ import {
   DroppableStateSnapshot,
 } from 'react-beautiful-dnd';
 
-import { IColumnProps } from './interfaces';
-import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal } from 'antd';
+import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal, Select } from 'antd';
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
+import { KeyInfomationBarItemProps } from '.';
+import { isDataColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 
 export interface IProps {
   readOnly: boolean;
@@ -23,7 +24,7 @@ export interface IProps {
 
 const EditableContext = React.createContext(null);
 const DragHandleContext = React.createContext(null);
-const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, isDropdown, ...restProps }) => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
   const form = useContext(EditableContext);
@@ -52,6 +53,15 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   let childNode = children;
 
+  const { Option } = Select;
+  const values = ['flex-start', 'flex-end', 'center', 'baseline', 'stretch'];
+  const Dropdown = (ref) =>
+    <Select ref={ref}>
+      {values.map((value, i) => <Option key={i} value={value}>{value.split('-').map(word => {
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }).join(' ')}</Option>)}
+    </Select>
+
   if (editable) {
     childNode = editing ? (
       <Form.Item
@@ -67,7 +77,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
         ]}
       >
         {/* <Input ref={inputRef} onPressEnter={save} onBlur={save} /> */}
-        <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />
+        {dataIndex === "alignItems" ? Dropdown(inputRef) : <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />}
       </Form.Item>
     ) : (
       <div
@@ -126,8 +136,9 @@ const DragHandle = () => {
   return <MenuOutlined style={{ color: '#999' }} {...dragHandleProps} />;
 };
 
+
 export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
-  const columns = value as IColumnProps[];
+  const columns = value as KeyInfomationBarItemProps[];
 
   const handleDeleteTab = (key: string) => {
     const newColumns = columns.filter(column => column.id !== key);
@@ -135,12 +146,10 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   };
 
   const handleAddColumn = () => {
-    const newColumn: IColumnProps = {
+    const newColumn: KeyInfomationBarItemProps = {
       id: nanoid(),
-      flex: 6,
-      offset: 0,
-      push: 0,
-      pull: 0,
+      width: 200,
+      alignItems: 'center',
       components: [],
     };
     const newColumns = [...columns, newColumn];
@@ -169,27 +178,15 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       : null,
     {
       title: 'Width',
-      dataIndex: 'flex',
+      dataIndex: 'width',
       editable: !readOnly,
-      width: '20%',
+      width: '35%',
     },
     {
-      title: 'Offset',
-      dataIndex: 'offset',
-      width: '20%',
+      title: 'Align Items',
+      dataIndex: 'alignItems',
       editable: !readOnly,
-    },
-    {
-      title: 'Push',
-      dataIndex: 'push',
-      width: '20%',
-      editable: !readOnly,
-    },
-    {
-      title: 'Pull',
-      dataIndex: 'pull',
-      width: '20%',
-      editable: !readOnly,
+      width: '35%',
     },
     !readOnly
       ? {
@@ -236,7 +233,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
     if (destination.droppableId === source.droppableId && source.index === destination.index) return;
 
-    const reorder = (list: IColumnProps[], startIndex: number, endIndex: number): IColumnProps[] => {
+    const reorder = (list: KeyInfomationBarItemProps[], startIndex: number, endIndex: number): KeyInfomationBarItemProps[] => {
       const orderedList = [...list];
       const [removed] = orderedList.splice(startIndex, 1);
       orderedList.splice(endIndex, 0, removed);
@@ -257,17 +254,17 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
   return (
     <Fragment>
-      <Button onClick={toggleModal}>{ readOnly ? 'View Columns' : 'Configure Columns' }</Button>
+      <Button onClick={toggleModal}>{readOnly ? 'View Columns' : 'Configure Columns'}</Button>
 
-      <Modal 
-        title={ readOnly ? 'View Columns' : 'Configure Columns' } 
-        open={showDialog} 
+      <Modal
+        title={readOnly ? 'View Columns' : 'Configure Columns'}
+        open={showDialog}
         width="650px"
-        
-        onOk={toggleModal} 
+
+        onOk={toggleModal}
         okButtonProps={{ hidden: readOnly }}
 
-        onCancel={toggleModal} 
+        onCancel={toggleModal}
         cancelText={readOnly ? 'Close' : undefined}
       >
         <Space direction="vertical" style={{ width: '100%' }}>
@@ -276,7 +273,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
               {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
                 <div ref={provided.innerRef} {...provided.droppableProps} style={getListStyle(snapshot.isDraggingOver)}>
                   <Table
-                    scroll={{ x: 'mex-content' }}
+                    scroll={{ x: 'max-content' }}
                     bordered
                     pagination={false}
                     dataSource={columns}
@@ -299,7 +296,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
           {!readOnly && (
             <div>
               <Button type="default" onClick={handleAddColumn} icon={<PlusOutlined />}>
-                Add Column
+                Add Item
               </Button>
             </div>
           )}

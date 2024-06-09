@@ -1,7 +1,7 @@
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { BorderLeftOutlined } from '@ant-design/icons';
-import { Divider, Flex } from 'antd';
+import { Divider, Flex, Space } from 'antd';
 import { IConfigurableFormComponent, useFormData, useGlobalState } from '@/providers';
 import { nanoid } from '@/utils/uuid';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
@@ -11,37 +11,40 @@ import ParentProvider from '@/providers/parentProvider/index';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useStyles } from './style';
 import { IColumnProps } from './interfaces';
+import { AlignItems } from '../container/interfaces';
 
-export interface KeyInformationBarItemProps {
+export interface KeyInfomationBarItemProps {
   id: string;
-  key?: string;
+  width: number;
+  alignItems: AlignItems;
+  components: IConfigurableFormComponent[];
 }
 
-export interface KeyInformationBarProps extends IConfigurableFormComponent, IColumnProps {
+export interface IKeyInformationBarProps extends IConfigurableFormComponent, IColumnProps {
   width?: string;
   height?: string;
   dividerHeight?: string;
   space?: number;
   formData?: any;
-  alignItems?: string;
+  alignItems?: AlignItems;
   columnWidth?: string;
   barWidth?: string;
   barHeight?: string;
   vertical?: boolean;
-  columns?: { id: string }[];
+  columns?: KeyInfomationBarItemProps[];
   readOnly?: boolean;
+  style?: string;
+  stylingBox?: any;
 }
 
-const ColumnsComponent: IToolboxComponent<KeyInformationBarProps> = {
+const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   type: 'KeyInformationBar',
   name: 'Key Information Bar',
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
-    const { data } = useFormData();
-    const { globalState } = useGlobalState();
-    const { columns } = model as any;
+    const { columns } = model as IKeyInformationBarProps;
     const { styles } = useStyles();
-    const { hidden, barWidth, barHeight, space, vertical } = model
+    const { hidden, barWidth, barHeight, alignItems, vertical, space } = model
     if (hidden) return null;
 
     return (
@@ -49,12 +52,15 @@ const ColumnsComponent: IToolboxComponent<KeyInformationBarProps> = {
         <Flex vertical={vertical} className={styles.flexContainer} style={{ width: barWidth, height: barHeight }}>
           {columns?.map((item, i) => {
             return (
-              <div key={i} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper}>
-                <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} style={{ width: 10, height: "100%", margin: space }} />
-                <ComponentsContainer
-                  containerId={item.id}
-                  dynamicComponents={model?.isDynamic ? item?.components : []}
-                />
+              <div key={i} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={{ width: item.width }}>
+                <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} style={{ height: barHeight ? barHeight : "100%", margin: space }} />
+                <div className={styles.content} style={{ flex: 1, textAlign: "center" }}>
+                  <ComponentsContainer
+                    containerId={item.id}
+                    dynamicComponents={model?.isDynamic ? item?.components : []}
+                  />
+                </div>
+
               </div>);
           })}
         </Flex>
@@ -63,17 +69,22 @@ const ColumnsComponent: IToolboxComponent<KeyInformationBarProps> = {
   },
   migrator: (m) =>
     m
-      .add<KeyInformationBarProps>(
+      .add<IKeyInformationBarProps>(
         0,
-        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as KeyInformationBarProps
+        (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarProps
       )
-      .add<KeyInformationBarProps>(1, (prev) => migrateVisibility(prev)),
+      .add<IKeyInformationBarProps>(1, (prev) => migrateVisibility(prev)),
   initModel: (model) => {
-    const tabsModel: KeyInformationBarProps = {
+    const tabsModel: IKeyInformationBarProps = {
       ...model,
-      propertyName: 'colum 1',
+      propertyName: 'column 1',
       columns: [
-        { id: nanoid() }
+        {
+          id: nanoid(),
+          width: 200,
+          alignItems: 'flex-start',
+          components: [],
+        }
       ],
     };
 

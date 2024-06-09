@@ -5,21 +5,21 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     const flexItemWrapper = "flex-item-wrapper";
     const flexItemWrapperVertical = "flex-item-wrapper-vertical";
     const divider = "divider";
-    const label = "label";
-    const value = "value";
-    const innerContainer = "container-inner";
+    const content = "content";
 
     const flexContainer = cx("flex-container", css`
 
-        width: max-content;
-        * {
-            margin: 0;
+        overflow: hidden;
+
+        .${content} {
+            * {
+            margin: 0 !important;
             padding: 0 !important;
-            min-height: min-content !important;
-            width; 100%;
+            }
         }
 
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
+        
             display: flex;
         }
 
@@ -30,13 +30,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         .${flexItemWrapperVertical} {
             flex-direction: column;
         }
-
-        .${flexItem} {
-            text-align: center;
-        }
     `);
 
     return {
-        flexItem, flexItemWrapper, flexItemWrapperVertical, divider, flexContainer, label, value, innerContainer
+        flexItem, flexItemWrapper, flexItemWrapperVertical, divider, flexContainer, content
     };
 });

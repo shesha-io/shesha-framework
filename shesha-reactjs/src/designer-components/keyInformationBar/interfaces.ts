@@ -9,10 +9,3 @@ export interface IColumnProps {
   components: IConfigurableFormComponent[];
 }
 
-export interface IColumnsComponentProps extends IConfigurableFormComponent {
-  columns: IColumnProps[];
-  gutterX?: number;
-  gutterY?: number;
-  style?: string;
-  customVisibility?: string;
-}
