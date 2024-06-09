@@ -35,7 +35,9 @@ namespace Shesha.Permission
 
         public List<PermissionedObjectDto> GetAll(string objectType = null)
         {
-            if (!GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
+            return new List<PermissionedObjectDto>();
+            
+            /*if (!GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
 
             var assemblies = _assembleFinder.GetAllAssemblies().Distinct(new AssemblyFullNameComparer()).Where(a => !a.IsDynamic).ToList();
             var allPermissions = new List<PermissionedObjectDto>();
@@ -114,7 +116,7 @@ namespace Shesha.Permission
             }
 
             return allPermissions;
-            
+            */
         }
     }
 }

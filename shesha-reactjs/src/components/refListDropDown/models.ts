@@ -34,12 +34,12 @@ export interface IRefListDropDownProps<TValue = any> extends Omit<SelectProps<an
    * How large should the button be?
    */
   filters?: number[];
-  includeFilters?: boolean;
   width?: number;
   style?: CSSProperties;
   base?: string;
   value?: TValue | TValue[];
   ignoredValues?: number[];
+  disabledValues?: number[];
   size?: SizeType;
   onChange?: (value: TValue | TValue[]) => void;
 }
@@ -55,6 +55,7 @@ export interface ISelectOption<TValue = any> {
   value: string | number;
   label: string | React.ReactNode;
   data: TValue;
+  disabled?: boolean;
 }
 
 export type CustomLabeledValue<TValue = any> = LabeledValue & { data: TValue };

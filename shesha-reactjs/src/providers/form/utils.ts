@@ -835,14 +835,6 @@ export function executeExpression<TResult>(
   return defaultValue;
 }
 
-export const isPropertySetting = <Value = any>(value: any): value is IPropertySetting<Value> => {
-  const typed = value as IPropertySetting<Value>;
-  return typed && typeof (typed) === 'object'
-    && typed._mode
-    && typeof (typed._mode) === 'string'
-    && (typed._mode === 'code' || typed._mode === 'value');
-};
-
 interface FunctionArgument {
   name: string;
   description?: string;
