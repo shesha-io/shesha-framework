@@ -1,6 +1,6 @@
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx }) => {
     const flexItem = "flex-item";
     const flexItemWrapper = "flex-item-wrapper";
     const flexItemWrapperVertical = "flex-item-wrapper-vertical";

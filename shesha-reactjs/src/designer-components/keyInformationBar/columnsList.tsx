@@ -13,8 +13,7 @@ import {
 import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal, Select } from 'antd';
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
-import { KeyInfomationBarItemProps } from '.';
-import { isDataColumnProps } from '@/providers/datatableColumnsConfigurator/models';
+import { KeyInfomationBarItemProps } from './interfaces';
 
 export interface IProps {
   readOnly: boolean;
@@ -36,6 +35,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   const toggleEdit = () => {
     setEditing(!editing);
+    console.log('toggleEdit', editing, record);
     form.setFieldsValue({
       [dataIndex]: record[dataIndex],
     });
@@ -54,9 +54,9 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   let childNode = children;
 
   const { Option } = Select;
-  const values = ['flex-start', 'flex-end', 'center', 'baseline', 'stretch'];
+  const values = ['start', 'end', 'center', 'left', 'right', "justify", 'initial', 'inherit'];
   const Dropdown = (ref) =>
-    <Select ref={ref}>
+    <Select ref={ref} onSelect={save} onBlur={save}>
       {values.map((value, i) => <Option key={i} value={value}>{value.split('-').map(word => {
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
       }).join(' ')}</Option>)}
@@ -76,8 +76,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
           },
         ]}
       >
-        {/* <Input ref={inputRef} onPressEnter={save} onBlur={save} /> */}
-        {dataIndex === "alignItems" ? Dropdown(inputRef) : <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />}
+        {dataIndex === "textAlign" ? Dropdown(inputRef) : <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />}
       </Form.Item>
     ) : (
       <div
@@ -149,7 +148,8 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
     const newColumn: KeyInfomationBarItemProps = {
       id: nanoid(),
       width: 200,
-      alignItems: 'center',
+      textAlign: 'center',
+      gap: 0,
       components: [],
     };
     const newColumns = [...columns, newColumn];
@@ -180,13 +180,19 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       title: 'Width',
       dataIndex: 'width',
       editable: !readOnly,
-      width: '35%',
+      width: '30%',
     },
     {
-      title: 'Align Items',
-      dataIndex: 'alignItems',
+      title: 'Text Align',
+      dataIndex: 'textAlign',
       editable: !readOnly,
-      width: '35%',
+      width: '30%',
+    },
+    {
+      title: 'Gap',
+      dataIndex: 'gap',
+      editable: !readOnly,
+      width: '30%',
     },
     !readOnly
       ? {
@@ -220,8 +226,8 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   });
 
   const getListStyle = (_isDraggingOver: boolean) => ({
-    //background: isDraggingOver ? "lightgrey" : "inherit",
-    //overflow: "scroll" as "scroll",
+    background: _isDraggingOver ? "lightgrey" : "inherit",
+    overflow: "scroll" as "scroll",
   });
 
   const onDragEnd = (result: DropResult) => {

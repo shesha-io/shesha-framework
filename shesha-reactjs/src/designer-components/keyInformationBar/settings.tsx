@@ -8,7 +8,7 @@ import { Checkbox, Input, InputNumber, Select } from 'antd';
 import { EXPOSED_VARIABLES } from './exposedVariables';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import ColumnsList from './columnsList';
-import { IKeyInformationBarProps } from '.';
+import { IKeyInformationBarProps } from './interfaces';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
     const { readOnly } = props;
@@ -44,8 +44,6 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                     <Option value="flex-start">Flex Start</Option>
                     <Option value="flex-end">Flex End</Option>
                     <Option value="center">Center</Option>
-                    <Option value="baseline">Baseline</Option>
-                    <Option value="stretch">Stretch</Option>
                 </Select>
             </SettingsFormItem>
 

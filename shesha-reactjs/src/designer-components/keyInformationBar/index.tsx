@@ -1,8 +1,8 @@
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { BorderLeftOutlined } from '@ant-design/icons';
-import { Divider, Flex, Space } from 'antd';
-import { IConfigurableFormComponent, useFormData, useGlobalState } from '@/providers';
+import { Divider, Flex } from 'antd';
+import { IConfigurableFormComponent } from '@/providers';
 import { nanoid } from '@/utils/uuid';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { KeyInformationBarSettingsForm } from './settings';
@@ -10,32 +10,8 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ParentProvider from '@/providers/parentProvider/index';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useStyles } from './style';
-import { IColumnProps } from './interfaces';
-import { AlignItems } from '../container/interfaces';
+import { IKeyInformationBarProps } from './interfaces';
 
-export interface KeyInfomationBarItemProps {
-  id: string;
-  width: number;
-  alignItems: AlignItems;
-  components: IConfigurableFormComponent[];
-}
-
-export interface IKeyInformationBarProps extends IConfigurableFormComponent, IColumnProps {
-  width?: string;
-  height?: string;
-  dividerHeight?: string;
-  space?: number;
-  formData?: any;
-  alignItems?: AlignItems;
-  columnWidth?: string;
-  barWidth?: string;
-  barHeight?: string;
-  vertical?: boolean;
-  columns?: KeyInfomationBarItemProps[];
-  readOnly?: boolean;
-  style?: string;
-  stylingBox?: any;
-}
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   type: 'KeyInformationBar',
@@ -47,20 +23,22 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
     const { hidden, barWidth, barHeight, alignItems, vertical, space } = model
     if (hidden) return null;
 
+    const dividerMargin = vertical ? `${space}px 0px` : `0px ${space}px`;
+
     return (
       <ParentProvider model={model}>
-        <Flex vertical={vertical} className={styles.flexContainer} style={{ width: barWidth, height: barHeight }}>
+        <Flex vertical={vertical} className={styles.flexContainer} style={{ width: barWidth, height: barHeight, justifyContent: alignItems }} >
           {columns?.map((item, i) => {
             return (
-              <div key={i} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={{ width: item.width }}>
-                <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} style={{ height: barHeight ? barHeight : "100%", margin: space }} />
-                <div className={styles.content} style={{ flex: 1, textAlign: "center" }}>
+              <div key={i} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={{ width: item.width, alignSelf: vertical ? alignItems : "inherit" }}>
+                <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} style={{ height: barHeight ? barHeight : "100%", margin: dividerMargin }} />
+                <div className={styles.content} style={{ textAlign: item.textAlign }}>
                   <ComponentsContainer
                     containerId={item.id}
+                    gap={item.gap}
                     dynamicComponents={model?.isDynamic ? item?.components : []}
                   />
                 </div>
-
               </div>);
           })}
         </Flex>
@@ -82,7 +60,8 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
         {
           id: nanoid(),
           width: 200,
-          alignItems: 'flex-start',
+          textAlign: 'left',
+          gap: 0,
           components: [],
         }
       ],
