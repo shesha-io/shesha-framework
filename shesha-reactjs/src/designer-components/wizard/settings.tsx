@@ -172,7 +172,8 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
             modalSettings={{
               title: readOnly ? "View Wizard Steps" : "Configure Wizard Steps",
               header: <Alert message={readOnly ? 'Here you can view wizard steps configuration.' : 'Here you can configure the wizard steps by adjusting their settings and ordering.'} />,
-            }}            
+            }}
+            actualModelContext={allData} 
           >
           </ItemListConfiguratorModal>
         </SettingsFormItem>
