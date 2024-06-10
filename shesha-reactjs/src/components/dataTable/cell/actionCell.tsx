@@ -47,7 +47,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
 
   const clickHandler = (event, data) => {
 
-    event.stopPropagation();
+    event.preventDefault();
 
     const selectedRow = getRowData(data);
 
