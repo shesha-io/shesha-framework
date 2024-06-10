@@ -238,11 +238,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
                 .${shaToolboxComponent} {
                     margin: 0;
-                    display: block;
-                    white-space: nowrap;
+                    display: flex;
+                    white-space: normal;
                     overflow: hidden;
-                    max-width: 225px;
-                    text-overflow: ellipsis;
+                    max-width: 100%;
+                    overflow: auto;
 
                     .${shaComponentTitle} {
                         margin-right: 10px;

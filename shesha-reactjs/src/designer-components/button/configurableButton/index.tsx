@@ -48,13 +48,13 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     buttonDisabled: props?.readOnly || (loading && isModal)
   };
 
-const getSearchParams = (arr): string => {
+  const getSearchParams = (arr): string => {
     return arr.map(obj => `${encodeURIComponent(obj.key)}=${obj.value}`).join('&');
-};
+  };
 
   const getUrlHref = (): string => {
     const searchParams = getSearchParams(props?.actionConfiguration?.actionArguments?.queryParameters);
-    const href = evaluateString(props?.actionConfiguration?.actionArguments?.url+'?'+searchParams, evaluationContext);
+    const href = evaluateString(props?.actionConfiguration?.actionArguments?.url + '?' + searchParams, evaluationContext);
     return href;
   };
 

@@ -82,11 +82,12 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
 
             return visibleItems.length === 0 ? null : (
               <Panel header={header} key={dsIndex.toString()} className={classNames(styles.shaToolboxPanel, { active: ds.datasource.id === activeDataSourceId })}>
-                <div className={styles.shaToolboxPanelItems}>
+                <div className={styles.shaToolboxPanelItems} >
                   <DataSourceTree
                     items={visibleItems}
                     searchText={searchText}
                     defaultExpandAll={(searchText ?? '') !== ''}
+
                   />
                 </div>
 

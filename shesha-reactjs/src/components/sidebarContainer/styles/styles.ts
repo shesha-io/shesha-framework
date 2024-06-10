@@ -42,6 +42,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
+
           &.allow-full-collapse {
             display: none;
           }

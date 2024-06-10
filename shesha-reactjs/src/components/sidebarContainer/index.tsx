@@ -7,7 +7,6 @@ import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
 import _ from 'lodash';
 
-
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
   /**
    * Left sidebar props
@@ -30,7 +29,7 @@ export interface ISidebarContainerProps extends PropsWithChildren<any> {
   sideBarWidth?: number;
 
   allowFullCollapse?: boolean;
-};
+}
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
   leftSidebarProps,
@@ -39,7 +38,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   children,
   allowFullCollapse = false,
   noPadding,
-
 }) => {
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
@@ -49,37 +47,40 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
     const hideFullCollapse = allowFullCollapse && !sidebarProps?.open;
 
-    return sidebarProps && !hideFullCollapse
-      ? (<SidebarPanel
+    return sidebarProps && !hideFullCollapse ? (
+      <SidebarPanel
         {...sidebarProps}
         allowFullCollapse={allowFullCollapse}
         side={side}
         setIsOpenGlobal={side === 'left' ? setIsOpenLeft : setIsOpenRight}
-      />)
-      : null;
+      />
+    ) : null;
   };
 
-  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse)
-    , [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]);
+  const sizes = useMemo(
+    () => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
+    [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
+  );
 
   return (
-    <div className={styles.sidebarContainer} >
-      {header && <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>}
+    <div className={styles.sidebarContainer}>
+      {header && (
+        <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>
+      )}
 
       <SizableColumns
-        sizes={sizes}
+        sizes={sizes?.sizes}
         expandToMin={false}
-        minSize={50}
+        minSize={sizes?.minSizes}
+        maxSize={sizes?.maxSizes}
         gutterSize={8}
         gutterAlign="center"
-        snapOffset={30}
+        snapOffset={5}
         dragInterval={1}
         direction="horizontal"
         cursor="col-resize"
         className={classNames(styles.sidebarContainerBody)}
-
       >
-
         {renderSidebar('left')}
 
         <div
@@ -92,7 +93,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'no-right-panel': !rightSidebarProps },
             { 'no-padding': noPadding },
             { 'allow-full-collapse': allowFullCollapse }
-
           )}
         >
           <div className={styles.sidebarContainerMainAreaBody}>{children}</div>
@@ -100,6 +100,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
         {renderSidebar('right')}
       </SizableColumns>
-    </div >
+    </div>
   );
 };

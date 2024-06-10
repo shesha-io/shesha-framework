@@ -18,14 +18,14 @@ export interface IProps<TItem> {
 }
 
 interface DataNodeWithObject<TItem> {
-  title: JSX.Element;
-  key: string;
-  isLeaf?: boolean;
-  children?: DataNodeWithObject<TItem>[];
-  icon?: ReactNode;
-  checkable?: boolean;
-  selectable?: boolean;
-  object: TItem;
+    title: JSX.Element;
+    key: string;
+    isLeaf?: boolean;
+    children?: DataNodeWithObject<TItem>[];
+    icon?: ReactNode;
+    checkable?: boolean;
+    selectable?: boolean;
+    object: TItem;
 }
 
 export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
@@ -47,7 +47,7 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
         const node: DataNodeWithObject<TItem> = {
             key: (getId(item))?.toLowerCase(),
             title: getName(item),
-            isLeaf:props.getIsLeaf ? props.getIsLeaf(item) : (!nested || Array.isArray(nested) && nested.length === 0),
+            isLeaf: props.getIsLeaf ? props.getIsLeaf(item) : (!nested || Array.isArray(nested) && nested.length === 0),
             selectable: false,
             object: item,
         };
@@ -60,16 +60,16 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     };
 
     useEffect(() => {
-      setNodes([...props.items.map(item =>
-        getTreeData(item, (item) => {
-          if (props.defaultExpandAll)
-            setManuallyExpanded((state) => {
-              if (state?.indexOf(getId(item)) === -1)
-                return [...state, getId(item)];
-              return state;
-            });
-        })
-      )]);
+        setNodes([...props.items.map(item =>
+            getTreeData(item, (item) => {
+                if (props.defaultExpandAll)
+                    setManuallyExpanded((state) => {
+                        if (state?.indexOf(getId(item)) === -1)
+                            return [...state, getId(item)];
+                        return state;
+                    });
+            })
+        )]);
     }, [props.items, props.defaultExpandAll]);
 
     const getTitle = (item: TItem) => {
@@ -115,7 +115,7 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     }, [props.defaultSelected]);
 
     const renderTitle = (node: DataNodeWithObject<TItem>): React.ReactNode => {
-        const icon = Boolean(props.getIcon) ? props.getIcon(node.object) : <ShaIcon iconName={'BookOutlined'}/>;
+        const icon = Boolean(props.getIcon) ? props.getIcon(node.object) : <ShaIcon iconName={'BookOutlined'} />;
         const markup = (
             <div className='sha-toolbox-component' key={node.key} ref={refs[node.key.toString()]}>
                 {props.onRenterItem
@@ -132,6 +132,7 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     };
 
     return (
+
         <Tree
             className='sha-datasource-tree'
             showIcon
