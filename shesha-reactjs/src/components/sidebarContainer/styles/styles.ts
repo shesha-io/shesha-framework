@@ -48,7 +48,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
           &.open {
             width: ${leftSidebarWidth};
-            min-width: 250px;
             display: block;
 
             .${sidebarHeader} {
@@ -61,8 +60,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           }
     
           background: white;
-          transition: ${sheshaStyles.transition};
-    
+
           .sidebar-subheader {
             margin-top: 8px;
             background: #282828;
@@ -170,9 +168,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         }
     
         .${sidebarContainerMainArea} {
-          transition: ${sheshaStyles.transition};
-          width: 100%;
-          position: sticky;
+         width: 100%;
+         position: sticky;
           overflow-x: auto;
     
           &::not(.no-padding) {

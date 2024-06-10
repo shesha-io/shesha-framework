@@ -31,7 +31,7 @@ function getPanelSizes(
         return [3, 77, 20];
     }
 
-    return [20, 70, 20];
+    return [20, 60, 20];
 }
 
 export { getPanelSizes };
