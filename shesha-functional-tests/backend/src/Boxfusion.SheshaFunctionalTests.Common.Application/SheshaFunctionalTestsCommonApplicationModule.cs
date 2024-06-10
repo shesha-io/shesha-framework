@@ -6,6 +6,7 @@ using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Intent.RoslynWeaver.Attributes;
 using Shesha;
+using Shesha.Modules;
 using Shesha.Startup;
 using Shesha.Web.FormsDesigner;
 
@@ -24,7 +25,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common
         typeof(AbpAspNetCoreModule)
     )]
     [IntentManaged(Mode.Ignore)]
-    public class SheshaFunctionalTestsCommonApplicationModule : AbpModule
+    public class SheshaFunctionalTestsCommonApplicationModule : SheshaSubModule<SheshaFunctionalTestsCommonModule>
     {
         /// inheritedDoc
         public override void Initialize()

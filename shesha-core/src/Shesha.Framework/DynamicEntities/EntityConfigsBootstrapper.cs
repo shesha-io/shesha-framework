@@ -15,6 +15,7 @@ using Shesha.JsonEntities;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -263,7 +264,7 @@ namespace Shesha.DynamicEntities
                     : 0;
                 foreach (var cp in codeProperties)
                 {
-                    var dbp = dbProperties.Where(p => p.Name == cp.Path && p.ParentProperty?.Id == parentProp?.Id)
+                    var dbp = dbProperties.Where(p => p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase) && p.ParentProperty?.Id == parentProp?.Id)
                         .OrderBy(p => !p.IsDeleted ? 0 : 1)
                         .ThenByDescending(p => p.CreationTime)
                         .FirstOrDefault();
@@ -312,7 +313,7 @@ namespace Shesha.DynamicEntities
                 var deletedProperties = dbProperties
                     .Where(p =>
                         p.Source == Domain.Enums.MetadataSourceType.ApplicationCode
-                        && !codeProperties.Any(cp => cp.Path == p.Name)
+                        && !codeProperties.Any(cp => cp.Path.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase))
                         && p.ParentProperty?.Id == parentProp?.Id
                         )
                     .ToList();
@@ -334,7 +335,7 @@ namespace Shesha.DynamicEntities
                 // todo: handle inactive flag
                 var dbProperties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
 
-                var duplicates = codeProperties.GroupBy(p => p.Path, (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
+                var duplicates = codeProperties.GroupBy(p => p.Path.ToCamelCase(), (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
                 if (duplicates.Any())
                 {
                 }

@@ -34,6 +34,7 @@ import { useDataContextManager } from '@/providers/dataContextManager/index';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { executeScript } from '@/providers/form/utils';
+import { getFormApi } from '@/providers/form/formApi';
 
 const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
@@ -220,9 +221,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
       // ToDo: review on Page/Form life cycle
-      form: formRef?.current ?? { formSettings },
-      setFormData: formRef?.current?.setFormData,
-      formMode: formRef?.current?.formMode,
+      form: formRef?.current ? getFormApi(formRef.current) : { formSettings },
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       pageContext: pageContext?.getFull(),
       application: dcm?.getDataContext(SheshaCommonContexts.ApplicationContext)?.getData(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { LOGO } from "@/app-constants/application";
+import { LOGO } from "@/app-constants";
 import { ShaButton, ShaInput, ShaTitle } from "@/components";
 import { ILoginForm } from "@/models";
 import { URL_FORGOT_PASSWORD } from "@/routes";

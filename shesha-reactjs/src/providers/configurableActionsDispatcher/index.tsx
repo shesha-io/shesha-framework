@@ -104,6 +104,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     if (!actionName) return Promise.reject('Action name is mandatory');
 
     const action = getConfigurableAction({ owner: actionOwner, name: actionName });
+
     if (!action) return Promise.reject(`Action '${actionOwner}:${actionName}' not found`);
 
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;

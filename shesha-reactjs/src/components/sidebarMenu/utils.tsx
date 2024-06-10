@@ -5,7 +5,7 @@ import React, { ReactNode } from 'react';
 import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
-import { IConfigurableActionConfiguration } from '@/providers/index';
+import { IConfigurableActionConfiguration} from '@/providers/index';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -23,7 +23,7 @@ interface IGetItemArgs {
 
 function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url }: IGetItemArgs): MenuItem {
   const clickHandler = (event) => {
-    event.stopPropagation();
+    event.preventDefault();
     onClick();
   };
 
@@ -34,7 +34,7 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
     icon,
     children,
     label: Boolean(onClick)
-      ? navigationType === 'url' ? <a className={className} href={url} onClick={clickHandler}>{label}</a> : <a className={className} onClick={clickHandler}>{label}</a>
+      ? navigationType === 'url' || navigationType === 'form' ? <a className={className} href={url} onClick={clickHandler}>{label}</a> : <a className={className} onClick={clickHandler}>{label}</a>
       : <span className={className}>{label}</span>,
     type: itemType === 'divider' ? 'divider' : undefined,
   } as MenuItem;
@@ -54,23 +54,32 @@ export interface IProps {
   isRootItem?: boolean;
   onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;
   onItemEvaluation?: (item: ISidebarMenuItem) => void;
+  getFormUrl: (args) => string;
+  getUrl: (args) => string;
 }
 
-export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation }: IProps): MenuItem => {
+export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
+
+
   const { id, title, icon, itemType } = item;
 
   const navigationType = item?.actionConfiguration?.actionArguments?.navigationType;
 
-  const url = item?.actionConfiguration?.actionArguments?.url;
-
   if (typeof isItemVisible === 'function' && !isItemVisible(item)) return null;
 
   const children = isSidebarGroup(item)
-    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation }))
+    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation, getFormUrl, getUrl }))
     : null;
   const hasChildren = Array.isArray(children) && children.length > 0;
 
   const actionConfiguration = isSidebarButton(item) ? item.actionConfiguration : undefined;
+
+  let url;
+  if(navigationType === 'form'){
+    url = getFormUrl(actionConfiguration);
+  }else if(navigationType === 'url'){
+    url = getUrl(actionConfiguration?.actionArguments?.url);
+  }
 
   const itemEvaluationArguments: IGetItemArgs = {
     label: title,

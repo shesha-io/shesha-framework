@@ -11,6 +11,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import ParentProvider from '@/providers/parentProvider/index';
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IAlertProps extends IConfigurableFormComponent {
   text: string;
@@ -134,6 +135,7 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
       };
     })
     .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ILinkProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
 
 };

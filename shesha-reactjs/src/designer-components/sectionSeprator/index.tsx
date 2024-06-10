@@ -7,6 +7,7 @@ import SectionSeparator from '@/components/sectionSeparator';
 import { ISectionSeparatorComponentProps } from './interfaces';
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
@@ -35,8 +36,10 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       label: 'Section',
     };
   },
-  migrator: (m) =>
-    m.add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
+  migrator: (m) => m
+    .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ISectionSeparatorComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
 };
 
 export default SectionSeparatorComponent;
