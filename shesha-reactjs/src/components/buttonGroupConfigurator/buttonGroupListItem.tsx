@@ -1,10 +1,9 @@
 import { ButtonGroupItemProps } from '@/providers';
 import { isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { ButtonGroupItem } from './buttonGroupItem';
 import { ButtonGroupItemsGroup } from './buttonGroupItemsGroup';
 import { NestedItemsRenderingArgs } from '@/components/listEditor';
-import { getActualModel } from '@/providers/form/utils';
 
 export interface IButtonGroupListItemProps {
   item: ButtonGroupItemProps;
@@ -16,20 +15,16 @@ export interface IButtonGroupListItemProps {
 }
 
 export const ButtonGroupListItem: FC<IButtonGroupListItemProps> = ({ item, onChange, index, nestedRenderer, initNewItem, actualModelContext }) => {
-  const actualItem = useMemo(() => getActualModel(item, actualModelContext)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    , [item.label, item.icon, item.tooltip, item.name, actualModelContext]);
+  if (isItem(item))
+    return <ButtonGroupItem key={item.id} item={item} actualModelContext={actualModelContext}/>;
 
-  if (isItem(actualItem))
-    return <ButtonGroupItem key={item.id} item={actualItem} />;
-
-  if (isGroup(actualItem))
+  if (isGroup(item))
     return (
       <ButtonGroupItemsGroup
         index={index}
         onChange={onChange}
         key={item.id}
-        item={actualItem}
+        item={item}
         containerRendering={(args) => {
           return nestedRenderer({
             ...args,
@@ -39,6 +34,7 @@ export const ButtonGroupListItem: FC<IButtonGroupListItemProps> = ({ item, onCha
             initNewItem: initNewItem,
           });
         }}
+        actualModelContext={actualModelContext}
       />
     );
 
