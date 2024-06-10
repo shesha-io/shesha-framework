@@ -5,7 +5,6 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { useDynamicActionsDispatcher } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
 
 const { Text } = Typography;
 
@@ -27,18 +26,14 @@ export interface IButtonGroupItemProps {
 
 export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item }) => {
   const { styles } = useStyles();
-
-  const label = isPropertySettings(item.label) ? (item.label._value ?? item.name) + ' {JS calculated}' : item.label;
-  const tooltip = isPropertySettings(item.tooltip) ? item.tooltip._value + ' {JS calculated}' : item.tooltip;
-
   return (
     <>
       {item.itemSubType === 'button' && (
         <>
           {item.icon && <ShaIcon iconName={item.icon as IconType} />}
-          <span className={styles.listItemName}>{label || item.name}</span>
-          {tooltip && (
-            <Tooltip title={tooltip}>
+          <span className={styles.listItemName}>{item.label || item.name}</span>
+          {item.tooltip && (
+            <Tooltip title={item.tooltip}>
               <QuestionCircleOutlined className={styles.helpIcon} />
             </Tooltip>
           )}
