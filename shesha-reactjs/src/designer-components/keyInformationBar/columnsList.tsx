@@ -56,11 +56,11 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   const { Option } = Select;
   const values = ['start', 'end', 'center', 'left', 'right', "justify", 'initial', 'inherit'];
   const Dropdown = (ref) =>
-    <Select ref={ref} onSelect={save} onBlur={save}>
-      {values.map((value, i) => <Option key={i} value={value}>{value.split('-').map(word => {
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      }).join(' ')}</Option>)}
-    </Select>
+  (<Select ref={ref} onSelect={save} onBlur={save}>
+    {values.map((value, i) => <Option key={i} value={value}>{value.split('-').map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }).join(' ')}</Option>)}
+  </Select>);
 
   if (editable) {
     childNode = editing ? (

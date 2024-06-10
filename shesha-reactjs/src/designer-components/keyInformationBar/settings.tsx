@@ -32,6 +32,10 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <Checkbox disabled={readOnly} />
             </SettingsFormItem>
 
+            <SettingsFormItem name="hideLabel" label="Hide Label" valuePropName="checked" jsSetting>
+                <Checkbox disabled={readOnly} />
+            </SettingsFormItem>
+
             <SettingsFormItem name="vertical" label="Vertical" valuePropName="checked" jsSetting>
                 <Checkbox disabled={readOnly} />
             </SettingsFormItem>

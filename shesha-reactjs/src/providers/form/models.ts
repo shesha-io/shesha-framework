@@ -24,7 +24,7 @@ export type FormMode = 'designer' | 'edit' | 'readonly';
 
 export type ViewType = 'details' | 'table' | 'form' | 'blank' | 'masterDetails' | 'menu' | 'dashboard';
 
-export type LabelAlign = 'left' | 'right' | 'top';
+export type LabelAlign = 'left' | 'right';
 
 export type PropertySettingMode = 'value' | 'code';
 /*
