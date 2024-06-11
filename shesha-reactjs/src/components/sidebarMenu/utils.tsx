@@ -5,7 +5,8 @@ import React, { ReactNode } from 'react';
 import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
-import { IConfigurableActionConfiguration} from '@/providers/index';
+import { IConfigurableActionConfiguration } from '@/providers/index';
+import Link from 'next/link';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -34,7 +35,7 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
     icon,
     children,
     label: Boolean(onClick)
-      ? navigationType === 'url' || navigationType === 'form' ? <a className={className} href={url} onClick={clickHandler}>{label}</a> : <a className={className} onClick={clickHandler}>{label}</a>
+      ? navigationType === 'url' || navigationType === 'form' ? <Link className={className} href={url} onClick={clickHandler}>{label}</Link> : <Link href={''} className={className} onClick={clickHandler}>{label}</Link>
       : <span className={className}>{label}</span>,
     type: itemType === 'divider' ? 'divider' : undefined,
   } as MenuItem;
@@ -75,9 +76,9 @@ export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, 
   const actionConfiguration = isSidebarButton(item) ? item.actionConfiguration : undefined;
 
   let url;
-  if(navigationType === 'form'){
+  if (navigationType === 'form') {
     url = getFormUrl(actionConfiguration);
-  }else if(navigationType === 'url'){
+  } else if (navigationType === 'url') {
     url = getUrl(actionConfiguration?.actionArguments?.url);
   }
 

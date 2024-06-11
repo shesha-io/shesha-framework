@@ -49,7 +49,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   };
 
 const getSearchParams = (arr): string => {
-    return arr.map(obj => `${encodeURIComponent(obj.key)}=${obj.value}`).join('&');
+    return arr && arr.map(obj => `${encodeURIComponent(obj.key)}=${obj.value}`).join('&');
 };
 
   const getUrlHref = (): string => {
