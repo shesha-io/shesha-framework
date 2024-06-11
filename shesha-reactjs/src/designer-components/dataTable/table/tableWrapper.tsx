@@ -19,7 +19,7 @@ import {
     useSheshaApplication,
 } from '@/providers';
 import { GlobalTableStyles } from './styles/styles';
-import { Alert } from 'antd';
+import { Alert, Tag } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 const NotConfiguredWarning: FC = () => {
@@ -29,7 +29,7 @@ const NotConfiguredWarning: FC = () => {
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { id, items, useMultiselect, tableStyle, containerStyle } = props;
-    
+
     const { formMode } = useForm();
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
@@ -46,6 +46,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         setMultiSelectedRow,
         requireColumns,
         allowReordering,
+        clearFilters,
+        removeColumnFilter,
+        tableFilter,
     } = useDataTableStore();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
@@ -82,6 +85,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
     };
 
+    const filtersList = tableFilter.map((filter)=> {
+        
+        return <Tag bordered={false} closable>
+            Tag 4
+        </Tag>
+    });
+
     return (
         <SidebarContainer
             rightSidebarProps={{
@@ -94,6 +104,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
+            {/* <FiltersList value={tableFilter} onChange={clearFilters} readOnly={false} /> */}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}

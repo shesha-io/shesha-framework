@@ -1,33 +1,36 @@
 import React from 'react';
-import settingsFormJson from './settingsForm.json';
-import { FilterOutlined } from '@ant-design/icons';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
+import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { FilterOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { getSettings } from './settingsForm';
 import { AdvancedFilterButton } from './advancedFilterButton';
 
-export interface IAdvancedFilterButtonComponentProps extends IConfigurableFormComponent { }
 
-const settingsForm = settingsFormJson as FormMarkup;
-
-const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
-  type: 'datatable.advancedFilterButton',
-  name: 'Table Advanced Filter Button',
+const FilterComponent: IToolboxComponent<IConfigurableFormComponent> = {
+  type: 'datatable.filter',
+  name: 'Table Filter',
   icon: <FilterOutlined />,
   Factory: ({ model }) => {
-    if (model.hidden) return null;
 
-    return <AdvancedFilterButton />;
+    return model.hidden ? null : <AdvancedFilterButton />;
   },
-  initModel: (model: IAdvancedFilterButtonComponentProps) => {
+  initModel: (model) => {
     return {
       ...model,
-      items: [],
     };
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  isHidden: true, // note: to be removed, now is used only for backward compatibility
+  migrator: (m) =>
+    m
+      .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<IConfigurableFormComponent>(1, (prev) => migrateVisibility(prev))
+      .add<IConfigurableFormComponent>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
+  ,
+  settingsFormMarkup: (context) => getSettings(context),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
-export default AdvancedFilterButtonComponent;
+export default FilterComponent;
