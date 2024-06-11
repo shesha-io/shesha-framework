@@ -56,10 +56,9 @@ export interface IProps {
   onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;
   onItemEvaluation?: (item: ISidebarMenuItem) => void;
   getFormUrl: (args) => string;
-  getUrl: (args) => string;
 }
 
-export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
+export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation, getFormUrl }: IProps): MenuItem => {
 
 
   const { id, title, icon, itemType } = item;
@@ -69,17 +68,15 @@ export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, 
   if (typeof isItemVisible === 'function' && !isItemVisible(item)) return null;
 
   const children = isSidebarGroup(item)
-    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation, getFormUrl, getUrl }))
+    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation, getFormUrl }))
     : null;
   const hasChildren = Array.isArray(children) && children.length > 0;
 
   const actionConfiguration = isSidebarButton(item) ? item.actionConfiguration : undefined;
 
   let url;
-  if (navigationType === 'form') {
+  if (navigationType === 'form' || navigationType === 'url') {
     url = getFormUrl(actionConfiguration);
-  } else if (navigationType === 'url') {
-    url = getUrl(actionConfiguration?.actionArguments?.url);
   }
 
   const itemEvaluationArguments: IGetItemArgs = {

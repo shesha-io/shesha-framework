@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useRef, useState } from 'react';
 import { normalizeUrl } from '@/utils/url';
 import { isSidebarButton } from '@/interfaces/sidebar';
-import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
+import { IConfigurableActionConfiguration, INavigateActoinArguments, isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
 import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { sidebarMenuItemToMenuItem } from './utils';
@@ -40,7 +40,15 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     });
   };
 
-
+  const getHrefValue = (actionArguments: INavigateActoinArguments) => {
+    if(actionArguments?.navigationType === 'form' || actionArguments?.navigationType === 'url'){
+      const evaluatedString = evaluateString(JSON.stringify(actionArguments), evaluationContext);
+      const assembledUrl = getUrlFromNavigationRequest(JSON.parse(evaluatedString));
+      return assembledUrl;
+    }else{
+      return '';
+    }
+  };
 
   const menuItems = useMemo(() => {
     return (items ?? []).map((item) =>
@@ -51,13 +59,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
         onButtonClick,
         isRootItem: true,
         getFormUrl: (args) => {
-          const url = getUrlFromNavigationRequest(args?.actionArguments);
-          const href = evaluateString(decodeURIComponent(url), evaluationContext);
-          return href;
-        },
-        getUrl: (url) => {
-          const href = evaluateString(decodeURIComponent(url), evaluationContext);
-          return href;
+          return getHrefValue(args?.actionArguments);
         },
         onItemEvaluation: (nestedItem) => {
           if (initialSelection.current === undefined && isSidebarButton(nestedItem) && isNavigationActionConfiguration(nestedItem.actionConfiguration)) {
