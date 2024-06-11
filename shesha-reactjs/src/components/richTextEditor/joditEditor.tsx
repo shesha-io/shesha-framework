@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState, lazy } from 'react';
+import React, { FC, useMemo, useState, lazy, useEffect } from 'react';
 import { Skeleton } from 'antd';
 
 let defaultOptions = {};
@@ -26,13 +26,19 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     const { config, value, onChange } = props;
 
     const [state, setState] = useState<IRichTextEditorState>({ content: value });
+    const [localPlaceholder, setLocalPlaceholder] = useState<string>(config?.placeholder);
+
+    useEffect(() => {
+        if (state?.content !== undefined) {
+            setLocalPlaceholder("");
+        }
+    }, [state]);
 
     const fullConfig = useMemo<any>(() => {
         const result = {
             ...defaultOptions,
             ...config
         };
-
         return result;
     }, [config]);
 
@@ -52,7 +58,7 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
         <React.Suspense fallback={<div>Loading editor...</div>}>
             <JoditEditor
                 value={state.content || value}
-                config={fullConfig}
+                config={{ ...fullConfig, placeholder: localPlaceholder }}
                 onBlur={handleChange} // preferred to use only this option to update the content for performance reasons
             />
         </React.Suspense>
