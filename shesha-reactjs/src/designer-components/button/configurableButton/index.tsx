@@ -49,11 +49,15 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   };
 
   const getHrefValue = (actionArguments: INavigateActoinArguments) => {
-    const evaluatedString = evaluateString(JSON.stringify(actionArguments), evaluationContext);
-    const assembledUrl = getUrlFromNavigationRequest(JSON.parse(evaluatedString));
-    return assembledUrl || '';
+    if(actionArguments?.navigationType === 'form' || actionArguments?.navigationType === 'url'){
+      const evaluatedString = evaluateString(JSON.stringify(actionArguments), evaluationContext);
+      const assembledUrl = getUrlFromNavigationRequest(JSON.parse(evaluatedString));
+      return assembledUrl;
+    }else{
+      return '';
+    }
   };
-
+  
   return (
     <Button
       href={getHrefValue(props?.actionConfiguration?.actionArguments)}

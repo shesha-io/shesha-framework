@@ -64,9 +64,13 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   };
 
   const getHrefValue = (actionArguments: INavigateActoinArguments) => {
-    const evaluatedString = evaluateString(JSON.stringify(actionArguments), evaluationContext);
-    const assembledUrl = evaluatedString && getUrlFromNavigationRequest(JSON.parse(evaluatedString));
-    return assembledUrl || '';
+    if(actionArguments?.navigationType === 'form' || actionArguments?.navigationType === 'url'){
+      const evaluatedString = evaluateString(JSON.stringify(actionArguments), evaluationContext);
+      const assembledUrl = getUrlFromNavigationRequest(JSON.parse(evaluatedString));
+      return assembledUrl;
+    }else{
+      return '';
+    }
   };
 
   return (
