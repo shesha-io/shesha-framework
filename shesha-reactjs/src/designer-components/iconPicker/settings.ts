@@ -138,11 +138,10 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
           functionName: 'getCustomColor'      
         },
         availableConstantsExpression: "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-      })
-      .addNumberField({
+      }).addNumberField({
         id: nanoid(),
-        propertyName: 'borderRadius',
-        label: 'Border Radius',
+        propertyName: 'borderWidth',
+        label: 'Border Width',
       })
       .addColorPicker({
         id: nanoid(),
@@ -154,9 +153,10 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       })
       .addNumberField({
         id: nanoid(),
-        propertyName: 'borderWidth',
-        label: 'Border Width',
-      }).addNumberField({
+        propertyName: 'borderRadius',
+        label: 'Border Radius',
+      })
+      .addNumberField({
         id: nanoid(),
         propertyName: 'fontSize',
         label: 'Size',

@@ -17,7 +17,6 @@ interface IconPickerWrapperProps {
     readOnly?: boolean;
     fontSize?: number;
     color?: string;
-    customIcon?: string;
     customColor?: string;
     borderWidth?: number;
     borderColor?: string;
@@ -27,7 +26,7 @@ interface IconPickerWrapperProps {
     defaultValue?: ShaIconTypes;
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+    const { customColor, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
@@ -44,18 +43,13 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     }, [applicationContext, customColor, borderColor]);
 
     const computedIcon = useMemo(() => {
-        if (customIcon) return executeScriptSync<string>(customIcon, applicationContext);
-
+        if (defaultValue) return executeScriptSync<string>(defaultValue, applicationContext);
         return value;
-    }, [applicationContext, customIcon, value, borderColor]);
+    }, [applicationContext, defaultValue, value, borderColor]);
 
     const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
         if (onChange) onChange(iconName);
     };
-
-    useEffect(()=>{
-        onIconChange(defaultValue, defaultValue);
-    },[defaultValue])
 
     const stylingBoxJSON = JSON.parse(stylingBox || '{}');
 
