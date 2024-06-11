@@ -1,13 +1,19 @@
 import { ISidebarProps } from './models';
 import _ from 'lodash';
 
+interface PanelSizes {
+    sizes: number[];
+    maxSizes: number[];
+    minSizes?: number[];
+}
+
 function getPanelSizes(
     leftOpen: boolean,
     rightOpen: boolean,
     leftSidebarProps?: ISidebarProps,
     rightSidebarProps?: ISidebarProps,
     allowFullCollapse?: boolean
-): { sizes: number[]; maxSizes: number[]; minSizes?: number[] } {
+): PanelSizes {
     if (allowFullCollapse) {
         return {
             sizes: [100],
@@ -20,7 +26,7 @@ function getPanelSizes(
         if (!rightOpen) {
             return {
                 sizes: [99, 1],
-                maxSizes: [Infinity, Infinity],
+                maxSizes: [Infinity, 30],
                 minSizes: [null, 30],
             };
         }
