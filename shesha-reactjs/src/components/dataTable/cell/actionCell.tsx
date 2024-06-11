@@ -13,7 +13,7 @@ import { ITableActionColumn } from '@/providers/dataTable/interfaces';
 import { MODAL_DATA } from '@/shesha-constants';
 import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
-import { evaluateString, useShaRouting } from '@/index';
+import { INavigateActoinArguments, evaluateString, useShaRouting } from '@/index';
 import Link from 'next/link';
 
 
@@ -63,35 +63,15 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     } else console.error('Action is not configured');
   };
 
-  const getSearchParams = (arr): string => {
-    return arr && arr.map(obj => `${encodeURIComponent(obj.key)}=${obj.value}`).join('&');
-  };
-
-  const getUrlHref = (): string => {
-    const searchParams = getSearchParams(actionConfiguration?.actionArguments?.queryParameters);
-    const href = evaluateString(actionConfiguration?.actionArguments?.url + '?' + searchParams, evaluationContext);
-    return href;
-  };
-
-  const getFormHref = (): string => {
-    const url = decodeURIComponent(getUrlFromNavigationRequest(actionConfiguration?.actionArguments));
-    const href = evaluateString(url, evaluationContext);
-    return href;
-  };
-
-  const getHrefValue = (navigationType?: string): string => {
-    if (navigationType === "url") {
-      return getUrlHref();
-    } else if (navigationType === "form") {
-      return getFormHref();
-    } else {
-      return '';
-    }
+  const getHrefValue = (actionArguments: INavigateActoinArguments) => {
+    const evaluatedString = evaluateString(JSON.stringify(actionArguments), evaluationContext);
+    const assembledUrl = evaluatedString && getUrlFromNavigationRequest(JSON.parse(evaluatedString));
+    return assembledUrl || '';
   };
 
   return (
     <>
-      <Link className="sha-link" href={getHrefValue(actionConfiguration?.actionArguments?.navigationType)} onClick={(e) => clickHandler(e, props)}>
+      <Link className="sha-link" href={getHrefValue(actionConfiguration?.actionArguments)} onClick={(e) => clickHandler(e, props)}>
         {icon && (
           <Tooltip title={description}>
             <ShaIcon iconName={icon as IconType} />

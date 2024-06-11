@@ -6,7 +6,7 @@ import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { evaluateString, useShaRouting } from '@/index';
+import { INavigateActoinArguments, evaluateString, useShaRouting } from '@/index';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
@@ -48,36 +48,15 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     buttonDisabled: props?.readOnly || (loading && isModal)
   };
 
-const getSearchParams = (arr): string => {
-    return arr && arr.map(obj => `${encodeURIComponent(obj.key)}=${obj.value}`).join('&');
-};
-
-  const getUrlHref = (): string => {
-    const searchParams = getSearchParams(props?.actionConfiguration?.actionArguments?.queryParameters);
-    const href = evaluateString(props?.actionConfiguration?.actionArguments?.url+'?'+searchParams, evaluationContext);
-    return href;
+  const getHrefValue = (actionArguments: INavigateActoinArguments) => {
+    const evaluatedString = evaluateString(JSON.stringify(actionArguments), evaluationContext);
+    const assembledUrl = getUrlFromNavigationRequest(JSON.parse(evaluatedString));
+    return assembledUrl || '';
   };
-
-  const getFormHref = (): string => {
-    const url = getUrlFromNavigationRequest(props?.actionConfiguration?.actionArguments);
-    const href = evaluateString(decodeURIComponent(url), evaluationContext);
-    return href;
-  };
-
-  const getHrefValue = (navigationType?: string): string => {
-    if (navigationType === "url") {
-      return getUrlHref();
-    } else if (navigationType === "form") {
-      return getFormHref();
-    } else {
-      return null;
-    }
-  };
-
 
   return (
     <Button
-      href={getHrefValue(props?.actionConfiguration?.actionArguments?.navigationType)}
+      href={getHrefValue(props?.actionConfiguration?.actionArguments)}
       title={props.tooltip}
       block={props.block}
       loading={buttonLoading}
