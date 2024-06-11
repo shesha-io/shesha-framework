@@ -160,7 +160,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         id: nanoid(),
         propertyName: 'fontSize',
         label: 'Size',
-        min: 10,
+        defaultValue: 24
       })
       .addColorPicker({
         id: nanoid(),

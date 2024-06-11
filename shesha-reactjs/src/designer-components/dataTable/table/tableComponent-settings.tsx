@@ -404,7 +404,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
 
         <SettingsFormItem name="noDataIcon" label="Icon" jsSetting>
           {(value, onChange) =>
-            <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} defaultValue={"RightOutlined"} />
+            <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} />
           }
         </SettingsFormItem>
       </SettingsCollapsiblePanel>

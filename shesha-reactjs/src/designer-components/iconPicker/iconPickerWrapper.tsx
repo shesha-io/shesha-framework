@@ -3,7 +3,8 @@ import React, {
     CSSProperties,
     FC,
     ReactNode,
-    useMemo
+    useMemo,
+    useEffect
     } from 'react';
 import { executeScriptSync, IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
 import { executeFunction, useFormData, useGlobalState } from '@/index';
@@ -52,6 +53,10 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         if (onChange) onChange(iconName);
     };
 
+    useEffect(()=>{
+        onIconChange(defaultValue, defaultValue);
+    },[defaultValue])
+
     const stylingBoxJSON = JSON.parse(stylingBox || '{}');
 
     const style: CSSProperties = {
@@ -61,12 +66,12 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     };
 
     const getIconStyle = {
-        boxSizing: 'border-box', 
+        boxSizing: 'border-box',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: Number(fontSize) ? `${fontSize}px` : '180px',
-        height: Number(fontSize) ? `${fontSize}px` : '40px',
+        width: Number(fontSize) ? `${fontSize}px` : '24px',
+        height: Number(fontSize) ? `${fontSize}px` : '24px',
         border: `${borderWidth}px solid ${computedBorderColor}`,
         borderRadius: `${borderRadius}px`,
         backgroundColor: backgroundColor,
