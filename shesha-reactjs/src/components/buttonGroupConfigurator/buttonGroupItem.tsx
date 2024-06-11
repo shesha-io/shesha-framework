@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { useDynamicActionsDispatcher } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { getActualModel } from '@/providers/form/utils';
 
 const { Text } = Typography;
 
@@ -23,20 +23,23 @@ const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
 
 export interface IButtonGroupItemProps {
   item: IButtonGroupItem;
+  actualModelContext?: any;
 }
 
-export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item }) => {
+export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelContext }) => {
   const { styles } = useStyles();
+  const actualItem = useMemo(() => getActualModel(item, actualModelContext)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    , [item.label, item.icon, item.tooltip, item.name, actualModelContext]);
 
-  const label = isPropertySettings(item.label) ? (item.label._value ?? item.name) + ' {JS calculated}' : item.label;
-  const tooltip = isPropertySettings(item.tooltip) ? item.tooltip._value + ' {JS calculated}' : item.tooltip;
+  const { icon, label, tooltip, name } = actualItem;
 
   return (
     <>
       {item.itemSubType === 'button' && (
         <>
-          {item.icon && <ShaIcon iconName={item.icon as IconType} />}
-          <span className={styles.listItemName}>{label || item.name}</span>
+          {icon && <ShaIcon iconName={icon as IconType} />}
+          <span className={styles.listItemName}>{label || name}</span>
           {tooltip && (
             <Tooltip title={tooltip}>
               <QuestionCircleOutlined className={styles.helpIcon} />

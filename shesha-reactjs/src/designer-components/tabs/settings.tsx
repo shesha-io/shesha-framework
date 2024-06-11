@@ -12,6 +12,7 @@ import { nanoid } from '@/utils/uuid';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
 import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
 const { Option } = Select;
 
@@ -19,6 +20,7 @@ const tabSettingsMarkup = itemSettings as FormMarkup;
 
 const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
   const { readOnly } = props;
+  const availableConstants = useAvailableConstantsData();
 
   const onAddNewItem = (items) => {
     const count = (items ?? []).length;
@@ -76,24 +78,25 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
       <SettingsCollapsiblePanel header="Configure Tab Panes">
-        <SettingsFormItem name="tabs">
-          <ItemListConfiguratorModal<ITabPaneProps>
-            readOnly={readOnly}
-            initNewItem={onAddNewItem}
-            settingsMarkupFactory={() => tabSettingsMarkup}
+          <SettingsFormItem name="tabs">
+            <ItemListConfiguratorModal<ITabPaneProps>
+              readOnly={readOnly}
+              initNewItem={onAddNewItem}
+              settingsMarkupFactory={() => tabSettingsMarkup}
             itemRenderer={({ item }) => ({
-              label: item.title || item.label || item.name,
-              description: item.tooltip,
-              icon: item.icon
+                  label: item.title || item.label || item.name,
+                  description: item.tooltip,
+                  icon: item.icon
             })}
-            buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
-            modalSettings={{
-              title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
-              header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
-            }}
-          >
-          </ItemListConfiguratorModal>
-        </SettingsFormItem>
+              buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
+              modalSettings={{
+                title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
+                header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
+              }}
+              actualModelContext={availableConstants}
+            >
+            </ItemListConfiguratorModal>
+          </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header="Style" >
