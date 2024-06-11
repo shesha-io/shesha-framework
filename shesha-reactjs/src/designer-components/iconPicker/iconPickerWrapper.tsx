@@ -43,8 +43,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     }, [applicationContext, customColor, borderColor]);
 
     const computedIcon = useMemo(() => {
-        if (defaultValue) return executeScriptSync<string>(defaultValue, applicationContext);
-        return value;
+        return defaultValue;
     }, [applicationContext, defaultValue, value, borderColor]);
 
     const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
