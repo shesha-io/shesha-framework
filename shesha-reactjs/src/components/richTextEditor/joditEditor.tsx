@@ -28,19 +28,16 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     const [state, setState] = useState<IRichTextEditorState>({ content: value });
     const [localPlaceholder, setLocalPlaceholder] = useState<string>(config?.placeholder);
 
-    useEffect(() => {
+    const fullConfig = useMemo<any>(() => {
         if (state?.content !== undefined) {
             setLocalPlaceholder("");
         }
-    }, [state]);
-
-    const fullConfig = useMemo<any>(() => {
         const result = {
             ...defaultOptions,
             ...config
         };
         return result;
-    }, [config]);
+    }, [config, state?.content]);
 
     const handleChange = (incomingValue: string) => {
         setState(prev => ({ ...prev, content: incomingValue }));
