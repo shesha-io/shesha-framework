@@ -18,7 +18,7 @@ import {
     useGlobalState,
     useSheshaApplication,
 } from '@/providers';
-import { GlobalTableStyles } from './styles/styles';
+import { GlobalTableStyles, useStyles } from './styles/styles';
 import { Alert, Tag } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
@@ -34,7 +34,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
     const { anyOfPermissionsGranted } = useSheshaApplication();
-
+    const { styles } = useStyles();
     const isDesignMode = formMode === 'designer';
 
     const {
@@ -49,6 +49,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         clearFilters,
         removeColumnFilter,
         tableFilter,
+        totalRows,
+        applyFilters
     } = useDataTableStore();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
@@ -85,12 +87,19 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
     };
 
-    const filtersList = tableFilter.map((filter)=> {
-        
-        return <Tag bordered={false} closable>
-            Tag 4
-        </Tag>
-    });
+    const FiltersList = ({ filters, clearFilters }) => <div style={{ fontSize: 12, fontWeight: 400, textAlign: "center", padding: ".32em" }}>
+        {`Filters(${totalRows} rows): `}
+        {filters.map(({ columnId }) => {
+            return <Tag bordered={false} closable key={columnId} onClose={() => {
+                removeColumnFilter(columnId);
+                applyFilters();
+            }}
+                style={{ color: styles.primaryColor, fontWeight: 450, marginBottom: '.32em' }}>
+                {columnId}
+            </Tag>
+        })}
+        <Tag onClick={clearFilters} style={{ fontSize: 12, color: '#b4b4b4', fontWeight: 500, background: "inherit", cursor: "pointer" }}>clear filters</Tag>
+    </div >
 
     return (
         <SidebarContainer
@@ -104,7 +113,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
-            {/* <FiltersList value={tableFilter} onChange={clearFilters} readOnly={false} /> */}
+            {tableFilter.length > 0 && <FiltersList filters={tableFilter} clearFilters={clearFilters} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}

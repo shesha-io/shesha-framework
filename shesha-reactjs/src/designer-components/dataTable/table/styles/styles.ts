@@ -1,5 +1,6 @@
-import { createGlobalStyle } from "antd-style";
+import { createGlobalStyle, createStyles } from "antd-style";
 import { sheshaStyles } from '@/styles';
+
 
 export const GlobalTableStyles = createGlobalStyle`
   .sha-components-container.sha-index-table-control {
@@ -78,3 +79,15 @@ export const GlobalTableStyles = createGlobalStyle`
     }
   }
 `;
+
+
+export const useStyles = createStyles(({ token }) => {
+
+  const primaryColor = token.colorPrimary;
+  const secondaryColor = token.colorPrimaryBgHover;
+
+  return {
+    secondaryColor,
+    primaryColor,
+  };
+});

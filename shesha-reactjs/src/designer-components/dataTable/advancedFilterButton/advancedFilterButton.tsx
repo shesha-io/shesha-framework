@@ -18,7 +18,7 @@ export const AdvancedFilterButton: FC = () => {
     const hasFilters = filterColumns.length > 0 || isFiltering;
 
     return (
-        <Badge count={tableFilter.length} color={styles.primaryColor} size="small" title={filterColumns.join("  ")}>
+        <Badge count={tableFilter.length} color={isFiltering ? "#b4b4b4" : styles.primaryColor} size='small' title={filterColumns.join("  ")}>
             <Button
                 type="link"
                 onClick={startFilteringColumns}
@@ -26,7 +26,7 @@ export const AdvancedFilterButton: FC = () => {
                 disabled={isFiltering}
                 icon={hasFilters ? <FilterFilled color={styles.primaryColor} /> : <FilterOutlined color={styles.primaryColor} />}
                 size="small"
-                style={{ border: hasFilters ? `1px solid ${styles.primaryColor}` : "none" }}
+                style={{ border: hasFilters ? `1px solid ${isFiltering ? "#b4b4b4" : styles.primaryColor}` : "none" }}
             />
         </Badge>
 
