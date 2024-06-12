@@ -119,26 +119,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         allowClear: true,
         showText: true,
       })
-      .addCodeEditor({
-        id: nanoid(),
-        propertyName: 'customColor',
-        label: 'Custom Color',
-        labelAlign: 'right',
-        parentId: 'root',
-        hidden: false,
-        description: 'Enter custom color code. The function must return a string representing the color of the icon',
-        validate: {},
-        settingsValidationErrors: [],
-        exposedVariables: [
-          { id: nanoid(), name: 'data', description: 'The form data', type: 'object' },
-          { id: nanoid(), name: 'globalState', description: 'The global state', type: 'object' },
-        ],
-        wrapInTemplate: true,
-        templateSettings: {
-          functionName: 'getCustomColor'      
-        },
-        availableConstantsExpression: "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
-      }).addNumberField({
+     .addNumberField({
         id: nanoid(),
         propertyName: 'borderWidth',
         label: 'Border Width',
@@ -159,8 +140,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       .addNumberField({
         id: nanoid(),
         propertyName: 'fontSize',
-        label: 'Size',
-        defaultValue: 24
+        label: 'Size'
       })
       .addColorPicker({
         id: nanoid(),

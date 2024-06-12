@@ -5,7 +5,7 @@ import React, {
     ReactNode,
     useMemo,
     useEffect
-    } from 'react';
+} from 'react';
 import { executeScriptSync, IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
 import { executeFunction, useFormData, useGlobalState } from '@/index';
 
@@ -26,21 +26,17 @@ interface IconPickerWrapperProps {
     defaultValue?: ShaIconTypes;
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { customColor, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+    const { fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
     const computedColor = useMemo(() => {
-        return customColor
-        ? executeScriptSync<string>(customColor, applicationContext)
-        : color;
-    }, [applicationContext, customColor, color]);
+        return color;
+    }, [applicationContext, color]);
 
     const computedBorderColor = useMemo(() => {
-        return customColor
-        ? executeScriptSync<string>(customColor, applicationContext)
-        : borderColor;
-    }, [applicationContext, customColor, borderColor]);
+        return borderColor;
+    }, [applicationContext, color, borderColor]);
 
     const computedIcon = useMemo(() => {
         return defaultValue;
@@ -53,35 +49,34 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const stylingBoxJSON = JSON.parse(stylingBox || '{}');
 
     const style: CSSProperties = {
-        fontSize: fontSize,
+        fontSize: fontSize || 24,
         color: computedColor,
-        marginLeft: '12px'
+        marginLeft: (borderWidth || borderColor || backgroundColor) ? '12px' : 'none' //this allows us to correct the icon layout when it's configured
     };
 
     const getIconStyle = {
-        boxSizing: 'border-box',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: Number(fontSize) ? `${fontSize}px` : '24px',
-        height: Number(fontSize) ? `${fontSize}px` : '24px',
+        width: Number(fontSize) ? `${fontSize}px` : 'auto',
+        height: Number(fontSize) ? `${fontSize}px` : 'auto',
         border: `${borderWidth}px solid ${computedBorderColor}`,
         borderRadius: `${borderRadius}px`,
         backgroundColor: backgroundColor,
         ...pickStyleFromModel(stylingBoxJSON),
-        ...(executeFunction("{}", { data, globalState }) || {}),
+        ...(executeFunction("{}", { data, globalState }) || {})
     };
 
     return (
         <div style={(computedIcon || defaultValue) ? getIconStyle : {}}>
-        <IconPicker
-            value={computedIcon as ShaIconTypes || defaultValue as ShaIconTypes}
-            onIconChange={onIconChange}
-            readOnly={readOnly}
-            style={style}
-            twoToneColor={computedColor}
-            defaultValue={defaultValue as ShaIconTypes}
-        />
+            <IconPicker
+                value={computedIcon as ShaIconTypes || defaultValue as ShaIconTypes}
+                onIconChange={onIconChange}
+                readOnly={readOnly}
+                style={style}
+                twoToneColor={computedColor}
+                defaultValue={defaultValue as ShaIconTypes}
+            />
         </div>
     );
 };
