@@ -42,7 +42,7 @@ namespace Shesha.Sms.Clickatell
             // Removing any spaces and any other common characters in a phone number.
             mobileNumber = MobileHelper.CleanupmobileNo(mobileNumber);
 
-            var gatewaySettings = await _settings.GatewaySettings.GetValueAsync();
+            var gatewaySettings = await _settings.ClickatellGateway.GetValueAsync();
 
             var sb = new StringBuilder();
             sb.Append("https://" + gatewaySettings.Host + "/http/sendmsg?api_id=");
@@ -123,7 +123,7 @@ namespace Shesha.Sms.Clickatell
 
         public override async Task<ClickatellSettingDto> GetTypedSettingsAsync()
         {
-            var gatewaySettings = await _settings.GatewaySettings.GetValueAsync();
+            var gatewaySettings = await _settings.ClickatellGateway.GetValueAsync();
 
             var settings = new ClickatellSettingDto
             {
@@ -146,7 +146,7 @@ namespace Shesha.Sms.Clickatell
 
         public override async Task SetTypedSettingsAsync(ClickatellSettingDto settings)
         {
-            await _settings.GatewaySettings.SetValueAsync(new GatewaySettings {
+            await _settings.ClickatellGateway.SetValueAsync(new GatewaySettings {
                 Host = settings.ClickatellHost,
                 ApiId = settings.ClickatellApiId,
                 Username = settings.ClickatellApiUsername,
