@@ -2,8 +2,7 @@ import { createStyles } from "antd-style";
 import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
-  const leftSidebarWidth = "350px";
-  const rightSidebarWidth = leftSidebarWidth;
+  const leftSidebarWidth = "550px";
   const sidebarBtnHeight = "35px";
 
   const sidebarContainerHeader = "sidebar-container-header";
@@ -43,6 +42,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerLeft},
         .${sidebarContainerRight} {
+
           &.allow-full-collapse {
             display: none;
           }
@@ -54,14 +54,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             .${sidebarHeader} {
               .sidebar-header-title {
                 display: flex;
+                width:100%;
               }
             
             }
           }
     
           background: white;
-          transition: ${sheshaStyles.transition};
-    
+
           .sidebar-subheader {
             margin-top: 8px;
             background: #282828;
@@ -139,7 +139,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${sidebarContainerRight} {
           border-left: 1px solid lightgrey;
-          max-width: ${rightSidebarWidth};
           min-height: calc(100vh - 102px);
     
           &.open {
@@ -170,9 +169,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         }
     
         .${sidebarContainerMainArea} {
-          transition: ${sheshaStyles.transition};
-          width: 100%;
-          position: sticky;
+         width: 100%;
+         position: sticky;
           overflow-x: auto;
     
           &::not(.no-padding) {

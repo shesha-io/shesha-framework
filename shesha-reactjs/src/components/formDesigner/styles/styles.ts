@@ -9,6 +9,7 @@ export const useStyles = () => {
 
     const sidebarContainerMainAreaBody = "sidebar-container-main-area-body";
     const shaDesignerToolbar = "sha-designer-toolbar";
+    const shaToolboxComponents = "sha-toolbox-components";
     const shaDesignerToolbarLeft = "sha-designer-toolbar-left";
     const shaDesignerToolbarRight = "sha-designer-toolbar-right";
     const shaDesignerCanvasConfig = "sha-designer-canvas-config";
@@ -16,9 +17,11 @@ export const useStyles = () => {
     const shaDesignerToolbox = "sha-designer-toolbox";
     const shaDatasourceTree = "sha-datasource-tree";
     const shaToolboxComponent = "sha-toolbox-component";
+    const shaToolboxPanelComponents = "sha-toolbox-panel-components";
     const shaComponentTitle = "sha-component-title";
     const shaComponentSearch = "sha-component-search";
     const shaToolboxPanel = "sha-toolbox-panel";
+    const shaToolboxPanelItems = "sha-toolbox-panel-items";
 
     const sidebarHeaderTitle = "sidebar-header-title";
     const shaDesignerHeader = "sha-designer-header";
@@ -49,6 +52,7 @@ export const useStyles = () => {
             componentDragHandle,
             sidebarContainerMainAreaBody,
             shaDesignerToolbar,
+            shaToolboxComponents,
             shaDesignerToolbarLeft,
             shaDesignerToolbarRight,
             shaDesignerCanvasConfig,
@@ -58,9 +62,11 @@ export const useStyles = () => {
             shaComponentGhost,
             shaComponent,
             shaToolboxComponent,
+            shaToolboxPanelComponents,
             shaComponentTitle,
             shaComponentSearch,
             shaToolboxPanel,
+            shaToolboxPanelItems,
             shaDatasourceTree,
             shaComponentIndicator,
             shaComponentsContainer,
@@ -87,6 +93,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         componentDragHandle,
         sidebarContainerMainAreaBody,
         shaDesignerToolbar,
+        shaToolboxComponents,
         shaDesignerToolbarLeft,
         shaDesignerToolbarRight,
         shaDesignerCanvasConfig,
@@ -96,9 +103,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaComponentGhost,
         shaComponent,
         shaToolboxComponent,
+        shaToolboxPanelComponents,
         shaComponentTitle,
         shaComponentSearch,
         shaToolboxPanel,
+        shaToolboxPanelItems,
         shaDatasourceTree,
         shaComponentIndicator,
         shaComponentsContainer,
@@ -181,6 +190,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
         }
+        .${shaToolboxComponents}{
+            height: 100%;
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            margin-bottom: 1rem;
+        }
         .${shaDesignerToolbar} {
             background: white;
             padding: 12px;
@@ -214,6 +229,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 ;            }
         }
         .${shaDesignerToolbox} {
+            height: 85vh;
+            margin-bottom: 3rem;
             .${shaDatasourceTree} {
                 .${prefixCls}-tree-switcher-noop {
                     display: none;
@@ -221,15 +238,16 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
                 .${shaToolboxComponent} {
                     margin: 0;
-                    display: block;
-                    white-space: nowrap;
+                    display: flex;
+                    white-space: normal;
                     overflow: hidden;
-                    max-width: 225px;
-                    text-overflow: ellipsis;
-        
+                    max-width: 100%;
+                    overflow: auto;
+
                     .${shaComponentTitle} {
                         margin-right: 10px;
                     }
+                 
                 }
         
                 .${siteTreeSearchValue} {
@@ -263,6 +281,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
                 &.active {
                     background-color: #ebf3fb;
+                }
+                .${shaToolboxPanelItems} {
+                    margin:-1rem -0.8rem;
                 }
             }
         
@@ -344,6 +365,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             border: 1px dashed #4099ff;
             border-radius: 2px;
             opacity: 0.7;
+
+          
+
+        }
+        .${shaToolboxPanelComponents}{
+            margin: -1rem -0.8rem;
         }
         .${shaComponent} {
             position: relative;
