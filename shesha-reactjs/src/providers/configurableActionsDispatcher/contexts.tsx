@@ -30,6 +30,11 @@ export interface IExecuteActionPayload {
   fail?: (error: any) => void;
 }
 
+export interface IPrepareActionArgumentsPayload<TArguments = any> {
+  actionConfiguration: IConfigurableActionConfiguration<TArguments>;
+  argumentsEvaluationContext: IArgumentsEvaluationContext;
+}
+
 export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any>
   extends IConfigurableActionDescriptor<TArguments, TReponse> { }
 
@@ -49,7 +54,8 @@ export interface IConfigurableActionDispatcherActionsContext {
   getActions: () => IConfigurableActionGroupDictionary;
   registerAction: RegisterActionType;
   unregisterAction: (actionIdentifier: IConfigurableActionIdentifier) => void;
-  prepareArguments: (actionArguments: any) => void;
+  prepareArguments: <TArguments = any>(payload: IPrepareActionArgumentsPayload<TArguments>) => Promise<TArguments>;
+  
   executeAction: ConfigurableActionExecuter;
   useActionDynamicContext: ActionDynamicContextEvaluationHook;
 }
