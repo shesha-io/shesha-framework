@@ -3,10 +3,9 @@ import React, {
     CSSProperties,
     FC,
     ReactNode,
-    useMemo,
-    useEffect
+    useMemo
 } from 'react';
-import { executeScriptSync, IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
+import { IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
 import { executeFunction, useFormData, useGlobalState } from '@/index';
 
 interface IconPickerWrapperProps {
