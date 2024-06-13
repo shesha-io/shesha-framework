@@ -14,7 +14,6 @@ import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal, Select } fr
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import { KeyInfomationBarItemProps } from './interfaces';
-import { title } from 'process';
 
 export interface IProps {
   readOnly: boolean;

@@ -25,7 +25,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
     const { hidden, alignItems, vertical, style, dividerMargin, dividerHeight, gap } = model;
     if (hidden) return null;
 
-    const computedStyle = getStyle(style, data)
+    const computedStyle = getStyle(style, data);
     const justifyContent = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };
 
     const containerStyle = (item) => ({
@@ -35,7 +35,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
       display: "flex",
       flexDirection: item.flexDirection ? item.flexDirection : "column",
       alignItems: item.textAlign
-    })
+    });
 
     const dividerStyle = {
       height: vertical ? 0 : dividerHeight ? dividerHeight : "100%",
