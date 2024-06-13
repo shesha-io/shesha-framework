@@ -81,13 +81,72 @@ export const GlobalTableStyles = createGlobalStyle`
 `;
 
 
-export const useStyles = createStyles(({ token }) => {
+export const useStyles = createStyles(({ token, cx, css }) => {
 
   const primaryColor = token.colorPrimary;
   const secondaryColor = token.colorPrimaryBgHover;
+  const arrowLeft = "scroll-arrow-left";
+  const arrowRight = "scroll-arrow-right";
+  const tag = "tag";
+
+  const scrollableTagsContainer = cx("scrollable-tags-container", css`
+      max-width: 700px;
+      margin: 6px auto;
+      overflow: hidden;
+      position: relative;
+      user-select: none;
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      * {
+        -ms-overflow-style: none; /* for Internet Explorer, Edge */
+        scrollbar-width: none; /* for Firefox */
+      }
+
+      .filters {
+        display: flex;
+        margin: 0 24px;
+        overflow-x: scroll;
+        scroll-behavior: smooth;
+      }
+
+      .${arrowLeft}, .${arrowRight} {
+        color: ${token.colorPrimary};
+        cursor: pointer;
+        position: absolute;
+        height: 100%;
+        top: 0;
+        width: 24px;
+        justify-content: center;
+        display: flex;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .${arrowLeft} {
+        left: 0;
+        border-radius: 4px 0 0 4px;
+      }
+
+       .${arrowRight} {
+        right: 0;
+        border-radius: 0 4px 4px 0;
+      }
+      
+      .${tag} {
+        color: ${token.colorPrimary};
+        marginBottom: .32em;
+    `);
 
   return {
     secondaryColor,
     primaryColor,
+    arrowLeft,
+    arrowRight,
+    tag,
+    scrollableTagsContainer
   };
 });

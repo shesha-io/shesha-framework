@@ -8,6 +8,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { AdvancedFilterButton } from './advancedFilterButton';
+import { ConfigurableFormItem } from '@/components';
 
 
 const FilterComponent: IToolboxComponent<IConfigurableFormComponent> = {

@@ -1,6 +1,10 @@
 import React, {
     FC,
-    Fragment
+    Fragment,
+    use,
+    useEffect,
+    useRef,
+    useState
 } from 'react';
 import { filterVisibility } from './utils';
 import { getStyle } from '@/providers/form/utils';
@@ -21,6 +25,8 @@ import {
 import { GlobalTableStyles, useStyles } from './styles/styles';
 import { Alert, Tag } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { set } from 'nested-property';
 
 const NotConfiguredWarning: FC = () => {
     return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
@@ -50,7 +56,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         removeColumnFilter,
         tableFilter,
         totalRows,
-        applyFilters
     } = useDataTableStore();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
@@ -87,20 +92,112 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
     };
 
-    const FiltersList = ({ filters, clearFilters }) => <div style={{ fontSize: 12, fontWeight: 400, textAlign: "center", padding: ".32em" }}>
-        {`Filters(${totalRows} rows): `}
-        {filters.map(({ columnId }) => {
-            return <Tag bordered={false} closable key={columnId} onClose={() => {
-                removeColumnFilter(columnId);
-                applyFilters();
-            }}
-                style={{ color: styles.primaryColor, fontWeight: 450, marginBottom: '.32em' }}>
-                {columnId}
-            </Tag>
-        })}
-        <Tag onClick={clearFilters} style={{ fontSize: 12, color: '#b4b4b4', fontWeight: 500, background: "inherit", cursor: "pointer" }}>clear filters</Tag>
-    </div >
+    const filtersRef = useRef(null);
+    const scrollbarLeftArrow = useRef(null);
+    const scrollbarRightArrow = useRef(null);
 
+    const manageArrows = () => {
+        if (!filtersRef.current) return;
+
+        const maxScrollDistance = filtersRef.current.scrollWidth - filtersRef.current.clientWidth - 30;
+
+        if (filtersRef.current.scrollLeft <= 0) {
+            scrollbarLeftArrow.current.classList.add("hidden");
+        } else {
+            scrollbarLeftArrow.current.classList.remove("hidden");
+        }
+
+        if (filtersRef.current.scrollLeft > maxScrollDistance + 24) {
+            scrollbarRightArrow.current.classList.add("hidden");
+        } else {
+            scrollbarRightArrow.current.classList.remove("hidden");
+        }
+
+        if (filtersRef.current.scrollWidth <= filtersRef.current.clientWidth) {
+            scrollbarRightArrow.current.classList.remove("active");
+            scrollbarLeftArrow.current.classList.remove("active");
+        }
+    };
+
+    const scrollRight = () => {
+        if (filtersRef.current) {
+            filtersRef.current.scrollLeft += 100;
+            manageArrows();
+        }
+    };
+
+    const scrollLeft = () => {
+        if (filtersRef.current) {
+            manageArrows();
+            filtersRef.current.scrollLeft -= filtersRef.current.scrollLeft === 0 ? 200 : 100;
+        }
+    };
+
+    useEffect(() => {
+        manageArrows();
+
+        const handleScroll = () => {
+            manageArrows();
+        };
+
+        if (filtersRef.current) {
+            manageArrows();
+            filtersRef.current.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (filtersRef.current) {
+                filtersRef.current.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, [filtersRef.current]);
+
+    const FiltersList = ({ filters, clearFilters }) => {
+        return (
+            <div style={{ textAlign: "center" }}>
+                <div className={styles.scrollableTagsContainer}>
+                    <LeftOutlined
+                        ref={scrollbarLeftArrow}
+                        className={styles.arrowLeft}
+                        onClick={scrollLeft}
+                    />
+                    <div className="filters" ref={filtersRef}>
+                        {filters?.map(({ columnId }) => {
+                            return (
+                                <Tag
+                                    bordered={false}
+                                    closable
+                                    key={columnId}
+                                    onClose={() => removeColumnFilter(columnId)}
+                                    className={styles.tag}
+                                >
+                                    {columnId}
+                                </Tag>
+                            );
+                        })}
+                    </div>
+                    <RightOutlined
+                        ref={scrollbarRightArrow}
+                        className={styles.arrowRight}
+                        onClick={scrollRight}
+                    />
+                </div>
+                {`Filters( ${totalRows} results): `}
+                <Tag
+                    onClick={clearFilters}
+                    style={{
+                        fontSize: 12,
+                        color: styles.secondaryColor,
+                        fontWeight: 500,
+                        background: "inherit",
+                        cursor: "pointer",
+                    }}
+                >
+                    clear all
+                </Tag>
+            </div>
+        );
+    };
     return (
         <SidebarContainer
             rightSidebarProps={{
