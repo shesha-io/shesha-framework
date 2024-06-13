@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Badge, Button } from 'antd';
-import { FilterFilled, FilterOutlined } from '@ant-design/icons';
+import { FilterFilled, FilterOutlined, FilterTwoTone } from '@ant-design/icons';
 import { useDataTableStore } from '@/providers';
 import { useStyles } from './style';
 
@@ -14,11 +14,11 @@ export const AdvancedFilterButton: FC = () => {
 
     const { styles } = useStyles();
     const startFilteringColumns = () => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
-    const filterColumns = tableFilter.map((filter) => filter.columnId);
-    const hasFilters = filterColumns.length > 0 || isFiltering;
+    const filterColumns = tableFilter?.map((filter) => filter.columnId);
+    const hasFilters = filterColumns?.length > 0 || isFiltering;
 
     return (
-        <Badge count={tableFilter.length} color={isFiltering ? styles.buttonDisabledColor : styles.primaryColor} size='small' title={filterColumns.join("  ")}>
+        <Badge count={tableFilter?.length} color={isFiltering ? styles.buttonDisabledColor : styles.primaryColor} size='small' title={filterColumns?.join("  ")}>
             <Button
                 type="link"
                 onClick={startFilteringColumns}
@@ -26,7 +26,7 @@ export const AdvancedFilterButton: FC = () => {
                 disabled={isFiltering}
                 icon={hasFilters ? <FilterFilled color={styles.primaryColor} /> : <FilterOutlined color={styles.primaryColor} />}
                 size="small"
-                style={{ border: hasFilters ? `1px solid ${isFiltering ? "#b4b4b4" : styles.primaryColor}` : "none", background: styles.secondaryColor }}
+                style={{ border: hasFilters ? `1px solid ${isFiltering ? "#b4b4b4" : styles.primaryColor}` : "none", background: isFiltering || !hasFilters ? "none" : styles.secondaryColor }}
             />
         </Badge>
 

@@ -92,7 +92,9 @@ export const useStyles = createStyles(({ token, cx, css }) => {
   const scrollableTagsContainer = cx("scrollable-tags-container", css`
       max-width: 700px;
       margin: 6px auto;
+      justify-content: center;
       overflow: hidden;
+      display: flex;
       position: relative;
       user-select: none;
       ::-webkit-scrollbar {

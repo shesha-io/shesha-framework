@@ -23,7 +23,7 @@ import {
     useSheshaApplication,
 } from '@/providers';
 import { GlobalTableStyles, useStyles } from './styles/styles';
-import { Alert, Tag } from 'antd';
+import { Alert, Button, Tag } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { set } from 'nested-property';
@@ -183,18 +183,16 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                     />
                 </div>
                 {`Filters( ${totalRows} results): `}
-                <Tag
+                <Button
                     onClick={clearFilters}
                     style={{
                         fontSize: 12,
                         color: styles.secondaryColor,
                         fontWeight: 500,
-                        background: "inherit",
-                        cursor: "pointer",
                     }}
                 >
                     clear all
-                </Tag>
+                </Button>
             </div>
         );
     };
@@ -210,7 +208,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
-            {tableFilter.length > 0 && <FiltersList filters={tableFilter} clearFilters={clearFilters} />}
+            {tableFilter?.length > 0 && <FiltersList filters={tableFilter} clearFilters={clearFilters} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}
