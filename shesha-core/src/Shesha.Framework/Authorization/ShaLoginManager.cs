@@ -10,6 +10,7 @@ using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.MultiTenancy;
+using Abp.UI;
 using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
 using NetTopologySuite.Operation.Valid;
@@ -114,6 +115,24 @@ namespace Shesha.Authorization
 
                 return await CreateLoginResultAsync(user, tenant);
             });
+        }
+
+        public virtual async Task<ShaLoginResult<TUser>> AnonymousLoginViaDeviceIdAsync(Guid deviceId, string imei = null, string tenancyName = null)
+        {
+            ShaLoginResult<TUser> result = null;
+            var user = await UserManager.FindByNameAsync(deviceId.ToString());
+            if (user == null)
+                throw new UserFriendlyException("User with the specified deviceId not found");
+
+            using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
+            {
+                result = await ProcessTenancyLoginActionAsync(imei, tenancyName, false, async (tenant) => {
+                    return await CreateLoginResultAsync(user, tenant);
+                });
+            }
+            await SaveLoginAttemptAsync(result, imei, tenancyName, deviceId.ToString());
+
+            return result;
         }
 
         private void CheckOtpAuthAvailability() 

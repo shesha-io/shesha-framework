@@ -1,9 +1,9 @@
 {
   "name": "@shesha-io/reactjs",
-  "version": "0.0.66007-local",
+  "version": "0.34.0",
   "description": "The reactjs frontend application and ui for the shesha framework",
   "license": "GPL-3.0",
-  "homepage": "https://shesha-io.github.io/shesha-framework",
+  "homepage": "https://www.shesha.io/",
   "repository": {
     "type": "git",
     "url": "https://github.com/shesha-io/shesha-framework"

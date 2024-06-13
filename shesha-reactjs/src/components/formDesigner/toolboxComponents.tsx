@@ -11,12 +11,12 @@ import { useStyles } from './styles/styles';
 
 const { Panel } = Collapse;
 
-export interface IToolboxComponentsProps {}
+export interface IToolboxComponentsProps { }
 
 export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.components.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.components.search', '');
-  const { styles }  = useStyles();
+  const { styles } = useStyles();
 
   const { toolboxComponentGroups, startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
 
@@ -48,7 +48,7 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
 
   let idx = 0;
   return (
-    <>
+    <div className={styles.shaToolboxComponents}>
       <SearchBox value={searchText} onChange={setSearchText} placeholder="Search components" />
       {filteredGroups.length > 0 && (
         <Collapse activeKey={openedKeys} onChange={onCollapseChange} accordion>
@@ -82,7 +82,9 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
                     ghostClass={styles.shaComponentGhost}
                     onStart={onDragStart}
                     onEnd={onDragEnd}
+                    className={styles.shaToolboxPanelComponents}
                   >
+
                     {visibleComponents.map((component, componentIndex) => {
                       idx++;
                       return (
@@ -100,7 +102,7 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
         </Collapse>
       )}
       {filteredGroups.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Components not found" />}
-    </>
+    </div>
   );
 };
 
