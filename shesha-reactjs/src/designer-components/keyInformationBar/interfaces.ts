@@ -14,7 +14,7 @@ export interface IColumnProps {
 export interface KeyInfomationBarItemProps {
   id: string;
   width: number;
-  gap: number;
+  flexDirection?: 'row' | 'column';
   textAlign: 'left' | 'center' | 'right' | 'justify' | 'initial' | 'inherit' | 'start' | 'end';
   components: IConfigurableFormComponent[];
 }
@@ -23,12 +23,10 @@ export interface IKeyInformationBarProps extends IConfigurableFormComponent, ICo
   width?: string;
   height?: string;
   dividerHeight?: string;
-  space?: number;
-  formData?: any;
+  dividerMargin?: number;
+  gap?: number;
   alignItems?: AlignItems;
   columnWidth?: string;
-  barWidth?: string;
-  barHeight?: string;
   vertical?: boolean;
   columns?: KeyInfomationBarItemProps[];
   readOnly?: boolean;

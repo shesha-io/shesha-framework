@@ -10,7 +10,8 @@ import ParentProvider from '@/providers/parentProvider/index';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useStyles } from './style';
 import { IKeyInformationBarProps } from './interfaces';
-import { ConfigurableFormItem } from '@/components';
+import { getStyle } from '@/providers/form/utils';
+import { useFormData } from '@/index';
 
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
@@ -20,31 +21,47 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   Factory: ({ model }) => {
     const { columns } = model as IKeyInformationBarProps;
     const { styles } = useStyles();
-    const { hidden, barWidth, barHeight, alignItems, vertical, space } = model;
+    const { data } = useFormData();
+    const { hidden, alignItems, vertical, style, dividerMargin, dividerHeight, gap } = model;
     if (hidden) return null;
 
-    const dividerMargin = vertical ? `${space}px 0px` : `0px ${space}px`;
+    const computedStyle = getStyle(style, data)
+    const justifyContent = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };
+
+    const containerStyle = (item) => ({
+      textOverflow: "ellipsis",
+      width: item.width,
+      textAlign: item.textAlign,
+      display: "flex",
+      flexDirection: item.flexDirection ? item.flexDirection : "column",
+      alignItems: item.textAlign
+    })
+
+    const dividerStyle = {
+      height: vertical ? 0 : dividerHeight ? dividerHeight : "100%",
+      width: !vertical ? 0 : dividerHeight ? dividerHeight : "100%",
+      margin: vertical ? `${dividerMargin}px 0px` : `0px ${dividerMargin}px`
+    };
 
     return (
-      <ConfigurableFormItem model={model}>
-        <ParentProvider model={model}>
-          <Flex vertical={vertical} className={styles.flexContainer} style={{ width: barWidth, height: barHeight, justifyContent: alignItems }} >
-            {columns?.map((item, i) => {
-              return (
-                <div key={i} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={{ width: item.width, alignSelf: vertical ? alignItems : "inherit" }}>
-                  <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} style={{ height: barHeight ? barHeight : "100%", margin: dividerMargin }} />
-                  <div className={styles.content} style={{ textAlign: item.textAlign }}>
-                    <ComponentsContainer
-                      containerId={item.id}
-                      gap={item.gap}
-                      dynamicComponents={model?.isDynamic ? item?.components : []}
-                    />
-                  </div>
-                </div>);
-            })}
-          </Flex>
-        </ParentProvider>
-      </ConfigurableFormItem>
+      <ParentProvider model={model}>
+        <Flex vertical={vertical} className={styles.flexContainer} style={{ ...computedStyle, ...justifyContent }} >
+          {columns?.map((item, i) => {
+            return (
+              <div key={i} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper}>
+                <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} className={styles.divider} style={dividerStyle} />
+                <div className={styles.content} style={{ textAlign: item.textAlign }}>
+                  <ComponentsContainer
+                    containerId={item.id}
+                    gap={gap}
+                    style={containerStyle(item)}
+                    dynamicComponents={model?.isDynamic ? item?.components : []}
+                  />
+                </div>
+              </div>);
+          })}
+        </Flex>
+      </ParentProvider >
     );
   },
   migrator: (m) =>
@@ -63,7 +80,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
           id: nanoid(),
           width: 200,
           textAlign: 'left',
-          gap: 0,
+          flexDirection: "column",
           components: [],
         }
       ],

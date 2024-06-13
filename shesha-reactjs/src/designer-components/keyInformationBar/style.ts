@@ -8,20 +8,29 @@ export const useStyles = createStyles(({ css, cx }) => {
     const content = "content";
 
     const flexContainer = cx("flex-container", css`
-    
         width: 100%;
 
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;
+            align-items: center;
+
             .${content} {
-                width: 100%;
-                * {
-                    margin: 0 !important;
-                    padding: 0 !important;
+                max-width: 100%;
+                width: max-content;
+                padding: 0;
+                white-space: nowrap;
+
+                .ant-form-item {
+                    margin-bottom: 0;
+                    overflow: hidden;
+                    max-width: 100%;
+                    justify-content: center;
+                    text-overflow: ellipsis;
                 }
 
-                & > sha-component {
-                    min-width: 0;
+                &.ant-form-item-control-input-content, .ant-form-item-control-input {
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }
             }
         }
@@ -31,11 +40,23 @@ export const useStyles = createStyles(({ css, cx }) => {
         }
 
         .${flexItemWrapperVertical} {
+            width: max-content;
             flex-direction: column;
+        }
+
+        .${divider}{
+            min-width: 0;
+            min-height: 0;
+            max-height: 100%;
         }
     `);
 
     return {
-        flexItem, flexItemWrapper, flexItemWrapperVertical, divider, flexContainer, content
+        flexContainer,
+        flexItem,
+        flexItemWrapper,
+        flexItemWrapperVertical,
+        divider,
+        content,
     };
 });

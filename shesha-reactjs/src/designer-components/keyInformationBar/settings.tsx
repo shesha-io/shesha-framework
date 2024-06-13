@@ -20,11 +20,11 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <Input readOnly={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="barHeight" label="Bar Height" jsSetting>
+            <SettingsFormItem name="dividerHeight" label="Divider Height" jsSetting>
                 <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="barWidth" label="Bar Width" jsSetting>
+            <SettingsFormItem name="dividerMargin" label="Divider Margin" jsSetting>
                 <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 
@@ -65,7 +65,7 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 />
             </SettingsFormItem>
 
-            <SettingsFormItem name="space" label="Space" jsSetting>
+            <SettingsFormItem name="gap" label="Gap" jsSetting>
                 <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 

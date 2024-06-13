@@ -14,6 +14,7 @@ import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal, Select } fr
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import { KeyInfomationBarItemProps } from './interfaces';
+import { title } from 'process';
 
 export interface IProps {
   readOnly: boolean;
@@ -54,8 +55,11 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
   let childNode = children;
 
   const { Option } = Select;
-  const values = ['start', 'end', 'center', 'left', 'right', "justify", 'initial', 'inherit'];
-  const Dropdown = (ref) =>
+
+  const textAlignValues = ['start', 'end', 'center', 'left', 'right', "justify", 'initial', 'inherit'];
+  const flexDirectionValues = ['row', 'column', 'row-reverse', 'column-reverse'];
+
+  const Dropdown = (ref, values) =>
   (<Select ref={ref} onSelect={save} onBlur={save}>
     {values.map((value, i) => <Option key={i} value={value}>{value.split('-').map(word => {
       return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -76,7 +80,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
           },
         ]}
       >
-        {dataIndex === "textAlign" ? Dropdown(inputRef) : <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />}
+        {dataIndex === "textAlign" ? Dropdown(inputRef, textAlignValues) : dataIndex === "flexDirection" ? Dropdown(inputRef, flexDirectionValues) : <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} />}
       </Form.Item>
     ) : (
       <div
@@ -149,7 +153,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       id: nanoid(),
       width: 200,
       textAlign: 'center',
-      gap: 0,
+      flexDirection: "column",
       components: [],
     };
     const newColumns = [...columns, newColumn];
@@ -180,19 +184,19 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       title: 'Width',
       dataIndex: 'width',
       editable: !readOnly,
-      width: '30%',
+      width: '20%',
     },
     {
       title: 'Text Align',
       dataIndex: 'textAlign',
       editable: !readOnly,
-      width: '30%',
+      width: '20%',
     },
     {
-      title: 'Gap',
-      dataIndex: 'gap',
+      title: 'Flex Direction',
+      dataIndex: 'flexDirection',
       editable: !readOnly,
-      width: '30%',
+      width: '20%',
     },
     !readOnly
       ? {
@@ -266,7 +270,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
         title={readOnly ? 'View Columns' : 'Configure Columns'}
         open={showDialog}
         width="650px"
-
+        
         onOk={toggleModal}
         okButtonProps={{ hidden: readOnly }}
 
@@ -277,9 +281,9 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId={'columns'}>
               {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} style={getListStyle(snapshot.isDraggingOver)}>
+                <div ref={provided.innerRef} {...provided.droppableProps} style={{ ...getListStyle(snapshot.isDraggingOver), overflow: "hidden" }} >
                   <Table
-                    scroll={{ x: 'max-content' }}
+                    style={{ overflow: "hidden" }}
                     bordered
                     pagination={false}
                     dataSource={columns}
@@ -302,7 +306,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
           {!readOnly && (
             <div>
               <Button type="default" onClick={handleAddColumn} icon={<PlusOutlined />}>
-                Add Item
+                Add Column
               </Button>
             </div>
           )}
