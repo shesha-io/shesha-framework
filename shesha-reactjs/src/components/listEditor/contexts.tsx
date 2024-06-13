@@ -24,7 +24,7 @@ export interface IListEditorStateContext<TItem = any> extends IListEditorState<T
 
 export interface IListEditorActionsContext<TItem = any> extends IListEditorActions<TItem> {
   setSelectedItem: (item: TItem) => void;
-  refresh: () => void;
+  refresh: (applyValue: boolean) => void;
 }
 
 export interface IListEditorContext<TItem = any> extends IListEditorStateContext<TItem>, IListEditorActionsContext<TItem> {

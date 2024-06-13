@@ -5,10 +5,11 @@ import React, { FC, useState } from 'react';
 import { FilterItemSettingsModal } from './filterItemSettingsModal';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { useStyles as useItemStyles } from './styles';
+import { ItemChangeDetails } from '@/components/listEditor';
 
 export interface IFilterItemProps {
     value?: ITableViewProps;
-    onChange?: (newValue: ITableViewProps) => void;
+    onChange?: (newValue: ITableViewProps, changeDetails: ItemChangeDetails) => void;
     readOnly: boolean;
 }
 
@@ -24,7 +25,7 @@ export const FilterItem: FC<IFilterItemProps> = ({ value, onChange, readOnly }) 
     };
 
     const onSaveSettings = (newValue: ITableViewProps) => {
-        onChange(newValue);
+        onChange(newValue, undefined);
         setSettingsVisible(false);
     };
 
