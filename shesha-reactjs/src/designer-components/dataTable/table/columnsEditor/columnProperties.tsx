@@ -57,7 +57,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       caption: metadata.label || metadata.path,
       description: metadata.description,
     };
-    // todo: handle editors
+    // TODO: handle editors
     form.setFieldsValue(newValues);
     debouncedSave(newValues);
   };

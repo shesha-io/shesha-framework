@@ -96,7 +96,7 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     }, {});
 
     useEffect(() => {
-        // ToDo: find another way to scrolling after expand
+        // TODO: find another way to scrolling after expand
         if (scrollId) {
             const timeout = setTimeout(() => {
                 refs[scrollId?.toLowerCase()]?.current?.scrollIntoView({

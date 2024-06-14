@@ -6,7 +6,7 @@ export interface IParentProviderStateContext {
   subFormIdPrefix?: string;
   context?: string;
   model: any;
-  flatComponentsStructure?: IFlatComponentsStructure;
+  formFlatMarkup?: IFlatComponentsStructure;
   getChildComponents: (componentId: string) => IConfigurableFormComponent[];
 }
 
@@ -15,7 +15,7 @@ export interface IParentProviderProps {
   subFormIdPrefix?: string;
   context?: string;
   model: any;
-  flatComponentsStructure?: IFlatComponentsStructure;
+  formFlatMarkup?: IFlatComponentsStructure;
 }
 
 export const ParentProviderStateContext = createContext<IParentProviderStateContext>({model: {}, getChildComponents: () => null });
@@ -36,14 +36,14 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
     model,
     formMode,
     context,
-    flatComponentsStructure
+    formFlatMarkup,
   } = props;
 
   const parent = useParent(false);
 
   const formModeLocal = formMode ?? parent?.formMode;
   const subFormIdPrefixLocal = subFormIdPrefix ?? parent?.subFormIdPrefix;
-  const flatComponentsStructureLocal = flatComponentsStructure ?? parent?.flatComponentsStructure;
+  const formFlatMarkupLocal = formFlatMarkup ?? parent?.formFlatMarkup;
   const contextLocal = context ?? parent?.context;
 
   const value: IParentProviderStateContext = useMemo(() => {
@@ -51,21 +51,21 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
       formMode: formModeLocal,
       subFormIdPrefix: subFormIdPrefixLocal,
       context: contextLocal,
-      flatComponentsStructure: flatComponentsStructureLocal,
+      flatComponentsStructure: formFlatMarkupLocal,
       model: {...parent?.model, ...model},
       getChildComponents: (componentId: string): IConfigurableFormComponent[] => {
-        if (!!value.flatComponentsStructure) {
-          const childIds = value.flatComponentsStructure.componentRelations[componentId];
+        if (!!value.formFlatMarkup) {
+          const childIds = value.formFlatMarkup.componentRelations[componentId];
           if (!childIds) return [];
           const components = childIds.map((childId) => {
-            return value.flatComponentsStructure.allComponents[childId];
+            return value.formFlatMarkup.allComponents[childId];
           });
           return components;
         }
         return null;
       },
     };
-  }, [formModeLocal, subFormIdPrefixLocal, contextLocal, flatComponentsStructureLocal, model, parent?.model]);
+  }, [formModeLocal, subFormIdPrefixLocal, contextLocal, formFlatMarkupLocal, model, parent?.model]);
 
   return (
     <ParentProviderStateContext.Provider value={value}>

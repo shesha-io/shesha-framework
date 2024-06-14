@@ -1,20 +1,16 @@
 import { createContext } from 'react';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import {
-  DEFAULT_FORM_SETTINGS,
   FormIdentifier,
   FormMarkupWithSettings,
-  FormRawMarkup,
   IFormSettings,
-  IPersistedFormProps,
 } from '../form/models';
+import { UpToDateForm } from '../formManager/interfaces';
 
 export interface IFormPersisterStateContext {
   formId: FormIdentifier;
   skipCache: boolean;
-  formProps: IPersistedFormProps;
-  formSettings: IFormSettings;
-  markup: FormRawMarkup;
+  formProps: UpToDateForm;
   loaded: boolean;
   loading: boolean;
   loadError?: IErrorInfo;
@@ -41,8 +37,6 @@ export interface IFormPersisterActionsContext {
 export const FORM_PERSISTER_CONTEXT_INITIAL_STATE: IFormPersisterStateContext = {
   formId: null,
   skipCache: false,
-  markup: null,
-  formSettings: DEFAULT_FORM_SETTINGS,
   formProps: null,
   loaded: false,
   loading: false,

@@ -24,7 +24,7 @@ const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
     const { size, ...model } = passedModel;
 
     return (
-      <ConfigurableFormItem model={model} initialValue={model?.defaultValue}>
+      <ConfigurableFormItem model={model}>
         {(value, onChange) => <Box value={value} onChange={onChange} readOnly={model.readOnly} />}
       </ConfigurableFormItem>
     );

@@ -3,18 +3,14 @@ import { IComponentsContainerBaseProps } from '@/interfaces';
 
 export type ContainerType = FC<IComponentsContainerBaseProps>;
 
-export interface IContainerContext {
-    ContainerComponent: ContainerType;
-}
-
-export const ComponentsContainerContext = createContext<IContainerContext>(undefined);
+export const ComponentsContainerContext = createContext<ContainerType>(undefined);
 
 export interface IComponentsContainerProviderProps {
     ContainerComponent: ContainerType;
 }
 export const ComponentsContainerProvider: FC<PropsWithChildren<IComponentsContainerProviderProps>> = ({ ContainerComponent, children }) => {
     return (
-        <ComponentsContainerContext.Provider value={{ ContainerComponent }}>
+        <ComponentsContainerContext.Provider value={ContainerComponent}>
             {children}
         </ComponentsContainerContext.Provider>
     );

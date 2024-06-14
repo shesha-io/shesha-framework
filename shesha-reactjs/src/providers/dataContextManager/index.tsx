@@ -26,8 +26,6 @@ export interface IDataContextManagerActionsContext {
     getDataContextData: (contextId: string) => any;
     onChangeContext: (dataContext: IDataContextDescriptor) => void;
     onChangeContextData: () => void;
-    setActiveContext: (contextId: string) => void;
-    getActiveContext: () => IDataContextDescriptor;
     updatePageFormInstance: (form: ConfigurableFormInstance) => void;
     getPageFormInstance: () => ConfigurableFormInstance;
     getPageContext: () => IDataContextDescriptor;
@@ -48,9 +46,7 @@ export interface IDataContextManagerProps {}
 const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ children }) => {
 
     const [state, setState] = useState<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
-    const [activeContextId, setActiveContextId] = useState<string>(null);
 
-    //const contextsData = useRef<{}>({});
     const contexts = useRef<IDataContextDictionary>({});
     const formInstance = useRef<ConfigurableFormInstance>();
 
@@ -161,15 +157,6 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         }
     };
 
-    const setActiveContext = (contextId: string) => {
-        if (activeContextId !== contextId)
-            setActiveContextId(contextId);
-    };
-
-    const getActiveContext = () => {
-        return contexts.current[activeContextId];
-    };
-
     const dataContextsManagerActions: IDataContextManagerActionsContext = {
         registerDataContext,
         unregisterDataContext,
@@ -180,8 +167,6 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
         getDataContextData,
         onChangeContext,
         onChangeContextData,
-        setActiveContext,
-        getActiveContext,
         updatePageFormInstance,
         getPageFormInstance,
         getPageContext,
@@ -196,17 +181,30 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ c
     );
 };
 
-function useDataContextManager(require: boolean = true): IDataContextManagerFullInstance {
+const useDataContextManagerActions = (require: boolean = true): IDataContextManagerActionsContext => {
     const actionsContext = useContext(DataContextManagerActionsContext);
+    if (!actionsContext && require)
+        throw new Error('useDataContextManagerActions must be used within a DataContextManager');
+
+    return actionsContext;
+};
+
+const useDataContextManagerState = (require: boolean = true): IDataContextManagerStateContext => {
     const stateContext = useContext(DataContextManagerStateContext);
-  
-    if ((actionsContext === undefined || stateContext === undefined) && require) {
-      throw new Error('useDataContextManager must be used within a DataContextManager');
-    }
+    if (!stateContext && require)
+        throw new Error('useDataContextManagerState must be used within a DataContextManager');
+
+    return stateContext;
+};
+
+const useDataContextManager = (require: boolean = true): IDataContextManagerFullInstance => {
+    const actionsContext = useDataContextManagerActions(require);
+    const stateContext = useDataContextManagerState(require);
+    
     return actionsContext !== undefined && stateContext !== undefined
       ? { ...actionsContext, ...stateContext }
       : undefined;
-}
+};
 
 const useDataContextRegister = (payload: IRegisterDataContextPayload, deps?: ReadonlyArray<any>) => {
     const manager = useDataContextManager(false);
@@ -234,4 +232,4 @@ function useNearestDataContext(type: DataContextType): IDataContextDescriptor {
   return nearestDataContext;
 }
 
-export { DataContextManager, useDataContextManager, useDataContextRegister, useNearestDataContext };
+export { DataContextManager, useDataContextManager, useDataContextRegister, useNearestDataContext, useDataContextManagerActions, useDataContextManagerState };

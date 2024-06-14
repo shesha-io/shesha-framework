@@ -1,18 +1,17 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useRef } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
   IAsyncValidationError,
   IFormValidationErrors,
+  ISettingsFormFactory,
   IToolboxComponent,
   IToolboxComponentGroup,
 } from '@/interfaces';
-import { useMetadataDispatcher } from '@/providers';
 import { UndoableActionCreators } from '@/utils/undoable';
 import { useFormDesignerComponentGroups, useFormDesignerComponents } from '../form/hooks';
 import { IFlatComponentsStructure, IFormSettings } from '../form/models';
-import { IDataSource } from '../formDesigner/models';
-import { getFlagSetters } from '../utils/flagsSetters';
+import { IComponentSettingsEditorsCache, IDataSource } from '../formDesigner/models';
 import {
   addDataSourceAction,
   componentAddAction,
@@ -53,19 +52,17 @@ import {
   UndoableFormDesignerStateContext,
 } from './contexts';
 import formReducer from './reducer';
-import { useDataContextManager } from '@/providers/dataContextManager';
-import { IDataContextFullInstance } from '@/providers/dataContextProvider/contexts';
 import { useCallback } from 'react';
 
 export interface IFormDesignerProviderProps {
-  flatComponents: IFlatComponentsStructure;
+  flatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   readOnly: boolean;
 }
 
 const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = ({
   children,
-  flatComponents,
+  flatMarkup,
   formSettings,
   readOnly,
 }) => {
@@ -73,48 +70,50 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const toolboxComponents = useFormDesignerComponents();
   const settingsPanelRef = useRef();
 
-  const getToolboxComponent = (type: string) => toolboxComponents[type];
+  const getToolboxComponent = useCallback((type: string) => toolboxComponents[type], [toolboxComponents]);
+  const componentEditors = useRef<IComponentSettingsEditorsCache>({});
 
-  const initial: IFormDesignerStateContext = {
-    ...FORM_DESIGNER_CONTEXT_INITIAL_STATE,
-    readOnly: readOnly,
-    toolboxComponentGroups,
-    ...flatComponents,
-    formSettings: formSettings,
-    settingsPanelRef: settingsPanelRef,
-  };
+  const getCachedComponentEditor = useCallback((type: string, evaluator: (() => ISettingsFormFactory)) => {
+    const existingEditor = componentEditors.current[type];
+    if (existingEditor !== undefined)
+      return existingEditor;
 
-  const { activateProvider } = useMetadataDispatcher(false) ?? {};
-  const { setActiveContext } = useDataContextManager(false) ?? {};
+    return componentEditors.current[type] = evaluator();
+  }, [componentEditors]);
 
-  const [state, dispatch] = useThunkReducer(formReducer, {
-    past: [],
-    present: initial,
-    future: [],
+  const [state, dispatch] = useThunkReducer(formReducer, undefined, () => {
+    const initial: IFormDesignerStateContext = {
+      ...FORM_DESIGNER_CONTEXT_INITIAL_STATE,
+      readOnly: readOnly,
+      toolboxComponentGroups,
+      formFlatMarkup: flatMarkup,
+      formSettings: formSettings,
+      settingsPanelRef: settingsPanelRef,
+    };
+    return {
+      past: [],
+      present: initial,
+      future: [],
+    };
   });
 
   const statePresent = state.present;
-
-  const setFlatComponents = (flatComponents: IFlatComponentsStructure) => {
-    dispatch((dispatchThunk, _getState) => {
-      dispatchThunk(setFlatComponentsAction(flatComponents));
-      dispatchThunk(UndoableActionCreators.clearHistory());
-    });
-  };
+  const { formFlatMarkup } = statePresent;
 
   useEffect(() => {
-    if (
-      flatComponents &&
-      (flatComponents.allComponents !== statePresent.allComponents ||
-        flatComponents.componentRelations !== statePresent.componentRelations)
-    ) {
-      setFlatComponents(flatComponents);
+    if (flatMarkup && formFlatMarkup !== flatMarkup) {
+      dispatch((dispatchThunk, _getState) => {
+        dispatchThunk(setFlatComponentsAction(flatMarkup));
+        dispatchThunk(UndoableActionCreators.clearHistory());
+      });
     }
-  }, [flatComponents]);
 
-  const setReadOnly = (value: boolean) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flatMarkup]);
+
+  const setReadOnly = useCallback((value: boolean) => {
     dispatch(setReadOnlyAction(value));
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     setReadOnly(readOnly);
@@ -138,26 +137,22 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(componentAddAction(payload));
   }, [dispatch]);
 
-  const addComponentsFromTemplate = (payload: IComponentAddFromTemplatePayload) => {
+  const addComponentsFromTemplate = useCallback((payload: IComponentAddFromTemplatePayload) => {
     dispatch(componentAddFromTemplateAction(payload));
-  };
+  }, [dispatch]);
 
-  const deleteComponent = (payload: IComponentDeletePayload) => {
+  const deleteComponent = useCallback((payload: IComponentDeletePayload) => {
     dispatch(componentDeleteAction(payload));
-  };
+  }, [dispatch]);
 
-  const duplicateComponent = (payload: IComponentDuplicatePayload) => {
+  const duplicateComponent = useCallback((payload: IComponentDuplicatePayload) => {
     dispatch(componentDuplicateAction(payload));
-  };
+  }, [dispatch]);
 
-  const getComponentModel = useCallback((componentId) => {
-    return statePresent.allComponents[componentId];
-  }, [statePresent?.allComponents]);
-
-  const updateComponent = (payload: IComponentUpdatePayload) => {
+  const updateComponent = useCallback((payload: IComponentUpdatePayload) => {
     dispatch(componentUpdateAction(payload));
 
-    const component = getComponentModel(payload.componentId);
+    const component = flatMarkup.allComponents[payload.componentId];
     const toolboxComponent = getToolboxComponent(component.type) as IToolboxComponent;
     if (toolboxComponent.validateSettings) {
       toolboxComponent
@@ -175,32 +170,11 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
           );
         });
     }
-  };
+  }, [dispatch]);
 
-  const getChildComponents = (componentId: string) => {
-    const childIds = statePresent.componentRelations[componentId];
-    if (!childIds) return [];
-    const components = childIds.map((childId) => {
-      return statePresent.allComponents[childId];
-    });
-    return components;
-  };
-
-  const getParentComponent = (componentId: string, type: string) => {
-    let component = statePresent.allComponents[componentId];
-
-    while (!!component) {
-      component = statePresent.allComponents[component.parentId];
-      if (component?.type === type)
-        return component;
-    }
-
-    return null;
-  };
-
-  const setDebugMode = (isDebug: boolean) => {
+  const setDebugMode = useCallback((isDebug: boolean) => {
     dispatch(setDebugModeAction(isDebug));
-  };
+  }, [dispatch]);
 
   const startDraggingNewItem = useCallback(() => {
     dispatch(startDraggingNewItemAction());
@@ -226,58 +200,72 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(updateChildComponentsAction(payload));
   }, [dispatch]);
 
-  const undo = () => {
+  const undo = useCallback(() => {
     dispatch(UndoableActionCreators.undo());
-  };
+  }, [dispatch]);
 
-  const redo = () => {
+  const redo = useCallback(() => {
     dispatch(UndoableActionCreators.redo());
-  };
+  }, [dispatch]);
 
-  const setSelectedComponent = (componentId: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => {
-    if (activateProvider) activateProvider(dataSourceId);
-    if (setActiveContext) setActiveContext(dataContext.id);
-
+  const setSelectedComponent = useCallback((componentId: string, componentRef?: MutableRefObject<any>) => {
     if (componentId !== state.present.selectedComponentId ||
-      dataSourceId !== state.present.activeDataSourceId ||
       componentRef !== state.present.selectedComponentRef)
-      dispatch(setSelectedComponentAction({ id: componentId, dataSourceId, componentRef }));
-  };
+      dispatch(setSelectedComponentAction({ id: componentId, componentRef }));
+  }, [dispatch]);
 
-  const updateFormSettings = (settings: IFormSettings) => {
+  const updateFormSettings = useCallback((settings: IFormSettings) => {
     dispatch(updateFormSettingsAction(settings));
-  };
+  }, [dispatch]);
 
   //#region move to designer
-  const addDataSource = (dataSource: IDataSource) => {
+  const addDataSource = useCallback((dataSource: IDataSource) => {
     dispatch(addDataSourceAction(dataSource));
-  };
-  const removeDataSource = (datasourceId: string) => {
+  }, [dispatch]);
+  const removeDataSource = useCallback((datasourceId: string) => {
     dispatch(removeDataSourceAction(datasourceId));
-  };
+  }, [dispatch]);
 
-  const setActiveDataSource = (datasourceId: string) => {
-    if (activateProvider) activateProvider(datasourceId);
+  const setActiveDataSource = useCallback((datasourceId: string) => {
     dispatch(setActiveDataSourceAction(datasourceId));
-  };
+  }, [dispatch]);
 
-  const getActiveDataSource = () => {
-    return statePresent.activeDataSourceId
-      ? statePresent.dataSources.find((ds) => ds.id === statePresent.activeDataSourceId)
-      : null;
-  };
   //#endregion
 
-  const configurableFormActions: IFormDesignerActionsContext = {
-    ...getFlagSetters(dispatch),
+  const configurableFormActions: IFormDesignerActionsContext = useMemo(() => {
+    return {
+      addDataProperty,
+      addComponent,
+      addComponentsFromTemplate,
+      deleteComponent,
+      duplicateComponent,
+      updateComponent,
+      setDebugMode,
+      startDraggingNewItem,
+      endDraggingNewItem,
+      startDragging,
+      endDragging,
+      setValidationErrors,
+      updateChildComponents,
+      undo,
+      redo,
+      setSelectedComponent,
+      updateFormSettings,
+      getToolboxComponent,
+      addDataSource,
+      removeDataSource,
+      setActiveDataSource,
+      setReadOnly,
+
+      getCachedComponentEditor,
+    };
+  }, [
     addDataProperty,
     addComponent,
     addComponentsFromTemplate,
     deleteComponent,
     duplicateComponent,
-    getComponentModel,
     updateComponent,
-    getChildComponents,
     setDebugMode,
     startDraggingNewItem,
     endDraggingNewItem,
@@ -293,11 +281,9 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     addDataSource,
     removeDataSource,
     setActiveDataSource,
-    getActiveDataSource,
-    setReadOnly,
-    getParentComponent
+    setReadOnly
     /* NEW_ACTION_GOES_HERE */
-  };
+  ]);
 
   return (
     <UndoableFormDesignerStateContext.Provider value={state}>
@@ -330,7 +316,7 @@ function useFormDesignerActions(require: boolean = true) {
   return context;
 }
 
-function useUndoableState(require: boolean = true) {
+function useFormDesignerUndoableState(require: boolean = true) {
   const context = useContext(UndoableFormDesignerStateContext);
 
   if (require && context === undefined) {
@@ -343,17 +329,4 @@ function useUndoableState(require: boolean = true) {
   };
 }
 
-function useFormDesigner(require: boolean = true) {
-  const actionsContext = useFormDesignerActions(require);
-  const stateContext = useFormDesignerState(require);
-  const undoableContext = useUndoableState(require);
-
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
-  return actionsContext !== undefined && stateContext !== undefined
-    ? { ...actionsContext, ...stateContext, ...undoableContext }
-    : undefined;
-}
-
-export { FormDesignerProvider, useFormDesigner, useFormDesignerActions, useFormDesignerState };
+export { FormDesignerProvider, useFormDesignerUndoableState, useFormDesignerActions, useFormDesignerState };

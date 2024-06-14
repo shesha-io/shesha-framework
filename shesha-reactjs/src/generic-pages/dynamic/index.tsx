@@ -83,7 +83,6 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
     const stackId = nanoid();
 
     if (props?.navMode === 'stacked' || navigationState) {
-      //const isInitialized = state?.formId || state?.entityPathId; // todo: review
       const isInitialized = state?.formId;
 
       if (!isInitialized) {
@@ -220,7 +219,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       setGlobalState,
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
-      // ToDo: review on Page/Form life cycle
+      // TODO: review on Page/Form life cycle
       form: formRef?.current ? getFormApi(formRef.current) : { formSettings },
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       pageContext: pageContext?.getFull(),
@@ -266,13 +265,14 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
   const markupErrorCode = formWithData.loadingState === 'failed' ? formWithData.error?.code : null;
 
-  const finalMarkup = useMemo(() => {
-    if (!formWithData) return null;
-    return {
-      components: formWithData.form?.markup,
-      formSettings: { ...formWithData.form?.settings, onInitialized: null },
-    };
-  }, [formWithData.form?.markup, formWithData.form?.settings]);
+  const finalFormSettings = useMemo(() => {
+    return formWithData
+      ? {
+        ...formWithData.form?.settings,
+        onInitialized: null
+      }
+      : undefined;
+  }, [formWithData.form?.settings]);
 
   if (markupErrorCode === 404) {
     return (
@@ -313,7 +313,8 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
               {formWithData.loadingState === 'ready' && (
                 <ConfigurableForm
                   needDebug
-                  markup={finalMarkup}
+                  formSettings={finalFormSettings}
+                  flatStructure={formWithData.form?.flatStructure}
                   formId={formId}
                   formProps={formWithData.form}
                   formRef={formRef}
