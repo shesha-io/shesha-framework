@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { AppProvider } from "./app-provider";
 import { unstable_noStore as noStore } from "next/cache";
 import StyledComponentsRegistry from "../lib/registry";
-import { AntdStyleRegistry } from '@shesha-io/reactjs';
+import { AntdStyleRegistry } from './antdStyleRegistry';
 
 export default function RootLayout({
   children,
