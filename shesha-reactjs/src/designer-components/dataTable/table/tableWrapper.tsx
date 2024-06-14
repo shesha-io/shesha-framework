@@ -1,10 +1,8 @@
 import React, {
     FC,
     Fragment,
-    use,
     useEffect,
     useRef,
-    useState
 } from 'react';
 import { filterVisibility } from './utils';
 import { getStyle } from '@/providers/form/utils';
@@ -26,7 +24,6 @@ import { GlobalTableStyles, useStyles } from './styles/styles';
 import { Alert, Button, Tag } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { set } from 'nested-property';
 
 const NotConfiguredWarning: FC = () => {
     return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
