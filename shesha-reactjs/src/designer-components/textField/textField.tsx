@@ -79,8 +79,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       <ConfigurableFormItem
         model={model}
         initialValue={
-          (model?.passEmptyStringByDefault && '') ||
-          evaluateString(model?.initialValue, { formData, formMode, globalState })
+          (model.passEmptyStringByDefault && '') ||
+          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode, globalState }) : undefined)
         }
       >
         {(value, onChange) => {

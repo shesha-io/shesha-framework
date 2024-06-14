@@ -51,7 +51,7 @@ export interface IRefListDropDownOption {
 }
 
 export interface ISelectOption<TValue = any> {
-  // todo: make generic
+  // TODO: make generic
   value: string | number;
   label: string | React.ReactNode;
   data: TValue;

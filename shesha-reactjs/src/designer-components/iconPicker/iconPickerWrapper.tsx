@@ -8,7 +8,7 @@ import React, {
 import { executeScriptSync, IApplicationContext } from '@/providers/form/utils';
 
 interface IconPickerWrapperProps {
-    disabled?: boolean; // todo: move to the model level
+    disabled?: boolean; // TODO: move to the model level
     applicationContext: IApplicationContext;
     value: any;
     onChange: (...args: any[]) => void;

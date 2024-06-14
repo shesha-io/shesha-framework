@@ -10,6 +10,8 @@ import { Card } from 'antd';
 import React from 'react';
 import { ICardComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
+import classNames from 'classnames';
+import { useStyles } from './styles';
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
   type: 'card',
@@ -17,8 +19,9 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   icon: <CodeSandboxSquareFilled />,
   Factory: ({ model }) => {
     const { data } = useFormData();
-    const { formMode, hasVisibleChilds } = useForm();
+    const { formMode } = useForm();
     const { globalState } = useGlobalState();
+    const { styles } = useStyles();
 
     const title = model.hideHeading ? null : model.label;
 
@@ -35,15 +38,10 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
 
     if (model.hidden) return null;
 
-    if (model.hideWhenEmpty && formMode !== 'designer') {
-      const childsVisible = hasVisibleChilds(model.content.id);
-      if (!childsVisible) return null;
-    }
-
     return (
       <ParentProvider model={model}>
         <Card
-          className={model.className}
+          className={classNames(model.className, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}
           extra={extra}
           style={getLayoutStyle(model, { data, globalState })}

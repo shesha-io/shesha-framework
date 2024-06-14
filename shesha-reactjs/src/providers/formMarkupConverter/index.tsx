@@ -1,9 +1,7 @@
 import React, { FC, ReactNode, useMemo } from 'react';
 import { useFormDesignerComponents } from '../form/hooks';
 import { FormRawMarkup, IFlatComponentsStructure, IFormSettings } from '../form/models';
-import { componentsTreeToFlatStructure, getComponentsFromMarkup, upgradeComponents } from '../form/utils';
-import { nanoid } from '@/utils/uuid';
-import { updateSettingsComponents } from '@/designer-components/_settings/utils';
+import { convertFormMarkupToFlatStructure } from '../form/utils';
 
 export interface IFormMarkupConverterProps {
   markup: FormRawMarkup;
@@ -14,21 +12,12 @@ export interface IFormMarkupConverterProps {
   ) => ReactNode;
 }
 
-const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({ children, markup, formSettings: formSettings }) => {
+const FormMarkupConverter: FC<IFormMarkupConverterProps> = ({ children, markup, formSettings }) => {
   const designerComponents = useFormDesignerComponents();
 
   const flatComponents = useMemo<IFlatComponentsStructure>(() => {
-      let components = getComponentsFromMarkup(markup);
-      if (formSettings?.isSettingsForm)
-          components = updateSettingsComponents(designerComponents, components);
-      const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
-      
-      // migrate components to last version
-      upgradeComponents(designerComponents, formSettings, newFlatComponents);
-      
-      newFlatComponents['id'] = nanoid();
-      return newFlatComponents;
-  }, [markup]);
+    return convertFormMarkupToFlatStructure(markup, formSettings, designerComponents);
+  }, [markup, formSettings, designerComponents]);
 
   const onChange = (_value: IFlatComponentsStructure) => {
     // nop

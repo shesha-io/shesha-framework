@@ -227,7 +227,6 @@ export const migrateV0toV1 = (
     return step;
   });
 
-  // TODO: Fix tslint issue caused by incompatible size property
   // @ts-ignore
   return { ...restProps, steps: steps ?? [] };
 };

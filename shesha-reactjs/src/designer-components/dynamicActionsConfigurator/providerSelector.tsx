@@ -29,7 +29,7 @@ export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, 
           const provider = providers[owner];
           const ownerNodes: ITreeItem[] = [];
     
-          /* todo: evaluate dynamically
+          /* TODO: evaluate dynamically
           ownerActions.actions.forEach(action => {
             const displayName = action.label ?? action.name;
     

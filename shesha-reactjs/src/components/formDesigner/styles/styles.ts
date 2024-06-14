@@ -1,83 +1,45 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
+const designerClassNames = {
+    componentDragHandle: "sha-component-drag-handle",
+    componentPropertiesActions: "component-properties-actions",
+    designerWorkArea: "sha-designer-work-area",
+    hasConfigErrors: "has-config-errors",
+    mainArea: "sha-designer-main-area",
+    shaComponent: "sha-component",
+    shaComponentControls: "sha-component-controls",
+    shaComponentGhost: "sha-component-ghost",
+    shaComponentIndicator: "sha-component-indicator",
+    shaComponentSearch: "sha-component-search",
+    shaComponentTitle: "sha-component-title",
+    shaComponentValidationIcon: "sha-component-validation-icon",
+    shaComponentsContainer: "sha-components-container",
+    shaComponentsContainerInner: "sha-components-container-inner",
+    shaDatasourceTree: "sha-datasource-tree",
+    shaDesignerCanvasConfig: "sha-designer-canvas-config",
+    shaDesignerHeader: "sha-designer-header",
+    shaDesignerHeaderRight: "sha-designer-header-right",
+    shaDesignerToolbar: "sha-designer-toolbar",
+    shaDesignerToolbarLeft: "sha-designer-toolbar-left",
+    shaDesignerToolbarRight: "sha-designer-toolbar-right",
+    shaDesignerToolbox: "sha-designer-toolbox",
+    shaDesignerWarning: "sha-designer-warning",
+    shaDragging: "sha-dragging",
+    shaDropHint: "sha-drop-hint",
+    shaForm: "sha-form",
+    shaHelpIcon: "sha-help-icon",
+    shaToolboxComponent: "sha-toolbox-component",
+    shaToolboxPanel: "sha-toolbox-panel",
+    sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
+    sidebarHeaderTitle: "sidebar-header-title",
+    siteTreeSearchValue: "site-tree-search-value",
+};
+const useStylesResponse = {
+    styles: designerClassNames,
+};
 export const useStyles = () => {
-    const shaForm = "sha-form";
-    const shaHelpIcon = "sha-help-icon";
-    const shaDragging = "sha-dragging";
-    const componentDragHandle = "sha-component-drag-handle";
-
-    const sidebarContainerMainAreaBody = "sidebar-container-main-area-body";
-    const shaDesignerToolbar = "sha-designer-toolbar";
-    const shaDesignerToolbarLeft = "sha-designer-toolbar-left";
-    const shaDesignerToolbarRight = "sha-designer-toolbar-right";
-    const shaDesignerCanvasConfig = "sha-designer-canvas-config";
-
-    const shaDesignerToolbox = "sha-designer-toolbox";
-    const shaDatasourceTree = "sha-datasource-tree";
-    const shaToolboxComponent = "sha-toolbox-component";
-    const shaComponentTitle = "sha-component-title";
-    const shaComponentSearch = "sha-component-search";
-    const shaToolboxPanel = "sha-toolbox-panel";
-
-    const sidebarHeaderTitle = "sidebar-header-title";
-    const shaDesignerHeader = "sha-designer-header";
-    const componentPropertiesActions = "component-properties-actions";
-
-    const shaComponentGhost = "sha-component-ghost";
-    const shaComponent = "sha-component";
-    const shaComponentsContainer = "sha-components-container";
-    const shaComponentsContainerInner = "sha-components-container-inner";
-    const shaDropHint = "sha-drop-hint";
-
-    const shaComponentIndicator = "sha-component-indicator";
-    const shaComponentControls = "sha-component-controls";
-    const designerWorkArea = "sha-designer-work-area";
-
-    const siteTreeSearchValue = "site-tree-search-value";
-    const shaDesignerWarning = "sha-designer-warning";
-    const hasConfigErrors = "has-config-errors";
-    const shaComponentValidationIcon = "sha-component-validation-icon";
-    const shaDesignerHeaderRight = "sha-designer-header-right";
-
-    const mainArea = "sha-designer-main-area";
-
-    return {
-        styles: {
-            shaHelpIcon,
-            shaDragging,
-            componentDragHandle,
-            sidebarContainerMainAreaBody,
-            shaDesignerToolbar,
-            shaDesignerToolbarLeft,
-            shaDesignerToolbarRight,
-            shaDesignerCanvasConfig,
-            shaDesignerToolbox,
-            sidebarHeaderTitle,
-            shaDesignerHeader,
-            shaComponentGhost,
-            shaComponent,
-            shaToolboxComponent,
-            shaComponentTitle,
-            shaComponentSearch,
-            shaToolboxPanel,
-            shaDatasourceTree,
-            shaComponentIndicator,
-            shaComponentsContainer,
-            shaComponentsContainerInner,
-            shaDropHint,
-            designerWorkArea,
-            componentPropertiesActions,
-            shaComponentControls,
-            siteTreeSearchValue,
-            shaDesignerWarning,
-            hasConfigErrors,
-            shaComponentValidationIcon,
-            shaDesignerHeaderRight,
-            shaForm,
-            mainArea,
-        }
-    };
+    return useStylesResponse;
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
@@ -210,7 +172,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .radio-button {
                     width: 33%;
                   }
-;            }
+            }
         }
         .${shaDesignerToolbox} {
             .${shaDatasourceTree} {

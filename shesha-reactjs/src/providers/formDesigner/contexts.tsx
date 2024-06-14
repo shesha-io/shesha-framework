@@ -1,9 +1,8 @@
 import { createContext, MutableRefObject } from 'react';
 import {
   IAsyncValidationError,
-  IFlagsSetters,
-  IFlagsState,
   IFormValidationErrors,
+  ISettingsFormFactory,
   IToolboxComponent,
   IToolboxComponentGroup,
 } from '@/interfaces';
@@ -18,21 +17,9 @@ import {
   ROOT_COMPONENT_KEY,
 } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
-import { IDataContextFullInstance } from '@/providers/dataContextProvider/contexts';
 
-export type IFlagProgressFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
-export type IFlagSucceededFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
-export type IFlagErrorFlags = 'addComponent' | 'updateComponent' | 'deleteComponent' | 'moveComponent';
-export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
-
-export interface IHasComponentGroups {
+export interface IFormDesignerStateContext {
   toolboxComponentGroups: IToolboxComponentGroup[];
-}
-
-export interface IFormDesignerStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
-  IHasComponentGroups,
-  IFlatComponentsStructure {
   validationErrors?: IFormValidationErrors;
 
   selectedComponentId?: string;
@@ -40,14 +27,14 @@ export interface IFormDesignerStateContext
   isDragging: boolean;
   hasDragged: boolean;
   dataSources: IDataSource[];
-  activeDataSourceId: string;
   isDebug: boolean;
   readOnly: boolean;
 
   settingsPanelRef?: MutableRefObject<any>;
 
-  // todo: move to persister
+  // TODO: move to persister
   formSettings: IFormSettings;
+  formFlatMarkup: IFlatComponentsStructure;
 }
 
 export interface IUndoableFormDesignerStateContext extends StateWithHistory<IFormDesignerStateContext> { }
@@ -95,41 +82,38 @@ export interface IComponentUpdateSettingsValidationPayload {
 export interface ISetSelectedComponentPayload {
   id: string;
   componentRef?: MutableRefObject<any>;
-  /** Id of the current source of metadata */
-  dataSourceId: string;
 }
 
-export interface IFormDesignerActionsContext
-  extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  getChildComponents: (id: string) => IConfigurableFormComponent[];
-  getParentComponent: (componentId: string, type: string) => IConfigurableFormComponent;
+export interface IFormDesignerActionsContext {
   deleteComponent: (payload: IComponentDeletePayload) => void;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateComponent: (payload: IComponentUpdatePayload) => void;
-  getComponentModel: (id: string) => IConfigurableFormComponent;
-
-  setValidationErrors: (payload: IFormValidationErrors) => void;
-
-  addDataProperty: (payload: IAddDataPropertyPayload) => void;
   addComponent: (payload: IComponentAddPayload) => void;
   addComponentsFromTemplate: (payload: IComponentAddFromTemplatePayload) => void;
   updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
-  setDebugMode: (isDebug: boolean) => void;
   startDraggingNewItem: () => void;
   endDraggingNewItem: () => void;
   startDragging: () => void;
   endDragging: () => void;
-  setSelectedComponent: (id: string, dataSourceId: string, dataContext: IDataContextFullInstance, componentRef?: MutableRefObject<any>) => void;
+
+  setSelectedComponent: (id: string, componentRef?: MutableRefObject<any>) => void;
+
+  setValidationErrors: (payload: IFormValidationErrors) => void;
+
+  setDebugMode: (isDebug: boolean) => void;
+
   updateFormSettings: (settings: IFormSettings) => void;
 
   getToolboxComponent: (type: string) => IToolboxComponent;
 
+  addDataProperty: (payload: IAddDataPropertyPayload) => void;
   addDataSource: (dataSource: IDataSource) => void;
   removeDataSource: (id: string) => void;
   setActiveDataSource: (id: string) => void;
-  getActiveDataSource: () => IDataSource | null;
 
   setReadOnly: (value: boolean) => void;
+
+  getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
 
   undo: () => void;
   redo: () => void;
@@ -137,19 +121,16 @@ export interface IFormDesignerActionsContext
 
 /** Form initial state */
 export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
-  isInProgress: {},
-  succeeded: {},
-  error: {},
-  actioned: {},
-  allComponents: {},
-  componentRelations: { [ROOT_COMPONENT_KEY]: [] },
   hasDragged: false,
   isDragging: false,
   isDebug: false,
   formSettings: DEFAULT_FORM_SETTINGS,
-  toolboxComponentGroups: [], //defaultToolboxComponents,
+  formFlatMarkup: {
+    allComponents: {},
+    componentRelations: { [ROOT_COMPONENT_KEY]: [] },
+  },
+  toolboxComponentGroups: [],
   dataSources: [],
-  activeDataSourceId: null,
   readOnly: true,
 };
 

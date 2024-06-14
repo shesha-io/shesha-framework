@@ -43,7 +43,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
     if (!owner || !name) return null;
 
-    // todo: search action in the dictionary and return action
+    // TODO: search action in the dictionary and return action
     const actionsGroup = actions.current[owner];
     if (!actionsGroup?.actions) return null;
 

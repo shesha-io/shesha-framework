@@ -23,7 +23,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode, hasVisibleChilds } = useForm();
+    const { formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const {
@@ -36,16 +36,12 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       headerColor,
       isSimpleDesign,
       hideCollapseContent,
+      hideWhenEmpty,
     } = model;
 
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
     if (model.hidden) return null;
-
-    if (model.hideWhenEmpty && formMode !== 'designer') {
-      const childsVisible = hasVisibleChilds(model.content.id);
-      if (!childsVisible) return null;
-    }
 
     const styling = JSON.parse(model.stylingBox || '{}');
 
@@ -80,6 +76,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
           hideCollapseContent={hideCollapseContent}
+          hideWhenEmpty={hideWhenEmpty}
         >
           <ComponentsContainer
             containerId={model.content.id}

@@ -90,10 +90,6 @@ export interface IComponentLabelProps {
 }
 
 export interface IComponentRuntimeProps {
-  visibilityFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
-
-  enabledFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
-
   /**/
   settingsValidationErrors?: IAsyncValidationError[];
 
@@ -281,7 +277,8 @@ export interface IPersistedFormProps {
   label?: string;
   description?: string;
   markup?: FormRawMarkup;
-  formSettings?: IFormSettings;
+  // formSettings?: IFormSettings;
+  // flatStructure: IFlatComponentsStructure;
   /**
    * Version number
    */
@@ -299,7 +296,8 @@ export interface IPersistedFormProps {
 
 export interface IConfigurableFormBaseProps {
   formId?: FormIdentifier;
-  markup?: FormMarkup;
+  formSettings?: IFormSettings;
+  flatStructure?: IFlatComponentsStructure;
   formProps?: IPersistedFormProps;
 }
 

@@ -4,7 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { FormProvider } from '@/providers';
+import { FormProvider, ShaForm } from '@/providers';
 import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,
@@ -94,7 +94,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   useEffect(() => {
     //to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one) 
-    const modeToUse = mode ==='read'?mode:allowChangeMode ? state.mode : mode;
+    const modeToUse = mode === 'read' ? mode : allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
@@ -164,11 +164,11 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     return form
       .validateFields()
       .then((values) => {
-        // todo: call common data preparation code (check configurableFormRenderer)
+        // TODO: call common data preparation code (check configurableFormRenderer)
         const mergedData = { ...state.initialValues, ...values };
 
         const postData = filterDataByOutputComponents(
-          removeGhostKeys(mergedData), // ToDo: temporary use ghost keys for file upload components, form colums still not provide components structure
+          removeGhostKeys(mergedData), // TODO: temporary use ghost keys for file upload components, form colums still not provide components structure
           props.editorComponents.allComponents,
           toolboxComponents
         );
@@ -275,30 +275,30 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     getInitialData,
   };
 
-  const flatComponents = state.mode === 'read' ? props.displayComponents : props.editorComponents;
+  const flatMarkup = state.mode === 'read' ? props.displayComponents : props.editorComponents;
 
   return (
     <CrudContext.Provider value={contextValue}>
       {true && (
-        <FormProvider
-          key={state.mode} /* important for re-rendering of the provider after mode change */
-          form={form}
-          name={''}
-          allComponents={flatComponents.allComponents}
-          componentRelations={flatComponents.componentRelations}
-          formSettings={formSettings}
-          mode={state.mode === 'read' ? 'readonly' : 'edit'}
-          isActionsOwner={false}
-        >
-          <ParentProvider model={{readOnly: state.mode === 'read'}} formMode={state.mode === 'read' ? 'readonly' : 'edit'}>
-            <FormWrapper 
-              form={form} initialValues={state.initialValues} onValuesChange={onValuesChange}
-              formSettings={formSettings} delayedUpdate={delayedUpdate}
-            >
-              {children}
-            </FormWrapper>
-          </ParentProvider>
-        </FormProvider>
+        <ShaForm.MarkupProvider markup={flatMarkup}>
+          <FormProvider
+            key={state.mode} /* important for re-rendering of the provider after mode change */
+            form={form}
+            name={''}
+            formSettings={formSettings}
+            mode={state.mode === 'read' ? 'readonly' : 'edit'}
+            isActionsOwner={false}
+          >
+            <ParentProvider model={{ readOnly: state.mode === 'read' }} formMode={state.mode === 'read' ? 'readonly' : 'edit'}>
+              <FormWrapper
+                form={form} initialValues={state.initialValues} onValuesChange={onValuesChange}
+                formSettings={formSettings} delayedUpdate={delayedUpdate}
+              >
+                {children}
+              </FormWrapper>
+            </ParentProvider>
+          </FormProvider>
+        </ShaForm.MarkupProvider>
       )}
     </CrudContext.Provider>
   );

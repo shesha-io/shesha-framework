@@ -1,22 +1,21 @@
 import * as RestfulShesha from '@/utils/fetchers';
 import {
-  asFormFullName,
-  asFormRawId,
-  componentsTreeToFlatStructure,
-  getComponentsFromMarkup,
   getMatchData,
   hasFormIdGotValue,
   IMatchData,
+  isFormFullName,
+  isFormRawId,
   updateModelToMoment
 } from './utils';
 import { ConfigurationItemsViewMode } from '../appConfigurator/models';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { EntityAjaxResponse, IEntity } from '@/generic-pages/dynamic/interfaces';
 import {
+  FormDto,
   FormIdentifier,
   FormMarkupWithSettings,
-  FormRawMarkup,
   IComponentsDictionary,
+  IFlatComponentsStructure,
   IFormDto,
   IFormSettings
 } from './models';
@@ -26,11 +25,10 @@ import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { asPropertiesArray, IApiEndpoint, IModelMetadata, IPropertyMetadata, isPropertiesArray, StandardEntityActions } from '@/interfaces/metadata';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { IMetadataDispatcherActionsContext } from '../metadataDispatcher/contexts';
+import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IToolboxComponents } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { removeNullUndefined } from '@/providers/utils';
-import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
   useEffect,
   useMemo,
@@ -44,6 +42,7 @@ import {
   useMetadataDispatcher,
   useSheshaApplication,
 } from '@/providers';
+import { useFormManager } from '../formManager';
 
 /**
  * Form configuration DTO
@@ -144,15 +143,12 @@ export const getMarkupFromResponse = (
  * Load form markup from the back-end
  */
 export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string, httpHeaders: HeadersInit) => {
-  const formRawId = asFormRawId(formId);
-  const formFullName = removeNullUndefined(asFormFullName(formId));
-
-  const requestParams = formRawId
-    ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formRawId } }
-    : formFullName
+  const requestParams = isFormRawId(formId)
+    ? { url: '/api/services/Shesha/FormConfiguration/Get', queryParams: { id: formId } }
+    : isFormFullName(formId)
       ? {
         url: '/api/services/Shesha/FormConfiguration/GetByName',
-        queryParams: { name: formFullName.name, module: formFullName.module, version: formFullName.version },
+        queryParams: removeNullUndefined({ name: formId.name, module: formId.module, version: formId.version }),
       }
       : null;
 
@@ -165,25 +161,22 @@ export const getFormConfiguration = (formId: FormIdentifier, backendUrl: string,
 
 export const useFormConfiguration = (args: UseFormConfigurationArgs): IFormMarkupResponse => {
   const { configurationItemMode } = useAppConfigurator();
-
+  const { formId } = args;
   const requestParams = useMemo(() => {
-    const formRawId = asFormRawId(args.formId);
-    const formFullName = removeNullUndefined(asFormFullName(args.formId));
-
-    if (formRawId)
+    if (isFormRawId(formId))
       return {
         url: '/api/services/Shesha/FormConfiguration/Get',
-        queryParams: { id: formRawId },
+        queryParams: { id: args.formId as string },
       };
 
-    if (formFullName)
+    if (isFormFullName(formId))
       return {
         url: '/api/services/Shesha/FormConfiguration/GetByName',
-        queryParams: { name: formFullName.name, module: formFullName.module, version: formFullName.version },
+        queryParams: removeNullUndefined({ name: formId.name, module: formId.module, version: formId.version }),
       };
 
     return null;
-  }, [args.formId, configurationItemMode]);
+  }, [formId, configurationItemMode]);
 
   const canFetch = Boolean(requestParams && requestParams.url);
   const fetcher = useGet<
@@ -239,8 +232,13 @@ export interface UseFormWitgDataArgs {
 
 export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
 
+export interface FormInfo extends Pick<FormDto, 'id' | 'module' | 'name' | 'versionNo'> {
+  flatStructure: IFlatComponentsStructure;
+  settings: IFormSettings;
+}
+
 export interface FormWithDataResponse {
-  form?: IFormDto;
+  form?: FormInfo;
   fetchedData?: IEntity;
   loadingState: LoadingState;
   loaderHint?: string;
@@ -254,13 +252,13 @@ export interface FormWithDataState {
   fetchedData?: IEntity;
   gqlFields?: string;
   getDataUrl?: string;
-  form?: IFormDto;
+  form?: FormInfo;
   error?: IErrorInfo;
   dataFetcher?: () => Promise<EntityAjaxResponse | void>;
 }
 
 interface GetFormFieldsPayload {
-  formMarkup: FormRawMarkup;
+  formFlatStructure: IFlatComponentsStructure;
   formSettings: IFormSettings;
   toolboxComponents: IToolboxComponents;
 }
@@ -324,13 +322,10 @@ export const gqlFieldsToString = (fields: IFieldData[]): string => {
 };
 
 const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata): string[] => {
-  const { formMarkup, formSettings, toolboxComponents } = payload;
-  if (!formMarkup) return null;
+  const { formFlatStructure, formSettings, toolboxComponents } = payload;
+  if (!formFlatStructure) return null;
 
-  const components = componentsTreeToFlatStructure(
-    toolboxComponents,
-    getComponentsFromMarkup(formMarkup)
-  ).allComponents;
+  const { allComponents: components } = formFlatStructure;
   let fieldNames = [];
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
@@ -342,7 +337,7 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
       if (component?.isInput && !model.context) {
         const propName = model.propertyName;
         
-        // ToDo: AS - calc actual propName from JS setting
+        // TODO: AS - calc actual propName from JS setting
         if (typeof propName === 'string') {
           fieldNames.push(propName);
           const fieldsFunc = component?.getFieldsToFetch;
@@ -355,13 +350,16 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
 
   fieldNames = fieldNames.concat(formSettings?.fieldsToFetch ?? []);
 
-  formMarkup.forEach((item) => {
+  for (const id in components) {
+    if (components.hasOwnProperty(id)) {
+      const item = components[id];
     fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.customEnabled));
     fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.customVisibility));
     fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onBlurCustom));
     fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onChangeCustom));
     fieldNames = fieldNames.concat(getFieldsFromCustomEvents(item.onFocusCustom));
-  });
+    }
+  }
   fieldNames.push('id');
 
   fieldNames = [...new Set(fieldNames)];
@@ -371,14 +369,14 @@ const getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata):
 };
 
 interface GetGqlFieldsPayload extends GetFormFieldsPayload {
-  getContainerProperties: IMetadataDispatcherActionsContext['getContainerProperties'];
-  getMetadata: IMetadataDispatcherActionsContext['getMetadata'];
+  getContainerProperties: IMetadataDispatcher['getContainerProperties'];
+  getMetadata: IMetadataDispatcher['getMetadata'];
 }
 
 export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]> => {
-  const { formMarkup, formSettings, getMetadata, getContainerProperties } = payload;
+  const { formSettings, getMetadata, getContainerProperties } = payload;
 
-  if (!formMarkup || !formSettings.modelType) return Promise.resolve([]);
+  if (!formSettings.modelType) return Promise.resolve([]);
 
   return getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType }).then((metadata) => {
     let fields: IFieldData[] = [];
@@ -450,7 +448,7 @@ export const getGqlFields = (payload: GetGqlFieldsPayload): Promise<IFieldData[]
 
 export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse => {
   const { formId, dataId, configurationItemMode } = args;
-  const { getForm } = useConfigurationItemsLoader();
+  const { getFormById } = useFormManager();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   const [state, setState] = useState<FormWithDataState>({ loadingState: 'waiting' });
@@ -460,7 +458,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
 
   const formRequestRef = useRef<string>();
 
-  const fetch = (getDataUrl, gqlFields, requestId, form: IFormDto = null) => {
+  const fetch = (getDataUrl, gqlFields, requestId, formSettings: IFormSettings) => {
     // fetch data and resolve
     const queryParams = { properties: gqlFields };
     if (dataId) queryParams['id'] = dataId;
@@ -471,10 +469,10 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
         headers: httpHeaders,
       })
         .then((dataResponse) => {
-          if (formRequestRef.current !== requestId) return null; // todo: cancel data request
+          if (formRequestRef.current !== requestId) return null; // TODO: cancel data request
 
           if (dataResponse.success) {
-            const modelType = state.form?.settings?.modelType ?? form?.settings?.modelType;
+            const modelType = formSettings?.modelType;
             if (modelType) {
               isEntityType(modelType)
                 .then((isEntity) => {
@@ -536,14 +534,12 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
       // fetch only data if dataId if changed
       if (
         Boolean(state.form) &&
-        ((typeof formId === 'string' && formId === state.form.id) ||
-          (typeof formId === 'object' &&
-            formId.module === state.form.module &&
-            formId.name === state.form.name &&
-            (!Boolean(formId.version) || formId.version === state.form.versionNo)))
+        (isFormRawId(formId) && formId === state.form.id ||
+          isFormFullName(formId) && formId.module === state.form.module && formId.name === state.form.name && (!Boolean(formId.version) || formId.version === state.form.versionNo)
+        )
       ) {
         if (dataId !== state.fetchedData?.id) {
-          fetch(state.getDataUrl, state.gqlFields, requestId);
+          fetch(state.getDataUrl, state.gqlFields, requestId, state.form.settings);
           return;
         }
       }
@@ -558,7 +554,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
         fetchedData: null,
       }));
 
-      getForm({ formId, configurationItemMode: args.configurationItemMode, skipCache: skipCache })
+      getFormById({ formId, configurationItemMode: args.configurationItemMode, skipCache: skipCache })
         .then((form) => {
           if (formRequestRef.current !== requestId) return;
 
@@ -580,7 +576,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
 
                   // fetch meta before the data
                   getGqlFields({
-                    formMarkup: form.markup,
+                    formFlatStructure: form.flatStructure,
                     formSettings: form.settings,
                     toolboxComponents,
                     getContainerProperties,
@@ -593,7 +589,7 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
                     setState((prev) => ({ ...prev, gqlFields }));
 
                     if (dataId || !modelIsEntity) {
-                      fetch(getDataUrl, gqlFields, requestId, form);
+                      fetch(getDataUrl, gqlFields, requestId, form.settings);
                     } else {
                       // data loading is not required
                       setState((prev) => ({ ...prev, loadingState: 'ready', loaderHint: null }));
@@ -651,8 +647,8 @@ export const useFormWithData = (args: UseFormWitgDataArgs): FormWithDataResponse
 };
 
 export interface UseFormDataArguments {
+  formFlatStructure: IFlatComponentsStructure;
   formSettings: IFormSettings;
-  formMarkup: FormRawMarkup;
   urlEvaluationData: IMatchData[];
   lazy: boolean;
 }
@@ -681,7 +677,7 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
   // evaluate url (default or specified in the formSettings)
   // prepare a list of GQL fields
   // call fetcher
-  const { formSettings, formMarkup, urlEvaluationData, lazy } = args;
+  const { formFlatStructure, formSettings, urlEvaluationData, lazy } = args;
 
   const [state, setState] = useState<UseFormDataState>({
     data: null,
@@ -721,10 +717,8 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
 
     const getDataUrl = urlObj.pathname;
 
-    // todo: check ?
-    // Boolean(queryParams?.id)
     const fetcher = getGqlFields({
-      formMarkup: formMarkup,
+      formFlatStructure: formFlatStructure,
       formSettings: formSettings,
       toolboxComponents,
       getContainerProperties,
@@ -745,7 +739,7 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
           headers: httpHeaders,
         })
           .then((dataResponse) => {
-            if (requestUidRef.current !== requestId) return null; // todo: cancel data request
+            if (requestUidRef.current !== requestId) return null; // TODO: cancel data request
 
             if (dataResponse.success) {
               setState((prev) => ({

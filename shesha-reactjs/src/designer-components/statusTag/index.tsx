@@ -29,7 +29,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
 
     const allEmpty = [override, value, color].filter(Boolean)?.length === 0;
 
-    // ToDo: AS - review code from Luke and remove
+    // TODO: AS - review code from Luke and remove
     /** Used to inject table row in the status tag if rendered on databale. Uses data if not applicable **/
     //func(model?.injectedTableRow || data, formMode);
     

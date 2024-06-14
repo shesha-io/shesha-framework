@@ -51,15 +51,15 @@ export type YesNoInheritJs = 'yes' | 'no' | 'inherit' | 'js';
 
 export interface IShaDataTableInlineEditableProps {
   canDeleteInline?: YesNoInheritJs;
-  canDeleteInlineExpression?: string; // todo: replace with new dynamic JS properties
+  canDeleteInlineExpression?: string; // TODO: replace with new dynamic JS properties
   customDeleteUrl?: string;
   canEditInline?: YesNoInheritJs;
-  canEditInlineExpression?: string; // todo: replace with new dynamic JS properties
+  canEditInlineExpression?: string; // TODO: replace with new dynamic JS properties
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
   customUpdateUrl?: string;
   canAddInline?: YesNoInheritJs;
-  canAddInlineExpression?: string; // todo: replace with new dynamic JS properties
+  canAddInlineExpression?: string; // TODO: replace with new dynamic JS properties
   newRowCapturePosition?: NewRowCapturePosition;
   newRowInsertPosition?: NewRowCapturePosition;
   customCreateUrl?: string;

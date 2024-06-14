@@ -38,10 +38,10 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
     const selectedRow = getRowData(data);
 
     if (actionConfiguration) {
-      setState({ data: selectedRow, key: MODAL_DATA }); // todo: remove usage of global state
+      setState({ data: selectedRow, key: MODAL_DATA }); // TODO: remove usage of global state
       changeActionedRow(data.row.original);
 
-      // todo: implement generic context collector
+      // TODO: implement generic context collector
       const evaluationContext = {
         selectedRow: selectedRow,
         data: formData,

@@ -45,7 +45,7 @@ export interface IMetadata extends Partial<IHasTypeDefinition> {
 }
 
 export interface IMemberMetadata extends IMemberType, Partial<IHasTypeDefinition> {
-  path?: string | null; // todo: check usages, replace with `name` and move to a common ancestor with IMetadata
+  path?: string | null; // TODO: check usages, replace with `name` and move to a common ancestor with IMetadata
   label?: string | null;
   description?: string | null;
 }
@@ -62,7 +62,7 @@ export interface ModelTypeIdentifier {
 }
 
 export interface IHasEntityType {
-  entityType: string | null; // todo: split this property into two different (for objects and for entities) or rename existing
+  entityType: string | null; // TODO: split this property into two different (for objects and for entities) or rename existing
   entityModule?: string | null;
   
   typeAccessor?: string;

@@ -7,7 +7,7 @@ import { useHttpClient } from '../publicApi/http/hooks';
 import { useAuthState } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
 import { useCacheProvider } from '@/hooks/useCache';
-import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/useEntityMetadataFetcher';
+import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
 import { MetadataBuilder } from '@/utils/metadata/metadataBuilder';
 
 export interface IApplicationDataProviderProps {

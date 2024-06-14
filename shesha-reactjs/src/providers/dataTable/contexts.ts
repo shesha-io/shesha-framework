@@ -152,7 +152,6 @@ export interface IDataTableStateContext
   /** Select row handler */
   onSelectRow?: (index: number, row: any) => void;
 
-  //#region todo: review!
   isFetchingTableData?: boolean;
   hasFetchTableDataError?: boolean;
 

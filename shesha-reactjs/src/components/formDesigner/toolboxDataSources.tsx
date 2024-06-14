@@ -7,9 +7,8 @@ import SearchBox from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';
 import { IPropertyMetadata, isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
-import classNames from 'classnames';
 
 const { Panel } = Collapse;
 
@@ -49,7 +48,7 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
 
   const currentMeta = useMetadata(false);
 
-  const { dataSources: formDs, activeDataSourceId } = useFormDesigner();
+  const { dataSources: formDs } = useFormDesignerState();
 
   const allDataSources = useMemo<IDataSource[]>(() => {
     const dataSources = [...formDs];
@@ -94,7 +93,7 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
             );
       
             return visibleItems.length === 0 ? null : (
-              <Panel header={header} key={dsIndex.toString()} className={classNames(styles.shaToolboxPanel, { active: ds.datasource.id === activeDataSourceId })}>
+              <Panel header={header} key={dsIndex.toString()} className={styles.shaToolboxPanel}>
                 <DataSourceTree
                   items={visibleItems}
                   searchText={searchText}

@@ -38,8 +38,8 @@ const getItemsLevel = (items: ButtonGroupItemProps[], onDynamicItem: (dynamicIte
             if (isResolvedDynamicItem(item)) {
                 return item;
             } else {
-                // todo: start promise, on success - fill resolvedItems and fire recalculation of main list
-                // todo: return lists of all promises to be able to cancel loading. it can be used for triggering of recalculations
+                // TODO: start promise, on success - fill resolvedItems and fire recalculation of main list
+                // TODO: return lists of all promises to be able to cancel loading. it can be used for triggering of recalculations
                 const dynamicItem: IResolvedDynamicItem = {
                     ...item,
                     isResolved: false,

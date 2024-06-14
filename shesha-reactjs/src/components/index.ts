@@ -11,7 +11,7 @@ export {
 export { ReactTable } from './reactTable';
 export { type IReactTableProps } from './reactTable/interfaces';
 export {
-  default as ConfigurableFormComponent,
+  ConfigurableFormComponent,
   type IConfigurableFormComponentProps,
 } from './formDesigner/configurableFormComponent';
 export { default as ConfigurableFormItem, type IConfigurableFormItemProps } from './formDesigner/components/formItem';
@@ -77,8 +77,8 @@ export { default as EmptyState, type IEmptyStateProps } from './emptyState';
 export {
   AppEditModeToggler,
   type IAppEditModeTogglerProps as IEditModeTogglerProps,
-} from './appConfigurator/editModeToggler'; // todo: convert to subtype
-export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // todo: convert to subtype
+} from './appConfigurator/editModeToggler'; // TODO: convert to subtype
+export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // TODO: convert to subtype
 export { FormDesigner, type IFormDesignerProps } from './formDesigner/index';
 export { QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
 export { type JsonLogicResult } from '@react-awesome-query-builder/antd';

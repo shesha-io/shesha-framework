@@ -78,7 +78,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         model={model}
         initialValue={
           (model?.passEmptyStringByDefault && '') ||
-          evaluateString(model?.initialValue, { formData, formMode, globalState })
+          (model.initialValue ? evaluateString(model?.initialValue, { formData, formMode, globalState }) : undefined)
         }
       >
         {(value, onChange) => {

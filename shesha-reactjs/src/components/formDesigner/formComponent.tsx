@@ -3,44 +3,48 @@ import React, { FC, MutableRefObject } from 'react';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
-import { useSheshaApplication } from '@/index';
+import { useSheshaApplication } from '@/providers';
 
 export interface IFormComponentProps {
-  id: string;
+  componentModel: IConfigurableFormComponent;
   componentRef: MutableRefObject<any>;
 }
 
-const FormComponent: FC<IFormComponentProps> = ({ id, componentRef }) => {
+const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
   const allData = useAvailableConstantsData();
-  const { getComponentModel, form, getToolboxComponent, isComponentFiltered } = allData.form;
+  const { form, getToolboxComponent, isComponentFiltered } = allData.form;
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const parent = useParent(false);
 
-  const model = getComponentModel(id);
   const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
-    return getActualModelWithParent(
-      {...model, editMode: typeof model.editMode === 'undefined' ? undefined : model.editMode}, // add editMode property if not exists
-      allData, parent);
-  }, [model, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
 
-  const toolboxComponent = getToolboxComponent(model.type);
+    const result = getActualModelWithParent(
+      { ...componentModel, editMode: typeof componentModel.editMode === 'undefined' ? undefined : componentModel.editMode }, // add editMode property if not exists
+      allData, parent
+    );
+
+    return result;
+  }, [componentModel, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
+
+  const toolboxComponent = getToolboxComponent(componentModel.type);
   if (!toolboxComponent) return <div>Component not found</div>;
 
-  actualModel.hidden = allData.formMode !== 'designer' 
+  actualModel.hidden = allData.formMode !== 'designer'
     && (
-        actualModel.hidden 
-        || !anyOfPermissionsGranted(model?.permissions || [])
-        || !isComponentFiltered(model)); // check `model` without modification
+      actualModel.hidden
+      || !anyOfPermissionsGranted(componentModel?.permissions || [])
+      || !isComponentFiltered(componentModel)); // check `model` without modification
   actualModel.readOnly = actualModel.readOnly;// || isComponentReadOnly(model); // check `model` without modification
 
   return (
-    <toolboxComponent.Factory 
-      model={actualModel} 
-      componentRef={componentRef} 
+    <toolboxComponent.Factory
+      model={actualModel}
+      componentRef={componentRef}
       form={form}
     />
   );
 };
 
-export default FormComponent;
+const FormComponentMemo = React.memo(FormComponent);
+export default FormComponentMemo;

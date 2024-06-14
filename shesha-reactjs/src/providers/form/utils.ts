@@ -51,8 +51,9 @@ import {
   ROOT_COMPONENT_KEY,
   SILENT_KEY,
   ViewType,
+  FormRawMarkup,
 } from './models';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings, updateSettingsComponents } from '@/designer-components/_settings/utils';
 import {
   IDataContextManagerFullInstance,
   IDataContextsData,
@@ -156,7 +157,7 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
   // Get global state
   const { globalState, setState: setGlobalState } = useGlobalState();
   // prepare data to support delayed update
-  const data = removeGhostKeys(useFormData()?.data); // ToDo: replace GhostKeys
+  const data = removeGhostKeys(useFormData()?.data); // TODO: replace GhostKeys
   const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
   if (Boolean(delayedUpdate)) data._delayedUpdate = delayedUpdate;
   // get list of data contexts
@@ -202,7 +203,7 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
     // If array - update all items
     if (Array.isArray(value)) {
       return value;
-      // ToDo: infinity loop
+      // TODO: infinity loop
       /*
       if (value.length === 0) return value;
       const v = value.map((x) => {
@@ -339,11 +340,11 @@ export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: 
   return { ...model, [propertyName]: getSettingValue(model[propertyName], allData, calcValue) } as T;
 };
 
-  //const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
+//const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
 export const updateModelToMoment = async (model: any, properties: NestedProperties): Promise<any> => {
   if (properties === null)
     return model;
-  const newModel = {...model};
+  const newModel = { ...model };
   const propsPromise = isPropertiesArray(properties)
     ? Promise.resolve(properties)
     : isPropertiesLoader(properties)
@@ -353,10 +354,10 @@ export const updateModelToMoment = async (model: any, properties: NestedProperti
     for (const key in newModel) {
       if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
         const prop = props.find(i => toCamelCase(i.path) === key);
-        if (prop && (prop.dataType === DataTypes.date  || prop.dataType === DataTypes.dateTime))
-        newModel[key] = moment(newModel[key]).utc(true);
+        if (prop && (prop.dataType === DataTypes.date || prop.dataType === DataTypes.dateTime))
+          newModel[key] = moment(newModel[key]).utc(true);
         if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
-          newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);        
+          newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);
         }
       }
     }
@@ -384,8 +385,6 @@ export const componentsTreeToFlatStructure = (
     result.allComponents[component.id] = {
       ...component,
       parentId,
-      //visibilityFunc: getCustomVisibilityFunc(component),
-      //enabledFunc: getCustomEnabledFunc(component),
     };
 
     const level = result.componentRelations[parentId] || [];
@@ -620,9 +619,9 @@ export const evaluateString = (template: string = '', data: any, skipUnknownTags
           const container = parts.reduce((level, key) => {
             return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
           }, view);
-          if (!container.hasOwnProperty(field)){
+          if (!container.hasOwnProperty(field)) {
             container[field] = new StaticMustacheTag(tag);
-          } 
+          }
         });
 
         const escape = (value: any): string => {
@@ -786,33 +785,6 @@ export const evaluateComplexStringWithResult = (
   return { result, success, unevaluatedExpressions: Array.from(new Set(unevaluatedExpressions)) };
 };
 
-export const getVisibilityFunc2 = (expression, name) => {
-  if (expression) {
-    try {
-      const customVisibilityExecutor = expression ? new Function('data, context, formMode', expression) : null;
-
-      const getIsVisible = (data = {}, context = {}, formMode = '') => {
-        if (customVisibilityExecutor) {
-          try {
-            return customVisibilityExecutor(data, context, formMode);
-          } catch (e) {
-            console.warn(`Custom Visibility of ${name} throws exception: ${e}`);
-            return true;
-          }
-        }
-
-        return true;
-      };
-
-      return getIsVisible;
-    } catch (e) {
-      return () => {
-        console.warn(`Incorrect syntax of the 'Custom Visibility', component: ${name}, error: ${e}`);
-      };
-    }
-  } else return () => true;
-};
-
 export interface IExpressionExecuterArguments {
   [key: string]: any;
 }
@@ -916,28 +888,6 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
   }
 }
 
-/**
- * Return ids of visible components according to the custom visibility
- */
-export const getVisibleComponentIds = (
-  components: IComponentsDictionary,
-  allData: IApplicationContext,
-  filteredComponents?: string[]
-): string[] => {
-  const visibleComponents: string[] = [];
-  for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      const component = components[key] as IConfigurableFormComponent;
-
-      if (filteredComponents?.includes(component.id)
-        && !getActualPropertyValue(component, allData, 'hidden')?.hidden
-        && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode)))
-        visibleComponents.push(key);
-    }
-  }
-  return visibleComponents;
-};
-
 const isComponentFiltered = (
   component: IConfigurableFormComponent,
   propertyFilter?: (name: string) => boolean
@@ -966,27 +916,6 @@ export const getFilteredComponentIds = (
     }
   }
   return visibleComponents;
-};
-
-/**
- * Return ids of enabled components according to the custom enabled
- */
-export const getEnabledComponentIds = (components: IComponentsDictionary, allData: IApplicationContext): string[] => {
-  const enabledComponents: string[] = [];
-  for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      const component = components[key] as IConfigurableFormComponent;
-      const readOnly = getReadOnlyBool(getActualPropertyValue(component, allData, 'editMode')?.editMode, false); // use false because components will use parent enabled by default
-      const isEnabled =
-        !readOnly &&
-        (!Boolean(component?.enabledFunc) ||
-          (typeof component?.enabledFunc === 'function' &&
-            component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));
-
-      if (isEnabled) enabledComponents.push(key);
-    }
-  }
-  return enabledComponents;
 };
 
 /**
@@ -1028,7 +957,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
   const { validate } = component;
   const rules: Rule[] = [];
 
-  // todo: implement more generic way (e.g. using validation providers)
+  // TODO: implement more generic way (e.g. using validation providers)
 
   if (validate) {
     if (validate.required)
@@ -1423,7 +1352,6 @@ export const createComponentModelForDataProperty = (
     labelAlign: 'right',
     //parentId: containerId,
     hidden: false,
-    visibilityFunc: (_data) => true,
     isDynamic: false,
     validate: {},
   };
@@ -1551,11 +1479,12 @@ export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: a
   return style;
 };
 
+const emptyStyle = {};
 export const getStyle = (
   style: string,
   formData: any = {},
   globalState: any = {},
-  defaultStyle: object = {}
+  defaultStyle: object = emptyStyle
 ): CSSProperties => {
   if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
@@ -1648,12 +1577,12 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[]): str
   return getNodes(tree);
 };
 
-export const asFormRawId = (formId: FormIdentifier): FormUid | undefined => {
-  return formId && typeof formId === 'string' ? (formId as FormUid) : undefined;
+export const isFormRawId = (formId: FormIdentifier): formId is FormUid => {
+  return formId && typeof formId === 'string';
 };
 
-export const asFormFullName = (formId: FormIdentifier): FormFullName | undefined => {
-  return formId && Boolean((formId as FormFullName)?.name) ? (formId as FormFullName) : undefined;
+export const isFormFullName = (formId: FormIdentifier): formId is FormFullName => {
+  return formId && Boolean((formId as FormFullName)?.name);
 };
 
 export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 'string' ? !!formId : !!formId?.name);
@@ -1756,7 +1685,7 @@ export const getFormActionArguments = (
       if (parameterIdx) {
         const parameter = dictionary[parameterIdx];
 
-        // todo: add promise support
+        // TODO: add promise support
         const value =
           typeof parameter?.value === 'string' ? evaluateString(parameter?.value, evaluationContext) : parameter?.value;
 
@@ -1824,7 +1753,7 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
 };
 
 
-// todo: move to Shesha API as a separate service and provide type definition
+// TODO: move to Shesha API as a separate service and provide type definition
 export const getSheshaFormUtils = (http: AxiosInstance) => {
   return {
     prepareTemplate: (templateId: string, replacements: object): Promise<string> => {
@@ -1850,4 +1779,24 @@ export const getSheshaFormUtils = (http: AxiosInstance) => {
         });
     }
   };
+};
+
+/**
+ * Converts the given form markup to a flat structure of configurable form components.
+ *
+ * @param {FormRawMarkup} markup - The form markup to convert.
+ * @param {IFormSettings} formSettings - The form settings.
+ * @param {IToolboxComponents} designerComponents - The designer components.
+ * @return {IFlatComponentsStructure} The flat structure of configurable form components.
+ */
+export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
+  let components = getComponentsFromMarkup(markup);
+  if (formSettings?.isSettingsForm)
+    components = updateSettingsComponents(designerComponents, components);
+  const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
+
+  // migrate components to last version
+  upgradeComponents(designerComponents, formSettings, newFlatComponents);
+
+  return newFlatComponents;
 };

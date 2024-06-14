@@ -134,29 +134,31 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           </Button>
         </Show>
       </Space>
-      <Modal
-        open={showDialog}
-        onCancel={onDialogCancel}
-        onOk={onDialogSave}
-        title={props.label}
-        okButtonProps={{ hidden: readOnly }}
-        cancelText={readOnly ? 'Close' : undefined}
-        destroyOnClose={true}
-        classNames={{ body: styles.codeEditorModalBody }}
-        className={ styles.codeEditorModal }
-        width={null}
-      >
-        <Show when={Boolean(props?.description)}>
-          <Alert message={props?.description} />
-          <br />
-        </Show>
+      {showDialog && (
+        <Modal
+          open={showDialog}
+          onCancel={onDialogCancel}
+          onOk={onDialogSave}
+          title={props.label}
+          okButtonProps={{ hidden: readOnly }}
+          cancelText={readOnly ? 'Close' : undefined}
+          destroyOnClose={true}
+          classNames={{ body: styles.codeEditorModalBody }}
+          className={styles.codeEditorModal}
+          width={null}
+        >
+          <Show when={Boolean(props?.description)}>
+            <Alert message={props?.description} />
+            <br />
+          </Show>
 
-        {tabItems ? (
-          <Tabs items={tabItems} />
-        ) : (
-          <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
-        )}
-      </Modal >
+          {tabItems ? (
+            <Tabs items={tabItems} />
+          ) : (
+            <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
+          )}
+        </Modal>
+      )}
     </>
   );
 };
