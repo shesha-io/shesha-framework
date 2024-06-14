@@ -133,7 +133,7 @@
     "ts-jest": "^29.1.2",
     "tsc-alias": "^1.8.8",
     "tsconfig-paths-webpack-plugin": "^4.0.1",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.5",
     "typescript-plugin-css-modules": "^5.0.2"
   },
   "files": [
@@ -170,7 +170,7 @@
     "number-to-words": "^1.2.4",
     "object-hash": "^3.0.0",
     "point-in-polygon": "^1.1.0",
-    "rc-picker": "^4.5.0",
+    "rc-picker": "4.5.0",
     "react-ace": "^10.1.0",
     "react-beautiful-dnd": "^13.1.0",
     "react-error-boundary": "^3.1.4",
