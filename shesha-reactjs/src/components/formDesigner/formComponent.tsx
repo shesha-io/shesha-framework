@@ -3,7 +3,7 @@ import React, { FC, MutableRefObject } from 'react';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
-import { useSheshaApplication } from '@/providers';
+import { useForm, useSheshaApplication } from '@/providers';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -11,8 +11,9 @@ export interface IFormComponentProps {
 }
 
 const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
+  const formInstance = useForm();
   const allData = useAvailableConstantsData();
-  const { form, getToolboxComponent, isComponentFiltered } = allData.form;
+  const { form, getToolboxComponent, isComponentFiltered } = formInstance;
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const parent = useParent(false);
@@ -30,12 +31,12 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const toolboxComponent = getToolboxComponent(componentModel.type);
   if (!toolboxComponent) return <div>Component not found</div>;
 
-  actualModel.hidden = allData.formMode !== 'designer'
+  actualModel.hidden = allData.form?.formMode !== 'designer' 
     && (
       actualModel.hidden
-      || !anyOfPermissionsGranted(componentModel?.permissions || [])
-      || !isComponentFiltered(componentModel)); // check `model` without modification
-  actualModel.readOnly = actualModel.readOnly;// || isComponentReadOnly(model); // check `model` without modification
+        || !anyOfPermissionsGranted(actualModel?.permissions || [])
+        || !isComponentFiltered(componentModel)); // check `model` without modification
+  actualModel.readOnly = actualModel.readOnly;
 
   return (
     <toolboxComponent.Factory

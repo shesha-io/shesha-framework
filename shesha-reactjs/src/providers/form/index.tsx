@@ -38,6 +38,7 @@ import { addFormFieldsList, removeGhostKeys } from '@/utils/form';
 import { filterDataByOutputComponents } from './api';
 import { IDataSourceComponent } from '@/components/configurableForm/models';
 import { hasPreviousActionError } from '@/interfaces/configurableAction';
+import { getFormApi } from './formApi';
 import { FormFlatMarkupProvider, useChildComponentIds, useChildComponents, useComponentModel, useFormMarkup } from './providers/formMarkupProvider';
 import { useFormDesignerActions } from '../formDesigner';
 
@@ -111,7 +112,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     };
   };
   const [state, dispatch] = useThunkReducer(formReducer, undefined, getInitialData);
-  const { allComponents, componentRelations } = ShaForm.useMarkup();
+  const { allComponents } = ShaForm.useMarkup();
 
   const toolboxComponents = useFormDesignerComponents();
 
@@ -195,7 +196,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       hasArguments: false,
       //argumentsFormMarkup: SubmitActionArgumentsMarkup,
       executer: async (args: ISubmitActionArguments, actionContext) => {
-        var formInstance = (actionContext?.form?.form ?? form) as FormInstance<any>;
+        var formInstance = (actionContext?.form?.formInstance ?? form) as FormInstance<any>;
         var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
         if (args?.validateFields === true || fieldsToValidate?.length > 0) {
           await formInstance.validateFields(fieldsToValidate);
@@ -214,7 +215,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       ownerUid: actionsOwnerUid,
       hasArguments: false,
       executer: (_, actionContext) => {
-        var formInstance = actionContext?.form?.form ?? form;
+        var formInstance = actionContext?.form?.formInstance ?? form;
         formInstance.resetFields();
         return Promise.resolve();
       },
@@ -244,7 +245,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       ownerUid: actionsOwnerUid,
       hasArguments: false,
       executer: async (_, actionContext) => {
-        var formInstance = actionContext?.form?.form ?? form;
+        var formInstance = actionContext?.form?.formInstance ?? form;
         var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
         await formInstance.validateFields(fieldsToValidate);
         return Promise.resolve();
@@ -368,8 +369,13 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       application: application?.getData(),
       contexts: { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
       data: exposedData || state.formData,
-      form: { ...state, allComponents, componentRelations },
-      formMode: state.formMode,
+      form: getFormApi({
+        form: state.form,
+        formSettings: state.formSettings,
+        formMode: state.formMode,
+        formData: state.formData,
+        setFormData: setFormData,
+      }),
       globalState: formProviderContext.globalState,
       http: formProviderContext.http,
       initialValues: props.initialValues,
@@ -377,7 +383,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       moment: formProviderContext.moment,
       pageContext: pageContext?.getFull(),
       parentFormValues: props.parentFormValues,
-      setFormData: setFormData,
       setGlobalState: formProviderContext.setGlobalState,
       shesha: getSheshaFormUtils(formProviderContext.http),
     };

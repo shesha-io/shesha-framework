@@ -165,7 +165,10 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
     `);
 
     const shaConfigItemModeToggler = cx("sha-config-item-mode-toggler", css`
-        display: inline-block;
+        display: flex;
+        flex-direction: row;
+        position: relative;
+        z-index: 1000;
 
         ${responsive.mobile} {
             display: none;

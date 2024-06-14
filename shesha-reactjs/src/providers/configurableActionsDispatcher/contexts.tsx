@@ -7,8 +7,8 @@ import {
 } from '@/interfaces/configurableAction';
 import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
-import { ConfigurableFormInstance } from '@/interfaces';
 import { IApplicationApi } from '../sheshaApplication/publicApi';
+import { FormApi } from '../form/formApi';
 
 export interface IConfigurableActionDispatcherStateContext {
 }
@@ -19,7 +19,7 @@ export interface IGetConfigurableActionPayload {
 }
 
 export interface IArgumentsEvaluationContext extends GenericDictionary {
-  form?: ConfigurableFormInstance;
+  form?: FormApi;
   application?: IApplicationApi;
 }
 
@@ -28,6 +28,11 @@ export interface IExecuteActionPayload {
   argumentsEvaluationContext: IArgumentsEvaluationContext;
   success?: (actionResponse: any) => void;
   fail?: (error: any) => void;
+}
+
+export interface IPrepareActionArgumentsPayload<TArguments = any> {
+  actionConfiguration: IConfigurableActionConfiguration<TArguments>;
+  argumentsEvaluationContext: IArgumentsEvaluationContext;
 }
 
 export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any>
@@ -49,7 +54,8 @@ export interface IConfigurableActionDispatcherActionsContext {
   getActions: () => IConfigurableActionGroupDictionary;
   registerAction: RegisterActionType;
   unregisterAction: (actionIdentifier: IConfigurableActionIdentifier) => void;
-  prepareArguments: (actionArguments: any) => void;
+  prepareArguments: <TArguments = any>(payload: IPrepareActionArgumentsPayload<TArguments>) => Promise<TArguments>;
+  
   executeAction: ConfigurableActionExecuter;
   useActionDynamicContext: ActionDynamicContextEvaluationHook;
 }

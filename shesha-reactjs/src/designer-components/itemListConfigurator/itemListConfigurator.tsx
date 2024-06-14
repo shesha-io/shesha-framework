@@ -15,6 +15,7 @@ export interface IItemListConfiguratorProps<TItem extends ListItemWithId> {
     settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
     itemRenderer: ListEditorChildrenFn<TItem> | DefaultItemRenderer<TItem>;
     header?: React.ReactNode;
+    actualModelContext?: any;
 }
 
 export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemListConfiguratorProps<TItem>) => {
@@ -47,6 +48,7 @@ export const ItemListConfigurator = <TItem extends ListItemWithId>(props: IItemL
                 return isDefaultItemRenderingProps(rendered)
                     ? (<DefaultListItem
                         item={rendered}
+                        actualModelContext={props.actualModelContext}
                     />)
                     : rendered;
             }

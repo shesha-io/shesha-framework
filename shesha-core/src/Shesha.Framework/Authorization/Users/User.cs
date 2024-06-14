@@ -59,7 +59,10 @@ namespace Shesha.Authorization.Users
 
         [Display(Name = "Require a change of password")]
         public virtual bool RequireChangePassword { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual bool IsAnonymous { get; set; }
         /// <summary>
         /// Security question status
         /// </summary>

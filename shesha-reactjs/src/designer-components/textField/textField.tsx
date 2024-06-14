@@ -16,6 +16,8 @@ import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -41,8 +43,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
-  Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
+  Factory: ({ model }) => {
+    const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -64,14 +66,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
 
@@ -80,7 +80,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         model={model}
         initialValue={
           (model.passEmptyStringByDefault && '') ||
-          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode, globalState }) : undefined)
+          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
         }
       >
         {(value, onChange) => {
@@ -108,6 +108,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
+    .add<ITextFieldComponentProps>(4, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {

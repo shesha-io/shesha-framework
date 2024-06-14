@@ -178,13 +178,13 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
   const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true,
     standardConstants: [
-      SheshaConstants.globalState, { uid: SheshaConstants.formData, name: "formData" }, SheshaConstants.moment, SheshaConstants.http
+      SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
   const onRowSaveConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true,
     standardConstants: [
-      SheshaConstants.globalState, { uid: SheshaConstants.formData, name: "formData" }, SheshaConstants.moment, SheshaConstants.http
+      SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ],
     onBuild: (builder) => {
       builder.addObject("data", "Current row data", undefined);
@@ -273,7 +273,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         <SettingsFormItem name="newRowInsertPosition" label="New row insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
           <Select disabled={readOnly} options={rowCapturePositions} />
         </SettingsFormItem>
-        <SettingsFormItem name="customCreateUrl" label="Custom create url" hidden={model.canEditInline === 'no'}>
+        <SettingsFormItem name="customCreateUrl" label="Custom create url" hidden={model.canAddInline === 'no'}>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
         <SettingsFormItem

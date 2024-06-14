@@ -21,6 +21,7 @@ const designerClassNames = {
     shaDesignerHeader: "sha-designer-header",
     shaDesignerHeaderRight: "sha-designer-header-right",
     shaDesignerToolbar: "sha-designer-toolbar",
+    shaToolboxComponents: "sha-toolbox-components",
     shaDesignerToolbarLeft: "sha-designer-toolbar-left",
     shaDesignerToolbarRight: "sha-designer-toolbar-right",
     shaDesignerToolbox: "sha-designer-toolbox",
@@ -30,7 +31,9 @@ const designerClassNames = {
     shaForm: "sha-form",
     shaHelpIcon: "sha-help-icon",
     shaToolboxComponent: "sha-toolbox-component",
+    shaToolboxPanelComponents: "sha-toolbox-panel-components",
     shaToolboxPanel: "sha-toolbox-panel",
+    shaToolboxPanelItems: "sha-toolbox-panel-items",
     sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
     sidebarHeaderTitle: "sidebar-header-title",
     siteTreeSearchValue: "site-tree-search-value",
@@ -49,6 +52,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         componentDragHandle,
         sidebarContainerMainAreaBody,
         shaDesignerToolbar,
+        shaToolboxComponents,
         shaDesignerToolbarLeft,
         shaDesignerToolbarRight,
         shaDesignerCanvasConfig,
@@ -58,9 +62,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaComponentGhost,
         shaComponent,
         shaToolboxComponent,
+        shaToolboxPanelComponents,
         shaComponentTitle,
         shaComponentSearch,
         shaToolboxPanel,
+        shaToolboxPanelItems,
         shaDatasourceTree,
         shaComponentIndicator,
         shaComponentsContainer,
@@ -143,6 +149,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
         }
+        .${shaToolboxComponents}{
+            height: 100%;
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            margin-bottom: 1rem;
+        }
         .${shaDesignerToolbar} {
             background: white;
             padding: 12px;
@@ -169,12 +181,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 gap: 1.5rem;
                 margin: 0 20%;
                 padding-left:5%;
+
                 .radio-button {
                     width: 33%;
                   }
             }
         }
         .${shaDesignerToolbox} {
+            height: 85vh;
+            margin-bottom: 3rem;
             .${shaDatasourceTree} {
                 .${prefixCls}-tree-switcher-noop {
                     display: none;
@@ -182,15 +197,16 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
                 .${shaToolboxComponent} {
                     margin: 0;
-                    display: block;
-                    white-space: nowrap;
+                    display: flex;
+                    white-space: normal;
                     overflow: hidden;
-                    max-width: 225px;
-                    text-overflow: ellipsis;
+                    max-width: 100%;
+                    overflow: auto;
         
                     .${shaComponentTitle} {
                         margin-right: 10px;
                     }
+                 
                 }
         
                 .${siteTreeSearchValue} {
@@ -225,6 +241,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 &.active {
                     background-color: #ebf3fb;
                 }
+                .${shaToolboxPanelItems} {
+                    margin:-1rem -0.8rem;
+            }
             }
         
             .${shaToolboxComponent} {
@@ -305,6 +324,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             border: 1px dashed #4099ff;
             border-radius: 2px;
             opacity: 0.7;
+
+          
+
+        }
+        .${shaToolboxPanelComponents}{
+            margin: -1rem -0.8rem;
         }
         .${shaComponent} {
             position: relative;

@@ -28,6 +28,7 @@ import {
 import { IComponentsDictionary, IFormsDictionary, IReferenceListsDictionary } from './models';
 import metadataReducer from './reducer';
 import { getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
+import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
 type StoragesDictionary = IDictionary<LocalForage>;
@@ -261,7 +262,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
               const responseData = response.result;
               if (!responseData) throw 'Failed to fetch form. Response is empty';
 
-              const dto = convertFormConfigurationDto2FormDto(responseData);
+              const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(responseData));
               addToCache(ItemTypes.Form, cacheKey, responseData);
 
               resolve(dto);
@@ -269,7 +270,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
               const rawResponse = response as Response;
               if (rawResponse && rawResponse.status === 304) {
                 // code 304 indicates that the content ws not modified - use cached value
-                const dto = convertFormConfigurationDto2FormDto(cachedDto);
+                const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(cachedDto));
                 resolve(dto);
               } else {
                 const httpResponse = response as Response;

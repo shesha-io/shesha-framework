@@ -16,6 +16,8 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { customEventHandler } from '@/components/formDesigner/components/utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -40,8 +42,8 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
-  Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
+  Factory: ({ model }) => {
+    const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -62,14 +64,12 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
 
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
 
@@ -78,7 +78,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         model={model}
         initialValue={
           (model?.passEmptyStringByDefault && '') ||
-          (model.initialValue ? evaluateString(model?.initialValue, { formData, formMode, globalState }) : undefined)
+          (model.initialValue ? evaluateString(model?.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
         }
       >
         {(value, onChange) => {
@@ -124,6 +124,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<ITextAreaComponentProps>(2, (prev) => migrateReadOnly(prev))
+      .add<ITextAreaComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
     ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

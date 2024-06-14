@@ -28,6 +28,7 @@ import { useDelayedUpdate } from '../delayedUpdateProvider/index';
 import ParentProvider from '../parentProvider/index';
 import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
+import { removeGhostKeys } from '@/utils/form';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -172,10 +173,12 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         // TODO: call common data preparation code (check configurableFormRenderer)
         const mergedData = { ...state.initialValues, ...values };
 
-        const postData = filterDataByOutputComponents(
+        const postData = removeGhostKeys(
+          filterDataByOutputComponents(
           mergedData,
           props.formFlatMarkup.allComponents,
           toolboxComponents
+          )
         );
         // send data of stored files
         const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;

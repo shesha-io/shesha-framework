@@ -1,6 +1,8 @@
-﻿using Abp.Authorization;
+﻿using Abp.AspNetCore.Mvc.ExceptionHandling;
+using Abp.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Localization;
 using Shesha.Domain.Enums;
 using Shesha.Permissions;
@@ -75,10 +77,14 @@ namespace Shesha.Authorization
                     ?? "Current user did not login to the application!"
                 );
             }
-
-            if (actualAccess == RefListPermissionedAccess.Disable
-                || actualAccess == RefListPermissionedAccess.RequiresPermissions
-                    && (permission.ActualPermissions == null || !permission.ActualPermissions.Any())
+            if (actualAccess == RefListPermissionedAccess.Disable)
+            {
+                throw new EntityNotFoundException(
+                    _localizationManager?.GetString(SheshaConsts.LocalizationSourceName, "NotFound") ?? "Not found"
+                );
+            }
+            if (actualAccess == RefListPermissionedAccess.RequiresPermissions
+                && (permission.ActualPermissions == null || !permission.ActualPermissions.Any())
             )
             {
                 throw new AbpAuthorizationException(

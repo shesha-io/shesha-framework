@@ -33,6 +33,7 @@ import { useStyles } from './styles/styles';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { getStyle } from '@/providers/form/utils';
+import { getFormApi } from '@/providers/form/formApi';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -193,7 +194,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       entityReference: { id: entityId, entity: props.value },
       data: formData,
       moment: moment,
-      form: localForm,
+      form: getFormApi(localForm),
       formMode: formMode,
       http: axiosHttp(backendUrl),
       message: message,

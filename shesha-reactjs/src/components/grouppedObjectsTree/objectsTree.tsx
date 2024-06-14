@@ -1,23 +1,30 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { Tree } from 'antd';
-import { DataNode } from 'antd/lib/tree';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import ShaIcon from '@/components/shaIcon';
 
 export interface IProps<TItem> {
     items: TItem[];
-    defaultExpandAll: boolean;
+    defaultExpandAll?: boolean;
     defaultSelected?: string;
     searchText?: string;
     onChange: (item: TItem) => void;
     idFieldName?: string;
     nameFieldName?: string;
+    childFieldName?: string;
     getChildren?: (item: TItem) => TItem[];
     getIsLeaf?: (item: TItem) => boolean;
-    getIcon?: (item: TItem) => IconType;
+    getIcon?: (item: TItem) => ReactNode;
     onRenterItem?: (item: TItem) => ReactNode;
 }
 
-interface DataNodeWithObject<TItem> extends DataNode {
+interface DataNodeWithObject<TItem> {
+    title: JSX.Element;
+    key: string;
+    isLeaf?: boolean;
+    children?: DataNodeWithObject<TItem>[];
+    icon?: ReactNode;
+    checkable?: boolean;
+    selectable?: boolean;
     object: TItem;
 }
 
@@ -40,7 +47,7 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
         const node: DataNodeWithObject<TItem> = {
             key: (getId(item))?.toLowerCase(),
             title: getName(item),
-            isLeaf: Boolean(props.getIsLeaf) ? props.getIsLeaf(item) : (!Boolean(nested) || Array.isArray(nested) || nested.length === 0),
+            isLeaf: props.getIsLeaf ? props.getIsLeaf(item) : (!nested || Array.isArray(nested) && nested.length === 0),
             selectable: false,
             object: item,
         };
@@ -53,54 +60,21 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     };
 
     useEffect(() => {
-        // update experiments
-        /*setNodes((ns) =>{
-            ns = ns.filter(n => props.items.find(p => getId(p) === getId(n.object)));
-            props.items.filter(n => !ns.find(p => getId(n) === getId(p.object)))
-                .forEach(p => ns.push(getTreeData(p, (item) => { 
-                    setManuallyExpanded((state) => {
-                            state.push(getId(item));
-                            return state;
-                        })
-                    })));
-
-            return [...ns];
-        });*/
-
-        /*setNodes(ns => {
-            const nss =  props.items.map(i => {
-                const n = ns.find(p => getId(i) === p.key);
-                return n 
-                    ? n 
-                    : getTreeData(i, (item) => { 
-                        setManuallyExpanded((state) => {
-                            state.push(getId(item));
-                            return state;
-                        })
-                    }) as DataNode;
-            });
-            return nss;
-        })*/
-
         setNodes([...props.items.map(item =>
             getTreeData(item, (item) => {
-                setManuallyExpanded((state) => {
-                    state?.push(getId(item));
-                    return state;
-                });
+                if (props.defaultExpandAll)
+                    setManuallyExpanded((state) => {
+                        if (state?.indexOf(getId(item)) === -1)
+                            return [...state, getId(item)];
+                        return state;
+                    });
             })
-        )]
-        );
-    }, [props.items]);
-
-    useEffect(() => {
-        if (props.defaultExpandAll)
-            setManuallyExpanded(null);
-    }, [props.defaultExpandAll]);
+        )]);
+    }, [props.items, props.defaultExpandAll]);
 
     const getTitle = (item: TItem) => {
         const name = getName(item);
-        const index = name.toLowerCase().indexOf(props.searchText);
+        const index = name.toLowerCase().indexOf(props.searchText.toLowerCase());
         if (index === -1)
             return <span>{name}</span>;
 
@@ -141,15 +115,12 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     }, [props.defaultSelected]);
 
     const renderTitle = (node: DataNodeWithObject<TItem>): React.ReactNode => {
-        const icon = Boolean(props.getIcon) ? props.getIcon(node.object) : 'BookOutlined' as IconType;
+        const icon = Boolean(props.getIcon) ? props.getIcon(node.object) : <ShaIcon iconName={'BookOutlined'} />;
         const markup = (
             <div className='sha-toolbox-component' key={node.key} ref={refs[node.key.toString()]}>
                 {props.onRenterItem
                     ? props.onRenterItem(node.object)
-                    : <>
-                        {icon && <ShaIcon iconName={icon}></ShaIcon>}
-                        <span className='sha-component-title'> {getTitle(node.object)}</span>
-                    </>
+                    : <>{icon}<span className='sha-component-title'> {getTitle(node.object)}</span></>
                 }
             </div>
         );
@@ -161,7 +132,8 @@ export const ObjectsTree = <TItem,>(props: IProps<TItem>) => {
     };
 
     return (
-        <Tree<DataNodeWithObject<TItem>>
+
+        <Tree
             className='sha-datasource-tree'
             showIcon
             treeData={nodes}

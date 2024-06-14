@@ -9,7 +9,7 @@ import { ListEditorChildrenFn } from '@/components/listEditor';
 
 export interface ModalSettings {
     title?: string;
-    header?: React.ReactNode;    
+    header?: React.ReactNode;
 }
 
 export interface IItemListConfiguratorModalProps<TItem extends ListItemWithId> {
@@ -22,6 +22,7 @@ export interface IItemListConfiguratorModalProps<TItem extends ListItemWithId> {
     buttonText?: string;
     modalSettings?: ModalSettings;
     itemRenderer: ListEditorChildrenFn<TItem> | DefaultItemRenderer<TItem>;
+    actualModelContext?: any;
 }
 
 export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: IItemListConfiguratorModalProps<TItem>) => {
@@ -34,6 +35,7 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
         itemRenderer,
         buttonText,
         modalSettings,
+        actualModelContext,
     } = props;
 
     const { title, header } = modalSettings ?? {};
@@ -77,6 +79,7 @@ export const ItemListConfiguratorModal = <TItem extends ListItemWithId>(props: I
                     settingsMarkupFactory={settingsMarkupFactory}
                     itemRenderer={itemRenderer}
                     header={header}
+                    actualModelContext={actualModelContext}
                 />
             </Modal>
         </>
