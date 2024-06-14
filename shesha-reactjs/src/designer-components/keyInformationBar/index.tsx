@@ -23,6 +23,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
     const { styles } = useStyles();
     const { data } = useFormData();
     const { hidden, alignItems, vertical, style, dividerMargin, dividerHeight, gap } = model;
+
     if (hidden) return null;
 
     const computedStyle = getStyle(style, data);

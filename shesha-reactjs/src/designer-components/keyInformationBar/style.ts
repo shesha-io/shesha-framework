@@ -1,6 +1,6 @@
 import { createStyles } from "antd-style";
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, token }) => {
     const flexItem = "flex-item";
     const flexItemWrapper = "flex-item-wrapper";
     const flexItemWrapperVertical = "flex-item-wrapper-vertical";
@@ -9,6 +9,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
     const flexContainer = cx("flex-container", css`
         width: 100%;
+        background-color: ${token.colorTextLightSolid};
 
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;
