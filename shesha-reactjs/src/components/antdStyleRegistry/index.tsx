@@ -5,7 +5,7 @@ import { useServerInsertedHTML } from 'next/navigation';
 import React from 'react';
 import { PropsWithChildren, useRef } from 'react';
 
-const StyleRegistry = ({ children }: PropsWithChildren) => {
+export const AntdStyleRegistry = ({ children }: PropsWithChildren) => {
   const isInsert = useRef(false);
 
   useServerInsertedHTML(() => {
@@ -22,5 +22,3 @@ const StyleRegistry = ({ children }: PropsWithChildren) => {
 
   return <StyleProvider cache={extractStaticStyle.cache}>{children}</StyleProvider>;
 };
-
-export default StyleRegistry;
