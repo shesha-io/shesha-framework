@@ -144,7 +144,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
 
-    const isDesignMode = allData.formMode === 'designer';
+    const isDesignMode = allData.form?.formMode === 'designer';
 
     const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
         const { permissions, hidden } = item;
@@ -188,7 +188,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 
     const actualItems = useDeepCompareMemo(() =>
         items?.map((item) => prepareItem(item, disabled))
-    , [items, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+    , [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
     const filteredItems = actualItems?.filter(getIsVisible);
 

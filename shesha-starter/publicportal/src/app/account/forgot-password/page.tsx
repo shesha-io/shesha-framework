@@ -6,7 +6,7 @@ import {
   useResetPasswordSendOtp,
   useResetPasswordVerifyOtp,
 } from "@/api/user";
-import { LOGO } from "@/app-constants/application";
+import { LOGO } from "@/app-constants";
 import { LoginPageWrapper } from "@/app/login/styles";
 import { ShaButton, ShaInput, ShaTitle } from "@/components";
 import { URL_LOGIN_PAGE } from "@/routes";
