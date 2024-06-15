@@ -84,6 +84,8 @@ export { QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
 export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 
 export { default as ConfigurableForm } from './configurableForm';
+export { FormWithFlatMarkup, type IFormWithFlatMarkupProps } from './configurableForm/formWithFlatMarkup';
+
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';
 export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
