@@ -97,7 +97,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   ...props
 }) => {
   const getInitialData = (): IFormStateInternalContext => {
-    //const formData = form?.getFieldValue([]);
     const formData = props.initialValues;
 
     return {
@@ -112,6 +111,10 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     };
   };
   const [state, dispatch] = useThunkReducer(formReducer, undefined, getInitialData);
+  // formDataRef is used for memoization of prepareDataForSubmit only, to be removed after review of form data handling
+  const formDataRef = useRef(state.formData);
+  formDataRef.current = state.formData;
+
   const { allComponents } = ShaForm.useMarkup();
 
   const toolboxComponents = useFormDesignerComponents();
@@ -420,13 +423,13 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const prepareDataForSubmit = (): Promise<object> => {
-    const initialValuesFromFormSettings = getInitialValuesFromFormSettings();
-    const { formData } = state;
+    const formData = formDataRef.current;
 
     return getDynamicPreparedValues()
       .then((dynamicValues) => {
-        const initialValues = getInitialValuesFromFormSettings();
-        const nonFormValues = { ...dynamicValues, ...initialValues };
+        const initialValuesFromFormSettings = getInitialValuesFromFormSettings();
+
+        const nonFormValues = { ...dynamicValues, ...initialValuesFromFormSettings };
         const { excludeFormFieldsInPayload } = formSettings ?? {};
 
         let postData = excludeFormFieldsInPayload
