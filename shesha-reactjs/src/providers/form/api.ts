@@ -232,7 +232,7 @@ export interface UseFormWitgDataArgs {
 
 export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
 
-export interface FormInfo extends Pick<FormDto, 'id' | 'module' | 'name' | 'versionNo'> {
+export interface FormInfo extends Pick<FormDto, 'id' | 'module' | 'name' | 'versionNo' | 'versionStatus'> {
   flatStructure: IFlatComponentsStructure;
   settings: IFormSettings;
 }
