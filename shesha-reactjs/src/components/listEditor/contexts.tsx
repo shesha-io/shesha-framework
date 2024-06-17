@@ -1,5 +1,5 @@
-import { createContext } from "react";
 import { ListItemFactory } from "./provider";
+import { createNamedContext } from "@/utils/react";
 
 export interface IListEditorState<TItem = any> {
   value: TItem[];
@@ -41,7 +41,7 @@ export const getListEditorContextInitialState = <TItem extends any>(
 
 export const getListEditorStateContext = <TItem extends any>(
   initialState: IListEditorStateContext<TItem>
-) => createContext<IListEditorStateContext<TItem>>(initialState);
+) => createNamedContext<IListEditorStateContext<TItem>>(initialState, "ListEditorStateContext");
 
 export const getListEditorActionsContext = <TItem extends any>() =>
-  createContext<IListEditorActionsContext<TItem>>(undefined);
+  createNamedContext<IListEditorActionsContext<TItem>>(undefined, "ListEditorActionsContext");

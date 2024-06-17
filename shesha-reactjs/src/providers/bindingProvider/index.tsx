@@ -1,12 +1,12 @@
+import { createNamedContext } from "@/utils/react";
 import React, { ComponentType, FC, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { createContext } from 'react';
 
 export interface IBindingProviderStateContext {
     value?: any;
     onChange?: (...args: any[]) => void;
 }
 
-export const BindingProviderStateContext = createContext<IBindingProviderStateContext>({});
+export const BindingProviderStateContext = createNamedContext<IBindingProviderStateContext>({}, "BindingProviderStateContext");
 
 export interface IBindingProviderProps  {
     valuePropName?: string;

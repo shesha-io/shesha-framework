@@ -1,5 +1,4 @@
 import { FormInstance } from 'antd';
-import { createContext } from 'react';
 import { IFormValidationErrors, IToolboxComponent, IToolboxComponentGroup } from '@/interfaces';
 import {
   DEFAULT_FORM_SETTINGS,
@@ -12,6 +11,7 @@ import {
   IFormSection,
   IFormSettings,
 } from './models';
+import { createNamedContext } from '@/utils/react';
 
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -93,11 +93,11 @@ export interface IFormDataActionsContext {
   setFields: (fields: FieldData[]) => void;
 }
 
-export const FormDataStateContext = createContext<IFormDataStateContext>(undefined);
-export const FormDataActionsContext = createContext<IFormDataActionsContext>(undefined);
+export const FormDataStateContext = createNamedContext<IFormDataStateContext>(undefined, "FormDataStateContext");
+export const FormDataActionsContext = createNamedContext<IFormDataActionsContext>(undefined, "FormDataActionsContext");
 
 export interface ConfigurableFormInstance extends IFormActionsContext, IFormStateContext { }
 
-export const FormStateContext = createContext<IFormStateContext>(FORM_CONTEXT_INITIAL_STATE);
+export const FormStateContext = createNamedContext<IFormStateContext>(FORM_CONTEXT_INITIAL_STATE, "FormStateContext");
 
-export const FormActionsContext = createContext<IFormActionsContext>(undefined);
+export const FormActionsContext = createNamedContext<IFormActionsContext>(undefined, "FormActionsContext");

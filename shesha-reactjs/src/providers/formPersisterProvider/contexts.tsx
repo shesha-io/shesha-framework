@@ -1,4 +1,3 @@
-import { createContext } from 'react';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import {
   FormIdentifier,
@@ -6,6 +5,7 @@ import {
   IFormSettings,
 } from '../form/models';
 import { UpToDateForm } from '../formManager/interfaces';
+import { createNamedContext } from '@/utils/react';
 
 export interface IFormPersisterStateContext {
   formId: FormIdentifier;
@@ -44,10 +44,11 @@ export const FORM_PERSISTER_CONTEXT_INITIAL_STATE: IFormPersisterStateContext = 
   saving: false,
 };
 
-export const FormPersisterStateContext = createContext<IFormPersisterStateContext>(
-  FORM_PERSISTER_CONTEXT_INITIAL_STATE
+export const FormPersisterStateContext = createNamedContext<IFormPersisterStateContext>(
+  FORM_PERSISTER_CONTEXT_INITIAL_STATE,
+  "FormPersisterStateContext"
 );
 
-export const FormPersisterActionsContext = createContext<IFormPersisterActionsContext>(undefined);
+export const FormPersisterActionsContext = createNamedContext<IFormPersisterActionsContext>(undefined, "FormPersisterActionsContext");
 
 export const FormPersisterStateConsumer = FormPersisterStateContext.Consumer;

@@ -1,11 +1,12 @@
-import React, { FC, PropsWithChildren, createContext, useContext, useMemo } from 'react';
+import React, { FC, PropsWithChildren, useContext, useMemo } from 'react';
 import { IConfigurableFormComponent, IFlatComponentsStructure } from '../models';
+import { createNamedContext } from '@/utils/react';
 
 export interface IFormFlatMarkupProviderProps {
     markup: IFlatComponentsStructure;
 }
 
-export const FormFlatMarkupContext = createContext<IFlatComponentsStructure>(undefined);
+export const FormFlatMarkupContext = createNamedContext<IFlatComponentsStructure>(undefined, "FormFlatMarkupContext");
 
 export const FormFlatMarkupProvider: FC<PropsWithChildren<IFormFlatMarkupProviderProps>> = ({ children, markup }) => {
     return (

@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createNamedContext } from "@/utils/react";
 
 export const ROOT_NAVIGATOR_ID = 'a66c4992-543c-11ed-bdc3-0242ac120002';
 
@@ -14,8 +14,9 @@ export const STACKED_NAVIGATION_CONTEXT_INITIAL_STATE: IStackedNavigationStateCo
   navigator: null,
 };
 
-export const StackedNavigationStateContext = createContext<IStackedNavigationStateContext>(
-  STACKED_NAVIGATION_CONTEXT_INITIAL_STATE
+export const StackedNavigationStateContext = createNamedContext<IStackedNavigationStateContext>(
+  STACKED_NAVIGATION_CONTEXT_INITIAL_STATE,
+  "StackedNavigationStateContext"
 );
 
-export const StackedNavigationActionsContext = createContext<IStackedNavigationActionsContext>(undefined);
+export const StackedNavigationActionsContext = createNamedContext<IStackedNavigationActionsContext>(undefined, "StackedNavigationActionsContext");

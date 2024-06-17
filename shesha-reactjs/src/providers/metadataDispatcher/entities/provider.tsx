@@ -1,10 +1,11 @@
 import { useCacheProvider } from '@/hooks/useCache';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi';
-import React, { FC, PropsWithChildren, createContext, useContext, useState } from 'react';
+import React, { FC, PropsWithChildren, useContext, useState } from 'react';
 import { EntityMetadataFetcher } from './entityMetadataFetcher';
 import { IEntityMetadataFetcher } from './models';
+import { createNamedContext } from '@/utils/react';
 
-export const EntityMetadataFetcherContext = createContext<IEntityMetadataFetcher>(undefined);
+export const EntityMetadataFetcherContext = createNamedContext<IEntityMetadataFetcher>(undefined, "EntityMetadataFetcherContext");
 
 export const EntityMetadataFetcherProvider: FC<PropsWithChildren> = ({ children }) => {
     const httpClient = useHttpClient();

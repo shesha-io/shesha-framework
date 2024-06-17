@@ -1,4 +1,4 @@
-import { createContext, MutableRefObject } from 'react';
+import { MutableRefObject } from 'react';
 import {
   IAsyncValidationError,
   IFormValidationErrors,
@@ -17,6 +17,7 @@ import {
   ROOT_COMPONENT_KEY,
 } from '../form/models';
 import { IDataSource } from '../formDesigner/models';
+import { createNamedContext } from '@/utils/react';
 
 export interface IFormDesignerStateContext {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -134,16 +135,16 @@ export const FORM_DESIGNER_CONTEXT_INITIAL_STATE: IFormDesignerStateContext = {
   readOnly: true,
 };
 
-export const UndoableFormDesignerStateContext = createContext<IUndoableFormDesignerStateContext>({
+export const UndoableFormDesignerStateContext = createNamedContext<IUndoableFormDesignerStateContext>({
   past: [],
   present: FORM_DESIGNER_CONTEXT_INITIAL_STATE,
   future: [],
-});
+}, "UndoableFormDesignerStateContext");
 
 export interface ConfigurableFormInstance extends IFormDesignerActionsContext, IFormDesignerStateContext { }
 
-export const FormDesignerStateContext = createContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE);
+export const FormDesignerStateContext = createNamedContext<IFormDesignerStateContext>(FORM_DESIGNER_CONTEXT_INITIAL_STATE, "FormDesignerStateContext");
 
-export const FormDesignerActionsContext = createContext<IFormDesignerActionsContext>(undefined);
+export const FormDesignerActionsContext = createNamedContext<IFormDesignerActionsContext>(undefined, "FormDesignerActionsContext");
 
 export const FormDesignerStateConsumer = FormDesignerStateContext.Consumer;

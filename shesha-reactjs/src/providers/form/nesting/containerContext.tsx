@@ -1,9 +1,10 @@
-import React, { createContext, FC, PropsWithChildren, useContext } from 'react';
+import React, { FC, PropsWithChildren, useContext } from 'react';
 import { IComponentsContainerBaseProps } from '@/interfaces';
+import { createNamedContext } from '@/utils/react';
 
 export type ContainerType = FC<IComponentsContainerBaseProps>;
 
-export const ComponentsContainerContext = createContext<ContainerType>(undefined);
+export const ComponentsContainerContext = createNamedContext<ContainerType>(undefined, "ComponentsContainerContext");
 
 export interface IComponentsContainerProviderProps {
     ContainerComponent: ContainerType;
