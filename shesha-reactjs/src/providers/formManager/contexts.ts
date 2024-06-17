@@ -1,7 +1,7 @@
-import { createContext } from "react";
 import { FormLoadingItem, UpToDateForm } from "./interfaces";
 import { FormIdentifier, FormRawMarkup, IFormSettings } from "../form/models";
 import { ConfigurationItemsViewMode } from "../appConfigurator/models";
+import { createNamedContext } from "@/utils/react";
 
 export interface IFormManagerStateContext {
 
@@ -26,6 +26,6 @@ export interface IFormManagerActionsContext {
     getFormByMarkupLoader: (payload: GetFormByMarkupPayload) => FormLoadingItem;
 }
 
-export const FormManagerStateContext = createContext<IFormManagerStateContext>(undefined);
+export const FormManagerStateContext = createNamedContext<IFormManagerStateContext>(undefined, "FormManagerStateContext");
 
-export const FormManagerActionsContext = createContext<IFormManagerActionsContext>(undefined);
+export const FormManagerActionsContext = createNamedContext<IFormManagerActionsContext>(undefined, "FormManagerActionsContext");

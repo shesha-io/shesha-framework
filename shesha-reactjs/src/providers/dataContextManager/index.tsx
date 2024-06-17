@@ -1,9 +1,9 @@
 import { ConfigurableFormInstance } from "@/interfaces";
 import { isEqual } from "lodash";
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
-import { createContext } from 'react';
 import { IDataContextDescriptor, IDataContextDictionary, IRegisterDataContextPayload } from "./models";
 import { DataContextType, IDataContextFull, useDataContext } from "../dataContextProvider/contexts";
+import { createNamedContext } from "@/utils/react";
 
 export const RootContexts: string[] = [];
 
@@ -38,8 +38,8 @@ export interface IDataContextManagerFullInstance extends IDataContextManagerStat
 /** initial state */
 export const DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE: IDataContextManagerStateContext = {lastUpdate: ''};
 
-export const DataContextManagerStateContext = createContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE);
-export const DataContextManagerActionsContext = createContext<IDataContextManagerActionsContext>(undefined);
+export const DataContextManagerStateContext = createNamedContext<IDataContextManagerStateContext>(DATA_CONTEXT_MANAGER_CONTEXT_INITIAL_STATE, "DataContextManagerStateContext");
+export const DataContextManagerActionsContext = createNamedContext<IDataContextManagerActionsContext>(undefined, "DataContextManagerActionsContext");
 
 export interface IDataContextManagerProps {}
 

@@ -1,5 +1,6 @@
-import React, { createContext, useContext, FC, PropsWithChildren, useMemo } from "react";
+import React, { useContext, FC, PropsWithChildren, useMemo } from "react";
 import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure } from "../index";
+import { createNamedContext } from "@/utils/react";
 
 export interface IParentProviderStateContext {
   formMode?: FormMode;
@@ -18,7 +19,7 @@ export interface IParentProviderProps {
   formFlatMarkup?: IFlatComponentsStructure;
 }
 
-export const ParentProviderStateContext = createContext<IParentProviderStateContext>({model: {}, getChildComponents: () => null });
+export const ParentProviderStateContext = createNamedContext<IParentProviderStateContext>({model: {}, getChildComponents: () => null }, "ParentProviderStateContext");
 
 export function useParent(require: boolean = true) {
   const stateContext = useContext(ParentProviderStateContext);

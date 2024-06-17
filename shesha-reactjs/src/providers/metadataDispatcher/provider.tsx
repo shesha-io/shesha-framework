@@ -1,10 +1,11 @@
-import React, { FC, PropsWithChildren, createContext, useContext, useState } from 'react';
+import React, { FC, PropsWithChildren, useContext, useState } from 'react';
 import { IMetadataDispatcher } from './contexts';
 import { MetadataDispatcher } from './dispatcher';
 import { useHttpClient } from '../sheshaApplication/publicApi';
 import { useEntityMetadataFetcher } from './entities/provider';
+import { createNamedContext } from '@/utils/react';
 
-export const MetadataDispatcherContext = createContext<IMetadataDispatcher>(undefined);
+export const MetadataDispatcherContext = createNamedContext<IMetadataDispatcher>(undefined, "MetadataDispatcherContext");
 
 export const MetadataDispatcherProvider: FC<PropsWithChildren> = ({ children }) => {
     const entityMetaFetcher = useEntityMetadataFetcher();

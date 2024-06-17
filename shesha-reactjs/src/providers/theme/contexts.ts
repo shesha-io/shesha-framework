@@ -1,5 +1,5 @@
+import { createNamedContext } from '@/utils/react';
 import { Theme } from 'antd/lib/config-provider/context';
-import { createContext } from 'react';
 
 interface ITextTheme {
   default?: string;
@@ -48,6 +48,6 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
   iconPrefixCls: 'antdicon',
 };
 
-export const UiStateContext = createContext<IThemeStateContext>(THEME_CONTEXT_INITIAL_STATE);
+export const UiStateContext = createNamedContext<IThemeStateContext>(THEME_CONTEXT_INITIAL_STATE, "UiStateContext");
 
-export const UiActionsContext = createContext<IThemeActionsContext>(undefined);
+export const UiActionsContext = createNamedContext<IThemeActionsContext>(undefined, "UiActionsContext");
