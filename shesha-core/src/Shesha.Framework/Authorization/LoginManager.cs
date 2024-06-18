@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
 using Shesha.Configuration;
+using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.MultiTenancy;
 using System;
@@ -30,7 +31,7 @@ namespace Shesha.Authorization
             AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory, 
             IRepository<ShaUserLoginAttempt, Guid> shaLoginAttemptRepository, 
             IRepository<MobileDevice, Guid> mobileDeviceRepository,
-            IAuthenticationSettings authSettings) : base(
+            ISecuritySettings securitySettings) : base(
                 userManager, 
                 multiTenancyConfig, 
                 tenantRepository, 
@@ -42,7 +43,7 @@ namespace Shesha.Authorization
                 claimsPrincipalFactory, 
                 shaLoginAttemptRepository, 
                 mobileDeviceRepository,
-                authSettings
+                securitySettings
             )
         {
         }

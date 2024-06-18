@@ -15,6 +15,7 @@ using Abp.Zero.Configuration;
 using Microsoft.AspNetCore.Identity;
 using NetTopologySuite.Operation.Valid;
 using Shesha.Configuration;
+using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
@@ -46,13 +47,15 @@ namespace Shesha.Authorization
         protected IIocResolver IocResolver { get; }
         protected AbpRoleManager<TRole, TUser> RoleManager { get; }
         public IOtpManager OtpManager { get; set; }
-        private readonly IAuthenticationSettings _authSettings;
+
+        private readonly ISecuritySettings _securitySettings;
 
         private readonly IPasswordHasher<TUser> _passwordHasher;
 
         private readonly AbpUserClaimsPrincipalFactory<TUser, TRole> _claimsPrincipalFactory;
 
         protected readonly IRepository<ShaUserLoginAttempt, Guid> ShaLoginAttemptRepository;
+
         private readonly IRepository<MobileDevice, Guid> _mobileDeviceRepository;
 
         public ShaLoginManager(
@@ -67,7 +70,7 @@ namespace Shesha.Authorization
             AbpUserClaimsPrincipalFactory<TUser, TRole> claimsPrincipalFactory,
             IRepository<ShaUserLoginAttempt, Guid> shaLoginAttemptRepository,
             IRepository<MobileDevice, Guid> mobileDeviceRepository,
-            IAuthenticationSettings authSettings)
+            ISecuritySettings securitySettings)
         {
             _passwordHasher = passwordHasher;
             _claimsPrincipalFactory = claimsPrincipalFactory;
@@ -78,7 +81,7 @@ namespace Shesha.Authorization
             IocResolver = iocResolver;
             RoleManager = roleManager;
             UserManager = userManager;
-            _authSettings = authSettings;
+            _securitySettings = securitySettings;
 
             ClientInfoProvider = NullClientInfoProvider.Instance;
             ShaLoginAttemptRepository = shaLoginAttemptRepository;
@@ -145,13 +148,13 @@ namespace Shesha.Authorization
         {
             CheckOtpAuthAvailability();
 
-            var lifetime = await _authSettings.MobileLoginPinLifetime.GetValueAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
 
             var response = await OtpManager.SendPinAsync(new SendPinInput()
             {
                 SendTo = mobileNumber,
                 SendType = OtpSendType.Sms,
-                Lifetime = lifetime,
+                Lifetime = securitySettings.MobileLoginPinLifetime,
                 ActionType = "OTP login",
                 RecipientId = user.Id.ToString(),
             });
