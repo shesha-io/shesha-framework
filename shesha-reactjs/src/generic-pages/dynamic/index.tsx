@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { App, Button, Form, message, notification, Result, Spin } from 'antd';
+import { App, Button, Form, message, Result, Spin } from 'antd';
 import classNames from 'classnames';
 import isDeepEqual from 'fast-deep-equal/react';
 import moment from 'moment';
