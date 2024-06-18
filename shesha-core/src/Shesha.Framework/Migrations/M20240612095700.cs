@@ -49,7 +49,8 @@ namespace Shesha.Migrations
                             OR ci.Name LIKE 'Shesha.Otp%'
                             OR ci.Name LIKE 'Shesha.Sms.%'
                             OR ci.Name LIKE 'Shesha.Email.%'
-		                ))
+		                )
+                )
                 AND (    
                     Category LIKE '%Authentication%'
                     OR Category LIKE '%One Time Pins%'
@@ -75,8 +76,6 @@ namespace Shesha.Migrations
                             OR ci.Name LIKE 'Shesha.Otp%'
                             OR ci.Name LIKE 'Shesha.Sms.%'
                             OR ci.Name LIKE 'Shesha.Email.%'
-
-
                         )
                 )
                 AND (
@@ -89,7 +88,7 @@ namespace Shesha.Migrations
 
             // remove settings configuration without corresponding configurations
             // Step 1: Update referencing records to set OriginId and ParentVersionId to NULL
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
                 UPDATE ""Frwk_ConfigurationItems""
                 SET ""OriginId"" = NULL, ""ParentVersionId"" = NULL
                 WHERE ""OriginId"" IN (
@@ -105,7 +104,7 @@ namespace Shesha.Migrations
             ");
 
             // Step 2: Delete target records
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
                 DELETE FROM ""Frwk_ConfigurationItems""
                 WHERE ""ItemType"" = 'setting-configuration'
                 AND NOT EXISTS (SELECT 1 FROM ""Frwk_SettingConfigurations"" WHERE ""Id"" = ""Frwk_ConfigurationItems"".""Id"")
