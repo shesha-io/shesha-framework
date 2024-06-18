@@ -498,7 +498,9 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     isComponentFiltered,
     getAction,
     getSection,
-    getToolboxComponent]);
+    getToolboxComponent,
+    prepareDataForSubmit,
+    executeExpression]);
 
   if (formRef)
     formRef.current = { ...configurableFormActions, ...state };
