@@ -1,6 +1,7 @@
-import React, { createContext, FC, useContext, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import { CollapsiblePanel, ICollapsiblePanelProps } from '@/components';
 import { useSettingsForm } from './settingsForm';
+import { createNamedContext } from '@/utils/react';
 
 interface ISettingsCollapsiblePanelProps extends ICollapsiblePanelProps { }
 
@@ -8,7 +9,7 @@ export interface ISettingsCollapsiblePanelActionsContext {
     registerField: (name: string) => void;
 }
   
-export const SettingsCollapsiblePanelActionsContext = createContext<ISettingsCollapsiblePanelActionsContext>(undefined);
+export const SettingsCollapsiblePanelActionsContext = createNamedContext<ISettingsCollapsiblePanelActionsContext>(undefined, "SettingsCollapsiblePanelActionsContext");
 
 const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => {
     const [fields, setFields] = useState([]);

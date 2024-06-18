@@ -116,7 +116,6 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
             const defaultExpandAll = props?.searchText.length > 1 && visibleItems.length <= 6;
 
             let classes = ['sha-toolbox-panel'];
-            //if (ds.datasource.id === activeDataSourceId) classes.push('active');
 
             return visibleItems.length === 0 ? null : (
               ds.groupName === '-'

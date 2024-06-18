@@ -109,7 +109,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
     const { styles } = useStyles();
     const [activePane, setActivePane] = useState(null);
-    const [ isDevMode ] = useLocalStorage('application.isDevMode', false);
+    const [isDevMode] = useLocalStorage('application.isDevMode', false);
 
     const { getMetadata } = useMetadataDispatcher();
 
@@ -123,15 +123,6 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
             subsCopy.forEach(s => s.dispose());
         };
     }, []);
-
-    /*
-    const addExtralibIfMissing = (language: languages.typescript.LanguageServiceDefaults, content: string, filePath?: string) => {
-        const extraLibs = language.getExtraLibs();
-        if (!extraLibs[filePath]) {
-            language.addExtraLib(content, filePath);
-        }
-    };
-    */
 
     const template = useMemo(() => {
         if (wrapInTemplate !== true)
@@ -228,15 +219,15 @@ ${(c) => c.editable(code)}
             : undefined;
         editorRef.current.setModel(model);
 
-        if (isRange(selectionOrPosition)){
-            editorRef.current.setSelection(selectionOrPosition, ''); 
+        if (isRange(selectionOrPosition)) {
+            editorRef.current.setSelection(selectionOrPosition, '');
             editorRef.current.revealLineInCenter(selectionOrPosition.startLineNumber);
         }
-        if (isPosition(selectionOrPosition)){
+        if (isPosition(selectionOrPosition)) {
             editorRef.current.setPosition(selectionOrPosition, '');
             editorRef.current.revealLineInCenter(selectionOrPosition.lineNumber);
         }
-        
+
         editorRef.current.focus();
     };
 
@@ -247,7 +238,7 @@ ${(c) => c.editable(code)}
             async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
                 if (!isDevMode)
                     return false;
-                
+
                 navigateToModel(resource, selectionOrPosition);
                 return true;
             }

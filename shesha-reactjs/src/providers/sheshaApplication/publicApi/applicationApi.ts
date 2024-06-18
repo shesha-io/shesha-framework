@@ -2,8 +2,7 @@ import { CurrentUserApi, IInternalCurrentUserApi } from './currentUser/api';
 import { ISettingsApi, SettingsApi } from './settings/api';
 import { HttpClientApi } from './http/api';
 import { EntitiesApi, IEntitiesApi } from './entities/api';
-import { ICacheProvider } from '@/providers/metadataDispatcher/entities/models';
-import { IEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/useEntityMetadataFetcher';
+import { ICacheProvider, IEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/models';
 
 export interface IApplicationPlugin {
     name: string;

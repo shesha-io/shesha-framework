@@ -79,7 +79,7 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
       ownerUid: id,
       hasArguments: false,
       executer: () => {
-        openDrawer(); // todo: return real promise
+        openDrawer(); // TODO: return real promise
         return Promise.resolve();
       },
     },
@@ -93,7 +93,7 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
       ownerUid: id,
       hasArguments: false,
       executer: () => {
-        closeDrawer(); // todo: return real promise
+        closeDrawer(); // TODO: return real promise
         return Promise.resolve();
       },
     },

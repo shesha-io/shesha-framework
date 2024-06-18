@@ -1,4 +1,3 @@
-import { createContext } from 'react';
 import { UserLoginInfoDto } from '@/apis/session';
 import {
   ResetPasswordUsingTokenInput,
@@ -11,6 +10,7 @@ import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { EMPTY_FLAGS_STATE } from '@/interfaces/flagsState';
 import IRequestHeaders from '@/interfaces/requestHeaders';
+import { createNamedContext } from '@/utils/react';
 
 export type IFlagProgressFlags =
   | 'isIdle'
@@ -101,6 +101,6 @@ export const AUTH_CONTEXT_INITIAL_STATE: IAuthStateContext = {
   isLoggedIn: false,
 };
 
-export const AuthStateContext = createContext<IAuthStateContext>(AUTH_CONTEXT_INITIAL_STATE);
+export const AuthStateContext = createNamedContext<IAuthStateContext>(AUTH_CONTEXT_INITIAL_STATE, "AuthStateContext");
 
-export const AuthActionsContext = createContext<IAuthActionsContext | undefined>(undefined);
+export const AuthActionsContext = createNamedContext<IAuthActionsContext | undefined>(undefined, "AuthActionsContext");
