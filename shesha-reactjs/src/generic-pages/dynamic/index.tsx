@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Form, message, notification, Result, Spin } from 'antd';
+import { App, Button, Form, message, notification, Result, Spin } from 'antd';
 import classNames from 'classnames';
 import isDeepEqual from 'fast-deep-equal/react';
 import moment from 'moment';
@@ -45,6 +45,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { configurationItemMode } = useAppConfigurator();
   const dcm = useDataContextManager(false);
   const pageContext = dcm.getPageContext();
+  const app = App.useApp();
 
   const { publish } = usePubSub();
 
@@ -190,7 +191,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   //#region Error messages
   
   const displayNotificationError = (error: IErrorInfo) => {
-    notification.error({
+    app.notification.error({
       message: 'Sorry! An error occurred.',
       icon: null,
       description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
