@@ -11,7 +11,7 @@ import {
 } from 'react-beautiful-dnd';
 
 import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal, Select } from 'antd';
-import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteFilled, MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import { KeyInfomationBarItemProps } from './interfaces';
 
@@ -150,8 +150,8 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const handleAddColumn = () => {
     const newColumn: KeyInfomationBarItemProps = {
       id: nanoid(),
-      width: 200,
-      textAlign: 'center',
+      width: 80,
+      textAlign: 'right',
       flexDirection: "column",
       components: [],
     };
@@ -200,11 +200,12 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
     !readOnly
       ? {
         title: '',
+        width: 10,
         dataIndex: 'operations',
         render: (_, record) =>
           columns.length >= 1 ? (
             <Popconfirm title="Are you sure want to delete this tab?" onConfirm={() => handleDeleteTab(record.id)}>
-              <a>Delete</a>
+              <a><DeleteFilled color='red' /></a>
             </Popconfirm>
           ) : null,
       }
@@ -269,7 +270,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
         title={readOnly ? 'View Columns' : 'Configure Columns'}
         open={showDialog}
         width="650px"
-        
+
         onOk={toggleModal}
         okButtonProps={{ hidden: readOnly }}
 

@@ -8,30 +8,50 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const content = "content";
 
     const flexContainer = cx("flex-container", css`
-        width: 100%;
+        max-width: 100%;
         background-color: ${token.colorTextLightSolid};
 
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;
             align-items: center;
+            flex-flow: row nowrap;
 
             .${content} {
                 max-width: 100%;
                 width: max-content;
                 padding: 0;
                 white-space: nowrap;
-
+                flex: 1 1;
                 .ant-form-item {
                     margin-bottom: 0;
-                    overflow: hidden;
-                    max-width: 100%;
+                    width: 100%;
                     justify-content: center;
-                    text-overflow: ellipsis;
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box; 
                 }
 
                 &.ant-form-item-control-input-content, .ant-form-item-control-input {
                     text-overflow: ellipsis;
                     white-space: nowrap;
+                    min-height: 0;
+                    width: 100%;
+
+                    button {
+                        width: 100%;
+                    }
+
+                    span {
+                        overflow: hidden;
+                        display: block;
+                        text-overflow: ellipsis;
+                    }
+                }
+
+                .ant-row {
+                    margin: 0;
+                    padding: 0;
+                
                 }
             }
         }

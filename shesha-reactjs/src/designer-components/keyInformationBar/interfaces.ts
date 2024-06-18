@@ -23,10 +23,10 @@ export interface IKeyInformationBarProps extends IConfigurableFormComponent, ICo
   width?: string;
   height?: string;
   dividerHeight?: string;
+  dividerWidth?: string;
   dividerMargin?: number;
   gap?: number;
   alignItems?: AlignItems;
-  columnWidth?: string;
   vertical?: boolean;
   columns?: KeyInfomationBarItemProps[];
   readOnly?: boolean;
