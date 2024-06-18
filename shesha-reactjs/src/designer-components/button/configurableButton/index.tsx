@@ -41,6 +41,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
           });
       } else console.error('Action is not configured');
     } catch (error) {
+      setLoading(false);
       console.error('Validation failed:', error);
     }
   };

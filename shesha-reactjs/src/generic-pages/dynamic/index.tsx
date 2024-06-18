@@ -313,6 +313,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
             <MetadataProvider id="dynamic" modelType={formSettings?.modelType}>
               {formWithData.loadingState === 'ready' && (
                 <ConfigurableForm
+                  formName='dynamic-page-form'
                   needDebug
                   formSettings={finalFormSettings}
                   flatStructure={formWithData.form?.flatStructure}
