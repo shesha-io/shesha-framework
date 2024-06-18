@@ -45,7 +45,7 @@ export const useChildComponents = (containerId: string): IConfigurableFormCompon
             return allComponents[childId];
         });
         return components;
-    }, [markup]);
+    }, [markup, containerId]);
 
     return result;
 };
