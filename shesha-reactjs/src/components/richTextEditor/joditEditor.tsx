@@ -1,4 +1,4 @@
-import React, { FC, useMemo, lazy } from 'react';
+import React, { FC, lazy, useState, useEffect } from 'react';
 import { Skeleton } from 'antd';
 
 let defaultOptions = {};
@@ -21,15 +21,29 @@ export interface IJoditEditorProps {
 export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     const { config, value, onChange } = props;
 
-    const fullConfig = useMemo<any>(() => {
-        const placeholder = !value ? config?.placeholder : "";
+    const getPlaceholder = (text: string) => {
+        return !text ? config?.placeholder : "";
+    };
+
+    const [fullConfig, setFullConfig] = useState<any>(() => {
         const result = {
             ...defaultOptions,
             ...config,
-            placeholder,
+            placeholder: getPlaceholder(value),
         };
         return result;
-    }, [config, value]);
+    });
+
+    const updatePlaceholder = (newValue: string) => {
+        const newPlaceholder = getPlaceholder(newValue);
+        if (fullConfig.placeholder !== newPlaceholder){
+            setFullConfig({ ...fullConfig, placeholder: newPlaceholder });
+        }
+    };
+
+    useEffect(() => {
+        updatePlaceholder(value);
+    }, [value]);
 
     const handleBlur = (newValue: string) => {
         onChange?.(newValue);
