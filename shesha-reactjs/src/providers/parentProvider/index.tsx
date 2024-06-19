@@ -47,12 +47,12 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
   const formFlatMarkupLocal = formFlatMarkup ?? parent?.formFlatMarkup;
   const contextLocal = context ?? parent?.context;
 
-  const value: IParentProviderStateContext = useMemo(() => {
+  const value = useMemo((): IParentProviderStateContext => {
     return {
       formMode: formModeLocal,
       subFormIdPrefix: subFormIdPrefixLocal,
       context: contextLocal,
-      flatComponentsStructure: formFlatMarkupLocal,
+      formFlatMarkup: formFlatMarkupLocal,
       model: {...parent?.model, ...model},
       getChildComponents: (componentId: string): IConfigurableFormComponent[] => {
         if (!!value.formFlatMarkup) {
@@ -64,7 +64,7 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
           return components;
         }
         return null;
-      },
+      }
     };
   }, [formModeLocal, subFormIdPrefixLocal, contextLocal, formFlatMarkupLocal, model, parent?.model]);
 
