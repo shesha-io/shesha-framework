@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useFormManager } from ".";
-import { GetFormByMarkupPayload } from "./contexts";
+import { GetFormByIdPayload, GetFormByMarkupPayload } from "./contexts";
 import { FormLoadingState, UpToDateForm } from "./interfaces";
 
 export interface GetFormByMarkupResponse {
@@ -14,6 +14,29 @@ export const useFormByMarkup = (props: GetFormByMarkupPayload): GetFormByMarkupR
     const { getFormByMarkupLoader } = useFormManager();
 
     const [loader, setLoader] = useState<GetFormByMarkupResponse>(() => getFormByMarkupLoader(props));
+    const initialLoaderState = useRef(loader.state);
+
+    useEffect(() => {
+        if (initialLoaderState.current !== 'ready')
+            loader.promise.then(() => {
+                setLoader({...loader});
+            });
+    }, []);
+
+    return loader;
+};
+
+export interface GetFormByIdResponse {
+    state: FormLoadingState;
+    form?: UpToDateForm;
+    error?: string;
+    promise: Promise<UpToDateForm>;
+}
+
+export const useFormById = (props: GetFormByIdPayload): GetFormByIdResponse => {
+    const { getFormByIdLoader } = useFormManager();
+
+    const [loader, setLoader] = useState<GetFormByMarkupResponse>(() => getFormByIdLoader(props));
     const initialLoaderState = useRef(loader.state);
 
     useEffect(() => {

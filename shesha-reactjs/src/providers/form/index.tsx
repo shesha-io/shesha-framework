@@ -112,8 +112,6 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   };
   const [state, dispatch] = useThunkReducer(formReducer, undefined, getInitialData);
   // formDataRef is used for memoization of prepareDataForSubmit only, to be removed after review of form data handling
-  const formDataRef = useRef(state.formData);
-  formDataRef.current = state.formData;
 
   const { allComponents } = ShaForm.useMarkup();
 
@@ -318,6 +316,17 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     }
   }, [form, updateStateFormData]);
 
+  // reset form to initial data on any change of initialData
+  const shouldSyncInitialData = useRef<boolean>(false);
+  useEffect(() => {
+    if (shouldSyncInitialData.current) {
+      setFormData({ values: props.initialValues, mergeValues: false });
+    } else {
+      shouldSyncInitialData.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.initialValues]);
+
   //#region form actions
   const registerActions = useCallback((ownerId: string, actionsToRegister: IFormActions) => {
     dispatch(registerComponentActionsAction({ id: ownerId, actions: actionsToRegister }));
@@ -423,7 +432,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const prepareDataForSubmit = (): Promise<object> => {
-    const formData = formDataRef.current;
+    const { formData } = state;
 
     return getDynamicPreparedValues()
       .then((dynamicValues) => {
@@ -474,34 +483,22 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       .catch((error) => console.error(error));
   };
 
-  const configurableFormActions = useMemo<IFormActionsContext>(() => (
-    {
-      setFormMode,
-      updateStateFormData,
-      setValidationErrors,
-      registerActions,
-      setFormData,
-      isComponentFiltered,
-
-      getAction,
-      getSection,
-      getToolboxComponent,
-
-      prepareDataForSubmit,
-      executeExpression,
-    }), [
+  // TODO: memoize after review handling of form data
+  const configurableFormActions: IFormActionsContext = {
     setFormMode,
     updateStateFormData,
     setValidationErrors,
     registerActions,
     setFormData,
     isComponentFiltered,
+
     getAction,
     getSection,
     getToolboxComponent,
-    prepareDataForSubmit,
-    executeExpression]);
 
+    prepareDataForSubmit,
+    executeExpression,
+  };
   if (formRef)
     formRef.current = { ...configurableFormActions, ...state };
 

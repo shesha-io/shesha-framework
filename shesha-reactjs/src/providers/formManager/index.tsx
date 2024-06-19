@@ -36,9 +36,9 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
             versionStatus: formDto.versionStatus,
             ...formDto,
             flatStructure,
-            settings: settings,            
+            settings: settings,
         };
-        
+
         return result;
     };
 
@@ -56,26 +56,33 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
                 throw error;
             }),
         };
-        
-        return item;        
+
+        return item;
     };
 
-    const getFormById = (payload: GetFormByIdPayload): Promise<UpToDateForm> => {
+    const getFormByIdLoader = (payload: GetFormByIdPayload): FormLoadingItem => {
         const cacheKey = getFormCacheKey(payload.formId, payload.configurationItemMode);
-        const cachedItem = cacheById.current[cacheKey];
-        if (cachedItem)
-            return cachedItem.promise;
+        
+        if (!payload.skipCache) {
+            const cachedItem = cacheById.current[cacheKey];
+            if (cachedItem)
+                return cachedItem;
+        }
 
         const item = makeFormByIdLoader(payload);
 
         cacheById.current[cacheKey] = item;
 
-        return item.promise;
+        return item;
+    };
+
+    const getFormById = (payload: GetFormByIdPayload): Promise<UpToDateForm> => {
+        return getFormByIdLoader(payload).promise;
     };
 
     const getFormByMarkupAsync = async ({ markup, formSettings = DEFAULT_FORM_SETTINGS, isSettingsForm: convertToSettings }: GetFormByMarkupPayload): Promise<UpToDateForm> => {
         const settings: IFormSettings = convertToSettings
-            ? {...formSettings, isSettingsForm: true }
+            ? { ...formSettings, isSettingsForm: true }
             : formSettings;
 
         const flatStructure = convertFormMarkupToFlatStructure(markup, settings, designerComponents);
@@ -101,8 +108,8 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
                 throw error;
             }),
         };
-        
-        return item;        
+
+        return item;
     };
 
     const getFormByMarkupLoader = (payload: GetFormByMarkupPayload): FormLoadingItem => {
@@ -129,6 +136,7 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
 
     const actions: IFormManagerActionsContext = {
         getFormById,
+        getFormByIdLoader,
         getFormByMarkup,
         getFormByMarkupLoader,
     };
