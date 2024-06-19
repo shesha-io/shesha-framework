@@ -79,7 +79,7 @@ const ThemeParameters: FC = () => {
   ];
 
   return (
-    <Fragment>
+    <div style={{marginTop: '10px'}}>
       <SectionSeparator title="Theme" />
 
       <Space direction="vertical" align="start">
@@ -137,7 +137,7 @@ const ThemeParameters: FC = () => {
           </Radio.Group>
         </Form.Item>
       </Form>
-    </Fragment>
+    </div>
   );
 };
 
