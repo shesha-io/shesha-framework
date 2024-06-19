@@ -26,7 +26,7 @@ import { useDataTableStore } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
-import {EmptyState} from '..';
+import { EmptyState } from '..';
 
 interface IReactTableState {
   allRows: any[];
@@ -127,14 +127,14 @@ export const ReactTable: FC<IReactTableProps> = ({
         id: 'selection',
         //isVisible: true,
         disableResizing: true,
-        minWidth: 35,
-        width: 35,
-        maxWidth: 35,
+        minWidth: 37,
+        width: 37,
+        maxWidth: 37,
         disableSortBy: true,
         // The header can use the table's getToggleAllRowsSelectedProps method
         // to render a checkbox
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-          <span>
+          <span className='Phumudzo' style={{ overflow: 'unset', textOverflow: 'unset' }}>
             <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
