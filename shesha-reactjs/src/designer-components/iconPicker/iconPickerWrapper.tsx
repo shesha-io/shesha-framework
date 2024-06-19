@@ -8,7 +8,7 @@ import { IApplicationContext, pickStyleFromModel } from '@/providers/form/utils'
 import { executeFunction, useFormData, useGlobalState } from '@/index';
 
 interface IconPickerWrapperProps {
-    disabled?: boolean; // TODO: move to the model level
+    disabled?: boolean; // todo: move to the model level
     applicationContext: IApplicationContext;
     value: any;
     onChange: (...args: any[]) => void;
@@ -24,7 +24,7 @@ interface IconPickerWrapperProps {
     defaultValue?: ShaIconTypes;
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { fontSize, readOnly, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
@@ -36,7 +36,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
     const style: CSSProperties = {
         fontSize: fontSize || 24,
-        color: defaultValue || value,
+        color: color,
         marginLeft: (borderWidth || borderColor || backgroundColor) ? '12px' : 'none' //this allows us to correct the icon layout when it's configured
     };
 
@@ -54,13 +54,13 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     };
 
     return (
-        <div style={(value || defaultValue) ? getIconStyle : {}}>
+        <div style={(defaultValue) ? getIconStyle : {}}>
             <IconPicker
-                value={value as ShaIconTypes || defaultValue as ShaIconTypes}
+                value={defaultValue as ShaIconTypes}
                 onIconChange={onIconChange}
                 readOnly={readOnly}
                 style={style}
-                twoToneColor={value}
+                twoToneColor={color}
                 defaultValue={defaultValue as ShaIconTypes}
             />
         </div>
