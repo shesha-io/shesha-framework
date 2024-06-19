@@ -1,8 +1,8 @@
 import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
 import { ComponentsContainer, useFormData } from '@/index';
 import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
-import { Divider, Flex, Row } from 'antd';
-import React, { FC } from 'react'
+import { Divider, Flex } from 'antd';
+import React, { FC } from 'react';
 import { useStyles } from './style';
 
 export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
@@ -20,7 +20,6 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
 
     const containerStyle = (item) => ({
-        width: item.width,
         textAlign: item.textAlign,
         display: "flex",
         flexDirection: item.flexDirection ? item.flexDirection : "column",
@@ -42,9 +41,9 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         <Flex vertical={vertical} className={styles.flexContainer} style={{ ...computedStyle, ...justifyContent }} >
             {columns?.map((item, i) => {
                 return (
-                    <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper}>
+                    <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={{ width: item.width }}>
                         <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} className={styles.divider} style={dividerStyle} />
-                        <div className={styles.content} style={{ textAlign: item.textAlign }}>
+                        <div className={styles.content} style={{ textAlign: item.textAlign, width: item.width }}>
                             <ComponentsContainer
                                 containerId={item.id}
                                 gap={gap}
@@ -55,7 +54,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
                     </div>);
             })}
         </Flex>
-    )
-}
+    );
+};
 
 export default KeyInformationBar;

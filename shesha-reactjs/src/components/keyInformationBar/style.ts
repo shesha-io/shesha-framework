@@ -10,18 +10,17 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const flexContainer = cx("flex-container", css`
         max-width: 100%;
         background-color: ${token.colorTextLightSolid};
+        flex-wrap: wrap;
 
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;
             align-items: center;
-            flex-flow: row nowrap;
+            flex: 0 0 33.3333%;
 
             .${content} {
-                max-width: 100%;
                 width: max-content;
                 padding: 0;
                 white-space: nowrap;
-                flex: 1 1;
                 .ant-form-item {
                     margin-bottom: 0;
                     width: 100%;
@@ -38,19 +37,21 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                     width: 100%;
 
                     button {
-                        width: 100%;
+                        max-width: 100%;
                     }
 
                     span {
                         overflow: hidden;
                         display: block;
                         text-overflow: ellipsis;
+                        width: inherit;
                     }
                 }
 
                 .ant-row {
                     margin: 0;
                     padding: 0;
+                    width: 100%;
                 
                 }
             }
@@ -69,6 +70,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             min-width: 0;
             min-height: 0;
             max-height: 100%;
+            max-width: 100%;
         }
     `);
 
