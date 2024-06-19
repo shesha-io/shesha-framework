@@ -60,17 +60,21 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
         return item;        
     };
 
-    const getFormById = (payload: GetFormByIdPayload): Promise<UpToDateForm> => {
+    const getFormByIdLoader = (payload: GetFormByIdPayload): FormLoadingItem => {
         const cacheKey = getFormCacheKey(payload.formId, payload.configurationItemMode);
         const cachedItem = cacheById.current[cacheKey];
         if (cachedItem)
-            return cachedItem.promise;
+            return cachedItem;
 
         const item = makeFormByIdLoader(payload);
 
         cacheById.current[cacheKey] = item;
 
-        return item.promise;
+        return item;
+    };
+
+    const getFormById = (payload: GetFormByIdPayload): Promise<UpToDateForm> => {
+        return getFormByIdLoader(payload).promise;
     };
 
     const getFormByMarkupAsync = async ({ markup, formSettings = DEFAULT_FORM_SETTINGS, isSettingsForm: convertToSettings }: GetFormByMarkupPayload): Promise<UpToDateForm> => {
@@ -129,6 +133,7 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
 
     const actions: IFormManagerActionsContext = {
         getFormById,
+        getFormByIdLoader,
         getFormByMarkup,
         getFormByMarkupLoader,
     };

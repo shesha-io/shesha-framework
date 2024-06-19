@@ -22,8 +22,10 @@ export type GetFormByIdPayload = {
 
 export interface IFormManagerActionsContext {
     getFormById: (payload: GetFormByIdPayload) => Promise<UpToDateForm>;
+    getFormByIdLoader: (payload: GetFormByIdPayload) => FormLoadingItem;
+    
     getFormByMarkup: (payload: GetFormByMarkupPayload) => Promise<UpToDateForm>;
-    getFormByMarkupLoader: (payload: GetFormByMarkupPayload) => FormLoadingItem;
+    getFormByMarkupLoader: (payload: GetFormByMarkupPayload) => FormLoadingItem;    
 }
 
 export const FormManagerStateContext = createNamedContext<IFormManagerStateContext>(undefined, "FormManagerStateContext");
