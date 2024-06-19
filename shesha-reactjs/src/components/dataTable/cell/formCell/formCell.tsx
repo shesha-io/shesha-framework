@@ -37,7 +37,7 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
     : (
       <div className={styles.shaFormCell} style={{minHeight: props.columnConfig.minHeight ?? 0}}> 
         <FormItemProvider labelCol={form.settings?.labelCol}>
-          <ParentProvider model={{ readOnly: true }} formMode='readonly' flatComponentsStructure={flatComponentsStructure}>
+          <ParentProvider model={{ readOnly: true }} formMode='readonly' formFlatMarkup={flatComponentsStructure}>
             <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
               <ComponentsContainer containerId={ROOT_COMPONENT_KEY} dynamicComponents={form.markup} />
             </ComponentsContainerProvider>

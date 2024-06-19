@@ -4,7 +4,7 @@ import { ConfigurableForm } from '@/components';
 import formSettingsJson from './formSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 
@@ -16,7 +16,8 @@ export interface IFormSettingsEditorProps {
 
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
   const [form] = Form.useForm();
-  const { formSettings, updateFormSettings } = useFormDesigner();
+  const { formSettings } = useFormDesignerState();
+  const { updateFormSettings } = useFormDesignerActions();
   const { formProps } = useFormPersister();
 
   const onSave = values => {

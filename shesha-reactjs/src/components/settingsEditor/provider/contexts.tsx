@@ -1,6 +1,6 @@
-import { createContext } from 'react';
 import { FormMode } from '@/providers';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, LoadingState, SettingValue } from './models';
+import { createNamedContext } from '@/utils/react';
 
 export interface IEditorBridge {
     save: () => Promise<void>;
@@ -71,4 +71,4 @@ export const SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE: ISettingsEditorStateCo
     editorMode: 'edit',
 };
 
-export const SettingsEditorContext = createContext<ISettingsEditorContext>(undefined);
+export const SettingsEditorContext = createNamedContext<ISettingsEditorContext>(undefined, "SettingsEditorContext");

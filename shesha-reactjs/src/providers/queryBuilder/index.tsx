@@ -113,7 +113,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
         });
       });
 
-      // add unknown fields todo: find a good way to handle these fields
+      // add unknown fields TODO: find a good way to handle these fields
       const unknownFields = fieldNames.filter(f => !missingProperties.find(p => p.propertyName === f));
       if (unknownFields.length > 0) {
         unknownFields.forEach(f => {

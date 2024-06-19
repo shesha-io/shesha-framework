@@ -132,7 +132,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     if (providedState.token) headers['Authorization'] = `Bearer ${providedState.token}`;
 
-    // todo: move culture and tenant to state and restore from localStorage on start
+    // TODO: move culture and tenant to state and restore from localStorage on start
     headers[ASPNET_CORE_CULTURE] = getLocalizationOrDefault();
 
     const tenantId = getTenantId();

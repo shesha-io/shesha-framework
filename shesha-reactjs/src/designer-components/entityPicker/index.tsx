@@ -21,6 +21,8 @@ import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { customEventHandler } from '@/components/formDesigner/components/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -54,21 +56,19 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-   Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
+   Factory: ({ model }) => {
+    const form = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const { data: formData } = useFormData();
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
     const { filters, modalWidth, customWidth, widthUnits, style } = model;
@@ -108,7 +108,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       return !!value ? value.id : null;
     }, [model.valueFormat, model.outcomeCustomJs, model.displayEntityKey, model.entityType]);
 
-    if (formMode === 'designer' && !model.entityType) {
+    if (form.formMode === 'designer' && !model.entityType) {
       return (
         <Alert
           showIcon
@@ -215,6 +215,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         ? 'default'
         : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
+    .add<IEntityPickerComponentProps>(9, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   settingsFormMarkup: entityPickerSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(entityPickerSettings, model),

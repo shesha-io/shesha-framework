@@ -14,6 +14,7 @@ import {
   migratePropertyName,
   migrateFunctionToProp,
 } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -84,7 +85,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
             'defaultActiveValue'
           ) as IWizardComponentProps
       )
-      .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev)),
+      .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
+      .add<IWizardComponentProps>(5, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],

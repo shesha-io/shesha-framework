@@ -16,7 +16,7 @@ Source files folder structure:
     │       │   │   ├── style.js                <-- simple property: style of the button configured via JS configuration
     │       │   │   ├── style.variables.d.ts    <-- list of exposed variables (generated)
     │       │   │   └── actionConfiguration/        <-- complex propertyconfigurable action configuration
-    │       │   │       ├── action1.js              <-- configuration of the script action. todo: decide how to indetify the task 
+    │       │   │       ├── action1.js              <-- configuration of the script action. TODO: decide how to indetify the task 
     │       │   │       ├── action1.variables.d.ts  <-- list of exposed variables (generated)
     │       │   │       └── action2.js
     │       │   └── checkBox1/

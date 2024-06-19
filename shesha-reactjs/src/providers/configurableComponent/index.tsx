@@ -45,18 +45,6 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
 
   const { getComponent, updateComponent } = useConfigurationItemsLoader();
 
-  const settingsPromise = useMemo(() => {
-    return getComponent({ name, isApplicationSpecific, skipCache: false });
-  }, [name, isApplicationSpecific]);
-
-  const initialSettings = settingsPromise?.value?.settings as TSettings;
-
-  const [state, dispatch] = useReducer(reducer, {
-    ...initialState,
-    name,
-    settings: initialSettings,
-  });
-
   const upgradeSettings = (value: TSettings): TSettings => {
     if (!isObject(value))
       return value;
@@ -71,6 +59,23 @@ const GenericConfigurableComponentProvider = <TSettings extends any>({
     const model = fluent.migrator.upgrade(versionedValue, {});
     return model;
   };
+
+  const initialSettingsMemo = useMemo<TSettings>(() => {
+    const promised = getComponent({ name, isApplicationSpecific, skipCache: false });
+    const loadedSettings = promised.value?.settings as TSettings;
+    if (!loadedSettings)
+      return undefined;
+
+    return upgradeSettings(loadedSettings);
+  }, [name, isApplicationSpecific]);
+
+  const initialSettings = initialSettingsMemo;
+
+  const [state, dispatch] = useReducer(reducer, {
+    ...initialState,
+    name,
+    settings: initialSettings,
+  });
 
   const fetchInternal = (loader: PromisedValue<IComponentSettings>) => {
     dispatch(loadRequestAction({ name, isApplicationSpecific }));

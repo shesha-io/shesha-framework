@@ -10,6 +10,7 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -50,7 +51,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
 
         return { ...item };
       };
-
+      
       newModel.items = prev.items?.map(updateItemDefaults);
       return newModel;
     })
@@ -69,6 +70,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       newModel.items = newModel.items.map(updateItems);
       return newModel ;
     })
+    .add<IButtonGroupComponentProps>(9, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),
 };

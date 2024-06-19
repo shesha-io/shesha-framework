@@ -1,12 +1,17 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     const extraMargin = "28px";
 
     const noContentPadding = "no-content-padding";
+    const hideWhenEmpty = "hide-empty";
 
     const shaCollapsiblePanel = cx("sha-collapsible-panel", css`
-    &.${prefixCls}-collapse-icon-position-left {
+      &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
+        display: none;
+      }
+
+      &.${prefixCls}-collapse-icon-position-left {
         .${prefixCls}-collapse-header-text {
           margin-left: ${extraMargin};
         }
@@ -106,5 +111,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     return {
         shaCollapsiblePanel,
         noContentPadding,
+        hideWhenEmpty,
     };
 });

@@ -41,9 +41,7 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   layoutSettings?: IFormLayoutSettings;
 }
 
-export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = (
-  props: ISettingsFormFactoryArgs<TModel>
-) => ReactNode;
+export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
 
 export interface ComponentFactoryArguements<TModel extends IConfigurableFormComponent = any> {
   model: TModel;

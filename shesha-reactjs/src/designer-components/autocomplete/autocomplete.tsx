@@ -25,6 +25,8 @@ import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -41,9 +43,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-  Factory: ({ model, form }) => {
+  Factory: ({ model }) => {
     const { queryParams, filter } = model;
-    const { formMode, setFormData } = useForm();
+    const form = useForm();
     const { data } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const pageContext = useDataContextManager(false)?.getPageContext();
@@ -134,17 +136,15 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       try {
         if (model?.defaultValue) {
           return new Function(
-            'data, form, formMode, globalState, http, message, moment, setFormData, setGlobalState',
+            'data, form, globalState, http, message, moment, setGlobalState',
             model?.defaultValue
           )(
             data,
-            form,
-            formMode,
+            getFormApi(form),
             globalState,
             axiosHttp(backendUrl),
             message,
             moment,
-            setFormData,
             setGlobalState
           );
         }
@@ -155,14 +155,12 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData: data,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
 
@@ -197,7 +195,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const formProps = defaultValue ? { model, initialValue: getDefaultValue() } : { model };
 
-    // todo: implement other types of datasources!
+    // TODO: implement other types of datasources!
 
 
     return (
@@ -244,6 +242,10 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     .add<IAutocompleteComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAutocompleteComponentProps>(3, (prev) => migrateVisibility(prev))
     .add<IAutocompleteComponentProps>(4, (prev) => migrateReadOnly(prev))
+    .add<IAutocompleteComponentProps>(5, (prev) => ({
+      ...migrateFormApi.eventsAndProperties(prev),
+      defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
+    }))
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {

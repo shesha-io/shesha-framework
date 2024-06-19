@@ -1,8 +1,8 @@
-import { createContext } from 'react';
 import { IFlagsSetters } from '@/interfaces/flagsSetters';
 import { IFlagsState } from '@/interfaces/flagsState';
 import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import { IHeaderAction } from './models';
+import { createNamedContext } from '@/utils/react';
 
 export type IFlagProgressFlags = 'fetchFileInfo' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
 export type IFlagSucceededFlags = 'fetchFileInfo' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
@@ -33,15 +33,15 @@ export const SIDEBAR_MENU_CONTEXT_INITIAL_STATE: ISidebarMenuStateContext = {
   isExpanded: false,
 };
 
-export const SidebarMenuStateContext = createContext<ISidebarMenuStateContext>(SIDEBAR_MENU_CONTEXT_INITIAL_STATE);
+export const SidebarMenuStateContext = createNamedContext<ISidebarMenuStateContext>(SIDEBAR_MENU_CONTEXT_INITIAL_STATE, "SidebarMenuStateContext");
 
-export const SidebarMenuActionsContext = createContext<ISidebarMenuActionsContext>(undefined);
+export const SidebarMenuActionsContext = createNamedContext<ISidebarMenuActionsContext>(undefined, "SidebarMenuActionsContext");
 
 //#region temporary defaults provider
 
 export interface ISidebarMenuDefaultsContext {
   items: ISidebarMenuItem[];
 }
-export const SidebarMenuDefaultsContext = createContext<ISidebarMenuDefaultsContext>({ items: [] });
+export const SidebarMenuDefaultsContext = createNamedContext<ISidebarMenuDefaultsContext>({ items: [] }, "SidebarMenuDefaultsContext");
 
 //#endregion

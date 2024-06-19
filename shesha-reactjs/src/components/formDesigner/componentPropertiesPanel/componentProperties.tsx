@@ -1,15 +1,10 @@
-import React, { FC, useMemo } from 'react';
-import { useForm } from '@/providers/form';
-import { useFormDesigner } from '@/providers/formDesigner';
+import React, { FC, useCallback } from 'react';
+import { useFormDesignerActions } from '@/providers/formDesigner';
 import { ComponentPropertiesEditor } from './componentPropertiesEditor';
 import ParentProvider from '@/providers/parentProvider/index';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
-import { IConfigurableFormComponent, IPersistedFormProps } from '@/interfaces';
-
-export interface IComponentPropertiesEditrorProps {
-
-}
+import { IConfigurableFormComponent, IPersistedFormProps, IToolboxComponent } from '@/interfaces';
 
 const getSourceFolderForComponent = (componentModel: IConfigurableFormComponent, formProps: IPersistedFormProps): string => {
     if (!componentModel || !formProps)
@@ -19,18 +14,23 @@ const getSourceFolderForComponent = (componentModel: IConfigurableFormComponent,
     return `/forms/${formProps.module}/${formProps.name}/${componentUid}`;
 };
 
-export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = () => {
-    const { getToolboxComponent } = useForm();
-    const { getComponentModel, updateComponent, selectedComponentId: id, readOnly } = useFormDesigner();
+export interface IComponentPropertiesEditrorProps {
+    componentModel: IConfigurableFormComponent;
+    readOnly: boolean;
+    toolboxComponent: IToolboxComponent;
+}
+export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = (props) => {
+    const { componentModel, readOnly, toolboxComponent } = props;
+    const { id } = componentModel;
+    const { updateComponent } = useFormDesignerActions();
+    
     const { formProps } = useFormPersister();
 
-    const onSave = values => {
+    const onSave = useCallback(values => {
         if (!readOnly)
             updateComponent({ componentId: id, settings: { ...values, id } });
         return Promise.resolve();
-    };
-    const componentModel = useMemo(() => !!id ? getComponentModel(id) : undefined, [id]);
-    const toolboxComponent = useMemo(() => !!componentModel?.type ? getToolboxComponent(componentModel.type) : undefined, [componentModel?.type]);
+    }, [id, readOnly, updateComponent]);
 
     const sourcesFolder = getSourceFolderForComponent(componentModel, formProps);
 

@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { CreateNewVersionButton } from './createNewVersionButton';
 import { FormConfigurationDto } from '@/providers/form/api';
 import { SaveMenu } from './saveMenu';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 import { useShaRouting, useSheshaApplication } from '@/providers';
 import { PublishButton } from './publishButton';
 import { DebugButton } from './debugButton';
@@ -18,7 +18,7 @@ export interface IProps { }
 export const FormDesignerToolbar: FC<IProps> = () => {
   const { routes } = useSheshaApplication();
   const { router } = useShaRouting(false) ?? {};
-  const { readOnly } = useFormDesigner();
+  const { readOnly } = useFormDesignerState();
   const { styles } = useStyles();
 
   const onVersionCreated = (newVersion: FormConfigurationDto) => {
