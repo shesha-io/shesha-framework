@@ -1,6 +1,6 @@
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import { createContext } from 'react';
 import { IDictionary, IToolboxComponentGroup } from '@/interfaces';
+import { createNamedContext } from '@/utils/react';
 
 export interface ISheshaRutes {
   formsDesigner: string;
@@ -45,8 +45,9 @@ export type ISheshaApplication = ISheshaApplicationStateContext & ISheshaApplica
 
 export const DEFAULT_ACCESS_TOKEN_NAME = 'xDFcxiooPQxazdndDsdRSerWQPlincytLDCarcxVxv';
 
-export const SheshaApplicationStateContext = createContext<ISheshaApplicationStateContext>(
-  SHESHA_APPLICATION_CONTEXT_INITIAL_STATE
+export const SheshaApplicationStateContext = createNamedContext<ISheshaApplicationStateContext>(
+  SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
+  "SheshaApplicationStateContext"
 );
 
-export const SheshaApplicationActionsContext = createContext<ISheshaApplicationActionsContext | undefined>(undefined);
+export const SheshaApplicationActionsContext = createNamedContext<ISheshaApplicationActionsContext | undefined>(undefined, "SheshaApplicationActionsContext");

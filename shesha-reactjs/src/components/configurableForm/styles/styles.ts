@@ -1,16 +1,27 @@
-import { createStyles } from "antd-style";
+import { createGlobalStyle } from 'antd-style';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    // .sha-components-container-inner
-    const shaComponentsContainerInner = "sha-components-container-inner";
-    // .sha-components-container
-    const shaComponentsContainer = cx("sha-components-container"); 
+const formClassNames = {
+    shaForm: "sha-form",
+    shaComponentsContainer: "sha-components-container",
+    shaComponentsContainerInner: "sha-components-container-inner",
+    shaFormInfoCard: "sha-form-info-card",
+    shaFormInfoCardTitle: "sha-form-info-card-title",
+};
 
-    const shaForm = cx("sha-form", css`
-        .${shaComponentsContainer} {
+const hookResponse = {
+    styles: formClassNames
+};
+
+export const useStyles = () => {
+    return hookResponse;
+};
+
+export const ShaFormStyles = createGlobalStyle`
+    .${formClassNames.shaForm} {
+        .${formClassNames.shaComponentsContainer} {
             min-height: 32px;
             &.horizontal {
-                .${shaComponentsContainerInner} {
+                .${formClassNames.shaComponentsContainerInner} {
                     display: flex;
                     flex-wrap: wrap;
 
@@ -20,24 +31,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
                 }
             }
         }
-    `);
-
-    // .sha-form-info-card
-    const shaFormInfoCardTitle = "sha-form-info-card-title";
-    const shaFormInfoCard = cx("sha-form-info-card", css`
-        >.${prefixCls}-card-body {
+    }
+    .${formClassNames.shaFormInfoCard} {
+        >.${(p) => p.theme.prefixCls}-card-body {
           padding: unset !important;  
         }
-        .${shaFormInfoCardTitle} {
+    .${formClassNames.shaFormInfoCard} {
+        .${formClassNames.shaFormInfoCardTitle} {
           margin-left: 10px;
         }
-    `);
-    
-    return {
-        shaForm,
-        shaComponentsContainer,
-        shaComponentsContainerInner,
-        shaFormInfoCard,
-        shaFormInfoCardTitle,
-    };
-});
+    }
+`;

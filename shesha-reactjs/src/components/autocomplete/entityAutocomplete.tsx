@@ -46,13 +46,13 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
 
 
   const rawValue = typeof value === 'string' || Array.isArray(value) ? value : (value as any)?.id ?? undefined;
-  /* todo: uncomment and test with arrays and numbers
+  /* TODO: uncomment and test with arrays and numbers
       : Array.isArray(value)
         ? value
         : undefined;
       */
 
-  // todo: move part of logic to the `useEntityAutocomplete`, implement support of multiple mode (it was not supported before because of wrong loading of provided value)
+  // TODO: move part of logic to the `useEntityAutocomplete`, implement support of multiple mode (it was not supported before because of wrong loading of provided value)
   const {
     data: fetchedData,
     loading,

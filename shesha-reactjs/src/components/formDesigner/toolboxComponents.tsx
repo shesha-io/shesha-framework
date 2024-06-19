@@ -6,7 +6,7 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '@/providers/form/models';
 import { IToolboxComponentGroup } from '@/interfaces';
 import { SearchBox } from './toolboxSearchBox';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
 
 const { Panel } = Collapse;
@@ -18,7 +18,8 @@ export const ToolboxComponents: FC<IToolboxComponentsProps> = () => {
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.components.search', '');
   const { styles } = useStyles();
 
-  const { toolboxComponentGroups, startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
+  const { toolboxComponentGroups } = useFormDesignerState();
+  const { startDraggingNewItem, endDraggingNewItem } = useFormDesignerActions();
 
   const filteredGroups = useMemo<IToolboxComponentGroup[]>(() => {
     if (!Boolean(searchText)) return [...toolboxComponentGroups];

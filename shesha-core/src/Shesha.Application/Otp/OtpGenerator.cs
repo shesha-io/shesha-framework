@@ -18,8 +18,8 @@ namespace Shesha.Otp
             var random = new Random();
             var password = string.Empty;
 
-            var alphabet = _settings.Alphabet.GetValue();
-            var passwordLength = _settings.PasswordLength.GetValue();
+            var alphabet = _settings.OneTimePins.GetValue().Alphabet;
+            var passwordLength = _settings.OneTimePins.GetValue().PasswordLength;
 
             for (int i = 0; i < passwordLength; i++)
             {

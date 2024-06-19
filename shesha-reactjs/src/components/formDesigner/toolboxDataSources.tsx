@@ -6,9 +6,7 @@ import SearchBox from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
-import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
-import classNames from 'classnames';
 
 const { Panel } = Collapse;
 
@@ -48,9 +46,6 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.datasources.search', '');
   const { styles } = useStyles();
 
-
-  const { activeDataSourceId } = useFormDesigner();
-
   const datasourcesWithVisible = useMemo<FilteredDataSource[]>(() => {
     const dataSourcesX = dataSources.map<FilteredDataSource>(ds => ({
       datasource: ds,
@@ -79,16 +74,16 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }
                 {shortName}
               </Tooltip>
             );
-
+      
             return visibleItems.length === 0 ? null : (
-              <Panel header={header} key={dsIndex.toString()} className={classNames(styles.shaToolboxPanel, { active: ds.datasource.id === activeDataSourceId })}>
+              <Panel header={header} key={dsIndex.toString()} className={styles.shaToolboxPanel}>
                 <div className={styles.shaToolboxPanelItems} >
-                  <DataSourceTree
-                    items={visibleItems}
-                    searchText={searchText}
-                    defaultExpandAll={(searchText ?? '') !== ''}
+                <DataSourceTree
+                  items={visibleItems}
+                  searchText={searchText}
+                  defaultExpandAll={(searchText ?? '') !== ''}
 
-                  />
+                />
                 </div>
 
               </Panel>

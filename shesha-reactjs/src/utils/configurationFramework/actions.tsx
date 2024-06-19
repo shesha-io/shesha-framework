@@ -207,7 +207,6 @@ export const createNewVersionRequest = (
 
 export const createNewVersion = (payload: ICreateNewItemVersionPayload): Promise<ICreateNewItemVersionResponse> => {
   return new Promise<ICreateNewItemVersionResponse>((resolve, reject) => {
-    // todo: return a promise and handle completion on upper level
     const onOk = () => {
       return createNewVersionRequest(payload)
         .then((response) => {

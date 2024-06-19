@@ -2,6 +2,7 @@
 using Abp.Runtime.Validation;
 using Shesha.Authorization.Users;
 using Shesha.Configuration;
+using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
@@ -22,18 +23,18 @@ namespace Shesha.UserManagements
         private readonly UserManager _userManager;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
         private readonly IRepository<Person, Guid> _repository;
-        private readonly IAuthenticationSettings _authSettings;
+        private readonly ISecuritySettings _securitySettings;
 
         public UserManagementAppService(
             IRepository<Person, Guid> repository, 
             UserManager userManager, 
             IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository,
-            IAuthenticationSettings authSettings)
+            ISecuritySettings securitySettings)
         {
             _userManager = userManager;
             _rolePersonRepository = rolePersonRepository;
             _repository = repository;
-            _authSettings = authSettings;
+            _securitySettings = securitySettings;
         }
 
         /// <summary>
@@ -73,15 +74,17 @@ namespace Shesha.UserManagements
             // Supported password reset methods for the user
             // This might need reviewing since some methods might be unavailable for some users during time of
             // creation.
-            var isEmailLinkSupported = await _authSettings.UseResetPasswordViaEmailLink.GetValueAsync();
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
+
+            var isEmailLinkSupported = securitySettings.UseResetPasswordViaEmailLink;
             if (isEmailLinkSupported)
                 supportedPasswordResetMethods.Add((int)RefListPasswordResetMethods.EmailLink);
 
-            var isSecurityQuestionsSupported = await _authSettings.UseResetPasswordViaSecurityQuestions.GetValueAsync();
+            var isSecurityQuestionsSupported = securitySettings.UseResetPasswordViaSecurityQuestions;
             if (isSecurityQuestionsSupported)
                 supportedPasswordResetMethods.Add((int)RefListPasswordResetMethods.SecurityQuestions);
 
-            var isSsmOtpSupported = await _authSettings.UseResetPasswordViaSmsOtp.GetValueAsync();
+            var isSsmOtpSupported = securitySettings.UseResetPasswordViaSmsOtp;
             if (isSsmOtpSupported)
                 supportedPasswordResetMethods.Add((int)RefListPasswordResetMethods.SmsOtp);
 

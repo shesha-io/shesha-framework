@@ -16,7 +16,7 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import { ButtonGroupConfigurator } from '@/components';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
@@ -28,7 +28,7 @@ const EntityReferenceSettings: FC<ISettingsFormFactoryArgs<IEntityReferenceContr
 
   const { model, values, onValuesChange } = useSettingsForm<IEntityReferenceControlProps>();
 
-  const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
+  const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(

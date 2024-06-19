@@ -5,19 +5,20 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { getActualModel } from '@/providers/form/utils';
+import { ItemChangeDetails } from '../listEditor';
 
 export interface IContainerRenderArgs {
   index?: number[];
   id?: string;
   items: ButtonGroupItemProps[];
 
-  onChange: (newValue: ButtonGroupItemProps[]) => void;
+  onChange: (newValue: ButtonGroupItemProps[], changeDetails: ItemChangeDetails) => void;
 }
 
 export interface IButtonGroupItemsGroupProps {
   index: number[];
   item: IButtonGroup;
-  onChange: (newValue: IButtonGroup) => void;
+  onChange: (newValue: IButtonGroup, changeDetails: ItemChangeDetails) => void;
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
   actualModelContext?: any;
 }
@@ -42,8 +43,8 @@ export const ButtonGroupItemsGroup: FC<IButtonGroupItemsGroupProps> = ({ item, i
       {containerRendering({
         index: index,
         items: item.childItems || [],
-        onChange: (newItems) => {
-          onChange({ ...item, childItems: [...newItems] });
+        onChange: (newItems, changeDetails) => {
+          onChange({ ...item, childItems: [...newItems] }, changeDetails);
         }
       })}
     </>

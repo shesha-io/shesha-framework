@@ -19,11 +19,11 @@ namespace Shesha.Tests.Otp
             var passwordLengthAccessor = new Mock<ISettingAccessor<int>>();
             passwordLengthAccessor.Setup(s => s.GetValue()).Returns(length);
 
-            settings.SetupGet(s => s.PasswordLength).Returns(passwordLengthAccessor.Object);
+            settings.SetupGet(s => s.OneTimePins.GetValue().PasswordLength).Returns(passwordLengthAccessor.Object.GetValue());
 
             var alphabetAccessor = new Mock<ISettingAccessor<string>>();
             alphabetAccessor.Setup(s => s.GetValue()).Returns(alphabet);
-            settings.SetupGet(s => s.Alphabet).Returns(alphabetAccessor.Object);
+            settings.SetupGet(s => s.OneTimePins.GetValue().Alphabet).Returns(alphabetAccessor.Object.GetValue());
 
 
             var generator = new Shesha.Otp.OtpGenerator(settings.Object);

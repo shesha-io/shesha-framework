@@ -1,20 +1,17 @@
 import { FormInstance } from 'antd';
-import { createContext } from 'react';
 import { IFormValidationErrors, IToolboxComponent, IToolboxComponentGroup } from '@/interfaces';
 import {
   DEFAULT_FORM_SETTINGS,
   FormAction,
   FormMode,
-  FormRawMarkup,
   FormSection,
   IConfigurableFormComponent,
-  IFlatComponentsStructure,
   IFormAction,
   IFormActions,
   IFormSection,
   IFormSettings,
-  ROOT_COMPONENT_KEY,
 } from './models';
+import { createNamedContext } from '@/utils/react';
 
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -23,42 +20,18 @@ export interface IHasComponentGroups {
 export interface IFormStateInternalContext {
   name?: string;
   formSettings: IFormSettings;
-  formMarkup?: FormRawMarkup;
   formMode: FormMode;
   form?: FormInstance<any>;
   actions: IFormAction[];
   sections: IFormSection[];
-  context?: any; // todo: make generic
 
   // runtime props
   formData?: any;
-  formControlsData?: any;
   validationErrors?: IFormValidationErrors;
-  visibleComponentIds?: string[];
-  enabledComponentIds?: string[];
-
-  /**
-   * If true, indicates that list of visible components are calculated
-   */
-  visibleComponentIdsIsSet: boolean;
 }
 
-export interface IFormStateContext extends IFormStateInternalContext, IFlatComponentsStructure {}
-
-export interface ISetVisibleComponentsPayload {
-  componentIds: string[];
-}
-
-export interface ISetEnabledComponentsPayload {
-  componentIds: string[];
-}
-
-export interface ISetFormControlsDataPayload {
-  /** control name */
-  name: string;
-
-  /** control values */
-  values: any;
+export interface IFormStateContext extends IFormStateInternalContext {
+  
 }
 
 export interface ISetFormDataPayload {
@@ -76,15 +49,7 @@ export interface IRegisterActionsPayload {
 
 export interface IFormActionsContext {
   setFormMode: (formMode: FormMode) => void;
-  getChildComponents: (id: string) => IConfigurableFormComponent[];
-  getChildComponentIds: (containerId: string) => string[];
-  getComponentModel: (id: string) => IConfigurableFormComponent;
-  isComponentReadOnly: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>) => boolean;
-  isComponentHidden: (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>) => boolean;
-  hasVisibleChilds: (id: string) => boolean;
-  setVisibleComponents: (payload: ISetVisibleComponentsPayload) => void;
   updateStateFormData: (payload: ISetFormDataPayload) => void;
-  setFormControlsData: (payload: ISetFormControlsDataPayload) => void;
   setFormData: (payload: ISetFormDataPayload) => void;
   setValidationErrors: (payload: IFormValidationErrors) => void;
   registerActions: (id: string, actions: IFormActions) => void;
@@ -106,21 +71,33 @@ export interface IFormActionsContext {
 
 /** Form initial state */
 export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
-  allComponents: {},
-  componentRelations: { [ROOT_COMPONENT_KEY]: [] },
-
-  visibleComponentIds: [],
-  visibleComponentIdsIsSet: false,
-  enabledComponentIds: [],
   formMode: 'designer',
   actions: [],
   sections: [],
-  context: null,
   formSettings: DEFAULT_FORM_SETTINGS,
 };
 
-export interface ConfigurableFormInstance extends IFormActionsContext, IFormStateContext {}
+export interface FieldData {
+  name: string | number | (string | number)[];
+  value?: any;
+  touched?: boolean;
+  validating?: boolean;
+  errors?: string[];
+}
 
-export const FormStateContext = createContext<IFormStateContext>(FORM_CONTEXT_INITIAL_STATE);
+export interface IFormDataStateContext {
+  fields: FieldData[];
+}
 
-export const FormActionsContext = createContext<IFormActionsContext>(undefined);
+export interface IFormDataActionsContext {
+  setFields: (fields: FieldData[]) => void;
+}
+
+export const FormDataStateContext = createNamedContext<IFormDataStateContext>(undefined, "FormDataStateContext");
+export const FormDataActionsContext = createNamedContext<IFormDataActionsContext>(undefined, "FormDataActionsContext");
+
+export interface ConfigurableFormInstance extends IFormActionsContext, IFormStateContext { }
+
+export const FormStateContext = createNamedContext<IFormStateContext>(FORM_CONTEXT_INITIAL_STATE, "FormStateContext");
+
+export const FormActionsContext = createNamedContext<IFormActionsContext>(undefined, "FormActionsContext");

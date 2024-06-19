@@ -1,7 +1,7 @@
 import { HubConnection } from '@microsoft/signalr';
 import { Moment } from 'moment';
-import { createContext } from 'react';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
+import { createNamedContext } from '@/utils/react';
 
 export type IFlagProgressFlags = 'getExecutionLog';
 /* NEW_IN_PROGRESS_FLAG_GOES_HERE */
@@ -34,8 +34,6 @@ export interface IScheduledJobExecutionActionsContext
   downloadLogFileRequest: () => void;
   downloadLogFileSuccess: () => void;
   downloadLogFileError: () => void;
-
-  /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
 
 export const SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE: IScheduledJobExecutionStateContext = {
@@ -46,8 +44,9 @@ export const SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE: IScheduledJobExecuti
   executionLogEvents: [],
 };
 
-export const ScheduledJobExecutionStateContext = createContext<IScheduledJobExecutionStateContext>(
-  SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE
+export const ScheduledJobExecutionStateContext = createNamedContext<IScheduledJobExecutionStateContext>(
+  SCHEDULED_JOB_EXECUTION_CONTEXT_INITIAL_STATE,
+  "ScheduledJobExecutionStateContext"
 );
 
-export const ScheduledJobExecutionActionsContext = createContext<IScheduledJobExecutionActionsContext>(undefined);
+export const ScheduledJobExecutionActionsContext = createNamedContext<IScheduledJobExecutionActionsContext>(undefined, "ScheduledJobExecutionActionsContext");
