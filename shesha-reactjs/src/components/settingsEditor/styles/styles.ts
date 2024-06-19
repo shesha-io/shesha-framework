@@ -1,18 +1,18 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
-    const shaSettingsEditorToolbar = "sha-settings-editor-toolbar";
-    const shaSettingsEditorToolbarLeft = "sha-settings-editor-toolbar-left";
-    const shaSettingsEditorToolbarRight = "sha-settings-editor-toolbar-right";
-    const shaSettingsEditorMain = "sha-settings-editor-main";
-    const shaSettingsEditorToolbox = "sha-settings-editor-toolbox";
-    const shaSettingSearch = "sha-setting-search";
-    const shaToolboxPanel = "sha-toolbox-panel";
-    const shaToolboxComponent = "sha-toolbox-component";
-    const shaSettingsEditorHeader = "sha-settings-editor-header";
-    const shaDesignerHeaderRight = "sha-designer-header-right";
+  const shaSettingsEditorToolbar = "sha-settings-editor-toolbar";
+  const shaSettingsEditorToolbarLeft = "sha-settings-editor-toolbar-left";
+  const shaSettingsEditorToolbarRight = "sha-settings-editor-toolbar-right";
+  const shaSettingsEditorMain = "sha-settings-editor-main";
+  const shaSettingsEditorToolbox = "sha-settings-editor-toolbox";
+  const shaSettingSearch = "sha-setting-search";
+  const shaToolboxPanel = "sha-toolbox-panel";
+  const shaToolboxComponent = "sha-toolbox-component";
+  const shaSettingsEditorHeader = "sha-settings-editor-header";
+  const shaDesignerHeaderRight = "sha-designer-header-right";
 
-    const shaSettingsEditor = cx("sha-settings-editor", css`
+  const shaSettingsEditor = cx("sha-settings-editor", css`
         .${shaSettingsEditorToolbar} {
           background: white;
           padding: 12px;
@@ -120,17 +120,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
           }
         }
   `);
-    return {
-        shaSettingsEditor,
-        shaSettingsEditorToolbar,
-        shaSettingsEditorToolbarLeft,
-        shaSettingsEditorToolbarRight,
-        shaSettingsEditorMain,
-        shaSettingsEditorToolbox,
-        shaSettingSearch,
-        shaToolboxPanel,
-        shaToolboxComponent,
-        shaSettingsEditorHeader,
-        shaDesignerHeaderRight,
-    };
+  return {
+    shaSettingsEditor,
+    shaSettingsEditorToolbar,
+    shaSettingsEditorToolbarLeft,
+    shaSettingsEditorToolbarRight,
+    shaSettingsEditorMain,
+    shaSettingsEditorToolbox,
+    shaSettingSearch,
+    shaToolboxPanel,
+    shaToolboxComponent,
+    shaSettingsEditorHeader,
+    shaDesignerHeaderRight,
+  };
 });

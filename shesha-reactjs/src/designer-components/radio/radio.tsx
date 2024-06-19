@@ -12,6 +12,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useFormData } from '@/providers';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -56,6 +57,7 @@ const Radio: IToolboxComponent<IEnhancedRadioProps> = {
     .add<IEnhancedRadioProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEnhancedRadioProps>(3, (prev) => migrateVisibility(prev))
     .add<IEnhancedRadioProps>(4, (prev) => migrateReadOnly(prev))
+    .add<IEnhancedRadioProps>(5, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   linkToModelMetadata: (model, metadata): IEnhancedRadioProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;

@@ -10,10 +10,11 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
   type: 'iconPicker',
-  name: 'Icon Picker',
+  name: 'Icon',
   icon: <HeartOutlined />,
   isInput: true,
   isOutput: true,
@@ -34,6 +35,7 @@ const IconPickerComponent: IToolboxComponent<IIconPickerComponentProps> = {
     .add<IIconPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IIconPickerComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IIconPickerComponentProps>(2, (prev) => ({ ...prev, color: legacyColor2Hex(prev.color) }))
+    .add<IIconPickerComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
 };
 

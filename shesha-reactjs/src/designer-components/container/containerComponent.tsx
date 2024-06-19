@@ -8,6 +8,7 @@ import { useFormData, useGlobalState } from '@/providers';
 import { ComponentsContainer } from '@/components';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -61,7 +62,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         components: prev['components'] ?? [],
       }))
       .add<IContainerComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<IContainerComponentProps>(2, (prev) => migrateVisibility(prev)),
+      .add<IContainerComponentProps>(2, (prev) => migrateVisibility(prev))
+      .add<IContainerComponentProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
 };
 
 export default ContainerComponent;

@@ -13,10 +13,13 @@ export interface IGrouppedObjectsTreeProps<TItem> {
   openedKeys?: string[];
   idFieldName?: string;
   nameFieldName?: string;
+  childFieldName?: string;
   onChange?: (item: TItem) => void;
   isMatch?: (item: TItem, searchText: string) => void;
   setOpenedKeys?: (keys: string[]) => void;
   onRenterItem?: (item: TItem) => ReactNode;
+  getIcon?: (item: TItem) => ReactNode;
+  getIsLeaf?: (item: TItem) => boolean;
   onGetGroupName?: (groupBy: string, data: string) => string;
 }
 
@@ -27,6 +30,8 @@ interface GrouppedObjects<TItem> {
 
 export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TItem>) => {
 
+  const childFieldName = props.childFieldName ?? 'children';
+
   const getVisible = (items: TItem[], searchText: string): TItem[] => {
     const result: TItem[] = [];
     if (!items)
@@ -34,11 +39,14 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
 
     items.forEach(item => {
       if (true /*!item.hidden*/) {
-        //const childItems = getVisible(item.child, searchText);
-        const matched = (searchText ?? '') === '' || typeof props?.isMatch === 'function' ? props.isMatch(item, props.searchText) : false;
+        const childItems = getVisible(item[childFieldName], searchText);
+        const matched = 
+          Array.isArray(childItems) && childItems.length > 0 
+          || (searchText ?? '') === '' 
+          || (typeof props?.isMatch === 'function' ? props.isMatch(item, props.searchText) : false);
 
         if (matched /*|| childItems.length > 0*/) {
-          const filteredItem: TItem = { ...item/*, child: childItems*/ };
+          const filteredItem: TItem = { ...item, [childFieldName]: [...childItems] };
           result.push(filteredItem);
         }
       }
@@ -102,12 +110,12 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
   return (
     <>
       {groups.length > 0 && (
-        <Collapse activeKey={props?.openedKeys} onChange={onCollapseChange} >
+        <Collapse activeKey={props?.openedKeys} accordion onChange={onCollapseChange} >
           {groups.map((ds) => {
             const visibleItems = ds.visibleItems;
+            const defaultExpandAll = props?.searchText.length > 1 && visibleItems.length <= 6;
 
             let classes = ['sha-toolbox-panel'];
-            //if (ds.datasource.id === activeDataSourceId) classes.push('active');
 
             return visibleItems.length === 0 ? null : (
               ds.groupName === '-'
@@ -116,7 +124,7 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
                     <ObjectsTree<TItem>
                       items={visibleItems}
                       searchText={props?.searchText}
-                      defaultExpandAll={(props?.searchText ?? '') !== ''}
+                      defaultExpandAll={defaultExpandAll}
                       onChange={onChangeHandler}
                       defaultSelected={props.defaultSelected?.toLowerCase()}
                       onRenterItem={props?.onRenterItem}
@@ -128,10 +136,12 @@ export const GrouppedObjectsTree = <TItem,>(props: IGrouppedObjectsTreeProps<TIt
                     <ObjectsTree<TItem>
                       items={visibleItems}
                       searchText={props?.searchText}
-                      defaultExpandAll={(props?.searchText ?? '') !== ''}
+                      defaultExpandAll={defaultExpandAll}
                       onChange={onChangeHandler}
                       defaultSelected={props?.openedKeys?.find(key => key === ds.groupName) ? props.defaultSelected?.toLowerCase() : null}
                       onRenterItem={props?.onRenterItem}
+                      getIcon={props?.getIcon}
+                      getIsLeaf={props?.getIsLeaf}
                     />
                   </Panel>
                 )

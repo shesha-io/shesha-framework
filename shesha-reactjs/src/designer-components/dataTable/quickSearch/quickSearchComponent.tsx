@@ -7,6 +7,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { SearchOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 export interface IQuickSearchComponentProps extends IConfigurableFormComponent {
   block?: boolean;
@@ -28,7 +29,9 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
   migrator: (m) =>
     m
       .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<IQuickSearchComponentProps>(1, (prev) => migrateVisibility(prev)),
+      .add<IQuickSearchComponentProps>(1, (prev) => migrateVisibility(prev))
+      .add<IQuickSearchComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
   settingsFormMarkup: (context) => getSettings(context),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

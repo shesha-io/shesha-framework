@@ -1,19 +1,16 @@
 import React from 'react';
 import { Form, Modal } from 'antd';
 import { ConfigurableForm } from '@/components/configurableForm';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IProps<TModel = any> {
   title?: string;
   model: TModel;
-  markup: IConfigurableFormComponent[];
   onCancel: () => void;
   onSave: (model: TModel) => void;
 }
 
 export const ComponentSettingsModal = <TSettings extends any>({
   title,
-  markup,
   model,
   onCancel,
   onSave,
@@ -36,7 +33,6 @@ export const ComponentSettingsModal = <TSettings extends any>({
         {...formLayout}
         form={form}
         onFinish={onSave}
-        markup={markup}
         initialValues={model}
       />
     </Modal>

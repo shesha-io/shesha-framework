@@ -13,6 +13,7 @@ import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 type TabItem = TabsProps['items'][number];
 
@@ -54,7 +55,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         } = tabModel;
 
         const granted = anyOfPermissionsGranted(permissions || []);
-        if ((!granted || hidden) && allData.formMode !== 'designer') return;
+        if ((!granted || hidden) && allData.form?.formMode !== 'designer') return;
 
         const tab: TabItem = {
           key: key,
@@ -85,7 +86,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       });
 
       return tabItems;
-    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow]);
+    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
     return model.hidden ? null : (
       <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
@@ -110,6 +111,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
       return newModel;
     })
+    .add<ITabsComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,
   customContainerNames: ['tabs'],

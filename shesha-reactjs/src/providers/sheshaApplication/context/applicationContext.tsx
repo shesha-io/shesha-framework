@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { SheshaCommonContexts } from '../../dataContextManager/models';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
 import { ApplicationApi, IApplicationApi } from '../publicApi/applicationApi';
@@ -7,8 +7,9 @@ import { useHttpClient } from '../publicApi/http/hooks';
 import { useAuthState } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
 import { useCacheProvider } from '@/hooks/useCache';
-import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/useEntityMetadataFetcher';
+import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
 import { MetadataBuilder } from '@/utils/metadata/metadataBuilder';
+import { createNamedContext } from '@/utils/react';
 
 export interface IApplicationDataProviderProps {
 
@@ -25,7 +26,7 @@ export interface IApplicationActionsContext {
   unregisterPlugin: (pluginName: string) => void;
   getPlugin: (pluginName: string) => ApplicationPluginRegistration;
 }
-export const ApplicationActionsContext = createContext<IApplicationActionsContext>(undefined);
+export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext>(undefined, "ApplicationActionsContext");
 
 export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
   const [plugins, setPlugins] = useState<ApplicationPluginRegistration[]>([]);

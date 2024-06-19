@@ -6,9 +6,14 @@ import { getFieldNameFromExpression, getValidationRules } from '@/providers/form
 import classNames from 'classnames';
 import { useFormItem } from '@/providers';
 import { DataBinder } from '@/hocs/dataBinder';
-import { useDataContextManager } from '@/providers/dataContextManager';
+import { useDataContextManagerActions } from '@/providers/dataContextManager';
 
-export type IConfigurableFormItemChildFunc = (value: any, onChange: (...args: any[]) => void, propertyName?: string, getFieldValue?: (propertyName: string) => object[]) => ReactNode;
+export type IConfigurableFormItemChildFunc = (
+  value: any,
+  onChange: (...args: any[]) => void,
+  propertyName?: string
+) => ReactNode;
+
 
 export interface IConfigurableFormItemProps {
   model: IConfigurableFormComponent;
@@ -21,6 +26,67 @@ export interface IConfigurableFormItemProps {
   labelCol?: ColProps;
 }
 
+export interface IConfigurableFormItem_FormProps {
+  formItemProps: FormItemProps;
+  readonly children?: IConfigurableFormItemChildFunc;
+  valuePropName?: string;
+}
+const ConfigurableFormItemForm: FC<IConfigurableFormItem_FormProps> = (props) => {
+  const {
+    formItemProps,
+    children,
+    valuePropName,
+  } = props;
+
+  return (
+    <Form.Item {...formItemProps}>
+      <DataBinder valuePropName={valuePropName}>
+        {children}
+      </DataBinder>
+    </Form.Item>
+  );
+};
+
+interface IConfigurableFormItem_ContextProps {
+  formItemProps: FormItemProps;
+
+  valuePropName?: string;
+  propertyName: string;
+  contextName: string;
+  readonly children?: IConfigurableFormItemChildFunc;
+}
+
+const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps> = (props) => {
+  const {
+    formItemProps,
+    valuePropName,
+    propertyName,
+    contextName,
+    children
+  } = props;
+
+  const { getDataContext } = useDataContextManagerActions();
+  const context = getDataContext(contextName);
+  const { getFieldValue } = context ?? {};
+
+  const value = getFieldValue(propertyName);
+
+  return (
+    <Form.Item {...formItemProps}>
+      <DataBinder
+        onChange={(val) => {
+          const value = !!val?.target ? val?.target[!!valuePropName ? valuePropName : 'value'] : val;
+          if (!!context?.setFieldValue)
+            context.setFieldValue(propertyName, value);
+        }}
+        value={value}
+      >
+        {children}
+      </DataBinder>
+    </Form.Item>
+  );
+};
+
 const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   children,
   model,
@@ -30,8 +96,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   labelCol,
   wrapperCol,
 }) => {
-
-  const { formData, form } = useForm();
+  const { formData } = useForm();
 
   const formItem = useFormItem();
 
@@ -43,13 +108,13 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   }, [formItemlabelCol, formItemWrapperCol]);
 
   const propName = namePrefix //&& (!model.context || !isCommonContext(model.context))
-    ? namePrefix + '.' + model.propertyName 
+    ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
   const { hideLabel } = model;
 
   const formItemProps: FormItemProps = {
-    className: classNames(className),//, { 'form-item-hidden': hideLabel }),
+    className: classNames(className),
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
@@ -58,54 +123,39 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     tooltip: model.description,
     rules: model.hidden ? [] : getValidationRules(model, { formData }),
     labelCol: layout?.labelCol,
-    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol
+    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
+    name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
 
-  const { getDataContext } = useDataContextManager();
-  const context =  getDataContext(model.context);
-  const { getFieldValue } = context ?? {};
-
-  const reactChildren = children as ReactNode;
-  const funcChildren = children as IConfigurableFormItemChildFunc;
-
-    // binding to context data for upgraded components 
-  if (!!context && typeof funcChildren === 'function') {
-    
-    const value = getFieldValue(propName);
-
+  if (typeof children === 'function') {
+    if (model.context) {
+      return (
+        <ConfigurableFormItemContext
+            formItemProps={formItemProps}
+            valuePropName={valuePropName}
+            propertyName={propName}
+            contextName={model.context}
+          >
+            {children}
+          </ConfigurableFormItemContext>
+      );
+    } else {
+      formItemProps.name = getFieldNameFromExpression(propName);
+      return (
+        <ConfigurableFormItemForm
+            formItemProps={formItemProps}
+            valuePropName={valuePropName}
+          >
+            {children}
+          </ConfigurableFormItemForm>
+      );
+    }
+  } else {
+    // Use standard Form.Item for components without binding support
     return (
-      <Form.Item {...formItemProps}>
-        <DataBinder 
-          onChange={(val) => {
-            const value = !!val?.target ? val?.target[!!valuePropName ? valuePropName : 'value'] : val;
-            if (!!context?.setFieldValue)
-              context.setFieldValue(propName, value);
-          }}
-          value={value}
-          getFieldValue={(propName) => getDataContext(model.context)?.getFieldValue(propName)}
-        >
-          {funcChildren}
-        </DataBinder>
-      </Form.Item>
+      <Form.Item {...formItemProps}>{children}</Form.Item>
     );
   }
-
-  formItemProps.name = getFieldNameFromExpression(propName);
-
-  // binding to from data for upgraded components
-  if (typeof funcChildren === 'function') 
-    return (
-      <Form.Item {...formItemProps}>
-        <DataBinder valuePropName={valuePropName} propertyName={model.propertyName} getFieldValue={(propName) => form?.getFieldValue(propName)}>
-          {funcChildren}
-        </DataBinder>
-      </Form.Item>
-    );
-
-  // Use standard Form.Item for components without binding support
-  return (
-    <Form.Item {...formItemProps}>{reactChildren}</Form.Item>
-  );
 };
 
-export default ConfigurableFormItem;
+export default React.memo(ConfigurableFormItem);

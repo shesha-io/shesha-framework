@@ -15,6 +15,7 @@ import { getNumberFormat } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { asPropertiesArray } from '@/interfaces/metadata';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -26,7 +27,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
   name: 'Number field',
   icon: <NumberOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
-  Factory: ({ model, form }) => {
+  Factory: ({ model }) => {
     const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
     const properties = asPropertiesArray(metaProperties, []);
 
@@ -36,7 +37,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     return (
       <ConfigurableFormItem
         model={model}
-        initialValue={evaluateString(model?.defaultValue, { formData, formMode, globalState })}
+        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined}
       >
         {(value, onChange) => {
           return model.readOnly ? (
@@ -45,7 +46,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
               value={getNumberFormat(value, getDataProperty(properties, model.propertyName))}
             />
           ) : (
-            <NumberFieldControl form={form} disabled={model.readOnly} model={model} value={value} onChange={onChange} />
+            <NumberFieldControl disabled={model.readOnly} model={model} value={value} onChange={onChange} />
           );
         }}
       </ConfigurableFormItem>
@@ -59,6 +60,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     .add<INumberFieldComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<INumberFieldComponentProps>(2, (prev) => migrateReadOnly(prev))
+    .add<INumberFieldComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
@@ -68,7 +70,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       description: metadata.description,
       min: metadata.min,
       max: metadata.max,
-      // todo: add decimal points and format
+      // TODO: add decimal points and format
     };
   },
 };

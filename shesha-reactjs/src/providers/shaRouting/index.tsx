@@ -5,7 +5,7 @@ import React, {
   useContext,
   useReducer
 } from 'react';
-import { asFormFullName } from '../form/utils';
+import { isFormFullName } from '../form/utils';
 import { FormIdentifier } from '@/interfaces';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { getQueryParams, getUrlWithoutQueryParams } from '@/utils/url';
@@ -60,8 +60,9 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
   const getFormUrl = (formId: FormIdentifier) => {
     if (state.getFormUrlFunc) return state.getFormUrlFunc(formId);
 
-    var form = asFormFullName(formId);
-    return form ? `/dynamic${form.module ? `/${form.module}` : ''}/${form.name}` : '';
+    return isFormFullName(formId) 
+      ? `/dynamic${formId.module ? `/${formId.module}` : ''}/${formId.name}` 
+      : '';
   };
 
   const navigateToRawUrl = (url: string): Promise<boolean> => {

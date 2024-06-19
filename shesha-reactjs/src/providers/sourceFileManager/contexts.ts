@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createNamedContext } from "@/utils/react";
 
 export  interface ISourcesFolderContext {
     /**
@@ -10,4 +10,4 @@ export  interface ISourcesFolderContext {
      */
     path: string;
 }
-export const SourcesFolderContext = createContext<ISourcesFolderContext>(undefined);
+export const SourcesFolderContext = createNamedContext<ISourcesFolderContext>(undefined, "SourcesFolderContext");

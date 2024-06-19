@@ -1,8 +1,9 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
     const shaIconPickerSelectedIcon = "sha-icon-picker-selected-icon";
+    const shaIconPickerParent = "sha-icon-pciker-parent";
     const shaIconPicker = cx("sha-icon-picker", css`
         .${shaIconPickerSelectedIcon} {
             &:not(.sha-readonly) {
@@ -32,6 +33,15 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
                 margin-left: ${sheshaStyles.paddingLG}px;
                 flex: 1;
             }
+        }
+
+        .${shaIconPickerParent} {
+            box-sizing: 'border-box', 
+            z-index: 2,
+            display: 'flex',
+            justify-content: 'center',
+            align-items: 'center',
+            transition: '.3s',
         }
     
         .${shaIconPickerIconList} {
@@ -91,5 +101,6 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
         shaIconPickerIconListGroupBody,
         shaIconPickerIconListIcon,
         shaIconPickerIconListIconName,
+        shaIconPickerParent
     };
 });

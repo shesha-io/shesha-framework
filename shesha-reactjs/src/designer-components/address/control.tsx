@@ -10,6 +10,7 @@ import { useForm, useGlobalState, useSheshaApplication } from '@/providers';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
 import { customAddressEventHandler } from '@/components/formDesigner/components/utils';
+import { getFormApi } from '@/providers/form/formApi';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentProps {
   value?: any;
@@ -25,7 +26,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
     lazy: true,
   });
 
-  const { form, formMode, formData, setFormData } = useForm();
+  const form = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const { backendUrl } = useSheshaApplication();
   const [googlePlaceReady, setGooglePlaceReady] = useState(false);
@@ -57,14 +58,12 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
 
   const eventProps = {
     model,
-    form,
-    formData,
-    formMode,
+    form: getFormApi(form),
+    formData: form.formData,
     globalState,
     http: axiosHttp(backendUrl),
     message,
     moment,
-    setFormData,
     setGlobalState,
     onChange,
     onSelect,

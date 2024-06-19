@@ -5,28 +5,13 @@ import {
   FORM_CONTEXT_INITIAL_STATE,
   IFormStateInternalContext,
   IRegisterActionsPayload,
-  ISetEnabledComponentsPayload,
-  ISetFormControlsDataPayload,
   ISetFormDataPayload,
-  ISetVisibleComponentsPayload,
 } from './contexts';
-import { FormMode, IFormSettings } from './models';
+import { FormMode } from './models';
 import { convertActions, filterFormData } from './utils';
 
 const reducer = handleActions<IFormStateInternalContext, any>(
   {
-    [FormActionEnums.SetSettingsAction]: (
-      state: IFormStateInternalContext,
-      action: ReduxActions.Action<IFormSettings>
-    ) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        formSettings: payload,
-      };
-    },
- 
     [FormActionEnums.SetFormMode]: (state: IFormStateInternalContext, action: ReduxActions.Action<FormMode>) => {
       const { payload } = action;
 
@@ -34,37 +19,6 @@ const reducer = handleActions<IFormStateInternalContext, any>(
         ...state,
         formMode: payload,
       };
-    },
-    [FormActionEnums.SetVisibleComponents]: (
-      state: IFormStateInternalContext,
-      action: ReduxActions.Action<ISetVisibleComponentsPayload>
-    ) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        visibleComponentIds: payload.componentIds,
-        visibleComponentIdsIsSet: true,
-      };
-    },
-
-    [FormActionEnums.SetEnabledComponents]: (
-      state: IFormStateInternalContext,
-      action: ReduxActions.Action<ISetEnabledComponentsPayload>
-    ) => {
-      const { payload } = action;
-
-      return {
-        ...state,
-        enabledComponentIds: payload.componentIds,
-      };
-    },
-
-    [FormActionEnums.SetFormControlsData]: (
-      state: IFormStateInternalContext,
-      action: ReduxActions.Action<ISetFormControlsDataPayload>
-    ) => {
-      return { ...state, formControlsData: { ...state.formControlsData, ...action.payload?.values } };
     },
 
     [FormActionEnums.SetFormData]: (

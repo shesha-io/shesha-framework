@@ -96,8 +96,8 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     return state.properties.find(p => getFullPath(p.path, containerPath ?? containerPathMultiple) === path);
   };
 
-  // todo: move to metadata dispatcher
-  // todo: add `loadProperties` method with callback:
+  // TODO: move to metadata dispatcher
+  // TODO: add `loadProperties` method with callback:
   //    modelType, properties[] (dot notation props list)
   useEffect(() => {
     getContainerProperties({ metadata, containerPath: containerPath ?? containerPathMultiple }).then(properties => {
@@ -107,27 +107,17 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     });
   }, [metadata?.properties, containerPath, containerPathMultiple]);
 
-  const allowAutoLabelling = props.autoFillProps !== false && Boolean(form) && !readOnly;
-
-
-  useEffect(() => {
-    if (!form || !props.id || !allowAutoLabelling) {
-      return;
-    }
-    const action = form.getAction(props.id, 'linkToModelMetadata');
-    const selectedProperty = typeof (props.value) === 'string' ? getProperty(props.value) : null;
-    if (typeof action === 'function' && selectedProperty) {
-      action(selectedProperty, form);
-    }
-  }, [props.value, state.properties]);
-
-
-
   const onSelect = (data: string) => {
     if (props.onChange) props.onChange(data);
+    const property = getProperty(data);
     if (props.onSelect) {
-      const property = getProperty(data);
       props.onSelect(data, property);
+    }
+    if (props.autoFillProps !== false && form && !readOnly && property) {
+      const action = form.getAction(props.id, 'linkToModelMetadata');
+      if (typeof action === 'function') {
+        action(property, form);
+      }
     }
   };
 
@@ -202,6 +192,19 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     />
   );
 
+  if (mode === 'single')
+    return autoComplete;
+
+  if (mode === 'tags')
+    return (
+      <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /*showSearch*/ size={props.size} disabled={readOnly}>
+        {state.options.map((option, index) => (
+          <Select.Option key={index} value={camelCase(option.value)}>
+            {option.label}
+          </Select.Option>
+        ))}
+      </Select>);
+
   const forMap = (tag: string) => {
     const tagElem = (
       <>
@@ -232,54 +235,33 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
 
   const tagChild = Boolean(props.value) && Array.isArray(props.value) ? props.value?.map(forMap) : null;
 
-  const multiple = (
-    <AutoComplete
-      disabled={readOnly}
-      value={multipleValue}
-      options={state.options}
-      style={props.style}
-      //onChange={setMultipleValue}
-      onSelect={onSelectMultiple}
-      onSearch={onSearchMultiple}
-      notFoundContent="Not found"
-      size={props.size}
-      dropdownStyle={props?.dropdownStyle}
-      popupMatchSelectWidth={false}
-    />
-  );
-
   return (
     <>
-      {mode === 'single' ? (
-        <>
-          {autoComplete}
-        </>
-      ) : mode === 'multiple' ? (
-        <>
-          <Space.Compact style={{ width: "100%", ...props.style }}>
-            {multiple}
-            <Button
-              icon={<PlusOutlined />}
-              onClick={onAddMultipleClick}
-              disabled={!Boolean(multipleValue)}
-              style={style}
-              size={props.size}
-            />
-          </Space.Compact>
-          <div style={{ marginTop: 16 }}>
-            {tagChild}
-          </div>
-        </>
-      ) :
-        (
-          <Select allowClear onChange={props?.onChange} value={props.value} mode={mode} /*showSearch*/ size={props.size} disabled={readOnly}>
-            {state.options.map((option, index) => (
-              <Select.Option key={index} value={camelCase(option.value)}>
-                {option.label}
-              </Select.Option>
-            ))}
-          </Select>
-        )}
+      <Space.Compact style={{ width: "100%", ...props.style }}>
+        <AutoComplete
+          disabled={readOnly}
+          value={multipleValue}
+          options={state.options}
+          style={props.style}
+          //onChange={setMultipleValue}
+          onSelect={onSelectMultiple}
+          onSearch={onSearchMultiple}
+          notFoundContent="Not found"
+          size={props.size}
+          dropdownStyle={props?.dropdownStyle}
+          popupMatchSelectWidth={false}
+        />
+        <Button
+          icon={<PlusOutlined />}
+          onClick={onAddMultipleClick}
+          disabled={!Boolean(multipleValue)}
+          style={style}
+          size={props.size}
+        />
+      </Space.Compact>
+      <div style={{ marginTop: 16 }}>
+        {tagChild}
+      </div>
     </>
   );
 };

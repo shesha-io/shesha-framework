@@ -60,9 +60,9 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
                     referenceListName: null,
                     referenceListModule: null,
                     entityReferenceTypeShortAlias: null,
-                    allowInherited: false, // todo: add to metadata
-                    isFilterable: true, // todo: add to metadata
-                    isSortable: true, // todo: add to metadata 
+                    allowInherited: false, // TODO: add to metadata
+                    isFilterable: true, // TODO: add to metadata
+                    isSortable: true, // TODO: add to metadata 
                 });
             }
         });

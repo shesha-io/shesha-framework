@@ -5,7 +5,7 @@ import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useC
 import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { sidebarMenuItemToMenuItem } from './utils';
-import { useAvailableConstantsData } from '@/providers/form/utils';
+import { evaluateString, useAvailableConstantsData } from '@/providers/form/utils';
 import { useLocalStorage } from '@/hooks';
 import { useSidebarMenu } from '@/providers/sidebarMenu';
 import { useStyles } from './styles/styles';
@@ -21,7 +21,8 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { getItems, isItemVisible } = useSidebarMenu();
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
-  const executionContext = useAvailableConstantsData();
+  const {executionContext, evaluationContext} = useAvailableConstantsData();
+  
   const { styles } = useStyles();
 
   const currentUrl = normalizeUrl(router?.fullPath);
@@ -40,13 +41,24 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   };
 
 
+
   const menuItems = useMemo(() => {
     return (items ?? []).map((item) =>
-    sidebarMenuItemToMenuItem({
+    
+      sidebarMenuItemToMenuItem({
         item,
         isItemVisible,
         onButtonClick,
         isRootItem: true,
+        getFormUrl: (args) => {
+          const url = getUrlFromNavigationRequest(args?.actionArguments);
+          const href = evaluateString(decodeURIComponent(url), evaluationContext);
+          return href;
+        },
+        getUrl: (url) => {
+          const href = evaluateString(decodeURIComponent(url), evaluationContext);
+          return href;
+        },
         onItemEvaluation: (nestedItem) => {
           if (initialSelection.current === undefined && isSidebarButton(nestedItem) && isNavigationActionConfiguration(nestedItem.actionConfiguration)) {
             const url = getUrlFromNavigationRequest(nestedItem.actionConfiguration.actionArguments);
