@@ -6,11 +6,12 @@ import React, { FC } from 'react';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { SimpleProperty } from './simpleProperty';
+import { ItemChangeDetails } from '@/components/listEditor';
 
 export interface IItemProps {
     itemProps: IModelItem;
     index: number[];
-    onChange: (newValue: IModelItem) => void;
+    onChange: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
     containerRendering: ContainerRenderer;
 }
 

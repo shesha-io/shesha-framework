@@ -7,15 +7,18 @@ import { useFormPersister } from '../formPersisterProvider';
 
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
-  const [ isDevmode ] = useLocalStorage('application.isDevMode', false);
+  const [isDevmode] = useLocalStorage('application.isDevMode', false);
   const formPersister = useFormPersister(false);
-  const { formId, formProps, formSettings } = formPersister || {};
-  const defaultToolboxComponents = getToolboxComponents(isDevmode, { formId, formProps, formSettings });
-  const appComponentGroups = app?.formDesignerComponentGroups;
+
+  const { formId, formProps } = formPersister || {};
 
   const toolboxComponentGroups = useMemo(() => {
+    const defaultToolboxComponents = getToolboxComponents(isDevmode, { formId, formProps });
+    const appComponentGroups = app?.formDesignerComponentGroups;
+
     return [...(defaultToolboxComponents || []), ...(appComponentGroups || [])];
-  }, [defaultToolboxComponents, appComponentGroups]);
+  }, [formId, formProps, isDevmode, app?.formDesignerComponentGroups]);
+
   return toolboxComponentGroups;
 };
 

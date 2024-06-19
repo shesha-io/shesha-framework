@@ -41,11 +41,11 @@ export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete,
                         onOpenChange={(visible) => (setPlaceholderPosition(visible ? 'before' : null))}
                     />
                     {placeholderPosition === 'before' && <NewItemPlaceHolder className={placeholderPosition} />}
-                    <span className={styles.dragHandle} onClick={onDragHandleClick}>
-                        <MenuOutlined />
-                    </span>
                 </>
             )}
+            <span className={styles.dragHandle} onClick={onDragHandleClick}>
+                <MenuOutlined />
+            </span>
             <div className={styles.listItemContent}>
                 {children}
             </div>

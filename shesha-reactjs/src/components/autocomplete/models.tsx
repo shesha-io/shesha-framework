@@ -7,7 +7,7 @@ import { FormIdentifier } from '@/providers';
 export type AutocompleteDataSourceType = 'entitiesList' | 'url';
 
 export interface ISelectOption<TValue = any> {
-  // todo: make generic
+  // TODO: make generic
   value: string | number;
   label: string | React.ReactNode;
   data: TValue;

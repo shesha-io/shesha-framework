@@ -135,39 +135,6 @@
       "version": 1
     },
     {
-      "id": "52f4460d-2e64-4d79-a900-7cd28b0bebd3",
-      "type": "propertyAutocomplete",
-      "propertyName": "formKeysToPersist",
-      "label": "Persisted properties",
-      "mode": "tags",
-      "labelAlign": "right",
-      "hidden": false,
-      "validate": {},
-      "settingsValidationErrors": [],
-      "description": "A list of form properties you want persisted",
-      "parentId": "root",
-      "version": 1
-    },
-    {
-      "id": "ad28d795-92d8-4470-a87e-603822368cc8",
-      "type": "textField",
-      "propertyName": "uniqueFormId",
-      "label": "Unique Form Id",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return  !getSettingValue(data?.formKeysToPersist?.length);",
-        "_mode": "code",
-        "_value": false
-      },
-      "validate": {
-        "required": true
-      },
-      "description": "This is very important since some form are rendered using the markup, in which case they wouldn't have the path or id that could be used as a unique id of the form",
-      "version": 3,
-      "textType": "text"
-    },
-    {
       "id": "6c121baa-57e3-4965-a429-0632dadc2a99",
       "type": "labelValueEditor",
       "propertyName": "initialValues",
@@ -599,7 +566,6 @@
       "wrapperCol.span",
       "excludeFormFieldsInPayload",
       "fieldsToFetch",
-      "formKeysToPersist",
       "uniqueFormId",
       "initialValues",
       "preparedValues",

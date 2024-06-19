@@ -1,4 +1,3 @@
-import { ConfigurableForm } from '@/components';
 import { ListItemWithId } from '@/components/listEditor/models';
 import { ItemPropertiesRendererProps } from '@/components/listEditorWithPropertiesPanel';
 import { ConfigurableFormInstance } from '@/interfaces';
@@ -8,6 +7,7 @@ import { Empty, Form } from 'antd';
 import React, { useMemo, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ItemSettingsMarkupFactory } from './interfaces';
+import { FormWithRawMarkup } from '@/components/configurableForm/formWithRawMarkup';
 
 export interface IPropertiesPanelProps<TItem extends ListItemWithId> extends ItemPropertiesRendererProps<TItem> {
     settingsMarkupFactory: ItemSettingsMarkupFactory<TItem>;
@@ -35,7 +35,7 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
         const markup = settingsMarkupFactory(item) ?? [];
         return (
             <SourceFilesFolderProvider folder={`item-${item.id}`}>
-                <ConfigurableForm
+                <FormWithRawMarkup
                     //key={selectedItemId} // rerender for each item to initialize all controls
                     formRef={formRef}
                     labelCol={{ span: 24 }}
@@ -46,7 +46,7 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
                     initialValues={item}
                     onValuesChange={debouncedSave}
                     className={sheshaStyles.verticalSettingsClass}
-                    isSettings={true}
+                    isSettingsForm={true}
                 />
             </SourceFilesFolderProvider>
         );

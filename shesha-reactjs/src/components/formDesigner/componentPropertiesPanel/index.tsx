@@ -1,15 +1,14 @@
 import React, { FC } from 'react';
 import { Empty } from 'antd';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 
 export interface IProps { }
 
-export const ComponentPropertiesPanel: FC<IProps> = () => {
-  const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesigner();
+const ComponentPropertiesPanelInner: FC<IProps> = () => {
+  const { selectedComponentId, readOnly, settingsPanelRef } = useFormDesignerState();
 
   return (
     <>
-      <div ref={settingsPanelRef} />
       {!selectedComponentId && (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -18,6 +17,10 @@ export const ComponentPropertiesPanel: FC<IProps> = () => {
           }
         />
       )}
+      <div ref={settingsPanelRef}>
+      </div>
     </>
   );
 };
+
+export const ComponentPropertiesPanel = React.memo(ComponentPropertiesPanelInner);

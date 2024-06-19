@@ -6,11 +6,12 @@ import { getIconByDataType } from '@/utils/metadata';
 import { ShaIcon } from '../../..';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { MetadataSourceType } from '@/interfaces/metadata';
+import { ItemChangeDetails } from '@/components/listEditor';
 
 export interface IContainerRenderArgs {
   index?: number[];
   items: IModelItem[];
-  onChange?: (items: IModelItem[]) => void;
+  onChange?: (items: IModelItem[], changeDetails: ItemChangeDetails) => void;
 }
 
 export type ContainerRenderer = (args: IContainerRenderArgs) => React.ReactNode;
@@ -19,7 +20,7 @@ export interface IProps {
   index: number[];
   data: IModelItem;
   containerRendering: ContainerRenderer;
-  onChange: (newValue: IModelItem) => void;
+  onChange: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
 }
 
 export const ComplexProperty: FC<IProps> = ({ data, index, containerRendering, onChange }) => {
@@ -44,8 +45,8 @@ export const ComplexProperty: FC<IProps> = ({ data, index, containerRendering, o
         {containerRendering({
           index: index,
           items: data.properties || [],
-          onChange: (newItems) => {
-            onChange({...data, properties: [...newItems]});
+          onChange: (newItems, changeDetails) => {
+            onChange({...data, properties: [...newItems]}, changeDetails);
           }
         })}
       </div>

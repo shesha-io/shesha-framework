@@ -9,9 +9,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Clickatell\forms\package20230411_1233.shaconfig" />
+    <None Remove="Clickatell\forms\package20240612_1014.shaconfig" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Clickatell\forms\package20230411_1233.shaconfig" />
+    <EmbeddedResource Include="Clickatell\forms\package20240612_1014.shaconfig" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) => {
     const shaConfigurableComponent = "sha-configurable-component";
@@ -165,7 +165,10 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
     `);
 
     const shaConfigItemModeToggler = cx("sha-config-item-mode-toggler", css`
-        display: inline-block;
+        display: flex;
+        flex-direction: row;
+        position: relative;
+        z-index: 1000;
 
         ${responsive.mobile} {
             display: none;

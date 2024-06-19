@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
@@ -8,7 +8,6 @@ export const useStyles = createStyles(({ css, cx }) => {
   const propsPanel = `${prefix}-props`;
   const propsPanelContent = `${prefix}-props-content`;
 
-  const background = "#2e3138";
 
   const propsPanelHeader = `${prefix}-props-header`;
   const propsPanelTitle = `${prefix}-props-title`;
@@ -24,10 +23,6 @@ export const useStyles = createStyles(({ css, cx }) => {
       -webkit-box-sizing: border-box;
       -moz-box-sizing: border-box;
       box-sizing: border-box;
-
-      .gutter {
-          background-color: ${background};
-      }
 
       .${mainArea} {
         overflow-x: hidden;

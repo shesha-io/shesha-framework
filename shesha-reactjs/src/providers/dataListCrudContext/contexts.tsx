@@ -1,6 +1,6 @@
-import { createContext } from 'react';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { CrudMode } from './models';
+import { createNamedContext } from '@/utils/react';
 
 export interface ICrudStateContext {
   isNewObject: boolean;
@@ -45,4 +45,4 @@ export const CRUD_CONTEXT_INITIAL_STATE: ICrudStateContext = {
   isDeleting: false,
 };
 
-export const CrudContext = createContext<ICrudContext>(undefined);
+export const CrudContext = createNamedContext<ICrudContext>(undefined, "CrudContext");

@@ -1,10 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { useDynamicActionsDispatcher } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
+import { getActualModel } from '@/providers/form/utils';
 
 const { Text } = Typography;
 
@@ -22,18 +23,25 @@ const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
 
 export interface IButtonGroupItemProps {
   item: IButtonGroupItem;
+  actualModelContext?: any;
 }
 
-export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item }) => {
+export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelContext }) => {
   const { styles } = useStyles();
+  const actualItem = useMemo(() => getActualModel(item, actualModelContext)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    , [item.label, item.icon, item.tooltip, item.name, actualModelContext]);
+
+  const { icon, label, tooltip, name } = actualItem;
+
   return (
     <>
       {item.itemSubType === 'button' && (
         <>
-          {item.icon && <ShaIcon iconName={item.icon as IconType} />}
-          <span className={styles.listItemName}>{item.label || item.name}</span>
-          {item.tooltip && (
-            <Tooltip title={item.tooltip}>
+          {icon && <ShaIcon iconName={icon as IconType} />}
+          <span className={styles.listItemName}>{label || name}</span>
+          {tooltip && (
+            <Tooltip title={tooltip}>
               <QuestionCircleOutlined className={styles.helpIcon} />
             </Tooltip>
           )}

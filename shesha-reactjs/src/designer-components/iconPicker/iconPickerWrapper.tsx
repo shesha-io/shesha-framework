@@ -9,7 +9,7 @@ import { executeScriptSync, IApplicationContext, pickStyleFromModel } from '@/pr
 import { executeFunction, useFormData, useGlobalState } from '@/index';
 
 interface IconPickerWrapperProps {
-    disabled?: boolean; // todo: move to the model level
+    disabled?: boolean; // TODO: move to the model level
     applicationContext: IApplicationContext;
     value: any;
     onChange: (...args: any[]) => void;
