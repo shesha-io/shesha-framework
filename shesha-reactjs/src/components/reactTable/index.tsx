@@ -134,7 +134,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         // The header can use the table's getToggleAllRowsSelectedProps method
         // to render a checkbox
         Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-          <span className='Phumudzo' style={{ overflow: 'unset', textOverflow: 'unset' }}>
+          <span>
             <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
           </span>
         ),
