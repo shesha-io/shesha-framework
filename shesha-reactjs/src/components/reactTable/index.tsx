@@ -26,7 +26,7 @@ import { useDataTableStore } from '@/providers/index';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
-import {EmptyState} from '..';
+import { EmptyState } from '..';
 
 interface IReactTableState {
   allRows: any[];
@@ -127,8 +127,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         id: 'selection',
         //isVisible: true,
         disableResizing: true,
-        minWidth: 35,
-        width: 35,
+        minWidth: 37,
         maxWidth: 35,
         disableSortBy: true,
         // The header can use the table's getToggleAllRowsSelectedProps method
