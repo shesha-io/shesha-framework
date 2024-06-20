@@ -18,13 +18,12 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     const computedStyle = { ...getStyle(style, data), ...pickStyleFromModel(stylingBoxJSON) };
     const justifyContent = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };
 
-
     const containerStyle = (item) => ({
         textAlign: item.textAlign,
         display: "flex",
         flexDirection: item.flexDirection ? item.flexDirection : "column",
         alignItems: item.textAlign,
-        maxWidth: item.width,
+        minWidth: item.width,
     });
 
     const height = dividerHeight ?? "100%";
@@ -40,7 +39,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         <Flex vertical={vertical} className={styles.flexContainer} style={{ ...computedStyle, ...justifyContent }} >
             {columns?.map((item, i) => {
                 return (
-                    <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={{ width: item.width + gap, maxWidth: item.width + gap }}>
+                    <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={{ minWidth: item.width + gap }}>
                         <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} className={styles.divider} style={dividerStyle} />
                         <div className={styles.content} style={{ textAlign: item.textAlign, width: item.width }}>
                             <ComponentsContainer

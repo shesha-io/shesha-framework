@@ -18,43 +18,21 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             min-width: 0px;
             box-sizing: border-box;
             flex: 1;
-
-            .ant-form-item {
-                max-width: 100%;
-                min-width: 14px;
-            }
             
             .${content} {
                 width: 100%;
                 padding: 0;
-                white-space: nowrap;
                 overflow: hidden;
-                
+                flex: 1;
                 .ant-form-item-control-input {
                     min-height: 0;
-                }
-                .entity-reference-btn {
-                    max-width: 130%;
-                    margin: 0;
-                }        
+                }       
 
                 span {
                     display: block;
                     min-width: 15px;
                     width: 100%;
-                    text-overflow: ellipsis;
                     overflow: hidden;
-                }
-
-                .sha-component {
-                    margin: 0;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    max-width: 100%;
-                }
-
-                .sha-drop-hint {
-                    white-space: normal;
                 }
 
             }
