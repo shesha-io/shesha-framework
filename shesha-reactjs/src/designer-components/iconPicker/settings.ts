@@ -88,6 +88,8 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     propertyName: 'editMode',
     parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
     label: "Edit mode",
+    defaultValue: ""
+    //add defaultvalue logic when js mode is selected
   })
   .toJson(),
 ],
@@ -109,7 +111,8 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         id: nanoid(),
         propertyName: 'defaultValue',
         label: 'Default Icon',
-        labelAlign: 'left'
+        labelAlign: 'left',
+        jsSetting: true
       })
       .addColorPicker({
         id: nanoid(),
@@ -140,7 +143,8 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       .addNumberField({
         id: nanoid(),
         propertyName: 'fontSize',
-        label: 'Size'
+        label: 'Size',
+        defaultValue: 24
       })
       .addColorPicker({
         id: nanoid(),
