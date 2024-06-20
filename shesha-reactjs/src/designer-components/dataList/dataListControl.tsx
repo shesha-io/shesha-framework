@@ -86,12 +86,23 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     []
   );
 
+  const determineDesignerCardQuantity = (orientation: string):Array<object> => {
+    switch (orientation) {
+      case 'vertical':
+        return [{}];
+      case 'horizontal':
+      case 'wrap':
+      default:
+        return [{}, {}, {}, {}];
+    }
+  }
+
   const data = useDeepCompareMemo(() => {
-    return isDesignMode
-      ? props.orientation === 'vertical'
-        ? [{}]
-        : [{}, {}, {}, {}]
-      : tableData;
+    if (isDesignMode) {
+      return determineDesignerCardQuantity(props.orientation)
+    } else {
+      return tableData;
+    }
   }, [isDesignMode, tableData, props.orientation]);
 
   // http, moment, setFormData
