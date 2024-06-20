@@ -88,8 +88,6 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     propertyName: 'editMode',
     parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
     label: "Edit mode",
-    defaultValue: ""
-    //add defaultvalue logic when js mode is selected
   })
   .toJson(),
 ],

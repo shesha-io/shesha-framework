@@ -24,8 +24,6 @@ interface IconPickerWrapperProps {
     defaultValue?: ShaIconTypes;
 }
 
-//make icon readonly after selecting from js
-
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue, value } = props;
     const { data } = useFormData();
