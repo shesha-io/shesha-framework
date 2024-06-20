@@ -16,6 +16,15 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+      "type": "permissionAutocomplete",
+      "propertyName": "permissions",
+      "parentId": "root",
+      "label": "Permissions",
+      "validate": {},
+      "version": 1
+    },
+    {
       "id": "077f5a0d-d59e-44b8-bc5b-a06e18438f4d",
       "type": "dropdown",
       "propertyName": "layout",
@@ -571,7 +580,8 @@
       "preparedValues",
       "onInitialized",
       "onDataLoaded",
-      "onUpdate"
+      "onUpdate",
+      "permissions"
     ],
     "layout": "horizontal",
     "colon": true,
@@ -583,6 +593,7 @@
     },
     "uniqueFormId": "",
     "onInitialized": "    ",
-    "onDataLoaded": null
+    "onDataLoaded": null,
+    "permissions": []
   }
 }
