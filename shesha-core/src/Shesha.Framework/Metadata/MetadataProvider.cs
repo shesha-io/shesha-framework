@@ -35,19 +35,22 @@ namespace Shesha.Metadata
 
         public MetadataProvider(
             IEntityConfigurationStore entityConfigurationStore,
-            IActionDescriptorCollectionProvider actionDescriptorCollectionProvider,
             ISpecificationsFinder specificationsFinder,
             IModelConfigurationManager modelConfigurationProvider,
             IHardcodeMetadataProvider hardcodeMetadataProvider,
-            IObjectMapper mapper
+            IObjectMapper mapper,
+            IIocResolver iocResolver
         )
         {
             _entityConfigurationStore = entityConfigurationStore;
-            _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
             _specificationsFinder = specificationsFinder;
             _modelConfigurationProvider = modelConfigurationProvider;
             _hardcodeMetadataProvider = hardcodeMetadataProvider;
             _mapper = mapper;
+
+            _actionDescriptorCollectionProvider = iocResolver.IsRegistered<IActionDescriptorCollectionProvider>()
+                ? iocResolver.Resolve<IActionDescriptorCollectionProvider>()
+                : null;
         }
 
         // ToDo: support Dynamic entities
@@ -93,7 +96,7 @@ namespace Shesha.Metadata
         public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpoints(Type containerType)
         {
             var result = new Dictionary<string, ApiEndpointDto>();
-            if (containerType == null || !containerType.IsEntityType())
+            if (_actionDescriptorCollectionProvider == null || containerType == null || !containerType.IsEntityType())
                 return Task.FromResult(result);
 
             var entityConfig = _entityConfigurationStore.Get(containerType);

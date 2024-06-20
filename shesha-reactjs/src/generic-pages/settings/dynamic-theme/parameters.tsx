@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Divider, Form, Radio, Space, Tooltip } from 'antd';
-import React, { FC, Fragment, useCallback } from 'react';
+import React, { FC, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
 import { useTheme } from '@/providers';
@@ -79,7 +79,7 @@ const ThemeParameters: FC = () => {
   ];
 
   return (
-    <Fragment>
+    <div style={{marginTop: '10px'}}>
       <SectionSeparator title="Theme" />
 
       <Space direction="vertical" align="start">
@@ -137,7 +137,7 @@ const ThemeParameters: FC = () => {
           </Radio.Group>
         </Form.Item>
       </Form>
-    </Fragment>
+    </div>
   );
 };
 

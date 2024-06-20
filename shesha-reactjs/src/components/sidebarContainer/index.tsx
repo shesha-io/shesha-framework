@@ -1,33 +1,18 @@
+import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
-import React, { FC, PropsWithChildren, ReactNode, useMemo, useState } from 'react';
+import _ from 'lodash';
+
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import _ from 'lodash';
 
 export interface ISidebarContainerProps extends PropsWithChildren<any> {
-  /**
-   * Left sidebar props
-   */
   leftSidebarProps?: ISidebarProps;
-
-  /**
-   * Right sidebar props
-   */
   rightSidebarProps?: ISidebarProps;
-
-  /**
-   * Container header
-   */
   header?: ReactNode | (() => ReactNode);
-
-  /**
-   * sidebar width. By default it's 250px
-   */
   sideBarWidth?: number;
-
   allowFullCollapse?: boolean;
 }
 
@@ -42,9 +27,23 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const { styles } = useStyles();
   const [isOpenLeft, setIsOpenLeft] = useState(false);
   const [isOpenRight, setIsOpenRight] = useState(false);
+
+
+  const [currentSizes, setCurrentSizes] = useState([]);
+
+  useEffect(() => {
+    const newSizes = getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse);
+    setCurrentSizes(newSizes.sizes);
+  }, [isOpenRight, isOpenLeft]);
+
+  const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
+    [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
+  );
+
+  const handleDrag = (newSizes) => setCurrentSizes(newSizes);
+
   const renderSidebar = (side: SidebarPanelPosition) => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
-
     const hideFullCollapse = allowFullCollapse && !sidebarProps?.open;
 
     return sidebarProps && !hideFullCollapse ? (
@@ -57,11 +56,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     ) : null;
   };
 
-  const sizes = useMemo(
-    () => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
-    [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft]
-  );
-
   return (
     <div className={styles.sidebarContainer}>
       {header && (
@@ -69,7 +63,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       )}
 
       <SizableColumns
-        sizes={sizes?.sizes}
+        sizes={currentSizes}
         expandToMin={false}
         minSize={sizes?.minSizes}
         maxSize={sizes?.maxSizes}
@@ -77,6 +71,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         gutterAlign="center"
         snapOffset={5}
         dragInterval={1}
+        onDrag={handleDrag}
         direction="horizontal"
         cursor="col-resize"
         className={classNames(styles.sidebarContainerBody)}
