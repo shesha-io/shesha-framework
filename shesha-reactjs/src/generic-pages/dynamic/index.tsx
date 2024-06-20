@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Form, message, notification, Result, Spin } from 'antd';
+import { App, Button, Form, message, Result, Spin } from 'antd';
 import classNames from 'classnames';
 import isDeepEqual from 'fast-deep-equal/react';
 import moment from 'moment';
@@ -34,6 +34,7 @@ import { useDataContextManager } from '@/providers/dataContextManager/index';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { executeScript } from '@/providers/form/utils';
+import { getFormApi } from '@/providers/form/formApi';
 
 const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
@@ -44,6 +45,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { configurationItemMode } = useAppConfigurator();
   const dcm = useDataContextManager(false);
   const pageContext = dcm.getPageContext();
+  const app = App.useApp();
 
   const { publish } = usePubSub();
 
@@ -82,7 +84,6 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
     const stackId = nanoid();
 
     if (props?.navMode === 'stacked' || navigationState) {
-      //const isInitialized = state?.formId || state?.entityPathId; // todo: review
       const isInitialized = state?.formId;
 
       if (!isInitialized) {
@@ -190,7 +191,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   //#region Error messages
   
   const displayNotificationError = (error: IErrorInfo) => {
-    notification.error({
+    app.notification.error({
       message: 'Sorry! An error occurred.',
       icon: null,
       description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
@@ -219,10 +220,8 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
       setGlobalState,
       http: axiosHttp(backendUrl),
       query: getQueryParams(),
-      // ToDo: review on Page/Form life cycle
-      form: formRef?.current ?? { formSettings },
-      setFormData: formRef?.current?.setFormData,
-      formMode: formRef?.current?.formMode,
+      // TODO: review on Page/Form life cycle
+      form: formRef?.current ? getFormApi(formRef.current) : { formSettings },
       contexts: {...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate},
       pageContext: pageContext?.getFull(),
       application: dcm?.getDataContext(SheshaCommonContexts.ApplicationContext)?.getData(),
@@ -267,13 +266,14 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
 
   const markupErrorCode = formWithData.loadingState === 'failed' ? formWithData.error?.code : null;
 
-  const finalMarkup = useMemo(() => {
-    if (!formWithData) return null;
-    return {
-      components: formWithData.form?.markup,
-      formSettings: { ...formWithData.form?.settings, onInitialized: null },
-    };
-  }, [formWithData.form?.markup, formWithData.form?.settings]);
+  const finalFormSettings = useMemo(() => {
+    return formWithData
+      ? {
+        ...formWithData.form?.settings,
+        onInitialized: null
+      }
+      : undefined;
+  }, [formWithData.form?.settings]);
 
   if (markupErrorCode === 404) {
     return (
@@ -313,8 +313,10 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
             <MetadataProvider id="dynamic" modelType={formSettings?.modelType}>
               {formWithData.loadingState === 'ready' && (
                 <ConfigurableForm
+                  formName='dynamic-page-form'
                   needDebug
-                  markup={finalMarkup}
+                  formSettings={finalFormSettings}
+                  flatStructure={formWithData.form?.flatStructure}
                   formId={formId}
                   formProps={formWithData.form}
                   formRef={formRef}

@@ -1,4 +1,5 @@
 using Abp;
+using Abp.AspNetCore;
 using Abp.AutoMapper;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Configuration;
@@ -28,14 +29,16 @@ using System.Reflection;
 namespace Shesha.Tests
 {
     [DependsOn(
+        
         typeof(AbpKernelModule),
         typeof(AbpTestBaseModule),
+        typeof(AbpAspNetCoreModule),
 
         typeof(SheshaFormsDesignerModule),
 
         typeof(SheshaApplicationModule),
         typeof(SheshaNHibernateModule),
-        typeof(SheshaFrameworkModule)
+        typeof(SheshaFrameworkModule)        
         )]
     public class SheshaTestModule : AbpModule
     {
@@ -103,6 +106,8 @@ namespace Shesha.Tests
 
             if (!IocManager.IsRegistered<ApplicationPartManager>())
                 IocManager.IocContainer.Register(Component.For<ApplicationPartManager>().ImplementedBy<ApplicationPartManager>());
+
+            StaticContext.SetIocManager(IocManager);
         }
 
         public override void Initialize()
@@ -114,8 +119,6 @@ namespace Shesha.Tests
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
             IocManager.IocContainer.AddFacility<LoggingFacility>(f => f.UseAbpLog4Net().WithConfig("log4net.config"));
-
-            StaticContext.SetIocManager(IocManager);
 
             ServiceCollectionRegistrar.Register(IocManager);
         }

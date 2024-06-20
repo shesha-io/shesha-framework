@@ -9,6 +9,7 @@ import React from 'react';
 import NotesProvider from '@/providers/notes';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -65,6 +66,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         )) as INotesProps)
     .add<INotesProps>(1, (prev) => migrateVisibility(prev))
     .add<INotesProps>(2, (prev) => migrateReadOnly(prev))
+    .add<INotesProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
 };
 

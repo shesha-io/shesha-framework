@@ -4,13 +4,10 @@ import useThunkReducer from '@/hooks/thunkReducer';
 import { useAppConfigurator, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
-  DEFAULT_FORM_SETTINGS,
   FormIdentifier,
   FormMarkupWithSettings,
   IFormSettings,
-  IPersistedFormProps,
 } from '../form/models';
-import { getFlagSetters } from '../utils/flagsSetters';
 import {
   loadErrorAction,
   loadRequestAction,
@@ -30,6 +27,7 @@ import {
   ILoadFormPayload,
 } from './contexts';
 import formReducer from './reducer';
+import { useFormManager } from '../formManager';
 
 export interface IFormProviderProps {
   formId: FormIdentifier;
@@ -45,31 +43,19 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
 
   const [state, dispatch] = useThunkReducer(formReducer, initial);
 
-  const { getForm, clearFormCache } = useConfigurationItemsLoader();
+  const { clearFormCache } = useConfigurationItemsLoader();
+  const { getFormById } = useFormManager();
   const { configurationItemMode } = useAppConfigurator();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   const doFetchFormInfo = (payload: ILoadFormPayload) => {
     if (formId) {
       dispatch(loadRequestAction({ formId }));
-      getForm({ formId, configurationItemMode: configurationItemMode, skipCache: payload.skipCache })
-        .then((form) => {
-          const formContent: IPersistedFormProps = {
-            id: form.id,
-            name: form.name,
-            module: form.module,
-            label: form.label,
-            description: form.description,
-            markup: form.markup ?? [],
-            formSettings: form.settings ?? DEFAULT_FORM_SETTINGS,
-            versionNo: form.versionNo,
-            versionStatus: form.versionStatus,
-            isLastVersion: form.isLastVersion,
-          };
 
-          // parse json content
+      getFormById({ formId, configurationItemMode: configurationItemMode, skipCache: payload.skipCache })
+        .then((form) => {
           dispatch((dispatchThunk, _getState) => {
-            dispatchThunk(loadSuccessAction(formContent));
+            dispatchThunk(loadSuccessAction(form));
           });
         })
         .catch((e) => {
@@ -119,7 +105,6 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
   };
 
   const formPersisterActions: IFormPersisterActionsContext = {
-    ...getFlagSetters(dispatch),
     loadForm,
     saveForm,
     updateFormSettings,

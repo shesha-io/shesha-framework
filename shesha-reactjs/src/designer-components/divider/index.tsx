@@ -8,6 +8,7 @@ import { FormMarkup } from '@/providers/form/models';
 import settingsFormJson from './settingsForm.json';
 import { useFormData, useGlobalState } from '@/providers';
 import { getLayoutStyle } from '@/providers/form/utils';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IDividerProps extends IConfigurableFormComponent {
   dividerType?: 'horizontal' | 'vertical';
@@ -35,7 +36,10 @@ const DividerComponent: IToolboxComponent<IDividerProps> = {
   },
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  migrator: (m) => m.add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
+  migrator: (m) => m
+    .add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDividerProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
   initModel: (model) => ({
     dividerType: 'horizontal',
     dashed: false,

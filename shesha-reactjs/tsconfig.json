@@ -17,7 +17,7 @@
     ],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "noImplicitAny": false, // todo: change to true after first successfull build
+    "noImplicitAny": false, // TODO: change to true after first successfull build
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,

@@ -14,6 +14,7 @@ import { IColumnProps } from './interfaces';
 import { Table, Space, Popconfirm, Button, Form, InputNumber, Modal } from 'antd';
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
+import { createNamedContext } from '@/utils/react';
 
 export interface IProps {
   readOnly: boolean;
@@ -21,8 +22,10 @@ export interface IProps {
   onChange?: any;
 }
 
-const EditableContext = React.createContext(null);
-const DragHandleContext = React.createContext(null);
+const EditableContext = createNamedContext(null, "EditableContext");
+
+const DragHandleContext = createNamedContext(null, "DragHandleContext");
+
 const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);

@@ -1,4 +1,4 @@
-# Contributing to Appsmith
+# Contributing to Shesha
 
 Thank you for your interest in Shesha and for taking the time to contribute to this project. 🙌 
 Shesha is a project by developers for developers and there are a lot of ways you can contribute. 

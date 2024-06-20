@@ -1,6 +1,6 @@
-import { createContext } from 'react';
 import { IFlagsSetters } from '@/interfaces/flagsSetters';
 import { IFlagsState } from '@/interfaces/flagsState';
+import { createNamedContext } from '@/utils/react';
 
 
 export type IFlagProgressFlags = 'fetchFileInfo' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
@@ -30,8 +30,8 @@ export const CANVAS_CONFIG_CONTEXT_INITIAL_STATE: ICanvasConfigStateContext = {
   zoom: 100,
 };
 
-export const CanvasConfigStateContext = createContext<ICanvasConfigStateContext>(CANVAS_CONFIG_CONTEXT_INITIAL_STATE);
+export const CanvasConfigStateContext = createNamedContext<ICanvasConfigStateContext>(CANVAS_CONFIG_CONTEXT_INITIAL_STATE, "CanvasConfigStateContext");
 
-export const CanvasConfigActionsContext = createContext<ICanvasConfigActionsContext>(undefined);
+export const CanvasConfigActionsContext = createNamedContext<ICanvasConfigActionsContext>(undefined, "CanvasConfigActionsContext");
 
 //#endregion

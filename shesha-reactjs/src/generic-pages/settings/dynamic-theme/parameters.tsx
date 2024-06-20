@@ -80,7 +80,7 @@ const ThemeParameters: FC = () => {
   ];
 
   return (
-    <Fragment>
+    <div style={{ marginTop: '10px' }}>
       <SectionSeparator title="Theme" />
 
       <Space direction="vertical" align="start">
@@ -148,14 +148,15 @@ const ThemeParameters: FC = () => {
           value: theme?.labelSpan,
         },
         {
-        name: ["component"],
-        value: theme?.componentSpan       
+          name: ["component"],
+          value: theme?.componentSpan
         }
       ]}
       >
+
         <Form.Item label="Label" name={"label"}>
           <InputNumber placeholder="Label Span"
-          style={{width: "100%"}}
+            style={{ width: "100%" }}
             onChange={(value: number) => {
               changeTheme({
                 ...theme,
@@ -165,9 +166,10 @@ const ThemeParameters: FC = () => {
             }
           />
         </Form.Item>
+
         <Form.Item label="Component" name={"component"}>
           <InputNumber placeholder="Component Span"
-            style={{width: "100%"}}
+            style={{ width: "100%" }}
             onChange={(value: number) => {
               changeTheme({
                 ...theme,
@@ -179,7 +181,7 @@ const ThemeParameters: FC = () => {
         </Form.Item>
       </Form>
 
-    </Fragment>
+    </div>
   );
 };
 

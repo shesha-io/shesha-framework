@@ -1,4 +1,5 @@
 import { MetadataDto } from "@/apis/metadata";
+import { IEntityMetadata } from "@/interfaces";
 import { IEntityTypeIndentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { HttpClientApi } from "@/providers/sheshaApplication/publicApi/http/api";
 
@@ -55,7 +56,7 @@ export interface ICache {
     removeItem(key: string, callback?: (err: any) => void): Promise<void>;
 }
 
-export interface EntityTypesMap {
+export interface IEntityTypesMap {
     resolve: (className: string) => IEntityTypeIndentifier;
     register: (className: string, accessor: IEntityTypeIndentifier) => void;
     clear: () => void;
@@ -64,5 +65,12 @@ export interface EntityTypesMap {
 export interface ISyncEntitiesContext {
     cacheProvider: ICacheProvider;
     httpClient: HttpClientApi;
-    typesMap: EntityTypesMap;
+    typesMap: IEntityTypesMap;
+}
+
+export interface IEntityMetadataFetcher {
+    syncAll: () => Promise<void>;
+    getByTypeId: (typeId: IEntityTypeIndentifier) => Promise<IEntityMetadata>;
+    getByClassName: (className: string) => Promise<IEntityMetadata>;
+    isEntity: (className: string) => Promise<boolean>;
 }

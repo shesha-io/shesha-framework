@@ -336,7 +336,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   // fetch data on first rendering and on change of some properties
   useDeepCompareEffect(() => {
     if (dataSource === 'api') fetchData();
-  }, [dataSource, finalQueryParams]); // todo: memoize final getUrl and add as a dependency
+  }, [dataSource, finalQueryParams]); // TODO: memoize final getUrl and add as a dependency
 
   const postData = useDebouncedCallback(() => {
     if (!postUrl) {
@@ -467,7 +467,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       ownerUid: id,
       hasArguments: false,
       executer: () => {
-        debouncedFetchData(true); // todo: return real promise
+        debouncedFetchData(true); // TODO: return real promise
         return Promise.resolve();
       },
     },
@@ -481,7 +481,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       ownerUid: id,
       hasArguments: false,
       executer: () => {
-        postData(); // todo: return real promise
+        postData(); // TODO: return real promise
         return Promise.resolve();
       },
     },
@@ -495,7 +495,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       ownerUid: id,
       hasArguments: false,
       executer: () => {
-        putData(); // todo: return real promise
+        putData(); // TODO: return real promise
         return Promise.resolve();
       },
     },

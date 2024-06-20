@@ -74,7 +74,7 @@ namespace Shesha.Permissions
         PermissionedObjectDto Get(string objectName, bool useInherited = true,
             UseDependencyType useDependency = UseDependencyType.Before, bool useHidden = false);
 
-        ConcurrentHashSet<string> GetActualPermissions(string objectName, bool useInherited = true,
+        List<string> GetActualPermissions(string objectName, bool useInherited = true,
             UseDependencyType useDependency = UseDependencyType.Before);
 
         /// <summary>

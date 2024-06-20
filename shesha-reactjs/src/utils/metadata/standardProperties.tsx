@@ -15,7 +15,6 @@ export const SheshaConstants = {
   contexts: "shesha:contexts",
   pageContext: "shesha:pageContext",
   form: "shesha:form",
-  formMode: "shesha:formMode",
   formData: "shesha:formData",
   application: "shesha:application",
 };
@@ -118,16 +117,6 @@ export const registerFormAction: MetadataBuilderAction = (builder, name = "form"
   builder.addCustom(name, "Form instance API", () => {
     const definition: TypeDefinition = {
       typeName: 'FormApi',
-      files: [{ content: formApiDefinition, fileName: 'apis/form.ts' }],
-    };
-    return Promise.resolve(definition);
-  });
-};
-
-export const registerFormModeAction: MetadataBuilderAction = (builder, name = "formMode") => {
-  builder.addCustom(name, "The form mode", () => {
-    const definition: TypeDefinition = {
-      typeName: 'FormMode',
       files: [{ content: formApiDefinition, fileName: 'apis/form.ts' }],
     };
     return Promise.resolve(definition);
