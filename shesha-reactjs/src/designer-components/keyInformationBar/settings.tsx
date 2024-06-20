@@ -33,17 +33,20 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <Checkbox disabled={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="vertical" label="Vertical" valuePropName="checked" jsSetting>
-                <Checkbox disabled={readOnly} />
+            <SettingsFormItem name="orientation" label="Orientation">
+                <Select >
+                    <Option value="horizontal">Horizontal</Option>
+                    <Option value="vertical">Vertical</Option>
+                </Select>
             </SettingsFormItem>
 
-            <Show when={!values.vertical}>
+            <Show when={values.orientation === "horizontal"}>
                 <SettingsFormItem name="dividerHeight" label="Divider Height" jsSetting>
                     <InputNumber readOnly={readOnly} />
                 </SettingsFormItem>
             </Show>
 
-            <Show when={values.vertical}>
+            <Show when={values.orientation === "vertical"}>
                 <SettingsFormItem name="dividerWidth" label="Divider Width" jsSetting >
                     <InputNumber readOnly={readOnly} />
                 </SettingsFormItem>
@@ -54,6 +57,7 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
             <SettingsFormItem name="columns" label="Columns">
                 <ColumnsList readOnly={readOnly} />
             </SettingsFormItem>
+
             <SettingsFormItem name="alignItems" label="Align Items">
                 <Select >
                     <Option value="flex-start">Flex Start</Option>
@@ -61,7 +65,6 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                     <Option value="center">Center</Option>
                 </Select>
             </SettingsFormItem>
-
 
             <SectionSeparator title="Style" />
 

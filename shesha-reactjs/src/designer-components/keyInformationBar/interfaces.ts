@@ -27,7 +27,7 @@ export interface IKeyInformationBarProps extends IConfigurableFormComponent, ICo
   dividerMargin?: number;
   gap?: number;
   alignItems?: AlignItems;
-  vertical?: boolean;
+  orientation?: 'horizontal' | 'vertical';
   columns?: KeyInfomationBarItemProps[];
   readOnly?: boolean;
   style?: string;

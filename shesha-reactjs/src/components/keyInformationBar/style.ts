@@ -15,45 +15,48 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;
             align-items: center;
-            flex: 0 0 33.3333%;
+            min-width: 0px;
+            box-sizing: border-box;
+            flex: 1;
 
+            .ant-form-item {
+                max-width: 100%;
+                min-width: 14px;
+            }
+            
             .${content} {
-                width: max-content;
+                width: 100%;
                 padding: 0;
                 white-space: nowrap;
-                .ant-form-item {
-                    margin-bottom: 0;
-                    width: 100%;
-                    justify-content: center;
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box; 
-                }
-
-                &.ant-form-item-control-input-content, .ant-form-item-control-input {
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    min-height: 0;
-                    width: 100%;
-
-                    button {
-                        max-width: 100%;
-                    }
-
-                    span {
-                        overflow: hidden;
-                        display: block;
-                        text-overflow: ellipsis;
-                        width: inherit;
-                    }
-                }
-
-                .ant-row {
-                    margin: 0;
-                    padding: 0;
-                    width: 100%;
+                overflow: hidden;
                 
+                .ant-form-item-control-input {
+                    min-height: 0;
                 }
+                .entity-reference-btn {
+                    max-width: 130%;
+                    margin: 0;
+                }        
+
+                span {
+                    display: block;
+                    min-width: 15px;
+                    width: 100%;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                .sha-component {
+                    margin: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 100%;
+                }
+
+                .sha-drop-hint {
+                    white-space: normal;
+                }
+
             }
         }
 
@@ -62,15 +65,14 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         }
 
         .${flexItemWrapperVertical} {
-            width: max-content;
             flex-direction: column;
         }
 
         .${divider}{
-            min-width: 0;
-            min-height: 0;
             max-height: 100%;
             max-width: 100%;
+            flex-shrink: 0;
+            flex-grow: 0;
         }
     `);
 

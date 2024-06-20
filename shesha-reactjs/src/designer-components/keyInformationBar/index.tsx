@@ -42,6 +42,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
           components: [],
         }
       ],
+      orientation: 'horizontal',
     };
 
     return tabsModel;
