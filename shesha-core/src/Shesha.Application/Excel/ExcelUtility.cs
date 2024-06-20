@@ -8,6 +8,7 @@ using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -350,8 +351,21 @@ namespace Shesha.Excel
                         if (val == null)
                             return null;
 
-                        var items = _refListHelper.DecomposeMultiValueIntoItems(refListIdentifier, Convert.ToInt64(val));
-                        return items.Select(i => i.Item).Delimited(",");
+                        if (val is IList valList) 
+                        {
+                            return valList.Cast<object>().Select(item =>
+                            {
+                                return list.FirstOrDefault(i => i.ItemValue.ToString() == item.ToString())?.Item;
+                            }).Where(i => i != null).Delimited(", ");
+                        }
+
+                        if (Int64.TryParse(val.ToString(), out var int64Value)) 
+                        {
+                            var items = _refListHelper.DecomposeMultiValueIntoItems(refListIdentifier, int64Value);
+                            return items.Select(i => i.Item).Delimited(", ");
+                        }
+
+                        return null;                        
                     });
                 }
                 else
