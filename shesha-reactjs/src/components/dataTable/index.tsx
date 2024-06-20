@@ -222,14 +222,14 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
-          // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-          //return onNewRowInitializeExecuter(formData, globalState);
-          const result = onNewRowInitializeExecuter(formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
-          return Promise.resolve(result);
-        }
+        // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
+        //return onNewRowInitializeExecuter(formData, globalState);
+        const result = onNewRowInitializeExecuter(formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
+        return Promise.resolve(result);
+      }
       : () => {
-          return Promise.resolve({});
-        };
+        return Promise.resolve({});
+      };
 
     return result;
   }, [onNewRowInitializeExecuter, formData, globalState]);
@@ -711,8 +711,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       <div className={styles.shaChildTableErrorContainer}>
         {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
       </div>
-      
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps}  />}
+
+      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
     </Fragment>
   );
 };

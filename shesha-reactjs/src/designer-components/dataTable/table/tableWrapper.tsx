@@ -182,11 +182,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 {`Filters( ${totalRows} results): `}
                 <Button
                     onClick={clearFilters}
-                    style={{
-                        fontSize: 12,
-                        color: styles.secondaryColor,
-                        fontWeight: 500,
-                    }}
+                    type='default'
+                    style={{ padding: "0 2px", height: "max-content" }}
                 >
                     clear all
                 </Button>
