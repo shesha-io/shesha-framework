@@ -236,7 +236,7 @@ export interface IFormSettings extends IHasVersion {
 
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean;
-  permissions: string[];
+  permissions?: string[];
 }
 
 export interface IFormProps extends IFlatComponentsStructure {
