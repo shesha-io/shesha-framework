@@ -1,5 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Divider, Form, Radio, Space, Tooltip } from 'antd';
+import { Divider, Form, Radio, Space, Tooltip, InputNumber } from 'antd';
 import React, { FC, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
@@ -7,6 +7,7 @@ import { useTheme } from '@/providers';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
 import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
+import { formItemLayout } from './form';
 
 interface IThemeConfig {
   name: string;
@@ -79,7 +80,7 @@ const ThemeParameters: FC = () => {
   ];
 
   return (
-    <div style={{marginTop: '10px'}}>
+    <div style={{ marginTop: '10px' }}>
       <SectionSeparator title="Theme" />
 
       <Space direction="vertical" align="start">
@@ -137,6 +138,49 @@ const ThemeParameters: FC = () => {
           </Radio.Group>
         </Form.Item>
       </Form>
+
+      <Divider />
+
+      <SectionSeparator title="Form Span Settings" />
+      <Form {...formItemLayout} fields={[
+        {
+          name: ["label"],
+          value: theme?.labelSpan,
+        },
+        {
+          name: ["component"],
+          value: theme?.componentSpan
+        }
+      ]}
+      >
+
+        <Form.Item label="Label" name={"label"}>
+          <InputNumber placeholder="Label Span"
+            style={{ width: "100%" }}
+            onChange={(value: number) => {
+              changeTheme({
+                ...theme,
+                labelSpan: value,
+              });
+            }
+            }
+          />
+        </Form.Item>
+
+        <Form.Item label="Component" name={"component"}>
+          <InputNumber placeholder="Component Span"
+            style={{ width: "100%" }}
+            onChange={(value: number) => {
+              changeTheme({
+                ...theme,
+                componentSpan: value,
+              });
+            }
+            }
+          />
+        </Form.Item>
+      </Form>
+
     </div>
   );
 };
