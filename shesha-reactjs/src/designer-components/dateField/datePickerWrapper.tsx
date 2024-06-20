@@ -134,6 +134,8 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             variant={hideBorder ? 'borderless' : undefined}
             showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
             showNow={showNow}
+            showHour={true}
+            showMinute={true}
             showSecond={true}
             picker={picker}
             format={pickerFormat}
