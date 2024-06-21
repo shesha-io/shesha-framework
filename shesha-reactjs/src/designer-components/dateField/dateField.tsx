@@ -85,7 +85,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     .add<IDateFieldProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDateFieldProps>(4, (prev) => ({
       ...prev,
-      showNow: prev.showNow === undefined && prev['showToday'] === undefined || Boolean(prev.showNow || prev['showToday'])
+      showNow: Boolean(prev.showNow || prev['showToday'])
     }))
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
