@@ -1,34 +1,27 @@
 import React from 'react';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { FilterOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { AdvancedFilterButton } from './advancedFilterButton';
+import { IButtonComponentProps } from '@/designer-components/button/interfaces';
+import { useFormData } from '@/index';
 
-
-const FilterComponent: IToolboxComponent<IConfigurableFormComponent> = {
+const FilterComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
   name: 'Table Filter',
   icon: <FilterOutlined />,
   Factory: ({ model }) => {
 
-    return model.hidden ? null : <AdvancedFilterButton />;
+    return model.hidden ? null : <AdvancedFilterButton {...model}/>
   },
   initModel: (model) => {
     return {
       ...model,
+      type: 'link',
+      label: "",
     };
   },
-  migrator: (m) =>
-    m
-      .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<IConfigurableFormComponent>(1, (prev) => migrateVisibility(prev))
-      .add<IConfigurableFormComponent>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-  ,
   settingsFormMarkup: (context) => getSettings(context),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };

@@ -1,8 +1,6 @@
 import React, {
     FC,
     Fragment,
-    useEffect,
-    useRef,
 } from 'react';
 import { filterVisibility } from './utils';
 import { getStyle } from '@/providers/form/utils';
@@ -21,9 +19,9 @@ import {
     useSheshaApplication,
 } from '@/providers';
 import { GlobalTableStyles, useStyles } from './styles/styles';
-import { Alert, Button, Tag } from 'antd';
+import { Alert } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { FilterList } from '../filterList/filterList';
 
 const NotConfiguredWarning: FC = () => {
     return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
@@ -52,7 +50,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         clearFilters,
         removeColumnFilter,
         tableFilter,
-        totalRows,
+        tableData,
+
     } = useDataTableStore();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
@@ -89,107 +88,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
     };
 
-    const filtersRef = useRef(null);
-    const scrollbarLeftArrow = useRef(null);
-    const scrollbarRightArrow = useRef(null);
-
-    const manageArrows = () => {
-        if (!filtersRef.current) return;
-
-        const maxScrollDistance = filtersRef.current.scrollWidth - filtersRef.current.clientWidth - 30;
-
-        if (filtersRef.current.scrollLeft <= 0) {
-            scrollbarLeftArrow.current.classList.add("hidden");
-        } else {
-            scrollbarLeftArrow.current.classList.remove("hidden");
-        }
-
-        if (filtersRef.current.scrollLeft > maxScrollDistance + 24) {
-            scrollbarRightArrow.current.classList.add("hidden");
-        } else {
-            scrollbarRightArrow.current.classList.remove("hidden");
-        }
-
-        if (filtersRef.current.scrollWidth <= filtersRef.current.clientWidth) {
-            scrollbarRightArrow.current.classList.remove("active");
-            scrollbarLeftArrow.current.classList.remove("active");
-        }
-    };
-
-    const scrollRight = () => {
-        if (filtersRef.current) {
-            filtersRef.current.scrollLeft += 100;
-            manageArrows();
-        }
-    };
-
-    const scrollLeft = () => {
-        if (filtersRef.current) {
-            manageArrows();
-            filtersRef.current.scrollLeft -= filtersRef.current.scrollLeft === 0 ? 200 : 100;
-        }
-    };
-
-    useEffect(() => {
-        manageArrows();
-
-        const handleScroll = () => {
-            manageArrows();
-        };
-
-        if (filtersRef.current) {
-            manageArrows();
-            filtersRef.current.addEventListener('scroll', handleScroll);
-        }
-
-        return () => {
-            if (filtersRef.current) {
-                filtersRef.current.removeEventListener('scroll', handleScroll);
-            }
-        };
-    }, [filtersRef.current]);
-
-    const FiltersList = ({ filters, clearFilters }) => {
-        return (
-            <div style={{ textAlign: "center" }}>
-                <div className={styles.scrollableTagsContainer}>
-                    <LeftOutlined
-                        ref={scrollbarLeftArrow}
-                        className={styles.arrowLeft}
-                        onClick={scrollLeft}
-                    />
-                    <div className="filters" ref={filtersRef}>
-                        {filters?.map(({ columnId }) => {
-                            return (
-                                <Tag
-                                    bordered={false}
-                                    closable
-                                    key={columnId}
-                                    onClose={() => removeColumnFilter(columnId)}
-                                    className={styles.tag}
-                                >
-                                    {columnId}
-                                </Tag>
-                            );
-                        })}
-                    </div>
-                    <RightOutlined
-                        ref={scrollbarRightArrow}
-                        className={styles.arrowRight}
-                        onClick={scrollRight}
-                    />
-                </div>
-                {`Filters( ${totalRows} results): `}
-                <Button
-                    onClick={clearFilters}
-                    type='default'
-                    style={{ padding: "0 2px", height: "max-content" }}
-                >
-                    clear all
-                </Button>
-            </div>
-        );
-    };
     return (
         <SidebarContainer
             rightSidebarProps={{
@@ -202,7 +100,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
-            {tableFilter?.length > 0 && <FiltersList filters={tableFilter} clearFilters={clearFilters} />}
+            {tableFilter?.length > 0 && <FilterList filters={tableFilter} clearFilters={clearFilters} styles={styles} rows={tableData.length} removeColumnFilter={removeColumnFilter} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}

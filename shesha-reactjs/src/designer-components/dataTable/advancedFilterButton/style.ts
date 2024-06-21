@@ -4,11 +4,11 @@ export const useStyles = createStyles(({ token }) => {
 
     const primaryColor = token.colorPrimary;
     const secondaryColor = token.colorPrimaryBgHover;
-    const buttonDisabledColor = token.colorTextDisabled;
+    const disabledColor = token.colorTextDisabled;
 
     return {
         secondaryColor,
         primaryColor,
-        buttonDisabledColor
+        disabledColor
     };
 });
