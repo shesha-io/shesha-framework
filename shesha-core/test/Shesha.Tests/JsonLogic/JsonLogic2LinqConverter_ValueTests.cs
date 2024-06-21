@@ -1,21 +1,12 @@
-﻿using Abp;
-using Abp.Domain.Entities;
-using Abp.Domain.Repositories;
-using Abp.Linq;
-using Abp.Timing;
+﻿using Abp.Timing;
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using Shesha.Authorization.Users;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.Extensions;
-using Shesha.JsonLogic;
 using Shesha.Services;
-using Shesha.Tests.TestingUtils;
+using Shesha.Tests.JsonLogic.Models;
 using Shesha.Utilities;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -26,42 +17,8 @@ namespace Shesha.Tests.JsonLogic
     /// <summary>
     /// JsonLogic2LinqConverter tests
     /// </summary>
-    public class JsonLogic2LinqConverter_Tests: SheshaNhTestBase
+    public class JsonLogic2LinqConverter_ValueTests : JsonLogic2LinqConverterBaseTests
     {
-        private Expression<Func<T, bool>> ConvertToExpression<T>(string jsonLogicExpression)
-        {
-            var converter = Resolve<IJsonLogic2LinqConverter>();
-
-            // Parse json into hierarchical structure
-            var jsonLogic = JObject.Parse(jsonLogicExpression);
-
-            var expression = converter.ParseExpressionOf<T>(jsonLogic);
-            return expression;
-        }
-
-        private async Task<List<T>> TryFetchData<T, TId>(string jsonLogicExpression, Func<IQueryable<T>, IQueryable<T>> prepareQueryable = null, Action<List<T>> assertions = null) where T: class, IEntity<TId>
-        {
-            var expression = ConvertToExpression<T>(jsonLogicExpression);
-
-            var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
-            var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
-
-            List<T> data = null;
-            
-            await WithUnitOfWorkAsync(async () => {
-                var query = repository.GetAll().Where(expression);
-
-                if (prepareQueryable != null)
-                    query = prepareQueryable.Invoke(query);
-
-                data = await asyncExecuter.ToListAsync(query);
-
-                assertions?.Invoke(data);
-            });
-
-            return data;
-        }
-
         #region string operations
 
         private readonly string _stringField_Equals_expression = @"{
@@ -1272,14 +1229,14 @@ namespace Shesha.Tests.JsonLogic
 }";
 
         [Fact]
-        public void entityReference_In_Convert()
+        public void EntityReference_In_Convert()
         {
             var expression = ConvertToExpression<Person>(_entityReference_In_Convert_expression);
             Assert.Equal(@"ent => ((ent.Id == ""24007BA5-697B-417C-91BA-ED92F3F31F3A"".ToGuid()) OrElse (ent.Id == ""D197A7B3-5505-430C-9D98-CD64F1A638FA"".ToGuid()))", expression.ToString());
         }
 
         [Fact]
-        public async Task entityReference_In_Fetch()
+        public async Task EntityReference_In_Fetch()
         {
             var data = await TryFetchData<Person, Guid>(_entityReference_In_Convert_expression);
             Assert.NotNull(data);
@@ -1381,54 +1338,5 @@ namespace Shesha.Tests.JsonLogic
         }
 
         #endregion
-
-        public class ChildEntityWithIntId : Entity<int> 
-        { 
-        }
-
-        public class EntityWithIntId : Entity<int>
-        {
-            public virtual ChildEntityWithIntId Child { get; set; }
-        }
-
-
-        public class EntityWithRefListrops : Entity<Guid> 
-        { 
-            public virtual RefListPersonTitle Title { get; set; }
-            public virtual RefListPersonTitle? NullableTitle { get; set; }
-        }
-
-        public class EntityWithDateProps: Entity<Guid> 
-        {
-            public virtual DateTime? NullableDateTimeProp { get; set; }
-
-            [DataType(DataType.Date)]
-            public virtual DateTime? NullableDateProp { get; set; }
-
-            public virtual TimeSpan? NullableTimeProp { get; set; }
-
-            public virtual DateTime DateTimeProp { get; set; }
-
-            [DataType(DataType.Date)]
-            public virtual DateTime DateProp { get; set; }
-            
-            public virtual TimeSpan TimeProp { get; set; }
-            public virtual int IntProp { get; set; }
-            public virtual int? NullableIntProp { get; set; }
-        }
-
-        private IDisposable FreezeTime() 
-        {
-            // save current provider
-            var prevProvider = Clock.Provider;
-
-            // change current provider to static
-            Clock.Provider = new StaticClockProvider();
-
-            // return compensation logic
-            return new DisposeAction(() => {
-                Clock.Provider = prevProvider;
-            });            
-        }
     }
 }
