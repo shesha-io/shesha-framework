@@ -32,7 +32,7 @@ export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
         allowChangeMode={false}
         editorComponents={components}
       >
-        <div className="tr tr-body sha-new-row" {...headerGroupProps}>
+        <div className="tr tr-body sha-new-row" {...headerGroupProps} key={headerGroupProps['key']}>
           {columns
             .filter((c) => c.isVisible)
             .map((column, index) => {
