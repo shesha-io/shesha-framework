@@ -8,7 +8,7 @@ import { Checkbox, Input, InputNumber, Select } from 'antd';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import ColumnsList from './columnsList';
 import { IKeyInformationBarProps } from './interfaces';
-import { Show } from '@/components';
+import { ColorPicker, Show } from '@/components';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
     const { readOnly } = props;
@@ -19,10 +19,6 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
         <>
             <SettingsFormItem name="componentName" label="Component Name" required>
                 <Input readOnly={readOnly} />
-            </SettingsFormItem>
-
-            <SettingsFormItem name="dividerMargin" label="Divider Margin" jsSetting>
-                <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 
             <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
@@ -40,20 +36,6 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 </Select>
             </SettingsFormItem>
 
-            <Show when={values.orientation === "horizontal"}>
-                <SettingsFormItem name="dividerHeight" label="Divider Height" jsSetting>
-                    <InputNumber readOnly={readOnly} />
-                </SettingsFormItem>
-            </Show>
-
-            <Show when={values.orientation === "vertical"}>
-                <SettingsFormItem name="dividerWidth" label="Divider Width" jsSetting >
-                    <InputNumber readOnly={readOnly} />
-                </SettingsFormItem>
-            </Show>
-
-
-
             <SettingsFormItem name="columns" label="Columns">
                 <ColumnsList readOnly={readOnly} />
             </SettingsFormItem>
@@ -65,7 +47,26 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                     <Option value="center">Center</Option>
                 </Select>
             </SettingsFormItem>
+            <SectionSeparator title="Divider" />
 
+            <SettingsFormItem name="dividerMargin" label="Divider Margin" jsSetting>
+                <InputNumber readOnly={readOnly} />
+            </SettingsFormItem>
+
+            <Show when={values.orientation === "horizontal"}>
+                <SettingsFormItem name="dividerHeight" label="Divider Height" jsSetting>
+                    <InputNumber readOnly={readOnly} />
+                </SettingsFormItem>
+            </Show>
+
+            <Show when={values.orientation === "vertical"}>
+                <SettingsFormItem name="dividerWidth" label="Divider Width" jsSetting >
+                    <InputNumber readOnly={readOnly} />
+                </SettingsFormItem>
+            </Show>
+            <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting >
+                <ColorPicker readOnly={readOnly} />
+            </SettingsFormItem>
             <SectionSeparator title="Style" />
 
             <SettingsFormItem name="style" label="Style">

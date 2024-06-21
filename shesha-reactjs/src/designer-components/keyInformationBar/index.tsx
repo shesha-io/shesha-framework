@@ -36,7 +36,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
       columns: [
         {
           id: nanoid(),
-          width: 80,
+          width: 200,
           textAlign: 'center',
           flexDirection: "column",
           components: [],

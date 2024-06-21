@@ -8,7 +8,7 @@ import { useStyles } from './style';
 export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
     const { data } = useFormData();
-    const { columns, hidden, alignItems, orientation, style, dividerMargin, dividerHeight, dividerWidth, gap, stylingBox } = props;
+    const { columns, hidden, alignItems, orientation, style, dividerMargin, dividerHeight, dividerWidth, dividerColor, gap, stylingBox } = props;
     const { styles } = useStyles();
 
     if (hidden) return null;
@@ -23,24 +23,23 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         display: "flex",
         flexDirection: item.flexDirection ? item.flexDirection : "column",
         alignItems: item.textAlign,
-        minWidth: item.width,
+        maxWidth: item.width - dividerMargin,
     });
 
-    const height = dividerHeight ?? "100%";
-    const width = dividerWidth ?? "100%";
+    const dividerStyle = () => ({
+        backgroundColor: dividerColor ?? '#b4b4b4',
+        minHeight: vertical ? '0.62px' : dividerHeight ?? "100%",
+        minWidth: !vertical ? '0.62px' : dividerWidth ?? "100%",
 
-    const dividerStyle = {
-        height: vertical ? '0px' : height,
-        width: !vertical ? '0px' : width,
         margin: dividerMargin && vertical ? `${dividerMargin}px 0px` : `0px ${dividerMargin}px 0px`,
-    };
+    });
 
     return (
         <Flex vertical={vertical} className={styles.flexContainer} style={{ ...computedStyle, ...justifyContent }} >
             {columns?.map((item, i) => {
                 return (
-                    <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={{ minWidth: item.width + gap }}>
-                        <Divider type={vertical ? "horizontal" : "vertical"} key={"divider" + i} className={styles.divider} style={dividerStyle} />
+                    <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={vertical ? { width: item.width } : { maxWidth: item.width + gap }}>
+                        <div key={"divider" + i} className={styles.divider} style={dividerStyle()} />
                         <div className={styles.content} style={{ textAlign: item.textAlign, width: item.width }}>
                             <ComponentsContainer
                                 containerId={item.id}

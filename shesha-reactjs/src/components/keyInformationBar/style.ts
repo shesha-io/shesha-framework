@@ -31,8 +31,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 span {
                     display: block;
                     min-width: 15px;
-                    width: 100%;
                     overflow: hidden;
+                    white-space: normal;
                 }
 
             }

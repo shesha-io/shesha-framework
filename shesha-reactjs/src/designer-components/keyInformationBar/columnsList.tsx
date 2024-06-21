@@ -150,8 +150,8 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
   const handleAddColumn = () => {
     const newColumn: KeyInfomationBarItemProps = {
       id: nanoid(),
-      width: 80,
-      textAlign: 'right',
+      width: 200,
+      textAlign: 'center',
       flexDirection: "column",
       components: [],
     };
