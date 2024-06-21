@@ -1,15 +1,16 @@
-import { useMutate } from '@/hooks';
-import useThunkReducer from '@/hooks/thunkReducer';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
 import { sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
-import { OverlayLoader } from '@/components/overlayLoader';
+import { useMutate } from '@/hooks';
+import useThunkReducer from '@/hooks/thunkReducer';
+import { useLoginUrl } from '@/hooks/useLoginUrl';
 import { IAccessToken } from '@/interfaces';
 import { IHttpHeaders } from '@/interfaces/accessToken';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IApiEndpoint } from '@/interfaces/metadata';
 import IRequestHeaders from '@/interfaces/requestHeaders';
+import { useShaRouting } from '@/providers/shaRouting';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { HOME_CACHE_URL, URL_CHANGE_PASSWORD, URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import {
   AUTHORIZATION_HEADER_NAME,
@@ -21,8 +22,7 @@ import {
 import { getLocalizationOrDefault } from '@/utils/localization';
 import { getCustomHeaders, getTenantId } from '@/utils/multitenancy';
 import { isSameUrls } from '@/utils/url';
-import { useShaRouting } from '@/providers/shaRouting';
-import { useSheshaApplication } from '@/providers/sheshaApplication';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, } from 'react';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   checkAuthAction,
@@ -46,7 +46,6 @@ import {
   ILoginForm,
 } from './contexts';
 import { authReducer } from './reducer';
-import { useLoginUrl } from '@/hooks/useLoginUrl';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -423,3 +422,4 @@ function useAuth(require: boolean = true) {
 export default AuthProvider;
 
 export { AuthProvider, useAuth, useAuthActions, useAuthState };
+
