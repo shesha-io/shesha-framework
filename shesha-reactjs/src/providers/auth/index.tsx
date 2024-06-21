@@ -362,22 +362,11 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const resetPasswordSuccess = () => {
     dispatch(resetPasswordSuccessAction());
   };
-
-  const showLoader = useMemo(() => {
-    return !!(
-      (state.isFetchingUserInfo || (!state.isFetchingUserInfo && !state.loginInfo && state.token)) // Done fetching user info but the state is not yet updated
-    );
-  }, [state.isFetchingUserInfo, state.loginInfo, state.token]);
-
   //#endregion
 
   const getAccessToken = () => {
     return state.token;
   };
-
-  if (showLoader) {
-    return <OverlayLoader loading={true} loadingText="Initializing..." />;
-  }
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
@@ -397,7 +386,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           /* NEW_ACTION_GOES_HERE */
         }}
       >
-        {children}
+         {children}
       </AuthActionsContext.Provider>
     </AuthStateContext.Provider>
   );
