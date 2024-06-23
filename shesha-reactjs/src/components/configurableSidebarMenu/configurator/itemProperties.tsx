@@ -3,16 +3,14 @@ import itemSettingsJson from './itemSettings.json';
 import React, {
   FC,
   useMemo,
-  useRef,
 } from 'react';
-import { ConfigurableForm } from '@/components';
-import { Empty, Form } from 'antd';
+import { Empty } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
-import { ConfigurableFormInstance } from '@/interfaces';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
+import { FormWithRawMarkup } from '@/components/configurableForm/formWithRawMarkup';
 
 export interface ISidebarItemPropertiesProps {
   item?: ISidebarMenuItem;
@@ -21,10 +19,6 @@ export interface ISidebarItemPropertiesProps {
 }
 
 export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, onChange, readOnly }) => {
-  const [form] = Form.useForm();
-
-  const formRef = useRef<ConfigurableFormInstance>(null);
-
   const debouncedSave = useDebouncedCallback(
     values => {
       onChange?.({ ...item, ...values });
@@ -44,14 +38,13 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
       
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
-        <ConfigurableForm
-          //key={selectedItemId} // rerender for each item to initialize all controls
-          formRef={formRef}
+        <FormWithRawMarkup
+          //key={item.id} // rerender for each item to initialize all controls
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
           markup={markup}
-          form={form}
+          cacheKey={isSidebarGroup(item) ? 'group' : 'item'}
           initialValues={item}
           onValuesChange={debouncedSave}
           className={sheshaStyles.verticalSettingsClass}

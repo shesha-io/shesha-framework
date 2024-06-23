@@ -4,16 +4,17 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { ISidebarGroup, ISidebarMenuItem } from '@/interfaces/sidebar';
 import { useStyles } from '@/components/listEditor/styles/styles';
+import { ItemChangeDetails } from '@/components/listEditor';
 
 export interface IContainerRenderArgs {
   id?: string;
   items: ISidebarMenuItem[];
-  onChange: (newValue: ISidebarMenuItem[]) => void;
+  onChange: (newValue: ISidebarMenuItem[], changeDetails: ItemChangeDetails) => void;
 }
 
 export interface ISidebarMenuGroupProps {
   item: ISidebarGroup;
-  onChange: (newValue: ISidebarGroup) => void;
+  onChange: (newValue: ISidebarGroup, changeDetails: ItemChangeDetails) => void;
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 
@@ -30,8 +31,8 @@ export const SidebarListGroup: FC<ISidebarMenuGroupProps> = ({ item, onChange, c
       )}
       {containerRendering({
         items: item.childItems || [],
-        onChange: (newItems) => {
-          onChange({ ...item, childItems: [...newItems] });
+        onChange: (newItems, changeDetails) => {
+          onChange({ ...item, childItems: [...newItems] }, changeDetails);
         }
       })}
     </>

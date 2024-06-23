@@ -90,10 +90,6 @@ export interface IComponentLabelProps {
 }
 
 export interface IComponentRuntimeProps {
-  visibilityFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
-
-  enabledFunc?: (data: any, globalState: any, formMode: FormMode) => boolean;
-
   /**/
   settingsValidationErrors?: IAsyncValidationError[];
 
@@ -240,6 +236,7 @@ export interface IFormSettings extends IHasVersion {
 
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean;
+  permissions?: string[];
 }
 
 export interface IFormProps extends IFlatComponentsStructure {
@@ -281,7 +278,8 @@ export interface IPersistedFormProps {
   label?: string;
   description?: string;
   markup?: FormRawMarkup;
-  formSettings?: IFormSettings;
+  // formSettings?: IFormSettings;
+  // flatStructure: IFlatComponentsStructure;
   /**
    * Version number
    */
@@ -299,7 +297,8 @@ export interface IPersistedFormProps {
 
 export interface IConfigurableFormBaseProps {
   formId?: FormIdentifier;
-  markup?: FormMarkup;
+  formSettings?: IFormSettings;
+  flatStructure?: IFlatComponentsStructure;
   formProps?: IPersistedFormProps;
 }
 
@@ -395,6 +394,7 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
   colon: true,
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
+  permissions: []
 };
 
 export type ActionParametersJs = string;

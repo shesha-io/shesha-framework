@@ -92,14 +92,14 @@ export default function undoable<State>(
           return {
             past: lastSavedState ? applyLimit([...past, lastSavedState], options.limit) : [],
             present: newPresent,
-            future: [],
+            future: state.future.length === 0  ? state.future : [],
             _latestUnfiltered: newPresent,
           };
         } else
           return {
             past: state.past,
             present: newPresent,
-            future: [],
+            future: state.future.length === 0  ? state.future : [],
             _latestUnfiltered: state._latestUnfiltered,
           };
     }

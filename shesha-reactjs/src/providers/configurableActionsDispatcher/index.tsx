@@ -8,6 +8,7 @@ import {
   IConfigurableActionDispatcherStateContext,
   IExecuteActionPayload,
   IGetConfigurableActionPayload,
+  IPrepareActionArgumentsPayload,
   IRegisterActionPayload,
 } from './contexts';
 import { IConfigurableActionGroupDictionary } from './models';
@@ -43,7 +44,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
     if (!owner || !name) return null;
 
-    // todo: search action in the dictionary and return action
+    // TODO: search action in the dictionary and return action
     const actionsGroup = actions.current[owner];
     if (!actionsGroup?.actions) return null;
 
@@ -53,11 +54,11 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     return action;
   };
 
-  const getConfigurableAction = (payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor => {
+  const getConfigurableAction = <TArguments = IConfigurableActionArguments>(payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor<TArguments> => {
     const action = getConfigurableActionOrNull(payload);
     if (!action) throw `Action '${payload.name}' in the owner '${payload.owner}' not found.`;
 
-    return action;
+    return action as IConfigurableActionDescriptor<TArguments>;
   };
 
   const getActions = () => {
@@ -92,8 +93,15 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     }
   };
 
-  const prepareArguments = (_actionArguments: any) => {
-    // nop
+  const prepareArguments = <TArguments = any>(payload: IPrepareActionArgumentsPayload<TArguments>): Promise<TArguments> => {
+    const { actionConfiguration, argumentsEvaluationContext } = payload;
+    const { actionOwner, actionName, actionArguments } = actionConfiguration;
+    const action = getConfigurableAction<TArguments>({ owner: actionOwner, name: actionName });
+    if (!action)
+      return undefined;
+
+    const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
+    return argumentsEvaluator(actionArguments, argumentsEvaluationContext);
   };
 
   const executeAction = (payload: IExecuteActionPayload) => {
@@ -110,7 +118,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
     const executionContext = argumentsEvaluationContext;
 
-    return argumentsEvaluator({ ...actionArguments }, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
+    return argumentsEvaluator({ ...actionArguments }, argumentsEvaluationContext)
       .then((preparedActionArguments) => {
         return action
           .executer(preparedActionArguments, executionContext)

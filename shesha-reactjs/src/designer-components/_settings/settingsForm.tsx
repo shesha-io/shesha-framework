@@ -1,7 +1,8 @@
-import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useContext, useState } from 'react';
 import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interfaces";
 import { getValuesFromSettings, updateSettingsFromVlues } from './utils';
+import { createNamedContext } from '@/utils/react';
 
 interface SettingsFormState<TModel> {
     model?: TModel;
@@ -17,9 +18,9 @@ interface ISettingsFormActions {
 export const DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE: SettingsFormState<any> = {
 };
 
-export const SettingsFormStateContext = createContext<SettingsFormState<any>>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE);
+export const SettingsFormStateContext = createNamedContext<SettingsFormState<any>>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE, "SettingsFormStateContext");
 
-export const SettingsFormActionsContext = createContext<ISettingsFormActions>(undefined);
+export const SettingsFormActionsContext = createNamedContext<ISettingsFormActions>(undefined, "SettingsFormActionsContext");
 
 export interface SettingsFormProps<TModel> extends ISettingsFormFactoryArgs<TModel> {
 }

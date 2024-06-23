@@ -105,7 +105,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             },
             onSubmitted: (values) => {
               removeModal(modalId);
-              resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
+              resolve(values); // TODO: return result e.g. we may need to handle created entity id and navigate to edit/details page
             },
             onClose: (positive = false, result) => {
               if (positive)

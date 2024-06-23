@@ -54,7 +54,9 @@ export interface FormApi<Values = any> {
   data: Values;
 };
 
-export const getFormApi = (form: ConfigurableFormInstance): FormApi => {
+export type ConfigurableFormPublicApi = Pick<ConfigurableFormInstance, 'setFormData' | 'form' | 'formSettings' | 'formMode' | 'formData'>;
+
+export const getFormApi = (form: ConfigurableFormPublicApi): FormApi => {
   return {
     setFieldValue: (name: string, value: any) => {
       form?.setFormData({values: setValueByPropertyName(form.formData, name, value, true), mergeValues: true});

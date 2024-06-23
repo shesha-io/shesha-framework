@@ -100,7 +100,7 @@ import { HEADER_CONFIGURATION } from '@/components/mainLayout/constant';
 
 export const getToolboxComponents = (
   devMode: boolean,
-  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps' | 'formSettings'>
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>
 ): IToolboxComponentGroup[] => {
   return [
     {

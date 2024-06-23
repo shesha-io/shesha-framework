@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Button } from 'antd';
 import { IListEditor, IListEditorContext } from './contexts';
-import { ListEditorChildrenFn, ListEditorSectionRenderingFn } from '.';
+import { ItemChangeDetails, ListEditorChildrenFn, ListEditorSectionRenderingFn } from '.';
 import { ListItem, SortableItem } from './models';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { ReactSortable } from 'react-sortablejs';
@@ -20,12 +20,13 @@ export interface IListEditorRendererProps<TItem = any> {
 export interface MakeListContextArgs<TItem = any> {
     value: TItem[];
     onChange: (value: TItem[]) => void;
+    onReorder: (value: TItem[], prevValue: TItem[]) => void;
     initNewItem: (items: TItem[]) => TItem;
     selectedItem?: TItem;
     setSelectedItem?: (item: TItem) => void;
 }
 
-export const makeListContext = <TItem = any>({ value, onChange, initNewItem, selectedItem, setSelectedItem }: MakeListContextArgs<TItem>): IListEditor<TItem> => {
+export const makeListContext = <TItem = any>({ value, onChange, initNewItem, selectedItem, setSelectedItem, onReorder }: MakeListContextArgs<TItem>): IListEditor<TItem> => {
     const context: IListEditor<TItem> = {
         value,
         deleteItem: function (index: number): void {
@@ -63,7 +64,7 @@ export const makeListContext = <TItem = any>({ value, onChange, initNewItem, sel
             onChange(newValue);
         },
         updateList: function (newItems: TItem[]): void {
-            onChange(newItems);
+            onReorder(newItems, value);
         }
     };
     return context;
@@ -99,7 +100,6 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
             return true;
 
         const changedIndex = newState.find((item, index) => {
-            //return item.id !== value[index].id;
             return item.data !== value[index];
         });
         return Boolean(changedIndex);
@@ -149,9 +149,11 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                         disabled={readOnly}
                     >
                         {value.map((item, index) => {
-                            const localItemChange = (newValue: TItem) => {
+                            const localItemChange = (newValue: TItem, changeDetails: ItemChangeDetails) => {
                                 Object.assign(item, newValue);
-                                refresh();
+
+                                const skipValueUpdate = changeDetails && changeDetails.isReorder && changeDetails.childsLengthDelta < 0;
+                                refresh(!skipValueUpdate);
                             };
                             return (
                                 <ListItemWrapper
@@ -180,6 +182,12 @@ export const ListEditorRenderer = <TItem extends ListItem,>(props: IListEditorRe
                                                 value: items,
                                                 onChange: (newItems) => {
                                                     onChange(newItems);
+                                                },
+                                                onReorder: (newItems, prevValue) => {
+                                                    onChange(newItems, { isReorder: true, childsLengthDelta: newItems.length - prevValue.length });
+
+                                                    const gotItem = prevValue.length < newItems.length;
+                                                    refresh(gotItem);
                                                 },
                                                 initNewItem: (items) => {
                                                     return initNewItem(items);

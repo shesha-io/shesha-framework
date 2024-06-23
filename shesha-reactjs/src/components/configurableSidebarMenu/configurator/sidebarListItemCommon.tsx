@@ -2,11 +2,11 @@ import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import React, { FC } from 'react';
 import { SidebarListGroup } from './sidebarListGroup';
 import { SidebarListItem } from './sidebarListItem';
-import { NestedItemsRenderingArgs } from '@/components/listEditor';
+import { ItemChangeDetails, NestedItemsRenderingArgs } from '@/components/listEditor';
 
 export interface ISidebarItemCommonProps {
     item: ISidebarMenuItem;
-    onChange: (newValue: ISidebarMenuItem) => void;
+    onChange: (newValue: ISidebarMenuItem, changeDetails: ItemChangeDetails) => void;
     nestedRenderer?: (args: NestedItemsRenderingArgs<ISidebarMenuItem>) => React.ReactNode | null;
     initNewItem: (items: ISidebarMenuItem[]) => ISidebarMenuItem;
 }
@@ -21,9 +21,6 @@ export const SidebarListItemCommon: FC<ISidebarItemCommonProps> = ({ item, onCha
                 containerRendering={(args) => {
                     return nestedRenderer({
                         ...args,
-                        onChange: function (newValue: ISidebarMenuItem[]): void {
-                            args.onChange(newValue);
-                        },
                         initNewItem: initNewItem,
                     });
                 }}

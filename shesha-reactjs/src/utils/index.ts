@@ -52,7 +52,7 @@ export const horizontalMouseScroll = (scrollableId: string) => {
       // );
     }
   } catch (error) {
-    console.log('horizontalMouseScroll error: ', error);
+    console.error('horizontalMouseScroll error: ', error);
   }
 };
 
@@ -182,7 +182,7 @@ export const evaluateDynamicFilters = async (
         const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
           const argValue = args[argIndex];
           // special handling for specifications
-          // todo: move `is_satisfied` operator name to constant
+          // TODO: move `is_satisfied` operator name to constant
           if (operator === 'is_satisfied' && argIndex === 1) {
             // second argument is an expression that should be converted to boolean
             if (typeof argValue === 'string') {

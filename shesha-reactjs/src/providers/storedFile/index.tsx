@@ -183,7 +183,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
       }
 
       if (fetchingFileInfoError) {
-        // todo: handle error
+        // TODO: handle error
       }
     }
   }, [isFetchingFileInfo, fetchingFileInfoResponse, fetchingFileInfoError]);

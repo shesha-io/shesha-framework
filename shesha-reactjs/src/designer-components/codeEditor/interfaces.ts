@@ -8,7 +8,7 @@ export interface IExecutableCodeEditor {
   fileName?: string;
   wrapInTemplate?: boolean;
   templateSettings?: CodeTemplateSettings;
-  availableConstants?: IObjectMetadata;
+
   /**
    * @deprecated to be removed
    */
@@ -22,6 +22,7 @@ export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type
   onChange?: (value: string) => void;
   mode?: 'inline' | 'dialog';
   language?: CodeLanguages;
+  availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>);
 }
 
 export interface ICodeEditorComponentProps extends IConfigurableFormComponent, IExecutableCodeEditor {
@@ -29,4 +30,5 @@ export interface ICodeEditorComponentProps extends IConfigurableFormComponent, I
 
   language?: CodeLanguages;
   availableConstantsExpression?: string;
+  availableConstants?: IObjectMetadata;
 }

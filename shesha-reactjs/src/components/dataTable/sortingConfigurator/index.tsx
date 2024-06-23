@@ -34,7 +34,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                                     value={item.propertyName}
                                     onChange={(value) => {
                                         if (!Array.isArray(value))
-                                            itemOnChange({ ...item, propertyName: value });
+                                            itemOnChange({ ...item, propertyName: value }, undefined);
                                     }}
                                     autoFillProps={false}
                                     size='small'
@@ -43,7 +43,7 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                                 <Select<ColumnSorting>
                                     value={item.sorting}
                                     onChange={(value) => {
-                                        itemOnChange({ ...item, sorting: value });
+                                        itemOnChange({ ...item, sorting: value }, undefined);
                                     }}
                                     style={{ width: '120px' }}
                                     size='small'

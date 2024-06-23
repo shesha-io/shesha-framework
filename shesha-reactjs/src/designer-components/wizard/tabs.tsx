@@ -34,7 +34,7 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
         const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
         const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
 
-        return {
+     return {
             id,
             title,
             subTitle,
@@ -43,10 +43,11 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
             status: isDisabledByCondition ? 'wait' : status,
             ...iconProps,
             content: (
-                <ComponentsContainer
-                    containerId={id}
-                    dynamicComponents={isDynamic ? components : []}
-                />
+                <ParentProvider model={{...model, readOnly: isDisabledByCondition}}>
+                    <ComponentsContainer
+                        containerId={id}
+                        dynamicComponents={isDynamic ? components : []}/>
+                </ParentProvider>
             ),
         };
     });
