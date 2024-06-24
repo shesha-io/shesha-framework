@@ -260,17 +260,17 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
   return (
     <Fragment>
-      <Button onClick={toggleModal}>{readOnly ? 'View Columns' : 'Configure Columns'}</Button>
+      <Button onClick={toggleModal}>{ readOnly ? 'View Columns' : 'Configure Columns' }</Button>
 
-      <Modal
-        title={readOnly ? 'View Columns' : 'Configure Columns'}
-        open={showDialog}
-        width="700px"
-
-        onOk={toggleModal}
+      <Modal 
+        title={ readOnly ? 'View Columns' : 'Configure Columns' } 
+        open={showDialog} 
+        width="650px"
+        
+        onOk={toggleModal} 
         okButtonProps={{ hidden: readOnly }}
 
-        onCancel={toggleModal}
+        onCancel={toggleModal} 
         cancelText={readOnly ? 'Close' : undefined}
       >
         <Space direction="vertical" style={{ width: '100%' }}>
