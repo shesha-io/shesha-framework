@@ -1,5 +1,4 @@
 import React, { ComponentType, FC, Fragment, useEffect } from 'react';
-import { /*IdleTimerRenderer,*/ OverlayLoader } from '@/components';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 
@@ -8,6 +7,7 @@ export interface IComponentWithAuthProps {
   landingPage: string;
   children: (query: NodeJS.Dict<string | string[]>) => React.ReactElement;
 }
+
 export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const { landingPage, unauthorizedRedirectUrl } = props;
   const { isCheckingAuth, loginInfo, checkAuth, getAccessToken, isLoggedIn } = useAuth();
@@ -31,7 +31,12 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   return isLoggedIn ? (
     <Fragment>{props.children(router?.query)}</Fragment>
   ) : (
-    <OverlayLoader loading={true} loadingText="Initializing..." />
+    <div style={{display:'flex', flexDirection:'column', justifyContent:'center' , alignItems:'center' , height:'100vh'}}>
+        <img src={`/images/SheshaLoadingAnimation.gif`} alt='Shesha Loading Animation' />
+        <div>
+            Initializing...
+         </div>
+    </div>
   );
 };
 
