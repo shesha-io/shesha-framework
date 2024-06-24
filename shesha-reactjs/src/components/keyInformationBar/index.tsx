@@ -1,7 +1,7 @@
 import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
 import { ComponentsContainer, useFormData } from '@/index';
 import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
-import { Divider, Flex } from 'antd';
+import { Flex } from 'antd';
 import React, { FC } from 'react';
 import { useStyles } from './style';
 
