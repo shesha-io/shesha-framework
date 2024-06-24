@@ -187,7 +187,7 @@ export const FormAutocomplete: FC<IFormAutocompleteRuntimeProps> = (props) => {
                 valueFetcher.refetch({ queryParams: valueFetchParams });
         }
 
-        if (!props.value) {
+        if (!props.value){
             if (autocompleteText)
                 setAutocompleteText(null);
             selectedValue.current = props.value;
