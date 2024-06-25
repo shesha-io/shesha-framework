@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Shesha.FluentMigrator;
+using Shesha;
 
 namespace ShaCompanyName.ShaProjectName
 {

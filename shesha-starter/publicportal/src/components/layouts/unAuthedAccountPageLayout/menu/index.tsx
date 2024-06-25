@@ -3,8 +3,10 @@ import {
   SidebarMenu,
   useConfigurableActionDispatcher,
   IConfigurableActionConfiguration,
-  useApplicationContextData,
   useSidebarMenu,
+  useShaRouting,
+  evaluateString,
+  useAvailableConstantsData,
 } from "@shesha-io/reactjs";
 import { Button, Menu } from "antd";
 import React, { FC, useState } from "react";
@@ -20,8 +22,10 @@ export const LayoutMenu: FC<IProps> = () => {
   const onClick = () => setState((s) => ({ ...s, open: true }));
   const onClose = () => setState((s) => ({ ...s, open: false }));
 
+  const { getUrlFromNavigationRequest } = useShaRouting();
+
   const { executeAction } = useConfigurableActionDispatcher();
-  const executionContext = useApplicationContextData();
+  const {executionContext, evaluationContext} = useAvailableConstantsData();
   const { getItems, isItemVisible } = useSidebarMenu();
   const items = getItems();
 
@@ -41,6 +45,15 @@ export const LayoutMenu: FC<IProps> = () => {
       isItemVisible,
       onButtonClick,
       isRootItem: true,
+      getFormUrl: (args) => {
+        const url = getUrlFromNavigationRequest(args?.actionArguments);
+        const href = evaluateString(decodeURIComponent(url), evaluationContext);
+        return href;
+      },
+      getUrl: (url) => {
+        const href = evaluateString(decodeURIComponent(url), evaluationContext);
+        return href;
+      },
     })
   );
 
