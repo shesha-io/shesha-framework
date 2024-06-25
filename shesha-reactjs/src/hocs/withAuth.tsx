@@ -1,6 +1,7 @@
 import React, { ComponentType, FC, Fragment, useEffect } from 'react';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
+import SheshaLoader from '@/components/sheshaLoader';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
@@ -31,12 +32,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   return isLoggedIn ? (
     <Fragment>{props.children(router?.query)}</Fragment>
   ) : (
-    <div style={{display:'flex', flexDirection:'column', justifyContent:'center' , alignItems:'center' , height:'100vh'}}>
-        <img src={`/images/SheshaLoadingAnimation.gif`} alt='Shesha Loading Animation' />
-        <div>
-            Initializing...
-         </div>
-    </div>
+    <SheshaLoader message='Initializing...'/>
   );
 };
 
