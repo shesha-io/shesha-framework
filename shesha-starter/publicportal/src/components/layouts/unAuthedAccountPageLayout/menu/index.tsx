@@ -41,6 +41,8 @@ export const LayoutMenu: FC<IProps> = () => {
       isItemVisible,
       onButtonClick,
       isRootItem: true,
+      getFormUrl: (props) => props,
+      getUrl: (props) => props,
     })
   );
 
