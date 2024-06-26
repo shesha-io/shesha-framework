@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Application.Services;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
-using Shesha.Domain.Attributes;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Utilities;
@@ -57,18 +56,6 @@ namespace Shesha.DynamicEntities
                     {
                         var entityType = entityConfigurationStore.Get($"{entityConfig.FullClassName}")?.EntityType;
                         if (entityType == null) 
-                            continue;
-
-                        var entityAttribute = entityType.GetAttribute<EntityAttribute>();
-                        if (entityAttribute != null 
-                            && entityAttribute.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
-                            && entityConfig.GenerateAppService ^ entityAttribute.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService)
-                        {
-                            entityConfig.GenerateAppService = entityAttribute.GenerateApplicationService == GenerateApplicationServiceState.AlwaysGenerateApplicationService;
-                            entityConfigRepo.Update(entityConfig);
-                        }
-
-                        if (!entityConfig.GenerateAppService) 
                             continue;
 
                         var appServiceType = DynamicAppServiceHelper.MakeApplicationServiceType(entityType);
