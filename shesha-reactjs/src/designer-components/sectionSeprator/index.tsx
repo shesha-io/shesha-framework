@@ -19,7 +19,6 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
 
     if (model.hidden) return null;
 
-    console.log("Tooltip: ", model?.description)
     return (
       <SectionSeparator
         {...model}

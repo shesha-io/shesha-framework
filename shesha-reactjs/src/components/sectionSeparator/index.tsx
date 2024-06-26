@@ -5,26 +5,10 @@ import Show from '@/components/show';
 import { useStyles } from './styles/styles';
 
 export interface ISectionSeparatorProps {
-  /**
- * Title of the section
- */
   title?: string | ReactNode;
-
-  /**
-   * The style that will be applied to the container of the section
-   */
   containerStyle?: CSSProperties;
-
-  /**
-   * The style that will be applied to the style of the section
-   */
   titleStyle?: CSSProperties;
-
-  /**
-   * The tooltip of the section
-   */
   tooltip?: string;
-
   labelAlign?: 'left' | 'right' | 'center';
   fontSize?: number;
   fontColor?: string;
