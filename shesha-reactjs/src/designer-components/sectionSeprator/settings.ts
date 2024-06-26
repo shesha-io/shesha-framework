@@ -27,11 +27,72 @@ export const getSettings = (data: any) =>
               required: true,
             },
           })
+          .addCheckbox({
+            id: '12345e70-99a0-4825-ae6c-8b933004e119',
+            propertyName: 'hidden',
+            parentId: 'root',
+            label: 'Hidden',
+          })
           .addTextField({
             id: '46d07439-4c18-468c-89e1-60c002ce96c5',
             propertyName: 'label',
             parentId: 'root',
             label: 'Label',
+          })
+          .addCheckbox({
+            id: '3b8b9e3f-M5f90-48ae-b4c3-f5cc36f934d9',
+            propertyName: 'hideLabel',
+            parentId: 'root',
+            label: 'Hide Label',
+          })
+          .addDropdown({
+            id: "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            propertyName: "labelAlign",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Label align",
+            values: [
+              {
+                label: "left",
+                value: "left",
+                id: "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              },
+              {
+                label: "right",
+                value: "right",
+                id: "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+              },
+              {
+                label: "center",
+                value: "center",
+                id: "b920ef96-ae27-4a01-bfad-b5m5wmb70hda"
+              }
+            ],
+            dataSourceType: "values"
+          })
+          .addColorPicker({
+            id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934d9",
+            propertyName: "fontColor",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Font Color"
+          })
+          .addNumberField({
+            id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934a9",
+            propertyName: "fontSize",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Font Size"
+          })
+          .addCheckbox({
+            id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934m5",
+            propertyName: "inline",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Inline"
+          })
+          .addCheckbox({
+            id: "3b8b9e3f-f10c-48ae-b4c3-f5cc36f934m5",
+            propertyName: "noMargin",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "No Margin",
+            hidden: { _code: 'return !getSettingValue(data?.inline);', _mode: 'code', _value: false } as any,
           })
           .addTextArea({
             id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
@@ -39,11 +100,48 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             label: 'Description',
           })
+          .addDropdown({
+            id: "57a40a33-7e08-4ce4-9f08-a34d00783338",
+            propertyName: "dividerType",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Divider Type",
+            values: [
+              {
+                label: "horizontal",
+                value: "horizontal",
+                id: "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              },
+              {
+                label: "vertical",
+                value: "vertical",
+                id: "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+              }
+            ],
+            dataSourceType: "values"
+          })
           .addCheckbox({
-            id: '12345e70-99a0-4825-ae6c-8b933004e119',
-            propertyName: 'hidden',
-            parentId: 'root',
-            label: 'Hidden',
+            id: "57a40a33-7e08-4ce4-9f08-a34d24a3rs3r",
+            propertyName: "dashed",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Dashed",
+          })
+          .addColorPicker({
+            id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f93aMg",
+            propertyName: "lineColor",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Line Color"
+          })
+          .addNumberField({
+            id: "3b8b9e3f-f47e-48ae-b4c3-f90c36f934d9",
+            propertyName: "lineThickness",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Line Thickness"
+          })
+          .addNumberField({
+            id: "3b8bv360-f47e-48ae-b4c3-f5cc36f934a9",
+            propertyName: "lineWidth",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Line Width"
           })
           .toJson(),
       },
@@ -117,8 +215,8 @@ export const getSettings = (data: any) =>
       ghost: true,
       collapsible: 'header',
       content: {
-        id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-        components: [...new DesignerToolbarSettings() 
+        id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...new DesignerToolbarSettings()
           .addPermissionAutocomplete({
             id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
             propertyName: 'permissions',
@@ -129,6 +227,6 @@ export const getSettings = (data: any) =>
             validate: {},
           }).toJson()
         ]
-  }
-  })
+      }
+    })
     .toJson();

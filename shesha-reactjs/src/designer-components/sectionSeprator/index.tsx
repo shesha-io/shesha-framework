@@ -19,9 +19,11 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
 
     if (model.hidden) return null;
 
+    console.log("Tooltip: ", model?.description)
     return (
       <SectionSeparator
-        title={model.label}
+        {...model}
+        title={!model.hideLabel && model.label}
         containerStyle={getLayoutStyle({ ...model, style: model?.containerStyle }, { data: formData, globalState })}
         titleStyle={getStyle(model?.titleStyle, formData)}
         tooltip={model?.description}
@@ -38,7 +40,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
   },
   migrator: (m) => m
     .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ISectionSeparatorComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ISectionSeparatorComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
   ,
 };
 
