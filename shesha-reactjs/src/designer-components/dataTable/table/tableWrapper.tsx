@@ -37,7 +37,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const { styles } = useStyles();
     const isDesignMode = formMode === 'designer';
-
     const {
         getRepository,
         isInProgress: { isFiltering, isSelectingColumns },
@@ -50,8 +49,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         clearFilters,
         removeColumnFilter,
         tableFilter,
-        tableData,
-
+        tableData
     } = useDataTableStore();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
@@ -88,6 +86,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
     };
 
+
     return (
         <SidebarContainer
             rightSidebarProps={{
@@ -100,7 +99,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
-            {tableFilter?.length > 0 && <FilterList filters={tableFilter} clearFilters={clearFilters} styles={styles} rows={tableData.length} removeColumnFilter={removeColumnFilter} />}
+            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={tableData?.length} clearFilters={clearFilters} styles={styles} removeColumnFilter={removeColumnFilter} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}

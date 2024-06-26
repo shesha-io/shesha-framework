@@ -12,7 +12,7 @@ export interface IFilterListProps {
     rows: number;
 }
 
-export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles, rows, removeColumnFilter }) => {
+export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles, removeColumnFilter, rows }) => {
 
     const filtersRef = useRef(null);
     const scrollbarLeftArrow = useRef(null);
@@ -103,11 +103,11 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles
                     onClick={scrollRight}
                 />
             </div>
-            {`Filters( ${rows} results:): `}
+            {`Filters (${rows} results): `}
             <Button
                 onClick={clearFilters}
                 type='link'
-                style={{ padding: "0 2px", height: "max-content" }}
+                style={{ padding: "0 4px", marginRight: "2em", height: "max-content" }}
             >
                 clear all
             </Button>

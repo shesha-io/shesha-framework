@@ -1,11 +1,12 @@
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import { FilterOutlined } from '@ant-design/icons';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { FilterOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { IButtonComponentProps } from '@/designer-components/button/interfaces';
-import { useFormData } from '@/index';
+import { Show } from '@/components';
+import { Tooltip } from 'antd';
 
 const FilterComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
@@ -13,12 +14,19 @@ const FilterComponent: IToolboxComponent<IButtonComponentProps> = {
   icon: <FilterOutlined />,
   Factory: ({ model }) => {
 
-    return model.hidden ? null : <AdvancedFilterButton {...model}/>
+    return model.hidden ? null : <div>
+      <AdvancedFilterButton {...model} />
+      <Show when={Boolean(model.tooltip?.trim())}>
+        <Tooltip title={model.tooltip}>
+          <QuestionCircleOutlined className='tooltip-question-icon' size={14} color='gray' />
+        </Tooltip>
+      </Show>
+    </div>
   },
   initModel: (model) => {
     return {
       ...model,
-      type: 'link',
+      buttonType: 'link',
       label: "",
     };
   },
