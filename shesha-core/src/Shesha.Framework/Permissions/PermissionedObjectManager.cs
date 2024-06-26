@@ -340,8 +340,8 @@ namespace Shesha.Permissions
             if (actionDescriptor is ControllerActionDescriptor descriptor)
             {
                 // remove disabled endpoints
-                var method = methods.ContainsKey(descriptor.MethodInfo.Name.RemovePostfix("Async"))
-                    ? methods[descriptor.MethodInfo.Name.RemovePostfix("Async")]
+                var method = PermissionedObjectManager.CrudMethods.ContainsKey(descriptor.MethodInfo.Name.RemovePostfix("Async"))
+                    ? PermissionedObjectManager.CrudMethods[descriptor.MethodInfo.Name.RemovePostfix("Async")]
                     : null;
 
                 var obj = "";

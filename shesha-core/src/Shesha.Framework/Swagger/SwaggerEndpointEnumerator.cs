@@ -26,7 +26,7 @@ namespace Shesha.Swagger
         public IEnumerator<UrlDescriptor> GetEnumerator()
         {
             var entityConfigs = IocManager.Instance.Resolve<IModelConfigurationManager>();
-            var pmo = IocManager.Instance.Resolve<IPermissionedObjectManager>()
+            var pmo = IocManager.Instance.Resolve<IPermissionedObjectManager>();
             var _uowManager = IocManager.Instance.Resolve<IUnitOfWorkManager>();
 
             var types = SwaggerHelper.ServiceTypesFunc();
