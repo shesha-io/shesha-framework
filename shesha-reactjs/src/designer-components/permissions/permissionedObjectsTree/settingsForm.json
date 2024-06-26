@@ -10,29 +10,31 @@
     "isDynamic": false,
     "description": "",
     "settingsValidationErrors": []
-  }, {
+  },
+  {
+    "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+    "type": "textField",
+    "propertyName": "componentName",
+    "parentId": "root",
+    "label": "Component name"
+  },
+  {
     "textType": "text",
     "id": "j4y44LJNbfCstHIIJ9fwY",
     "type": "textField",
     "propertyName": "objectsType",
     "label": "Type of permissioned objects",
     "labelAlign": "right",
+    "parentId": "root"
+  },
+  {
+    "id": "12307439-4c18-468c-89e1-60c002ce96c5",
+    "type": "textField",
+    "propertyName": "height",
     "parentId": "root",
-    "hidden": false,
-    "isDynamic": false,
-    "placeholder": "",
-    "description": "",
-    "prefix": "",
-    "suffix": "",
-    "initialValue": "",
-    "validate": {
-      "minLength": "",
-      "maxLength": "",
-      "message": ""
-    },
-    "quickviewWidth": "",
-    "settingsValidationErrors": []
-  }],
+    "label": "Height"
+  }
+  ],
   "formSettings": {
     "layout": "horizontal",
     "colon": true,

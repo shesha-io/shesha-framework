@@ -56,13 +56,13 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
                             index={[index]}
                             key={item?.id}
                             onChange={(newValue) => {
-                                itemOnChange({ ...newValue });
+                                itemOnChange({ ...newValue }, undefined);
                             }}
                             containerRendering={(args) => {
                                 return nestedRenderer({
                                     ...args,
-                                    onChange: function (newValue: IModelItem[]): void {
-                                        args.onChange(newValue);
+                                    onChange: (newValue: IModelItem[], changeDetails) => {
+                                        args.onChange(newValue, changeDetails);
                                     },
                                     initNewItem: makeNewItem,
                                 });

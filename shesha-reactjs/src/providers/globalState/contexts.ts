@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import { IAnyObject } from './../../interfaces/anyObject';
+import { createNamedContext } from '@/utils/react';
 
 export interface ISetStatePayload {
   data?: any;
@@ -19,6 +19,6 @@ export interface IGlobalStateActionsContext {
 
 export const GLOBAL_STATE_CONTEXT_INITIAL_STATE: IGlobalStateStateContext = { globalState: {} };
 
-export const GlobalStateStateContext = createContext<IGlobalStateStateContext>(GLOBAL_STATE_CONTEXT_INITIAL_STATE);
+export const GlobalStateStateContext = createNamedContext<IGlobalStateStateContext>(GLOBAL_STATE_CONTEXT_INITIAL_STATE, "GlobalStateStateContext");
 
-export const GlobalStateActionsContext = createContext<IGlobalStateActionsContext>(undefined);
+export const GlobalStateActionsContext = createNamedContext<IGlobalStateActionsContext>(undefined, "GlobalStateActionsContext");

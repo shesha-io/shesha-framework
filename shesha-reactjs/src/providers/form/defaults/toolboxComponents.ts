@@ -99,7 +99,7 @@ import AdvancedFilterButtonComponent from '@/designer-components/dataTable/advan
 
 export const getToolboxComponents = (
   devMode: boolean,
-  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps' | 'formSettings'>
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>
 ): IToolboxComponentGroup[] => {
   return [
     {

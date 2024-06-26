@@ -8,7 +8,7 @@ import { useShaRouting } from '@/providers';
 const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>) => {
   // Do something with the error
   // E.g. log to an error logging client here
-  console.log('CustomErrorBoundary error :', error);
+  console.error('CustomErrorBoundary error :', error);
 };
 
 interface ICustomErrorBoundaryFallbackProps extends FallbackProps {

@@ -15,7 +15,7 @@ import {
   Spin
   } from 'antd';
 import { ConfigurableForm } from '@/components/';
-import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication, useUi } from '@/providers';
+import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useFormConfiguration } from '@/providers/form/api';
 import { entitiesGet } from '@/apis/entities';
@@ -53,6 +53,19 @@ export interface IQuickViewProps extends PropsWithChildren {
   style?: string;
 }
 
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    md: { span: 8 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    md: { span: 16 },
+    sm: { span: 16 },
+  },
+};
+
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   children,
   entityId,
@@ -73,7 +86,6 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings>(null);
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const [form] = Form.useForm();
-  const { formItemLayout } = useUi();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { styles } = useStyles();
 

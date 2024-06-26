@@ -37,7 +37,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     return (
       <ConfigurableFormItem
         model={model}
-        initialValue={evaluateString(model?.defaultValue, { formData, formMode, globalState })}
+        initialValue={model?.defaultValue ? evaluateString(model?.defaultValue, { formData, formMode, globalState }) : undefined}
       >
         {(value, onChange) => {
           return model.readOnly ? (
@@ -70,7 +70,7 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
       description: metadata.description,
       min: metadata.min,
       max: metadata.max,
-      // todo: add decimal points and format
+      // TODO: add decimal points and format
     };
   },
 };

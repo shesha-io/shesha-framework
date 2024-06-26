@@ -1,20 +1,17 @@
-import React, { createContext, FC, PropsWithChildren, useContext } from 'react';
+import React, { FC, PropsWithChildren, useContext } from 'react';
 import { IComponentsContainerBaseProps } from '@/interfaces';
+import { createNamedContext } from '@/utils/react';
 
 export type ContainerType = FC<IComponentsContainerBaseProps>;
 
-export interface IContainerContext {
-    ContainerComponent: ContainerType;
-}
-
-export const ComponentsContainerContext = createContext<IContainerContext>(undefined);
+export const ComponentsContainerContext = createNamedContext<ContainerType>(undefined, "ComponentsContainerContext");
 
 export interface IComponentsContainerProviderProps {
     ContainerComponent: ContainerType;
 }
 export const ComponentsContainerProvider: FC<PropsWithChildren<IComponentsContainerProviderProps>> = ({ ContainerComponent, children }) => {
     return (
-        <ComponentsContainerContext.Provider value={{ ContainerComponent }}>
+        <ComponentsContainerContext.Provider value={ContainerComponent}>
             {children}
         </ComponentsContainerContext.Provider>
     );

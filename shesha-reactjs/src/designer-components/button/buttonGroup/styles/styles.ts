@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     const shaResponsiveButtonGroup = "sha-responsive-button-group";
@@ -101,4 +101,4 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         shaResponsiveButtonGroupInlineContainer,
         a,
     };
-});
+  });

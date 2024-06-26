@@ -1,5 +1,4 @@
 import { IModelMetadata, ISpecification } from '@/interfaces/metadata';
-import { IMetadataProviderRegistration } from './contexts';
 
 export interface IProperty {
   name: string;
@@ -13,8 +12,4 @@ export interface IModelsDictionary {
 
 export interface ISpecificationsDictionary {
   [key: string]: Promise<ISpecification[]>;
-}
-
-export interface IProvidersDictionary {
-  [key: string]: IMetadataProviderRegistration;
 }

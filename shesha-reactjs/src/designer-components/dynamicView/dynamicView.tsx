@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
-import { useForm } from '@/providers/form';
+import { ShaForm, useForm } from '@/providers/form';
 import { createComponentModelForDataProperty, upgradeComponent } from '@/providers/form/utils';
 import { camelcaseDotNotation } from '@/utils/string';
 import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
@@ -15,7 +15,8 @@ export interface DynamicViewProps extends IConfigurableFormComponent {
 export const DynamicView: FC<DynamicViewProps> = (model) => {
     const currentMeta = useMetadata(false)?.metadata;
 
-    const { allComponents, componentRelations, formSettings } = useForm();
+    const { formSettings } = useForm();
+    const { allComponents, componentRelations } = ShaForm.useMarkup();
     const toolboxComponentGroups = useFormDesignerComponentGroups();
 
     const staticComponents = useMemo<IConfigurableFormComponent[]>(() => {

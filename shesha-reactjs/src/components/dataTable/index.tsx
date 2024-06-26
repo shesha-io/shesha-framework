@@ -222,11 +222,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
-        // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-        //return onNewRowInitializeExecuter(formData, globalState);
-        const result = onNewRowInitializeExecuter(formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
-        return Promise.resolve(result);
-      }
+          // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
+          //return onNewRowInitializeExecuter(formData, globalState);
+          const result = onNewRowInitializeExecuter(formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
+          return Promise.resolve(result);
+        }
       : () => {
         return Promise.resolve({});
       };
@@ -507,10 +507,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           if (component.linkToModelMetadata && propertyMeta) {
             model = component.linkToModelMetadata(model, propertyMeta);
           }
-
-          // ToDo: AS - use hidden and disable in JS mode
-          //model.visibilityFunc = getCustomVisibilityFunc(model);
-          //model.enabledFunc = getCustomEnabledFunc(model);
 
           result.allComponents[model.id] = model;
           componentIds.push(model.id);

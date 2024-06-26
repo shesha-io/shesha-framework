@@ -9,6 +9,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 
 export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent { 
   objectsType?: string;
+  height?: string;
 
   /**
    * A callback for when the value of this component changes
@@ -24,7 +25,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {
     return (
-      <PermissionedObjectsTree {...model}/>
+      <PermissionedObjectsTree {...model} formComponentId={model.id} formComponentName={model.componentName}/>
     );
   },
   initModel: (model: IPermissionedObjectsTreeComponentProps) => {

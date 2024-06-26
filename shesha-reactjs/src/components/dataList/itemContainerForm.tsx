@@ -1,9 +1,9 @@
-import { useForm } from '@/providers';
+import { ShaForm } from '@/providers';
 import { ConfigurableFormComponent } from '@/components';
-import { joinStringValues } from '@/utils';
 import { useParent } from '@/providers/parentProvider/index';
 import React, { CSSProperties, FC, PropsWithChildren } from 'react';
 import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';
+import classNames from 'classnames';
 
 type AlignmentProps = Pick<
   IComponentsContainerProps,
@@ -69,15 +69,14 @@ export const getAlignmentStyle = ({
 };
 
 export const ItemContainerForm: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
-  const form = useForm();
   const parent = useParent();
 
-  const components = form.getChildComponents(props.containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const components = ShaForm.useChildComponents(props.containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
   const renderComponents = () => {
-    const renderedComponents = components.map((c, index) =>{ 
-     return <ConfigurableFormComponent id={c.id} index={index} key={c.id} />;
-  });
+    const renderedComponents = components.map((c) => {
+      return <ConfigurableFormComponent id={c.id} key={c.id} />;
+    });
 
     return typeof props.render === 'function' ? props.render(renderedComponents) : renderedComponents;
   };
@@ -87,7 +86,7 @@ export const ItemContainerForm: FC<PropsWithChildren<IComponentsContainerProps>>
   return props.noDefaultStyling ? (
     <div style={{ ...style, textJustify: 'auto' }}>{renderComponents()}</div>
   ) : (
-    <div className={joinStringValues(['sha-components-container', props.direction, props.className])} style={props.wrapperStyle}>
+    <div className={classNames(['sha-components-container', props.direction, props.className])} style={props.wrapperStyle}>
       <div className="sha-components-container-inner" style={style}>
         {renderComponents()}
       </div>

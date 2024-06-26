@@ -25,7 +25,6 @@ import {
   ShaRoutingProvider,
   AppConfiguratorProvider,
   DynamicModalProvider,
-  UiProvider,
   CanvasProvider,
 } from '@/providers';
 import {
@@ -38,6 +37,7 @@ import {
   DEFAULT_ACCESS_TOKEN_NAME,
   DEFAULT_SHESHA_ROUTES,
   ISheshaApplication,
+  ISheshaApplicationStateContext,
   ISheshaRutes,
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
   SheshaApplicationActionsContext,
@@ -49,6 +49,9 @@ import { ApplicationContextsProvider } from './context';
 import { DataContextProvider } from '../dataContextProvider';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { useApplicationPlugin } from './context/applicationContext';
+import { FormManager } from '../formManager';
+import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
+import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/provider';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -130,69 +133,81 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
       >
         <SettingsProvider>
           <ConfigurableActionDispatcherProvider>
-            <UiProvider>
-              <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
-                <DynamicActionsDispatcherProvider>
-                  <ConditionalWrap
-                    condition={!props.noAuth}
-                    wrap={(authChildren) => (
-                      <AuthProvider
-                        tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
-                        onSetRequestHeaders={setRequestHeaders}
-                        unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                        authRef={authRef}
-                        homePageUrl={homePageUrl}
-                      >
-                        {authChildren}
-                      </AuthProvider>
-                    )}
-                  >
-                    <ConfigurationItemsLoaderProvider>
+            <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
+              <DynamicActionsDispatcherProvider>
+                <ConditionalWrap
+                  condition={!props.noAuth}
+                  wrap={(authChildren) => (
+                    <AuthProvider
+                      tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
+                      onSetRequestHeaders={setRequestHeaders}
+                      unauthorizedRedirectUrl={unauthorizedRedirectUrl}
+                      authRef={authRef}
+                      homePageUrl={homePageUrl}
+                    >
+                      {authChildren}
+                    </AuthProvider>
+                  )}
+                >
+                  <ConfigurationItemsLoaderProvider>
+                    <FormManager>
                       <ThemeProvider {...(themeProps || {})}>
                         <GlobalSheshaStyles />
+                        <ShaFormStyles />
                         <GlobalPageStyles />
 
                         <AppConfiguratorProvider>
                           <ReferenceListDispatcherProvider>
-                            <MetadataDispatcherProvider>
-                              <DataContextManager>
-                                <ApplicationContextsProvider>
-                                  <DataContextProvider
-                                    id={SheshaCommonContexts.AppContext}
-                                    name={SheshaCommonContexts.AppContext}
-                                    description={'Application data store context'}
-                                    type={'root'}
-                                  >
-                                    <CanvasProvider>
-                                  <StackedNavigationProvider>
-                                    <DataSourcesProvider>
-                                      <DynamicModalProvider>
-                                        <DebugPanel>
-                                          <ApplicationActionsProcessor>
-                                              {children}
-                                          </ApplicationActionsProcessor>
-                                        </DebugPanel>
-                                      </DynamicModalProvider>
-                                    </DataSourcesProvider>
-                                  </StackedNavigationProvider>
-                                    </CanvasProvider>
-                                  </DataContextProvider>
-                                </ApplicationContextsProvider>
-                              </DataContextManager>
-                            </MetadataDispatcherProvider>
+                            <EntityMetadataFetcherProvider>
+                              <MetadataDispatcherProvider>
+                                <DataContextManager>
+                                  <ApplicationContextsProvider>
+                                    <DataContextProvider
+                                      id={SheshaCommonContexts.AppContext}
+                                      name={SheshaCommonContexts.AppContext}
+                                      description={'Application data store context'}
+                                      type={'root'}
+                                    >
+                                      <CanvasProvider>
+                                        <StackedNavigationProvider>
+                                          <DataSourcesProvider>
+                                            <DynamicModalProvider>
+                                              <DebugPanel>
+                                                <ApplicationActionsProcessor>
+                                                  {children}
+                                                </ApplicationActionsProcessor>
+                                              </DebugPanel>
+                                            </DynamicModalProvider>
+                                          </DataSourcesProvider>
+                                        </StackedNavigationProvider>
+                                      </CanvasProvider>
+                                    </DataContextProvider>
+                                  </ApplicationContextsProvider>
+                                </DataContextManager>
+                              </MetadataDispatcherProvider>
+                            </EntityMetadataFetcherProvider>
                           </ReferenceListDispatcherProvider>
                         </AppConfiguratorProvider>
                       </ThemeProvider>
-                    </ConfigurationItemsLoaderProvider>
-                  </ConditionalWrap>
-                </DynamicActionsDispatcherProvider>
-              </ShaRoutingProvider>
-            </UiProvider>
+                    </FormManager>
+                  </ConfigurationItemsLoaderProvider>
+                </ConditionalWrap>
+              </DynamicActionsDispatcherProvider>
+            </ShaRoutingProvider>
           </ConfigurableActionDispatcherProvider>
         </SettingsProvider>
       </SheshaApplicationActionsContext.Provider>
     </SheshaApplicationStateContext.Provider>
   );
+};
+
+const useSheshaApplicationState = (require: boolean = true): ISheshaApplicationStateContext => {
+  const stateContext = useContext(SheshaApplicationStateContext);
+  if (require && stateContext === undefined) {
+    throw new Error('useSheshaApplicationState must be used within a SheshaApplicationStateContext');
+  }
+
+  return stateContext;
 };
 
 const useSheshaApplication = (require: boolean = true): ISheshaApplication => {
@@ -206,4 +221,4 @@ const useSheshaApplication = (require: boolean = true): ISheshaApplication => {
   return { ...stateContext, ...actionsContext };
 };
 
-export { ShaApplicationProvider, useSheshaApplication, useApplicationPlugin };
+export { ShaApplicationProvider, useSheshaApplication, useSheshaApplicationState, useApplicationPlugin };

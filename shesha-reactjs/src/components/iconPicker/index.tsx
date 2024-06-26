@@ -152,7 +152,7 @@ const IconPicker: FC<IIconPickerProps> = ({
             Select Icon
           </Button>
         ) : (
-          <span>none</span>
+          <></>
         )}
       </div>
       <Modal

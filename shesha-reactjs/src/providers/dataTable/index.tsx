@@ -351,7 +351,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const debouncedFetchInternal = useDebouncedCallback(
     (payload: IGetListDataPayload) => {
-      // todo: check payload and skip fetching if the filters (or other required things) are not calculated
+      // TODO: check payload and skip fetching if the filters (or other required things) are not calculated
       const canFetch = true;
       if (canFetch) {
         repository
@@ -650,7 +650,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       ownerUid: actionOwnerId,
       hasArguments: false,
       executer: () => {
-        refreshTable(); // todo: return correct promise
+        refreshTable(); // TODO: return correct promise
         return Promise.resolve();
       },
     },
@@ -701,7 +701,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   //#endregion
 
-  // todo: pass row index
+  // TODO: pass row index
   const setRowData = (rowIndex: number, rowData: any) => {
     dispatch(setRowDataAction({ rowIndex, rowData: rowData }));
   };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { CodeSandboxOutlined } from '@ant-design/icons';
@@ -13,7 +13,6 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { IObjectMetadata } from '@/interfaces/metadata';
 import { useFormData } from '@/providers';
 import { CodeEditorWithStandardConstants } from './codeEditorWithConstants';
-import isDeepEqual from 'fast-deep-equal/react';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -30,32 +29,17 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     const editorProps: ICodeEditorProps = {
       ...model,
     };
-
+    const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
 
-    const metadataBuilderFactory = useMetadataBuilderFactory();
-    
-    const getAvailableConstantsAsync = (): Promise<IObjectMetadata> => {
+    const usePassedConstants = model.availableConstantsExpression;
+    const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
       if (!model.availableConstantsExpression)
-        return undefined;
+        return Promise.reject("AvailableConstantsExpression is mandatory");
 
       const metadataBuilder = metadataBuilderFactory("baseProperties");
-      const result = executeScript<IObjectMetadata>(model.availableConstantsExpression, { data: formData, metadataBuilder });
-      return result;
-    };
-
-    const [availableConstants, setAvailableConstants] = useState<IObjectMetadata>();
-    useEffect(() => {
-      if (model.availableConstants){
-        setAvailableConstants(model.availableConstants);
-      } else {
-        getAvailableConstantsAsync()?.then(constants => {
-          if (!isDeepEqual(availableConstants, constants)) {
-            setAvailableConstants(constants);
-          }
-        });
-      }
-    }, [model.availableConstantsExpression, formData]);
+      return executeScript<IObjectMetadata>(model.availableConstantsExpression, { data: formData, metadataBuilder });
+    }, [model.availableConstantsExpression, metadataBuilderFactory, formData]);
 
     return (
       <ConfigurableFormItem model={model}>
@@ -68,8 +52,9 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
             mode: model.mode || 'dialog',
             readOnly: model.readOnly
           };
-          return availableConstants
-            ? <CodeEditor {...props} availableConstants={availableConstants} />
+
+          return usePassedConstants
+            ? <CodeEditor {...props} availableConstants={constantsAccessor} />
             : <CodeEditorWithStandardConstants {...props} />;
         }
         }
@@ -80,7 +65,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     .add<ICodeEditorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ICodeEditorComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ICodeEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
-    .add<ICodeEditorComponentProps>(3, (prev) => ({...prev, language: prev.language ?? "typescript" }))
+    .add<ICodeEditorComponentProps>(3, (prev) => ({ ...prev, language: prev.language ?? "typescript" }))
   ,
   initModel: model => {
     const textAreaModel: ICodeEditorComponentProps = {

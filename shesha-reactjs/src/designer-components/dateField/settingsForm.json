@@ -399,16 +399,7 @@
             "type": "checkbox",
             "propertyName": "showNow",
             "parentId": "nU7UhIr28XCaiEFbzhB0n",
-            "label": "Show Now",
-            "defaultValue": false,
-            "version": 2
-          },
-          {
-            "id": "640a5ce5-7ca9-4ea8-b960-be74faf65ba1",
-            "type": "checkbox",
-            "propertyName": "showToday",
-            "parentId": "nU7UhIr28XCaiEFbzhB0n",
-            "label": "Show Today",
+            "label": "Show Today/Now",
             "defaultValue": false,
             "version": 2
           },

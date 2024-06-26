@@ -1,5 +1,6 @@
-import { createContext, useContext } from 'react';
+import { useContext } from 'react';
 import { IModelMetadata } from "@/index";
+import { createNamedContext } from '@/utils/react';
 
 export interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }
 
@@ -35,8 +36,8 @@ export interface IDataContextProviderActionsContextOverride extends Partial<IDat
 /** initial state */
 export const DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE: IDataContextProviderStateContext = { id: '', name: '', type: '' };
 
-export const DataContextProviderStateContext = createContext<IDataContextProviderStateContext>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE);
-export const DataContextProviderActionsContext = createContext<IDataContextProviderActionsContext>(undefined);
+export const DataContextProviderStateContext = createNamedContext<IDataContextProviderStateContext>(DATA_CONTEXT_PROVIDER_CONTEXT_INITIAL_STATE, "DataContextProviderStateContext");
+export const DataContextProviderActionsContext = createNamedContext<IDataContextProviderActionsContext>(undefined, "DataContextProviderActionsContext");
 
 export type DataContextType = 'root' | 'page' | 'form' | 'control' | 'settings';
 

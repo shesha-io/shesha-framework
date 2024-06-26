@@ -1,6 +1,8 @@
 import { FormInstance } from 'antd';
 import { YesNoInherit } from '@/interfaces/formDesigner';
-import { FormMode } from '@/providers/form/models';
+import { FormIdentifier, FormMode } from '@/providers/form/models';
+import { isFormFullName, isFormRawId } from '@/providers/form/utils';
+import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
 
 interface IDataWithFields {
   _formFields: string[];
@@ -124,4 +126,16 @@ export const evaluateYesNo = (
       return formMode === 'edit';
   }
   return false;
+};
+
+export const getFormCacheKey = (formId: FormIdentifier, configurationItemMode: ConfigurationItemsViewMode): string => {
+  const formKey = isFormRawId(formId)
+    ? formId
+    : isFormFullName(formId)
+      ? `${formId.module}/${formId.name}`
+      : undefined;
+      
+  return formKey
+    ? `${formKey}:${configurationItemMode}`
+    : undefined;
 };

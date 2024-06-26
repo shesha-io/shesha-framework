@@ -1,5 +1,5 @@
+import { createNamedContext } from '@/utils/react';
 import { ColProps } from 'antd';
-import { createContext } from 'react';
 
 export interface IFormItemStateContext {
   labelCol?: ColProps;
@@ -7,10 +7,10 @@ export interface IFormItemStateContext {
   namePrefix?: string;
 }
 
-export interface IFormItemActionsContext {}
+export interface IFormItemActionsContext { }
 
 export const FORM_ITEM_CONTEXT_INITIAL_STATE: IFormItemStateContext = {};
 
-export const FormItemStateContext = createContext<IFormItemStateContext>(FORM_ITEM_CONTEXT_INITIAL_STATE);
+export const FormItemStateContext = createNamedContext<IFormItemStateContext>(FORM_ITEM_CONTEXT_INITIAL_STATE, "FormItemStateContext");
 
-export const FormItemActionsContext = createContext<IFormItemActionsContext>(undefined);
+export const FormItemActionsContext = createNamedContext<IFormItemActionsContext>(undefined, "FormItemActionsContext");

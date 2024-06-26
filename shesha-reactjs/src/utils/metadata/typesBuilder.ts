@@ -147,7 +147,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
     #getTypeIdentifier = (property: IPropertyMetadata): ModelTypeIdentifier => {
         const { dataFormat } = property;
-        // todo: merge entityType and dataFormat
+        // TODO: merge entityType and dataFormat
         const entityType = (property as IHasEntityType).entityType ?? dataFormat;
 
         if (!entityType)
@@ -166,7 +166,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
 
     #getArrayType = async (_property: IPropertyMetadata): Promise<TypeAndLocation> => {
         return { typeName: "any[]" };
-        /* todo: add context and import required types
+        /* TODO: add context and import required types
         if (property.itemsType){
             const itemType = await this.#getTypescriptType(property.itemsType);
 

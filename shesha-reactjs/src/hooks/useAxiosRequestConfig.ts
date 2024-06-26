@@ -1,4 +1,4 @@
-import { useSheshaApplication } from "@/providers";
+import { useSheshaApplicationState } from "@/providers";
 import { AxiosRequestConfig } from "axios";
 import { useMemo } from "react";
 
@@ -8,7 +8,7 @@ import { useMemo } from "react";
  * @return {AxiosRequestConfig} The Axios request configuration object with baseURL and headers
  */
 export const useAxiosRequestConfig = (): AxiosRequestConfig => {
-    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const { backendUrl, httpHeaders } = useSheshaApplicationState();
     return useMemo<AxiosRequestConfig>(() => {
         return {
             baseURL: backendUrl,

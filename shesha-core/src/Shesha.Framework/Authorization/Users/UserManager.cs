@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Shesha.Authorization.Roles;
 using Shesha.Configuration;
+using Shesha.Configuration.Security;
 using Shesha.Extensions;
 using Shesha.Settings;
 using System;
@@ -30,7 +31,7 @@ namespace Shesha.Authorization.Users
         private readonly IOptions<IdentityOptions> _optionsAccessor;
         
         private readonly IPasswordComplexitySettings _passwordComplexitySettings;
-        private readonly IAuthenticationSettings _authenticationSettings;
+        private readonly ISecuritySettings _securitySettings;
 
         public UserManager(
             RoleManager roleManager,
@@ -52,7 +53,7 @@ namespace Shesha.Authorization.Users
             ISettingManager settingManager,
             IShaSettingManager settingProvider,
             IPasswordComplexitySettings passwordComplexitySettings,
-            IAuthenticationSettings authenticationSettings,
+            ISecuritySettings securitySettings,
             IRepository<UserLogin, Int64> loginRepository)
             : base(
                 roleManager, 
@@ -76,7 +77,7 @@ namespace Shesha.Authorization.Users
         {
             _optionsAccessor = optionsAccessor;
             _passwordComplexitySettings = passwordComplexitySettings;
-            _authenticationSettings = authenticationSettings;
+            _securitySettings = securitySettings;
         }
 
         protected override void Dispose(bool disposing)
@@ -282,10 +283,10 @@ namespace Shesha.Authorization.Users
             Options = JsonConvert.DeserializeObject<IdentityOptions>(_optionsAccessor.Value.ToJsonString());
 
             //Lockout
-            Options.Lockout.AllowedForNewUsers = _authenticationSettings.UserLockOutEnabled.GetValue();
-            var lockoutSecs = _authenticationSettings.DefaultAccountLockoutSeconds.GetValue();
+            Options.Lockout.AllowedForNewUsers = _securitySettings.UserLockOutEnabled.GetValue();
+            var lockoutSecs = _securitySettings.DefaultAccountLockoutSeconds.GetValue();
             Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(lockoutSecs);
-            Options.Lockout.MaxFailedAccessAttempts = _authenticationSettings.MaxFailedAccessAttemptsBeforeLockout.GetValue();
+            Options.Lockout.MaxFailedAccessAttempts = _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValue();
 
             //Password complexity
             Options.Password.RequireDigit = _passwordComplexitySettings.RequireDigit.GetValue();
@@ -300,10 +301,10 @@ namespace Shesha.Authorization.Users
             Options = JsonConvert.DeserializeObject<IdentityOptions>(_optionsAccessor.Value.ToJsonString());
 
             //Lockout
-            Options.Lockout.AllowedForNewUsers = await _authenticationSettings.UserLockOutEnabled.GetValueAsync();
-            var lockoutSecs = await _authenticationSettings.DefaultAccountLockoutSeconds.GetValueAsync();
+            Options.Lockout.AllowedForNewUsers = await _securitySettings.UserLockOutEnabled.GetValueAsync();
+            var lockoutSecs = await _securitySettings.DefaultAccountLockoutSeconds.GetValueAsync();
             Options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(lockoutSecs);
-            Options.Lockout.MaxFailedAccessAttempts = await _authenticationSettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
+            Options.Lockout.MaxFailedAccessAttempts = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
 
             //Password complexity
             Options.Password.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueAsync();

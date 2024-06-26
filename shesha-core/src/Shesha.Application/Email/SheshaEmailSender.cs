@@ -2,6 +2,7 @@
 using Abp.Net.Mail.Smtp;
 using Castle.Core.Logging;
 using Shesha.Configuration;
+using Shesha.Configuration.Email;
 using Shesha.Email.Dtos;
 using Shesha.Utilities;
 using System;
@@ -29,7 +30,7 @@ namespace Shesha.Email
 
         private bool EmailsEnabled() 
         {
-            var enabled = _emailSettings.EmailsEnabled.GetValue();
+            var enabled = _emailSettings.EmailSettings.GetValue().EmailsEnabled;
             if (!enabled)
                 Logger.Warn("Emails are disabled");
 
@@ -121,7 +122,7 @@ namespace Shesha.Email
                 return false;
             }
 
-            var redirectTo = _emailSettings.RedirectAllMessagesTo.GetValue();
+            var redirectTo = _emailSettings.EmailSettings.GetValue().RedirectAllMessagesTo;
             if (!string.IsNullOrWhiteSpace(redirectTo))
             {
                 mail.To.Clear();

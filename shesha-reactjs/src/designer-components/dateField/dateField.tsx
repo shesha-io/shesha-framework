@@ -52,13 +52,13 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       <Fragment>
         <ConfigurableFormItem model={model}>
           {(value, onChange) => {
-            const customEvent =  customDateEventHandler(eventProps);
+            const customEvent = customDateEventHandler(eventProps);
             const onChangeInternal = (...args: any[]) => {
               customEvent.onChange(args[0], args[1]);
-              if (typeof onChange === 'function') 
+              if (typeof onChange === 'function')
                 onChange(...args);
             };
-            
+
             return <DatePickerWrapper {...model} {...customEvent} value={value} onChange={onChangeInternal} />;
           }}
         </ConfigurableFormItem>
@@ -82,7 +82,11 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     .add<IDateFieldProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDateFieldProps>(1, (prev) => migrateVisibility(prev))
     .add<IDateFieldProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IDateFieldProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IDateFieldProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<IDateFieldProps>(4, (prev) => ({
+      ...prev,
+      showNow: Boolean(prev.showNow || prev['showToday'])
+    }))
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
 
