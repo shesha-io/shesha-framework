@@ -220,6 +220,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
 
       dropdownStyle={props?.dropdownStyle}
       popupMatchSelectWidth={false}
+      allowClear
     >
     </Select>
   );

@@ -12,7 +12,6 @@ import { useTheme } from "antd-style";
 import { MainLayout } from "@/components";
 import { LOGO } from "@/app-constants";
 import { GlobalPublicPortalStyles } from "@/styles/global";
-/* NEW_TOOLBOXCOMPONENT_IMPORT_GOES_HERE */
 
 export interface IAppProviderProps {
   backendUrl: string;
@@ -42,11 +41,6 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({
         backendUrl={backendUrl}
         router={nextRouter}
         noAuth={false}
-        toolboxComponentGroups={
-          [
-            /* NEW_TOOLBOXCOMPONENT_GOES_HERE */
-          ]
-        }
       >
         <GlobalPublicPortalStyles />
         <StoredFilesProvider baseUrl={backendUrl} ownerId={""} ownerType={""}>
