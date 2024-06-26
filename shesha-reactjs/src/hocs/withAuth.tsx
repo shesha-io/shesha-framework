@@ -12,7 +12,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const { landingPage, unauthorizedRedirectUrl } = props;
   const { isCheckingAuth, loginInfo, checkAuth, getAccessToken, isLoggedIn, isFetchingUserInfo, token } = useAuth();
 
-  const loading = isFetchingUserInfo || (!isFetchingUserInfo && !loginInfo && token) || isLoggedIn;
+  const loading = isFetchingUserInfo || (!isFetchingUserInfo && !loginInfo && token) || !isLoggedIn;
 
   const { goingToRoute, router } = useShaRouting();
 
@@ -31,9 +31,9 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   }, [isCheckingAuth]);
 
   return loading ? (
-    <Fragment>{props.children(router?.query)}</Fragment>
-  ) : (
     <OverlayLoader loading={true} loadingText="Initializing..." />
+  ) : (
+    <Fragment>{props.children(router?.query)}</Fragment>
   );
 };
 
@@ -42,16 +42,16 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
  */
 export const withAuth =
   <P extends object>(Component: ComponentType<P>, unauthorizedRedirectUrl = '/login', landingPage = '/'): FC<P> =>
-  (props) => {
-    const propsObj = Array.isArray(props) ? props[0] : props;
+    (props) => {
+      const propsObj = Array.isArray(props) ? props[0] : props;
 
-    return (
-      <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
-        {(query) => (
-          // <IdleTimerRenderer>
-          <Component {...propsObj} id={query?.id} />
-          // </IdleTimerRenderer>
-        )}
-      </ComponentWithAuth>
-    );
-  };
+      return (
+        <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
+          {(query) => (
+            // <IdleTimerRenderer>
+            <Component {...propsObj} id={query?.id} />
+            // </IdleTimerRenderer>
+          )}
+        </ComponentWithAuth>
+      );
+    };
