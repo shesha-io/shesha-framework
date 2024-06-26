@@ -23,8 +23,6 @@ namespace Shesha.Authorization
         private readonly IEntityConfigCache _entityConfigCache;
         private readonly Dictionary<string, string> methods; 
 
-        public Guid Id { get; set; }
-
         public EntityCrudAuthorizationHelper(
             IFeatureChecker featureChecker,
             IAuthorizationConfiguration authConfiguration,
@@ -36,21 +34,6 @@ namespace Shesha.Authorization
             _entityConfigCache = entityConfigCache;
             _authConfiguration = authConfiguration;
             _objectPermissionChecker = objectPermissionChecker;
-            methods = new Dictionary<string, string>()
-            {
-                { "GetAll", "Get" },
-                { "QueryAll", "Get" },
-                { "Get", "Get" },
-                { "Query", "Get" },
-                { "Create", "Create" },
-                { "CreateGql", "Create" },
-                { "Update", "Update" },
-                { "UpdateGql", "Update" },
-                { "Delete", "Delete" },
-            };
-
-            Id = Guid.NewGuid();
-            //Debug.WriteLine($"EntityCrudAuthorizationHelper Create: {Id.ToString()}");
         }
 
         public override async Task AuthorizeAsync(MethodInfo methodInfo, Type type)
