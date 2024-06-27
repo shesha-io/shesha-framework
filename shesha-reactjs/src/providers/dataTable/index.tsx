@@ -540,7 +540,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const removeColumnFilter = (columnId: string) => {
     dispatch(removeColumFilterAction(columnId));
-  }
+  };
 
   const changeActionedRow = (val: any) => {
     dispatch(changeActionedRowAction(val));

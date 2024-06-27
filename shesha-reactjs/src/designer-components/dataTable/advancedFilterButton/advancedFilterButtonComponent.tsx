@@ -21,7 +21,7 @@ const FilterComponent: IToolboxComponent<IButtonComponentProps> = {
           <QuestionCircleOutlined className='tooltip-question-icon' size={14} color='gray' />
         </Tooltip>
       </Show>
-    </div>
+    </div>;
   },
   initModel: (model) => {
     return {

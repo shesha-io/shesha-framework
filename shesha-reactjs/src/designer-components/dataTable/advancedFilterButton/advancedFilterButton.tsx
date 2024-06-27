@@ -29,7 +29,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
 
     const splitByCapitalLetters = (str) => {
         return str?.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/([A-Z])([A-Z][a-z])/g, '$1 $2').split(" ");
-    }
+    };
 
     const customIcon = () => {
         if (props.icon) {
@@ -39,17 +39,17 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
             const iconName = splitIconName.join('');
 
             return Icons[iconName];
-        }
+        };
 
         return null;
-    }
+    };
 
     useEffect(() => {
         setIcon(customIcon());
-    }, [props.icon, hasFilters])
+    }, [props.icon, hasFilters]);
 
     const IconComponent = icon;
-    const defaultIcon = hasFilters ? <FilterFilled /> : <FilterOutlined />
+    const defaultIcon = hasFilters ? <FilterFilled /> : <FilterOutlined />;
     const filterIcon = icon ? <IconComponent /> : defaultIcon;
 
     return (
