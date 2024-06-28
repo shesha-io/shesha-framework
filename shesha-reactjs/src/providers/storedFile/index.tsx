@@ -240,7 +240,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     appendIfDefined('id', state.fileId);
     appendIfDefined('ownerId', ownerId);
     appendIfDefined('ownerType', ownerType);
-    appendIfDefined('filesCategory', fileCategory);
+    if (fileCategory)
+      appendIfDefined('filesCategory', fileCategory);
     appendIfDefined('propertyName', propertyName);
 
     const newFile: IStoredFile = {
