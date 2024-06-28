@@ -14,7 +14,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
         .${flexItemWrapper}, .${flexItemWrapperVertical} {
             display: flex;
-            align-items: center;
             min-width: 0px;
             box-sizing: border-box;
             flex: 1;
@@ -29,10 +28,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 }       
 
                 span {
-                    display: block;
                     min-width: 15px;
                     overflow: hidden;
-                    white-space: normal;
                 }
 
             }

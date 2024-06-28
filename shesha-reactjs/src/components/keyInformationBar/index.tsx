@@ -30,7 +30,8 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         backgroundColor: dividerColor ?? '#b4b4b4',
         minHeight: vertical ? '0.62px' : dividerHeight ?? "100%",
         minWidth: !vertical ? '0.62px' : dividerWidth ?? "100%",
-
+        width: dividerWidth,
+        height: dividerHeight,
         margin: dividerMargin && vertical ? `${dividerMargin}px 0px` : `0px ${dividerMargin}px 0px`,
     });
 
@@ -39,7 +40,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
             {columns?.map((item, i) => {
                 return (
                     <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={vertical ? { width: item.width } : { maxWidth: item.width + gap }}>
-                        <div key={"divider" + i} className={styles.divider} style={dividerStyle()} />
+                        <div key={"divider" + i} className={styles.divider} style={{ ...dividerStyle(), alignSelf: "center" }} />
                         <div className={styles.content} style={{ textAlign: item.textAlign, width: item.width }}>
                             <ComponentsContainer
                                 containerId={item.id}
