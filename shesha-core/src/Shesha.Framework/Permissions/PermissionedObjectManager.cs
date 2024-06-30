@@ -261,14 +261,23 @@ namespace Shesha.Permissions
                     return obj;
                 }
 
+                var parent = !string.IsNullOrEmpty(obj.Parent)
+                    ? await GetAsync(obj.Parent, true, useDependency, useHidden)
+                    : null;
+                obj.InheritedAccess = RefListPermissionedAccess.Inherited;
+
+                // check parent
+                if (parent != null)
+                {
+                    obj.InheritedPermissions = parent.ActualPermissions;
+                    obj.InheritedAccess = parent.ActualAccess;
+                }
 
                 // if current object is inherited
-                if (useInherited && obj.Inherited && !string.IsNullOrEmpty(obj.Parent))
+                if (useInherited && obj.Inherited && parent != null)
                 {
-                    var parent = await GetAsync(obj.Parent, true, useDependency, useHidden);
-
                     // check parent
-                    if (parent != null && parent.ActualAccess != RefListPermissionedAccess.Inherited)
+                    if (parent.ActualAccess != RefListPermissionedAccess.Inherited)
                     {
                         obj.ActualPermissions = parent.ActualPermissions;
                         obj.ActualAccess = parent.ActualAccess;
