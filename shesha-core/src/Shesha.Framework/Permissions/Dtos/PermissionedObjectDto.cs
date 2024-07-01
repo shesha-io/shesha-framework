@@ -38,11 +38,13 @@ namespace Shesha.Permissions
         public List<string> Permissions { get; set; }
 
         public List<string> ActualPermissions { get; set; }
+        public List<string> InheritedPermissions { get; set; }
 
         public RefListPermissionedAccess? Access { get; set; }
 
         public bool Inherited => Access == RefListPermissionedAccess.Inherited;
         public RefListPermissionedAccess? ActualAccess { get; set; }
+        public RefListPermissionedAccess? InheritedAccess { get; set; }
 
         public string Parent { get; set; }
         public string Dependency { get; set; }
