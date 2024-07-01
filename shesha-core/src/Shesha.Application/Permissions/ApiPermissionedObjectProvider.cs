@@ -106,7 +106,7 @@ namespace Shesha.Permissions
 
                     var objType = isDynamic
                         ? PermissionedObjectsSheshaTypes.WebCrudApi
-                        : GetObjectType(service);
+                        : PermissionedObjectsSheshaTypes.WebApi;
 
                     if (objectType != null && objType != objectType) continue;
 
@@ -117,17 +117,7 @@ namespace Shesha.Permissions
 
                     Type entityType = null;
                     if (objType == PermissionedObjectsSheshaTypes.WebCrudApi)
-                    {
                         continue;
-                        /*entityType = service.FindBaseGenericType(typeof(AbpAsyncCrudAppService<,,,,,,,>))?.GetGenericArguments()[0];
-                        if (isDynamic && entityType != null)
-                        {
-                            name = $"{entityType.Name}DynamicCrudAppService";
-                            fullName = $"{entityType.Namespace}.Dynamic{entityType.Name}CrudAppService";
-                            description = $"CRUD API service for {entityType.Name} entity";
-                            eModule = GetModuleOfType(entityType);
-                        }*/
-                    }
 
                     var serviceName = service.Name;
                     serviceName = serviceName.EndsWith("AppService") 
