@@ -4,6 +4,7 @@ import { getActualModelWithParent, useAvailableConstantsData } from '@/providers
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 import { useForm, useSheshaApplication } from '@/providers';
+import { CustomErrorBoundary } from '..';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -39,11 +40,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   actualModel.readOnly = actualModel.readOnly;
 
   return (
-    <toolboxComponent.Factory
-      model={actualModel}
-      componentRef={componentRef}
-      form={form}
-    />
+    <CustomErrorBoundary>
+      <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
+    </CustomErrorBoundary>
   );
 };
 
