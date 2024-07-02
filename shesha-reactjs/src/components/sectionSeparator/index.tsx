@@ -29,7 +29,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   dashed,
   lineColor,
   lineThickness = 1,
-  lineWidth,
+  lineWidth = "100%",
   dividerType,
   containerStyle,
   titleStyle,
