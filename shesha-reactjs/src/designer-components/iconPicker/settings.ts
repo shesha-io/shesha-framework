@@ -53,7 +53,7 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     id: nanoid(),
     propertyName: 'textAlign',
     parentId: 'root',
-    label: 'Text Align',
+    label: 'Icon Align',
     allowClear: false,
     defaultValue: 'start',
     values: [
