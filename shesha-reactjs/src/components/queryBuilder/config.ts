@@ -29,7 +29,7 @@ const standardTypes = AntdConfig.types ?? basicConfig.types;
 const standardOperators = AntdConfig.operators ?? basicConfig.operators;
 const standardWidgets = AntdConfig.widgets ?? basicConfig.widgets;
 
-const standardSourceTypes: ValueSource[] = ['value', /*'field',*/ 'func'];
+const standardSourceTypes: ValueSource[] = ['value', 'field', 'func'];
 
 const types = {
   ...standardTypes,

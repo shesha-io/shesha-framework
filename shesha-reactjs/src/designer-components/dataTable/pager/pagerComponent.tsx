@@ -8,6 +8,8 @@ import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { useDataTableStore } from '@/index';
+import { Alert } from 'antd';
 
 export interface IPagerComponentProps extends ITablePagerProps, IConfigurableFormComponent {}
 
@@ -16,9 +18,16 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   name: 'Table Pager',
   icon: <ControlOutlined />,
   Factory: ({ model }) => {
+    const store = useDataTableStore(false);
     if (model.hidden) return null;
     
-    return <TablePager {...model} />;
+    return store 
+      ? <TablePager {...model} />
+      : <Alert
+        className="sha-designer-warning"
+        message="Table Pager must be used within a Data Table Context"
+        type="warning"
+      />;
   },
   initModel: (model: IPagerComponentProps) => {
     return {

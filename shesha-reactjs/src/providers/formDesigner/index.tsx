@@ -158,7 +158,8 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       toolboxComponent
         .validateSettings(payload.settings)
         .then(() => {
-          dispatch(componentUpdateSettingsValidationAction({ componentId: payload.componentId, validationErrors: [] }));
+          if (component.settingsValidationErrors && component.settingsValidationErrors.length > 0)
+            dispatch(componentUpdateSettingsValidationAction({ componentId: payload.componentId, validationErrors: [] }));
         })
         .catch(({ errors }) => {
           const validationErrors = errors as IAsyncValidationError[];

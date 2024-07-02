@@ -236,6 +236,7 @@ export interface IFormSettings extends IHasVersion {
 
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean;
+  permissions?: string[];
 }
 
 export interface IFormProps extends IFlatComponentsStructure {
@@ -393,6 +394,7 @@ export const DEFAULT_FORM_SETTINGS: IFormSettings = {
   colon: true,
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
+  permissions: []
 };
 
 export type ActionParametersJs = string;

@@ -7,13 +7,22 @@ import { migrateFilterMustacheExpressions } from '@/designer-components/_common-
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { SelectOutlined } from '@ant-design/icons';
 import { TableViewSelector } from './tableViewSelector';
+import { Alert } from 'antd';
+import { useDataTableStore } from '@/index';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',
   name: 'Table view selector',
   icon: <SelectOutlined />,
   Factory: ({ model, componentRef }) => {
-    return <TableViewSelector {...model} componentRef={componentRef} />;
+    const store = useDataTableStore(false);
+    return store 
+      ? <TableViewSelector {...model} componentRef={componentRef} />
+      : <Alert
+        className="sha-designer-warning"
+        message="Table view selector must be used within a Data Table Context"
+        type="warning"
+      />;
   },
   migrator: m => m.add<ITableViewSelectorComponentProps>(0, prev => {
     return {

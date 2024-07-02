@@ -69,7 +69,7 @@ const ConfigurableFormItemContext: FC<IConfigurableFormItem_ContextProps> = (pro
   const context = getDataContext(contextName);
   const { getFieldValue } = context ?? {};
 
-  const value = getFieldValue(propertyName);
+  const value = getFieldValue ? getFieldValue(propertyName) : undefined;
 
   return (
     <Form.Item {...formItemProps}>

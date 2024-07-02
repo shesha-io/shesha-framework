@@ -13,7 +13,7 @@ import {
 } from '@/utils/form';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import { Form, Spin } from 'antd';
+import { Button, Form, Result, Spin } from 'antd';
 import { useFormData } from '@/providers/form/api';
 import { getQueryParams } from '@/utils/url';
 import { ValidateErrorEntity } from '@/interfaces';
@@ -22,7 +22,7 @@ import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { ShaForm, useForm } from '@/providers/form';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { useGlobalState } from '@/providers';
+import { useGlobalState, useSheshaApplication } from '@/providers';
 import { useModelApiEndpoint } from './useActionEndpoint';
 import { useMutate } from '@/hooks/useMutate';
 import { useStyles } from './styles/styles';
@@ -31,6 +31,7 @@ import {
   evaluateValue,
   IMatchData,
 } from '@/providers/form/utils';
+import Link from 'next/link';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -47,6 +48,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { styles } = useStyles();
   const formFlatMarkup = ShaForm.useMarkup();
+  const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const {
     updateStateFormData,
@@ -228,6 +230,24 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     wrapperCol: props.wrapperCol ?? formSettings.wrapperCol,
     colon: formSettings.colon,
   };
+
+  if (!anyOfPermissionsGranted(formSettings?.permissions || [])) {
+    return (
+      <Result
+        status="403"
+        style={{ height: '100vh - 55px' }}
+        title="403"
+        subTitle="Sorry, you are not authorized to access this page."
+        extra={
+          <Button type="primary">
+            <Link href={'/'}>
+              Back Home
+            </Link>
+          </Button>
+        }
+      />
+    );
+  }
 
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>

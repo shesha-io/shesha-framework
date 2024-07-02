@@ -13,12 +13,16 @@ export interface IConfigurableTheme {
   sidebarBackground?: string;
   layoutBackground?: string;
   text?: ITextTheme;
+  labelSpan?: number;
+  componentSpan?: number;
 }
 
 export interface IThemeStateContext {
   readonly theme?: IConfigurableTheme;
   prefixCls: string;
   iconPrefixCls: string;
+  labelSpan: number;
+  componentSpan: number;
 }
 
 export interface IThemeActionsContext {
@@ -46,6 +50,8 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
   },
   prefixCls: 'antd',
   iconPrefixCls: 'antdicon',
+  labelSpan: 6,
+  componentSpan: 18,
 };
 
 export const UiStateContext = createNamedContext<IThemeStateContext>(THEME_CONTEXT_INITIAL_STATE, "UiStateContext");

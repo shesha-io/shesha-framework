@@ -1,11 +1,11 @@
 import { Type } from '@react-awesome-query-builder/antd';
 
 export const RefListType: Type = {
-  valueSources: ['value', 'func'],
+  valueSources: ['value', 'func', 'field'],
   defaultOperator: 'equal',
   widgets: {
     refListDropdown: {
-      operators: ['equal'],
+      operators: ['equal', 'not_equal'],
     },
   },
 };

@@ -1,5 +1,4 @@
-﻿using Abp.AspNetCore.Mvc.ExceptionHandling;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Entities;
@@ -7,7 +6,6 @@ using Abp.Localization;
 using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using Shesha.Utilities;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +19,6 @@ namespace Shesha.Authorization
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IShaPermissionChecker _permissionChecker;
         private readonly ILocalizationManager _localizationManager;
-        private readonly Dictionary<string, string> methods;
 
         public ObjectPermissionChecker(
             IAuthorizationConfiguration authConfiguration,
@@ -34,19 +31,6 @@ namespace Shesha.Authorization
             _permissionedObjectManager = permissionedObjectManager;
             _permissionChecker = permissionChecker;
             _localizationManager = localizationManager;
-
-            methods = new Dictionary<string, string>()
-            {
-                { "GetAll", "Get" },
-                { "QueryAll", "Get" },
-                { "Get", "Get" },
-                { "Query", "Get" },
-                { "Create", "Create" },
-                { "CreateGql", "Create" },
-                { "Update", "Update" },
-                { "UpdateGql", "Update" },
-                { "Delete", "Delete" },
-            };
         }
 
         public async Task AuthorizeAsync(bool requireAll, string permissionedObject, string method, bool IsAuthenticated, RefListPermissionedAccess? replaceInherited = null)
@@ -56,7 +40,9 @@ namespace Shesha.Authorization
                 return;
             }
 
-            var methodName = methods.ContainsKey(method.RemovePostfix("Async")) ? methods[method.RemovePostfix("Async")] : method;
+            var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method.RemovePostfix("Async")) 
+                ? PermissionedObjectManager.CrudMethods[method.RemovePostfix("Async")] 
+                : method;
             var permissionName = $"{permissionedObject}@{methodName}";
 
             var permission = await _permissionedObjectManager.GetAsync(permissionName);

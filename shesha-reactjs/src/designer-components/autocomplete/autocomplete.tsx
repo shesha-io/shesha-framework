@@ -13,7 +13,7 @@ import { useDataContextManager, useFormData, useGlobalState, useNestedPropertyMe
 import { useForm } from '@/providers/form';
 import { FormMarkup } from '@/providers/form/models';
 import {
-  evaluateValue,
+  evaluateString,
   getStyle,
   replaceTags,
   validateConfigurableComponentSettings,
@@ -90,7 +90,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
         queryParams?.forEach(({ param, value }) => {
           const valueAsString = value as string;
           if (param?.length && valueAsString.length) {
-            queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateValue(valueAsString, { data }) : value;
+            queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data }) : value;
           }
         });
       }

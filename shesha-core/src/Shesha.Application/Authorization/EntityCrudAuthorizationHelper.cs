@@ -7,6 +7,7 @@ using Abp.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.DynamicEntities.Cache;
 using Shesha.Extensions;
+using Shesha.Permissions;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -21,9 +22,6 @@ namespace Shesha.Authorization
         private readonly IAuthorizationConfiguration _authConfiguration;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
         private readonly IEntityConfigCache _entityConfigCache;
-        private readonly Dictionary<string, string> methods; 
-
-        public Guid Id { get; set; }
 
         public EntityCrudAuthorizationHelper(
             IFeatureChecker featureChecker,
@@ -36,21 +34,6 @@ namespace Shesha.Authorization
             _entityConfigCache = entityConfigCache;
             _authConfiguration = authConfiguration;
             _objectPermissionChecker = objectPermissionChecker;
-            methods = new Dictionary<string, string>()
-            {
-                { "GetAll", "Get" },
-                { "QueryAll", "Get" },
-                { "Get", "Get" },
-                { "Query", "Get" },
-                { "Create", "Create" },
-                { "CreateGql", "Create" },
-                { "Update", "Update" },
-                { "UpdateGql", "Update" },
-                { "Delete", "Delete" },
-            };
-
-            Id = Guid.NewGuid();
-            //Debug.WriteLine($"EntityCrudAuthorizationHelper Create: {Id.ToString()}");
         }
 
         public override async Task AuthorizeAsync(MethodInfo methodInfo, Type type)
@@ -60,7 +43,9 @@ namespace Shesha.Authorization
                 return;
             }
 
-            var method = methods.ContainsKey(methodInfo.Name.RemovePostfix("Async")) ? methods[methodInfo.Name.RemovePostfix("Async")] : null;
+            var method = PermissionedObjectManager.CrudMethods.ContainsKey(methodInfo.Name.RemovePostfix("Async")) 
+                ? PermissionedObjectManager.CrudMethods[methodInfo.Name.RemovePostfix("Async")] 
+                : null;
             // It is not a Crud method
             if (method == null) return;
 

@@ -1,10 +1,9 @@
 import { useMutate } from '@/hooks';
 import useThunkReducer from '@/hooks/thunkReducer';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
 import { sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
-import { OverlayLoader } from '@/components/overlayLoader';
 import { IAccessToken } from '@/interfaces';
 import { IHttpHeaders } from '@/interfaces/accessToken';
 import { IErrorInfo } from '@/interfaces/errorInfo';
@@ -363,21 +362,11 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     dispatch(resetPasswordSuccessAction());
   };
 
-  const showLoader = useMemo(() => {
-    return !!(
-      (state.isFetchingUserInfo || (!state.isFetchingUserInfo && !state.loginInfo && state.token)) // Done fetching user info but the state is not yet updated
-    );
-  }, [state.isFetchingUserInfo, state.loginInfo, state.token]);
-
   //#endregion
 
   const getAccessToken = () => {
     return state.token;
   };
-
-  if (showLoader) {
-    return <OverlayLoader loading={true} loadingText="Initializing..." />;
-  }
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
