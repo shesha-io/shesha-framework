@@ -6,8 +6,6 @@ using Abp.PlugIns;
 using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Castle.Facilities.Logging;
 using ElmahCore.Mvc;
-using ElmahCore.Postgresql;
-using ElmahCore.Sql;
 using GraphQL;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -69,17 +67,17 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.EnableEndpointRouting = false;
 				options.Conventions.Add(new Shesha.Swagger.ApiExplorerGroupPerControllerConvention());
 
-				options.EnableDynamicDtoBinding();
+                options.EnableDynamicDtoBinding();
 				options.AddDynamicAppServices(services);
 
-                    options.Filters.AddService(typeof(SheshaAuthorizationFilter));
-                    options.Filters.AddService(typeof(SheshaExceptionFilter), order: 1);
-                })
-                .AddApiExplorer()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.UseCamelCasing(true);
-                });
+                options.Filters.AddService(typeof(SheshaAuthorizationFilter));
+                options.Filters.AddService(typeof(SheshaExceptionFilter), order: 1);
+            })
+            .AddApiExplorer()
+            .AddNewtonsoftJson(options =>
+            {
+                options.UseCamelCasing(true);
+            });
 
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
@@ -216,6 +214,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
+				options.DocumentFilter<SwaggerDocumentFilter>();
 
 				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 

@@ -11,6 +11,6 @@
         public const string DefaultSubjectTemplate = "One-Time-Pin";
         public const string DefaultBodyTemplate = "Your One-Time-Pin is {{password}}";
         public const string DefaultEmailSubjectTemplate = "One-Time-Pin";
-        public const string DefaultEmailBodyTemplate = @"Your One-Time-Pin is {{password}}";
+        public const string DefaultEmailBodyTemplate = @"Click the following link to reset your password: <a href='http://localhost:3000/no-auth/shesha/email-link-verification/?token={{token}}&identifier={{userid}}'>link</a>";
     }
 }

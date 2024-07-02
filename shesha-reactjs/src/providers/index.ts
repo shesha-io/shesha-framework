@@ -10,6 +10,7 @@ export * from './configurationItemsLoader';
 export * from './dataTable';
 export * from './dynamicModal';
 export * from './form';
+export * from './formManager';
 export * from './form/models';
 export { useFormWithData } from './form/api';
 export { useFormDesignerComponents } from './form/hooks';

@@ -2,21 +2,19 @@ import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
 import React, {
     CSSProperties,
     FC,
-    ReactNode,
-    useMemo
-    } from 'react';
-import { executeScriptSync, IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
+    ReactNode
+} from 'react';
+import { IApplicationContext, pickStyleFromModel } from '@/providers/form/utils';
 import { executeFunction, useFormData, useGlobalState } from '@/index';
 
 interface IconPickerWrapperProps {
-    disabled?: boolean; // TODO: move to the model level
+    disabled?: boolean; // todo: move to the model level
     applicationContext: IApplicationContext;
     value: any;
     onChange: (...args: any[]) => void;
     readOnly?: boolean;
     fontSize?: number;
     color?: string;
-    customIcon?: string;
     customColor?: string;
     borderWidth?: number;
     borderColor?: string;
@@ -26,27 +24,9 @@ interface IconPickerWrapperProps {
     defaultValue?: ShaIconTypes;
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { customColor, customIcon, fontSize, color, readOnly, applicationContext, value, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-
-    const computedColor = useMemo(() => {
-        return customColor
-        ? executeScriptSync<string>(customColor, applicationContext)
-        : color;
-    }, [applicationContext, customColor, color]);
-
-    const computedBorderColor = useMemo(() => {
-        return customColor
-        ? executeScriptSync<string>(customColor, applicationContext)
-        : borderColor;
-    }, [applicationContext, customColor, borderColor]);
-
-    const computedIcon = useMemo(() => {
-        if (customIcon) return executeScriptSync<string>(customIcon, applicationContext);
-
-        return value;
-    }, [applicationContext, customIcon, value, borderColor]);
 
     const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes) => {
         if (onChange) onChange(iconName);
@@ -55,35 +35,34 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const stylingBoxJSON = JSON.parse(stylingBox || '{}');
 
     const style: CSSProperties = {
-        fontSize: fontSize,
-        color: computedColor,
-        marginLeft: '12px'
+        fontSize: fontSize || 24,
+        color: color,
+        marginLeft: (borderWidth || borderColor || backgroundColor) ? '12px' : 'none' //this allows us to correct the icon layout when it's configured
     };
 
     const getIconStyle = {
-        boxSizing: 'border-box', 
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: Number(fontSize) ? `${fontSize}px` : '180px',
-        height: Number(fontSize) ? `${fontSize}px` : '40px',
-        border: `${borderWidth}px solid ${computedBorderColor}`,
+        width: Number(fontSize) ? `${fontSize}px` : 'auto',
+        height: Number(fontSize) ? `${fontSize}px` : 'auto',
+        border: `${borderWidth}px solid ${borderColor}`,
         borderRadius: `${borderRadius}px`,
         backgroundColor: backgroundColor,
         ...pickStyleFromModel(stylingBoxJSON),
-        ...(executeFunction("{}", { data, globalState }) || {}),
+        ...(executeFunction("{}", { data, globalState }) || {})
     };
 
     return (
-        <div style={(computedIcon || defaultValue) ? getIconStyle : {}}>
-        <IconPicker
-            value={computedIcon as ShaIconTypes || defaultValue as ShaIconTypes}
-            onIconChange={onIconChange}
-            readOnly={readOnly}
-            style={style}
-            twoToneColor={computedColor}
-            defaultValue={defaultValue as ShaIconTypes}
-        />
+        <div style={(defaultValue) ? getIconStyle : {}}>
+            <IconPicker
+                value={defaultValue as ShaIconTypes}
+                onIconChange={onIconChange}
+                readOnly={readOnly}
+                style={style}
+                twoToneColor={color}
+                defaultValue={defaultValue as ShaIconTypes}
+            />
         </div>
     );
 };

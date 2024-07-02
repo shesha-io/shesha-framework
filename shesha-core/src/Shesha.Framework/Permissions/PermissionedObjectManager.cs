@@ -1,27 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Abp.Dependency;
+﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Linq.Extensions;
 using Abp.ObjectMapping;
 using Abp.Runtime.Caching;
-using ConcurrentCollections;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Shesha.Application.Services;
 using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Permissions.Enum;
+using Shesha.Reflection;
 using Shesha.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
     public class PermissionedObjectManager : IPermissionedObjectManager, ITransientDependency
     {
+        public static readonly Dictionary<string, string> CrudMethods =
+            new Dictionary<string, string>()
+            {
+                { "GetAll", "Get" },
+                { "QueryAll", "Get" },
+                { "Get", "Get" },
+                { "Query", "Get" },
+                { "Create", "Create" },
+                { "CreateGql", "Create" },
+                { "Update", "Update" },
+                { "UpdateGql", "Update" },
+                { "Delete", "Delete" },
+            };
+
+
         private IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
         private IUnitOfWorkManager _unitOfWorkManager;
         private ICacheManager _cacheManager;
@@ -243,14 +261,23 @@ namespace Shesha.Permissions
                     return obj;
                 }
 
+                var parent = !string.IsNullOrEmpty(obj.Parent)
+                    ? await GetAsync(obj.Parent, true, useDependency, useHidden)
+                    : null;
+                obj.InheritedAccess = RefListPermissionedAccess.Inherited;
+
+                // check parent
+                if (parent != null)
+                {
+                    obj.InheritedPermissions = parent.ActualPermissions;
+                    obj.InheritedAccess = parent.ActualAccess;
+                }
 
                 // if current object is inherited
-                if (useInherited && obj.Inherited && !string.IsNullOrEmpty(obj.Parent))
+                if (useInherited && obj.Inherited && parent != null)
                 {
-                    var parent = await GetAsync(obj.Parent, true, useDependency, useHidden);
-
                     // check parent
-                    if (parent != null && parent.ActualAccess != RefListPermissionedAccess.Inherited)
+                    if (parent.ActualAccess != RefListPermissionedAccess.Inherited)
                     {
                         obj.ActualPermissions = parent.ActualPermissions;
                         obj.ActualAccess = parent.ActualAccess;
@@ -314,15 +341,40 @@ namespace Shesha.Permissions
 
             var dto = _objectMapper.Map<PermissionedObjectDto>(obj);
             await _cacheManager.GetPermissionedObjectCache().SetAsync(objectName, dto);
-
             return dto;
+        }
+
+        public async Task<bool> IsActionDescriptorEnabled(ActionDescriptor actionDescriptor)
+        {
+            if (actionDescriptor is ControllerActionDescriptor descriptor)
+            {
+                // remove disabled endpoints
+                var method = PermissionedObjectManager.CrudMethods.ContainsKey(descriptor.MethodInfo.Name.RemovePostfix("Async"))
+                    ? PermissionedObjectManager.CrudMethods[descriptor.MethodInfo.Name.RemovePostfix("Async")]
+                    : null;
+
+                var obj = "";
+                if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)) && !method.IsNullOrEmpty())
+                {
+                    // entity service
+                    var genericInterface = descriptor.ControllerTypeInfo.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault();
+                    var entityType = genericInterface.GenericTypeArguments.FirstOrDefault();
+                    obj = $"{entityType.FullName}@{method}";
+                }
+                else
+                    // api service
+                    obj = $"{descriptor.ControllerTypeInfo.FullName}@{descriptor.MethodInfo.Name}";
+
+                var permission = await GetAsync(obj);
+                return permission == null || permission.ActualAccess != RefListPermissionedAccess.Disable;
+            }
+            return true;
         }
 
         public virtual async Task ClearCacheAsync()
         {
             await _cacheManager.GetPermissionedObjectCache().ClearAsync();
         }
-
     }
 
 }

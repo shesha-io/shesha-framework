@@ -6,6 +6,7 @@ import { useFormDesignerComponents } from '../form/hooks';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { convertFormMarkupToFlatStructure } from '../form/utils';
 import { DEFAULT_FORM_SETTINGS, IFormSettings } from '../form/models';
+import { useFormById, useFormByMarkup } from './hooks';
 
 export interface IFormManagerProps {
 
@@ -159,3 +160,5 @@ export const useFormManager = (): IFormManagerActionsContext => {
 
     return context;
 };
+
+export { useFormByMarkup, useFormById };

@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.AspNetCore.Mvc.Extensions;
 using Abp.Modules;
 using Abp.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Shesha.ConfigurationItems;
-using Shesha.Domain.ConfigurationItems;
-using Shesha.Extensions;
 using Shesha.Utilities;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Module = Shesha.Domain.ConfigurationItems.Module;
 
 namespace Shesha.Permissions
@@ -33,16 +29,6 @@ namespace Shesha.Permissions
             _apiDescriptionsProvider = apiDescriptionsProvider;
             _moduleManager = moduleManager;
         }
-
-        private Dictionary<string, string> CrudMethods = new Dictionary<string, string>
-        {
-            { "Get", "Get" },
-            { "GetAll", "Get" },
-            { "Create", "Create" },
-            { "Update", "Update" },
-            { "Delete", "Delete" },
-            { "Remove", "Delete" }
-        };
 
         public List<string> GetObjectTypes()
         {
@@ -120,7 +106,7 @@ namespace Shesha.Permissions
 
                     var objType = isDynamic
                         ? PermissionedObjectsSheshaTypes.WebCrudApi
-                        : GetObjectType(service);
+                        : PermissionedObjectsSheshaTypes.WebApi;
 
                     if (objectType != null && objType != objectType) continue;
 
@@ -131,17 +117,7 @@ namespace Shesha.Permissions
 
                     Type entityType = null;
                     if (objType == PermissionedObjectsSheshaTypes.WebCrudApi)
-                    {
                         continue;
-                        /*entityType = service.FindBaseGenericType(typeof(AbpAsyncCrudAppService<,,,,,,,>))?.GetGenericArguments()[0];
-                        if (isDynamic && entityType != null)
-                        {
-                            name = $"{entityType.Name}DynamicCrudAppService";
-                            fullName = $"{entityType.Namespace}.Dynamic{entityType.Name}CrudAppService";
-                            description = $"CRUD API service for {entityType.Name} entity";
-                            eModule = GetModuleOfType(entityType);
-                        }*/
-                    }
 
                     var serviceName = service.Name;
                     serviceName = serviceName.EndsWith("AppService") 
@@ -181,8 +157,8 @@ namespace Shesha.Permissions
                             Type = GetMethodType(objType),
                             Parent = parent.Object,
                             Description = GetDescription(methodInfo.Action),
-                            Dependency = entityType != null && CrudMethods.ContainsKey(methodName)
-                                ? entityType.FullName + "@" + CrudMethods.GetValueOrDefault(methodName)
+                            Dependency = entityType != null && PermissionedObjectManager.CrudMethods.ContainsKey(methodName)
+                                ? entityType.FullName + "@" + PermissionedObjectManager.CrudMethods.GetValueOrDefault(methodName)
                                 : null,
                         };
 
