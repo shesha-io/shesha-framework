@@ -22,9 +22,10 @@ interface IconPickerWrapperProps {
     backgroundColor?: string;
     stylingBox?: string;
     defaultValue?: ShaIconTypes;
+    textAlign?: string;
 }
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue, textAlign } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
@@ -37,11 +38,12 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const style: CSSProperties = {
         fontSize: fontSize || 24,
         color: color,
-        marginLeft: (borderWidth || borderColor || backgroundColor) ? '12px' : 'none' //this allows us to correct the icon layout when it's configured
+        marginLeft: (defaultValue) ? '12px' : 'none' //this allows us to correct the icon layout when an icon is selected
     };
 
     const getIconStyle = {
         display: 'flex',
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         width: Number(fontSize) ? `${fontSize}px` : 'auto',
@@ -54,15 +56,17 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     };
 
     return (
-        <div style={(defaultValue) ? getIconStyle : {}}>
-            <IconPicker
-                value={defaultValue as ShaIconTypes}
-                onIconChange={onIconChange}
-                readOnly={readOnly}
-                style={style}
-                twoToneColor={color}
-                defaultValue={defaultValue as ShaIconTypes}
-            />
+        <div style={(defaultValue) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
+            <div style={(defaultValue) ? getIconStyle : {}}>
+                <IconPicker
+                    value={defaultValue as ShaIconTypes}
+                    onIconChange={onIconChange}
+                    readOnly={readOnly}
+                    style={style}
+                    twoToneColor={color}
+                    defaultValue={defaultValue as ShaIconTypes}
+                />
+            </div>
         </div>
     );
 };
