@@ -72,8 +72,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   noDataSecondaryText,
   noDataText,
   cardHeight,
-  cardMaxWidth,
-  cardMinWidth,
+  cardMaxWidth = '350px',
+  cardMinWidth = '350px',
   showBorder,
   cardSpacing,
   ...props
