@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 import qb_compact_styles from './css/compact_styles.css';
 

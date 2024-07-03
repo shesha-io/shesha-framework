@@ -1,10 +1,11 @@
+import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { CellStyleFunc, IAnchoredColumnProps, ITableColumn } from '@/providers/dataTable/interfaces';
-import { FunctionExecutor, getFunctionExecutor, isPropertySetting } from '@/providers/form/utils';
+import { FunctionExecutor, getFunctionExecutor } from '@/providers/form/utils';
 import { calculatePositionShift, calculateTotalColumnsOnFixed, getColumnAnchored } from '@/utils';
 import { Cell } from 'react-table';
 
 export const getCellStyleAccessor = (columnItem: ITableColumn): CellStyleFunc => {
-  const backgroundSetting = isPropertySetting<string>(columnItem.backgroundColor)
+  const backgroundSetting = isPropertySettings<string>(columnItem.backgroundColor)
     ? columnItem.backgroundColor
     : undefined;
 

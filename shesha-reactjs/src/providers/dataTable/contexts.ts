@@ -1,4 +1,3 @@
-import { createContext } from 'react';
 import { Row } from 'react-table';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
@@ -20,6 +19,7 @@ import {
   FilterExpression,
 } from './interfaces';
 import { IHasModelType, IRepository } from './repository/interfaces';
+import { createNamedContext } from '@/utils/react';
 
 /** Table Selection */
 
@@ -152,7 +152,6 @@ export interface IDataTableStateContext
   /** Select row handler */
   onSelectRow?: (index: number, row: any) => void;
 
-  //#region todo: review!
   isFetchingTableData?: boolean;
   hasFetchTableDataError?: boolean;
 
@@ -274,6 +273,6 @@ export const DATA_TABLE_CONTEXT_INITIAL_STATE: IDataTableStateContext = {
 
 export interface DataTableFullInstance extends IDataTableStateContext, IDataTableActionsContext { }
 
-export const DataTableStateContext = createContext<IDataTableStateContext>(DATA_TABLE_CONTEXT_INITIAL_STATE);
+export const DataTableStateContext = createNamedContext<IDataTableStateContext>(DATA_TABLE_CONTEXT_INITIAL_STATE, "DataTableStateContext");
 
-export const DataTableActionsContext = createContext<IDataTableActionsContext>(undefined);
+export const DataTableActionsContext = createNamedContext<IDataTableActionsContext>(undefined, "DataTableActionsContext");

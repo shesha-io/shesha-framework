@@ -8,6 +8,7 @@ import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import ConfigurableForm from '@/components/configurableForm';
 import { ButtonGroupItemProps } from '@/providers';
+import { sheshaStyles } from '@/styles';
 
 export interface IButtonGroupPropertiesProps {
   item?: ButtonGroupItemProps;
@@ -51,7 +52,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
           form={form}
           initialValues={item}
           onValuesChange={debouncedSave}
-          className='vertical-settings'
+          className={sheshaStyles.verticalSettingsClass}
         />
       </SourceFilesFolderProvider>
     );

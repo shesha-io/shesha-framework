@@ -1,7 +1,7 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
+import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
-    const verticalSettings = "vertical-settings";
     const jsSwitch = cx(css`
         &.${prefixCls}-btn {
             position: absolute;
@@ -10,9 +10,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             top: 4px;
             font-size: 12px;
             height: 20px;
-            width: 54px;
+            width: 2.5rem;
             margin-left: 5px;
             margin-right: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             ${responsive.mobile} {
                 right: 0;
                 left: auto;
@@ -25,7 +28,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
                 left: auto;
                 top: -28px;
             }
-            .${verticalSettings} & {
+            .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;
                 left: auto;
                 top: -28px;
@@ -48,7 +51,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         .sidebar-container & {
             padding-top: 4px;
         }
-        .${verticalSettings} & {
+        .${sheshaStyles.verticalSettingsClass} & {
             padding-top: 4px;
         }
     `);
@@ -63,17 +66,16 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             margin-right: 0;
             margin-left: 0;
         }
-        .${verticalSettings} & {
+        .${sheshaStyles.verticalSettingsClass} & {
             margin-right: 0;
             margin-left: 0;
         }
     `);
-    
+
     return {
         jsSwitch,
         contentJs,
         contentCode,
         jsContent,
-        verticalSettings,
     };
 });

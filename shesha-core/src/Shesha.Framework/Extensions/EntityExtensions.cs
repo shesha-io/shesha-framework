@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
@@ -24,6 +25,28 @@ namespace Shesha.Extensions
     /// </summary>
     public static class EntityExtensions
     {
+        /// <summary>
+        /// Check if the property name is a one of special/system property
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        public static bool IsSpecialProperty(this string propertyName)
+        {
+            return
+                propertyName == nameof(FullAuditedEntity.CreatorUserId)
+                || propertyName == nameof(AuditedEntity<Guid, IEntity<long>>.CreatorUser)
+                || propertyName == nameof(FullAuditedEntity.CreationTime)
+                || propertyName == nameof(ISoftDelete.IsDeleted)
+                || propertyName == nameof(FullAuditedEntity.DeleterUserId)
+                || propertyName == nameof(FullAuditedEntity<Guid, IEntity<long>>.DeleterUser)
+                || propertyName == nameof(FullAuditedEntity.DeletionTime)
+                || propertyName == nameof(FullAuditedEntity.LastModifierUserId)
+                || propertyName == nameof(AuditedEntity<Guid, IEntity<long>>.LastModifierUser)
+                || propertyName == nameof(FullAuditedEntity.LastModificationTime)
+                || propertyName == nameof(FullAuditedEntity.Id)
+                || propertyName == nameof(IMayHaveTenant.TenantId);
+        }
+
         /// <summary>
         /// Returns the DisplayName of the entity.
         /// </summary>

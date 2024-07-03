@@ -74,6 +74,8 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
 
     .${(p) => p.theme.prefixCls}-pagination {
       font-size: ${fontSize.secondary};
+      position: relative;
+      z-index: 1;
 
       .${(p) => p.theme.prefixCls}-pagination-options {
         .${(p) => p.theme.prefixCls}-select-selector {

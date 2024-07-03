@@ -4,7 +4,7 @@ import { EntityConfigurationDto, IEntity, IEntityTypeIndentifier } from "./model
 import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
 import { ICacheProvider } from "@/providers/metadataDispatcher/entities/models";
 import qs from "qs";
-import { IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/useEntityMetadataFetcher";
+import { IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";
 
 export const ENTITIES_URLS = {
     GET_CONFIGURATIONS: '/api/services/app/EntityConfig/GetClientApiConfigurations',    

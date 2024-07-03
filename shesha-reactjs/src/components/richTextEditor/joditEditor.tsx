@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState, lazy } from 'react';
+import React, { FC, lazy, useState, useEffect } from 'react';
 import { Skeleton } from 'antd';
 
 let defaultOptions = {};
@@ -18,30 +18,41 @@ export interface IJoditEditorProps {
     config?: any;
 }
 
-interface IRichTextEditorState {
-    content?: string;
-}
-
 export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     const { config, value, onChange } = props;
 
-    const [state, setState] = useState<IRichTextEditorState>({ content: value });
+    const getPlaceholder = (text: string) => {
+        return !text ? config?.placeholder : "";
+    };
 
-    const fullConfig = useMemo<any>(() => {
+    const [fullConfig, setFullConfig] = useState<any>(() => {
         const result = {
             ...defaultOptions,
-            ...config
+            ...config,
+            placeholder: getPlaceholder(value),
         };
-
         return result;
-    }, [config]);
+    });
 
-    const handleChange = (incomingValue: string) => {
-        setState(prev => ({ ...prev, content: incomingValue }));
-
-        if (onChange) {
-            onChange(incomingValue);
+    const updatePlaceholder = (newValue: string) => {
+        const newPlaceholder = getPlaceholder(newValue);
+        if (fullConfig.placeholder !== newPlaceholder){
+            setFullConfig({ ...fullConfig, placeholder: newPlaceholder });
         }
+    };
+
+    useEffect(() => {
+        updatePlaceholder(value);
+    }, [value]);
+
+    const handleBlur = (newValue: string) => {
+        onChange?.(newValue);
+    };
+
+    const handleChange = (newValue: string) => {
+        // Apply value to restore placeholder
+        if (!newValue && !fullConfig.placeholder && config.placeholder)
+            onChange?.(newValue);
     };
 
     const isSSR = typeof window === 'undefined';
@@ -51,9 +62,10 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
     ) : (
         <React.Suspense fallback={<div>Loading editor...</div>}>
             <JoditEditor
-                value={state.content}
+                value={value}
                 config={fullConfig}
-                onBlur={handleChange} // preferred to use only this option to update the content for performance reasons
+                onBlur={handleBlur} // preferred to use only this option to update the content for performance reasons
+                onChange={handleChange}
             />
         </React.Suspense>
     );

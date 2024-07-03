@@ -1,7 +1,7 @@
 import { IProviderSettingsFormFactory } from '@/designer-components/dynamicActionsConfigurator/interfaces';
 import { FormMarkup } from '@/interfaces';
 import { DynamicItemsEvaluationHook } from '@/providers/dynamicActionsDispatcher/models';
-import { createContext } from 'react';
+import { createNamedContext } from '@/utils/react';
 
 export interface IDynamicActionsStateContext<TSettings = any> {
   id: string;
@@ -38,4 +38,4 @@ export const DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE: IDynamicActionsContext = {
   hasArguments: false,
 };
 
-export const DynamicActionsContext = createContext<IDynamicActionsContext>(undefined);
+export const DynamicActionsContext = createNamedContext<IDynamicActionsContext>(undefined, "DynamicActionsContext");

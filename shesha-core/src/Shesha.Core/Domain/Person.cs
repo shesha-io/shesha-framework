@@ -127,5 +127,8 @@ namespace Shesha.Domain
         public virtual Account PrimaryAccount { get; set; }
         public virtual Site PrimarySite { get; set; }
         public virtual long? TargetingFlag { get; set; }
+
+        [ReferenceList("Shesha.Core", "PersonType")]
+        public virtual long? Type { get; set; }
     }
 }

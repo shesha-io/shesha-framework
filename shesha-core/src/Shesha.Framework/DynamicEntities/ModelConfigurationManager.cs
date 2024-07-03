@@ -317,9 +317,10 @@ namespace Shesha.DynamicEntities
                 if (id != null)
                     allPropertiesId.Add(id.Value);
             });
-            var toDelete = properties.Where(p => !allPropertiesId.Contains(p.Id)).ToList();
+            var toDelete = properties.Where(p => !p.Name.IsSpecialProperty() && !allPropertiesId.Contains(p.Id)).ToList();
             foreach (var prop in toDelete)
             {
+
                 await _entityPropertyRepository.DeleteAsync(prop);
             }
 

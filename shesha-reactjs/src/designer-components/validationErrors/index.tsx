@@ -6,6 +6,7 @@ import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useForm } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent {
 }
@@ -25,8 +26,12 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
 
     return <ValidationErrors error={validationErrors}/>;
   },
-  settingsFormMarkup: settingsForm,
+  /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
+  // settingsFormMarkup: settingsForm, 
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  migrator: (m) => m
+    .add<IValidationErrorsComponentProps>(0, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
 };
 
 export default ValidationErrorsComponent;

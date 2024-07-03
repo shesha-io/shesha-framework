@@ -183,7 +183,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
       }
 
       if (fetchingFileInfoError) {
-        // todo: handle error
+        // TODO: handle error
       }
     }
   }, [isFetchingFileInfo, fetchingFileInfoResponse, fetchingFileInfoError]);
@@ -240,7 +240,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     appendIfDefined('id', state.fileId);
     appendIfDefined('ownerId', ownerId);
     appendIfDefined('ownerType', ownerType);
-    appendIfDefined('filesCategory', fileCategory);
+    if (fileCategory)
+      appendIfDefined('filesCategory', fileCategory);
     appendIfDefined('propertyName', propertyName);
 
     const newFile: IStoredFile = {

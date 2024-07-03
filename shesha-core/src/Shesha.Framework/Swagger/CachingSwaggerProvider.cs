@@ -1,4 +1,5 @@
-﻿using Abp.Events.Bus.Entities;
+﻿using Abp.Dependency;
+using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -10,9 +11,10 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Shesha.Swagger
 {
-    public class CachingSwaggerProvider : ISwaggerProvider,
+    public class CachingSwaggerProvider : ISwaggerProvider, ITransientDependency,
         IEventHandler<EntityChangedEventData<EntityProperty>>,
-        IEventHandler<EntityChangedEventData<EntityConfig>>
+        IEventHandler<EntityChangedEventData<EntityConfig>>,
+        IEventHandler<EntityChangedEventData<PermissionedObject>>
     {
         private readonly ICacheManager _cacheManager;
 
@@ -49,6 +51,11 @@ namespace Shesha.Swagger
         }
 
         public void HandleEvent(EntityChangedEventData<EntityConfig> eventData)
+        {
+            ClearCache();
+        }
+
+        public void HandleEvent(EntityChangedEventData<PermissionedObject> eventData)
         {
             ClearCache();
         }

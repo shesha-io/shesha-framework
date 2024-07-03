@@ -19,7 +19,7 @@ import { ContextPropertyAutocomplete } from '@/designer-components/contextProper
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ISubFormComponentProps } from '.';
 import { useForm } from '@/providers';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
@@ -35,7 +35,7 @@ const SubFormSettings: FC<ISettingsFormFactoryArgs<ISubFormComponentProps>> = (p
 
   const { values: formData, model, onValuesChange } = useSettingsForm<ISubFormComponentProps>();
 
-  const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
+  const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
 
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(

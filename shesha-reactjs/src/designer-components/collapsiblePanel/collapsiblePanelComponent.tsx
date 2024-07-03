@@ -15,6 +15,7 @@ import { ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0 } fr
 import settingsFormJson from './settingsForm.json';
 import { executeFunction } from '@/utils';
 import ParentProvider from '@/providers/parentProvider/index';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -23,7 +24,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { formMode, hasVisibleChilds } = useForm();
+    const { formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const {
@@ -36,16 +37,12 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       headerColor,
       isSimpleDesign,
       hideCollapseContent,
+      hideWhenEmpty,
     } = model;
 
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
     if (model.hidden) return null;
-
-    if (model.hideWhenEmpty && formMode !== 'designer') {
-      const childsVisible = hasVisibleChilds(model.content.id);
-      if (!childsVisible) return null;
-    }
 
     const styling = JSON.parse(model.stylingBox || '{}');
 
@@ -80,6 +77,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
           hideCollapseContent={hideCollapseContent}
+          hideWhenEmpty={hideWhenEmpty}
         >
           <ComponentsContainer
             containerId={model.content.id}
@@ -130,7 +128,9 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
               ? 'end'
               : prev.expandIconPosition,
       }))
-      .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev)),
+      .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev))
+      .add<ICollapsiblePanelComponentProps>(5, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
   customContainerNames: ['header', 'content'],
 };
 

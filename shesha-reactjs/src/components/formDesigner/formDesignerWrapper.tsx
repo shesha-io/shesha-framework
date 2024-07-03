@@ -6,12 +6,11 @@ import {
   Result,
   Skeleton
 } from 'antd';
-import { FormDesignerProvider, useFormDesigner } from '@/providers/formDesigner';
+import { FormDesignerProvider, useFormDesignerState } from '@/providers/formDesigner';
 import { FormIdentifier } from '@/providers/form/models';
-import { FormMarkupConverter } from '@/providers/formMarkupConverter';
 import { FormPersisterProvider } from '@/providers/formPersisterProvider';
 import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/contexts';
-import { FormProvider } from '@/providers/form';
+import { FormProvider, ShaForm } from '@/providers/form';
 import { MetadataProvider } from '@/providers';
 import { ResultStatusType } from 'antd/lib/result';
 
@@ -20,29 +19,29 @@ export interface IFormProviderWrapperProps extends PropsWithChildren {
 }
 
 const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
-  const { allComponents, componentRelations, formSettings } = useFormDesigner();
+  const { formSettings, formFlatMarkup } = useFormDesignerState();
 
   return (
-    <FormProvider
-      needDebug
-      name="Designer Form"
-      mode="designer"
-      allComponents={allComponents}
-      componentRelations={componentRelations}
-      formSettings={formSettings}
-      isActionsOwner={true}
-      form={form}
-    >
-      <>
-        {formSettings.modelType ? (
-          <MetadataProvider id="designer" modelType={formSettings.modelType}>
-            {children}
-          </MetadataProvider>
-        ) : (
-          <>{children}</>
-        )}
-      </>
-    </FormProvider>
+    <ShaForm.MarkupProvider markup={formFlatMarkup}>
+      <FormProvider
+        needDebug
+        name="Form"
+        mode="designer"
+        formSettings={formSettings}
+        isActionsOwner={true}
+        form={form}
+      >
+        <>
+          {formSettings.modelType ? (
+            <MetadataProvider id="designer" modelType={formSettings.modelType}>
+              {children}
+            </MetadataProvider>
+          ) : (
+            <>{children}</>
+          )}
+        </>
+      </FormProvider>
+    </ShaForm.MarkupProvider>
   );
 };
 
@@ -56,23 +55,20 @@ export const FormProviderWrapper: FC<IFormProviderWrapperProps> = ({ formId, chi
           if (formStore.loading)
             return (<Skeleton loading active />);
 
-          if (formStore.loaded && formStore.markup)
+          if (formStore.loaded) {
+            const { flatStructure, settings } = formStore.formProps;
             return (
-              <FormMarkupConverter markup={formStore.markup} formSettings={{ ...formStore.formSettings, isSettingsForm: false }}>
-                {flatComponents => (
-                  <FormDesignerProvider
-                    flatComponents={flatComponents}
-                    formSettings={formStore.formSettings}
-                    readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
-                  >
-                      <FormProviderWrapperInner form={form}>
-                        {children}
-                      </FormProviderWrapperInner>
-                  </FormDesignerProvider>
-                )}
-              </FormMarkupConverter>
-
+              <FormDesignerProvider
+                flatMarkup={flatStructure}
+                formSettings={settings}
+                readOnly={formStore.formProps?.versionStatus !== ConfigurationItemVersionStatus.Draft}
+              >
+                <FormProviderWrapperInner form={form}>
+                  {children}
+                </FormProviderWrapperInner>
+              </FormDesignerProvider>
             );
+          }
 
           if (formStore.loadError)
             return (

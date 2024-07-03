@@ -57,7 +57,7 @@ module.exports = {
     'sort-imports': [
       'off',
       {
-        /* todo: enable and auto-fix */ ignoreCase: false,
+        /* TODO: enable and auto-fix */ ignoreCase: false,
         ignoreDeclarationSort: false,
         ignoreMemberSort: false,
         memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],

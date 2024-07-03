@@ -1,15 +1,15 @@
-import ItemListSettingsModal from '../itemListConfigurator/itemListSettingsModal';
 import React, { FC, useRef } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import StyleBox from '../styleBox/components/box';
 import {
+  Alert,
   Checkbox,
   Input,
   RefSelectProps,
   Select
-  } from 'antd';
+} from 'antd';
 import { CodeEditor } from '@/components';
 import { getActualModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { getSettings } from './itemSettings';
@@ -20,8 +20,11 @@ import { useDeepCompareMemo } from '@/hooks';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
 
 const { Option } = Select;
+
+const wizardStepSettingsMarkup = getSettings();
 
 const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
   const { readOnly } = props;
@@ -42,11 +45,10 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
     if (props.onValuesChange) props.onValuesChange(changedValues, newValues);
   };*/
 
-  const onAddNewItem = (_, count: number) => {
+  const onAddNewItem = (items) => {
+    const count = (items ?? []).length;
     const buttonProps: IWizardStepProps = {
       id: nanoid(),
-      itemType: 'item',
-      sortOrder: count,
       name: `step${count + 1}`,
       label: `Step ${count + 1}`,
       key: `stepKey${count + 1}`,
@@ -56,6 +58,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
       nextButtonText: 'Next',
       backButtonText: 'Back',
       components: [],
+      status: undefined,
     };
 
     return buttonProps;
@@ -69,7 +72,7 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
   );
   const selectRef = useRef<RefSelectProps>();
 
-  const getStyleConstants = useAvailableConstantsMetadata({ 
+  const getStyleConstants = useAvailableConstantsMetadata({
     addGlobalConstants: false,
     standardConstants: [
       SheshaConstants.globalState, SheshaConstants.formData
@@ -156,15 +159,23 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
 
       <SettingsCollapsiblePanel header="Configure Wizard Steps">
         <SettingsFormItem name="steps" initialValue={steps}>
-          <ItemListSettingsModal
-            options={{ onAddNewItem }}
-            title="Configure Wizard Steps"
-            heading="Settings"
-            callToAction="Configure Wizard Steps"
-            itemTypeMarkup={getSettings()}
-            allowAddGroups={false}
-            insertMode="after"
-          />
+          <ItemListConfiguratorModal<IWizardStepProps>
+            readOnly={readOnly}
+            initNewItem={onAddNewItem}
+            settingsMarkupFactory={() => wizardStepSettingsMarkup}
+            itemRenderer={({ item }) => ({
+              label: item.title || item.label || item.name,
+              description: item.tooltip,
+              icon: item.icon
+            })}
+            buttonText={readOnly ? "View Wizard Steps" : "Configure Wizard Steps"}
+            modalSettings={{
+              title: readOnly ? "View Wizard Steps" : "Configure Wizard Steps",
+              header: <Alert message={readOnly ? 'Here you can view wizard steps configuration.' : 'Here you can configure the wizard steps by adjusting their settings and ordering.'} />,
+            }}
+            actualModelContext={allData} 
+          >
+          </ItemListConfiguratorModal>
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 

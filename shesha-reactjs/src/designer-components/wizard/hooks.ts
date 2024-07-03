@@ -62,7 +62,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
           const granted = anyOfPermissionsGranted(permissions || []);
           const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-          return !((!granted || !isVisibleByCondition) && allData.formMode !== 'designer');
+          return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
         })
         .map(item => getActualModel(item, allData) as IWizardStepProps),
     [tabs, allData.data, allData.globalState, allData.contexts.lastUpdate]
@@ -74,7 +74,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     if (!components) return null;
     const flat = componentsTreeToFlatStructure(toolbox, components);
     const properties = [];
-    for (var comp in flat.allComponents)
+    for (const comp in flat.allComponents)
       if (Object.hasOwn(flat.allComponents, comp)) {
         const component = flat.allComponents[comp];
         if (component.propertyName)
@@ -170,7 +170,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         );
       }
     } catch (errInfo) {
-      console.log("Could'nt Proceed", errInfo);
+      console.log("Couldn't Proceed", errInfo);
     }
   };
 
@@ -196,7 +196,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         (tab) => tab.afterDoneActionConfiguration
       );
     } catch (errInfo) {
-      console.log("Could'nt Proceed", errInfo);
+      console.log("Couldn't Proceed", errInfo);
     }
   };
 

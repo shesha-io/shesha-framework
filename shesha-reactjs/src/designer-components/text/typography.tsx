@@ -7,6 +7,7 @@ import { useForm, useFormData } from '@/providers';
 import {
   getContent,
 } from './utils';
+import { isMoment } from 'moment';
 
 const TypographyComponent: FC<ITextTypographyProps> = ({
   contentDisplay,
@@ -20,7 +21,13 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const { formMode } = useForm();
   const { data: formData } = useFormData();
 
-  const contentEvaluation = evaluateString(value, formData);
+  const val = typeof value === 'string'
+    ? value 
+    : isMoment(value)
+      ? value.isValid() ? value.format(dateFormat) : ''
+      : value?.toString();
+
+  const contentEvaluation = evaluateString(val, formData);
   const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
 
   if (!content && contentDisplay === 'content' && formMode === 'designer') {
@@ -30,7 +37,7 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const computedStyle = getStyle(style, formData) ?? {};
 
   return (
-    <GenericText style={computedStyle} {...model}>
+    <GenericText style={{...computedStyle, display: 'grid', placeItems: model?.textAlign}} {...model}>
       {content}
     </GenericText>
   );

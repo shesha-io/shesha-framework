@@ -11,13 +11,6 @@ import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IDictionary } from '@/interfaces';
 
-/*
-export interface IEditorAdapter<T extends IConfigurableFormComponent = IConfigurableFormComponent> {
-    fillSettings: (customSettings: Partial<T>) => T;
-    settingsFormFactory?: ISettingsFormFactory<T>;
-  };
-*/
-
 type PropertyInclusionPredicate = (name: string) => boolean;
 
 export interface IEditorAdapter {
@@ -46,13 +39,13 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
       'mode',
-      'referenceListId',
-      'dataSourceType',
-      'valueFormat',
+      //'referenceListId',
+      //'dataSourceType',
+      //'valueFormat',
       'incomeCustomJs',
       'outcomeCustomJs',
       'labelCustomJs',
-      'values',
+      //'values',
     ]),
   },
   [AutocompleteComponent.type]: {

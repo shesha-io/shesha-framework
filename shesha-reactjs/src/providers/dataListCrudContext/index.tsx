@@ -4,7 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { FormProvider, useForm } from '@/providers/index';
+import { FormProvider, ShaForm, useForm } from '@/providers/index';
 import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,
@@ -28,6 +28,7 @@ import { useDelayedUpdate } from '../delayedUpdateProvider/index';
 import ParentProvider from '../parentProvider/index';
 import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
+import { removeGhostKeys } from '@/utils/form';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -44,7 +45,7 @@ export interface ICrudProviderProps {
   deleter?: () => Promise<any>;
   onSave?: DataProcessor;
   autoSave?: boolean;
-  flatComponents?: IFlatComponentsStructure;
+  formFlatMarkup?: IFlatComponentsStructure;
   formSettings?: IFormSettings;
   itemListId?: string;
 }
@@ -79,9 +80,9 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     initialValues: typeof data !== 'function' ? data : undefined,
   });
 
-  const {form, setFormData, setFormMode} = useForm();
+  const { form, setFormData, setFormMode } = useForm();
 
-  const {getPayload: getDelayedUpdate} = useDelayedUpdate(false) ?? {};
+  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
   const toolboxComponents = useFormDesignerComponents();
 
   const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean) => {
@@ -122,11 +123,11 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
       Promise.resolve(dataResponse).then((response) => {
         setInitialValues(response);
-        setFormData({values: response, mergeValues: true});
+        setFormData({ values: response, mergeValues: true });
       });
     } else {
       setInitialValues(data);
-      setFormData({values: data, mergeValues: true});
+      setFormData({ values: data, mergeValues: true });
     }
   }, [data]);
 
@@ -169,13 +170,15 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     return form
       .validateFields()
       .then((values) => {
-        // todo: call common data preparation code (check configurableFormRenderer)
+        // TODO: call common data preparation code (check configurableFormRenderer)
         const mergedData = { ...state.initialValues, ...values };
 
-        const postData = filterDataByOutputComponents(
+        const postData = removeGhostKeys(
+          filterDataByOutputComponents(
           mergedData,
-          props.flatComponents.allComponents,
+          props.formFlatMarkup.allComponents,
           toolboxComponents
+          )
         );
         // send data of stored files
         const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
@@ -290,15 +293,15 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   return (
     <CrudContext.Provider value={contextValue}>
-      <Form 
+      <Form
         key={state.mode}
-        component={false} 
-        form={form} 
-        initialValues={state.initialValues} 
-        onValuesChange={onValuesChangeInternal} 
+        component={false}
+        form={form}
+        initialValues={state.initialValues}
+        onValuesChange={onValuesChangeInternal}
         {...props.formSettings}
       >
-        <ParentProvider model={{componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read"}} subFormIdPrefix={itemListId}>
+        <ParentProvider model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }} subFormIdPrefix={itemListId}>
           {children}
         </ParentProvider>
       </Form>
@@ -314,13 +317,12 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
   } = props;
   const [form] = Form.useForm();
 
-  
+
   return (
+    <ShaForm.MarkupProvider markup={props.formFlatMarkup}>
       <FormProvider
         form={form}
         name={''}
-        allComponents={props.flatComponents.allComponents}
-        componentRelations={props.flatComponents.componentRelations}
         formSettings={formSettings}
         mode={mode === 'read' ? 'readonly' : 'edit'}
         isActionsOwner={false}
@@ -329,6 +331,7 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
           {children}
         </CrudProvider>
       </FormProvider>
+    </ShaForm.MarkupProvider>
   );
 };
 

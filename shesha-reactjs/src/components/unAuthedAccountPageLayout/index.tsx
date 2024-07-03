@@ -1,7 +1,15 @@
 import React, { FC, ReactNode } from 'react';
 import { Col, Row } from 'antd';
 import { UnAuthedLayoutContainer } from './styles';
-import { useUi } from '@/providers';
+
+const accountFormCols = {
+  xs: { span: 14, offset: 5 },
+  sm: { span: 12, offset: 6 },
+  md: { span: 10, offset: 7 },
+  lg: { span: 8, offset: 8 },
+  xl: { span: 6, offset: 9 },
+  xxl: { span: 4.5, offset: 10.5 },
+};
 
 export const UnAuthedAccountPageLayout: FC<{
   className?: string;
@@ -9,7 +17,6 @@ export const UnAuthedAccountPageLayout: FC<{
   hint?: string;
   children?: ReactNode;
 }> = ({ className, children, heading, hint }) => {
-  const { accountFormCols } = useUi();
 
   return (
     <UnAuthedLayoutContainer className={className}>

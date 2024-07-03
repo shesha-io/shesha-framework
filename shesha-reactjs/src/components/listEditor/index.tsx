@@ -16,13 +16,17 @@ export interface IListStateProps<TItem = any> {
 
 export interface NestedItemsRenderingArgs<TItem = any> {
   items: TItem[];
-  onChange: (newValue: TItem[]) => void;
+  onChange: (newValue: TItem[], changeDetails?: ItemChangeDetails) => void;
   initNewItem: (items: TItem[]) => TItem;
 }
 
+export interface ItemChangeDetails {
+  isReorder: boolean;
+  childsLengthDelta?: number; 
+}
 export interface ListItemRenderingArgs<TItem = any> {
   item: TItem;
-  itemOnChange: (newValue: TItem) => void;
+  itemOnChange: (newValue: TItem, changeDetails?: ItemChangeDetails) => void;
   index: number;
   readOnly: boolean;
   nestedRenderer?: (args: NestedItemsRenderingArgs<TItem>) => React.ReactNode | null;
@@ -32,7 +36,8 @@ export type ListEditorChildrenFn<TItem = any> = (args: ListItemRenderingArgs<TIt
 export interface ListEditorSectionRenderingArgs<TItem = any> {
   contextAccessor: () => IListEditorContext<TItem>;
   parentItem?: TItem;
-  level: number;  
+  level: number;
+  addItemText?: string;
 }
 export type ListEditorSectionRenderingFn<TItem = any> = (args: ListEditorSectionRenderingArgs<TItem>) => React.ReactNode | null;
 

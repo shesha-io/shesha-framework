@@ -4,7 +4,7 @@ import { CustomErrorBoundary } from '@/components';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
-import { useSheshaApplication } from '@/index';
+import { useForm, useSheshaApplication } from '@/index';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
@@ -12,8 +12,9 @@ export interface IConfigurableFormComponentProps {
 
 const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   const allData = useAvailableConstantsData();
+  const formInstance = useForm();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { form, getToolboxComponent } = allData.form;
+  const { form, getToolboxComponent } = formInstance;
 
   const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(model.type);
@@ -21,30 +22,25 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
 
   const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
     return getActualModelWithParent(
-      {...model, editMode: typeof model.editMode === 'undefined' ? undefined : model.editMode}, // add editMode property if not exists
+      { ...model, editMode: typeof model.editMode === 'undefined' ? undefined : model.editMode }, // add editMode property if not exists
       allData, parent);
   }, [model, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
 
   if (!toolboxComponent) return null;
 
-  // ToDo: AS review hidden and enabled for SubForm
-  actualModel.hidden = allData.formMode !== 'designer' 
+  // TODO: AS review hidden and enabled for SubForm
+  actualModel.hidden = allData.form?.formMode !== 'designer'
     && (
-      actualModel.hidden 
+      actualModel.hidden
       || !anyOfPermissionsGranted(actualModel?.permissions || []));
-      // || !isComponentFiltered(model)); // check `model` without modification
 
-  actualModel.readOnly = actualModel.readOnly;// || isComponentReadOnly(model); // check `model` without modification
+  actualModel.readOnly = actualModel.readOnly;
 
-  const renderComponent = () => {
-    return (
-      <CustomErrorBoundary>
-        <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form}/>
-      </CustomErrorBoundary>
-    );
-  };
-
-  return renderComponent();
+  return (
+    <CustomErrorBoundary>
+      <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
+    </CustomErrorBoundary>
+  );
 };
 
 export default DynamicComponent;

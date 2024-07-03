@@ -2,7 +2,7 @@ import { SmileOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Space } from 'antd';
 import React, { FC } from 'react';
 
-const formItemLayout = {
+export const formItemLayout = {
   labelCol: {
     xs: {
       span: 24,

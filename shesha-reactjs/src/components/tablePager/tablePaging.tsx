@@ -80,7 +80,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
       onShowSizeChange={onShowSizeChange}
       showLessItems
       disabled={disabled}
-      showTotal={showTotal} // todo: add `filtered from xxx` here if needed
+      showTotal={showTotal} // TODO: add `filtered from xxx` here if needed
     />
   );
 };
