@@ -11,7 +11,7 @@ import ColorPickerComponent from '@/designer-components/colorPicker';
 import Columns from '@/designer-components/columns/columns';
 import DataList from '@/designer-components/dataList/dataListComponent';
 import DataSource from '@/designer-components/dataSource/dataSourceComponent';
-import Divider from '@/designer-components/divider';
+import Divider from '@/designer-components/_legacyComponents/divider';
 import Drawer from '@/designer-components/drawer';
 import DynamicView from '@/designer-components/dynamicView';
 import EditableTagGroup from '@/designer-components/editableTagGroup';

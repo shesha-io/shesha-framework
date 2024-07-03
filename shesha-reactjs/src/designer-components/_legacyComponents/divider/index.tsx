@@ -1,31 +1,42 @@
 import { LineOutlined } from '@ant-design/icons';
+import { Divider, DividerProps } from 'antd';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { ISectionSeparatorProps, SectionSeparator } from '@/components';
-import { getSettings } from './settings';
+import { FormMarkup } from '@/providers/form/models';
+import settingsFormJson from './settingsForm.json';
+import { useFormData, useGlobalState } from '@/providers';
+import { getLayoutStyle } from '@/providers/form/utils';
+import { migrateFormApi } from '../../_common-migrations/migrateFormApi1';
 
 export interface IDividerProps extends IConfigurableFormComponent {
   dividerType?: 'horizontal' | 'vertical';
   dashed?: boolean;
 }
 
+const settingsForm = settingsFormJson as FormMarkup;
 
-const DividerComponent: IToolboxComponent<ISectionSeparatorProps> = {
+const DividerComponent: IToolboxComponent<IDividerProps> = {
   type: 'divider',
   name: 'Divider',
   icon: <LineOutlined />,
+  tooltip: "Deprecated! Please use 'Section Separator' instead.",
   Factory: ({ model }) => {
+    const { data } = useFormData();
+    const { globalState } = useGlobalState();
 
+    const props: DividerProps = {
+      type: model?.dividerType,
+      dashed: model?.dashed,
+    };
 
     return (
-      <SectionSeparator {...model} />
+      <Divider style={getLayoutStyle(model, { data, globalState })} {...props} />
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: settingsForm,
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDividerProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
