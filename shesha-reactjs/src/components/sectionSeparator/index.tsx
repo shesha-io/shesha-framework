@@ -3,13 +3,14 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { ConfigProvider, Divider, Space, Tooltip } from 'antd';
 import Show from '@/components/show';
 import { useStyles } from './styles/styles';
+import { IConfigurableFormComponent } from '@/providers';
 
-export interface ISectionSeparatorProps {
+export interface ISectionSeparatorProps extends IConfigurableFormComponent {
+  id: string;
   title?: string | ReactNode;
   containerStyle?: CSSProperties;
   titleStyle?: CSSProperties;
   tooltip?: string;
-  labelAlign?: 'left' | 'right' | 'center';
   fontSize?: number;
   fontColor?: string;
   inline?: boolean;
