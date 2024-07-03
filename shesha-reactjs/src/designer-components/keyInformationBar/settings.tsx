@@ -15,6 +15,8 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
     const { Option } = Select;
     const { values } = useSettingsForm<IKeyInformationBarProps>();
 
+    const tooltip = 'You can use any unit (%, px, em, etc). px by default if without unit';
+
     return (
         <>
             <SettingsFormItem name="componentName" label="Component Name" required>
@@ -38,18 +40,18 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
 
             <SectionSeparator title="Divider" />
 
-            <SettingsFormItem name="dividerMargin" label="Divider Margin" jsSetting>
-                <InputNumber readOnly={readOnly} />
+            <SettingsFormItem name="dividerMargin" label="Divider Margin" jsSetting tooltip={tooltip}>
+                <Input readOnly={readOnly} />
             </SettingsFormItem>
 
             <Show when={values.orientation === "horizontal"}>
-                <SettingsFormItem name="dividerHeight" label="Divider Height" jsSetting>
+                <SettingsFormItem name="dividerHeight" label="Divider Height" jsSetting tooltip={tooltip}>
                     <Input readOnly={readOnly} />
                 </SettingsFormItem>
             </Show>
 
             <Show when={values.orientation === "vertical"}>
-                <SettingsFormItem name="dividerWidth" label="Divider Width" jsSetting >
+                <SettingsFormItem name="dividerWidth" label="Divider Width" jsSetting tooltip={tooltip}>
                     <Input readOnly={readOnly} />
                 </SettingsFormItem>
             </Show>
