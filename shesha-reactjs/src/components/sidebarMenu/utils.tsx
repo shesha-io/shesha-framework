@@ -1,4 +1,3 @@
-import { QuestionOutlined } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
@@ -41,12 +40,12 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
   } as MenuItem;
 }
 
-const getIcon = (icon: ReactNode, isParent?: boolean, isRootItem?: boolean) => {
+const getIcon = (icon: ReactNode, isParent?: boolean) => {
   if (typeof icon === 'string')
     return <ShaIcon iconName={icon as IconType} className={classNames({ 'is-parent-menu': isParent })} />;
 
   if (React.isValidElement(icon)) return icon;
-  return isRootItem ? <QuestionOutlined /> : null; // Make sure there's always an Icon on the root item menu, even when not specified
+  return null;
 };
 
 export interface IProps {
@@ -59,7 +58,7 @@ export interface IProps {
   getUrl: (args) => string;
 }
 
-export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
+export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
 
 
   const { id, title, icon, itemType } = item;
@@ -85,7 +84,7 @@ export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, 
   const itemEvaluationArguments: IGetItemArgs = {
     label: title,
     key: id,
-    icon: getIcon(icon, hasChildren, isRootItem),
+    icon: getIcon(icon, hasChildren),
     children: children,
     isParent: hasChildren,
     itemType,
