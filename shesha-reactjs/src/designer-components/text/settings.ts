@@ -76,6 +76,32 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           ],
           dataSourceType: 'values',
         })
+        .addDropdown({
+          id: nanoid(),
+          propertyName: 'textAlign',
+          parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+          label: 'Text Align',
+          allowClear: false,
+          defaultValue: 'start',
+          values: [
+            {
+              label: 'Left',
+              value: 'start',
+              id: '32ebcc5b-6775-4b34-b856-d7ed42f33c3b',
+            },
+            {
+              label: 'Center',
+              value: 'center',
+              id: 'f3622f5e-3dc3-452b-aa57-2273f65b9fdc',
+            },
+            {
+              label: 'Right',
+              value: 'end',
+              id: '3e6a5ac8-bf51-48fb-b5c1-33ba455a1246',
+            },
+          ],
+          dataSourceType: 'values',
+        })
         .addTextArea({
           id: 'b9857800-eb4d-4303-b1ac-6f9bc7f140ad',
           propertyName: 'content',

@@ -83,4 +83,5 @@ export interface ITextTypographyProps extends IConfigurableFormComponent {
   keyboard?: boolean;
   strong?: boolean;
   value?: any;
+  textAlign?: string;
 }
