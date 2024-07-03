@@ -129,7 +129,8 @@ export const getSettings = (data: any) =>
             id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f93aMg",
             propertyName: "lineColor",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            label: "Line Color"
+            label: "Line Color",
+            allowClear: true,
           })
           .addNumberField({
             id: "3b8b9e3f-f47e-48ae-b4c3-f90c36f934d9",

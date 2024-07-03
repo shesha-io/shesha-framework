@@ -29,7 +29,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   inline,
   dashed,
   lineColor,
-  lineThickness = 1,
+  lineThickness,
   lineWidth = "100%",
   dividerType,
   containerStyle,
@@ -57,12 +57,14 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     };
 
     return (
-      <span style={titleStyles}>
-        <Space size="small" style={{ flexWrap: "nowrap" }}>
+      <span style={{
+        ...titleStyles
+      }}>
+        <Space size="small" style={{ flexWrap: "nowrap", alignContent: "center" }}>
           {title}
           <Show when={Boolean(tooltip?.trim())}>
             <Tooltip title={tooltip}>
-              <QuestionCircleOutlined className='tooltip-question-icon' style={{ fontSize: 14, color: 'gray' }} />
+              <QuestionCircleOutlined className='tooltip-question-icon' style={{ fontSize: 14, color: 'gray', verticalAlign: "middle" }} />
             </Tooltip>
           </Show>
         </Space>

@@ -35,6 +35,8 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
     return {
       ...model,
       label: 'Section',
+      lineThickness: 2,
+      labelAlign: "left"
     };
   },
   migrator: (m) => m
