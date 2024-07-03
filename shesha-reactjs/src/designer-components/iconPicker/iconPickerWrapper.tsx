@@ -26,7 +26,7 @@ interface IconPickerWrapperProps {
 }
 
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue, textAlign } = props;
+    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue, value, textAlign } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
@@ -57,10 +57,10 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     };
 
     return (
-        <div style={(defaultValue) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
+        <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
             <div style={(defaultValue) ? getIconStyle : {}}>
                 <IconPicker
-                    value={defaultValue as ShaIconTypes}
+                    value={value as ShaIconTypes}
                     onIconChange={onIconChange}
                     readOnly={readOnly}
                     style={style}
