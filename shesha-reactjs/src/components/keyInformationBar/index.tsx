@@ -38,7 +38,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         backgroundColor: dividerColor ?? '#b4b4b4',
         width: !vertical ? '0.62px' : width,
         height: vertical ? '0.62px' : height,
-        margin: vertical ? `${margin ?? 0} 0` : `0 ${margin ?? 0}`,
+        margin: vertical ? `${margin} 0` : `0 ${margin}`,
     };
 
     return (
