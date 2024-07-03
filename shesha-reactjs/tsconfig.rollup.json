@@ -3,7 +3,7 @@
   "compilerOptions": {
     "sourceMap": false,
     "incremental": false,
-    "declaration": true,
+    "declaration": false,
   },
   "exclude": [
     "node_modules",
