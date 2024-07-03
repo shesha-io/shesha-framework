@@ -24,6 +24,7 @@ interface IconPickerWrapperProps {
     defaultValue?: ShaIconTypes;
     textAlign?: string;
 }
+
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue, textAlign } = props;
     const { data } = useFormData();
@@ -46,8 +47,8 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        width: Number(fontSize) ? `${fontSize}px` : 'auto',
-        height: Number(fontSize) ? `${fontSize}px` : 'auto',
+        width: Number(fontSize) ? `${fontSize}px` : '25px',
+        height: Number(fontSize) ? `${fontSize}px` : '25px',
         border: `${borderWidth}px solid ${borderColor}`,
         borderRadius: `${borderRadius}px`,
         backgroundColor: backgroundColor,
