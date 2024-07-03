@@ -8,7 +8,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const content = "content";
 
     const flexContainer = cx("flex-container", css`
-        max-width: 100%;
+        width: max-content;
         background-color: ${token.colorTextLightSolid};
         flex-wrap: wrap;
 

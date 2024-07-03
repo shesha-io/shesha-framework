@@ -25,10 +25,6 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <Checkbox disabled={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="hideLabel" label="Hide Label" valuePropName="checked" jsSetting>
-                <Checkbox disabled={readOnly} />
-            </SettingsFormItem>
-
             <SettingsFormItem name="orientation" label="Orientation">
                 <Select >
                     <Option value="horizontal">Horizontal</Option>
@@ -40,13 +36,6 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <ColumnsList readOnly={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="alignItems" label="Align Items">
-                <Select >
-                    <Option value="flex-start">Flex Start</Option>
-                    <Option value="flex-end">Flex End</Option>
-                    <Option value="center">Center</Option>
-                </Select>
-            </SettingsFormItem>
             <SectionSeparator title="Divider" />
 
             <SettingsFormItem name="dividerMargin" label="Divider Margin" jsSetting>
@@ -55,13 +44,13 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
 
             <Show when={values.orientation === "horizontal"}>
                 <SettingsFormItem name="dividerHeight" label="Divider Height" jsSetting>
-                    <InputNumber readOnly={readOnly} />
+                    <Input readOnly={readOnly} />
                 </SettingsFormItem>
             </Show>
 
             <Show when={values.orientation === "vertical"}>
                 <SettingsFormItem name="dividerWidth" label="Divider Width" jsSetting >
-                    <InputNumber readOnly={readOnly} />
+                    <Input readOnly={readOnly} />
                 </SettingsFormItem>
             </Show>
             <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting >
