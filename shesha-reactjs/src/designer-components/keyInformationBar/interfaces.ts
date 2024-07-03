@@ -1,16 +1,6 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { AlignItems } from '../container/interfaces';
 
-export interface IColumnProps {
-  id: string;
-  flex: number;
-  offset: number;
-  push: number;
-  pull: number;
-  components: IConfigurableFormComponent[];
-}
-
-
 export interface KeyInfomationBarItemProps {
   id: string;
   width: number;
@@ -19,7 +9,7 @@ export interface KeyInfomationBarItemProps {
   components: IConfigurableFormComponent[];
 }
 
-export interface IKeyInformationBarProps extends IConfigurableFormComponent, IColumnProps {
+export interface IKeyInformationBarProps extends IConfigurableFormComponent {
   width?: string;
   height?: string;
   dividerHeight?: string;
