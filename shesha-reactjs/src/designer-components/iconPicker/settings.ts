@@ -109,7 +109,8 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         id: nanoid(),
         propertyName: 'defaultValue',
         label: 'Default Icon',
-        labelAlign: 'left'
+        labelAlign: 'left',
+        jsSetting: true
       })
       .addColorPicker({
         id: nanoid(),
@@ -140,7 +141,8 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       .addNumberField({
         id: nanoid(),
         propertyName: 'fontSize',
-        label: 'Size'
+        label: 'Size',
+        defaultValue: 24
       })
       .addColorPicker({
         id: nanoid(),

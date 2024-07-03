@@ -23,8 +23,9 @@ interface IconPickerWrapperProps {
     stylingBox?: string;
     defaultValue?: ShaIconTypes;
 }
+
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue, value } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
@@ -44,8 +45,8 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        width: Number(fontSize) ? `${fontSize}px` : 'auto',
-        height: Number(fontSize) ? `${fontSize}px` : 'auto',
+        width: Number(fontSize) ? `${fontSize}px` : '25px',
+        height: Number(fontSize) ? `${fontSize}px` : '25px',
         border: `${borderWidth}px solid ${borderColor}`,
         borderRadius: `${borderRadius}px`,
         backgroundColor: backgroundColor,
@@ -54,9 +55,9 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     };
 
     return (
-        <div style={(defaultValue) ? getIconStyle : {}}>
+        <div style={(defaultValue || value) ? getIconStyle : {}}>
             <IconPicker
-                value={defaultValue as ShaIconTypes}
+                value={value as ShaIconTypes}
                 onIconChange={onIconChange}
                 readOnly={readOnly}
                 style={style}
