@@ -58,7 +58,7 @@ export interface IProps {
   getUrl: (args) => string;
 }
 
-export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
+export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
 
 
   const { id, title, icon, itemType } = item;
