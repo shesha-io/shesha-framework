@@ -23,6 +23,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
     const hasFilters = filterColumns?.length > 0 || isFiltering;
 
     const buttonStyle = {
+        ...localStyle,
         ...{ color: props.buttonType !== "primary" && !props.danger ? styles.primaryColor : "" },
         border: hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
     };
@@ -58,12 +59,12 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
                 type={props.buttonType}
                 title={filterColumns?.join("  ")}
                 onClick={startFilteringColumns}
-                className="extra-btn filter"
+                className={styles.button}
                 danger={props.danger}
                 disabled={props.readOnly || isFiltering}
                 icon={filterIcon}
                 size={props.size}
-                style={isFiltering || props.readOnly ? {} : { ...buttonStyle, ...localStyle }}
+                style={isFiltering || props.readOnly ? {} : { ...buttonStyle }}
             >
                 {props.label}
             </Button>
