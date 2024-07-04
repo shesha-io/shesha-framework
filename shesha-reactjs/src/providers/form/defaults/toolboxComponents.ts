@@ -21,6 +21,7 @@ import FormAutocompleteComponent from '@/designer-components/formAutocomplete';
 import IconPicker from '@/designer-components/iconPicker';
 import Image from '@/designer-components/image';
 import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
+import KeyInformationBarComponent from '@/designer-components/keyInformationBar';
 import Paragraph from '@/designer-components/_legacyComponents/paragraph';
 import Title from '@/designer-components/_legacyComponents/title';
 import Link from '@/designer-components/link';
@@ -191,6 +192,7 @@ export const getToolboxComponents = (
         ContainerComponent,
         Divider,
         Drawer,
+        KeyInformationBarComponent,
         SectionSeprator,
         SizableColumnsComponent,
         Space,
