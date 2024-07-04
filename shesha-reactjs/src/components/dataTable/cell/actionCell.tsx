@@ -75,13 +75,13 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   return (
     <>
       {navigationUrl === "" ?
-        <span className="sha-link" onClick={(e) => clickHandler(e, props)}>
+        <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
           {icon && (
             <Tooltip title={description}>
               <ShaIcon iconName={icon as IconType} />
             </Tooltip>
           )}
-        </span>
+        </a>
         :
         <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
           {icon && (
