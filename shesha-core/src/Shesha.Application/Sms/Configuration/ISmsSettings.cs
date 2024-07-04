@@ -12,18 +12,10 @@ namespace Shesha.Sms.Configuration
     public interface ISmsSettings : ISettingAccessors
     {
         /// <summary>
-        /// SMS Gateway
+        /// SMS Settings
         /// </summary>
         [Display(Name = "SMS Gateway")]
-        [Setting(SheshaSettingNames.Sms.SmsGateway, false, "sms-settings-gateway")]
-        ISettingAccessor<string> SmsGateway { get; }
-
-        /// <summary>
-        /// Redirect all messages to.
-        /// Is used for testing purposes only
-        /// </summary>
-        [Display(Name = "Redirect all messages to", Description = "Is used for testing purposes only")]
-        [Setting(SheshaSettingNames.Sms.RedirectAllMessagesTo)]
-        ISettingAccessor<string> RedirectAllMessagesTo { get; }
+        [Setting(SheshaSettingNames.SmsSettings, false, "sms-settings")]
+        ISettingAccessor<SmsSettings> SmsSettings { get; }
     }
 }

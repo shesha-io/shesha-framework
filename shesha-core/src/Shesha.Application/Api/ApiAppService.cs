@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Api.Dto;
 using Shesha.AutoMapper.Dto;
+using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +19,30 @@ namespace Shesha.Api
     public class ApiAppService: SheshaAppServiceBase//, IApiAppService
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;
-        public ApiAppService(IApiDescriptionGroupCollectionProvider apiDescriptionsProvider)
+        private readonly IPermissionedObjectManager _permissionedObjectManager;
+
+        public ApiAppService(
+            IApiDescriptionGroupCollectionProvider apiDescriptionsProvider,
+            IPermissionedObjectManager permissionedObjectManager
+        )
         {
             _apiDescriptionsProvider = apiDescriptionsProvider;
+            _permissionedObjectManager = permissionedObjectManager;
         }
 
         [HttpGet]
-        public Task<List<AutocompleteItemDto>> EndpointsAsync(string term, string verb, int maxResultCount = 10)
+        public async Task<List<AutocompleteItemDto>> EndpointsAsync(string term, string verb, int maxResultCount = 10)
         {
             var actionDescriptors = _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectMany(g => g.Items.Select(gi => gi.ActionDescriptor)).ToList();
 
-            var allEndpoints = actionDescriptors.SelectMany(desc => {
+            // ToDo: AS - make endpoints list cachable
+
+            var permissioned = new List<ActionDescriptor>();
+            foreach (var actionDescriptor in actionDescriptors)
+                if (await _permissionedObjectManager.IsActionDescriptorEnabled(actionDescriptor))
+                    permissioned.Add(actionDescriptor);
+
+            var allEndpoints = permissioned.SelectMany(desc => {
                 var verbs = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SelectMany(c => c.HttpMethods).Distinct().ToList() ?? new List<string> { "" };
 
                 var actionDescriptor = desc as ControllerActionDescriptor;
@@ -50,7 +65,7 @@ namespace Shesha.Api
                 .Take(maxResultCount)
                 .ToList();
 
-            return Task.FromResult(endpoints);
+            return endpoints;
         }
     }
 }

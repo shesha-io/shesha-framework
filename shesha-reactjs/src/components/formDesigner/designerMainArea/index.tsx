@@ -1,11 +1,11 @@
-import ComponentPropertiesTitle from '../componentPropertiesTitle';
+import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import ParentProvider from '@/providers/parentProvider';
 import React, { FC, useMemo } from 'react';
 import Toolbox from '../toolbox';
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import { DebugPanel } from '../debugPanel';
 import { useCanvasConfig, useForm } from '@/providers';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 
@@ -14,7 +14,7 @@ export interface IDesignerMainAreaProps {
 }
 
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
-    const { isDebug, readOnly } = useFormDesigner();
+    const { isDebug, readOnly } = useFormDesignerState();
     const { form, formMode } = useForm();
     const { width, zoom } = useCanvasConfig();
     const { styles } = useStyles();

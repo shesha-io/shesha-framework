@@ -1,6 +1,6 @@
-import { createContext } from 'react';
 import { NoteDto } from '@/apis/note';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
+import { createNamedContext } from '@/utils/react';
 
 export type IFlagProgressFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
 export type IFlagSucceededFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
@@ -52,6 +52,6 @@ export const COMMENTS_CONTEXT_INITIAL_STATE: INotesStateContext = {
   notes: [],
 };
 
-export const NotesStateContext = createContext<INotesStateContext>(COMMENTS_CONTEXT_INITIAL_STATE);
+export const NotesStateContext = createNamedContext<INotesStateContext>(COMMENTS_CONTEXT_INITIAL_STATE, "NotesStateContext");
 
-export const NotesActionsContext = createContext<INotesActionsContext>(undefined);
+export const NotesActionsContext = createNamedContext<INotesActionsContext>(undefined, "NotesActionsContext");

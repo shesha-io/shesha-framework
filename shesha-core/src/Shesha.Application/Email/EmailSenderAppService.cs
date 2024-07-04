@@ -2,6 +2,7 @@
 using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration;
+using Shesha.Configuration.Email;
 using Shesha.Email.Dtos;
 using System;
 using System.Threading.Tasks;
@@ -30,8 +31,12 @@ namespace Shesha.Email
         [HttpPost]
         public async Task<bool> UpdateSmtpSettingsAsync(SmtpSettingsDto input)
         {
-            await _emailSettings.EmailsEnabled.SetValueAsync(input.EmailsEnabled);
-            await _emailSettings.RedirectAllMessagesTo.SetValueAsync(input.RedirectAllMessagesTo);
+            await _emailSettings.EmailSettings.SetValueAsync(new EmailSettings
+            {
+                EmailsEnabled = input.EmailsEnabled,
+                RedirectAllMessagesTo = input.RedirectAllMessagesTo,
+            });
+
             await _emailSettings.SmtpSettings.SetValueAsync(new SmtpSettings { 
                 Host = input.Host,
                 Port = input.Port,
@@ -52,6 +57,7 @@ namespace Shesha.Email
         public async Task<SmtpSettingsDto> GetSmtpSettingsAsync()
         {
             var smtpSettings = await _emailSettings.SmtpSettings.GetValueAsync();
+            var emailSettings = await _emailSettings.EmailSettings.GetValueAsync();
 
             var settings = new SmtpSettingsDto
             {
@@ -65,8 +71,8 @@ namespace Shesha.Email
                 DefaultFromDisplayName = smtpSettings.DefaultFromDisplayName,
                 SupportSmtpRelay = smtpSettings.UseSmtpRelay,
 
-                RedirectAllMessagesTo = await _emailSettings.RedirectAllMessagesTo.GetValueAsync(),
-                EmailsEnabled = await _emailSettings.EmailsEnabled.GetValueAsync(),
+                RedirectAllMessagesTo = emailSettings.RedirectAllMessagesTo,
+                EmailsEnabled = emailSettings.EmailsEnabled,
             };
             
             return settings;

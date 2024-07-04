@@ -6,6 +6,8 @@ import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
+import { isNavigationActionConfiguration, useShaRouting } from '@/index';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties;
@@ -13,23 +15,25 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'i
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
+  const { actionConfiguration } = props;
   const evaluationContext = useAvailableConstantsData();
-  const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
-  const dynamicContext = useActionDynamicContext(props.actionConfiguration);
+  const { getUrlFromNavigationRequest } = useShaRouting();
+  const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
+  const dynamicContext = useActionDynamicContext(actionConfiguration);
 
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
   const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
+    event.preventDefault();
     try {
-      if (props.actionConfiguration) {
-        if (['Show Dialog', 'Show Confirmation Dialog'].includes(props.actionConfiguration?.actionName)) {
+      if (actionConfiguration) {
+        if (['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration?.actionName)) {
           setModal(true);
         }
         setLoading(true);
         executeAction({
-          actionConfiguration: { ...props.actionConfiguration },
+          actionConfiguration: { ...actionConfiguration },
           argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext },
         })
           .finally(() => {
@@ -37,6 +41,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
           });
       } else console.error('Action is not configured');
     } catch (error) {
+      setLoading(false);
       console.error('Validation failed:', error);
     }
   };
@@ -47,12 +52,20 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   };
 
 
+  const navigationUrl = useAsyncMemo(async () => {
+    if (!isNavigationActionConfiguration(actionConfiguration) || !actionConfiguration.actionArguments)
+      return null;
+    const preparedArguments = await prepareArguments({ actionConfiguration, argumentsEvaluationContext: evaluationContext });
+    return getUrlFromNavigationRequest(preparedArguments);
+  }, [actionConfiguration], "");
+
   return (
     <Button
+      href={navigationUrl}
       title={props.tooltip}
       block={props.block}
       loading={buttonLoading}
-      onClick={(event) => onButtonClick(event)}
+      onClick={onButtonClick}
       type={props.buttonType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
@@ -60,7 +73,6 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       size={props?.size}
       disabled={buttonDisabled}
       style={props?.style}
-
     >
       {props.label}
     </Button>

@@ -6,7 +6,6 @@ import React, {
   PropsWithChildren,
   useEffect,
   useMemo,
-  useState
 } from 'react';
 import {
   hasFiles,
@@ -14,25 +13,25 @@ import {
 } from '@/utils/form';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import { Form, Spin } from 'antd';
+import { Button, Form, Result, Spin } from 'antd';
 import { useFormData } from '@/providers/form/api';
 import { getQueryParams } from '@/utils/url';
-import { IAnyObject, ValidateErrorEntity } from '@/interfaces';
+import { ValidateErrorEntity } from '@/interfaces';
 import { IConfigurableFormRendererProps } from './models';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { StandardEntityActions } from '@/interfaces/metadata';
-import { useForm } from '@/providers/form';
-import { useFormDesigner } from '@/providers/formDesigner';
-import { useGlobalState } from '@/providers';
+import { ShaForm, useForm } from '@/providers/form';
+import { useFormDesignerState } from '@/providers/formDesigner';
+import { useGlobalState, useSheshaApplication } from '@/providers';
 import { useModelApiEndpoint } from './useActionEndpoint';
 import { useMutate } from '@/hooks/useMutate';
 import { useStyles } from './styles/styles';
 import {
   evaluateComplexString,
   evaluateValue,
-  getObjectWithOnlyIncludedKeys,
   IMatchData,
 } from '@/providers/form/utils';
+import Link from 'next/link';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -45,27 +44,23 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   skipFetchData,
   ...props
 }) => {
-
   const formInstance = useForm();
+
   const { styles } = useStyles();
+  const formFlatMarkup = ShaForm.useMarkup();
+  const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const {
     updateStateFormData,
     formData,
-    allComponents,
-    formMode,
     formSettings,
-    formMarkup,
     setValidationErrors,
     setFormData,
-    visibleComponentIdsIsSet,
   } = formInstance;
 
-  const designerMode = formMode === 'designer';
+  const { isDragging = false } = useFormDesignerState(false) ?? {};
 
-  const { isDragging = false } = useFormDesigner(false) ?? {};
-
-  const { onDataLoaded, onUpdate, onInitialized, formKeysToPersist, uniqueFormId } = formSettings;
+  const { onDataLoaded, onUpdate, onInitialized, uniqueFormId } = formSettings;
   const { globalState } = useGlobalState();
 
   const urlEvaluationData: IMatchData[] = [
@@ -82,10 +77,8 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     mappings: urlEvaluationData,
   });
 
-  const [lastTruthyPersistedValue, setLastTruthyPersistedValue] = useState<IAnyObject>(null);
-
   const dataFetcher = useFormData({
-    formMarkup: formMarkup,
+    formFlatStructure: formFlatMarkup,
     formSettings: formSettings,
     lazy: skipFetchData,
     urlEvaluationData: urlEvaluationData,
@@ -104,25 +97,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       }
     }
   }, [onInitialized]);
-
-  //#region PERSISTED FORM VALUES
-  // I decided to do the persisting manually since the hook way fails in prod. Only works perfectly, but on Storybook
-  // TODO: Revisit this
-  useEffect(() => {
-    if (window && uniqueFormId) {
-      const itemFromStorage = window?.localStorage?.getItem(uniqueFormId);
-      setLastTruthyPersistedValue(_.isEmpty(itemFromStorage) ? null : JSON.parse(itemFromStorage));
-    }
-  }, [uniqueFormId]);
-
-  useEffect(() => {
-    if (uniqueFormId && formKeysToPersist?.length && !_.isEmpty(formData)) {
-      localStorage.setItem(uniqueFormId, JSON.stringify(getObjectWithOnlyIncludedKeys(formData, formKeysToPersist)));
-    } else {
-      localStorage.removeItem(uniqueFormId);
-    }
-  }, [formData]);
-  //#endregion
 
   const onValuesChangeInternal = (changedValues: any, values: any) => {
     if (props.onValuesChange) props.onValuesChange(changedValues, values);
@@ -172,13 +146,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     }
   }, [formData, onUpdate]);
 
-  // reset form to initial data on any change of components or initialData
-  // only if data is not fetched or form is not in designer mode
-  useEffect(() => {
-    if (!fetchedFormEntity && !designerMode)
-      setFormData({ values: initialValues, mergeValues: false });
-  }, [allComponents, initialValues]);
-
   useEffect(() => {
     let incomingInitialValues = null;
 
@@ -189,7 +156,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       incomingInitialValues = fetchedFormEntity
         ? Object.assign(fetchedFormEntity, initialValuesFromSettings)
         : initialValuesFromSettings;
-    } else if (!_.isEmpty(fetchedFormEntity) || !_.isEmpty(lastTruthyPersistedValue)) {
+    } else if (!_.isEmpty(fetchedFormEntity)) {
       // `fetchedFormEntity` will always be merged with persisted values from local storage
       // To override this, to not persist values or pass skipFetchData
       let computedInitialValues = fetchedFormEntity
@@ -198,9 +165,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
           : fetchedFormEntity
         : initialValues;
 
-      if (!_.isEmpty(lastTruthyPersistedValue)) {
-        computedInitialValues = { ...computedInitialValues, ...lastTruthyPersistedValue };
-      }
       incomingInitialValues = computedInitialValues;
     }
     // }
@@ -208,7 +172,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     if (incomingInitialValues) {
       setFormData({ values: incomingInitialValues, mergeValues: true });
     }
-  }, [fetchedFormEntity, lastTruthyPersistedValue, initialValuesFromSettings, uniqueFormId]);
+  }, [fetchedFormEntity, initialValuesFromSettings, uniqueFormId]);
 
   const { mutate: doSubmit, loading: submitting } = useMutate();
 
@@ -267,29 +231,43 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     colon: formSettings.colon,
   };
 
-  // Note: render form only after calculation of visible components to prevent re-creation of components
-  // Looks like the code that re-creates components are deep inside the antd form
-  if (!visibleComponentIdsIsSet) return null;
+  if (!anyOfPermissionsGranted(formSettings?.permissions || [])) {
+    return (
+      <Result
+        status="403"
+        style={{ height: '100vh - 55px' }}
+        title="403"
+        subTitle="Sorry, you are not authorized to access this page."
+        extra={
+          <Button type="primary">
+            <Link href={'/'}>
+              Back Home
+            </Link>
+          </Button>
+        }
+      />
+    );
+  }
 
   return (
-    <Spin spinning={submitting}>
-      <Form
-        form={form}
-        labelWrap
-        size={props.size}
-        onFinish={onFinishInternal}
-        onFinishFailed={onFinishFailedInternal}
-        onValuesChange={onValuesChangeInternal}
-        initialValues={initialValues}
-        className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
-        {...mergedProps}
-      >
-        <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
+    <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
+      <Spin spinning={submitting}>
+        <Form
+          form={form}
+          labelWrap
+          size={props.size}
+          onFinish={onFinishInternal}
+          onFinishFailed={onFinishFailedInternal}
+          onValuesChange={onValuesChangeInternal}
+          initialValues={initialValues}
+          className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
+          {...mergedProps}
+        >
           <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
-        </ComponentsContainerProvider>
-        {children}
-      </Form>
-    </Spin>
+          {children}
+        </Form>
+      </Spin>
+    </ComponentsContainerProvider>
   );
 };
 

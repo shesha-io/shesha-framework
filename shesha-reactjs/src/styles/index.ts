@@ -1,10 +1,10 @@
-import { FullToken } from "antd-style";
+import { FullToken, createInstance } from "antd-style";
 
 export const sheshaStyles = {
     paddingSM: 4,
     paddingMD: 8,
     paddingLG: 12,
-    
+
     layoutHeaderHeight: "55px", // @layout-header-height
     pageHeadingHeight: "45px", // @sha-page-heading-height
     pageToolbarHeight: "33px", // @sha-page-toolbar-height
@@ -21,8 +21,8 @@ export const sheshaStyles = {
     justify-content: space-between;
     align-items: center;
 `,
-    thinScrollbars: 
-`
+    thinScrollbars:
+        `
 scrollbar-width: thin;
 ::-webkit-scrollbar {
     width: 8px;
@@ -57,3 +57,18 @@ export const getWarningHoverEffects = (token: FullToken) => {
         cursor: pointer;
     `;
 };
+
+export interface SheshaStyleTokens {
+
+}
+
+const { createStyles, ThemeProvider } = createInstance<SheshaStyleTokens>({
+    key: 'css',
+    hashPriority: 'high',
+    speedy: true,
+    customToken: {
+        // custom tokens
+    },
+});
+
+export { createStyles, ThemeProvider };

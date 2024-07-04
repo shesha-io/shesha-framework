@@ -27,7 +27,7 @@ const SettingsProvider: FC<PropsWithChildren<ISettingsProviderProps>> = ({ child
     const key = makeFormLoadingKey(settingId);
 
     const loadedValue = settings.current[key];
-    if (loadedValue) return loadedValue; // todo: check for rejection
+    if (loadedValue) return loadedValue; // TODO: check for rejection
 
     const settingPromise = settingsGetValue(
       { name: settingId.name, module: settingId.module },

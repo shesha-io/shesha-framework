@@ -13,9 +13,10 @@ export interface PermissionedObjectDto {
   actualPermissions?: string[] | null;
   inherited?: boolean;
   access?: number | null;
+  actualAccess?: number | null;
   parent?: string | null;
   dependency?: string | null;
-  child?: PermissionedObjectDto[] | null;
+  children?: PermissionedObjectDto[] | null;
   hidden?: boolean;
 }
 

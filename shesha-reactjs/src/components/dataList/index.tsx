@@ -72,8 +72,8 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   noDataSecondaryText,
   noDataText,
   cardHeight,
-  cardMaxWidth,
-  cardMinWidth,
+  cardMaxWidth = '350px',
+  cardMinWidth = '350px',
   showBorder,
   cardSpacing,
   ...props
@@ -188,7 +188,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const [measuredRef, measured] = useMeasure();
   const [itemWidthCalc, setItemWidth] = useState({});
 
-  // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
+  // TODO: Horisontal orientation works incorrect under Container with Display = `grid`
 
   //The below forces the card to use max-width, therefore avoiding the issue of having cards
   //with varying sizes. This is only a problem when selection mode is not "none"
@@ -327,7 +327,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     const dblClick = () => {
       if (props.dblClickActionConfiguration) {
-        // todo: implement generic context collector
+        // TODO: implement generic context collector
         const evaluationContext = {
           ...allData,
           selectedRow: item,

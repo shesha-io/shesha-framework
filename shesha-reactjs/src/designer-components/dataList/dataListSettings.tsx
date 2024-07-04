@@ -422,11 +422,6 @@ const DataListSettings: FC<ISettingsFormFactoryArgs<IDataListComponentProps>> = 
             <InputNumber disabled={readOnly} />
           </SettingsFormItem>
         }
-        {
-          //<SettingsFormItem name="newListItemInsertPosition" label="New list item insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
-          //  <Select disabled={readOnly} options={rowCapturePositions} />
-          //</SettingsFormItem>
-        }
         <SettingsFormItem name="customCreateUrl" label="Custom create url" hidden={model.canAddInline === 'no'}>
           <Input readOnly={readOnly} />
         </SettingsFormItem>

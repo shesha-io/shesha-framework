@@ -39,7 +39,7 @@ export const AppEditModeToggler: FC<IAppEditModeTogglerProps> = () => {
   };
 
   return (
-    <Space>
+    <Space className={styles.shaConfigItemModeToggler}>
       {contextHolder}
       <span className={styles.shaConfigurableModeSwitcherLabel}>{Boolean(formInfoBlockVisible) ? 'Edit Mode' : 'Live Mode'}</span>
       <Switch className={styles.shaConfigurableModeSwitcherSwitcher}

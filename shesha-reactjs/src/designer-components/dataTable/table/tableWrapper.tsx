@@ -29,7 +29,7 @@ const NotConfiguredWarning: FC = () => {
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { id, items, useMultiselect, tableStyle, containerStyle } = props;
-    
+
     const { formMode } = useForm();
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();

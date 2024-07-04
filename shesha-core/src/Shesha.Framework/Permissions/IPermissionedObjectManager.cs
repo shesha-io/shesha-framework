@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ConcurrentCollections;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Shesha.Domain.Enums;
 using Shesha.Permissions.Enum;
 
@@ -74,7 +75,7 @@ namespace Shesha.Permissions
         PermissionedObjectDto Get(string objectName, bool useInherited = true,
             UseDependencyType useDependency = UseDependencyType.Before, bool useHidden = false);
 
-        ConcurrentHashSet<string> GetActualPermissions(string objectName, bool useInherited = true,
+        List<string> GetActualPermissions(string objectName, bool useInherited = true,
             UseDependencyType useDependency = UseDependencyType.Before);
 
         /// <summary>
@@ -92,6 +93,13 @@ namespace Shesha.Permissions
         /// <param name="permissions">Required permissions for Protected Object. Will be ignored if Inherited is True</param>
         /// <returns></returns>
         Task<PermissionedObjectDto> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions);
+
+        /// <summary>
+        /// Checks if the action descriptor is not disabled as permissioned object 
+        /// </summary>
+        /// <param name="actionDescriptor">Action descriptor</param>
+        /// <returns></returns>
+        Task<bool> IsActionDescriptorEnabled(ActionDescriptor actionDescriptor);
 
         /// <summary>
         /// Clear protected objects cache

@@ -29,7 +29,7 @@ export type OnSaveSuccessHandler = (
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
-  const { 
+  const {
     dataSourceInstance: dataSource,
     onListItemSave,
     onListItemSaveSuccessAction,
@@ -98,9 +98,9 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onListItemSave) return (data) => Promise.resolve(data);
 
-    const executer = new Function('data, formData, contexts, globalState, http, moment', onListItemSave);
-    return (data, formData, contexts, globalState) => {
-      const preparedData = executer(data, formData, contexts, globalState, allData.http, allData.moment);
+    const executer = new Function('data, form, contexts, globalState, http, moment', onListItemSave);
+    return (data, form, contexts, globalState) => {
+      const preparedData = executer(data, form, contexts, globalState, allData.http, allData.moment);
       return Promise.resolve(preparedData);
     };
   }, [onListItemSave]);
@@ -134,7 +134,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
     const repository = getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, allData.data ?? {}, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
+    return performOnRowSave(rowData, allData.form, allData.contexts ?? {}, allData.globalState).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
@@ -201,8 +201,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
-  if(groupingColumns?.length > 0 && props.orientation === "wrap"){
-    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.'/>;
+  if (groupingColumns?.length > 0 && props.orientation === "wrap") {
+    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
   }
 
   return (
@@ -212,7 +212,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         styles.shaDatalistComponent,
         { horizontal: props?.orientation === 'horizontal' && allData.form?.formMode !== 'designer' } //
       )}
-      wrapperCol={{  md: 24 }}
+      wrapperCol={{ md: 24 }}
     >
 
       <DataList

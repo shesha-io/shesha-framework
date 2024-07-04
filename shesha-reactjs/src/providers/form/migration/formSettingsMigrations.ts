@@ -16,6 +16,10 @@ export const migrateFormSettings = (form: IFormDto) => {
   if (!form) return form;
   const migrator = new Migrator<IFormSettings, IFormSettings>();
   const fluent = formSettingsMigrations(migrator);
-  if (form.settings.version === undefined) form.settings.version = -1;
+  if (!form.settings?.version) {
+    if (!form.settings)
+      form.settings = {} as IFormSettings; 
+    form.settings.version = -1;
+  }
   return {...form, settings: fluent.migrator.upgrade(form.settings, {})};
 };

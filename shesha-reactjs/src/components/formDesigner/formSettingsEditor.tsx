@@ -4,9 +4,10 @@ import { ConfigurableForm } from '@/components';
 import formSettingsJson from './formSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
+import { useTheme } from '@/index';
 
 export interface IFormSettingsEditorProps {
   isVisible: boolean;
@@ -15,16 +16,22 @@ export interface IFormSettingsEditorProps {
 }
 
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
+  const { theme } = useTheme();
   const [form] = Form.useForm();
-  const { formSettings, updateFormSettings } = useFormDesigner();
+  const { formSettings } = useFormDesignerState();
+  const { updateFormSettings } = useFormDesignerActions();
   const { formProps } = useFormPersister();
 
+  formSettings.labelCol = { span: formSettings?.labelCol?.span || theme.labelSpan };
+  formSettings.wrapperCol = { span: formSettings?.wrapperCol?.span || theme.componentSpan };
+
   const onSave = values => {
-    if (!readOnly)
+    if (!readOnly) {
       updateFormSettings(values);
-    close();
+      close();
+    }
   };
-  
+
   const sourcesFolder = `/forms/${formProps.module}/${formProps.name}`;
 
   return (

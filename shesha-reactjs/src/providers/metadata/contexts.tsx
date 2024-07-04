@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import { IModelMetadata, IPropertyMetadata } from '@/interfaces/metadata';
+import { createNamedContext } from '@/utils/react';
 
 export type MetadataType = 'entity' | 'context';
 
@@ -15,7 +15,7 @@ export interface IMetadataActionsContext {
   getPropertyMeta: (name: string) => IPropertyMetadata;
 }
 
-export interface IMetadataContext extends IMetadataStateContext, IMetadataActionsContext {}
+export interface IMetadataContext extends IMetadataStateContext, IMetadataActionsContext { }
 
 export interface ISetMetadataPayload {
   metadata: IModelMetadata;
@@ -31,4 +31,4 @@ export const METADATA_CONTEXT_INITIAL_STATE: IMetadataContext = {
   getPropertyMeta: null,
 };
 
-export const MetadataContext = createContext<IMetadataContext>(undefined);
+export const MetadataContext = createNamedContext<IMetadataContext>(undefined, "MetadataContext");

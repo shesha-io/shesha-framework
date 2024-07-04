@@ -1,12 +1,12 @@
 import { Type } from '@react-awesome-query-builder/antd';
 
 export const EntityReferenceType: Type = {
-  valueSources: ['value', 'func'],
+  valueSources: ['value', 'func', 'field'],
   defaultOperator: 'equal',
   mainWidget: 'entityAutocomplete',
   widgets: {
     entityAutocomplete: {
-      operators: ['equal', 'is_null', 'is_not_null'],
+      operators: ['equal', 'not_equal', 'is_null', 'is_not_null'],
     },
   },
 };

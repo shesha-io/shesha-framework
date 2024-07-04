@@ -1,4 +1,3 @@
-import { createContext } from 'react';
 import {
   IConfigurableActionArguments,
   IConfigurableActionConfiguration,
@@ -9,6 +8,7 @@ import { GenericDictionary } from '../form/models';
 import { IConfigurableActionGroupDictionary } from './models';
 import { IApplicationApi } from '../sheshaApplication/publicApi';
 import { FormApi } from '../form/formApi';
+import { createNamedContext } from '@/utils/react';
 
 export interface IConfigurableActionDispatcherStateContext {
 }
@@ -30,6 +30,11 @@ export interface IExecuteActionPayload {
   fail?: (error: any) => void;
 }
 
+export interface IPrepareActionArgumentsPayload<TArguments = any> {
+  actionConfiguration: IConfigurableActionConfiguration<TArguments>;
+  argumentsEvaluationContext: IArgumentsEvaluationContext;
+}
+
 export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any>
   extends IConfigurableActionDescriptor<TArguments, TReponse> { }
 
@@ -49,7 +54,8 @@ export interface IConfigurableActionDispatcherActionsContext {
   getActions: () => IConfigurableActionGroupDictionary;
   registerAction: RegisterActionType;
   unregisterAction: (actionIdentifier: IConfigurableActionIdentifier) => void;
-  prepareArguments: (actionArguments: any) => void;
+  prepareArguments: <TArguments = any>(payload: IPrepareActionArgumentsPayload<TArguments>) => Promise<TArguments>;
+
   executeAction: ConfigurableActionExecuter;
   useActionDynamicContext: ActionDynamicContextEvaluationHook;
 }
@@ -58,9 +64,9 @@ export interface IConfigurableActionDispatcherActionsContext {
 export const CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE: IConfigurableActionDispatcherStateContext = {
 };
 
-export const ConfigurableActionDispatcherStateContext = createContext<IConfigurableActionDispatcherStateContext>(
-  CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE
+export const ConfigurableActionDispatcherStateContext = createNamedContext<IConfigurableActionDispatcherStateContext>(
+  CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
+  "ConfigurableActionDispatcherStateContext"
 );
 
-export const ConfigurableActionDispatcherActionsContext =
-  createContext<IConfigurableActionDispatcherActionsContext>(undefined);
+export const ConfigurableActionDispatcherActionsContext = createNamedContext<IConfigurableActionDispatcherActionsContext>(undefined, "ConfigurableActionDispatcherActionsContext");

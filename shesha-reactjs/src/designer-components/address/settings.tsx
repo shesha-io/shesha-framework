@@ -14,7 +14,7 @@ import { IAddressCompomentProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { Option } from 'antd/lib/mentions';
 import { useForm } from '@/providers';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
@@ -24,7 +24,7 @@ interface IEntityReferenceSettingsState extends IAddressCompomentProps { }
 const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({ readOnly }) => {
   const { values, model, onValuesChange } = useSettingsForm<IAddressCompomentProps>();
 
-  const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
+  const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
 
   const onChangeOrSelectConstants = useAvailableConstantsMetadata({
