@@ -47,6 +47,16 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "YA_9x3zMkfC3GEzzrduwu",
+      "type": "iconPicker",
+      "propertyName": "downIcon",
+      "label": "Down Icon",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "settingsValidationErrors": []
+    },
+    {
       "id": "LKVj_90JMwALpmLN_6iZn",
       "type": "dropdown",
       "propertyName": "buttonType",

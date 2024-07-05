@@ -31,8 +31,8 @@ export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = ()
       <CustomErrorBoundary>
         <ConfigurableForm
           layout="horizontal"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
           mode="edit"
           markup={markup}
           onFinish={onSettingsSave}

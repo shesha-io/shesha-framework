@@ -50,25 +50,21 @@ const getIcon = (icon: ReactNode, isParent?: boolean) => {
 
 export interface IProps {
   item: ISidebarMenuItem;
-  isItemVisible: (item: ISidebarMenuItem) => boolean;
-  isRootItem?: boolean;
   onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;
   onItemEvaluation?: (item: ISidebarMenuItem) => void;
   getFormUrl: (args) => string;
   getUrl: (args) => string;
 }
 
-export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
-
-
+export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
   const { id, title, icon, itemType } = item;
 
   const navigationType = item?.actionConfiguration?.actionArguments?.navigationType;
 
-  if (typeof isItemVisible === 'function' && !isItemVisible(item)) return null;
+  if (item.isHidden) return null;
 
   const children = isSidebarGroup(item)
-    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation, getFormUrl, getUrl }))
+    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }))
     : null;
   const hasChildren = Array.isArray(children) && children.length > 0;
 
