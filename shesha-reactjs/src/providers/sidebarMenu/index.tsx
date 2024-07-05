@@ -69,7 +69,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     return item;
   };
 
-  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]): ISidebarMenuItem => {
+  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
     if (
       item.actionConfiguration?.actionOwner === 'shesha.common'
       && item.actionConfiguration?.actionName === 'Navigate'
@@ -82,16 +82,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
         x.module === item.actionConfiguration?.actionArguments?.formId?.module
         && x.name === item.actionConfiguration?.actionArguments?.formId?.name
       );
-      if (form && form.permissions) {
-        item.isHidden = !anyOfPermissionsGranted(form.permissions);
-        //return {...item, isHidden: !anyOfPermissionsGranted(form.permissions)};
-      } else
-        item.isHidden= false;
-    } else {
-      // other actions, check menu item permissions
-      if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0)
-        return {...item, childItems: item.childItems.map(item => updatetItemVisible(item, formsPermission))} as ISidebarMenuItem;
-      return item;
+      item.isHidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
     }
   };
 
