@@ -3,10 +3,9 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { ConfigProvider, Divider, Space, Tooltip } from 'antd';
 import Show from '@/components/show';
 import { useStyles } from './styles/styles';
-import { IConfigurableFormComponent } from '@/providers';
 
-export interface ISectionSeparatorProps extends IConfigurableFormComponent {
-  id: string;
+export interface ISectionSeparatorProps {
+  id?: string;
   title?: string | ReactNode;
   containerStyle?: CSSProperties;
   titleStyle?: CSSProperties;
@@ -18,7 +17,9 @@ export interface ISectionSeparatorProps extends IConfigurableFormComponent {
   lineColor?: string;
   lineThickness?: number;
   lineWidth?: number;
+  lineHeight?: number;
   noMargin?: boolean;
+  labelAlign?: 'left' | 'center' | 'right';
   dividerType?: 'horizontal' | 'vertical';
 }
 
@@ -31,6 +32,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   lineColor,
   lineThickness,
   lineWidth = "100%",
+  lineHeight,
   dividerType,
   containerStyle,
   titleStyle,
@@ -85,6 +87,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
               colorSplit: lineColor || styles.primaryColor,
               colorText: fontColor || '#000',
               lineWidth: lineThickness,
+              fontSize: lineHeight || fontSize,
             },
           }}
         >

@@ -22,9 +22,9 @@ import { EntityConfigType, MetadataSourceType } from '@/interfaces/metadata';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
-import { SectionSeparator } from '..';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { useStyles } from './styles/styles';
+import SectionSeparator from '../sectionSeparator';
 
 type MenuItem = MenuProps['items'][number];
 

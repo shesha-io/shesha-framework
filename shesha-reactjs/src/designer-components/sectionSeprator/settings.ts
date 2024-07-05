@@ -92,7 +92,7 @@ export const getSettings = (data: any) =>
             propertyName: "noMargin",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "No Margin",
-            hidden: { _code: 'return !getSettingValue(data?.inline);', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'return getSettingValue(data?.inline);', _mode: 'code', _value: true } as any,
           })
           .addTextArea({
             id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
@@ -102,9 +102,9 @@ export const getSettings = (data: any) =>
           })
           .addDropdown({
             id: "57a40a33-7e08-4ce4-9f08-a34d00783338",
-            propertyName: "dividerType",
+            propertyName: "orientation",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            label: "Divider Type",
+            label: "Orientation",
             values: [
               {
                 label: "horizontal",
@@ -142,7 +142,15 @@ export const getSettings = (data: any) =>
             id: "3b8bv360-f47e-48ae-b4c3-f5cc36f934a9",
             propertyName: "lineWidth",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            label: "Line Width"
+            label: "Line Width",
+            hidden: { _code: 'return getSettingValue(data?.orientation) !== "vertical;', _mode: 'code', _value: true } as any,
+          })
+          .addNumberField({
+            id: "3b8bv360-f47e-48ae-b4c3-f5coMp6f934a9",
+            propertyName: "lineHeight",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            label: "Line Height",
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical;', _mode: 'code', _value: true } as any,
           })
           .toJson(),
       },
