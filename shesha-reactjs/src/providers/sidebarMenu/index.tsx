@@ -82,11 +82,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
         x.module === item.actionConfiguration?.actionArguments?.formId?.module
         && x.name === item.actionConfiguration?.actionArguments?.formId?.name
       );
-      if (form && form.permissions) {
-        item.isHidden = !anyOfPermissionsGranted(form.permissions);
-        //return {...item, isHidden: !anyOfPermissionsGranted(form.permissions)};
-      } else
-        item.isHidden= false;
+      item.isHidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
     }
   };
 
