@@ -16,9 +16,9 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
 
   const [icon, setIcon] = useState(null);
   const { data: formData } = useFormData();
-  const localStyle = getStyle(props.style, formData);
   const { styles } = useStyles();
-  const startFilteringColumns = () => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
+
+  const localStyle = getStyle(props.style, formData);
 
   const filterColumns = tableFilter?.map((filter) => filter.columnId);
   const hasFilters = filterColumns?.length > 0 || isFiltering;
@@ -28,6 +28,8 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
     ...{ color: props.buttonType !== 'primary' && !props.danger ? styles.primaryColor : '' },
     border: hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
   };
+
+  const startFilteringColumns = () => setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
 
   const splitByCapitalLetters = (str: string) => {
     return str
