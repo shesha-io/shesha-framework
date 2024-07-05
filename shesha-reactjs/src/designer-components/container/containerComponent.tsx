@@ -1,5 +1,5 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evaluateValue } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
@@ -42,11 +42,11 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
 
     let val;
     if (model?.dataSource === "storedFileId") {
-      val = model?.storedFileId
+      val = model?.storedFileId;
     } else if (model?.dataSource === "base64") {
-      val = model?.base64
+      val = model?.base64;
     } else if (model?.dataSource === "url") {
-      val = model?.backgroundUrl
+      val = model?.backgroundUrl;
     }
 
     const fileProvider = child => {
@@ -66,10 +66,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         </StoredFileProvider>
       );
     };
-
-    useEffect(()=>{
-      console.log('MODEL CONTAINER >> ', model, val)
-    },[model])
 
     return (
       <ParentProvider model={model}>
