@@ -14,6 +14,7 @@ import { Table, Space, Popconfirm, Button, Form, Modal, Select, Input, Tooltip }
 import { DeleteFilled, MenuOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import { KeyInfomationBarItemProps } from './interfaces';
+import { strings } from '@/components/keyInformationBar/utils';
 
 export interface IProps {
   readOnly: boolean;
@@ -55,6 +56,12 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   const { Option } = Select;
 
+  const tooltip = () => (
+    <Tooltip title={strings.tooltip}>
+      {<QuestionCircleOutlined className='tooltip-question-icon' size={14} color='gray' />}
+    </Tooltip>
+  );
+
   const textAlignValues = ['start', 'end', 'center', 'left', 'right', "justify", 'initial', 'inherit'];
   const flexDirectionValues = ['row', 'column', 'row-reverse', 'column-reverse'];
 
@@ -79,7 +86,9 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
           },
         ]}
       >
-        {dataIndex === "textAlign" ? Dropdown(inputRef, textAlignValues) : dataIndex === "flexDirection" ? Dropdown(inputRef, flexDirectionValues) : <Input ref={inputRef} onPressEnter={save} onBlur={save} prefix={<Tooltip title='You can use any unit (%, px, em, etc). px by default if without unit'>{<QuestionCircleOutlined className='tooltip-question-icon' size={14} color='gray' />}</Tooltip>} />}
+        {dataIndex === "textAlign" ?
+          Dropdown(inputRef, textAlignValues) : dataIndex === "flexDirection" ?
+            Dropdown(inputRef, flexDirectionValues) : <Input ref={inputRef} onPressEnter={save} onBlur={save} prefix={tooltip()} />}
       </Form.Item>
     ) : (
       <div
@@ -184,7 +193,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       dataIndex: 'width',
       editable: !readOnly,
       width: '20%',
-      tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit'
+      tooltip: strings.tooltip,
     },
     {
       title: 'Text Align',

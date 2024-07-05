@@ -9,13 +9,14 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import ColumnsList from './columnsList';
 import { IKeyInformationBarProps } from './interfaces';
 import { ColorPicker, Show } from '@/components';
+import { strings } from '@/components/keyInformationBar/utils';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
     const { readOnly } = props;
     const { Option } = Select;
     const { values } = useSettingsForm<IKeyInformationBarProps>();
 
-    const tooltip = 'You can use any unit (%, px, em, etc). px by default if without unit';
+    const tooltip = strings.tooltip;
 
     return (
         <>
