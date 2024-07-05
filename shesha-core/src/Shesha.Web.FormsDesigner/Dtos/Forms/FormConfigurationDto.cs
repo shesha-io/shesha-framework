@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace Shesha.Web.FormsDesigner.Dtos
 {
@@ -66,6 +68,10 @@ namespace Shesha.Web.FormsDesigner.Dtos
         public ConfigurationItemVersionStatus VersionStatus { get; set; }
         
         public bool Suppress { get; set; }
+
+        public RefListPermissionedAccess? Access { get; set; }
+
+        public List<string> Permissions { get; set; }
 
         /// <summary>
         /// Cache MD5, is used for client-side caching

@@ -13,8 +13,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     'sha-model-configurator',
     css`
       padding-left: 12px;
+      padding-right: 12px;
       height: 100vh;
-      overflow: scroll;
+      overflow: none;
   
       
       .${shaModelConfiguratorToolbar} {

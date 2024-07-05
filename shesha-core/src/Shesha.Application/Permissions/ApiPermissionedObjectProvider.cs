@@ -32,7 +32,7 @@ namespace Shesha.Permissions
 
         public List<string> GetObjectTypes()
         {
-            return new List<string>() { PermissionedObjectsSheshaTypes.WebApi, PermissionedObjectsSheshaTypes.WebCrudApi };
+            return new List<string>() { ShaPermissionedObjectsTypes.WebApi, ShaPermissionedObjectsTypes.WebCrudApi };
         }
 
         private bool IsCrud(Type type)
@@ -53,16 +53,16 @@ namespace Shesha.Permissions
                                  && (shaServiceType.IsAssignableFrom(type) || controllerType.IsAssignableFrom(type)))
                    ? null // if not controller
                    : IsCrud(type)
-                        ? PermissionedObjectsSheshaTypes.WebCrudApi
-                        : PermissionedObjectsSheshaTypes.WebApi;
+                        ? ShaPermissionedObjectsTypes.WebCrudApi
+                        : ShaPermissionedObjectsTypes.WebApi;
         }
 
         private string GetMethodType(string parentType)
         {
-            return parentType == PermissionedObjectsSheshaTypes.WebApi
-                ? PermissionedObjectsSheshaTypes.WebApiAction
-                : parentType == PermissionedObjectsSheshaTypes.WebCrudApi
-                    ? PermissionedObjectsSheshaTypes.WebCrudApiAction
+            return parentType == ShaPermissionedObjectsTypes.WebApi
+                ? ShaPermissionedObjectsTypes.WebApiAction
+                : parentType == ShaPermissionedObjectsTypes.WebCrudApi
+                    ? ShaPermissionedObjectsTypes.WebCrudApiAction
                     : null;
         }
 
@@ -105,8 +105,8 @@ namespace Shesha.Permissions
                         x.GetGenericTypeDefinition() == typeof(IDynamicCrudAppService<,,>));
 
                     var objType = isDynamic
-                        ? PermissionedObjectsSheshaTypes.WebCrudApi
-                        : PermissionedObjectsSheshaTypes.WebApi;
+                        ? ShaPermissionedObjectsTypes.WebCrudApi
+                        : ShaPermissionedObjectsTypes.WebApi;
 
                     if (objectType != null && objType != objectType) continue;
 
@@ -115,8 +115,7 @@ namespace Shesha.Permissions
                     string description = null;
                     Module eModule = null;
 
-                    Type entityType = null;
-                    if (objType == PermissionedObjectsSheshaTypes.WebCrudApi)
+                    if (objType == ShaPermissionedObjectsTypes.WebCrudApi)
                         continue;
 
                     var serviceName = service.Name;
@@ -131,12 +130,10 @@ namespace Shesha.Permissions
                     {
                         Object = fullName ?? service.FullName,
                         ModuleId = (eModule ?? module)?.Id,
+                        Module = (eModule ?? module)?.Name,
                         Name = name ?? GetName(service, serviceName),
                         Type = objType,
                         Description = description ?? GetDescription(service),
-                        Dependency = entityType != null
-                            ? entityType.FullName
-                            : null
                     };
                     allApiPermissions.Add(parent);
 
@@ -149,7 +146,7 @@ namespace Shesha.Permissions
                         var child = new PermissionedObjectDto()
                         {
                             Object = parent.Object + "@" + methodInfo.Action.Name,
-                            ModuleId = parent.ModuleId,
+                            Module = parent.Module,
                             Name = GetName(methodInfo.Action, 
                                 methodInfo.Action.Name.EndsWith("Async")
                                     ? methodInfo.Action.Name.Replace("Async", "")
@@ -157,9 +154,6 @@ namespace Shesha.Permissions
                             Type = GetMethodType(objType),
                             Parent = parent.Object,
                             Description = GetDescription(methodInfo.Action),
-                            Dependency = entityType != null && PermissionedObjectManager.CrudMethods.ContainsKey(methodName)
-                                ? entityType.FullName + "@" + PermissionedObjectManager.CrudMethods.GetValueOrDefault(methodName)
-                                : null,
                         };
 
                         child.AdditionalParameters.Add("HttpMethod", methodInfo.HttpMethod);

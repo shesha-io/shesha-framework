@@ -1,33 +1,37 @@
 import React from 'react';
-import settingsFormJson from './settingsForm.json';
-import { FilterOutlined } from '@ant-design/icons';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
+import { FilterOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getSettings } from './settingsForm';
 import { AdvancedFilterButton } from './advancedFilterButton';
+import { IButtonComponentProps } from '@/designer-components/button/interfaces';
+import { Show } from '@/components';
+import { Tooltip } from 'antd';
 
-export interface IAdvancedFilterButtonComponentProps extends IConfigurableFormComponent { }
-
-const settingsForm = settingsFormJson as FormMarkup;
-
-const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
-  type: 'datatable.advancedFilterButton',
-  name: 'Table Advanced Filter Button',
+const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
+  type: 'datatable.filter',
+  name: 'Table Filter',
   icon: <FilterOutlined />,
-  Factory: ({ model }) => {
-    if (model.hidden) return null;
-
-    return <AdvancedFilterButton />;
-  },
-  initModel: (model: IAdvancedFilterButtonComponentProps) => {
+  Factory: ({ model }) =>
+    model.hidden ? null : (
+      <div>
+        <AdvancedFilterButton {...model} />
+        <Show when={Boolean(model.tooltip?.trim())}>
+          <Tooltip title={model.tooltip}>
+            <QuestionCircleOutlined className="tooltip-question-icon" size={14} color="gray" />
+          </Tooltip>
+        </Show>
+      </div>
+    ),
+  initModel: (model) => {
     return {
       ...model,
-      items: [],
+      buttonType: 'link',
+      label: '',
     };
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  isHidden: true, // note: to be removed, now is used only for backward compatibility
+  settingsFormMarkup: (context) => getSettings(context),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default AdvancedFilterButtonComponent;

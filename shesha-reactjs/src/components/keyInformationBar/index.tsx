@@ -4,17 +4,13 @@ import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import { Flex } from 'antd';
 import React, { FC } from 'react';
 import { useStyles } from './style';
+import { addPx } from './utils';
 
 export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
     const { data } = useFormData();
     const { columns, hidden, orientation, style, dividerMargin, dividerHeight, dividerWidth, dividerColor, gap, stylingBox } = props;
     const { styles } = useStyles();
-
-    const addPx = (value) => {
-        !value && (value = "100%");
-        return /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
-    }
 
     const width = addPx(dividerWidth);
     const height = addPx(dividerHeight);
