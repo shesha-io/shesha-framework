@@ -64,7 +64,6 @@ import ContainerComponent from '@/designer-components/container/containerCompone
 import ContextPropertyAutocompleteComponent from '@/designer-components/contextPropertyAutocomplete';
 import DataContextComponent from '@/designer-components/dataContextComponent';
 import DataContextSelector from '@/designer-components/dataContextSelector';
-import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import ChildTable from '@/designer-components/dataTable/childTable';
 import Pager from '@/designer-components/dataTable/pager/pagerComponent';
 import QuickSearch from '@/designer-components/dataTable/quickSearch/quickSearchComponent';
@@ -97,6 +96,7 @@ import EditModeToggler from '@/designer-components/editModeToggler';
 import ProfileDropdown from '@/designer-components/profileDropdown';
 import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/contexts';
 import { HEADER_CONFIGURATION } from '@/components/mainLayout/constant';
+import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 
 export const getToolboxComponents = (
   devMode: boolean,

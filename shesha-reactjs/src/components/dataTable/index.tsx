@@ -228,8 +228,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           return Promise.resolve(result);
         }
       : () => {
-          return Promise.resolve({});
-        };
+        return Promise.resolve({});
+      };
 
     return result;
   }, [onNewRowInitializeExecuter, formData, globalState]);
@@ -707,8 +707,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       <div className={styles.shaChildTableErrorContainer}>
         {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
       </div>
-      
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps}  />}
+
+      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
     </Fragment>
   );
 };
