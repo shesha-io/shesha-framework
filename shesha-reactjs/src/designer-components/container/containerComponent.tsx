@@ -1,5 +1,5 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evaluateValue } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
@@ -67,6 +67,10 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       );
     };
 
+    useEffect(()=>{
+      console.log('MODEL BG COVER >> ', model?.backgroundCover)
+    },[model])
+
     return (
       <ParentProvider model={model}>
         <ConditionalWrap
@@ -78,7 +82,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             {...flexAndGridStyles}
             className={model.className}
             wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
-            style={{ ...getStyle(model?.style, formData), background: model?.backgroundType === 'image' ? `url(${val}) ${model?.backgroundCover}` : model?.backgroundColor }}
+            style={{ ...getStyle(model?.style, formData), background: model?.backgroundType === 'image' ? `url(${val}) ${model?.backgroundCover}` : model?.backgroundColor, backgroundSize: `${model?.backgroundCover}` }}
             dynamicComponents={model?.isDynamic ? model?.components : []}
           />
         </ConditionalWrap>
