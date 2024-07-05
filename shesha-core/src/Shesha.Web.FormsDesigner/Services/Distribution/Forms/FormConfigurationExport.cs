@@ -1,8 +1,10 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
+using Shesha.Permissions;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
 using System.IO;
@@ -16,10 +18,15 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
     public class FormConfigurationExport: IFormConfigurationExport, ITransientDependency
     {
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
+        private readonly IPermissionedObjectManager _permissionedObjectManager;
 
-        public FormConfigurationExport(IRepository<FormConfiguration, Guid> formConfigRepo)
+        public FormConfigurationExport(
+            IRepository<FormConfiguration, Guid> formConfigRepo,
+            IPermissionedObjectManager permissionedObjectManager
+        )
         {
             _formConfigRepo = formConfigRepo;
+            _permissionedObjectManager = permissionedObjectManager;
         }
 
         public string ItemType => FormConfiguration.ItemTypeName;
@@ -32,10 +39,12 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         }
 
         /// inheritedDoc
-        public Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item) 
+        public async Task<DistributedConfigurableItemBase> ExportItemAsync(ConfigurationItemBase item) 
         {
             if (!(item is FormConfiguration form))
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(FormConfiguration)}, actual: {item.GetType().FullName}");
+
+            var permission = await _permissionedObjectManager.GetAsync(FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo));
 
             var result = new DistributedFormConfiguration
             {
@@ -58,9 +67,11 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 ModelType = form.ModelType,
                 TemplateId = form.Template?.Id,
                 IsTemplate = form.IsTemplate,
+                Access = permission.Access,
+                Permissions = permission.Permissions,
             };
 
-            return Task.FromResult<DistributedConfigurableItemBase>(result);
+            return result;
         }
 
         /// inheritedDoc

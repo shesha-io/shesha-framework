@@ -16,7 +16,6 @@ import {
     isItem
 } from '@/providers/buttonGroupConfigurator/models';
 import { ConfigurableButton } from '../configurableButton';
-import { DownOutlined } from '@ant-design/icons';
 import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
 import {
     getActualModel,
@@ -115,8 +114,8 @@ const InlineItem: FC<InlineItemProps> = (props) => {
                     disabled={item.readOnly}
         
                 >
-                    {item.label}
-                    <DownOutlined />
+                    {item.label ? item.label : undefined}
+                    {item.downIcon ? <ShaIcon iconName={item.downIcon as IconType} /> : undefined}
                 </Button>
             </Dropdown>
         );

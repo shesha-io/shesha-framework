@@ -2,7 +2,7 @@ import React, { CSSProperties, FC, useMemo } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
-import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/providers';
+import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useSheshaApplication } from '@/providers';
 import Show from '@/components/show';
 import FormInfo from '@/components/configurableForm/formInfo';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
@@ -10,6 +10,8 @@ import { IPersistedFormProps } from '@/providers/form/models';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { ComponentsContainerSubForm } from './componentsContainerSubForm';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { Button, Result } from 'antd';
+import Link from 'antd/es/typography/Link';
 
 interface ISubFormProps {
   style?: CSSProperties;
@@ -17,6 +19,7 @@ interface ISubFormProps {
 }
 
 const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
+  const { anyOfPermissionsGranted } = useSheshaApplication();
   const { formInfoBlockVisible } = useAppConfigurator();
   const {
     id,
@@ -41,6 +44,24 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   }, [loading]);
 
   const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
+
+  if (formSettings?.access === 4 &&  !anyOfPermissionsGranted(formSettings?.permissions || [])) {
+    return (
+      <Result
+        status="403"
+        style={{ height: '100vh - 55px' }}
+        title="403"
+        subTitle="Sorry, you are not authorized to access this page."
+        extra={
+          <Button type="primary">
+            <Link href={'/'}>
+              Back Home
+            </Link>
+          </Button>
+        }
+      />
+    );
+  }
 
   return (
     <ShaSpin spinning={isLoading}>

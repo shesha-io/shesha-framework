@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using Shesha.Domain.Attributes;
@@ -7,8 +8,9 @@ using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
 {
-    [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObject", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
-    public class PermissionedObject : FullAuditedEntity<Guid>
+    [Entity(TypeShortAlias = "Shesha.Framework.PermissionedObjectFull", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
+    [Table("vw_Frwk_PermissionedObjectsFull")]
+    public class PermissionedObjectFull : FullAuditedEntity<Guid>
     {
         /// <summary>
         /// Text identifier of the object (for example, the full name of the class)
@@ -26,6 +28,8 @@ namespace Shesha.Domain
         /// </summary>
         [NotNull]
         public virtual Module Module { get; set; }
+        public string ModuleName { get; set; }
+        public Guid? ModuleId { get; set; }
 
         /// <summary>
         /// Type of the permissioned object
@@ -58,6 +62,26 @@ namespace Shesha.Domain
         /// Access type
         /// </summary>
         public virtual RefListPermissionedAccess Access { get; set; }
+
+        /// <summary>
+        /// List of inherited permissions required to access this securable (comma-separated permission identifiers)
+        /// </summary>
+        public virtual string InheritedPermissions { get; set; }
+
+        /// <summary>
+        /// Inherited access type
+        /// </summary>
+        public virtual RefListPermissionedAccess InheritedAccess { get; set; }
+
+        /// <summary>
+        /// List of actual permissions required to access this securable (comma-separated permission identifiers)
+        /// </summary>
+        public virtual string ActualPermissions { get; set; }
+
+        /// <summary>
+        /// Actual access type
+        /// </summary>
+        public virtual RefListPermissionedAccess ActualAccess { get; set; }
 
         /// <summary>
         /// Text identifier of the parent object

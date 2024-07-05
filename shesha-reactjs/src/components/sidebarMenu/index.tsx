@@ -18,7 +18,7 @@ export interface ISidebarMenuProps {
 
 const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('openedSidebarKeys', null);
-  const { getItems, isItemVisible } = useSidebarMenu();
+  const { items } = useSidebarMenu();
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
   const {executionContext, evaluationContext} = useAvailableConstantsData();
@@ -29,7 +29,6 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const [selectedKey, setSelectedKey] = useState<string>();
 
-  const items = getItems();
   const initialSelection = useRef<string>(undefined);
 
   const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => {
@@ -47,9 +46,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     
       sidebarMenuItemToMenuItem({
         item,
-        isItemVisible,
         onButtonClick,
-        isRootItem: true,
         getFormUrl: (args) => {
           const url = getUrlFromNavigationRequest(args?.actionArguments);
           const href = evaluateString(decodeURIComponent(url), evaluationContext);

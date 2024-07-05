@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Abp.Application.Services.Dto;
-using ConcurrentCollections;
-using Shesha.Domain.ConfigurationItems;
+﻿using Abp.Application.Services.Dto;
 using Shesha.Domain.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace Shesha.Permissions
 {
@@ -47,7 +44,6 @@ namespace Shesha.Permissions
         public RefListPermissionedAccess? InheritedAccess { get; set; }
 
         public string Parent { get; set; }
-        public string Dependency { get; set; }
         
         public List<PermissionedObjectDto> Children { get; set; }
 
@@ -62,7 +58,7 @@ namespace Shesha.Permissions
                 : Access == RefListPermissionedAccess.RequiresPermissions
                     ? string.Join(", ", Permissions)
                 : Access.ToString();
-            return $"{Object} -> {Dependency} ({permissions})";
+            return $"{Object} -> ({permissions})";
         }
     }
 }
