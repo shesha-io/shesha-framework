@@ -95,7 +95,7 @@ import EditModeToggler from '@/designer-components/editModeToggler';
 import ProfileDropdown from '@/designer-components/profileDropdown';
 import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/contexts';
 import { HEADER_CONFIGURATION } from '@/components/mainLayout/constant';
-import AdvancedFilterButtonComponent from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
+import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -168,7 +168,7 @@ export const getToolboxComponents = (
         TableContext,
         DataTable,
         DataList,
-        AdvancedFilterButtonComponent,
+        AdvancedFilterButton,
         Pager,
         QuickSearch,
         SelectColumnsButton,
