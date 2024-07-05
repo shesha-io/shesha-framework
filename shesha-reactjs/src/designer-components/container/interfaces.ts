@@ -152,10 +152,24 @@ export interface ICommonContainerProps {
   noDefaultStyling?: boolean;
   gridColumnsCount?: number;
   gap?: string | number;
+  backgroundUrl?: string;
+  base64?: string;
+  dataSource?: string;
+  storedFileId?: string;
+  ownerId?: string;
+  backgroundType?: 'image' | 'color';
+  backgroundColor?: string;
 }
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
+  backgroundCover?: string;
+  fileCategory?: string;
+  ownerType?: string;
   className?: string;
   wrapperStyle?: string;
+  backgroundUrl?: string;
+  base64?: string;
+  dataSource?: string;
+  storedFileId?: string;
   components: IConfigurableFormComponent[]; // Only important for fluent API
 }
