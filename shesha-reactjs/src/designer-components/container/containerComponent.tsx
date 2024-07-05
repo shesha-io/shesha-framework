@@ -68,7 +68,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     };
 
     useEffect(()=>{
-      console.log('MODEL BG COVER >> ', model?.backgroundCover)
+      console.log('MODEL CONTAINER >> ', model, val)
     },[model])
 
     return (
@@ -82,7 +82,12 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             {...flexAndGridStyles}
             className={model.className}
             wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
-            style={{ ...getStyle(model?.style, formData), background: model?.backgroundType === 'image' ? `url(${val}) ${model?.backgroundCover}` : model?.backgroundColor, backgroundSize: `${model?.backgroundCover}` }}
+            style={{
+              ...getStyle(model?.style, formData),
+              background: model?.backgroundType === 'image' ? `url(${val})` : model?.backgroundColor,
+              backgroundSize: model?.backgroundCover,
+              backgroundRepeat: model?.backgroundCover
+            }}
             dynamicComponents={model?.isDynamic ? model?.components : []}
           />
         </ConditionalWrap>

@@ -53,181 +53,6 @@ export const getSettings = (data: any) =>
               description: 'If checked, the default styles and classes of the container will not be applied.',
             })
             .addDropdown({
-              id: nanoid(),
-              propertyName: 'backgroundType',
-              label: 'Background Type',
-              labelAlign: 'right',
-              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-              dataSourceType: "values",
-              values: [
-                {
-                  label: "Color",
-                  value: "color",
-                  id: nanoid()
-                },
-                {
-                  label: "Image",
-                  value: "image",
-                  id: nanoid()
-                }
-              ]
-            })
-            .addColorPicker({
-              id: nanoid(),
-              propertyName: 'backgroundColor',
-              label: 'Color',
-              title: 'Choose Background color',
-              allowClear: true,
-              showText: true,
-              hidden: {
-                _code: "return getSettingValue(data?.backgroundType) !== 'color';",
-                _mode: 'code',
-                _value: false,
-              } as any    
-            })
-            .addDropdown({
-              id: nanoid(),
-              propertyName: 'dataSource',
-              label: 'Image Source Type',
-              labelAlign: 'right',
-              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-              dataSourceType: "values",
-              values: [
-                {
-                  label: "StoredFile",
-                  value: "storedFileId",
-                  id: nanoid()
-                },
-                {
-                  label: "Url",
-                  value: "url",
-                  id: nanoid()
-                },
-                {
-                  label: "Base64",
-                  value: "base64",
-                  id: nanoid()
-                }
-              ],
-              hidden: {
-                _code: "return getSettingValue(data?.backgroundType) !== 'image';",
-                _mode: 'code',
-                _value: false,
-              } as any 
-            })
-            .addTextField({
-              id: nanoid(),
-              propertyName: 'backgroundUrl',
-              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-              label: 'Background Image URL',
-              description: 'Add a background image URL',
-              hidden: {
-                _code: "return getSettingValue(data?.dataSource) !== 'url';",
-                _mode: 'code',
-                _value: false,
-              } as any,
-            })
-            .addTextArea({
-              id: nanoid(),
-              propertyName: 'base64',
-              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-              label: 'Base64',
-              description: 'Add a base64 encoded image',
-              hidden: {
-                _code: "return getSettingValue(data?.dataSource) !== 'base64' || getSettingValue(data?.backgroundType) !== 'image';",
-                _mode: 'code',
-                _value: false,
-              } as any,
-            })
-            .addCollapsiblePanel({
-              id: nanoid(),
-              propertyName: "pnlStoredFile",
-              label: "Stored File",
-              labelAlign: "right",
-              parentId: nanoid(),
-              hidden: {
-                _code: "return getSettingValue(data?.dataSource) !== 'storedFileId';",
-                _mode: "code",
-                _value: false
-              },
-              isDynamic: false,
-              version: 4,
-              expandIconPosition: "start",
-              collapsible: "header",
-              ghost: true,
-              hideWhenEmpty: true,
-              settingsValidationErrors: [],
-              content: {
-                id: nanoid(),
-                components: [
-                  ...new DesignerToolbarSettings()
-                    .addTextField({
-                      id: nanoid(),
-                      propertyName: "ownerId",
-                      label: "Owner Id",
-                      parentId: "111nm2re1eYM1M7pEEuf9",
-                    }).addAutocomplete({
-                      id: nanoid(),
-                      propertyName: "ownerType",
-                      label: "Owner Type",
-                      parentId: "111nm2re1eYM1M7pEEuf9",
-                      labelAlign: "right",
-                      dataSourceType: "url",
-                      dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete",
-                      useRawValues: true
-                    })
-                    .addTextField({
-                      id: nanoid(),
-                      propertyName: "storedFileId",
-                      parentId: nanoid(),
-                      label: "StoredFile ID"
-                    })
-                    .addTextField({
-                        id: "1c413b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-                        propertyName: "fileCategory",
-                        parentId: "y9SNusmMM0Wd1Sc_YI1ng",
-                        label: "File category"
-                    })
-                    .toJson(),
-                ]
-              }
-            })
-            .addDropdown({
-              id: nanoid(),
-              propertyName: 'backgroundCover',
-              label: 'Background Cover Type',
-              labelAlign: 'right',
-              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-              dataSourceType: "values",
-              hidden: {
-                _code: "return getSettingValue(data?.backgroundType) !== 'image';",
-                _mode: 'code',
-                _value: false,
-              } as any,
-              values: [
-                {
-                  label: "Stretch",
-                  value: "stretch",
-                  id: nanoid()
-                },
-                {
-                  label: "Repeat",
-                  value: "repeat",
-                  id: nanoid()
-                },
-                {
-                  label: "No Repeat",
-                  value: "no-repeat",
-                  id: nanoid()
-                },
-                {
-                  label: "Cover",
-                  value: "cover",
-                  id: nanoid()
-                }
-              ],
-            })
-            .addDropdown({
               id: 'dbad943d-d498-454b-b13e-6845b69c8df1',
               propertyName: 'display',
               label: 'Display',
@@ -521,6 +346,196 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             hidden: false,
             validate: {},
+          }).toJson()
+        ]
+      }
+    })
+     .addCollapsiblePanel({
+      id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a2901',
+      propertyName: 'pnlBackground',
+      parentId: 'root',
+      label: 'Background',
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...new DesignerToolbarSettings()
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'backgroundType',
+            label: 'Background Type',
+            labelAlign: 'right',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            dataSourceType: "values",
+            values: [
+              {
+                label: "Color",
+                value: "color",
+                id: nanoid()
+              },
+              {
+                label: "Image",
+                value: "image",
+                id: nanoid()
+              }
+            ]
+          })
+          .addColorPicker({
+            id: nanoid(),
+            propertyName: 'backgroundColor',
+            label: 'Color',
+            title: 'Choose Background color',
+            allowClear: true,
+            showText: true,
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundType) !== 'color';",
+              _mode: 'code',
+              _value: false,
+            } as any    
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'dataSource',
+            label: 'Image Source Type',
+            labelAlign: 'right',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            dataSourceType: "values",
+            values: [
+              {
+                label: "StoredFile",
+                value: "storedFileId",
+                id: nanoid()
+              },
+              {
+                label: "Url",
+                value: "url",
+                id: nanoid()
+              },
+              {
+                label: "Base64",
+                value: "base64",
+                id: nanoid()
+              }
+            ],
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any 
+          })
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'backgroundUrl',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            label: 'Background Image URL',
+            description: 'Add a background image URL',
+            hidden: {
+              _code: "return getSettingValue(data?.dataSource) !== 'url';",
+              _mode: 'code',
+              _value: false,
+            } as any,
+          })
+          .addTextArea({
+            id: nanoid(),
+            propertyName: 'base64',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            label: 'Base64',
+            description: 'Add a base64 encoded image',
+            hidden: {
+              _code: "return getSettingValue(data?.dataSource) !== 'base64' || getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any,
+          })
+          .addCollapsiblePanel({
+            id: nanoid(),
+            propertyName: "pnlStoredFile",
+            label: "Stored File",
+            labelAlign: "right",
+            parentId: nanoid(),
+            hidden: {
+              _code: "return getSettingValue(data?.dataSource) !== 'storedFileId';",
+              _mode: "code",
+              _value: false
+            },
+            isDynamic: false,
+            version: 4,
+            expandIconPosition: "start",
+            collapsible: "header",
+            ghost: true,
+            hideWhenEmpty: true,
+            settingsValidationErrors: [],
+            content: {
+              id: nanoid(),
+              components: [
+                ...new DesignerToolbarSettings()
+                  .addTextField({
+                    id: nanoid(),
+                    propertyName: "ownerId",
+                    label: "Owner Id",
+                    parentId: "111nm2re1eYM1M7pEEuf9",
+                  }).addAutocomplete({
+                    id: nanoid(),
+                    propertyName: "ownerType",
+                    label: "Owner Type",
+                    parentId: "111nm2re1eYM1M7pEEuf9",
+                    labelAlign: "right",
+                    dataSourceType: "url",
+                    dataSourceUrl: "/api/services/app/Metadata/EntityTypeAutocomplete",
+                    useRawValues: true
+                  })
+                  .addTextField({
+                    id: nanoid(),
+                    propertyName: "storedFileId",
+                    parentId: nanoid(),
+                    label: "StoredFile ID"
+                  })
+                  .addTextField({
+                      id: "1c413b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+                      propertyName: "fileCategory",
+                      parentId: "y9SNusmMM0Wd1Sc_YI1ng",
+                      label: "File category"
+                  })
+                  .toJson(),
+              ]
+            }
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'backgroundCover',
+            label: 'Background Cover Type',
+            labelAlign: 'right',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            dataSourceType: "values",
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any,
+            values: [
+              {
+                label: "Contain",
+                value: "contain",
+                id: nanoid()
+              },
+              {
+                label: "Repeat",
+                value: "repeat",
+                id: nanoid()
+              },
+              {
+                label: "No Repeat",
+                value: "no-repeat",
+                id: nanoid()
+              },
+              {
+                label: "Cover",
+                value: "cover",
+                id: nanoid()
+              }
+            ],
           }).toJson()
         ]
       }
