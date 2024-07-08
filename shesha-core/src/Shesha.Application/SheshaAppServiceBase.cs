@@ -287,6 +287,17 @@ namespace Shesha
             return await MapToCustomDynamicDtoAsync<DynamicDto<TEntity, TPrimaryKey>, TEntity, TPrimaryKey>(entity, settings);
         }
 
+        protected async Task<List<DynamicDto<TEntity, TPrimaryKey>>> MapToDynamicDtoListAsync<TEntity, TPrimaryKey>(IEnumerable<TEntity> entities, IDynamicMappingSettings settings = null) where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var dtoList = await Task.WhenAll(
+                entities.Select(async entity =>
+                {
+                    return await MapToDynamicDtoAsync<TEntity, TPrimaryKey>(entity);
+                }));
+
+            return dtoList.ToList();
+        }
+
         /// <summary>
         /// Map entity to a custom <see cref="DynamicDto{TEntity, TPrimaryKey}"/>
         /// </summary>
