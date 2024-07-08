@@ -20,7 +20,7 @@ export interface ISectionSeparatorProps {
   lineHeight?: number;
   noMargin?: boolean;
   labelAlign?: 'left' | 'center' | 'right';
-  dividerType?: 'horizontal' | 'vertical';
+  orientation?: 'horizontal' | 'vertical';
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
@@ -33,7 +33,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   lineThickness,
   lineWidth = "100%",
   lineHeight,
-  dividerType,
+  orientation,
   containerStyle,
   titleStyle,
   tooltip,
@@ -48,6 +48,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     '--border-color': lineColor || styles.primaryColor,
     textAlign: labelAlign
   } as CSSProperties;
+
+  console.log(orientation, 'dividerType');
 
   const titleComponent = () => {
     if (!title) return null;
@@ -78,7 +80,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     style: { ...containerStyle, minWidth: "100px", width: lineWidth }
   };
 
-  if (inline || dividerType === 'vertical') {
+  if (inline || orientation === 'vertical') {
     return (
       <div {...commonProps}>
         <ConfigProvider
@@ -92,7 +94,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
           }}
         >
           <Divider
-            type={dividerType}
+            type={orientation}
             orientation={labelAlign}
             orientationMargin={noMargin ? "0" : undefined}
             dashed={dashed}
