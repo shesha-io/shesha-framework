@@ -201,11 +201,11 @@ namespace Shesha.DynamicEntities
                 await _permissionedObjectManager.SetAsync(destinationPermission);
             };
 
-            await copyPermission("", PermissionedObjectsSheshaTypes.Entity);
-            await copyPermission("@Get", PermissionedObjectsSheshaTypes.EntityAction);
-            await copyPermission("@Create", PermissionedObjectsSheshaTypes.EntityAction);
-            await copyPermission("@Update", PermissionedObjectsSheshaTypes.EntityAction);
-            await copyPermission("@Delete", PermissionedObjectsSheshaTypes.EntityAction);
+            await copyPermission("", ShaPermissionedObjectsTypes.Entity);
+            await copyPermission("@Get", ShaPermissionedObjectsTypes.EntityAction);
+            await copyPermission("@Create", ShaPermissionedObjectsTypes.EntityAction);
+            await copyPermission("@Update", ShaPermissionedObjectsTypes.EntityAction);
+            await copyPermission("@Delete", ShaPermissionedObjectsTypes.EntityAction);
         }
 
         private async Task DeepUpdateAsync(EntityConfig source, EntityConfig destination)
@@ -326,27 +326,27 @@ namespace Shesha.DynamicEntities
 
             if (input.Permission != null)
             {
-                input.Permission.Type = PermissionedObjectsSheshaTypes.Entity;
+                input.Permission.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(input.Permission);
             }
             if (input.PermissionGet != null)
             {
-                input.PermissionGet.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                input.PermissionGet.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionGet);
             }
             if (input.PermissionCreate != null)
             {
-                input.PermissionCreate.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                input.PermissionCreate.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionCreate);
             }
             if (input.PermissionUpdate != null)
             {
-                input.PermissionUpdate.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                input.PermissionUpdate.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionUpdate);
             }
             if (input.PermissionDelete != null)
             {
-                input.PermissionDelete.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                input.PermissionDelete.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionDelete);
             }
 

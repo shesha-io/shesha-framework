@@ -52,7 +52,7 @@ namespace Shesha.Permissions
         /// <returns></returns>
         public async Task<List<PermissionedObjectDto>> GetAllTreeAsync(string type, bool showHidden = false)
         {
-            return await _permissionedObjectManager.GetAllTreeAsync(type, showHidden);
+            return await Task.FromResult(_permissionedObjectManager.GetAllTree(type, showHidden));
         }
 
         /// <summary>
@@ -86,15 +86,17 @@ namespace Shesha.Permissions
         public async Task<PermissionedObjectDto> GetApiPermissionsAsync(string serviceName, string actionName)
         {
             var action = string.IsNullOrEmpty(actionName) ? "" : "@" + actionName;
-            return await _permissionedObjectManager.GetAsync($"{serviceName}{action}");
+            var type = string.IsNullOrEmpty(actionName) 
+                ? ShaPermissionedObjectsTypes.WebApi 
+                : ShaPermissionedObjectsTypes.WebApiAction;
+            return await _permissionedObjectManager.GetAsync($"{serviceName}{action}", type);
         }
 
         public override async Task<PermissionedObjectDto> GetAsync(EntityDto<Guid> input)
         {
             if (input.Id == Guid.Empty)
                 return null;
-            var obj = await base.GetAsync(input);
-            return await _permissionedObjectManager.GetAsync(obj.Object);
+            return await _permissionedObjectManager.GetAsync(input.Id);
         }
 
         /// <summary>
@@ -119,15 +121,6 @@ namespace Shesha.Permissions
         {
             var action = string.IsNullOrEmpty(actionName) ? "" : "@" + actionName;
             return await _permissionedObjectManager.SetPermissionsAsync($"{serviceName}{action}", access, permissions);
-        }
-
-        /// <summary>
-        /// Clear protected objects cache
-        /// </summary>
-        /// <returns></returns>
-        public async Task ClearCacheAsync()
-        {
-            await _permissionedObjectManager.ClearCacheAsync();
         }
     }
 }

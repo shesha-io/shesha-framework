@@ -49,6 +49,32 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
     ],
     dataSourceType: 'values',
   })
+  .addDropdown({
+    id: nanoid(),
+    propertyName: 'textAlign',
+    parentId: 'root',
+    label: 'Icon Align',
+    allowClear: false,
+    defaultValue: 'start',
+    values: [
+      {
+        label: 'Left',
+        value: 'start',
+        id: '32ebcc5b-6775-4b34-b856-d7ed42f33c3b',
+      },
+      {
+        label: 'Center',
+        value: 'center',
+        id: 'f3622f5e-3dc3-452b-aa57-2273f65b9fdc',
+      },
+      {
+        label: 'Right',
+        value: 'end',
+        id: '3e6a5ac8-bf51-48fb-b5c1-33ba455a1246',
+      },
+    ],
+    dataSourceType: 'values',
+  })
   .addTextArea({
     id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
     propertyName: 'description',
@@ -109,7 +135,8 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
         id: nanoid(),
         propertyName: 'defaultValue',
         label: 'Default Icon',
-        labelAlign: 'left'
+        labelAlign: 'left',
+        jsSetting: true
       })
       .addColorPicker({
         id: nanoid(),
@@ -140,7 +167,8 @@ export const iconPickerFormSettings = new DesignerToolbarSettings()
       .addNumberField({
         id: nanoid(),
         propertyName: 'fontSize',
-        label: 'Size'
+        label: 'Size',
+        defaultValue: 24
       })
       .addColorPicker({
         id: nanoid(),

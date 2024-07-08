@@ -74,13 +74,22 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
 
   return (
     <>
-      <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
-        {icon && (
-          <Tooltip title={description}>
-            <ShaIcon iconName={icon as IconType} />
-          </Tooltip>
-        )}
-      </Link>
+      {navigationUrl === "" ?
+        <a className="sha-link" onClick={(e) => clickHandler(e, props)}>
+          {icon && (
+            <Tooltip title={description}>
+              <ShaIcon iconName={icon as IconType} />
+            </Tooltip>
+          )}
+        </a>
+        :
+        <Link className="sha-link" href={navigationUrl} onClick={(e) => clickHandler(e, props)}>
+          {icon && (
+            <Tooltip title={description}>
+              <ShaIcon iconName={icon as IconType} />
+            </Tooltip>
+          )}
+        </Link>}
     </>);
 };
 

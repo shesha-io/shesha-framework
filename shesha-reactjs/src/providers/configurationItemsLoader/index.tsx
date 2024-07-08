@@ -127,8 +127,13 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       isLastVersion: dto.isLastVersion,
 
       markup: markupWithSettings?.components,
-      settings: markupWithSettings?.formSettings,
+      settings: {
+        ...markupWithSettings?.formSettings,
+       access: dto.access,
+       permissions: dto.permissions,
+      }
     };
+
     return result;
   };
 
@@ -219,6 +224,17 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     referenceLists.current[key] = promiseWithState;
 
     return promiseWithState;
+  };
+
+  const getCachedForm = (payload: IGetFormPayload): Promise<IFormDto> => {
+    // create a key
+    const key = getFormCacheKey(payload.formId, payload.configurationItemMode);
+
+    if (!payload.skipCache) {
+      const loadedForm = forms.current[key];
+      if (loadedForm) return loadedForm; // TODO: check for rejection
+    }
+    return null;
   };
 
   const getForm = (payload: IGetFormPayload): Promise<IFormDto> => {
@@ -409,6 +425,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
   };
 
   const loaderActions: IConfigurationItemsLoaderActionsContext = {
+    getCachedForm,
     getForm,
     getRefList,
     getComponent,

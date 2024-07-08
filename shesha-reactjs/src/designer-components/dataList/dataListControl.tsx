@@ -29,7 +29,7 @@ export type OnSaveSuccessHandler = (
 
 const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
-  const { 
+  const {
     dataSourceInstance: dataSource,
     onListItemSave,
     onListItemSaveSuccessAction,
@@ -201,8 +201,8 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
-  if(groupingColumns?.length > 0 && props.orientation === "wrap"){
-    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.'/>;
+  if (groupingColumns?.length > 0 && props.orientation === "wrap") {
+    return <EmptyState noDataText='Configuration Error' noDataSecondaryText='Wrap Orientation is not supported when Grouping is enabled.' />;
   }
 
   return (
@@ -212,7 +212,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
         styles.shaDatalistComponent,
         { horizontal: props?.orientation === 'horizontal' && allData.form?.formMode !== 'designer' } //
       )}
-      wrapperCol={{  md: 24 }}
+      wrapperCol={{ md: 24 }}
     >
 
       <DataList

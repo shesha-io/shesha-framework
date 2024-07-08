@@ -1,10 +1,12 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using GraphQL;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
 using Shesha.Web.FormsDesigner.Domain;
 using System;
@@ -21,16 +23,20 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
         private readonly IRepository<FormConfiguration, Guid> _formConfigRepo;
         private readonly IFormManager _formManger;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         public FormConfigurationImport(IRepository<Module, Guid> moduleRepo,
             IRepository<FrontEndApp, Guid> frontEndAppRepo, 
             IFormManager formManger, 
             IRepository<FormConfiguration, Guid> formConfigRepo, 
-            IUnitOfWorkManager unitOfWorkManager) : base(moduleRepo, frontEndAppRepo)
+            IUnitOfWorkManager unitOfWorkManager,
+            IPermissionedObjectManager permissionedObjectManager
+        ) : base(moduleRepo, frontEndAppRepo)
         {
             _formManger = formManger;
             _formConfigRepo = formConfigRepo;
             _unitOfWorkManager = unitOfWorkManager;
+            _permissionedObjectManager = permissionedObjectManager;
         }
 
         public string ItemType => FormConfiguration.ItemTypeName;
@@ -104,6 +110,8 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
                 await _formConfigRepo.UpdateAsync(newFormVersion);
 
+                await SetPermissions(item, newFormVersion);
+
                 return newFormVersion;
             } else 
             {
@@ -122,8 +130,26 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
                 await _formConfigRepo.InsertAsync(newForm);
 
+                await SetPermissions(item, newForm);
+
                 return newForm;
             }
+        }
+
+        private async Task SetPermissions(DistributedFormConfiguration item, FormConfiguration form)
+        {
+            var permisson = new PermissionedObjectDto
+            {
+                Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
+                Name = $"{form.Module?.Name}.{form.Name} v.{form.VersionNo}",
+                Module = form.Module.Name,
+                ModuleId = form.Module.Id,
+                Type = ShaPermissionedObjectsTypes.Form,
+                Access = item.Access,
+                Permissions = item.Permissions,
+            };
+
+            await _permissionedObjectManager.SetAsync(permisson);
         }
 
         private void MapToForm(DistributedFormConfiguration item, FormConfiguration form) 

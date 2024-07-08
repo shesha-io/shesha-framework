@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Runtime.Validation;
@@ -11,9 +12,11 @@ using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Domain.Enums;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Mvc;
+using Shesha.Permissions;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
@@ -38,22 +41,130 @@ namespace Shesha.Web.FormsDesigner.Services
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly IEntityConfigManager _entityConfigManager;
+        private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         public FormConfigurationAppService(
-            IRepository<FormConfiguration, Guid> repository, 
-            IRepository<Module, Guid> moduleRepository, 
-            IFormManager formManager, 
-            IConfigurationFrameworkRuntime cfRuntime, 
+            IRepository<FormConfiguration, Guid> repository,
+            IRepository<Module, Guid> moduleRepository,
+            IFormManager formManager,
+            IConfigurationFrameworkRuntime cfRuntime,
             IConfigurationItemClientSideCache clientSideCache,
-            IEntityConfigManager entityConfigManager
-            ) : base(repository)
+            IEntityConfigManager entityConfigManager,
+            IPermissionedObjectManager permissionedObjectManager
+        ) : base(repository)
         {
             _moduleRepository = moduleRepository;
             _formManager = formManager;
             _cfRuntime = cfRuntime;
             _clientSideCache = clientSideCache;
             _entityConfigManager = entityConfigManager;
+            _permissionedObjectManager = permissionedObjectManager;
         }
+
+        private async Task<string[]> GetFormPermissionsAsync(string module, string name, int versionNo)
+        {
+            var permission = await _permissionedObjectManager.GetAsync(FormManager.GetFormPermissionedObjectName(module, name, versionNo));
+            return permission?.Access == RefListPermissionedAccess.RequiresPermissions
+                ? permission.Permissions?.ToArray() ?? []
+                : [];
+        }
+
+        private async Task<bool> CheckFormPermissions(string module, string name, int versionNo)
+        {
+            var permission = _permissionedObjectManager.Get(FormManager.GetFormPermissionedObjectName(module, name, versionNo));
+
+            var access = permission?.Access ?? RefListPermissionedAccess.AnyAuthenticated;
+            if (AbpSession.UserId == null
+                && (access == RefListPermissionedAccess.AnyAuthenticated || access == RefListPermissionedAccess.RequiresPermissions))
+                throw new AbpAuthorizationException("You are not authorized for this form");
+            if (access == RefListPermissionedAccess.RequiresPermissions)
+            {
+                var permissions = permission.Permissions.ToArray() ?? [];
+                return await PermissionChecker.IsGrantedAsync(false, permissions);
+            }
+            return true;
+        }
+
+        protected override FormConfigurationDto MapToEntityDto(FormConfiguration entity)
+        {
+            var dto = base.MapToEntityDto(entity);
+            
+            var permission = AsyncHelper.RunSync(() => 
+                _permissionedObjectManager.GetAsync(FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name, entity.VersionNo))
+            );
+            if ((int)permission?.Access > 2) // permission exists
+            {
+                dto.Access = permission?.Access;
+                dto.Permissions = permission?.Permissions;
+            }
+            return dto;
+        }
+
+        /// <summary>
+        /// Check permission of forms configuration by name
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="FormNotFoundException"></exception>
+        [HttpPost]
+        public async Task<List<FormByFullNamePermissionsDto>> CheckPermissions(GetFormByFullNameInput[] input)
+        {
+            var mode = _cfRuntime.ViewMode;
+
+            var result = new List<FormByFullNamePermissionsDto>();
+
+            foreach (var inputItem in input)
+            {
+                var query = Repository.GetAll().Where(f => f.Module.Name == inputItem.Module && f.Name == inputItem.Name);
+
+                if (inputItem.Version.HasValue)
+                    query = query.Where(f => f.VersionNo == inputItem.Version.Value);
+                else
+                {
+                    switch (mode)
+                    {
+                        case ConfigurationItemViewMode.Live:
+                            query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                            break;
+                        case ConfigurationItemViewMode.Ready:
+                            {
+                                var statuses = new ConfigurationItemVersionStatus[] {
+                            ConfigurationItemVersionStatus.Live,
+                            ConfigurationItemVersionStatus.Ready
+                        };
+
+                                query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
+                                break;
+                            }
+                        case ConfigurationItemViewMode.Latest:
+                            {
+                                var statuses = new ConfigurationItemVersionStatus[] {
+                            ConfigurationItemVersionStatus.Live,
+                            ConfigurationItemVersionStatus.Ready,
+                            ConfigurationItemVersionStatus.Draft
+                        };
+                                query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
+                                break;
+                            }
+                    }
+                }
+
+                var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
+                if (form != null)
+                {
+                    var permissions = await GetFormPermissionsAsync(form.Module?.Name, form.Name, form.VersionNo);
+                    if (permissions.Length > 0)
+                        result.Add(new FormByFullNamePermissionsDto
+                        {
+                            Name = form.Name,
+                            Module = form.Module?.Name,
+                            Permissions = permissions,
+                        });
+                }
+            }
+
+            return result;
+        }
+
 
         /// <summary>
         /// Get current form configuration by name
@@ -66,7 +177,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var mode = _cfRuntime.ViewMode;
 
             // check cache
-            if (!string.IsNullOrWhiteSpace(input.Md5)) 
+            if (!string.IsNullOrWhiteSpace(input.Md5))
             {
                 var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode);
                 if (input.Md5 == cachedMd5)
@@ -82,44 +193,49 @@ namespace Shesha.Web.FormsDesigner.Services
             if (input.Version.HasValue)
                 query = query.Where(f => f.VersionNo == input.Version.Value);
             else {
-                switch (mode) 
+                switch (mode)
                 {
                     case ConfigurationItems.Models.ConfigurationItemViewMode.Live:
                         query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
                         break;
                     case ConfigurationItems.Models.ConfigurationItemViewMode.Ready:
-                    {
-                        var statuses = new ConfigurationItemVersionStatus[] { 
-                            ConfigurationItemVersionStatus.Live, 
-                            ConfigurationItemVersionStatus.Ready 
+                        {
+                            var statuses = new ConfigurationItemVersionStatus[] {
+                            ConfigurationItemVersionStatus.Live,
+                            ConfigurationItemVersionStatus.Ready
                         };
 
-                        query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
-                        break;
-                    }
+                            query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
+                            break;
+                        }
                     case ConfigurationItems.Models.ConfigurationItemViewMode.Latest:
-                    {
-                        var statuses = new ConfigurationItemVersionStatus[] { 
-                            ConfigurationItemVersionStatus.Live, 
+                        {
+                            var statuses = new ConfigurationItemVersionStatus[] {
+                            ConfigurationItemVersionStatus.Live,
                             ConfigurationItemVersionStatus.Ready,
                             ConfigurationItemVersionStatus.Draft
                         };
-                        query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
-                        break;
-                    }
+                            query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
+                            break;
+                        }
                 }
             }
 
             var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
-            
+
             if (form == null)
                 throw new FormNotFoundException(input.Module, input.Name);
 
-            var dto = ObjectMapper.Map<FormConfigurationDto>(form);
+            var dto = MapToEntityDto(form);
 
-            var json = JsonConvert.SerializeObject(dto);
             dto.CacheMd5 = GetMd5(dto);
             await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
+
+            if (!await CheckFormPermissions(form.Module?.Name, form.Name, form.VersionNo))
+            {
+                dto.Markup = null;
+                dto.CacheMd5 = "";
+            }
 
             return dto;
         }
@@ -134,16 +250,24 @@ namespace Shesha.Web.FormsDesigner.Services
                     throw new ContentNotModifiedException("Form not changed");
             }
 
-            // add MD5 to request
-            var dto = await base.GetAsync(input);
+            var form = await Repository.GetAsync(input.Id);
 
+            var dto = MapToEntityDto(form);
             dto.CacheMd5 = GetMd5(dto);
+
+            // add MD5 to request
             await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id, dto.CacheMd5);
+
+            if (!await CheckFormPermissions(form.Module?.Name, form.Name, form.VersionNo))
+            {
+                dto.Markup = null;
+                dto.CacheMd5 = "";
+            }
 
             return dto;
         }
 
-        private string GetMd5(FormConfigurationDto dto) 
+        private string GetMd5(FormConfigurationDto dto)
         {
             var json = JsonConvert.SerializeObject(dto);
             return json.ToMd5Fingerprint();
@@ -161,6 +285,22 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = await Repository.GetAsync(input.Id);
             form.Markup = input.Markup;
             await Repository.UpdateAsync(form);
+
+            if (input.Access != null)
+            {
+                var permisson = new PermissionedObjectDto
+                {
+                    Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
+                    Name = $"{form.Module?.Name}.{form.Name} v.{form.VersionNo}",
+                    Module = form.Module.Name,
+                    ModuleId = form.Module.Id,
+                    Type = ShaPermissionedObjectsTypes.Form,
+                    Access = input.Access,
+                    Permissions = input.Permissions,
+                };
+
+                await _permissionedObjectManager.SetAsync(permisson);
+            }
         }
 
         /// <summary>
@@ -226,6 +366,11 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var newVersion = await _formManager.CreateNewVersionAsync(item);
             await CurrentUnitOfWork.SaveChangesAsync();
+
+            await _permissionedObjectManager.CopyAsync(
+                FormManager.GetFormPermissionedObjectName(item.Module?.Name, item.Name, item.VersionNo),
+                FormManager.GetFormPermissionedObjectName(newVersion.Module?.Name, newVersion.Name, newVersion.VersionNo)
+            );
 
             return MapToEntityDto(newVersion);
         }

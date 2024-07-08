@@ -1,6 +1,7 @@
 import { handleActions } from 'redux-actions';
 import { SidebarMenuActionEnums } from './actions';
 import { ISidebarMenuStateContext, SIDEBAR_MENU_CONTEXT_INITIAL_STATE } from './contexts';
+import { ISidebarMenuItem } from '.';
 
 export default handleActions<ISidebarMenuStateContext, any>(
   {
@@ -10,6 +11,14 @@ export default handleActions<ISidebarMenuStateContext, any>(
       return {
         ...state,
         isExpanded: payload,
+      };
+    },
+    [SidebarMenuActionEnums.SetItems]: (state: ISidebarMenuStateContext, action: ReduxActions.Action<ISidebarMenuItem[]>) => {
+      const { payload } = action;
+
+      return {
+        ...state,
+        items: payload,
       };
     },
   },
