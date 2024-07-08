@@ -75,7 +75,11 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles
     }, [filtersRef.current]);
 
     return (
-        <div style={{ textAlign: "center" }}>
+        <div className={styles.wrapper}>
+            <div style={{ margin: "auto 6px auto auto", textAlign: "end" }}>
+                {`Filters (${rows} results)`}
+            </div>
+
             <div className={styles.scrollableTagsContainer}>
                 <LeftOutlined
                     ref={scrollbarLeftArrow}
@@ -103,14 +107,18 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles
                     onClick={scrollRight}
                 />
             </div>
-            {`Filters (${rows} results): `}
-            <Button
-                onClick={clearFilters}
-                type='link'
-                style={{ padding: "0 4px", marginRight: "2em", height: "max-content" }}
-            >
-                clear all
-            </Button>
+
+            <div style={{
+                margin: "auto auto auto 6px", textAlign: "end"
+            }}>
+                <Button
+                    onClick={clearFilters}
+                    type='link'
+                    style={{ padding: "0 4px", marginRight: "2em", height: "max-content" }}
+                >
+                    clear all
+                </Button>
+            </div>
         </div>
     );
 };

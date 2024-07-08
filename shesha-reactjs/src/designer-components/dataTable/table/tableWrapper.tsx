@@ -12,6 +12,7 @@ import {
     DatatableColumnsSelector,
 } from '@/components';
 import {
+    useDataTable,
     useDataTableStore,
     useForm,
     useFormData,
@@ -51,6 +52,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         tableFilter,
         tableData
     } = useDataTableStore();
+
+    const { totalRows } = useDataTable()
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
 
@@ -99,7 +102,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
-            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={tableData?.length} clearFilters={clearFilters} styles={styles} removeColumnFilter={removeColumnFilter} />}
+            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} styles={styles} removeColumnFilter={removeColumnFilter} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}

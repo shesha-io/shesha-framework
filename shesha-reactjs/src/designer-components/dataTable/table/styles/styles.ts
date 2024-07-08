@@ -89,9 +89,15 @@ export const useStyles = createStyles(({ token, cx, css }) => {
   const arrowRight = "scroll-arrow-right";
   const tag = "tag";
 
+  const wrapper = cx("filter - wrapper", css`
+      display: flex;
+      whiteSpace: nowrap;
+      justifyContent: center;
+      `);
+
   const scrollableTagsContainer = cx("scrollable-tags-container", css`
       max-width: 700px;
-      margin: 6px auto;
+      margin: 6px;
       justify-content: center;
       overflow: hidden;
       display: flex;
@@ -106,11 +112,15 @@ export const useStyles = createStyles(({ token, cx, css }) => {
         scrollbar-width: none; /* for Firefox */
       }
 
+      p {
+        white-space: nowrap;
+      }
       .filters {
         display: flex;
         margin: 0 24px;
         overflow-x: scroll;
         scroll-behavior: smooth;
+        align-items: center;
       }
 
       .${arrowLeft}, .${arrowRight} {
@@ -141,6 +151,7 @@ export const useStyles = createStyles(({ token, cx, css }) => {
       .${tag} {
         color: ${token.colorPrimary};
         marginBottom: .32em;
+        vertical-align: middle;
     `);
 
   return {
@@ -149,6 +160,7 @@ export const useStyles = createStyles(({ token, cx, css }) => {
     arrowLeft,
     arrowRight,
     tag,
+    wrapper,
     scrollableTagsContainer
   };
 });
