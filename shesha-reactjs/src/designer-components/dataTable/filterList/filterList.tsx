@@ -76,7 +76,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles
 
     return (
         <div className={styles.wrapper}>
-            <div style={{ margin: "auto 6px auto auto", textAlign: "end" }}>
+            <div style={{ margin: "auto 6px auto auto", textAlign: "end", whiteSpace: "nowrap" }}>
                 {`Filters (${rows} results)`}
             </div>
 
