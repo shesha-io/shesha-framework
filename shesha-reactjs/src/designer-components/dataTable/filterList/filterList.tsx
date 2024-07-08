@@ -109,15 +109,17 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles
             </div>
 
             <div style={{
-                margin: "auto auto auto 6px", textAlign: "end"
+                margin: "auto auto auto 6px", textAlign: "start"
             }}>
-                <Button
-                    onClick={clearFilters}
-                    type='link'
-                    style={{ padding: "0 4px", marginRight: "2em", height: "max-content" }}
-                >
-                    clear all
-                </Button>
+                {filters.length > 1 &&
+                    <Button
+                        onClick={clearFilters}
+                        type='link'
+                        style={{ padding: "0 4px", marginRight: "2em", height: "max-content" }}
+                    >
+                        clear all
+                    </Button>
+                }
             </div>
         </div>
     );

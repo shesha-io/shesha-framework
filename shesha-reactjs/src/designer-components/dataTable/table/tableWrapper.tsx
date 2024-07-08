@@ -50,10 +50,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         clearFilters,
         removeColumnFilter,
         tableFilter,
-        tableData
     } = useDataTableStore();
 
-    const { totalRows } = useDataTable()
+    const { totalRows } = useDataTable();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
 
