@@ -26,6 +26,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
   const buttonStyle = {
     ...localStyle,
     ...{ color: props.buttonType !== 'primary' && !props.danger ? styles.primaryColor : '' },
+    padding: "3px",
     border: hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
   };
 
