@@ -1,5 +1,5 @@
 import { IFlatComponentsStructure, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import ParentProvider from '@/providers/parentProvider';
 import { FormProvider } from '@/providers/form';
@@ -26,7 +26,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     propertyFilter,
   } = props;
 
-  const { 
+  const {
     actions,
     sections,
     refetchData,
@@ -35,6 +35,8 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     onValuesChange,
     form,
   } = props;
+
+  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(false);
 
   const { formInfoBlockVisible } = useAppConfigurator();
   const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
@@ -60,7 +62,6 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
           formRef={formRef}
           actions={actions}
           sections={sections}
-          
           refetchData={refetchData}
           isActionsOwner={isActionsOwner}
           propertyFilter={propertyFilter}
@@ -68,10 +69,16 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
           parentFormValues={parentFormValues}
           initialValues={props.initialValues}
         >
-          <Show when={Boolean(showFormInfo)}>
-            <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
-          </Show>
-          <ConfigurableFormRenderer {...props} />
+          <div style={{ border: Boolean(showFormInfo) ? '1px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={() => {
+            setFormInfoPanelShowing(false);
+          }} onMouseEnter={() => {
+            setFormInfoPanelShowing(true);
+          }}>
+            <Show when={Boolean(showFormInfo)}>
+              <FormInfo visible={formInfoPanelShowing} formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
+            </Show>
+            <ConfigurableFormRenderer {...props} />
+          </div>
         </FormProvider>
       </ParentProvider>
     </FormFlatMarkupProvider>
