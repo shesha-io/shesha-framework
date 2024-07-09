@@ -5,8 +5,9 @@ export interface KeyInfomationBarItemProps {
   id: string;
   width: number;
   flexDirection?: 'row' | 'column';
-  textAlign: 'left' | 'center' | 'right' | 'justify' | 'initial' | 'inherit' | 'start' | 'end';
+  textAlign?: 'center' | 'inherit' | 'start' | 'end';
   components: IConfigurableFormComponent[];
+  padding?: string;
 }
 
 export interface IKeyInformationBarProps extends IConfigurableFormComponent {
@@ -23,4 +24,5 @@ export interface IKeyInformationBarProps extends IConfigurableFormComponent {
   readOnly?: boolean;
   style?: string;
   stylingBox?: any;
+  backgroundColor?: string;
 }

@@ -35,8 +35,20 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 </Select>
             </SettingsFormItem>
 
+            <SettingsFormItem name="backgroundColor" label="Background Color" jsSetting >
+                <ColorPicker readOnly={readOnly} allowClear />
+            </SettingsFormItem>
+
             <SettingsFormItem name="columns" label="Columns">
                 <ColumnsList readOnly={readOnly} />
+            </SettingsFormItem>
+
+            <SettingsFormItem name="alignItems" label="Align Items">
+                <Select >
+                    <Option value="flex-start">Flex Start</Option>
+                    <Option value="flex-end">Flex End</Option>
+                    <Option value="center">Center</Option>
+                </Select>
             </SettingsFormItem>
 
             <SectionSeparator title="Divider" />
@@ -57,7 +69,7 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 </SettingsFormItem>
             </Show>
             <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting >
-                <ColorPicker readOnly={readOnly} />
+                <ColorPicker readOnly={readOnly} allowClear />
             </SettingsFormItem>
             <SectionSeparator title="Style" />
 
