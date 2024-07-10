@@ -19,7 +19,7 @@ import {
     useGlobalState,
     useSheshaApplication,
 } from '@/providers';
-import { GlobalTableStyles, useStyles } from './styles/styles';
+import { GlobalTableStyles } from './styles/styles';
 import { Alert } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { FilterList } from '../filterList/filterList';
@@ -36,7 +36,6 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const { styles } = useStyles();
     const isDesignMode = formMode === 'designer';
     const {
         getRepository,
@@ -101,7 +100,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
-            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} styles={styles} removeColumnFilter={removeColumnFilter} />}
+            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}

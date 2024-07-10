@@ -3,20 +3,21 @@ import { ITableFilter } from '@/providers/dataTable/interfaces';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Tag } from 'antd';
 import React, { FC, useEffect, useRef } from 'react';
+import { useStyles } from '../advancedFilterButton/style';
 
 export interface IFilterListProps {
     filters?: ITableFilter[];
     clearFilters?: () => void;
     removeColumnFilter?: (columnId: string) => void;
-    styles: any;
     rows: number;
 }
 
-export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles, removeColumnFilter, rows }) => {
+export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, removeColumnFilter, rows }) => {
 
     const filtersRef = useRef(null);
     const scrollbarLeftArrow = useRef(null);
     const scrollbarRightArrow = useRef(null);
+    const { styles } = useStyles();
 
     const manageArrows = () => {
         if (!filtersRef.current) return;
@@ -76,7 +77,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles
 
     return (
         <div className={styles.wrapper}>
-            <div style={{ margin: "auto 6px auto auto", textAlign: "end", whiteSpace: "nowrap" }}>
+            <div className={styles.resultCount}>
                 {`Filters (${rows} results)`}
             </div>
 
@@ -108,14 +109,12 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, styles
                 />
             </div>
 
-            <div style={{
-                margin: "auto auto auto 6px", textAlign: "start"
-            }}>
+            <div className={styles.clearAllButton}>
                 {filters.length > 1 &&
                     <Button
                         onClick={clearFilters}
                         type='link'
-                        style={{ padding: "0 4px", marginRight: "2em", height: "max-content" }}
+                        className={styles.clearAllButton}
                     >
                         clear all
                     </Button>
