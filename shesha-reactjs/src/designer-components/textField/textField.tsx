@@ -18,6 +18,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IconType, ShaIcon } from '@/components';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -55,7 +56,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       className: 'sha-input',
       placeholder: model.placeholder,
       prefix: model.prefix,
-      suffix: model.suffix,
+      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }}/>}</>,
       variant: model.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,

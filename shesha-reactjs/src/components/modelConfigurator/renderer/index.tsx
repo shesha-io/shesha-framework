@@ -30,6 +30,7 @@ export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = ()
     <div className={styles.shaModelConfigurator}>
       <CustomErrorBoundary>
         <ConfigurableForm
+          className={styles.shaModelConfiguratorForm}
           layout="horizontal"
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 18 }}

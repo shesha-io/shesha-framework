@@ -12,7 +12,7 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
 }) => {
   const { items, addItem, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
-
+  
   const onAddClick = () => {
     addItem().then(_item => {
       const element = selectedItemRef?.current;
@@ -34,22 +34,24 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
 
   return (
     <div className={styles.shaToolbarConfigurator}>
-    {allowAdd &&
-      <div className={styles.shaActionButtons} style={{ marginBottom: '8px' }}>
-        <Button onClick={onAddClick} type="primary">
-          Add Property
-        </Button>
-      </div>}
+      {allowAdd &&
+        <div className={styles.shaActionButtons} style={{ marginBottom: '8px' }}>
+          <Button onClick={onAddClick} type="primary">
+            Add Property
+          </Button>
+        </div>}
 
-    <SidebarContainer
-      rightSidebarProps={{
-        open: true,
-        title: 'Properties',
-        content: <ToolbarItemProperties />,
-      }}
-    >
-      <ItemsContainer items={items} index={[]} />
-    </SidebarContainer>
-  </div>
+      <SidebarContainer
+        rightSidebarProps={{
+          open: true,
+          title: 'Properties',
+          content: <ToolbarItemProperties />,
+        }}
+      >
+        <div>
+          <ItemsContainer items={items} index={[]} />
+        </div>
+      </SidebarContainer>
+    </div>
   );
 };
