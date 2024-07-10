@@ -75,6 +75,12 @@ namespace Shesha.Web.FormsDesigner.Services
                 await ConfigurationItemRepository.UpdateAsync(form.Configuration);
             }
             */
+
+            await _permissionedObjectManager.CopyAsync(
+                FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
+                FormManager.GetFormPermissionedObjectName(newVersion.Module?.Name, newVersion.Name, newVersion.VersionNo)
+            );
+
             return newVersion;
         }
 
