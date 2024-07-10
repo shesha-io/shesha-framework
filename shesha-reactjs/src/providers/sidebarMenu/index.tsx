@@ -2,20 +2,23 @@ import React, {
   FC,
   PropsWithChildren,
   useContext,
+  useEffect,
   useReducer
   } from 'react';
 import SidebarMenuReducer from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IHeaderAction } from './models';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
-import { toggleSidebarAction } from './actions';
-import { useSheshaApplication } from '@/providers';
+import { setItemsAction, toggleSidebarAction } from './actions';
+import { FormFullName, isNavigationActionConfiguration, useSheshaApplication } from '@/providers';
 import {
   SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
   SidebarMenuActionsContext,
   SidebarMenuDefaultsContext,
   SidebarMenuStateContext,
 } from './contexts';
+import { FormIdFullNameDto } from '@/apis/entityConfig';
+import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
 
 export interface ISidebarMenuProviderProps {
   items: ISidebarMenuItem[];
@@ -29,28 +32,91 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   items,
   children,
 }) => {
-  const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
 
   const [state, dispatch] = useReducer(SidebarMenuReducer, {
     ...SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
     actions,
     accountDropdownListItems,
+    items,
   });
 
-  const getItems = () => items;
+  const requestItemVisible = (item: ISidebarMenuItem, itemsToCheck: ISidebarMenuItem[]): ISidebarMenuItem => {
+    if (item.isHidden)
+      return item;
 
-  const isItemVisible = (item: ISidebarMenuItem): boolean => {
-    if (item.isHidden) return false;
-    if (item.requiredPermissions && !anyOfPermissionsGranted(item?.requiredPermissions)) return false;
+    if (item.requiredPermissions?.length > 0)
+      if (anyOfPermissionsGranted(item?.requiredPermissions))
+        return item;
+      else
+        return {...item, isHidden: true};
 
-    if (item.requiredPermissions?.length) {
-      if (!anyOfPermissionsGranted(item?.requiredPermissions)) return false;
-    }
+    if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0)
+      return {...item, isHidden: false, childItems: item.childItems.map((childItem) => requestItemVisible(childItem, itemsToCheck))} as ISidebarMenuItem;
 
-    return isSidebarGroup(item) && item.childItems && item.childItems.length > 0
-      ? item.childItems.some((childItem) => isItemVisible(childItem))
-      : true;
+    if (
+      isNavigationActionConfiguration(item.actionConfiguration)
+      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
+      && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
+      && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
+    ) {
+      // form navigation, check form permissions
+      const newItem = {...item, isHidden: true};
+      itemsToCheck.push(newItem);
+      return newItem;
+    } 
+    
+    return item;
   };
+
+  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
+    if (
+      item.actionConfiguration?.actionOwner === 'shesha.common'
+      && item.actionConfiguration?.actionName === 'Navigate'
+      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
+      && item.actionConfiguration?.actionArguments?.formId?.name
+      && item.actionConfiguration?.actionArguments?.formId?.module
+    ) {
+      // form navigation, check form permissions
+      const form = formsPermission.find(x => 
+        x.module === item.actionConfiguration?.actionArguments?.formId?.module
+        && x.name === item.actionConfiguration?.actionArguments?.formId?.name
+      );
+      item.isHidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
+    }
+  };
+
+  const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
+    if (itemsToCheck.length > 0) {
+      formConfigurationCheckPermissions(
+        itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto),
+        { base: backendUrl, headers: httpHeaders }
+      )
+        .then((result) => {
+          if (result.success) {
+            //const localItems = 
+            itemsToCheck.forEach((item) => {
+              return updatetItemVisible(item, result.result);
+            });
+            dispatch(setItemsAction([...items]));
+          } else {
+            console.error(result.error);
+          }
+        });
+    }
+  };
+
+  useEffect(() => {
+    const itemsToCheck = [];
+    const localItems = items.map((item) => {
+      if (item.isHidden === false) return item;
+      return requestItemVisible(item, itemsToCheck);
+    });
+    dispatch(setItemsAction(localItems));
+    if (itemsToCheck.length > 0) {
+      getFormPermissions(localItems, itemsToCheck);
+    }
+  }, [items]);
 
   const collapse = () => {
     dispatch(toggleSidebarAction(false));
@@ -69,8 +135,6 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
           ...getFlagSetters(dispatch),
           collapse,
           expand,
-          isItemVisible,
-          getItems,
           /* NEW_ACTION_GOES_HERE */
         }}
       >
@@ -82,12 +146,13 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
 
 function useSidebarMenuState(require: boolean) {
   const context = useContext(SidebarMenuStateContext);
+  const actions = useContext(SidebarMenuActionsContext);
 
-  if (context === undefined && require) {
+  if ((context === undefined || actions === undefined) && require) {
     throw new Error('useSidebarMenuState must be used within a SidebarMenuProvider');
   }
 
-  return context;
+  return {...context, ...actions};
 }
 
 function useSidebarMenuActions(require: boolean) {

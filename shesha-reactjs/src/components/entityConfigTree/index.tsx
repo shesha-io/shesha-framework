@@ -22,9 +22,9 @@ import { EntityConfigType, MetadataSourceType } from '@/interfaces/metadata';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
-import { SectionSeparator } from '..';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { useStyles } from './styles/styles';
+import SectionSeparator from '../sectionSeparator';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -214,8 +214,8 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
       tip={'Fetching data...'}
       indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
     >
-      <div className="sha-page-heading">
-        <div className="sha-page-heading-left">
+      <div className="sha-page-heading sha-paging-height">
+        <div className="sha-page-heading-left" style={{width: 'calc(100% - 60px)'}}>
           <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />
         </div>
         <div className="sha-page-heading-right">
@@ -226,7 +226,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           </Dropdown>
         </div>
       </div>
-      <div style={{ height: '90vh', overflowY: 'scroll' }}>
+      <div style={{height: 'calc(100vh - 168px)', overflow: 'auto'}}>
         <GrouppedObjectsTree<EntityConfigDto>
           items={items}
           openedKeys={openedKeys}

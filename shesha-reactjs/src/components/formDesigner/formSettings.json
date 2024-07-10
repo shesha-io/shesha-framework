@@ -16,13 +16,47 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "777f5a0d-d59e-44b8-bc5b-a06e18438f4d",
+      "type": "dropdown",
+      "propertyName": "access",
+      "label": "Access",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "dataSourceType": "values",
+      "values": [
+        {
+          "id": "3",
+          "label": "Any authenticated",
+          "value": "3"
+        },
+        {
+          "id": "4",
+          "label": "Requires permissions",
+          "value": "4"
+        },
+        {
+          "id": "5",
+          "label": "Allow anonymous",
+          "value": "5"
+        }
+      ],
+      "version": 5,
+      "referenceListId": null,
+      "valueFormat": "listItem"
+    },
+    {
       "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
       "type": "permissionAutocomplete",
       "propertyName": "permissions",
       "parentId": "root",
       "label": "Permissions",
       "validate": {},
-      "version": 1
+      "version": 1,
+      "hidden": {
+        "_mode": "code",
+        "_code": "return data?.access != 4;"
+      }
     },
     {
       "id": "077f5a0d-d59e-44b8-bc5b-a06e18438f4d",

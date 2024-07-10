@@ -1,5 +1,6 @@
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
+import { FormIdFullNameDto } from './entityConfig';
 
 /**
  * Status of the Shesha.Domain.ConfigurationItems.ConfigurationItem
@@ -53,6 +54,10 @@ export interface FormConfigurationDto {
   isLastVersion?: boolean;
   versionStatus?: ConfigurationItemVersionStatus;
   suppress?: boolean;
+
+  access?: number;
+  permissions?: string[];
+
   /**
    * Cache MD5, is used for client-side caching
    */
@@ -142,6 +147,10 @@ export interface FormUpdateMarkupInput {
    * Form markup (components) in JSON format
    */
   markup?: string | null;
+  /** Form asscess mode */
+  access?: number;
+  /** Form permissions for Required premission mode */  
+  permissions?: string[];
 }
 
 export interface FormConfigurationUpdateMarkupQueryParams {
@@ -162,6 +171,36 @@ export const formConfigurationUpdateMarkup = (data: FormUpdateMarkupInput, props
   RestfulShesha.mutate<void, unknown, FormConfigurationUpdateMarkupQueryParams, FormUpdateMarkupInput, void>(
     'PUT',
     `/api/services/Shesha/FormConfiguration/UpdateMarkup`,
+    data,
+    props
+  );
+
+
+export interface FormPermissionsDto {
+  name?: string | null;
+  module?: string | null;
+  permissions?: string[] | null;
+}
+
+export type FormPermissionsDtoAjaxResponse = IAjaxResponse<FormPermissionsDto[]>;  
+
+export interface FormConfigurationCheckPermissionsQueryParams {
+  /**
+   * The requested API version
+   */
+  'api-version'?: string;
+}
+export type formConfigurationCheckPermissionsProps = Omit<
+  RestfulShesha.MutateProps<FormPermissionsDtoAjaxResponse, unknown, FormConfigurationCheckPermissionsQueryParams, FormIdFullNameDto[], void>,
+  'data'
+>;
+/**
+ * Check forms permissions
+ */
+export const formConfigurationCheckPermissions = (data: FormIdFullNameDto[], props: formConfigurationCheckPermissionsProps) =>
+  RestfulShesha.mutate<FormPermissionsDtoAjaxResponse, unknown, FormConfigurationCheckPermissionsQueryParams, FormIdFullNameDto[], void>(
+    'POST',
+    `/api/services/Shesha/FormConfiguration/CheckPermissions`,
     data,
     props
   );

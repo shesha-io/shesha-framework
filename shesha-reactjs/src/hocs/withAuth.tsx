@@ -1,19 +1,16 @@
 import React, { ComponentType, FC, Fragment, useEffect } from 'react';
+import { /*IdleTimerRenderer,*/ OverlayLoader } from '@/components';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
-import SheshaLoader from '@/components/sheshaLoader';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
   landingPage: string;
   children: (query: NodeJS.Dict<string | string[]>) => React.ReactElement;
 }
-
 export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const { landingPage, unauthorizedRedirectUrl } = props;
-  const { isCheckingAuth, loginInfo, checkAuth, getAccessToken, isLoggedIn, isFetchingUserInfo, token } = useAuth();
-
-  const loading = isFetchingUserInfo || (!isFetchingUserInfo && !loginInfo && token) || !isLoggedIn;
+  const { isCheckingAuth, loginInfo, checkAuth, getAccessToken, isLoggedIn } = useAuth();
 
   const { goingToRoute, router } = useShaRouting();
 
@@ -31,10 +28,10 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
     }
   }, [isCheckingAuth]);
 
-  return loading ? (
-    <SheshaLoader message='Initializing...' />
-  ) : (
+  return isLoggedIn ? (
     <Fragment>{props.children(router?.query)}</Fragment>
+  ) : (
+    <OverlayLoader loading={true} loadingText="Initializing..." />
   );
 };
 
