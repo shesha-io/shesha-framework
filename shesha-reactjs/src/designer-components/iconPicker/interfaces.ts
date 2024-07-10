@@ -13,4 +13,5 @@ export interface IIconPickerComponentProps extends IConfigurableFormComponent {
     backgroundColor?: string;
     stylingBox?: string;
     defaultIcon?: ShaIconTypes;
+    textAlign?: string;
 }

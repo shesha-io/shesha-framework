@@ -22,9 +22,11 @@ interface IconPickerWrapperProps {
     backgroundColor?: string;
     stylingBox?: string;
     defaultValue?: ShaIconTypes;
+    textAlign?: string;
 }
+
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
-    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue } = props;
+    const { fontSize, color, readOnly, onChange, borderColor, borderRadius, borderWidth, backgroundColor, stylingBox, defaultValue, value, textAlign } = props;
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
@@ -37,15 +39,16 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     const style: CSSProperties = {
         fontSize: fontSize || 24,
         color: color,
-        marginLeft: (borderWidth || borderColor || backgroundColor) ? '12px' : 'none' //this allows us to correct the icon layout when it's configured
+        marginLeft: (defaultValue) ? '12px' : 'none' //this allows us to correct the icon layout when an icon is selected
     };
 
     const getIconStyle = {
         display: 'flex',
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        width: Number(fontSize) ? `${fontSize}px` : 'auto',
-        height: Number(fontSize) ? `${fontSize}px` : 'auto',
+        width: Number(fontSize) ? `${fontSize}px` : '25px',
+        height: Number(fontSize) ? `${fontSize}px` : '25px',
         border: `${borderWidth}px solid ${borderColor}`,
         borderRadius: `${borderRadius}px`,
         backgroundColor: backgroundColor,
@@ -54,15 +57,17 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     };
 
     return (
-        <div style={(defaultValue) ? getIconStyle : {}}>
-            <IconPicker
-                value={defaultValue as ShaIconTypes}
-                onIconChange={onIconChange}
-                readOnly={readOnly}
-                style={style}
-                twoToneColor={color}
-                defaultValue={defaultValue as ShaIconTypes}
-            />
+        <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign, width: '100%' } : {}}>
+            <div style={(defaultValue) ? getIconStyle : {}}>
+                <IconPicker
+                    value={value as ShaIconTypes}
+                    onIconChange={onIconChange}
+                    readOnly={readOnly}
+                    style={style}
+                    twoToneColor={color}
+                    defaultValue={defaultValue as ShaIconTypes}
+                />
+            </div>
         </div>
     );
 };

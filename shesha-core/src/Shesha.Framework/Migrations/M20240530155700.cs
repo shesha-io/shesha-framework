@@ -11,6 +11,7 @@ namespace Shesha.Migrations
             IfDatabase("SqlServer").Execute.Sql(@"
 with data as (
 select 
+	ROW_NUMBER() over (partition by EntityConfigId, ParentPropertyId, Name order by CreationTime) rowNo,
 	* 
 from 
 	Frwk_EntityProperties ep
@@ -42,17 +43,21 @@ where
 			and dup.Id <> ep.Id
 			and dup.IsDeleted = 0
 	)
+),
+rdata as (
+	select * from data where rowno = 1
 )
 update 
 	Frwk_EntityProperties 
 set 
 	IsDeleted = 0
 where 
-	Id in (select Id from data)");
+	Id in (select Id from rdata)");
 
             IfDatabase("PostgreSql").Execute.Sql(@"
 with data as (
 select 
+	ROW_NUMBER() over (partition by ""EntityConfigId"", ""ParentPropertyId"", ""Name"" order by ""CreationTime"") row_no,
 	* 
 from 
 	""Frwk_EntityProperties"" ep
@@ -84,13 +89,16 @@ where
 			and dup.""Id"" <> ep.""Id""
 			and dup.""IsDeleted"" = false
 	)
+),
+rdata as (
+	select * from data where ""row_no"" = 1
 )
 update 
 	""Frwk_EntityProperties"" 
 set 
 	""IsDeleted"" = false
 where 
-	""Id"" in (select ""Id"" from data)
+	""Id"" in (select ""Id"" from rdata)
 ");
         }
     }

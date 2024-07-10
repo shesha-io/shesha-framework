@@ -104,22 +104,25 @@ namespace Shesha.EntityHistory
             // Add entity history
             history.AddRange(audit);
 
-            // Add many-to-many related entities
-            history.AddRange(await GetManyToManyEntitiesAuditAsync(itemType, entityId));
-
-            // Add many-to-one related entities
-            history.AddRange(await GetManyToOneEntitiesAuditAsync(itemType, entityId));
-
-            // Add child audited properties
-            if (includeEventsOnChildEntities)
-                history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
-
-            // Add generic child entities
-            history.AddRange(GetGenericEntitiesAudit(itemType, entityId));
-
-            if (maxDate != DateTime.MaxValue)
+            if (itemType != null)
             {
-                history = history.Where(x => x.CreationTime <= maxDate).ToList();
+                // Add many-to-many related entities
+                history.AddRange(await GetManyToManyEntitiesAuditAsync(itemType, entityId));
+
+                // Add many-to-one related entities
+                history.AddRange(await GetManyToOneEntitiesAuditAsync(itemType, entityId));
+
+                // Add child audited properties
+                if (includeEventsOnChildEntities)
+                    history.AddRange(await GetChildEntitiesAuditAsync(itemType, entityId));
+
+                // Add generic child entities
+                history.AddRange(GetGenericEntitiesAudit(itemType, entityId));
+
+                if (maxDate != DateTime.MaxValue)
+                {
+                    history = history.Where(x => x.CreationTime <= maxDate).ToList();
+                }
             }
 
             _unitOfWorkManager.Current.EnableFilter(AbpDataFilters.SoftDelete);
@@ -330,7 +333,7 @@ namespace Shesha.EntityHistory
                 {
                     try
                     {
-                        if (Parser.CanParseId(entityId, entityType) &&
+                        if (entityType != null && Parser.CanParseId(entityId, entityType) &&
                             _dynamicRepository.Get(entityType, entityId) is ICreationAudited obj)
                         {
                             var createdBy = GetPersonByUserId(obj.CreatorUserId);

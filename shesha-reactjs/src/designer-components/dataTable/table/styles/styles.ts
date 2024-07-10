@@ -1,6 +1,7 @@
 import { createGlobalStyle } from "antd-style";
 import { sheshaStyles } from '@/styles';
 
+
 export const GlobalTableStyles = createGlobalStyle`
   .sha-components-container.sha-index-table-control {
     background: white;

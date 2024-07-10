@@ -57,6 +57,7 @@ import {
   setDraggingRowAction,
   setStandardSortingAction,
   onGroupAction,
+  removeColumFilterAction,
 } from './actions';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -414,7 +415,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
     setUserConfig(settings);
   };
-    
+
   const fetchTableData = (providedState: IDataTableStateContext) => {
     // save user settings before fetch
     saveUserSettings(providedState);
@@ -476,7 +477,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       if (userColumn)
         userColumn.width = wc.width;
     });
-    setUserConfig(userConfig);    
+    setUserConfig(userConfig);
   };
 
   const setCurrentPage = (val: number) => {
@@ -535,6 +536,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     } else {
       clearFilters();
     }
+  };
+
+  const removeColumnFilter = (columnId: string) => {
+    dispatch(removeColumFilterAction(columnId));
   };
 
   const changeActionedRow = (val: any) => {
@@ -730,6 +735,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     changePageSize,
     toggleColumnVisibility,
     toggleColumnFilter,
+    removeColumnFilter,
     changeFilterOption,
     changeFilter,
     applyFilters,
