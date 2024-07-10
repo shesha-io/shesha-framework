@@ -47,7 +47,7 @@ namespace Shesha.ConfigurationItems.Distribution.Models
             var entityConfigStore = iocManager.Resolve<IEntityConfigurationStore>();
 
             var types = typeFinder.Find(t => t.IsAssignableTo(typeof(ConfigurationItemBase)) && !t.IsAbstract).ToList();
-            _itemTypes = types.ToDictionary(t => entityConfigStore.Get(t).DiscriminatorValue.Trim('"', '\''), t => t);
+            _itemTypes = types.ToDictionary(t => entityConfigStore.Get(t).DiscriminatorValue.Trim('"', '\'').Replace("N'", ""), t => t);
         }
 
         public ReadPackageContext() : this(StaticContext.IocManager)

@@ -4,7 +4,7 @@ import EditViewMsg from '../appConfigurator/editViewMsg';
 import React, { FC } from 'react';
 import { FormPersisterActionsContext } from '@/providers/formPersisterProvider/contexts';
 import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
-import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
+import { getFormForbiddenMessage, getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
 import { IConfigurableFormProps } from './models';
 import { Result } from 'antd';
 import { MetadataProvider, useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
@@ -59,6 +59,13 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
                             status="404"
                             title="404"
                             subTitle={getFormNotFoundMessage(formId)}
+                          />
+                        )}
+                        {(persister.loadError?.code === 401 || persister.loadError?.code === 403) && (
+                          <Result
+                            status="403"
+                            title="403"
+                            subTitle={getFormForbiddenMessage(formId)}
                           />
                         )}
                         {persister.loaded &&

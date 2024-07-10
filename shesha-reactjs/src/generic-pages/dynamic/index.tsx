@@ -35,6 +35,7 @@ import { DataContextProvider } from '@/providers/dataContextProvider';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { executeScript } from '@/providers/form/utils';
 import { getFormApi } from '@/providers/form/formApi';
+import { getFormForbiddenMessage } from '@/providers/configurationItemsLoader/utils';
 
 const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { backendUrl } = useSheshaApplication();
@@ -282,6 +283,24 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
         style={{ height: '100vh - 55px' }}
         title="404"
         subTitle="Sorry, the page you visited does not exist."
+        extra={
+          <Button type="primary">
+            <Link href={'/'}>
+              Back Home
+            </Link>
+          </Button>
+        }
+      />
+    );
+  }
+
+  if (markupErrorCode === 401 || markupErrorCode === 403) {
+    return (
+      <Result
+        status="403"
+        style={{ height: '100vh - 55px' }}
+        title="403"
+        subTitle={getFormForbiddenMessage(formId)}
         extra={
           <Button type="primary">
             <Link href={'/'}>
