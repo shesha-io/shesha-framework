@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Shesha.Domain
 {
     /// <summary>
-    /// Represents an invitation to a user or would-be user 
+    /// Represents an invitation to a user or would-be user to
     /// associate with an `Organisation account`
     /// </summary>
     [Discriminator]

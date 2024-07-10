@@ -13,16 +13,14 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            // Add a reference list for AccountInvitationStatus
             this.Shesha().ReferenceListCreate("Shesha.Core", "AccountInvitationStatus")
-                .SetDescription("Account Invitation Status") // set desctiption
-                .SetNoSelectionValue(1) // set noselection value
+                .SetDescription("Account Invitation Status") 
+                .SetNoSelectionValue(1) 
                 .AddItem(1, "Invited")
                 .AddItem(2, "Registration")
                 .AddItem(3, "Expired")
                 .AddItem(4, "Cancelled");
 
-            // Create the AccountInvitation table
             Create.Table("Core_AccountInvitations")
                 .WithIdAsGuid()
                 .WithFullAuditColumns()
