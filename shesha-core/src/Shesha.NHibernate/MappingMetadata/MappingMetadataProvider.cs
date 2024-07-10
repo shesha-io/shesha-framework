@@ -33,7 +33,7 @@ namespace Shesha.MappingMetadata
             var mappingMetadata = new EntityMappingMetadata()
             {
                 TableName = persister?.TableName,
-                DiscriminatorValue = persister?.DiscriminatorSQLValue,
+                DiscriminatorValue = persister?.DiscriminatorValue?.ToString(),
                 IsMultiTable = persister?.IsMultiTable ?? false,
             };
             mappingMetadata.SubclassTableName = mappingMetadata.IsMultiTable

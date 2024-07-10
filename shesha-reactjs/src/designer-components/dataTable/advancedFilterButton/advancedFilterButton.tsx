@@ -26,6 +26,7 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
   const buttonStyle = {
     ...localStyle,
     ...{ color: props.buttonType !== 'primary' && !props.danger ? styles.primaryColor : '' },
+    padding: "3px",
     border: hasFilters ? `1px solid ${styles.primaryColor}` : 'none',
   };
 
@@ -60,25 +61,28 @@ export const AdvancedFilterButton: FC<IButtonComponentProps> = (props) => {
   const filterIcon = icon ? <IconComponent /> : defaultIcon;
 
   return (
-    <Badge
-      count={tableFilter?.length}
-      color={isFiltering || props.readOnly ? styles.disabledColor : styles.primaryColor}
-      size="small"
-      title={filterColumns?.join('  ')}
-    >
-      <Button
-        type={props.buttonType}
+    <span>
+      <Badge
+        count={tableFilter?.length}
+        color={isFiltering || props.readOnly ? styles.disabledColor : styles.primaryColor}
+        size="small"
         title={filterColumns?.join('  ')}
-        onClick={startFilteringColumns}
-        className={styles.button}
-        danger={props.danger}
-        disabled={props.readOnly || isFiltering}
-        icon={filterIcon}
-        size={props.size}
-        style={isFiltering || props.readOnly ? {} : { ...buttonStyle }}
       >
-        {props.label}
-      </Button>
-    </Badge>
+        <Button
+          type={props.buttonType}
+          title={filterColumns?.join('  ')}
+          onClick={startFilteringColumns}
+          className={styles.button}
+          danger={props.danger}
+          disabled={props.readOnly || isFiltering}
+          icon={filterIcon}
+          size={props.size}
+          style={isFiltering || props.readOnly ? {} : { ...buttonStyle }}
+        >
+          {props.label}
+        </Button>
+      </Badge>
+    </span>
+
   );
 };

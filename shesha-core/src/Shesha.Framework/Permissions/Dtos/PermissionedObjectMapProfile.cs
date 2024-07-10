@@ -11,7 +11,8 @@ namespace Shesha.Permissions.Dtos
         public PermissionedObjectMapProfile()
         {
             CreateMap<PermissionedObjectDto, PermissionedObject>()
-                .ForMember(e => e.Permissions, c => c.MapFrom(e => string.Join(",", e.Permissions)));
+                .ForMember(e => e.Permissions, c => c.MapFrom(e => string.Join(",", e.Permissions)))
+                .ForMember(e => e.Module, c => c.Ignore());
             CreateMap<PermissionedObject, PermissionedObjectDto>()
                 .ForMember(e => e.Permissions, c => c.MapFrom(e =>
                     e.Permissions == null
