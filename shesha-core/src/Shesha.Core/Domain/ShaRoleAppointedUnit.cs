@@ -7,6 +7,5 @@ namespace Shesha.Domain
     [DiscriminatorValue((int)ShaRoleAppointmentType.Unit)]
     public class ShaRoleAppointedUnit : ShaRoleAppointment
     {
-        public virtual OrganisationUnit OrganisationUnit { get; set; }
     }
 }
