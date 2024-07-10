@@ -1,4 +1,3 @@
-import { QuestionOutlined } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
@@ -41,35 +40,31 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
   } as MenuItem;
 }
 
-const getIcon = (icon: ReactNode, isParent?: boolean, isRootItem?: boolean) => {
+const getIcon = (icon: ReactNode, isParent?: boolean) => {
   if (typeof icon === 'string')
     return <ShaIcon iconName={icon as IconType} className={classNames({ 'is-parent-menu': isParent })} />;
 
   if (React.isValidElement(icon)) return icon;
-  return isRootItem ? <QuestionOutlined /> : null; // Make sure there's always an Icon on the root item menu, even when not specified
+  return null;
 };
 
 export interface IProps {
   item: ISidebarMenuItem;
-  isItemVisible: (item: ISidebarMenuItem) => boolean;
-  isRootItem?: boolean;
   onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;
   onItemEvaluation?: (item: ISidebarMenuItem) => void;
   getFormUrl: (args) => string;
   getUrl: (args) => string;
 }
 
-export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, isRootItem, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
-
-
+export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
   const { id, title, icon, itemType } = item;
 
   const navigationType = item?.actionConfiguration?.actionArguments?.navigationType;
 
-  if (typeof isItemVisible === 'function' && !isItemVisible(item)) return null;
+  if (item.isHidden) return null;
 
   const children = isSidebarGroup(item)
-    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, isItemVisible, onItemEvaluation, getFormUrl, getUrl }))
+    ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }))
     : null;
   const hasChildren = Array.isArray(children) && children.length > 0;
 
@@ -85,7 +80,7 @@ export const sidebarMenuItemToMenuItem = ({ item, isItemVisible, onButtonClick, 
   const itemEvaluationArguments: IGetItemArgs = {
     label: title,
     key: id,
-    icon: getIcon(icon, hasChildren, isRootItem),
+    icon: getIcon(icon, hasChildren),
     children: children,
     isParent: hasChildren,
     itemType,

@@ -2,6 +2,7 @@
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Entities;
+using Abp.Domain.Uow;
 using Abp.Localization;
 using Shesha.Domain.Enums;
 using Shesha.Permissions;
@@ -19,18 +20,21 @@ namespace Shesha.Authorization
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IShaPermissionChecker _permissionChecker;
         private readonly ILocalizationManager _localizationManager;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public ObjectPermissionChecker(
             IAuthorizationConfiguration authConfiguration,
             IPermissionedObjectManager permissionedObjectManager,
             IShaPermissionChecker permissionChecker,
-            ILocalizationManager localizationManager
-            )
+            ILocalizationManager localizationManager,
+            IUnitOfWorkManager unitOfWorkManager
+        )
         {
             _authConfiguration = authConfiguration;
             _permissionedObjectManager = permissionedObjectManager;
             _permissionChecker = permissionChecker;
             _localizationManager = localizationManager;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public async Task AuthorizeAsync(bool requireAll, string permissionedObject, string method, bool IsAuthenticated, RefListPermissionedAccess? replaceInherited = null)
@@ -40,6 +44,7 @@ namespace Shesha.Authorization
                 return;
             }
 
+            using var uow = _unitOfWorkManager.Begin();
             var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method.RemovePostfix("Async")) 
                 ? PermissionedObjectManager.CrudMethods[method.RemovePostfix("Async")] 
                 : method;
@@ -81,6 +86,7 @@ namespace Shesha.Authorization
             var ty = _permissionChecker.GetType();// (_permissionChecker as IProxyTargetAccessor).DynProxyGetTarget().GetType();
             // ToDo: add RequireAll flag
             await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions.ToArray());
+            await uow.CompleteAsync();
         }
     }
 }

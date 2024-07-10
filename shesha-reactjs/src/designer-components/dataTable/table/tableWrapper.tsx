@@ -1,6 +1,6 @@
 import React, {
     FC,
-    Fragment
+    Fragment,
 } from 'react';
 import { filterVisibility } from './utils';
 import { getStyle } from '@/providers/form/utils';
@@ -18,9 +18,10 @@ import {
     useGlobalState,
     useSheshaApplication,
 } from '@/providers';
-import { GlobalTableStyles } from './styles/styles';
+import { GlobalTableStyles, useStyles } from './styles/styles';
 import { Alert } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { FilterList } from '../filterList/filterList';
 
 const NotConfiguredWarning: FC = () => {
     return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
@@ -34,9 +35,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
     const { anyOfPermissionsGranted } = useSheshaApplication();
-
+    const { styles } = useStyles();
     const isDesignMode = formMode === 'designer';
-
     const {
         getRepository,
         isInProgress: { isFiltering, isSelectingColumns },
@@ -46,6 +46,10 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         setMultiSelectedRow,
         requireColumns,
         allowReordering,
+        clearFilters,
+        removeColumnFilter,
+        tableFilter,
+        tableData
     } = useDataTableStore();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
@@ -82,6 +86,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
     };
 
+
     return (
         <SidebarContainer
             rightSidebarProps={{
@@ -94,6 +99,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
+            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={tableData?.length} clearFilters={clearFilters} styles={styles} removeColumnFilter={removeColumnFilter} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}

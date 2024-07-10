@@ -34,6 +34,7 @@ export interface IButtonGroupItemBase {
   isDynamic?: boolean;
   itemType: ButtonGroupItemType;
   icon?: string;
+  downIcon?: string;
   buttonType?: ButtonType;
   ghost?: boolean;
   permissions?: string[];

@@ -64,11 +64,6 @@ namespace Shesha.Domain
         /// </summary>
         public virtual string Parent { get; set; }
 
-        /// <summary>
-        /// Dependence on another permissioned object (for example, CRUD API on an entity)
-        /// </summary>
-        public virtual string Dependency { get; set; }
-
         public virtual bool Hidden { get; set; }
     }
 }
