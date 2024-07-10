@@ -71,9 +71,11 @@ namespace Shesha.Web.FormsDesigner.Services
 
         private async Task<bool> CheckFormPermissions(string module, string name, int versionNo)
         {
-            var permission = _permissionedObjectManager.Get(FormManager.GetFormPermissionedObjectName(module, name, versionNo));
+            var permission = await _permissionedObjectManager.GetOrNullAsync(FormManager.GetFormPermissionedObjectName(module, name, versionNo));
 
-            var access = permission?.Access ?? RefListPermissionedAccess.AnyAuthenticated;
+            var access = permission?.Access == null || permission.Access < RefListPermissionedAccess.AnyAuthenticated
+                ? RefListPermissionedAccess.AnyAuthenticated
+                : permission.Access;
             if (AbpSession.UserId == null
                 && (access == RefListPermissionedAccess.AnyAuthenticated || access == RefListPermissionedAccess.RequiresPermissions))
                 throw new AbpAuthorizationException("You are not authorized for this form");
@@ -92,7 +94,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var permission = AsyncHelper.RunSync(() => 
                 _permissionedObjectManager.GetAsync(FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name, entity.VersionNo))
             );
-            if ((int)permission?.Access > 2) // permission exists
+            if (permission?.Access > RefListPermissionedAccess.Inherited) // permission exists
             {
                 dto.Access = permission?.Access;
                 dto.Permissions = permission?.Permissions;
@@ -286,12 +288,12 @@ namespace Shesha.Web.FormsDesigner.Services
             form.Markup = input.Markup;
             await Repository.UpdateAsync(form);
 
-            if (input.Access != null)
+            if (input.Access > RefListPermissionedAccess.Inherited)
             {
                 var permisson = new PermissionedObjectDto
                 {
                     Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
-                    Name = $"{form.Module?.Name}.{form.Name} v.{form.VersionNo}",
+                    Name = $"{form.Module?.Name}.{form.Name}",
                     Module = form.Module.Name,
                     ModuleId = form.Module.Id,
                     Type = ShaPermissionedObjectsTypes.Form,
@@ -366,11 +368,6 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var newVersion = await _formManager.CreateNewVersionAsync(item);
             await CurrentUnitOfWork.SaveChangesAsync();
-
-            await _permissionedObjectManager.CopyAsync(
-                FormManager.GetFormPermissionedObjectName(item.Module?.Name, item.Name, item.VersionNo),
-                FormManager.GetFormPermissionedObjectName(newVersion.Module?.Name, newVersion.Name, newVersion.VersionNo)
-            );
 
             return MapToEntityDto(newVersion);
         }
