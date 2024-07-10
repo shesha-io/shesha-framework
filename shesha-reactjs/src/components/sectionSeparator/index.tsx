@@ -43,7 +43,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   const { styles } = useStyles();
 
   const borderStyle = {
-    '--border-thickness': `${lineThickness}px`,
+    '--border-thickness': `${lineThickness ?? 2}px`,
     '--border-style': dashed ? 'dashed' : 'solid',
     '--border-color': lineColor || styles.primaryColor,
     textAlign: labelAlign
