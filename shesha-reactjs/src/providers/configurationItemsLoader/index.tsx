@@ -27,7 +27,7 @@ import {
 } from './contexts';
 import { IComponentsDictionary, IFormsDictionary, IReferenceListsDictionary } from './models';
 import metadataReducer from './reducer';
-import { getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
+import { getFormForbiddenMessage, getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
@@ -293,7 +293,11 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
                 const error = response.error ?? {
                   code: httpResponse?.status,
-                  message: httpResponse?.status === 404 ? getFormNotFoundMessage(formId) : httpResponse?.statusText,
+                  message: httpResponse?.status === 404
+                    ? getFormNotFoundMessage(formId) 
+                    : httpResponse?.status === 401 || httpResponse?.status === 403
+                      ? getFormForbiddenMessage(formId)
+                      : httpResponse?.statusText,
                 };
 
                 reject(error);

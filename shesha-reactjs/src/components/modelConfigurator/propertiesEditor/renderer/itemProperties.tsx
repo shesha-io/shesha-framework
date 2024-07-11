@@ -47,7 +47,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
     const markup = propertySettingsJson as FormMarkup;
 
     return (
-      <>
+      <div>
         <ConfigurableForm
           key={nanoid()}
           size="small"
@@ -61,7 +61,7 @@ export const ToolbarItemProperties: FC<IProps> = () => {
           initialValues={componentModel}
           onValuesChange={debouncedSave}
         />
-      </>
+      </div>
     );
   };
 

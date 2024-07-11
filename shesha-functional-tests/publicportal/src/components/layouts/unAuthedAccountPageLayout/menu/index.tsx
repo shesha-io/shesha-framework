@@ -42,7 +42,7 @@ export const LayoutMenu: FC<IProps> = () => {
     SidebarMenu.sidebarItemToMenuItem({
       item,
       onButtonClick,
-      isRootItem: true,
+      //isRootItem: true,
       getFormUrl: (args) => {
         const url = getUrlFromNavigationRequest(args?.actionArguments);
         const href = evaluateString(decodeURIComponent(url), evaluationContext);

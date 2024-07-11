@@ -115,6 +115,14 @@
             "propertyName": "suffix",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Suffix",
+            "version": 3
+          },
+          {
+            "id": "123b1754-682c-4f2c-b49a-a1f250467474",
+            "type": "iconPicker",
+            "propertyName": "suffixIcon",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Suffix Icon",
             "version": 3,
             "textType": "text"
           },

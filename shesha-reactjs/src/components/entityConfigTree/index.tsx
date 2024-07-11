@@ -226,7 +226,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           </Dropdown>
         </div>
       </div>
-      <div style={{height: 'calc(100vh - 168px)', overflow: 'auto'}}>
+      <div className={styles.shaTreeMain}>
         <GrouppedObjectsTree<EntityConfigDto>
           items={items}
           openedKeys={openedKeys}

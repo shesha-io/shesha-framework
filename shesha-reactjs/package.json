@@ -90,7 +90,7 @@
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/eslint-plugin-tslint": "^7.0.2",
     "@typescript-eslint/parser": "^7.2.0",
-    "antd": "^5.17.4",
+    "antd": "5.17.4",
     "antd-style": "^3.6.2",
     "axios": "^1.7.2",
     "camelcase": "^6.2.0",

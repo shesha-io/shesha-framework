@@ -147,6 +147,7 @@ namespace Shesha.Permissions
                         {
                             Object = parent.Object + "@" + methodInfo.Action.Name,
                             Module = parent.Module,
+                            ModuleId = parent.ModuleId,
                             Name = GetName(methodInfo.Action, 
                                 methodInfo.Action.Name.EndsWith("Async")
                                     ? methodInfo.Action.Name.Replace("Async", "")
