@@ -43,13 +43,15 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <ColumnsList readOnly={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="alignItems" label="Align Items">
-                <Select >
-                    <Option value="flex-start">Flex Start</Option>
-                    <Option value="flex-end">Flex End</Option>
-                    <Option value="center">Center</Option>
-                </Select>
-            </SettingsFormItem>
+            <Show when={values.orientation === "horizontal"}>
+                <SettingsFormItem name="alignItems" label="Align Items">
+                    <Select >
+                        <Option value="flex-start">Flex Start</Option>
+                        <Option value="flex-end">Flex End</Option>
+                        <Option value="center">Center</Option>
+                    </Select>
+                </SettingsFormItem>
+            </Show>
 
             <SectionSeparator title="Divider" />
 
@@ -68,6 +70,11 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                     <Input readOnly={readOnly} />
                 </SettingsFormItem>
             </Show>
+
+            <SettingsFormItem name="dividerThickness" label="Divider Thickness" jsSetting tooltip={tooltip}>
+                <Input readOnly={readOnly} />
+            </SettingsFormItem>
+
             <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting >
                 <ColorPicker readOnly={readOnly} allowClear />
             </SettingsFormItem>

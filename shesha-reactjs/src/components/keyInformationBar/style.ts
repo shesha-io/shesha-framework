@@ -22,6 +22,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 flex-direction: row;
                 align-items: center;
                 overflow: hidden;
+                width: 100%;
+                
                 .ant-form-item-control-input {
                     min-height: 0;
                 }
@@ -36,7 +38,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 span, div {
                     min-width: 15px;
                     display: block;
-                    width: 100%;
                 }
                 
                 .ant-typography {
@@ -49,7 +50,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                     
                 &.ant-form-item-control-input-content, .ant-form-item-control-input {
                     min-height: 0;
-                    width: 100%;
+                    max-width: 100%;
                 }
 
                 button {

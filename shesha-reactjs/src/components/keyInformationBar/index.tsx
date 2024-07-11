@@ -8,7 +8,7 @@ import { addPx } from './utils';
 export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
     const { data } = useFormData();
-    const { columns, hidden, orientation, style, dividerMargin, dividerHeight, dividerWidth, dividerColor, gap, stylingBox, alignItems, backgroundColor } = props;
+    const { columns, hidden, orientation, style, dividerMargin, dividerHeight, dividerWidth, dividerThickness = '0.62px', dividerColor, gap, stylingBox, alignItems, backgroundColor } = props;
     const { styles } = useStyles();
 
     const width = addPx(dividerWidth);
@@ -32,10 +32,12 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         textOverflow: "ellipsis",
     });
 
+    const divThickness = addPx(dividerThickness) !== '100%' ? addPx(dividerThickness) : '0.62px';
+
     const dividerStyle = {
         backgroundColor: dividerColor ?? '#b4b4b4',
-        width: !vertical && width ? '0.62px' : width,
-        height: vertical && height ? '0.62px' : height,
+        width: !vertical && width ? divThickness ?? '0.62px' : width,
+        height: vertical && height ? divThickness ?? '0.62px' : height,
         margin: vertical ? `${margin} 0` : `0 ${margin}`,
     };
 
@@ -46,7 +48,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
                 return (
                     <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={vertical ? { width: itemWidth, justifyContent: alignItems } : { maxWidth: itemWidth }}>
                         <div key={"divider" + i} className={styles.divider} style={{ ...dividerStyle, alignSelf: "center" }} />
-                        <div className={styles.content} style={{ textAlign: item.textAlign, ...(vertical ? { width: itemWidth, justifyContent: alignItems } : { maxWidth: itemWidth }) }}>
+                        <div className={styles.content} style={{ justifyContent: item.textAlign }}>
                             <ComponentsContainer
                                 containerId={item.id}
                                 gap={gap}
