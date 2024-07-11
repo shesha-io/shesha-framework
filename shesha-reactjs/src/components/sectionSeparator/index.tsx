@@ -56,10 +56,10 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     const titleStyles = {
       ...titleStyle,
       fontSize: fontSize,
-      padding: inline ? '0 6px' : '0',
       ...(fontColor && { color: fontColor }),
     };
 
+    if (title === "Test Details") console.log("Label align: ", labelAlign)
     return (
       <span style={{
         ...titleStyles
@@ -97,8 +97,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
         >
           <Divider
             type={orientation}
-            orientation={labelAlign}
-            orientationMargin={noMargin ? "0" : null}
+            orientation={labelAlign || 'left'}
+            orientationMargin={noMargin ? '0' : null}
             dashed={dashed}
           >
             {titleComponent()}
