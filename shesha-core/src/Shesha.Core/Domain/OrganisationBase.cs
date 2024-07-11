@@ -105,7 +105,7 @@ namespace Shesha.Domain
         public virtual TPerson PrimaryContact { get; set; }
 
         /// <summary>
-        /// 
+        /// Child organisations
         /// </summary>
         [InverseProperty("ParentId")]
         public virtual IList<T> Units { get; set; }
