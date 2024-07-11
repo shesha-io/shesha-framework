@@ -9,6 +9,7 @@ export const useStyles = createStyles(({ token, cx, css }) => {
   const tag = "tag";
   const resultCount = "result-count";
   const clearAllButton = "clear-all-button";
+  const filters = "filters";
 
   const wrapper = cx("filter-wrapper", css`
       display: flex;
@@ -63,7 +64,7 @@ export const useStyles = createStyles(({ token, cx, css }) => {
         white-space: nowrap;
       }
 
-      .filters {
+      .${filters} {
         display: flex;
         overflow-x: scroll;
         scroll-behavior: smooth;
@@ -116,6 +117,7 @@ export const useStyles = createStyles(({ token, cx, css }) => {
     disabledColor,
     button,
     resultCount,
-    clearAllButton
+    clearAllButton,
+    filters
   };
 });

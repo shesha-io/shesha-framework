@@ -86,7 +86,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
                     className={styles.arrowLeft}
                     onClick={scrollLeft}
                 />
-                <div className={'filters'} ref={filtersRef} style={{}}>
+                <div className={styles.filters} ref={filtersRef}>
                     {filters?.map(({ columnId }) => {
                         return (
                             <Tag
