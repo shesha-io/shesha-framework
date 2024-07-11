@@ -44,13 +44,14 @@ namespace Shesha.Authorization
                 return;
             }
 
-            using var uow = _unitOfWorkManager.Begin();
             var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method.RemovePostfix("Async")) 
                 ? PermissionedObjectManager.CrudMethods[method.RemovePostfix("Async")] 
                 : method;
             var permissionName = $"{permissionedObject}@{methodName}";
 
+            using var uow = _unitOfWorkManager.Begin();
             var permission = await _permissionedObjectManager.GetAsync(permissionName);
+            await uow.CompleteAsync();
 
             var actualAccess = replaceInherited != null && permission?.ActualAccess == RefListPermissionedAccess.Inherited
                 ? replaceInherited
@@ -86,7 +87,6 @@ namespace Shesha.Authorization
             var ty = _permissionChecker.GetType();// (_permissionChecker as IProxyTargetAccessor).DynProxyGetTarget().GetType();
             // ToDo: add RequireAll flag
             await _permissionChecker.AuthorizeAsync(false, permission.ActualPermissions.ToArray());
-            await uow.CompleteAsync();
         }
     }
 }

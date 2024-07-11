@@ -17,7 +17,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
   const container = cx(prefix, css`
       width: 100%;
-      height: 100%;
+      height: calc(100vh - 122px);
       display: flex;
       flex-direction: row;
       -webkit-box-sizing: border-box;
@@ -28,18 +28,27 @@ export const useStyles = createStyles(({ css, cx }) => {
         overflow-x: hidden;
         overflow-y: auto;
         padding-right: 5px;
+        height: 100%;
         ${sheshaStyles.thinScrollbars}
+        
+        .ant-spin-nested-loading {
+          height: 100%;
+          .ant-spin-container{
+            height: 100%;
+          }
+        }
       }
 
       .${propsPanel} {
         overflow: hidden;
         background: white;
-
+        height: calc(100vh - 122px);
+        
         .${propsPanelContent} {
           display: flex;
           flex-direction: column;
-          height: calc(100vh - 168px);
           overflow: hidden;
+          height: 100%;
 
           .${propsPanelHeader} {
             display: flex;

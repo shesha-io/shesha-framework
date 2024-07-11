@@ -266,7 +266,7 @@ namespace Shesha.Permissions
             return await Task.FromResult(_objectMapper.Map<PermissionedObjectDto>(dbObj));
         }
 
-        public virtual async Task<PermissionedObjectDto> GetAsync(string objectName, string objectType = null, bool useInherited = true, bool useHidden = false)
+        public virtual async Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType = null, bool useInherited = true, bool useHidden = false)
         {
 
             using var unitOfWork = _unitOfWorkManager.Begin();
@@ -278,8 +278,13 @@ namespace Shesha.Permissions
 
             if (dbObj != null)
                 return _objectMapper.Map<PermissionedObjectDto>(dbObj);
-            
-            var obj = await GetDtoAsync(InternalCreate(objectName, objectType));
+
+            return null;
+        }
+
+        public virtual async Task<PermissionedObjectDto> GetAsync(string objectName, string objectType = null, bool useInherited = true, bool useHidden = false)
+        {
+            var obj = await GetOrNullAsync(objectName, objectType, useInherited, useHidden) ?? await GetDtoAsync(InternalCreate(objectName, objectType));
             return obj;
         }
 
@@ -335,11 +340,15 @@ namespace Shesha.Permissions
 
         public async Task<PermissionedObjectDto> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType = null, string dstObjectType = null)
         {
-            var permission = await GetAsync(srcObjectName, srcObjectType);
-            permission.Id = Guid.Empty;
-            permission.Object = dstObjectName;
-            permission.Type = dstObjectType != null ? dstObjectType : permission.Type;
-            return await SetAsync(permission);
+            var permission = await GetOrNullAsync(srcObjectName, srcObjectType);
+            if (permission != null)
+            {
+                permission.Id = Guid.Empty;
+                permission.Object = dstObjectName;
+                permission.Type = dstObjectType != null ? dstObjectType : permission.Type;
+                return await SetAsync(permission);
+            }
+            return null;
         }
 
         public async Task<bool> IsActionDescriptorEnabled(ActionDescriptor actionDescriptor)

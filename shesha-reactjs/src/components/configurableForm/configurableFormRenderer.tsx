@@ -231,7 +231,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     colon: formSettings.colon,
   };
 
-  if (formSettings?.access === 4 &&  !anyOfPermissionsGranted(formSettings?.permissions || [])) {
+  if (formSettings?.access === 4 && !anyOfPermissionsGranted(formSettings?.permissions || [])) {
     return (
       <Result
         status="403"

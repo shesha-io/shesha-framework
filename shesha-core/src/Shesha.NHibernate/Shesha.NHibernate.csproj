@@ -30,7 +30,7 @@
     <PackageReference Include="FluentMigrator.Runner.Postgres" Version="5.0.0" />
     <PackageReference Include="JsonLogic.Net" Version="1.1.11" />
     <PackageReference Include="NetTopologySuite" Version="2.5.0" />
-    <PackageReference Include="NHibernate" Version="5.4.7" />
+    <PackageReference Include="NHibernate" Version="5.5.2" />
     <PackageReference Include="NHibernate.Extensions.NpgSql" Version="8.0.0" />
     <PackageReference Include="NHibernate.Spatial" Version="7.0.0" />
     <PackageReference Include="PluralizeService.Core" Version="1.2.21147.2" />

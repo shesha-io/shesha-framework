@@ -350,7 +350,25 @@ namespace Shesha.DynamicEntities
                 await _permissionedObjectManager.SetAsync(input.PermissionDelete);
             }
 
-            return await GetModelConfigurationAsync(modelConfig);
+            var dto = await GetModelConfigurationAsync(modelConfig);
+            // update permissions from the input because data is not saved to DB yet
+            dto.Permission = input.Permission;
+            dto.Permission.ActualAccess = dto.Permission.Access;
+            dto.Permission.ActualPermissions = dto.Permission.Permissions;
+            dto.PermissionGet = input.PermissionGet;
+            dto.PermissionGet.ActualAccess = dto.PermissionGet.Access;
+            dto.PermissionGet.ActualPermissions = dto.PermissionGet.Permissions;
+            dto.PermissionUpdate = input.PermissionUpdate;
+            dto.PermissionUpdate.ActualAccess = dto.PermissionUpdate.Access;
+            dto.PermissionUpdate.ActualPermissions = dto.PermissionUpdate.Permissions;
+            dto.PermissionDelete = input.PermissionDelete;
+            dto.PermissionDelete.ActualAccess = dto.PermissionDelete.Access;
+            dto.PermissionDelete.ActualPermissions = dto.PermissionDelete.Permissions;
+            dto.PermissionCreate = input.PermissionCreate;
+            dto.PermissionCreate.ActualAccess = dto.PermissionCreate.Access;
+            dto.PermissionCreate.ActualPermissions = dto.PermissionCreate.Permissions;
+
+            return dto;
         }
 
         private IMapper GetModelConfigMapper(MetadataSourceType sourceType)

@@ -1,6 +1,7 @@
 import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
+  const shaModelConfiguratorForm = 'sha-model-configurator-form';
   const shaModelConfiguratorToolbar = 'sha-model-configurator-toolbar';
   const shaModelConfiguratorToolbarLeft = 'sha-model-configurator-toolbar-left';
   const shaModelConfiguratorToolbarRight = 'sha-model-configurator-toolbar-right';
@@ -14,9 +15,44 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     css`
       padding-left: 12px;
       padding-right: 12px;
-      height: 100vh;
-      overflow: none;
-  
+      height: 100%;
+      overflow: hidden;
+
+      .${shaModelConfiguratorForm} {
+        height: 100%;
+        .ant-spin-nested-loading, .ant-spin-container, .ant-form:first-child {
+          height: 100%;
+          .sha-components-container.vertical, .sha-components-container-inner {
+            height: 100%;
+            .ant-tabs, .ant-tabs-content, .ant-tabs-tabpane-active {
+              height: 100%;
+              .shaPropertiesEditorForm.ant-form-item {
+                height: 100%;
+                .ant-form-item-row:first-child, .ant-col:first-child, .ant-form-item-control-input-content:first-child {
+                  height: 100%;
+                  .sidebar-container, .sidebar-container-body, .sidebar-container-main-area {
+                    height: 100%;
+                    overflow: hidden;
+                    .sidebar-container-main-area-body {
+                      height: 100%;
+                      overflow: auto;
+                    }
+                    .sidebar-container-right, sidebar-body {
+                      height: 100%;
+                      overflow: hidden;
+                      min-height: 100%;
+                      .sidebar-body {
+                        height: calc(100% - 35px);
+                        overflow: auto;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
       
       .${shaModelConfiguratorToolbar} {
         padding: 12px;
@@ -69,6 +105,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     `
   );
   return {
+    shaModelConfiguratorForm,
     shaModelConfigurator,
     shaModelConfiguratorToolbar,
     shaModelConfiguratorToolbarLeft,

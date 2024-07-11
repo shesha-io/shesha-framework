@@ -50,6 +50,9 @@ namespace Shesha.Permissions
         Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string inheritedFromName = null,
             bool useInherited = true, bool useHidden = false);
 
+
+        Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType = null, bool useInherited = true, bool useHidden = false);
+
         /// <summary>
         /// Get Protected Object by object name
         /// </summary>

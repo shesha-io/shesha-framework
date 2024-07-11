@@ -12,6 +12,15 @@ export const getFormNotFoundMessage = (formId: FormIdentifier) => {
   return 'Form not found';
 };
 
+export const getFormForbiddenMessage = (formId: FormIdentifier) => {
+  if (isFormRawId(formId)) return `You are not authorized to access the form with id='${formId}'`;
+
+  if (isFormFullName(formId)) return `You are not authorized to access the form '${getFormFullName(formId.module, formId.name)}'`;
+
+  return 'Form not found';
+};
+
+
 export const getReferenceListNotFoundMessage = (refListId: IReferenceListIdentifier) => {
   if (refListId) return `Reference list '${getReferenceListFullName(refListId)}' not found`;
 
