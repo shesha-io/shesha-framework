@@ -5,11 +5,12 @@ import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evalua
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { ComponentsContainer } from '@/components';
+import { ComponentsContainer, ValidationErrors } from '@/components';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { isValidGuid } from '@/components/formDesigner/components/utils';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -21,6 +22,10 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const { formSettings } = useForm();
     const { backendUrl } = useSheshaApplication();
     const ownerId = evaluateValue(model.ownerId, { data, globalState });
+
+    if (model.dataSource === 'storedFileId' && model.storedFileId && !isValidGuid(model.storedFileId)) {
+      return <ValidationErrors error="The provided StoredFileId is inValid" />;
+    }
 
     if (model.hidden) return null;
 
