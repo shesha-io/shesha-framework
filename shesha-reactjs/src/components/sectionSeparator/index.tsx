@@ -1,58 +1,116 @@
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Space, Tooltip } from 'antd';
-import Show from '@/components/show';
 import React, { CSSProperties, FC, ReactNode } from 'react';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { ConfigProvider, Divider, Space, Tooltip } from 'antd';
+import Show from '@/components/show';
 import { useStyles } from './styles/styles';
 
 export interface ISectionSeparatorProps {
-  /**
-   * @deprecated - use `title` instead
-   * Section name
-   */
-  sectionName?: string;
-
-  /**
-   * Title of the section
-   */
+  id?: string;
   title?: string | ReactNode;
-
-  /**
-   * The style that will be applied to the container of the section
-   */
   containerStyle?: CSSProperties;
-
-  /**
-   * The style that will be applied to the style of the section
-   */
   titleStyle?: CSSProperties;
-
-  /**
-   * The tooltip of the section
-   */
   tooltip?: string;
+  fontSize?: number;
+  fontColor?: string;
+  inline?: boolean;
+  dashed?: boolean;
+  lineColor?: string;
+  lineThickness?: number;
+  lineWidth?: number;
+  lineHeight?: number;
+  noMargin?: boolean;
+  labelAlign?: 'left' | 'center' | 'right';
+  orientation?: 'horizontal' | 'vertical';
 }
 
-/** A component for separating the content on the form */
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
-  sectionName = '',
+  labelAlign,
+  fontSize,
+  fontColor,
+  inline,
+  dashed,
+  lineColor,
+  lineThickness,
+  lineWidth = "100%",
+  lineHeight,
+  orientation,
   containerStyle,
   titleStyle,
   tooltip,
   title,
+  noMargin
 }) => {
   const { styles } = useStyles();
-  const sectionTitle = title || sectionName;
 
-  return (
-    <div className={styles.shaSectionSeparator} style={containerStyle}>
-      <span style={titleStyle}>
-        <Space size="small">
-          {sectionTitle}
+  const borderStyle = {
+    '--border-thickness': `${lineThickness ?? 2}px`,
+    '--border-style': dashed ? 'dashed' : 'solid',
+    '--border-color': lineColor || styles.primaryColor,
+    textAlign: labelAlign
+  } as CSSProperties;
+
+  console.log(orientation, 'dividerType');
+
+  const titleComponent = () => {
+    if (!title) return null;
+
+    const titleStyles = {
+      ...titleStyle,
+      ...(fontSize && { fontSize }),
+      ...(fontColor && { color: fontColor }),
+    };
+
+    return (
+      <span style={{
+        ...titleStyles
+      }}>
+        <Space size="small" style={{ flexWrap: "nowrap", alignContent: "center" }}>
+          {title}
           <Show when={Boolean(tooltip?.trim())}>
-            <Tooltip title={tooltip}>{<QuestionCircleOutlined className='tooltip-question-icon' size={14} color='gray'/>}</Tooltip>
+            <Tooltip title={tooltip}>
+              <QuestionCircleOutlined className='tooltip-question-icon' style={{ fontSize: 14, color: 'gray', verticalAlign: "middle" }} />
+            </Tooltip>
           </Show>
         </Space>
       </span>
+    );
+  };
+
+  const commonProps = {
+    style: { ...containerStyle, minWidth: "100px", width: lineWidth }
+  };
+
+  if (inline || orientation === 'vertical') {
+    return (
+      <div {...commonProps}>
+        <ConfigProvider
+          theme={{
+            token: {
+              colorSplit: lineColor || styles.primaryColor,
+              colorText: fontColor || '#000',
+              lineWidth: lineThickness,
+              fontSize: lineHeight || fontSize,
+            },
+          }}
+        >
+          <Divider
+            type={orientation}
+            orientation={labelAlign}
+            orientationMargin={noMargin ? "0" : undefined}
+            dashed={dashed}
+          >
+            {titleComponent()}
+          </Divider>
+        </ConfigProvider>
+      </div>
+    );
+  }
+
+  return (
+    <div {...commonProps}>
+      <div className={styles.shaSectionSeparator} style={borderStyle}>
+        {titleComponent()}
+      </div>
     </div>
   );
 };

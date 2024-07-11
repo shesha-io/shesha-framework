@@ -17,7 +17,8 @@
       "propertyName": "sectionSeparator1",
       "label": "Display",
       "labelAlign": "right",
-      "parentId": "root"
+      "parentId": "root",
+      "lineThickness": 2
     },
     {
       "id": "aYeIfcjqrSZpmuKd6Fijn",
@@ -58,7 +59,8 @@
       "propertyName": "sectionSeparator1",
       "label": "Data type and format",
       "labelAlign": "right",
-      "parentId": "root"
+      "parentId": "root",
+      "lineThickness": 2
     },
     {
       "id": "F7W3qRl8P_Jdv_R2Q-f3u",
@@ -494,7 +496,8 @@
       "propertyName": "sectionSeparator1",
       "label": "Attributes",
       "labelAlign": "right",
-      "parentId": "root"
+      "parentId": "root",
+      "lineThickness": 2
     },
     {
       "id": "-X1emhZPx1rM7w22GOc12",
@@ -547,7 +550,8 @@
           "propertyName": "sectionSeparatorCascade",
           "label": "Cascade update rules",
           "labelAlign": "right",
-          "parentId": "root"
+          "parentId": "root",
+          "lineThickness": 2
         },
         {
           "id": "-X1emhZPx1rM7w22GO124",

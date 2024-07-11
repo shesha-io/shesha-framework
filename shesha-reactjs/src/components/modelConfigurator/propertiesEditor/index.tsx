@@ -24,6 +24,7 @@ export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
 export const PropertiesEditorComponent: FC<IPropertiesEditorComponentProps> = () => {
     return (
         <Form.Item
+        className='shaPropertiesEditorForm'
             name="properties"
             labelCol={{ span: 0 }}
             wrapperCol={{ span: 24 }}

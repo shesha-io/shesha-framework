@@ -6,6 +6,7 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
   prefix?: string;
   suffix?: string;
+  suffixIcon?: string;
   hideBorder?: boolean;
   initialValue?: string;
   passEmptyStringByDefault?: boolean;

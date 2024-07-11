@@ -26,8 +26,7 @@ export const LayoutMenu: FC<IProps> = () => {
 
   const { executeAction } = useConfigurableActionDispatcher();
   const {executionContext, evaluationContext} = useAvailableConstantsData();
-  const { getItems, isItemVisible } = useSidebarMenu();
-  const items = getItems();
+  const { items } = useSidebarMenu();
 
   const onButtonClick = (
     itemId: string,
@@ -42,9 +41,8 @@ export const LayoutMenu: FC<IProps> = () => {
   const menuItems = items.map((item) =>
     SidebarMenu.sidebarItemToMenuItem({
       item,
-      isItemVisible,
       onButtonClick,
-      isRootItem: true,
+      //isRootItem: true,
       getFormUrl: (args) => {
         const url = getUrlFromNavigationRequest(args?.actionArguments);
         const href = evaluateString(decodeURIComponent(url), evaluationContext);
