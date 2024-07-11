@@ -1,33 +1,29 @@
 # Release Notes
 ## Enhancements
-- Made the header bar configurable. A backend update is required to retrieve the header configuration form.
-- Converted roles and permissions to `configurationItem`.
-- Added support for `wrap` orientation on the Datalist component.
-- Permissions can now be selected from a list instead of entered as free text.
-- Created a permission component that allows selection of one or more permissions.
-- Added support for full width on the search bar component.
-- Added support for `pageContext` on the query builder.
-- Added an `onChange` event property to the Entity Picker component.
-- Added a `name` property to the formConfiguration update endpoint.
-- Added support for typeShortAlias to the entityHistory endpoint and created an API for getting form settings from the code editor.
-- Implemented a click action listener.
-- Added an `allow delete` property to the Notes component.
+- Added an access property on form settings to support: `Anonymous`, `Any authenticated`, and `Requires permissions` values. This allows configurators to specify required access at a view level.
+- Required permissions of `Navigate to` menu items now automatically inherit from the required permissions of the targeted view. Currently supports the `form` navigation option.
+- Provided a helper function on `SheshaAppServiceBase` to perform `MapToDynamicDtoListAsync`.
+- Cleaned up the logon and OTP tables in the starter template database.
+- Added an advanced filter component with a badge to indicate that filtering has been applied.
+- Removed AppService or custom endpoints from the backend when `access` is set to `disabled`.
 
 ## Bug Fixes
-- Fixed an issue where formatting on nested entities configurations did not apply to subforms.
-- Fixed duplication of the `initialValue`s variable in onDataLoaded form settings.
-- Fixed duplication of the `formMode` variable on the file list changed property.
-- Ghost property appended to the payload when submitting the fileList component using the execute script action.
-- Ensured formatting on Entity Configuration now applies in real time in the current browser.
-- Fixed the issue where the `edit mode` property on the Address component was not working as expected.
-- Ensured values written to the `pageContext` are now reflected in its properties immediately.
-- Fixed the issue where `pageContext` did not append data to the subform after selection on an autocomplete.
-- Addressed the issue where custom buttons failed to adhere to form validations.
-- Optimized the Entity Picker component to prevent unnecessary calls on form load, improving performance.
-- Fixed the issue where the Tab component allowed users without defined permissions to view the component.
-- Ensured the file list component does not allow file deletion when the `Allow remove` property is set to false.
-- Fixed an error thrown when utilizing `pageContext` on a dialog view.
-- Fixed the issue where the Address component appears blank upon rendering and only becomes visible after the form state changes.
+- Fixed an issue where the autocomplete custom query parameter was not accepting dynamically defined values.
+- Removed dot in `Select All Rows` cell.
+- Fixed a bug where updated query parameter values were not saved in action configurations.
+- Resolved an issue preventing configuration of a custom create URL without enabling `Can Edit Inline` in DataTable configuration.
+- Fixed an issue where the `RichTextEditor` component displayed the value on top of the placeholder text when rendered in an edit dialog.
+- Fixed the `table view selector` component to save updated changes.
+- Ensured the navigation link on hover appears only on action configurations set to navigate.
+- Removed the default icon if not specified in the side menu configuration.
+- Fixed an issue where the API actual access value was not updated until a refresh was performed.
 
 ## Configuration Changes
-- Added a standard form to display entity audit trail information.
+- Updated forgot password to have access value.
+
+## UX Changes
+- CSS and layout improvements of the forms designer.
+- Cleaned up Permissioned Objects and Entity Configuration UI.
+
+## Breaking Changes
+- Consolidated security-related settings into a single form. A backend update is also required.
