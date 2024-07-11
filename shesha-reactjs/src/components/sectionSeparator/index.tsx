@@ -59,7 +59,6 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       ...(fontColor && { color: fontColor }),
     };
 
-    if (title === "Test Details") console.log("Label align: ", labelAlign)
     return (
       <span style={{
         ...titleStyles
