@@ -28,7 +28,7 @@ import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
 
-export interface IAppConfiguratorProviderProps { }
+export interface IAppConfiguratorProviderProps {}
 
 interface IAppConfiguratorModesState {
   mode: ConfigurationItemsViewMode;
@@ -74,23 +74,23 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
 
   const result: IUseAppConfiguratorSettingsResponse = hasRights
     ? {
-      mode: itemMode,
-      isInformerVisible: isFormInfoVisible,
-      setMode: (mode) => {
-        setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
-        setItemMode(mode);
-      },
-      setIsInformerVisible: setIsFormInfoVisible,
-    }
+        mode: itemMode,
+        isInformerVisible: isFormInfoVisible,
+        setMode: (mode) => {
+          setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+          setItemMode(mode);
+        },
+        setIsInformerVisible: setIsFormInfoVisible,
+      }
     : {
-      ...AppConfiguratorModeDefaults,
-      setMode: () => {
-        /*nop*/
-      },
-      setIsInformerVisible: () => {
-        /*nop*/
-      },
-    };
+        ...AppConfiguratorModeDefaults,
+        setMode: () => {
+          /*nop*/
+        },
+        setIsInformerVisible: () => {
+          /*nop*/
+        },
+      };
   return result;
 };
 
@@ -105,6 +105,8 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   });
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  const { loginUserAsync } = useAuth();
 
   //#region Configuration Framework renamed to Configuration Items
 
@@ -186,7 +188,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-
         return new Promise((resolve, reject) => {
           publishItem({ id: actionArgs.itemId, ...cfArgs })
             .then(() => {
@@ -196,7 +197,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
               reject(error);
             });
         });
-
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -219,7 +219,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
               reject(error);
             });
         });
-
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -244,6 +243,17 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
         });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Sign In',
+      owner: actionsOwner,
+      ownerUid: SheshaActionOwners.ConfigurationFramework,
+      hasArguments: false,
+      executer: (_, actionContext) => loginUserAsync(actionContext?.form?.data),
     },
     actionDependencies
   );
