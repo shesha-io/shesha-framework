@@ -222,10 +222,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     new Promise((resolve, reject) => {
       const error = { message: GENERIC_ERR_MSG };
 
-      if (state.isFetchingUserInfo || Boolean(state.loginInfo)) reject(error);
-
-      if (Boolean(state.loginInfo)) reject(error);
-
       dispatch(fetchUserDataAction());
       sessionGetCurrentLoginInfo({ base: backendUrl, headers })
         .then((response) => {
@@ -235,7 +231,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
             dispatch(setIsLoggedInAction(true));
 
             if (state.requireChangePassword && Boolean(changePasswordUrl)) {
-              resolve(changePasswordUrl);
+              resolve({ payload: response, url: changePasswordUrl });
             } else {
               // if we are on the login page - redirect to the returnUrl or home page
               if (isSameUrls(router.path, unauthorizedRedirectUrl)) {
@@ -246,8 +242,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
                 const redirects: string[] = [returnUrl, response.result?.user?.homeUrl, homePageUrl, DEFAULT_HOME_PAGE];
                 const redirectUrl = redirects.find((r) => Boolean(r?.trim())); // skip all null/undefined and empty strings
 
-                resolve(redirectUrl);
-              } else resolve(router.fullPath?.toString());
+                resolve({ payload: response, url: redirectUrl });
+              } else resolve({ payload: response, url: router.fullPath?.toString() });
             }
           } else {
             const message = 'Not authorized';
@@ -338,7 +334,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
             dispatchThunk(loginUserErrorAction(data?.error as IErrorInfo));
             reject({ stackTrace: data?.error, message: GENERIC_ERR_MSG });
           }
-        }
+        } else reject({ message: GENERIC_ERR_MSG });
       });
 
   const loginUserAsync = (loginFormData: ILoginForm) =>
