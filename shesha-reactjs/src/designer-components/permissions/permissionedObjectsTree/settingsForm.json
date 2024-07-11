@@ -4,7 +4,6 @@
     "type": "sectionSeparator",
     "propertyName": "separator1",
     "label": "Settings",
-    "labelAlign": "right",
     "parentId": "root",
     "hidden": false,
     "isDynamic": false,

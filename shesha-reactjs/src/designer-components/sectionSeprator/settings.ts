@@ -67,19 +67,22 @@ export const getSettings = (data: any) =>
                 id: "b920ef96-ae27-4a01-bfad-b5m5wmb70hda"
               }
             ],
-            dataSourceType: "values"
+            dataSourceType: "values",
+            defaultValue: "left"
           })
           .addColorPicker({
             id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934d9",
             propertyName: "fontColor",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            label: "Font Color"
+            label: "Font Color",
+            allowClear: true,
           })
           .addNumberField({
             id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934a9",
             propertyName: "fontSize",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            label: "Font Size"
+            label: "Font Size",
+            defaultValue: 14,
           })
           .addCheckbox({
             id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934m5",
@@ -92,7 +95,7 @@ export const getSettings = (data: any) =>
             propertyName: "noMargin",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "No Margin",
-            hidden: { _code: 'return getSettingValue(data?.inline);', _mode: 'code', _value: true } as any,
+            hidden: { _code: 'return !getSettingValue(data?.inline);', _mode: 'code', _value: true } as any,
           })
           .addTextArea({
             id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
@@ -136,16 +139,18 @@ export const getSettings = (data: any) =>
             id: "3b8b9e3f-f47e-48ae-b4c3-f90c36f934d9",
             propertyName: "lineThickness",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            label: "Line Thickness"
+            label: "Line Thickness",
+            defaultValue: 2,
           })
-          .addNumberField({
+          .addTextField({
             id: "3b8bv360-f47e-48ae-b4c3-f5cc36f934a9",
             propertyName: "lineWidth",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Line Width",
             hidden: { _code: 'return getSettingValue(data?.orientation) !== "vertical;', _mode: 'code', _value: true } as any,
+            defaultValue: '100%',
           })
-          .addNumberField({
+          .addTextField({
             id: "3b8bv360-f47e-48ae-b4c3-f5coMp6f934a9",
             propertyName: "lineHeight",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
@@ -183,7 +188,7 @@ export const getSettings = (data: any) =>
             exposedVariables: [{ name: 'data', description: 'Form values', type: 'object' }],
             wrapInTemplate: true,
             templateSettings: {
-              functionName: 'getTitleStyle',
+              functionName: 'getContainerStyle',
             },
             availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();'
           })

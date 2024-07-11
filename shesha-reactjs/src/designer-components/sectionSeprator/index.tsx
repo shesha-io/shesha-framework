@@ -42,6 +42,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
   migrator: (m) => m
     .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISectionSeparatorComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
+    .add<ISectionSeparatorComponentProps>(2, (prev) => ({ ...prev, labelAlign: "left" }))
   ,
 };
 

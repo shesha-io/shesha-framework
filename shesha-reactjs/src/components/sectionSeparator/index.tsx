@@ -31,7 +31,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   dashed,
   lineColor,
   lineThickness,
-  lineWidth = "100%",
+  lineWidth,
   lineHeight,
   orientation,
   containerStyle,
@@ -43,20 +43,20 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   const { styles } = useStyles();
 
   const borderStyle = {
-    '--border-thickness': `${lineThickness ?? 2}px`,
+    '--border-thickness': `${lineThickness || 2}px`,
     '--border-style': dashed ? 'dashed' : 'solid',
     '--border-color': lineColor || styles.primaryColor,
-    textAlign: labelAlign
+    textAlign: `${labelAlign || 'left'}`,
+    marginBottom: '8px'
   } as CSSProperties;
-
-  console.log(orientation, 'dividerType');
 
   const titleComponent = () => {
     if (!title) return null;
 
     const titleStyles = {
       ...titleStyle,
-      ...(fontSize && { fontSize }),
+      fontSize: fontSize,
+      padding: inline ? '0 6px' : '0',
       ...(fontColor && { color: fontColor }),
     };
 
@@ -64,11 +64,14 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       <span style={{
         ...titleStyles
       }}>
-        <Space size="small" style={{ flexWrap: "nowrap", alignContent: "center" }}>
+        <Space size="small" style={{
+          flexWrap: "nowrap",
+        }}>
+
           {title}
           <Show when={Boolean(tooltip?.trim())}>
             <Tooltip title={tooltip}>
-              <QuestionCircleOutlined className='tooltip-question-icon' style={{ fontSize: 14, color: 'gray', verticalAlign: "middle" }} />
+              <QuestionCircleOutlined className={`tooltip-question-icon ${styles.helpIcon}`} />
             </Tooltip>
           </Show>
         </Space>
@@ -76,27 +79,26 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     );
   };
 
-  const commonProps = {
-    style: { ...containerStyle, minWidth: "100px", width: lineWidth }
-  };
+  const commonStyle = { ...containerStyle, minWidth: "100px", width: `${lineWidth}px` };
 
   if (inline || orientation === 'vertical') {
     return (
-      <div {...commonProps}>
+      <div style={commonStyle}>
         <ConfigProvider
           theme={{
             token: {
               colorSplit: lineColor || styles.primaryColor,
               colorText: fontColor || '#000',
-              lineWidth: lineThickness,
+              lineWidth: lineThickness || 2,
               fontSize: lineHeight || fontSize,
+              margin: 8
             },
           }}
         >
           <Divider
             type={orientation}
             orientation={labelAlign}
-            orientationMargin={noMargin ? "0" : undefined}
+            orientationMargin={noMargin ? "0" : null}
             dashed={dashed}
           >
             {titleComponent()}
@@ -107,7 +109,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   }
 
   return (
-    <div {...commonProps}>
+    <div style={commonStyle}>
       <div className={styles.shaSectionSeparator} style={borderStyle}>
         {titleComponent()}
       </div>
