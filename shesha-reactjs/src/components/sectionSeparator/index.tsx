@@ -81,7 +81,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     );
   };
 
-  const commonStyle = { ...containerStyle, minWidth: "100px", width: lineWidth ? addPx(lineWidth) : '100%' };
+  const commonStyle = { ...containerStyle, minWidth: "100px", width: lineWidth ? addPx(lineWidth) : '100%', margin: 8 };
 
   if (inline || vertical) {
     return (
@@ -93,7 +93,6 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
               colorText: fontColor || '#000',
               lineWidth: lineThickness || 2,
               fontSize: addPx(lineHeight) || addPx(fontSize),
-              margin: 8
             },
           }}
         >
