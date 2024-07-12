@@ -30,12 +30,12 @@ namespace Shesha.Permissions
         /// <param name="type"></param>
         /// <param name="withHidden">Show hidden protected objects</param>
         /// <returns></returns>
-        List<PermissionedObjectDto> GetAllTree(string type, bool withHidden);
+        Task<List<PermissionedObjectDto>> GetAllTreeAsync(string type = null, bool withHidden = false);
 
         /// <summary>
         /// Get Protected Object by object name with children
         /// </summary>
-        PermissionedObjectDto GetObjectWithChild(string type, bool withHidden);
+        Task<PermissionedObjectDto> GetObjectWithChildAsync(string objectName, string type = null, bool withHidden = false);
 
         /// <summary>
         /// Get Protected Object by object name
@@ -43,27 +43,21 @@ namespace Shesha.Permissions
         /// <param name="objectName">Object name for search Protected Object (usually it has format "type@action")</param>
         /// <param name="objectType"></param>
         /// <param name="inheritedFromName">Name of parent object </param>
-        /// <param name="useInherited">Get permission data from parent if inherited</param>
-
-        /// <param name="useHidden">Allow to get permission data from hidden protected objects</param>
         /// <returns></returns>
-        Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string inheritedFromName = null,
-            bool useInherited = true, bool useHidden = false);
+        Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string inheritedFromName = null);
 
 
-        Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType = null, bool useInherited = true, bool useHidden = false);
+        Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType = null);
 
         /// <summary>
         /// Get Protected Object by object name
         /// </summary>
         /// <param name="objectName">Object name for search Protected Object (usually it has format "type@action")</param>
         /// <param name="objectType">Object type for search Protected Object</param>
-        /// <param name="useInherited">Get permission data from parent if inherited</param>
-        /// <param name="useHidden">Allow to get permission data from hidden protected objects</param>
         /// <returns></returns>
-        Task<PermissionedObjectDto> GetAsync(string objectName, string objectType = null, bool useInherited = true, bool useHidden = false);
+        Task<PermissionedObjectDto> GetAsync(string objectName, string objectType = null);
 
-        Task<PermissionedObjectDto> GetAsync(Guid id, bool useInherited = true, bool useHidden = false);
+        Task<PermissionedObjectDto> GetAsync(Guid id);
 
         Task<PermissionedObjectDto> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType = null, string dstObjectType = null);
 
@@ -72,10 +66,8 @@ namespace Shesha.Permissions
         /// </summary>
         /// <param name="objectName">Object name for search Protected Object (usually it has format "type@action")</param>
         /// <param name="objectType">Object type for search Protected Object</param>
-        /// <param name="useInherited">Get permission data from parent if inherited</param>
-        /// <param name="useHidden">Allow to get permission data from hidden protected objects</param>
         /// <returns></returns>
-        PermissionedObjectDto Get(string objectName, string objectType = null, bool useInherited = true, bool useHidden = false);
+        PermissionedObjectDto Get(string objectName, string objectType = null);
 
         List<string> GetActualPermissions(string objectName, string objectType = null, bool useInherited = true);
 
