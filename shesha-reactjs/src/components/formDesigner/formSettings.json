@@ -24,6 +24,7 @@
       "parentId": "root",
       "hidden": false,
       "dataSourceType": "values",
+      "allowClear": false,
       "values": [
         {
           "id": "3",
@@ -66,6 +67,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+      "allowClear": false,
       "validate": {
         "required": true
       },

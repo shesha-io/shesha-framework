@@ -39,7 +39,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         public static string GetFormPermissionedObjectName(string module, string name, int versionNo)
         {
-            return $"{module}.{name}@{versionNo}";
+            return $"{module}.{name}#{versionNo}";
         }
 
         /// inheritedDoc

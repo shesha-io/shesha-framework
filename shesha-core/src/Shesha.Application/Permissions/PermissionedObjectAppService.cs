@@ -52,7 +52,7 @@ namespace Shesha.Permissions
         /// <returns></returns>
         public async Task<List<PermissionedObjectDto>> GetAllTreeAsync(string type, bool showHidden = false)
         {
-            return await Task.FromResult(_permissionedObjectManager.GetAllTree(type, showHidden));
+            return await _permissionedObjectManager.GetAllTreeAsync(type, showHidden);
         }
 
         /// <summary>

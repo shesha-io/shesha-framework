@@ -63,7 +63,10 @@ namespace Shesha.Web.FormsDesigner.Services
 
         private async Task<string[]> GetFormPermissionsAsync(string module, string name, int versionNo)
         {
-            var permission = await _permissionedObjectManager.GetAsync(FormManager.GetFormPermissionedObjectName(module, name, versionNo));
+            var permission = await _permissionedObjectManager.GetAsync(
+                FormManager.GetFormPermissionedObjectName(module, name, versionNo),
+                ShaPermissionedObjectsTypes.Form
+            );
             return permission?.Access == RefListPermissionedAccess.RequiresPermissions
                 ? permission.Permissions?.ToArray() ?? []
                 : [];
@@ -71,7 +74,10 @@ namespace Shesha.Web.FormsDesigner.Services
 
         private async Task<bool> CheckFormPermissions(string module, string name, int versionNo)
         {
-            var permission = await _permissionedObjectManager.GetOrNullAsync(FormManager.GetFormPermissionedObjectName(module, name, versionNo));
+            var permission = await _permissionedObjectManager.GetAsync(
+                FormManager.GetFormPermissionedObjectName(module, name, versionNo),
+                ShaPermissionedObjectsTypes.Form
+            );
 
             var access = permission?.Access == null || permission.Access < RefListPermissionedAccess.AnyAuthenticated
                 ? RefListPermissionedAccess.AnyAuthenticated
@@ -92,7 +98,10 @@ namespace Shesha.Web.FormsDesigner.Services
             var dto = base.MapToEntityDto(entity);
             
             var permission = AsyncHelper.RunSync(() => 
-                _permissionedObjectManager.GetAsync(FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name, entity.VersionNo))
+                _permissionedObjectManager.GetAsync(
+                    FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name, entity.VersionNo),
+                    ShaPermissionedObjectsTypes.Form
+                )
             );
             if (permission?.Access > RefListPermissionedAccess.Inherited) // permission exists
             {
@@ -150,15 +159,20 @@ namespace Shesha.Web.FormsDesigner.Services
                     }
                 }
 
-                var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
+                var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query.Select(x => new
+                {
+                    Module = x.Module.Name,
+                    x.Name,
+                    x.VersionNo
+                }));
                 if (form != null)
                 {
-                    var permissions = await GetFormPermissionsAsync(form.Module?.Name, form.Name, form.VersionNo);
+                    var permissions = await GetFormPermissionsAsync(form.Module, form.Name, form.VersionNo);
                     if (permissions.Length > 0)
                         result.Add(new FormByFullNamePermissionsDto
                         {
                             Name = form.Name,
-                            Module = form.Module?.Name,
+                            Module = form.Module,
                             Permissions = permissions,
                         });
                 }
