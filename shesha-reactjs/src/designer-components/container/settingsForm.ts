@@ -345,8 +345,6 @@ export const getSettings = (data: any) =>
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
             dataSourceType: "values",
-            allowClear: false,
-            defaultValue: 'color',
             values: [
               {
                 label: "Color",
@@ -511,11 +509,6 @@ export const getSettings = (data: any) =>
               {
                 label: "Cover",
                 value: "cover",
-                id: nanoid()
-              },
-              {
-                label: "Stretch",
-                value: "stretch",
                 id: nanoid()
               }
             ],

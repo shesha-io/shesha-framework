@@ -24,7 +24,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const ownerId = evaluateValue(model.ownerId, { data, globalState });
 
     if (model.dataSource === 'storedFileId' && model.storedFileId && !isValidGuid(model.storedFileId)) {
-      return <ValidationErrors error="The provided StoredFileId is inValid" />;
+      return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
     if (model.hidden) return null;
@@ -54,7 +54,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       val = model?.backgroundUrl;
     }
 
-    const fileProvider = child => {
+    const fileProvider = (child) => {
       return (
         <StoredFileProvider
           value={val}
@@ -72,6 +72,12 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       );
     };
 
+    const backgroundStyles = model?.backgroundType === 'image'
+      ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundCover }
+      : model?.backgroundType === 'color'
+      ? { background: model?.backgroundColor }
+      : {};
+
     return (
       <ParentProvider model={model}>
         <ConditionalWrap
@@ -85,9 +91,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
             style={{
               ...getStyle(model?.style, formData),
-              background: model?.backgroundType === 'image' ? `url(${val})` : model?.backgroundColor,
-              backgroundSize: model?.backgroundCover,
-              backgroundRepeat: model?.backgroundCover
+              ...backgroundStyles,
             }}
             dynamicComponents={model?.isDynamic ? model?.components : []}
           />
