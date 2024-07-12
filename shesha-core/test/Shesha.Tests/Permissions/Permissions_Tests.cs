@@ -36,7 +36,7 @@ namespace Shesha.Tests.Permissions
         [Fact]
         public async Task GetAllApi_Test()
         {
-            var api = await Task.Run(() => _permissionedObjectManager.GetAllTree());
+            var api = await Task.Run(() => _permissionedObjectManager.GetAllTreeAsync());
         }
 
         private Task Get(int i)
