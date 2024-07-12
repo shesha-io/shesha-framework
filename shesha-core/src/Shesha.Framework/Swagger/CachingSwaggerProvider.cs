@@ -11,7 +11,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Shesha.Swagger
 {
-    public class CachingSwaggerProvider : ISwaggerProvider, ITransientDependency,
+    public class CachingSwaggerProvider : ISwaggerProvider,
         IEventHandler<EntityChangedEventData<EntityProperty>>,
         IEventHandler<EntityChangedEventData<EntityConfig>>,
         IEventHandler<EntityChangedEventData<PermissionedObject>>
