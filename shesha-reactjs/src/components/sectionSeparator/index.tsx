@@ -3,6 +3,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { ConfigProvider, Divider, Space, Tooltip } from 'antd';
 import Show from '@/components/show';
 import { useStyles } from './styles/styles';
+import { addPx } from './utils';
 
 export interface ISectionSeparatorProps {
   id?: string;
@@ -42,6 +43,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
 }) => {
   const { styles } = useStyles();
 
+  const vertical = orientation === 'vertical';
+
   const borderStyle = {
     '--border-thickness': `${lineThickness || 2}px`,
     '--border-style': dashed ? 'dashed' : 'solid',
@@ -78,9 +81,9 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     );
   };
 
-  const commonStyle = { ...containerStyle, minWidth: "100px", width: `${lineWidth}px` };
+  const commonStyle = { ...containerStyle, minWidth: "100px", width: lineWidth ? addPx(lineWidth) : '100%' };
 
-  if (inline || orientation === 'vertical') {
+  if (inline || vertical) {
     return (
       <div style={commonStyle}>
         <ConfigProvider
@@ -89,7 +92,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
               colorSplit: lineColor || styles.primaryColor,
               colorText: fontColor || '#000',
               lineWidth: lineThickness || 2,
-              fontSize: lineHeight || fontSize,
+              fontSize: addPx(lineHeight) || addPx(fontSize),
               margin: 8
             },
           }}
@@ -99,6 +102,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
             orientation={labelAlign || 'left'}
             orientationMargin={noMargin ? '0' : null}
             dashed={dashed}
+            style={vertical ? { top: 0 } : {}}
           >
             {titleComponent()}
           </Divider>

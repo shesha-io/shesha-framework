@@ -147,7 +147,7 @@ export const getSettings = (data: any) =>
             propertyName: "lineWidth",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Line Width",
-            hidden: { _code: 'return getSettingValue(data?.orientation) !== "vertical;', _mode: 'code', _value: true } as any,
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
             defaultValue: '100%',
           })
           .addTextField({
@@ -155,7 +155,7 @@ export const getSettings = (data: any) =>
             propertyName: "lineHeight",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Line Height",
-            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical;', _mode: 'code', _value: true } as any,
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "horizontal";', _mode: 'code', _value: true } as any,
           })
           .toJson(),
       },
