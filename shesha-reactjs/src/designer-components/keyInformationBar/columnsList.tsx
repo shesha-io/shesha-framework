@@ -62,7 +62,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
     </Tooltip>
   );
 
-  const textAlignValues = ['start', 'end', 'center', 'left', 'right', "justify", 'initial', 'inherit'];
+  const textAlignValues = ['start', 'end', 'center', 'inherit'];
   const flexDirectionValues = ['row', 'column', 'row-reverse', 'column-reverse'];
 
   const Dropdown = (ref, values) =>
@@ -163,6 +163,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       textAlign: 'center',
       flexDirection: "column",
       components: [],
+      padding: '0px',
     };
     const newColumns = [...columns, newColumn];
     onChange(newColumns);
@@ -204,6 +205,12 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
     {
       title: 'Flex Direction',
       dataIndex: 'flexDirection',
+      editable: !readOnly,
+      width: '20%',
+    },
+    {
+      title: 'Padding',
+      dataIndex: 'padding',
       editable: !readOnly,
       width: '20%',
     },
