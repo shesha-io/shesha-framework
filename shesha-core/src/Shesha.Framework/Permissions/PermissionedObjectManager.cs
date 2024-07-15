@@ -73,7 +73,7 @@ namespace Shesha.Permissions
 
         private string GetCacheName(string objectName, string objectType)
         {
-            return $"{objectName}_{objectType}";
+            return $"{objectName}"; // TODO: AS review using Permissioned objects types _{objectType}";
         }
 
         public virtual string GetObjectType(Type type)
@@ -340,9 +340,8 @@ namespace Shesha.Permissions
             obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
 
             var newObj = await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
-            
-            var dto = await GetDtoAsync(newObj);
 
+            var dto = await GetDtoAsync(newObj);
             return dto;
         }
 
