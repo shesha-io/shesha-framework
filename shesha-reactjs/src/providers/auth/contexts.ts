@@ -50,6 +50,7 @@ export interface IAuthStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   isCheckingAuth?: boolean;
   isFetchingUserInfo?: boolean;
+  hasFetchedUserInfoAsync?: boolean;
   loginInfo?: UserLoginInfoDto;
   requireChangePassword?: boolean;
   isLoggedIn: boolean;

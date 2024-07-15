@@ -26,6 +26,7 @@ import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   checkAuthAction,
+  fetchedUserDataAsyncAction,
   fetchUserDataAction,
   fetchUserDataActionErrorAction,
   fetchUserDataActionSuccessAction,
@@ -224,6 +225,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
       sessionGetCurrentLoginInfo({ base: backendUrl, headers })
         .then((response) => {
+          dispatch(fetchedUserDataAsyncAction());
+
           if (response.result.user) {
             if (state.requireChangePassword && Boolean(changePasswordUrl)) {
               resolve({ payload: response, url: changePasswordUrl });
@@ -423,11 +426,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     dispatch(resetPasswordSuccessAction());
   };
 
-  const showLoader = useMemo(() => {
-    return !!(
-      (state.isFetchingUserInfo || (!state.isFetchingUserInfo && !state.loginInfo && state.token)) // Done fetching user info but the state is not yet updated
-    );
-  }, [state.isFetchingUserInfo, state.loginInfo, state.token]);
+  // Done fetching user info but the state is not yet updated
+  const showLoader =
+    !state.hasFetchedUserInfoAsync &&
+    !!(state.isFetchingUserInfo || (!state.isFetchingUserInfo && !state.loginInfo && state.token));
 
   //#endregion
 
