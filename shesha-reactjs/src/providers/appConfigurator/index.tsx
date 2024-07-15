@@ -106,7 +106,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const { loginUserAsync } = useAuth();
 
   //#region Configuration Framework renamed to Configuration Items
 
@@ -246,18 +245,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     },
     actionDependencies
   );
-
-  useConfigurableAction(
-    {
-      name: 'Sign In',
-      owner: actionsOwner,
-      ownerUid: SheshaActionOwners.ConfigurationFramework,
-      hasArguments: false,
-      executer: (_, actionContext) => loginUserAsync(actionContext?.form?.data),
-    },
-    actionDependencies
-  );
-
   //#endregion
 
   useEffect(() => {
