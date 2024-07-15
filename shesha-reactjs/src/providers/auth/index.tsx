@@ -1,7 +1,7 @@
 import { useMutate } from '@/hooks';
 import useThunkReducer, { ThunkDispatch } from '@/hooks/thunkReducer';
 import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
-import { sessionGetCurrentLoginInfo } from '@/apis/session';
+import { GetCurrentLoginInfoOutputAjaxResponse, sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
 import { OverlayLoader } from '@/components/overlayLoader';
@@ -222,14 +222,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     new Promise((resolve, reject) => {
       const error = { message: GENERIC_ERR_MSG };
 
-      dispatch(fetchUserDataAction());
       sessionGetCurrentLoginInfo({ base: backendUrl, headers })
         .then((response) => {
           if (response.result.user) {
-            dispatch(fetchUserDataActionSuccessAction(response.result.user));
-
-            dispatch(setIsLoggedInAction(true));
-
             if (state.requireChangePassword && Boolean(changePasswordUrl)) {
               resolve({ payload: response, url: changePasswordUrl });
             } else {
@@ -248,7 +243,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           } else {
             const message = 'Not authorized';
             clearAccessToken();
-            dispatch(fetchUserDataActionErrorAction({ message }));
             reject({ message, url: loginUrl });
           }
         })
@@ -354,11 +348,15 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   const loginUser = (loginFormData: ILoginForm) => {
     loginUserAsync(loginFormData)
-      .then(redirect)
+      .then((response) => {
+        const { payload, url } = response as { payload: GetCurrentLoginInfoOutputAjaxResponse; url: string };
+
+        dispatch(fetchUserDataActionSuccessAction(payload?.result?.user));
+        dispatch(setIsLoggedInAction(true));
+        redirect(url);
+      })
       .catch((e) => {
-        if (e?.url) {
-          redirect(e.url);
-        }
+        if (e?.url) redirect(e.url);
       });
   };
   //#endregion
