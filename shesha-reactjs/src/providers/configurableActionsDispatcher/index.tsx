@@ -125,7 +125,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
           .then(async (actionResponse) => {
             if (handleSuccess) {
               if (onSuccess) {
-                const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
+                const onSuccessContext = { ...argumentsEvaluationContext, actionResponse };
                 await executeAction({
                   actionConfiguration: { ...onSuccess },
                   argumentsEvaluationContext: onSuccessContext,
