@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,27 +19,68 @@ namespace Shesha.Domain
         [StringLength(255, MinimumLength = 2)]
         [Required(AllowEmptyStrings = false)]
         public virtual string Name { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
 
         [StringLength(50)]
         [Browsable(false)]
         public virtual string ShortAlias { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
 
         [StringLength(300), DataType(DataType.MultilineText)]
         public virtual string Description { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
 
         [StringLength(1000), DataType(DataType.MultilineText)]
         [Display(Name = "Address (free text)")]
         public virtual string FreeTextAddress { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
 
         [ReferenceList("Shesha.Core", "OrganisationUnitType")]
         public virtual int? OrganisationType { get; set; }
-        
-        public virtual int? TenantId { get; set; }        
+        /// <summary>
+        /// 
+        /// </summary>
+
+        public virtual int? TenantId { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
 
         [StringLength(200)]
         public virtual string ContactEmail { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         [StringLength(50)]
         public virtual string ContactMobileNo { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [StringLength(200)]
+        public virtual string ContactName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [StringLength(200)]
+        public virtual string ContactRole { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+
+        [ReferenceList("Shesha.Core", "Status")]
+        public virtual long? Status { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual int? OrderIndex { get; set; }
     }
 
 
@@ -62,6 +104,11 @@ namespace Shesha.Domain
         [CascadeUpdateRules(true, true)]
         public virtual TPerson PrimaryContact { get; set; }
 
+        /// <summary>
+        /// Child organisations
+        /// </summary>
+        [InverseProperty("ParentId")]
+        public virtual IList<T> Units { get; set; }
     }
 
     public class OrganisationBase<T> : OrganisationBase<T, Address, Person>

@@ -9,6 +9,7 @@ export const useStyles = createStyles(({ token, cx, css }) => {
   const tag = "tag";
   const resultCount = "result-count";
   const clearAllButton = "clear-all-button";
+  const filters = "filters";
 
   const wrapper = cx("filter-wrapper", css`
       display: flex;
@@ -17,15 +18,19 @@ export const useStyles = createStyles(({ token, cx, css }) => {
       margin: 0 6px;
 
       .${resultCount} {
-        margin: auto 6px auto auto;
         text-align: end;
-        white-space: nowrap 
+        white-space: nowrap;
+        margin: 6px 0;
+        align-self: center;
       }
 
       .${clearAllButton} {
-        margin: auto auto auto 6px;
         text-align: start;
-        white-space: nowrap 
+        margin: 6px 0;
+        white-space: nowrap;
+        padding-left: 0px;
+        padding-bottom: 6px;
+        align-self: center;
       `);
 
   const button = cx("filter-btn", css`
@@ -40,7 +45,7 @@ export const useStyles = createStyles(({ token, cx, css }) => {
 
   const scrollableTagsContainer = cx("scrollable-tags-container", css`
       max-width: 700px;
-      margin: 6px;
+      margin: 0 6px;
       justify-content: center;
       overflow: hidden;
       display: flex;
@@ -58,12 +63,16 @@ export const useStyles = createStyles(({ token, cx, css }) => {
       p {
         white-space: nowrap;
       }
-      .filters {
+
+      .${filters} {
         display: flex;
-        margin: 0 24px;
         overflow-x: scroll;
         scroll-behavior: smooth;
         align-items: center;
+
+        span:last-child {
+          margin-right: 0px;
+        }
       }
 
       .${arrowLeft}, .${arrowRight} {
@@ -108,6 +117,7 @@ export const useStyles = createStyles(({ token, cx, css }) => {
     disabledColor,
     button,
     resultCount,
-    clearAllButton
+    clearAllButton,
+    filters
   };
 });

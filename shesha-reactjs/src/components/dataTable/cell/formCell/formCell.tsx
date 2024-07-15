@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
+import { Result } from 'antd';
 import { useCrud } from "@/providers/crudContext/index";
 import { IConfigurableCellProps, IFormCellProps } from '../interfaces';
 import { ComponentsContainer, FormIdentifier, FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator } from '@/index';
@@ -10,6 +11,10 @@ import { useStyles } from '../../styles/styles';
 import { ComponentsContainerFormCell } from './componentsContainerFormCell';
 import { useFormById } from '@/providers/formManager/hooks';
 import { UpToDateForm } from '@/providers/formManager/interfaces';
+import { getFormForbiddenMessage, getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
+
+const MODE_READONLY_TRUE = { readOnly: true };
+const MODE_READONLY_FALSE = { readOnly: false };
 
 interface FormCellRenderProps {
   formId: FormIdentifier;
@@ -25,20 +30,29 @@ const FormCellRender: FC<FormCellRenderProps> = ({ formId, children }) => {
 
   return formLoading.state === 'loading'
     ? <LoadingOutlined />
-    : children(formLoading.form);
+    : formLoading.state === 'error'
+      ? formLoading.error?.code === 404
+        ? <Result status="404" title="404" subTitle={getFormNotFoundMessage(formId)} />
+        : formLoading.error?.code === 401 || formLoading.error?.code === 403
+          ?<Result status="403" title="403" subTitle={getFormForbiddenMessage(formId)} />
+          : <>Form loading error</>
+      : children(formLoading.form);
 };
 
 const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D, V>) => {
   const { styles } = useStyles();
+  const styleMinHeight = useMemo(() => {
+    return { minHeight: props.columnConfig.minHeight ?? 0 };
+  }, [props.columnConfig.minHeight]);
 
   return !props.columnConfig.displayFormId
     ? null
     : (
       <FormCellRender formId={props.columnConfig.displayFormId}>
         {(form) => (
-          <div className={styles.shaFormCell} style={{ minHeight: props.columnConfig.minHeight ?? 0 }}>
+          <div className={styles.shaFormCell} style={styleMinHeight}>
             <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={{ readOnly: true }} formMode='readonly' formFlatMarkup={form.flatStructure}>
+              <ParentProvider model={MODE_READONLY_TRUE} formMode='readonly' formFlatMarkup={form.flatStructure}>
                 <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                   <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                 </ComponentsContainerProvider>
@@ -52,15 +66,18 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
 
 export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) => {
   const { styles } = useStyles();
+  const styleMinHeight = useMemo(() => {
+    return { minHeight: props.columnConfig.minHeight ?? 0 };
+  }, [props.columnConfig.minHeight]);
 
   return !props.columnConfig.createFormId
     ? null
     : (
       <FormCellRender formId={props.columnConfig.createFormId}>
         {(form) => (
-          <div className={styles.shaFormCell} style={{ minHeight: props.columnConfig.minHeight ?? 0 }}>
+          <div className={styles.shaFormCell} style={styleMinHeight}>
             <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={{ readOnly: false }} formMode='edit' formFlatMarkup={form.flatStructure}>
+              <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure}>
                 <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                   <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                 </ComponentsContainerProvider>
@@ -74,15 +91,18 @@ export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) 
 
 const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D, V>) => {
   const { styles } = useStyles();
+  const styleMinHeight = useMemo(() => {
+    return { minHeight: props.columnConfig.minHeight ?? 0 };
+  }, [props.columnConfig.minHeight]);
 
   return !props.columnConfig.editFormId
     ? <ReadFormCell {...props} />
     : (
       <FormCellRender formId={props.columnConfig.editFormId}>
         {(form) => (
-          <div className={styles.shaFormCell} style={{ minHeight: props.columnConfig.minHeight ?? 0 }}>
+          <div className={styles.shaFormCell} style={styleMinHeight}>
             <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={{ readOnly: false }} formMode='edit' formFlatMarkup={form.flatStructure}>
+              <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure}>
                 <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                   <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                 </ComponentsContainerProvider>

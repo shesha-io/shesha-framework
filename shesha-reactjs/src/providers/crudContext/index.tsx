@@ -75,11 +75,11 @@ const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = 
 
       Promise.resolve(dataResponse).then((response) => {
         props.setInitialValues(response);
-        form.setFormData({values: response, mergeValues: false});
+        form.form.setFieldsValue(response);
       });
     } else {
       props.setInitialValues(data);
-      form.setFormData({values: data, mergeValues: false});
+      form.form.setFieldsValue(data);
     }
   }, [data]);
 

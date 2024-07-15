@@ -16,7 +16,6 @@
       "type": "sectionSeparator",
       "propertyName": "sectionSeparator1",
       "label": "Display",
-      "labelAlign": "right",
       "parentId": "root",
       "lineThickness": 2
     },
@@ -58,7 +57,6 @@
       "type": "sectionSeparator",
       "propertyName": "sectionSeparator1",
       "label": "Data type and format",
-      "labelAlign": "right",
       "parentId": "root",
       "lineThickness": 2
     },
@@ -495,7 +493,6 @@
       "type": "sectionSeparator",
       "propertyName": "sectionSeparator1",
       "label": "Attributes",
-      "labelAlign": "right",
       "parentId": "root",
       "lineThickness": 2
     },
@@ -549,7 +546,6 @@
           "type": "sectionSeparator",
           "propertyName": "sectionSeparatorCascade",
           "label": "Cascade update rules",
-          "labelAlign": "right",
           "parentId": "root",
           "lineThickness": 2
         },

@@ -3,9 +3,16 @@ import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
     const primaryColor = token.colorPrimary;
+    const helpIcon = "help-icon-question-circle";
     const shaSectionSeparator = cx("sha-section-separator", css`
         font-weight: 500;
         height: ${sheshaStyles.pageHeadingHeight}px;
+
+        .${helpIcon} {
+            fontSize: 14;
+            color: #aaa;
+            margin: auto;
+        };
 
         ::after {
             content: '';
@@ -16,6 +23,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     `);
 
     return {
-        shaSectionSeparator, primaryColor
+        shaSectionSeparator, primaryColor, helpIcon
     };
 });
