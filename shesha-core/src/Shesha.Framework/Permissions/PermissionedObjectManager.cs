@@ -73,7 +73,7 @@ namespace Shesha.Permissions
 
         private string GetCacheName(string objectName, string objectType)
         {
-            return $"{objectName}_{objectType}";
+            return $"{objectName}"; // TODO: AS review using Permissioned objects types _{objectType}";
         }
 
         public virtual string GetObjectType(Type type)
@@ -264,7 +264,7 @@ namespace Shesha.Permissions
         public virtual async Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string inheritedFromName = null)
         {
             PermissionedObjectDto obj = null;
-            var dbObj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
+            var dbObj = await _permissionedObjectFullRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
             if (dbObj != null)
             {
                 obj = _objectMapper.Map<PermissionedObjectDto>(dbObj);
@@ -279,7 +279,7 @@ namespace Shesha.Permissions
 
         public virtual async Task<PermissionedObjectDto> GetAsync(Guid id)
         {
-            var dbObj = _permissionedObjectRepository.GetAll().FirstOrDefault(x => x.Id == id);
+            var dbObj = _permissionedObjectFullRepository.GetAll().FirstOrDefault(x => x.Id == id);
             var dto = await Task.FromResult(_objectMapper.Map<PermissionedObjectDto>(dbObj));
             await _permissionedObjectsCache.SetAsync(GetCacheName(dto.Object, dto.Type), dto);
             return dto;
@@ -289,11 +289,12 @@ namespace Shesha.Permissions
         {
             return await _permissionedObjectsCache.GetAsync(GetCacheName(objectName, objectType), async key =>
             {
+                using var uow = _unitOfWorkManager.Begin();
                 var dbObj = await _permissionedObjectFullRepository.GetAll()
                     .WhereIf(!objectType.IsNullOrEmpty(), x => x.Type == objectType)
                     .Where(x => x.Object == objectName)
                     .FirstOrDefaultAsync();
-
+                await uow.CompleteAsync();
                 return dbObj != null
                     ? _objectMapper.Map<PermissionedObjectDto>(dbObj)
                     : null;
@@ -339,11 +340,8 @@ namespace Shesha.Permissions
             obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
 
             var newObj = await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
-            
-            var dto = _objectMapper.Map<PermissionedObjectDto>(newObj);
 
-            await _permissionedObjectsCache.SetAsync(GetCacheName(dto.Object, dto.Type), dto);
-
+            var dto = await GetDtoAsync(newObj);
             return dto;
         }
 
@@ -359,7 +357,7 @@ namespace Shesha.Permissions
             obj.Access = (RefListPermissionedAccess)access;
             await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
 
-            var dto = _objectMapper.Map<PermissionedObjectDto>(obj);
+            var dto = await GetDtoAsync(obj);
             return dto;
         }
 
