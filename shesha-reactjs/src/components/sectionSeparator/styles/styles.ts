@@ -1,5 +1,5 @@
-import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+
 
 export const useStyles = createStyles(({ css, cx, token }) => {
     const primaryColor = token.colorPrimary;
@@ -10,7 +10,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
         .${helpIcon} {
             fontSize: 14;
-            color: #aaa;
+            color: #aaa !important;
             margin: auto;
         };
 
