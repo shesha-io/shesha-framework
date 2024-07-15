@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
-import { Monaco } from '@monaco-editor/react';
+import { Monaco, loader } from '@monaco-editor/react';
 import { IDisposable, IPosition, IRange, Uri, UriComponents, editor, languages } from 'monaco-editor';
 import { DataTypes, IObjectMetadata } from "@/interfaces";
 import { ModelTypeIdentifier, NestedProperties, PropertiesPromise, asPropertiesArray, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
@@ -16,6 +16,9 @@ import { FileOutlined } from "@ant-design/icons";
 import { SizableColumns } from "@/components/sizableColumns";
 import { FileTree } from "./fileTree/fileTree";
 import { useLocalStorage } from "@/hooks";
+
+// you can change the source of the monaco files
+loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs', } });
 
 interface EditorFileNamesState {
     modelPath: string;
@@ -109,6 +112,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
     const { styles } = useStyles();
     const [activePane, setActivePane] = useState(null);
+    const [internalReadOnly, setInternalReadOnly] = useState(false);
     const [isDevMode] = useLocalStorage('application.isDevMode', false);
 
     const { getMetadata } = useMetadataDispatcher();
@@ -201,7 +205,6 @@ ${(c) => c.editable(code)}
         }
         effectiveFolder = _.trimStart(effectiveFolder, '/');
 
-
         const result: EditorFileNamesState = {
             modelPath: prefixFilePath(`${effectiveFolder}/${effectiveFileName}.ts`),
             exposedVarsPath: prefixFilePath(`${effectiveFolder}/${effectiveFileName}.variables.d.ts`),
@@ -209,6 +212,13 @@ ${(c) => c.editable(code)}
 
         return result;
     }, [path, fileName]);
+    const isInitialPath = (path?: string): boolean => {
+        if (!path)
+            return false;
+        
+        const normalizedPath = _.trimStart(path, '/');
+        return fileNamesState.modelPath === normalizedPath;
+    };
 
     const navigateToModel = (fileUri?: UriComponents, selectionOrPosition?: IRange | IPosition) => {
         if (!monacoInst.current || !editorRef.current || !fileUri)
@@ -229,6 +239,10 @@ ${(c) => c.editable(code)}
         }
 
         editorRef.current.focus();
+
+        const newInternalReadOnly = !isInitialPath(fileUri?.path);
+        if (newInternalReadOnly !== internalReadOnly)
+            setInternalReadOnly(newInternalReadOnly);
     };
 
     const initEditor = (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
@@ -296,7 +310,7 @@ ${(c) => c.editable(code)}
         addSubscription(createEditorSubscription);
 
         if (template && availableConstants && asPropertiesArray(availableConstants.properties, []).length > 0)
-            editor.trigger(null, 'editor.fold', { selectionLines: [1] });
+            editor.trigger(null, 'editor.fold', { selectionLines: [0] });
     };
 
     const onExplorerClick = () => {
@@ -312,6 +326,7 @@ ${(c) => c.editable(code)}
     };
 
     const showTree = isDevMode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
+    const finalReadOnly = readOnly || internalReadOnly;
     return showTree
         ? (
             <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
@@ -345,7 +360,7 @@ ${(c) => c.editable(code)}
                             onChange={onChange}
                             options={{
                                 automaticLayout: true,
-                                readOnly: readOnly,
+                                readOnly: finalReadOnly,
                             }}
                             onMount={onEditorMount}
                             template={template}
@@ -364,7 +379,7 @@ ${(c) => c.editable(code)}
                     onChange={onChange}
                     options={{
                         automaticLayout: true,
-                        readOnly: readOnly,
+                        readOnly: finalReadOnly,
                     }}
                     onMount={onEditorMount}
                     template={template}
