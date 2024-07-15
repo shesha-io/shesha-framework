@@ -25,7 +25,7 @@ const DebugPanelDataContent: FC = () => {
           });
     }, []);
 
-    const contexts = useMemo(() => contextManager.getDataContexts('all'), [contextManager.lastUpdate]);
+    const contexts = useMemo(() => contextManager.getDataContexts('full'), [contextManager.lastUpdate]);
   
     const onChangeContext = (contextId: string, propName: string, val: any) => {
       const ctx = contextManager.getDataContext(contextId);

@@ -26,6 +26,40 @@ import { GenericDictionary } from '@/interfaces';
 
 export interface IConfigurableActionDispatcherProviderProps { }
 
+function useConfigurableActionDispatcherState(require: boolean) {
+  const context = useContext(ConfigurableActionDispatcherStateContext);
+
+  if (context === undefined && require) {
+    throw new Error('useConfigurableActionDispatcherState must be used within a ConfigurableActionDispatcherProvider');
+  }
+
+  return context;
+}
+
+function useConfigurableActionDispatcherActions(require: boolean) {
+  const context = useContext(ConfigurableActionDispatcherActionsContext);
+
+  if (context === undefined && require) {
+    throw new Error(
+      'useConfigurableActionDispatcherActions must be used within a ConfigurableActionDispatcherProvider'
+    );
+  }
+
+  return context;
+}
+
+function useConfigurableActionDispatcher(require: boolean = true) {
+  const actionsContext = useConfigurableActionDispatcherActions(require);
+  const stateContext = useConfigurableActionDispatcherState(require);
+
+  // useContext() returns initial state when provider is missing
+  // initial context state is useless especially when require == true
+  // so we must return value only when both context are available
+  return actionsContext !== undefined && stateContext !== undefined
+    ? { ...actionsContext, ...stateContext }
+    : undefined;
+}
+
 const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
   children,
 }) => {
@@ -37,6 +71,8 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
   const [state] = useThunkReducer(metadataReducer, initial);
 
+  const parent = useConfigurableActionDispatcher(false);
+
   const getConfigurableActionOrNull = (
     payload: IGetConfigurableActionPayload
   ): IConfigurableActionDescriptor | null => {
@@ -46,10 +82,10 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
 
     // TODO: search action in the dictionary and return action
     const actionsGroup = actions.current[owner];
-    if (!actionsGroup?.actions) return null;
+    if (!actionsGroup?.actions) return parent?.getConfigurableActionOrNull(payload);
 
     const action = actionsGroup.actions.find((a) => a.name === name);
-    if (!action) return null;
+    if (!action) return parent?.getConfigurableActionOrNull(payload);
 
     return action;
   };
@@ -62,7 +98,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
   };
 
   const getActions = () => {
-    return actions.current;
+    return {...parent?.getActions(), ...actions.current};
   };
 
   const registerAction = (payload: IRegisterActionPayload) => {
@@ -201,40 +237,6 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
     </ConfigurableActionDispatcherStateContext.Provider>
   );
 };
-
-function useConfigurableActionDispatcherState(require: boolean) {
-  const context = useContext(ConfigurableActionDispatcherStateContext);
-
-  if (context === undefined && require) {
-    throw new Error('useConfigurableActionDispatcherState must be used within a ConfigurableActionDispatcherProvider');
-  }
-
-  return context;
-}
-
-function useConfigurableActionDispatcherActions(require: boolean) {
-  const context = useContext(ConfigurableActionDispatcherActionsContext);
-
-  if (context === undefined && require) {
-    throw new Error(
-      'useConfigurableActionDispatcherActions must be used within a ConfigurableActionDispatcherProvider'
-    );
-  }
-
-  return context;
-}
-
-function useConfigurableActionDispatcher(require: boolean = true) {
-  const actionsContext = useConfigurableActionDispatcherActions(require);
-  const stateContext = useConfigurableActionDispatcherState(require);
-
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
-  return actionsContext !== undefined && stateContext !== undefined
-    ? { ...actionsContext, ...stateContext }
-    : undefined;
-}
 
 const ConfigurableActionDispatcherConsumer = ConfigurableActionDispatcherActionsContext.Consumer;
 

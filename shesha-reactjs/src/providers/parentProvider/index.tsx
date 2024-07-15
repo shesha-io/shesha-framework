@@ -1,6 +1,7 @@
-import React, { useContext, FC, PropsWithChildren, useMemo } from "react";
-import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure } from "../index";
+import React, { useContext, FC, PropsWithChildren, useMemo, useId } from "react";
+import { ConfigurableActionDispatcherProvider, DataContextManager, FormMode, IConfigurableFormComponent, IFlatComponentsStructure } from "../index";
 import { createNamedContext } from "@/utils/react";
+import ConditionalWrap from "@/components/conditionalWrapper";
 
 export interface IParentProviderStateContext {
   formMode?: FormMode;
@@ -13,10 +14,10 @@ export interface IParentProviderStateContext {
 
 export interface IParentProviderProps { 
   formMode?: FormMode;
-  subFormIdPrefix?: string;
   context?: string;
   model: any;
   formFlatMarkup?: IFlatComponentsStructure;
+  isScope?: boolean;
 }
 
 export const ParentProviderStateContext = createNamedContext<IParentProviderStateContext>({model: {}, getChildComponents: () => null }, "ParentProviderStateContext");
@@ -33,24 +34,23 @@ export function useParent(require: boolean = true) {
 const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
   const { 
     children,
-    subFormIdPrefix,
     model,
     formMode,
     context,
     formFlatMarkup,
+    isScope = false,
   } = props;
 
   const parent = useParent(false);
+  const id = useId();
 
   const formModeLocal = formMode ?? parent?.formMode;
-  const subFormIdPrefixLocal = subFormIdPrefix ?? parent?.subFormIdPrefix;
   const formFlatMarkupLocal = formFlatMarkup ?? parent?.formFlatMarkup;
   const contextLocal = context ?? parent?.context;
 
   const value = useMemo((): IParentProviderStateContext => {
     return {
       formMode: formModeLocal,
-      subFormIdPrefix: subFormIdPrefixLocal,
       context: contextLocal,
       formFlatMarkup: formFlatMarkupLocal,
       model: {...parent?.model, ...model},
@@ -66,12 +66,25 @@ const ParentProvider: FC<PropsWithChildren<IParentProviderProps>> = (props) => {
         return null;
       }
     };
-  }, [formModeLocal, subFormIdPrefixLocal, contextLocal, formFlatMarkupLocal, model, parent?.model]);
+  }, [formModeLocal, contextLocal, formFlatMarkupLocal, model, parent?.model]);
 
   return (
-    <ParentProviderStateContext.Provider value={value}>
-      {children}
-    </ParentProviderStateContext.Provider>
+    <ConditionalWrap 
+      condition={isScope} 
+      wrap={(children: React.ReactNode) => {
+        return (
+          <DataContextManager id={id}>
+            <ConfigurableActionDispatcherProvider>
+              {children}
+            </ConfigurableActionDispatcherProvider>
+          </DataContextManager>
+        );
+      }}
+    >
+      <ParentProviderStateContext.Provider value={value}>
+        {children}
+      </ParentProviderStateContext.Provider>
+    </ConditionalWrap>
   );
 };
 

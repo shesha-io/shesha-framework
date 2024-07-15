@@ -64,7 +64,6 @@ import { ISelectionProps } from '@/providers/dataTable/contexts';
 import { ContextGetData, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
   IApplicationApi,
-  IConfigurableActionConfiguration,
   useDataTableStore,
   useForm,
   useFormData,
@@ -75,8 +74,6 @@ import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance, AxiosResponse } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
-import { StandardNodeTypes } from '@/interfaces/formComponent';
-import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { IParentProviderProps } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { useDeepCompareMemo } from '@/hooks';
@@ -143,7 +140,7 @@ export function useAvailableConstantsData(topContextId?: string): IApplicationCo
   tcId = topContextId || tcId;
   const { backendUrl } = useSheshaApplication();
   // get closest form or page form
-  const form = useForm(false) ?? dcm.getPageFormInstance();
+  const form = useForm(false) ?? dcm.getRoot()?.getPageFormInstance();
   // get full page context data
   const pageContext = pc?.getFull();
   // Get global state
@@ -280,23 +277,6 @@ export const isCommonContext = (name: string): boolean => {
   return r.filter(i => i === name)?.length > 0;
 };
 
-const updateConfigurableActionParent = (model: any, parentId: string) => {
-  for (const key in model) {
-    if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
-      const config = model[key] as IConfigurableActionConfiguration;
-
-      if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
-        // skip SheshaActionOwners actions since they are common
-        if (Object.values(SheshaActionOwners).filter(i => i === config.actionOwner)?.length > 0)
-          continue;
-        model[key] = { ...config, actionOwner: `${parentId}.${config.actionOwner}` };
-      } else {
-        updateConfigurableActionParent(config, parentId);
-      }
-    }
-  }
-};
-
 export const getActualModelWithParent = <T>(
   model: T,
   allData: any,
@@ -307,22 +287,6 @@ export const getActualModelWithParent = <T>(
     && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
 
   const actualModel = getActualModel(model, allData, parentReadOnly);
-  // update Id for complex containers (SubForm, DataList item, etc)
-  if (!!parent?.subFormIdPrefix) {
-    actualModel['id'] = `${parent?.subFormIdPrefix}.${actualModel['id']}`;
-    actualModel['parentId'] = `${parent?.subFormIdPrefix}.${actualModel['parentId']}`;
-    actualModel['componentName'] = !!parent?.model?.componentName
-      ? `${parent?.model?.componentName}.${actualModel['componentName']}`
-      : actualModel['componentName'];
-
-    actualModel['context'] =
-      !!actualModel['context']
-        && parent?.context !== actualModel['context'] // If the subForm has the same context then don't update context name
-        && !isCommonContext(actualModel['context']) // If a common context then don't update context name
-        ? `${parent?.subFormIdPrefix}.${actualModel['context']}`
-        : actualModel['context'];
-    updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
-  }
   return actualModel;
 };
 

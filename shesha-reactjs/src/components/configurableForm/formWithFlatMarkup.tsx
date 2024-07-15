@@ -1,7 +1,6 @@
 import { IFlatComponentsStructure, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
 import React, { FC } from 'react';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
-import ParentProvider from '@/providers/parentProvider';
 import { FormProvider } from '@/providers/form';
 import Show from '../show';
 import FormInfo from './formInfo';
@@ -48,32 +47,30 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
 
   return (
     <FormFlatMarkupProvider markup={formFlatMarkup}>
-      <ParentProvider model={{}} formMode={mode} formFlatMarkup={formFlatMarkup}>
-        <FormProvider
-          name={props.formName}
-          formSettings={formSettings}
-          needDebug={needDebug}
-          onValuesChange={onValuesChange}
+      <FormProvider
+        name={props.formName}
+        formSettings={formSettings}
+        needDebug={needDebug}
+        onValuesChange={onValuesChange}
 
-          mode={mode}
-          form={form}
-          formRef={formRef}
-          actions={actions}
-          sections={sections}
-          
-          refetchData={refetchData}
-          isActionsOwner={isActionsOwner}
-          propertyFilter={propertyFilter}
+        mode={mode}
+        form={form}
+        formRef={formRef}
+        actions={actions}
+        sections={sections}
+        
+        refetchData={refetchData}
+        isActionsOwner={isActionsOwner}
+        propertyFilter={propertyFilter}
 
-          parentFormValues={parentFormValues}
-          initialValues={props.initialValues}
-        >
-          <Show when={Boolean(showFormInfo)}>
-            <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
-          </Show>
-          <ConfigurableFormRenderer {...props} />
-        </FormProvider>
-      </ParentProvider>
+        parentFormValues={parentFormValues}
+        initialValues={props.initialValues}
+      >
+        <Show when={Boolean(showFormInfo)}>
+          <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
+        </Show>
+        <ConfigurableFormRenderer {...props} />
+      </FormProvider>
     </FormFlatMarkupProvider>
   );
 };
