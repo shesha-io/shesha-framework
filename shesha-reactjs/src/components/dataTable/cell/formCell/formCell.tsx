@@ -52,7 +52,7 @@ const ReadFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
         {(form) => (
           <div className={styles.shaFormCell} style={styleMinHeight}>
             <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={MODE_READONLY_TRUE} formMode='readonly' formFlatMarkup={form.flatStructure}>
+              <ParentProvider model={MODE_READONLY_TRUE} formMode='readonly' formFlatMarkup={form.flatStructure} isScope>
                 <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                   <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                 </ComponentsContainerProvider>
@@ -77,7 +77,7 @@ export const CreateFormCell = (props: IConfigurableCellProps<ITableFormColumn>) 
         {(form) => (
           <div className={styles.shaFormCell} style={styleMinHeight}>
             <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure}>
+              <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
                 <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                   <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                 </ComponentsContainerProvider>
@@ -102,7 +102,7 @@ const EditFormCell = <D extends object = {}, V = number>(props: IFormCellProps<D
         {(form) => (
           <div className={styles.shaFormCell} style={styleMinHeight}>
             <FormItemProvider labelCol={form.settings?.labelCol}>
-              <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure}>
+              <ParentProvider model={MODE_READONLY_FALSE} formMode='edit' formFlatMarkup={form.flatStructure} isScope>
                 <ComponentsContainerProvider ContainerComponent={ComponentsContainerFormCell}>
                   <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
                 </ComponentsContainerProvider>

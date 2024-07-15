@@ -550,7 +550,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           condition={Boolean(state.formSettings?.modelType)}
           wrap={(children) => <MetadataProvider modelType={state.formSettings.modelType}>{children}</MetadataProvider>}
         >
-          <ParentProvider model={props} subFormIdPrefix={id} context={context}>
+          <ParentProvider model={props} context={context} isScope >
             {children}
           </ParentProvider>
         </ConditionalWrap>

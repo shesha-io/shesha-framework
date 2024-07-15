@@ -9,9 +9,9 @@ export interface DebugPanelProps {
 
 export const DebugPanel: FC<DebugPanelProps> = (props) => {
 
-    const ctxManager = useDataContextManager(false);
+    const ctxManager = useDataContextManager(false)?.getRoot();
 
-    const contexts = ctxManager.getDataContexts('all');
+    const contexts = ctxManager.getDataContexts('full');
 
     return (
         <>
