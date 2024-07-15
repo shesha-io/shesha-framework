@@ -13,7 +13,7 @@ export interface IColumnsEditorModal {
   onChange?: any;
 }
 
-export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, visible, hideModal }) => {
+export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, visible, hideModal, readOnly }) => {
   const isSmall = useMedia('(max-width: 480px)');
 
   const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
@@ -39,7 +39,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
       destroyOnClose={true}
     >
       <ColumnsConfigurator
-        readOnly={false}
+        readOnly={readOnly}
         value={localValue}
         onChange={setLocalValue}
       />
