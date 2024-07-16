@@ -53,19 +53,31 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     marginBottom: '8px',
   } as CSSProperties;
 
+
   const renderTitle = () => {
 
     const titleStyles = {
       ...titleStyle,
-      fontSize: fontSize,
-      ...(fontColor && { color: fontColor }),
+      fontSize: fontSize || 14,
+      color: fontColor || '#000',
     };
 
-    return <Title labelAlign={labelAlign} title={title} tooltip={tooltip} classes={styles} titleStyles={{ ...titleStyles, }} inline={inline} titleMargin={titleMargin} />;
+    return <Title
+      labelAlign={labelAlign}
+      title={title}
+      tooltip={tooltip}
+      classes={styles}
+      titleStyles={{ ...titleStyles, }}
+      titleMargin={titleMargin} />;
   };
 
   const defaultWidth = vertical ? 'max-content' : '100%';
-  const commonStyle = { ...containerStyle, width: lineWidth && !vertical ? addPx(lineWidth) : defaultWidth, margin: vertical ? 8 : '8px 0px' };
+  const commonStyle = {
+    ...containerStyle,
+    width: lineWidth && !vertical ? addPx(lineWidth)
+      : defaultWidth, margin: vertical ? 8 : '8px 0px'
+  };
+
   const dividerMargin = Number((titleMargin / 100).toFixed(2));
 
   if (inline || vertical) {
@@ -78,8 +90,9 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
                 colorSplit: lineColor || styles.primaryColor,
                 colorText: fontColor || '#000',
                 lineWidth: lineThickness || 2,
-                fontSize: addPx(lineHeight) || addPx(fontSize),
-                orientationMargin: dividerMargin || 0.05
+                fontSize: addPx(lineHeight) || addPx(fontSize) || 14,
+                orientationMargin: dividerMargin || 0.05,
+                margin: 8,
               },
             },
           }}

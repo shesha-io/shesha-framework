@@ -34,16 +34,6 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             label: 'Hidden',
           })
-          .addNumberField({
-            id: "3b8b9e3f-f10c-48ae-b4c3-f5cc36f934m5",
-            propertyName: "titleMargin",
-            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            description: "Distance between text and edge, which should be a number between 0 and 100",
-            label: "Title Margin",
-            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
-            min: 0,
-            max: 100,
-          })
           .addTextField({
             id: '46d07439-4c18-468c-89e1-60c002ce96c5',
             propertyName: 'label',
@@ -100,6 +90,16 @@ export const getSettings = (data: any) =>
             defaultValue: 14,
             hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
 
+          })
+          .addNumberField({
+            id: "3b8b9e3f-f10c-48ae-b4c3-f5cc36f934m5",
+            propertyName: "titleMargin",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            description: "Distance between text and edge, which should be a number between 0 and 100",
+            label: "Title Margin",
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
+            min: 0,
+            max: 100,
           })
           .addCheckbox({
             id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934m5",

@@ -1,5 +1,5 @@
 import React, { CSSProperties, ReactNode, useRef } from 'react';
-import { Space, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import Show from '../show';
 
@@ -8,9 +8,9 @@ interface TitleProps {
     tooltip?: string;
     classes?: any;
     titleStyles?: CSSProperties;
-    inline?: boolean;
     titleMargin?: number;
     labelAlign?: 'left' | 'center' | 'right';
+    color?: string;
 }
 
 const Title: React.FC<TitleProps> = ({
@@ -18,36 +18,30 @@ const Title: React.FC<TitleProps> = ({
     tooltip,
     classes,
     titleStyles,
-    inline,
     labelAlign,
-    titleMargin,
+    titleMargin
 }) => {
 
-    const titleRef = useRef<HTMLSpanElement>(null);
+    const titleRef = useRef<HTMLDivElement>(null);
 
     if (!title) return null;
 
-    const getMarginStyle = () => {
-        if (inline || labelAlign === 'center') return null;
-
-        return labelAlign === 'left'
-            ? { marginLeft: `calc(${titleMargin || 0}%)` }
-            : { marginRight: `calc(${titleMargin || 0}%)` };
-    };
+    const marginWidth = `${titleMargin || 0}%`;
 
     return (
-        <span style={{ ...titleStyles, ...getMarginStyle() }} ref={titleRef}>
-            <Space size="small" style={{ flexWrap: 'nowrap' }}>
-                <span >{title}</span>
-                <Show when={Boolean(tooltip?.trim())}>
-                    <Tooltip title={tooltip}>
-                        <QuestionCircleOutlined
-                            className={`tooltip-question-icon ${classes.helpIcon}`}
-                        />
-                    </Tooltip>
-                </Show>
-            </Space>
-        </span>
+        <div className={classes.titleContainer} style={{ justifyContent: labelAlign, flexWrap: 'nowrap' }} ref={titleRef}>
+            <div style={{ width: labelAlign === 'left' ? marginWidth : 0 }} ></div>
+            <span style={{ ...titleStyles, whiteSpace: 'nowrap', paddingRight: '8px' }}>{title}</span>
+            <Show when={Boolean(tooltip?.trim())}>
+                <Tooltip title={tooltip}>
+                    <QuestionCircleOutlined
+                        className={`tooltip-question-icon`}
+                        style={{ color: '#aaa' }}
+                    />
+                </Tooltip>
+            </Show>
+            <div style={{ width: labelAlign === 'right' ? marginWidth : 0 }} ></div>
+        </div>
     );
 };
 
