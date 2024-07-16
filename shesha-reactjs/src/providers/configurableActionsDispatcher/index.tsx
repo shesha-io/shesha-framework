@@ -251,9 +251,12 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
     if (!payload.owner || !payload.ownerUid) return undefined;
 
     registerAction(payload);
-    return () => {
-      unregisterAction(payload);
-    };
+
+    return !payload.isPermament
+      ? () => {
+        unregisterAction(payload);
+      }
+      : undefined;
   }, deps);
 }
 

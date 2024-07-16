@@ -1,6 +1,6 @@
 import { useMutate } from '@/hooks';
 import useThunkReducer, { ThunkDispatch } from '@/hooks/thunkReducer';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
 import { GetCurrentLoginInfoOutputAjaxResponse, sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
