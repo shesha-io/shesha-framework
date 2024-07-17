@@ -18,7 +18,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IconType, ShaIcon } from '@/components';
+import * as Icons from '@ant-design/icons';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -52,11 +52,13 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const InputComponentType = renderInput(model.textType);
 
+    const prefixAndSuffix = (value) => Icons[value] ? React.createElement(Icons[value]) : value;
+
     const inputProps: InputProps = {
       className: 'sha-input',
       placeholder: model.placeholder,
-      prefix: model.prefix,
-      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }}/>}</>,
+      prefix: prefixAndSuffix(model.prefix),
+      suffix: prefixAndSuffix(model.suffix),
       variant: model.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
@@ -85,10 +87,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         }
       >
         {(value, onChange) => {
-          const customEvent =  customEventHandler(eventProps);
+          const customEvent = customEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
-            if (typeof onChange === 'function') 
+            if (typeof onChange === 'function')
               onChange(...args);
           };
           return inputProps.readOnly
@@ -109,7 +111,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
-    .add<ITextFieldComponentProps>(4, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
@@ -120,3 +122,4 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 };
 
 export default TextFieldComponent;
+
