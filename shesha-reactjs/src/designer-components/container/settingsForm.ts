@@ -508,7 +508,7 @@ export const getSettings = (data: any) =>
     })
     .addDropdown({
       id: nanoid(),
-      propertyName: 'backgroundSize',
+      propertyName: 'backgroundRepeat',
       label: 'Background Repeat',
       labelAlign: 'right',
       parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',

@@ -73,7 +73,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     };
 
     const backgroundStyles = model?.backgroundType === 'image'
-      ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundSize }
+      ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundRepeat }
       : model?.backgroundType === 'color'
       ? { background: model?.backgroundColor }
       : {};
