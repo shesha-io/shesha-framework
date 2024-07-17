@@ -326,7 +326,7 @@ export const getSettings = (data: any) =>
         ],
       },
     })
-     .addCollapsiblePanel({
+    .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'pnlBackground',
       parentId: 'root',
@@ -369,7 +369,7 @@ export const getSettings = (data: any) =>
               _code: "return getSettingValue(data?.backgroundType) !== 'color';",
               _mode: 'code',
               _value: false,
-            } as any    
+            } as any
           })
           .addDropdown({
             id: nanoid(),
@@ -399,7 +399,7 @@ export const getSettings = (data: any) =>
               _code: "return getSettingValue(data?.backgroundType) !== 'image';",
               _mode: 'code',
               _value: false,
-            } as any 
+            } as any
           })
           .addTextField({
             id: nanoid(),
@@ -469,10 +469,10 @@ export const getSettings = (data: any) =>
                     label: "StoredFile ID"
                   })
                   .addTextField({
-                      id: "1c413b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-                      propertyName: "fileCategory",
-                      parentId: "y9SNusmMM0Wd1Sc_YI1ng",
-                      label: "File category"
+                    id: "1c413b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+                    propertyName: "fileCategory",
+                    parentId: "y9SNusmMM0Wd1Sc_YI1ng",
+                    label: "File category"
                   })
                   .toJson(),
               ]
@@ -481,7 +481,7 @@ export const getSettings = (data: any) =>
           .addDropdown({
             id: nanoid(),
             propertyName: 'backgroundCover',
-            label: 'Background Cover Type',
+            label: 'Background Size',
             labelAlign: 'right',
             parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
             dataSourceType: "values",
@@ -497,16 +497,6 @@ export const getSettings = (data: any) =>
                 id: nanoid()
               },
               {
-                label: "Repeat",
-                value: "repeat",
-                id: nanoid()
-              },
-              {
-                label: "No Repeat",
-                value: "no-repeat",
-                id: nanoid()
-              },
-              {
                 label: "Cover",
                 value: "cover",
                 id: nanoid()
@@ -515,6 +505,45 @@ export const getSettings = (data: any) =>
           }).toJson()
         ]
       }
+    })
+    .addDropdown({
+      id: nanoid(),
+      propertyName: 'backgroundSize',
+      label: 'Background Repeat',
+      labelAlign: 'right',
+      parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+      dataSourceType: "values",
+      hidden: {
+        _code: "return getSettingValue(data?.backgroundType) !== 'image';",
+        _mode: 'code',
+        _value: false,
+      } as any,
+      values: [
+        {
+          label: "Repeat",
+          value: "repeat",
+          id: nanoid()
+        },
+        {
+          label: "No Repeat",
+          value: "no-repeat",
+          id: nanoid()
+        }, {
+          label: "Repeat-X",
+          value: "repeat-x",
+          id: nanoid()
+        },
+        {
+          label: "Repeat-Y",
+          value: "repeat-y",
+          id: nanoid()
+        },
+        {
+          label: "Round",
+          value: "round",
+          id: nanoid()
+        },
+      ],
     })
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
