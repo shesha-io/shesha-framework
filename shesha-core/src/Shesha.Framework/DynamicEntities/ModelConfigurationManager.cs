@@ -189,8 +189,8 @@ namespace Shesha.DynamicEntities
         {
             var copyPermission = async (string method, string type) =>
             {
-                var sourcePermission = await _permissionedObjectManager.GetAsync($"{source.FullClassName}{method}");
-                var destinationPermission = await _permissionedObjectManager.GetAsync($"{destination.FullClassName}{method}");
+                var sourcePermission = await _permissionedObjectManager.GetAsync($"{source.FullClassName}{method}", type);
+                var destinationPermission = await _permissionedObjectManager.GetAsync($"{destination.FullClassName}{method}", type);
                 destinationPermission.Access = sourcePermission.Access;
                 destinationPermission.Type = type;
                 sourcePermission.Permissions.ToList().ForEach(x =>
