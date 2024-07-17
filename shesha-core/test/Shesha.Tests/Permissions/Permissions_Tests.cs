@@ -45,7 +45,7 @@ namespace Shesha.Tests.Permissions
             {
                 Debug.WriteLine($"Start item {i}");
                 var s = DateTime.Now;
-                var t = _permissionedObjectManager.Get($"shurik@{i}");
+                var t = _permissionedObjectManager.Get($"shurik@{i}", "");
                 Debug.WriteLine($"Executed item {i}");
                 var e = DateTime.Now;
                 var d = e - s;
