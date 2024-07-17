@@ -110,6 +110,15 @@
             "textType": "text"
           },
           {
+            "id": "123b1754-682d-4f2c-b49a-a1f25046747s",
+            "type": "iconPicker",
+            "propertyName": "prefixIcon",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Prefix Icon",
+            "version": 3,
+            "textType": "text"
+          },
+          {
             "id": "d68b1754-682c-4f2c-b49a-a1f250467474",
             "type": "textField",
             "propertyName": "suffix",

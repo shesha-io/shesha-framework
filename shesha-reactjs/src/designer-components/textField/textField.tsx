@@ -18,7 +18,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import * as Icons from '@ant-design/icons';
+import { IconType, ShaIcon } from '@/components';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -52,13 +52,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const InputComponentType = renderInput(model.textType);
 
-    const prefixAndSuffix = (value) => Icons[value] ? React.createElement(Icons[value]) : value;
-
     const inputProps: InputProps = {
       className: 'sha-input',
       placeholder: model.placeholder,
-      prefix: prefixAndSuffix(model.prefix),
-      suffix: prefixAndSuffix(model.suffix),
+      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       variant: model.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
@@ -122,4 +120,3 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 };
 
 export default TextFieldComponent;
-
