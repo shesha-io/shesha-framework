@@ -63,6 +63,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
         colorSuccess: appTheme.successColor,
         colorError: appTheme.errorColor,
         colorWarning: appTheme.warningColor,
+        borderRadius: appTheme.defaultBorderRadius,
       }
       : {};
 

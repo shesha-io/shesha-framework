@@ -1,5 +1,5 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Divider, Form, Radio, Space, Tooltip, InputNumber } from 'antd';
+import { Divider, Form, Radio, Space, Tooltip, InputNumber, Slider } from 'antd';
 import React, { FC, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
@@ -136,6 +136,27 @@ const ThemeParameters: FC = () => {
             <Radio value="dark">Dark</Radio>
             <Radio value="light">Light</Radio>
           </Radio.Group>
+        </Form.Item>
+      </Form>
+
+      <Divider />
+
+      <SectionSeparator title="Style" />
+
+      <Form fields={[
+        {
+          name: ["defaultBorderRadius"],
+          value: theme?.application?.defaultBorderRadius,
+        }]}>
+        <Form.Item label="Border Radius (%)" name="defaultBorderRadius">
+          <Slider min={0} max={50}
+            defaultValue={theme.application.defaultBorderRadius}
+            onChange={(value: number) => {
+              updateTheme('application',{
+                defaultBorderRadius: value,
+              });
+            }}
+          />
         </Form.Item>
       </Form>
 
