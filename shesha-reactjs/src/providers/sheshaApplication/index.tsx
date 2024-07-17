@@ -47,7 +47,7 @@ import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
 import { DataContextProvider } from '../dataContextProvider';
-import { SheshaCommonContexts } from '../dataContextManager/models';
+import { SHESHA_ROOT_DATA_CONTEXT_MANAGER, SheshaCommonContexts } from '../dataContextManager/models';
 import { useApplicationPlugin } from './context/applicationContext';
 import { FormManager } from '../formManager';
 import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
@@ -160,7 +160,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           <ReferenceListDispatcherProvider>
                             <EntityMetadataFetcherProvider>
                               <MetadataDispatcherProvider>
-                                <DataContextManager>
+                                <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
                                   <ApplicationContextsProvider>
                                     <DataContextProvider
                                       id={SheshaCommonContexts.AppContext}

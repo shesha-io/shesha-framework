@@ -112,6 +112,9 @@ export interface IComponentBindingProps {
 
   /** data context ID, empty for from data */
   context?: string;
+
+  /** initial data context ID, empty for from data */
+  initialContext?: string;
 }
 
 export interface IComponentVisibilityProps {

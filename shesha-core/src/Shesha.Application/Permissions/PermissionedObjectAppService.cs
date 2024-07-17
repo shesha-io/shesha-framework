@@ -59,10 +59,11 @@ namespace Shesha.Permissions
         /// Get protected object by name
         /// </summary>
         /// <param name="objectName"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        public async Task<PermissionedObjectDto> GetByObjectNameAsync(string objectName)
+        public async Task<PermissionedObjectDto> GetByObjectNameAsync(string objectName, string type)
         {
-            return await _permissionedObjectManager.GetAsync(objectName);
+            return await _permissionedObjectManager.GetAsync(objectName, type);
         }
 
         /// <summary>

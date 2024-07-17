@@ -32,6 +32,7 @@ import {
   IMatchData,
 } from '@/providers/form/utils';
 import Link from 'next/link';
+import ParentProvider from '@/providers/parentProvider';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -53,6 +54,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   const {
     updateStateFormData,
     formData,
+    formMode,
     formSettings,
     setValidationErrors,
     setFormData,
@@ -250,24 +252,26 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   }
 
   return (
-    <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
-      <Spin spinning={submitting}>
-        <Form
-          form={form}
-          labelWrap
-          size={props.size}
-          onFinish={onFinishInternal}
-          onFinishFailed={onFinishFailedInternal}
-          onValuesChange={onValuesChangeInternal}
-          initialValues={initialValues}
-          className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
-          {...mergedProps}
-        >
-          <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
-          {children}
-        </Form>
-      </Spin>
-    </ComponentsContainerProvider>
+    <ParentProvider model={{}} formMode={formMode} formFlatMarkup={formFlatMarkup} isScope >
+      <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
+        <Spin spinning={submitting}>
+          <Form
+            form={form}
+            labelWrap
+            size={props.size}
+            onFinish={onFinishInternal}
+            onFinishFailed={onFinishFailedInternal}
+            onValuesChange={onValuesChangeInternal}
+            initialValues={initialValues}
+            className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
+            {...mergedProps}
+          >
+            <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+            {children}
+          </Form>
+        </Spin>
+      </ComponentsContainerProvider>
+    </ParentProvider>
   );
 };
 

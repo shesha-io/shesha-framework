@@ -505,7 +505,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
   useDeepCompareEffect(() => {
     // set main form if empty
     if (needDebug)
-      formProviderContext.contextManager?.updatePageFormInstance({ ...state, ...configurableFormActions } as ConfigurableFormInstance);
+      formProviderContext.contextManager?.getRoot()?.updatePageFormInstance({ ...state, ...configurableFormActions } as ConfigurableFormInstance);
   }, [state]);
 
   return (

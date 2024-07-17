@@ -65,7 +65,6 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     onSave,
     allowChangeMode,
     autoSave = false,
-    itemListId
   } = props;
 
   const [state, dispatch] = useThunkReducer(reducer, {
@@ -301,7 +300,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
         onValuesChange={onValuesChangeInternal}
         {...props.formSettings}
       >
-        <ParentProvider model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }} subFormIdPrefix={itemListId}>
+        <ParentProvider model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }} isScope >
           {children}
         </ParentProvider>
       </Form>
@@ -316,7 +315,6 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
     formSettings,
   } = props;
   const [form] = Form.useForm();
-
 
   return (
     <ShaForm.MarkupProvider markup={props.formFlatMarkup}>
