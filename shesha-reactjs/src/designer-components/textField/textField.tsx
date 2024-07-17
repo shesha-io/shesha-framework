@@ -55,8 +55,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const inputProps: InputProps = {
       className: 'sha-input',
       placeholder: model.placeholder,
-      prefix: model.prefix,
-      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }}/>}</>,
+      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       variant: model.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
@@ -85,10 +85,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         }
       >
         {(value, onChange) => {
-          const customEvent =  customEventHandler(eventProps);
+          const customEvent = customEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
-            if (typeof onChange === 'function') 
+            if (typeof onChange === 'function')
               onChange(...args);
           };
           return inputProps.readOnly
@@ -109,7 +109,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
-    .add<ITextFieldComponentProps>(4, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
