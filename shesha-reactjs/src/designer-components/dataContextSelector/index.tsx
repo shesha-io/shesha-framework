@@ -14,7 +14,8 @@ export interface IDataContextSelectorProps<TValue = any> {
   onChange?: (value: TValue) => void;
 }
 const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
-  const { getDataContexts } = useDataContextManager();
+  // Use parent DCM because this control usually used in the properties form and has own DCM
+  const { getDataContexts } = useDataContextManager()?.parent ?? useDataContextManager().getRoot();
 
   const dataContext = useDataContext(false);
   const dataContexts = getDataContexts(dataContext?.id);
