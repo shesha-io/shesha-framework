@@ -4,7 +4,6 @@ import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect }
 import { GetCurrentLoginInfoOutputAjaxResponse, sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
-import { OverlayLoader } from '@/components/overlayLoader';
 import { IAccessToken } from '@/interfaces';
 import { IHttpHeaders } from '@/interfaces/accessToken';
 import { IErrorInfo } from '@/interfaces/errorInfo';
@@ -49,6 +48,7 @@ import {
 import { authReducer } from './reducer';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import { Action } from 'redux-actions';
+import SheshaLoader from '@/components/sheshaLoader';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -438,7 +438,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   };
 
   if (showLoader) {
-    return <OverlayLoader loading={true} loadingText="Initializing..." />;
+    return <SheshaLoader message="Initializing..." />;
   }
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
