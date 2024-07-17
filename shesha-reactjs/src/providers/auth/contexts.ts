@@ -75,6 +75,9 @@ export interface IAuthStateContext
 
 export interface IAuthActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
+  /**
+   * @deprecated - Use loginUserAsync instead.
+   */
   loginUser?: (loginFormData: ILoginForm) => void;
   loginUserAsync?: (loginFormData: ILoginForm) => Promise<unknown>;
 
