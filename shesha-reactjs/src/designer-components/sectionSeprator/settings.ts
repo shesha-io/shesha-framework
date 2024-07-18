@@ -132,6 +132,7 @@ export const getSettings = (data: any) =>
                 id: "b920ef96-ae27-4a01-bfad-b5b7d07218da"
               }
             ],
+            defaultValue: "horizontal",
             dataSourceType: "values"
           })
           .addCheckbox({
@@ -153,7 +154,6 @@ export const getSettings = (data: any) =>
             description: "Line Thickness in pixels (px)",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Line Thickness",
-            defaultValue: 2,
           })
           .addTextField({
             id: "3b8bv360-f47e-48ae-b4c3-f5cc36f934a9",

@@ -37,7 +37,7 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
       label: 'Section',
       lineThickness: 2,
       labelAlign: "left",
-      
+      orientation: "horizontal",
     };
   },
   migrator: (m) => m
