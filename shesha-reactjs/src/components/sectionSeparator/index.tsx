@@ -66,7 +66,6 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       labelAlign={labelAlign}
       title={title}
       tooltip={tooltip}
-      classes={styles}
       titleStyles={{ ...titleStyles, }}
       titleMargin={titleMargin} />;
   };

@@ -17,9 +17,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             };
 
         .${titleContainer} {
-            display: flex;
-            vertical-align: middle;
-            width: 100%
+            flexWrap: nowrap;
+            alignItems: center;
+            width: 100%;
         }
     `);
 

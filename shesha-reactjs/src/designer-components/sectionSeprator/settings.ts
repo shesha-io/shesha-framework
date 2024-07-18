@@ -97,7 +97,7 @@ export const getSettings = (data: any) =>
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             description: "Distance between text and edge, which should be a number between 0 and 100",
             label: "Title Margin",
-            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical" || getSettingValue(data?.labelAlign) === "center";', _mode: 'code', _value: true } as any,
             min: 0,
             max: 100,
           })
