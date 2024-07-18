@@ -1,8 +1,8 @@
 import React, { ReactElement } from "react";
 import {
-    render as baseRender,
-    RenderOptions,
-    RenderResult,
+  render as baseRender,
+  RenderOptions,
+  RenderResult,
 } from "@testing-library/react";
 
 /**
@@ -14,11 +14,11 @@ import {
  */
 
 export const AllTheProviders = ({ children }) => {
-    return <>{children}</>;
+  return <>{children}</>;
 };
 
 const render = (ui: ReactElement, options?: Omit<RenderOptions, "queries">) =>
-    baseRender(ui, { wrapper: AllTheProviders, ...options }) as RenderResult;
+  baseRender(ui, { wrapper: AllTheProviders, ...options }) as RenderResult;
 
 // re-export everything
 export * from "@testing-library/react";

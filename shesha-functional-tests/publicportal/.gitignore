@@ -11,3 +11,4 @@ next-env.d.ts
 node_modules/asn1*
 out/
 .DS_Store
+dist/
