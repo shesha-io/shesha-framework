@@ -50,6 +50,7 @@ export interface IAuthStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   isCheckingAuth?: boolean;
   isFetchingUserInfo?: boolean;
+  hasFetchedUserInfoAsync?: boolean;
   loginInfo?: UserLoginInfoDto;
   requireChangePassword?: boolean;
   isLoggedIn: boolean;
@@ -74,7 +75,11 @@ export interface IAuthStateContext
 
 export interface IAuthActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
+  /**
+   * @deprecated - Use loginUserAsync instead.
+   */
   loginUser?: (loginFormData: ILoginForm) => void;
+  loginUserAsync?: (loginFormData: ILoginForm) => Promise<unknown>;
 
   logoutUser?: () => Promise<unknown>;
 
@@ -101,6 +106,6 @@ export const AUTH_CONTEXT_INITIAL_STATE: IAuthStateContext = {
   isLoggedIn: false,
 };
 
-export const AuthStateContext = createNamedContext<IAuthStateContext>(AUTH_CONTEXT_INITIAL_STATE, "AuthStateContext");
+export const AuthStateContext = createNamedContext<IAuthStateContext>(AUTH_CONTEXT_INITIAL_STATE, 'AuthStateContext');
 
-export const AuthActionsContext = createNamedContext<IAuthActionsContext | undefined>(undefined, "AuthActionsContext");
+export const AuthActionsContext = createNamedContext<IAuthActionsContext | undefined>(undefined, 'AuthActionsContext');

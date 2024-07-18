@@ -1,10 +1,9 @@
 import { useMutate } from '@/hooks';
-import useThunkReducer from '@/hooks/thunkReducer';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
-import { sessionGetCurrentLoginInfo } from '@/apis/session';
+import useThunkReducer, { ThunkDispatch } from '@/hooks/thunkReducer';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
+import { GetCurrentLoginInfoOutputAjaxResponse, sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
-import { OverlayLoader } from '@/components/overlayLoader';
 import { IAccessToken } from '@/interfaces';
 import { IHttpHeaders } from '@/interfaces/accessToken';
 import { IErrorInfo } from '@/interfaces/errorInfo';
@@ -26,6 +25,7 @@ import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { getFlagSetters } from '../utils/flagsSetters';
 import {
   checkAuthAction,
+  fetchedUserDataAsyncAction,
   fetchUserDataAction,
   fetchUserDataActionErrorAction,
   fetchUserDataActionSuccessAction,
@@ -47,6 +47,8 @@ import {
 } from './contexts';
 import { authReducer } from './reducer';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
+import { Action } from 'redux-actions';
+import SheshaLoader from '@/components/sheshaLoader';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -89,6 +91,7 @@ interface IAuthProviderProps {
 }
 
 const ASPNET_CORE_CULTURE = '.AspNetCore.Culture';
+const GENERIC_ERR_MSG = 'Oops, something went wrong';
 
 const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   children,
@@ -211,10 +214,47 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
       })
       .catch((e) => {
         console.error('failed to fetch user profile', e);
-        dispatch(fetchUserDataActionErrorAction({ message: 'Oops, something went wrong' }));
+        dispatch(fetchUserDataActionErrorAction({ message: GENERIC_ERR_MSG }));
         redirectToUnauthorized();
       });
   };
+
+  const fetchUserInfoAsync = (headers: IHttpHeaders) =>
+    new Promise((resolve, reject) => {
+      const error = { message: GENERIC_ERR_MSG };
+
+      sessionGetCurrentLoginInfo({ base: backendUrl, headers })
+        .then((response) => {
+          dispatch(fetchedUserDataAsyncAction());
+
+          if (response.result.user) {
+            if (state.requireChangePassword && Boolean(changePasswordUrl)) {
+              resolve({ payload: response, url: changePasswordUrl });
+            } else {
+              // if we are on the login page - redirect to the returnUrl or home page
+              if (isSameUrls(router.path, unauthorizedRedirectUrl)) {
+                const returnUrl = router.query['returnUrl']?.toString();
+
+                cacheHomeUrl(response.result?.user?.homeUrl || homePageUrl);
+
+                const redirects: string[] = [returnUrl, response.result?.user?.homeUrl, homePageUrl, DEFAULT_HOME_PAGE];
+                const redirectUrl = redirects.find((r) => Boolean(r?.trim())); // skip all null/undefined and empty strings
+
+                resolve({ payload: response, url: redirectUrl });
+              } else resolve({ payload: response, url: router.fullPath?.toString() });
+            }
+          } else {
+            const message = 'Not authorized';
+            clearAccessToken();
+            reject({ message, url: loginUrl });
+          }
+        })
+        .catch((e) => {
+          const message = error.message;
+          dispatch(fetchUserDataActionErrorAction({ message }));
+          reject({ stackTrace: e, message, url: loginUrl });
+        });
+    });
 
   const getHttpHeaders = (): IHttpHeaders => {
     return getHttpHeadersFromState(state);
@@ -231,7 +271,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         fetchUserInfo(headers);
       }
     } else {
-      dispatch(loginUserErrorAction({ message: 'Oops, something went wrong' }));
+      dispatch(loginUserErrorAction({ message: GENERIC_ERR_MSG }));
       redirectToUnauthorized();
     }
   };
@@ -266,11 +306,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   //#region  Login
   const { mutate: loginUserHttp } = useMutate<AuthenticateModel, AuthenticateResultModelAjaxResponse>();
 
-  const loginUser = (loginFormData: ILoginForm) => {
-    dispatch((dispatchThunk, getState) => {
-      dispatchThunk(loginUserAction()); // We just want to let the user know we're logging in
-
-      const loginSuccessHandler = (data: AuthenticateResultModelAjaxResponse) => {
+  const loginSuccessHandler =
+    (dispatchThunk: ThunkDispatch<IAuthStateContext, Action<any>>, getState: () => IAuthStateContext) =>
+    (data: AuthenticateResultModelAjaxResponse) =>
+      new Promise((resolve, reject) => {
         dispatchThunk(loginUserSuccessAction());
         if (data) {
           const token = data.success && data.result ? (data.result as IAccessToken) : null;
@@ -287,17 +326,41 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
             // get new headers and fetch the user info
             const headers = getHttpHeadersFromState(newState);
-            fetchUserInfo(headers);
-          } else dispatchThunk(loginUserErrorAction(data?.error as IErrorInfo));
-        }
-      };
+            fetchUserInfoAsync(headers).then(resolve).catch(reject);
+          } else {
+            dispatchThunk(loginUserErrorAction(data?.error as IErrorInfo));
+            reject({ stackTrace: data?.error, message: GENERIC_ERR_MSG });
+          }
+        } else reject({ message: GENERIC_ERR_MSG });
+      });
 
-      loginUserHttp(loginEndpoint, loginFormData)
-        .then(loginSuccessHandler)
-        .catch((err) => {
-          dispatchThunk(loginUserErrorAction(err?.data));
-        });
+  const loginUserAsync = (loginFormData: ILoginForm) =>
+    new Promise((resolve, reject) => {
+      dispatch((dispatchThunk, getState) => {
+        dispatchThunk(loginUserAction()); // We just want to let the user know we're logging in
+
+        loginUserHttp(loginEndpoint, loginFormData)
+          .then(loginSuccessHandler(dispatchThunk, getState))
+          .then(resolve)
+          .catch((err) => {
+            dispatchThunk(loginUserErrorAction(err?.data));
+            reject(err);
+          });
+      });
     });
+
+  const loginUser = (loginFormData: ILoginForm) => {
+    loginUserAsync(loginFormData)
+      .then((response) => {
+        const { payload, url } = response as { payload: GetCurrentLoginInfoOutputAjaxResponse; url: string };
+
+        dispatch(fetchUserDataActionSuccessAction(payload?.result?.user));
+        dispatch(setIsLoggedInAction(true));
+        redirect(url);
+      })
+      .catch((e) => {
+        if (e?.url) redirect(e.url);
+      });
   };
   //#endregion
 
@@ -363,11 +426,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     dispatch(resetPasswordSuccessAction());
   };
 
-  const showLoader = useMemo(() => {
-    return !!(
-      (state.isFetchingUserInfo || (!state.isFetchingUserInfo && !state.loginInfo && state.token)) // Done fetching user info but the state is not yet updated
-    );
-  }, [state.isFetchingUserInfo, state.loginInfo, state.token]);
+  // Done fetching user info but the state is not yet updated
+  const showLoader =
+    !state.hasFetchedUserInfoAsync &&
+    !!(state.isFetchingUserInfo || (!state.isFetchingUserInfo && !state.loginInfo && state.token));
 
   //#endregion
 
@@ -376,7 +438,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   };
 
   if (showLoader) {
-    return <OverlayLoader loading={true} loadingText="Initializing..." />;
+    return <SheshaLoader message="Initializing..." />;
   }
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
@@ -387,8 +449,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         value={{
           ...setters,
           checkAuth,
-          loginUser,
           getAccessToken,
+          loginUser,
+          loginUserAsync,
           logoutUser,
           anyOfPermissionsGranted: anyOfPermissionsGrantedWrapper,
           verifyOtpSuccess,

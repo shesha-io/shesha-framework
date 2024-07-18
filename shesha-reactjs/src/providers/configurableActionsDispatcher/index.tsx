@@ -161,7 +161,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
           .then(async (actionResponse) => {
             if (handleSuccess) {
               if (onSuccess) {
-                const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
+                const onSuccessContext = { ...argumentsEvaluationContext, actionResponse };
                 await executeAction({
                   actionConfiguration: { ...onSuccess },
                   argumentsEvaluationContext: onSuccessContext,
@@ -253,9 +253,12 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
     if (!payload.owner || !payload.ownerUid) return undefined;
 
     registerAction(payload);
-    return () => {
-      unregisterAction(payload);
-    };
+
+    return !payload.isPermament
+      ? () => {
+        unregisterAction(payload);
+      }
+      : undefined;
   }, deps);
 }
 
