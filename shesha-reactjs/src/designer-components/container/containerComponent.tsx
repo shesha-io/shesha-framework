@@ -73,7 +73,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     };
 
     const backgroundStyles = model?.backgroundType === 'image'
-      ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundCover }
+      ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundRepeat }
       : model?.backgroundType === 'color'
       ? { background: model?.backgroundColor }
       : {};
@@ -88,6 +88,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             containerId={model.id}
             {...flexAndGridStyles}
             className={model.className}
+            {...model}
             wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
             style={{
               ...getStyle(model?.style, formData),
