@@ -7,8 +7,13 @@ interface ITextTheme {
   link?: string;
 }
 
+interface IBorderTheme {
+  borderRadius: number;
+}
+
 export interface IConfigurableTheme {
   application?: Theme;
+  border?: IBorderTheme;
   sidebar?: 'dark' | 'light';
   sidebarBackground?: string;
   layoutBackground?: string;

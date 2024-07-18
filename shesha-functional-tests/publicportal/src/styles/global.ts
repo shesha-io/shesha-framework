@@ -85,7 +85,7 @@ export const GlobalPublicPortalStyles = createGlobalStyle`
     }
 
     .${(p) => p.theme.prefixCls}-btn {
-      border-radius: 5px;
+      border-radius: ${p.theme.defaultBorderRadius};
       box-shadow: 1px 1px 1px 1px ${colors.grey};
       font-size: 14px;
       min-height: 30px;
