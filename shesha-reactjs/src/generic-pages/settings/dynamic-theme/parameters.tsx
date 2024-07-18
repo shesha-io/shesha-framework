@@ -146,15 +146,13 @@ const ThemeParameters: FC = () => {
       <Form fields={[
         {
           name: ["defaultBorderRadius"],
-          value: theme?.application?.defaultBorderRadius,
+          value: theme?.defaultBorderRadius,
         }]}>
         <Form.Item label="Border Radius (%)" name="defaultBorderRadius">
           <Slider min={0} max={50}
-            defaultValue={theme.application.defaultBorderRadius}
+            defaultValue={theme?.defaultBorderRadius}
             onChange={(value: number) => {
-              updateTheme('application',{
-                defaultBorderRadius: value,
-              });
+              updateTheme('defaultBorderRadius', value);
             }}
           />
         </Form.Item>

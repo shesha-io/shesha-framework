@@ -9,6 +9,7 @@ interface ITextTheme {
 
 export interface IConfigurableTheme {
   application?: Theme;
+  defaultBorderRadius?: number;
   sidebar?: 'dark' | 'light';
   sidebarBackground?: string;
   layoutBackground?: string;
