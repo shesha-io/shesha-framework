@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, ReactNode, useEffect, useState } from 'react';
+import React, { CSSProperties, FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IComponentsContainerBaseProps } from '@/interfaces';
 import { useComponentContainer } from '@/providers/form/nesting/containerContext';
@@ -21,7 +21,7 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
 
   const { getStoredFile } = useStoredFile(false) ?? {};
   const [storedFile, setStoredFile] = useState<string>();
-  const [updatedProps, setUpdatedProps] = useState<ICommonContainerProps>();
+  const [updatedStyles, setUpdatedStyles] = useState<CSSProperties>()
 
   const isStoredFileId = props?.dataSource === 'storedFileId' && Boolean(props?.storedFileId);
 
@@ -39,16 +39,13 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
 
   const ContainerComponent = useComponentContainer();
   
-  useEffect(() => {
+  useMemo(() => {
     const updatedStyles = { ...props.style, background: `url(data:image/png;base64,${storedFile})` };
-    const uProps = { ...props, style: updatedStyles };
-    if(isStoredFileId === true){
-    setUpdatedProps(uProps);
-    }
+    setUpdatedStyles(updatedStyles)
   }, [props, storedFile]);
 
   return (
-    <ContainerComponent {...props} {...updatedProps} />
+    <ContainerComponent {...{...props, style: isStoredFileId === true ? updatedStyles : props.style} } />
   );
 };
 
