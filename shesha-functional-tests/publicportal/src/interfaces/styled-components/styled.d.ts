@@ -1,18 +1,18 @@
 // #region Global Imports
-import 'styled-components';
+import "styled-components";
 // #endregion Global Imports
-type CommonColors = 'transparent' | 'darkGrey' | 'blackGrey' | 'white';
+type CommonColors = "transparent" | "darkGrey" | "blackGrey" | "white";
 
 type ExtendedColors =
   | CommonColors
-  | 'toggleBorder'
-  | 'gradient'
-  | 'background'
-  | 'headerBg'
-  | 'cardsBg'
-  | 'textColor'
-  | 'dodgerBlue';
-declare module 'styled-components' {
+  | "toggleBorder"
+  | "gradient"
+  | "background"
+  | "headerBg"
+  | "cardsBg"
+  | "textColor"
+  | "dodgerBlue";
+declare module "styled-components" {
   export interface BaseTheme {
     colors: Record<CommonColors, string>;
   }
