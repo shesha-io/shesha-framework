@@ -73,7 +73,7 @@ namespace Shesha.Authorization
             //}
 
             // ToDo: add RequireAll flag
-            await _objectPermissionChecker.AuthorizeAsync(false, config.FullClassName, method, AbpSession.UserId.HasValue);
+            await _objectPermissionChecker.AuthorizeAsync(false, config.FullClassName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue);
         }
     }
 }

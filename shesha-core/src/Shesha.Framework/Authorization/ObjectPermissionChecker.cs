@@ -37,7 +37,7 @@ namespace Shesha.Authorization
             _unitOfWorkManager = unitOfWorkManager;
         }
 
-        public async Task AuthorizeAsync(bool requireAll, string permissionedObject, string method, bool IsAuthenticated, RefListPermissionedAccess? replaceInherited = null)
+        public async Task AuthorizeAsync(bool requireAll, string permissionedObject, string objectType, string method, bool IsAuthenticated, RefListPermissionedAccess? replaceInherited = null)
         {
             if (!_authConfiguration.IsEnabled)
             {
@@ -50,7 +50,7 @@ namespace Shesha.Authorization
             var permissionName = $"{permissionedObject}@{methodName}";
 
             using var uow = _unitOfWorkManager.Begin();
-            var permission = await _permissionedObjectManager.GetAsync(permissionName);
+            var permission = await _permissionedObjectManager.GetAsync(permissionName, objectType);
             await uow.CompleteAsync();
 
             var actualAccess = replaceInherited != null && permission?.ActualAccess == RefListPermissionedAccess.Inherited

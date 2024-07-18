@@ -165,12 +165,12 @@ namespace Shesha.Permissions
             return dto;
         }
 
-        public virtual PermissionedObjectDto Get(string objectName, string objectType = null)
+        public virtual PermissionedObjectDto Get(string objectName, string objectType)
         {
             return AsyncHelper.RunSync(() => GetAsync(objectName, objectType));
         }
 
-        public List<string> GetActualPermissions(string objectName, string objectType = null, bool useInherited = true)
+        public List<string> GetActualPermissions(string objectName, string objectType, bool useInherited = true)
         {
             var obj = Get(objectName, objectType);
             return obj != null 
@@ -285,7 +285,7 @@ namespace Shesha.Permissions
             return dto;
         }
 
-        public virtual async Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType = null)
+        public virtual async Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType)
         {
             return await _permissionedObjectsCache.GetAsync(GetCacheName(objectName, objectType), async key =>
             {
@@ -301,7 +301,7 @@ namespace Shesha.Permissions
             });
         }
 
-        public virtual async Task<PermissionedObjectDto> GetAsync(string objectName, string objectType = null)
+        public virtual async Task<PermissionedObjectDto> GetAsync(string objectName, string objectType)
         {
             var obj = await GetOrNullAsync(objectName, objectType);
             if (obj == null)
@@ -361,7 +361,7 @@ namespace Shesha.Permissions
             return dto;
         }
 
-        public async Task<PermissionedObjectDto> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType = null, string dstObjectType = null)
+        public async Task<PermissionedObjectDto> CopyAsync(string srcObjectName, string dstObjectName, string srcObjectType, string dstObjectType = null)
         {
             var permission = await GetOrNullAsync(srcObjectName, srcObjectType);
             if (permission != null)

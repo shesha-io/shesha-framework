@@ -78,7 +78,8 @@ namespace Shesha.Web.FormsDesigner.Services
 
             await _permissionedObjectManager.CopyAsync(
                 FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
-                FormManager.GetFormPermissionedObjectName(newVersion.Module?.Name, newVersion.Name, newVersion.VersionNo)
+                FormManager.GetFormPermissionedObjectName(newVersion.Module?.Name, newVersion.Name, newVersion.VersionNo),
+                ShaPermissionedObjectsTypes.Form
             );
 
             return newVersion;
@@ -258,7 +259,8 @@ namespace Shesha.Web.FormsDesigner.Services
 
             await _permissionedObjectManager.CopyAsync(
                 GetFormPermissionedObjectName(item.Module?.Name, item.Name, item.VersionNo),
-                GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo)
+                GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
+                ShaPermissionedObjectsTypes.Form
             );
 
             return form;
