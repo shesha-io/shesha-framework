@@ -25,19 +25,19 @@ const Title: React.FC<TitleProps> = ({
 
     if (!title) return null;
 
-    const marginWidth = `${titleMargin || 0}%`;
+    const marginWidth = `calc(${titleMargin || 0}% - ${((titleRef.current?.clientWidth + 14) / 2) || 0}px)`; // 14 is the width of the question mark icon
 
     return (
         <div className={styles.titleContainer} style={{
             justifyContent: labelAlign, display: 'flex'
-        }} ref={titleRef}>
+        }}>
             <div style={{ width: labelAlign === 'left' ? marginWidth : 0 }} ></div>
-            <span style={{ ...titleStyles, whiteSpace: 'nowrap', paddingRight: '8px', }}>{title}</span>
+            <span ref={titleRef} style={{ ...titleStyles, whiteSpace: 'nowrap' }}>{title}</span>
             <Show when={Boolean(tooltip?.trim())}>
                 <Tooltip title={tooltip}>
                     <QuestionCircleOutlined
                         className={`tooltip-question-icon`}
-                        style={{ color: '#aaa' }}
+                        style={{ color: '#aaa', marginLeft: '8px' }}
                     />
                 </Tooltip>
             </Show>
