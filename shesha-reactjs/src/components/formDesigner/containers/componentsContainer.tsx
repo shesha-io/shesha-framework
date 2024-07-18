@@ -42,7 +42,7 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
   useEffect(() => {
     const updatedStyles = { ...props.style, background: `url(data:image/png;base64,${storedFile})` };
     const uProps = { ...props, style: updatedStyles };
-    setUpdatedProps(uProps)
+    setUpdatedProps(uProps);
   }, [props, storedFile]);
 
   return (
