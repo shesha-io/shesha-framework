@@ -21,7 +21,7 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
 
   const { getStoredFile } = useStoredFile(false) ?? {};
   const [storedFile, setStoredFile] = useState<string>();
-  const [updatedStyles, setUpdatedStyles] = useState<CSSProperties>()
+  const [updatedStyles, setUpdatedStyles] = useState<CSSProperties>();
 
   const isStoredFileId = props?.dataSource === 'storedFileId' && Boolean(props?.storedFileId);
 
@@ -41,7 +41,7 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
   
   useMemo(() => {
     const updatedStyles = { ...props.style, background: `url(data:image/png;base64,${storedFile})` };
-    setUpdatedStyles(updatedStyles)
+    setUpdatedStyles(updatedStyles);
   }, [props, storedFile]);
 
   return (
