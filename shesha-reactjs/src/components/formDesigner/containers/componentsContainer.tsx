@@ -21,32 +21,32 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
 
   const { getStoredFile } = useStoredFile(false) ?? {};
   const [storedFile, setStoredFile] = useState<string>();
-  const [updatedStyles, setUpdatedStyles] = useState<CSSProperties>();
 
   const isStoredFileId = props?.dataSource === 'storedFileId' && Boolean(props?.storedFileId);
 
   const fetchStoredFile = () => {
     if (isStoredFileId && isValidGuid(props?.storedFileId)) {
-      getStoredFile({ id: props?.storedFileId}).then((file: string) => {
+      getStoredFile({ id: props?.storedFileId }).then((file: string) => {
         setStoredFile(() => file);
       });
     }
   };
 
   useEffect(() => {
-      fetchStoredFile();
+    fetchStoredFile();
   }, [isStoredFileId, props?.storedFileId]);
 
   const ContainerComponent = useComponentContainer();
-  
-  useMemo(() => {
+
+  const updatedProps = useMemo(() => {
     const updatedStyles = { ...props.style, background: `url(data:image/png;base64,${storedFile})` };
-    setUpdatedStyles(updatedStyles);
-  }, [props, storedFile]);
+    return { ...{ ...props, style: isStoredFileId === true ? updatedStyles : props.style } };
+  }, [props, props?.storedFileId, storedFile]);
 
   return (
-    <ContainerComponent {...{...props, style: isStoredFileId === true ? updatedStyles : props.style} } />
+    <ContainerComponent {...updatedProps} />
   );
+
 };
 
 export default ComponentsContainer;
