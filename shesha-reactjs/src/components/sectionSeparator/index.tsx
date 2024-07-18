@@ -1,8 +1,8 @@
 import React, { CSSProperties, FC, ReactNode } from 'react';
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import { ConfigProvider, Divider, Space, Tooltip } from 'antd';
-import Show from '@/components/show';
+import { ConfigProvider, Divider } from 'antd';
 import { useStyles } from './styles/styles';
+import { addPx } from './utils';
+import Title from './title';
 
 export interface ISectionSeparatorProps {
   id?: string;
@@ -16,14 +16,15 @@ export interface ISectionSeparatorProps {
   dashed?: boolean;
   lineColor?: string;
   lineThickness?: number;
-  lineWidth?: number;
-  lineHeight?: number;
-  noMargin?: boolean;
+  lineWidth?: string;
+  lineHeight?: string;
+  titleMargin?: number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
+  id,
   labelAlign,
   fontSize,
   fontColor,
@@ -38,69 +39,71 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   titleStyle,
   tooltip,
   title,
-  noMargin
+  titleMargin
 }) => {
   const { styles } = useStyles();
+
+  const vertical = orientation === 'vertical';
 
   const borderStyle = {
     '--border-thickness': `${lineThickness || 2}px`,
     '--border-style': dashed ? 'dashed' : 'solid',
     '--border-color': lineColor || styles.primaryColor,
     textAlign: `${labelAlign || 'left'}`,
-    marginBottom: '8px'
+    marginBottom: '8px',
   } as CSSProperties;
 
-  const titleComponent = () => {
-    if (!title) return null;
+
+  const renderTitle = () => {
 
     const titleStyles = {
       ...titleStyle,
-      fontSize: fontSize,
-      ...(fontColor && { color: fontColor }),
+      fontSize: fontSize || 14,
+      color: fontColor || '#000',
     };
 
-    return (
-      <span style={{
-        ...titleStyles
-      }}>
-        <Space size="small" style={{
-          flexWrap: "nowrap",
-        }}>
-
-          {title}
-          <Show when={Boolean(tooltip?.trim())}>
-            <Tooltip title={tooltip}>
-              <QuestionCircleOutlined className={`tooltip-question-icon ${styles.helpIcon}`} />
-            </Tooltip>
-          </Show>
-        </Space>
-      </span>
-    );
+    return <Title
+      labelAlign={labelAlign}
+      title={title}
+      tooltip={tooltip}
+      titleStyles={{ ...titleStyles, }}
+      titleMargin={titleMargin} />;
   };
 
-  const commonStyle = { ...containerStyle, minWidth: "100px", width: `${lineWidth}px` };
+  const defaultWidth = vertical ? 'max-content' : '100%';
+  const commonStyle = {
+    ...containerStyle,
+    width: lineWidth && !vertical ? addPx(lineWidth)
+      : defaultWidth, margin: vertical ? 8 : '8px 0px'
+  };
 
-  if (inline || orientation === 'vertical') {
+  const dividerMargin = Number((titleMargin / 100).toFixed(2));
+
+  if (inline || vertical) {
     return (
-      <div style={commonStyle}>
+      <div style={commonStyle} key={id}>
         <ConfigProvider
           theme={{
-            token: {
-              colorSplit: lineColor || styles.primaryColor,
-              colorText: fontColor || '#000',
-              lineWidth: lineThickness || 2,
-              fontSize: lineHeight || fontSize,
-              margin: 8
+            components: {
+              Divider: {
+                colorSplit: lineColor || styles.primaryColor,
+                colorText: fontColor || '#000',
+                lineWidth: lineThickness || 2,
+                fontSize: addPx(lineHeight) || addPx(fontSize) || 14,
+                orientationMargin: dividerMargin || 0.05,
+                margin: 8,
+              },
             },
           }}
         >
           <Divider
             type={orientation}
             orientation={labelAlign || 'left'}
-            orientationMargin={noMargin ? '0' : null}
             dashed={dashed}
+            style={vertical ? { top: 0 } : {}}
+            orientationMargin={titleMargin === 0 ? '0' : null}
           >
-            {titleComponent()}
+            {renderTitle()}
           </Divider>
         </ConfigProvider>
       </div>
@@ -108,9 +111,9 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   }
 
   return (
-    <div style={commonStyle}>
+    <div style={commonStyle} key={id}>
       <div className={styles.shaSectionSeparator} style={borderStyle}>
-        {titleComponent()}
+        {renderTitle()}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { strings } from '@/components/sectionSeparator/utils';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 
 export const getSettings = (data: any) =>
@@ -38,12 +39,14 @@ export const getSettings = (data: any) =>
             propertyName: 'label',
             parentId: 'root',
             label: 'Label',
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
           })
           .addCheckbox({
             id: '3b8b9e3f-M5f90-48ae-b4c3-f5cc36f934d9',
             propertyName: 'hideLabel',
             parentId: 'root',
             label: 'Hide Label',
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
           })
           .addDropdown({
             id: "57a40a33-7e08-4ce4-9f08-a34d24a83338",
@@ -68,7 +71,8 @@ export const getSettings = (data: any) =>
               }
             ],
             dataSourceType: "values",
-            defaultValue: "left"
+            defaultValue: "left",
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
           })
           .addColorPicker({
             id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934d9",
@@ -76,6 +80,7 @@ export const getSettings = (data: any) =>
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Font Color",
             allowClear: true,
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
           })
           .addNumberField({
             id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934a9",
@@ -83,25 +88,32 @@ export const getSettings = (data: any) =>
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Font Size",
             defaultValue: 14,
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
+
+          })
+          .addNumberField({
+            id: "3b8b9e3f-f10c-48ae-b4c3-f5cc36f934m5",
+            propertyName: "titleMargin",
+            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
+            description: "Distance between text and edge, which should be a number between 0 and 100",
+            label: "Title Margin",
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical" || getSettingValue(data?.labelAlign) === "center";', _mode: 'code', _value: true } as any,
+            min: 0,
+            max: 100,
           })
           .addCheckbox({
             id: "3b8b9e3f-f47e-48ae-b4c3-f5cc36f934m5",
             propertyName: "inline",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            label: "Inline"
-          })
-          .addCheckbox({
-            id: "3b8b9e3f-f10c-48ae-b4c3-f5cc36f934m5",
-            propertyName: "noMargin",
-            parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
-            label: "No Margin",
-            hidden: { _code: 'return !getSettingValue(data?.inline);', _mode: 'code', _value: true } as any,
+            label: "Inline",
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
           })
           .addTextArea({
             id: '2d32fe70-99a0-4825-ae6c-8b933004e119',
             propertyName: 'description',
             parentId: 'root',
             label: 'Description',
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
           })
           .addDropdown({
             id: "57a40a33-7e08-4ce4-9f08-a34d00783338",
@@ -120,6 +132,7 @@ export const getSettings = (data: any) =>
                 id: "b920ef96-ae27-4a01-bfad-b5b7d07218da"
               }
             ],
+            defaultValue: "horizontal",
             dataSourceType: "values"
           })
           .addCheckbox({
@@ -138,24 +151,26 @@ export const getSettings = (data: any) =>
           .addNumberField({
             id: "3b8b9e3f-f47e-48ae-b4c3-f90c36f934d9",
             propertyName: "lineThickness",
+            description: "Line Thickness in pixels (px)",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Line Thickness",
-            defaultValue: 2,
           })
           .addTextField({
             id: "3b8bv360-f47e-48ae-b4c3-f5cc36f934a9",
             propertyName: "lineWidth",
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Line Width",
-            hidden: { _code: 'return getSettingValue(data?.orientation) !== "vertical;', _mode: 'code', _value: true } as any,
+            description: `${strings.tooltip}. This is only applicable when the orientation is horizontal`,
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
             defaultValue: '100%',
           })
           .addTextField({
             id: "3b8bv360-f47e-48ae-b4c3-f5coMp6f934a9",
             propertyName: "lineHeight",
+            description: `${strings.tooltip}. This is only applicable when the orientation is vertical`,
             parentId: "1BCC52E8-FD3B-4309-AD9B-099CDB729441",
             label: "Line Height",
-            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical;', _mode: 'code', _value: true } as any,
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "horizontal";', _mode: 'code', _value: true } as any,
           })
           .toJson(),
       },
@@ -211,6 +226,7 @@ export const getSettings = (data: any) =>
               'A script that returns the style of the element as an object. This should conform to CSSProperties',
             exposedVariables: [{ name: 'data', description: 'Form values', type: 'object' }],
             wrapInTemplate: true,
+            hidden: { _code: 'return getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: true } as any,
             templateSettings: {
               functionName: 'getTitleStyle',
             },
