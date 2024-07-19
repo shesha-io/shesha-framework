@@ -87,6 +87,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           <ComponentsContainer
             containerId={model.id}
             {...flexAndGridStyles}
+            {...backgroundStyles}
             className={model.className}
             {...model}
             wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}

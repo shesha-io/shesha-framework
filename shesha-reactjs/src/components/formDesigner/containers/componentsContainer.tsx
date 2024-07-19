@@ -15,6 +15,11 @@ export interface IComponentsContainerProps extends IComponentsContainerBaseProps
   style?: CSSProperties;
   dataSource?: string;
   storedFileId?: string;
+  backgroundUrl?: string;
+  base64?: string;
+  backgroundCover?: string;
+  backgroundSize?: string;
+  backgroundRepeat?: string;
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
@@ -39,9 +44,9 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
   const ContainerComponent = useComponentContainer();
 
   const updatedProps = useMemo(() => {
-    const updatedStyles = { ...props.style, background: `url(data:image/png;base64,${storedFile})` };
+    const updatedStyles = { ...props.style, backgroundImage: `url(data:image/png;base64,${storedFile})`, backgroundRepeat: props?.backgroundRepeat, backgroundSize: props?.backgroundSize };
     return { ...{ ...props, style: isStoredFileId === true ? updatedStyles : props.style } };
-  }, [props, props?.storedFileId, storedFile]);
+  }, [props, props.storedFileId, storedFile]);
 
   return (
     <ContainerComponent {...updatedProps} />
