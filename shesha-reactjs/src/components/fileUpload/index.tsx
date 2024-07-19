@@ -154,7 +154,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const renderStub = () => {
     if (isDragger) {
-      return  <Dragger disabled><DraggerStub /></Dragger>;
+      return <Dragger disabled><DraggerStub /></Dragger>;
     }
 
     return <div className={classes}>{uploadButton}</div>;
@@ -165,16 +165,16 @@ export const FileUpload: FC<IFileUploadProps> = ({
       return (
         <Dragger {...fileProps} className={classes}>
           <span ref={uploadDraggerSpanRef} />
-            <DraggerStub/>
+          <DraggerStub />
         </Dragger>
       );
     }
 
     return (
-        <Upload {...fileProps} className={classes}>
-          {allowUpload && uploadButton}
-        </Upload>
-      );
+      <Upload {...fileProps} className={classes}>
+        {allowUpload && uploadButton}
+      </Upload>
+    );
   };
 
 

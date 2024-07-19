@@ -11,6 +11,9 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     const { columns, hidden, orientation, style, dividerMargin, dividerHeight, dividerWidth, dividerThickness = '0.62px', dividerColor, gap, stylingBox, alignItems, backgroundColor } = props;
     const { styles } = useStyles();
 
+    console.log('columns', columns);
+    console.log('Props', props);
+
     const width = addPx(dividerWidth);
     const height = addPx(dividerHeight);
     const margin = dividerMargin ? addPx(dividerMargin) : 0;

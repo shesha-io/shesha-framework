@@ -8,6 +8,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ParentProvider from '@/providers/parentProvider/index';
 import { IKeyInformationBarProps } from './interfaces';
 import KeyInformationBar from '@/components/keyInformationBar';
+import SizeComponent from '../_settings/size/sizeComponent';
 
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
@@ -18,7 +19,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
 
     return (
       <ParentProvider model={model}>
-        <KeyInformationBar {...model} />
+        <SizeComponent />
       </ParentProvider >
     );
   },
