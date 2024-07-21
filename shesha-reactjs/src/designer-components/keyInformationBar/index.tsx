@@ -8,7 +8,6 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ParentProvider from '@/providers/parentProvider/index';
 import { IKeyInformationBarProps } from './interfaces';
 import KeyInformationBar from '@/components/keyInformationBar';
-import SizeComponent from '../_settings/size/sizeComponent';
 
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
@@ -17,9 +16,10 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
 
+    console.log('model', model);
     return (
       <ParentProvider model={model}>
-        <SizeComponent />
+        <KeyInformationBar {...model} />
       </ParentProvider >
     );
   },

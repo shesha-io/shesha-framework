@@ -28,6 +28,9 @@ import { IRadioProps } from '@/designer-components/radio/utils';
 import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
+import { IBackgroundProps } from '@/designer-components/_settings/background/interfaces';
+import { IBorderProps } from '@/designer-components/_settings/border/interfaces';
+import { ISizeComponentProps } from '@/designer-components/_settings/size/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -93,6 +96,9 @@ type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
 type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, 'hidden' | 'type'>;
 
 type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
+type SizeType = ToolbarSettingsProp & Omit<ISizeComponentProps, 'hidden' | 'type'>;
+type BorderType = ToolbarSettingsProp & Omit<IBorderProps, 'hidden' | 'type'>;
+type BackgroundType = ToolbarSettingsProp & Omit<IBackgroundProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -107,6 +113,18 @@ export class DesignerToolbarSettings<T> {
 
   public addAlert(props: AlertType | ((data: T) => AlertType)) {
     return this.addProperty(props, 'alert');
+  }
+
+  public addSize(props: SizeType | ((data: T) => SizeType)) {
+    return this.addProperty(props, 'size');
+  }
+
+  public addBackground(props: BackgroundType | ((data: T) => BackgroundType)) {
+    return this.addProperty(props, 'background');
+  }
+
+  public addBorder(props: BorderType | ((data: T) => BorderType)) {
+    return this.addProperty(props, 'border');
   }
 
   public addButtons(props: ButtonGroupType | ((data: T) => ButtonGroupType)) {

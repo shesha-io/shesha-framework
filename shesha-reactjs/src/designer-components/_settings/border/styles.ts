@@ -1,6 +1,6 @@
-import { createStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, responsive }) => {
     const container = cx(css`
         min-width: 150px;
         padding-bottom: 8px;

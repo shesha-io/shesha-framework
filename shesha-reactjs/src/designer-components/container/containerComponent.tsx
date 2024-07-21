@@ -27,6 +27,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
+    console.log('ContainerComponent', model);
     if (model.hidden) return null;
 
     const flexAndGridStyles: ICommonContainerProps = {
@@ -75,8 +76,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const backgroundStyles = model?.backgroundType === 'image'
       ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundRepeat }
       : model?.backgroundType === 'color'
-      ? { background: model?.backgroundColor }
-      : {};
+        ? { background: model?.backgroundColor }
+        : {};
 
     return (
       <ParentProvider model={model}>
