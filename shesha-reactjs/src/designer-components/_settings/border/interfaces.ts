@@ -2,17 +2,43 @@ import { IConfigurableFormComponent } from "@/providers";
 
 export interface IBorderValue {
     radius: {
-        type: string;
-        value: number;
+        all?: number;
+        topLeft?: number;
+        topRight?: number;
+        bottomLeft?: number;
+        bottomRight?: number;
     };
     border: {
-        type: string;
-        width: {
-            value: number | string;
+        all?: {
+            width: number | string;
             unit: string;
+            color: string;
+            style: string;
         };
-        color: string;
-        style: string;
+        top?: {
+            width: number | string;
+            unit: string;
+            color: string;
+            style: string;
+        };
+        right?: {
+            width: number | string;
+            unit: string;
+            color: string;
+            style: string;
+        };
+        bottom?: {
+            width: number | string;
+            unit: string;
+            color: string;
+            style: string;
+        };
+        left?: {
+            width: number | string;
+            unit: string;
+            color: string;
+            style: string;
+        };
     };
 }
 

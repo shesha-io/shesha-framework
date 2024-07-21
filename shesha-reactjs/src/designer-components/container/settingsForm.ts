@@ -298,8 +298,8 @@ export const getSettings = (data: any) =>
             })
             .addSize({
               id: 'f8c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
-              propertyName: 'size',
-              label: 'Size',
+              propertyName: 'dimensions',
+              label: 'Dimensions',
               parentId: 'root',
               validate: {},
               settingsValidationErrors: [],

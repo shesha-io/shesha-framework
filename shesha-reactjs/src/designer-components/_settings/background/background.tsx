@@ -1,5 +1,5 @@
-import { Button, Col, Flex, Input, Radio, RadioChangeEvent, Row, Tag } from 'antd';
-import React, { FC, useState } from 'react'
+import { Button, Col, Input, Radio, RadioChangeEvent, Row, Tag } from 'antd';
+import React, { FC, useState, useEffect } from 'react';
 import { useStyles } from './styles';
 import { BgColorsOutlined, BoldOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from '@ant-design/icons';
 import { CollapsiblePanel, ColorPicker, FileUpload } from '@/components';
@@ -26,7 +26,14 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
     const { backendUrl } = useSheshaApplication();
     const { formMode } = useForm();
     const [localValue, setLocalValue] = useState<IBackgroundValue>(value);
-    const [colors, setColors] = useState<string[]>([]);
+    const [colors, setColors] = useState<string[]>(value.gradient?.colors || []);
+
+    useEffect(() => {
+        setLocalValue(value);
+        if (value.type === 'gradient' && value.gradient?.colors) {
+            setColors(value.gradient.colors);
+        }
+    }, [value]);
 
     const updateValue = (newValue: Partial<IBackgroundValue>) => {
         const updatedValue = { ...localValue, ...newValue };
@@ -37,6 +44,24 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
 
     const onTypeChange = (e: RadioChangeEvent) => {
         updateValue({ type: e.target.value as IBackgroundValue['type'] });
+    };
+
+    const addColor = () => {
+        const newColors = [...colors, ''];
+        setColors(newColors);
+        updateValue({ gradient: { ...localValue.gradient, colors: newColors } });
+    };
+
+    const updateColor = (color: string, index: number) => {
+        const newColors = colors.map((c, i) => (i === index ? color : c));
+        setColors(newColors);
+        updateValue({ gradient: { ...localValue.gradient, colors: newColors } });
+    };
+
+    const removeColor = (index: number) => {
+        const newColors = colors.filter((_, i) => i !== index);
+        setColors(newColors);
+        updateValue({ gradient: { ...localValue.gradient, colors: newColors } });
     };
 
     const renderBackgroundInput = () => {
@@ -60,27 +85,27 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
                             <span>Colors</span>
                         </Col>
                         <Col className="gutter-row" span={24}>
-                            <div className={styles.flex}>{
-                                colors?.map((_, i) => {
-                                return <Tag
-                                    bordered={false}
-                                    closable
-                                    onClose={() => {
-                                        setColors(prev => prev.filter((_, index) => index !== i));
-                                        updateValue({ gradient: { ...localValue?.gradient, colors: localValue.gradient.colors.filter((_, index) => index !== i) } });
-                                    }
-                                    }
-                                    className={styles.tag}
-                                >
-                                    <ColorPicker
-                                        allowClear
-                                        value={localValue.gradient?.colors[i]}
-                                        onChange={(color) => updateValue({ gradient: { ...localValue?.gradient, colors: localValue.gradient.colors.map((c, position) => position === i ? color.toString() : c) } })}
-                                    />
-                                </Tag>
-                            })}</div>
-
-                            <Button onClick={() => setColors(prev => [...prev, ''])}>Add color</Button>
+                            <div className={styles.flex}>
+                                {colors.map((color, i) => (
+                                    <Tag
+                                        key={i}
+                                        bordered={false}
+                                        closable
+                                        onClose={(e) => {
+                                            e.preventDefault();
+                                            removeColor(i);
+                                        }}
+                                        className={styles.tag}
+                                    >
+                                        <ColorPicker
+                                            allowClear
+                                            value={color}
+                                            onChange={(newColor) => updateColor(newColor.toString(), i)}
+                                        />
+                                    </Tag>
+                                ))}
+                            </div>
+                            <Button onClick={addColor}>Add color</Button>
                         </Col>
                     </Col>
                 );
@@ -162,7 +187,7 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
                 {renderBackgroundInput()}
             </Row>
         </CollapsiblePanel>
-    )
+    );
 };
 
 export default BackgroundConfigurator;

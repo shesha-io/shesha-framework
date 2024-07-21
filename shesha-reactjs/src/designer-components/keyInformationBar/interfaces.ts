@@ -1,5 +1,8 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { AlignItems } from '../container/interfaces';
+import { ISizeValue } from '../_settings/size/sizeComponent';
+import { IBorderValue } from '../_settings/border/interfaces';
+import { IBackgroundValue } from '../_settings/background/interfaces';
 
 export interface KeyInfomationBarItemProps {
   id: string;
@@ -25,5 +28,7 @@ export interface IKeyInformationBarProps extends IConfigurableFormComponent {
   readOnly?: boolean;
   style?: string;
   stylingBox?: any;
-  backgroundColor?: string;
+  sizeStyle?: ISizeValue;
+  borderStyle?: IBorderValue;
+  background?: IBackgroundValue;
 }

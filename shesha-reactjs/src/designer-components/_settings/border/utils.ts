@@ -1,6 +1,33 @@
-import { IValue } from "./interfaces";
+import { IBorderValue } from "./interfaces";
 
-export const getStyleValue = (type: keyof IValue, value: number) => {
-    const v = value || '{}' as IValue;
-    return (v || {})[`${type}}`] || 0;
-};
+export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
+    console.log("Border styles input:::", input);
+    if (!input) return {};
+
+    const style: React.CSSProperties = {};
+
+    // Handle border radius
+    if (input.radius) {
+        const { all, topLeft, topRight, bottomLeft, bottomRight } = input.radius;
+        style.borderRadius = all ? `${all}px` : `${topLeft || 1}px ${topRight || 1}px ${bottomRight || 1}px ${bottomLeft || 1}px`;
+    }
+
+    // Handle border
+    if (input.border) {
+        const { all, top, right, bottom, left } = input.border;
+
+        const handleBorderPart = (part, prefix: string) => {
+            if (part?.width) style[`${prefix}Width`] = `${part.width || 0}px`;
+            if (part?.style) style[`${prefix}Style`] = part.style;
+            if (part?.color) style[`${prefix}Color`] = part.color;
+        };
+
+        handleBorderPart(all, 'border');
+        handleBorderPart(top, 'borderTop');
+        handleBorderPart(right, 'borderRight');
+        handleBorderPart(bottom, 'borderBottom');
+        handleBorderPart(left, 'borderLeft');
+    }
+
+    return style;
+}

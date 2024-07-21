@@ -1,7 +1,7 @@
 
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { StrikethroughOutlined } from '@ant-design/icons';
+import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
@@ -11,7 +11,7 @@ import { ISizeComponentProps } from '../_settings/size/interfaces';
 const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
     type: 'size',
     name: 'Size',
-    icon: <StrikethroughOutlined />,
+    icon: <ColumnWidthOutlined />,
     canBeJsSetting: true,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
     Factory: ({ model: passedModel }) => {

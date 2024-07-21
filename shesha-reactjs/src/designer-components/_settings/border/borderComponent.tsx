@@ -9,19 +9,46 @@ const { Option } = Select;
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 
-export interface IBorderType {
+interface IBorderProps {
     onChange?: (value: IBorderValue) => void;
     value?: IBorderValue;
 }
 
-const BorderComponent: FC<IBorderType> = ({ onChange, value }) => {
+const BorderComponent: FC<IBorderProps> = ({ onChange, value = {
+    radius: { all: 0 },
+    border: {
+        all: { width: 1, unit: 'px', color: '#000000', style: 'solid' }
+    }
+} }) => {
     const { styles } = useStyles();
     const [localValue, setLocalValue] = useState<IBorderValue>(value);
+    const [radiusType, setRadiusType] = useState<string>('all');
+    const [borderType, setBorderType] = useState<string>('all');
 
-    const updateValue = (key: keyof IBorderValue, newValue: any) => {
-        const updatedValue = { ...localValue, [key]: { ...localValue[key], ...newValue } };
+    const updateValue = (newValue: Partial<IBorderValue>) => {
+        const updatedValue = { ...localValue, ...newValue };
         setLocalValue(updatedValue);
         onChange?.(updatedValue);
+    };
+
+    const updateRadius = (key: string, value: number) => {
+        if (value === 0) {
+            const newRadius = { ...localValue.radius };
+            delete newRadius[key];
+            updateValue({ radius: newRadius });
+        } else {
+            updateValue({ radius: { ...localValue.radius, [key]: value } });
+        }
+    };
+
+    const updateBorder = (key: string, value: any) => {
+        if (value.width === 0) {
+            const newBorder = { ...localValue.border };
+            delete newBorder[key];
+            updateValue({ border: newBorder });
+        } else {
+            updateValue({ border: { ...localValue.border, [key]: value } });
+        }
     };
 
     const renderRadioGroup = (
@@ -40,18 +67,18 @@ const BorderComponent: FC<IBorderType> = ({ onChange, value }) => {
 
     const radiusOptions = [
         { value: 'all', icon: <ExpandOutlined />, title: 'all' },
-        { value: 'top-left', icon: <RadiusUpleftOutlined />, title: 'top-left' },
-        { value: 'top-right', icon: <RadiusUprightOutlined />, title: 'top-right' },
-        { value: 'bottom-left', icon: <RadiusBottomleftOutlined />, title: 'bottom-left' },
-        { value: 'bottom-right', icon: <RadiusBottomrightOutlined />, title: 'bottom-right' },
+        { value: 'topLeft', icon: <RadiusUpleftOutlined />, title: 'top-left' },
+        { value: 'topRight', icon: <RadiusUprightOutlined />, title: 'top-right' },
+        { value: 'bottomLeft', icon: <RadiusBottomleftOutlined />, title: 'bottom-left' },
+        { value: 'bottomRight', icon: <RadiusBottomrightOutlined />, title: 'bottom-right' },
     ];
 
     const borderOptions = [
-        { value: 'all', icon: <BorderOutlined /> },
-        { value: 'top', icon: <BorderTopOutlined /> },
-        { value: 'right', icon: <BorderRightOutlined /> },
-        { value: 'bottom', icon: <BorderBottomOutlined /> },
-        { value: 'left', icon: <BorderLeftOutlined /> },
+        { value: 'all', icon: <BorderOutlined />, title: 'all' },
+        { value: 'top', icon: <BorderTopOutlined />, title: 'top' },
+        { value: 'right', icon: <BorderRightOutlined />, title: 'right' },
+        { value: 'bottom', icon: <BorderBottomOutlined />, title: 'bottom' },
+        { value: 'left', icon: <BorderLeftOutlined />, title: 'left' },
     ];
 
     const styleOptions = [
@@ -61,16 +88,13 @@ const BorderComponent: FC<IBorderType> = ({ onChange, value }) => {
     ];
 
     return (
-        <CollapsiblePanel header='Border' className={styles.container} isSimpleDesign ghost>
+        <CollapsiblePanel className={styles.container} isSimpleDesign ghost>
             <Row gutter={[8, 8]} style={{ width: 200, fontSize: '11px' }}>
                 <Col className="gutter-row" span={24}>
                     <span>Radius</span>
                 </Col>
                 <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(radiusOptions, localValue.radius.type, (e) => updateValue('radius', { type: e.target.value }))}
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <span>Px </span>
+                    {renderRadioGroup(radiusOptions, radiusType, (e) => setRadiusType(e.target.value))}
                 </Col>
                 <Col className="gutter-row" span={24}>
                     <Row>
@@ -78,17 +102,17 @@ const BorderComponent: FC<IBorderType> = ({ onChange, value }) => {
                             <Slider
                                 min={0}
                                 max={100}
-                                value={localValue.radius.value}
-                                onChange={(value) => updateValue('radius', { value })}
+                                value={localValue.radius[radiusType] || 0}
+                                onChange={(value) => updateRadius(radiusType, value)}
                             />
                         </Col>
                         <Col span={4}>
                             <InputNumber
-                                min={1}
-                                max={20}
+                                min={0}
+                                max={100}
                                 style={{ margin: '0 16px' }}
-                                value={localValue.radius.value}
-                                onChange={(value) => updateValue('radius', { value })}
+                                value={localValue.radius[radiusType] || 0}
+                                onChange={(value) => updateRadius(radiusType, value)}
                                 className={styles.input}
                             />
                         </Col>
@@ -98,7 +122,7 @@ const BorderComponent: FC<IBorderType> = ({ onChange, value }) => {
                     <span>Border</span>
                 </Col>
                 <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(borderOptions, localValue.border.type, (e) => updateValue('border', { type: e.target.value }))}
+                    {renderRadioGroup(borderOptions, borderType, (e) => setBorderType(e.target.value))}
                 </Col>
                 <Col className="gutter-row" span={24}>
                     <Col className="gutter-row" span={6}>
@@ -108,15 +132,15 @@ const BorderComponent: FC<IBorderType> = ({ onChange, value }) => {
                         <Input
                             addonAfter={
                                 <Select
-                                    value={localValue.border.width.unit}
-                                    onChange={(unit) => updateValue('border', { width: { ...localValue.border.width, unit } })}
+                                    value={localValue.border[borderType]?.unit || 'px'}
+                                    onChange={(unit) => updateBorder(borderType, { ...localValue.border[borderType], unit })}
                                 >
                                     {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
                                 </Select>
                             }
                             className={styles.input}
-                            value={localValue.border.width.value}
-                            onChange={(e) => updateValue('border', { width: { ...localValue.border.width, value: e.target.value } })}
+                            value={localValue.border[borderType]?.width}
+                            onChange={(e) => updateBorder(borderType, { ...localValue.border[borderType], width: e.target.value || 0 })}
                             style={{ width: 'calc(100%)' }}
                         />
                     </Col>
@@ -126,8 +150,8 @@ const BorderComponent: FC<IBorderType> = ({ onChange, value }) => {
                     <div style={{ width: 'calc(100% - 35px)' }}>
                         <ColorPicker
                             allowClear
-                            value={localValue.border.color}
-                            onChange={(color) => updateValue('border', { color })}
+                            value={localValue.border[borderType]?.color || '#000000'}
+                            onChange={(color) => updateBorder(borderType, { ...localValue.border[borderType], color })}
                         />
                     </div>
                 </Col>
@@ -135,7 +159,7 @@ const BorderComponent: FC<IBorderType> = ({ onChange, value }) => {
                     <span>Style</span>
                 </Col>
                 <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(styleOptions, localValue.border.style, (e) => updateValue('border', { style: e.target.value }))}
+                    {renderRadioGroup(styleOptions, localValue.border[borderType]?.style || 'solid', (e) => updateBorder(borderType, { ...localValue.border[borderType], style: e.target.value }))}
                 </Col>
             </Row>
         </CollapsiblePanel>

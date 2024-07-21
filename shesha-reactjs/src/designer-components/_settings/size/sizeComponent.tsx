@@ -13,7 +13,7 @@ export interface ISizeValueWithUnit {
     unit: string;
 }
 
-interface ISizeValue {
+export interface ISizeValue {
     width?: ISizeValueWithUnit;
     height?: ISizeValueWithUnit;
     minWidth?: ISizeValueWithUnit;
@@ -28,7 +28,7 @@ export interface ISizeType {
     value?: ISizeValue;
 }
 
-const SizeComponent: FC<ISizeType> = ({ onChange, value = {} }) => {
+const SizeComponent: FC<ISizeType> = ({ onChange, value = { width: null, height: null, minWidth: null, minHeight: null, maxHeight: null, maxWidth: null } }) => {
     const { styles } = useStyles();
     const [localValue, setLocalValue] = useState<ISizeValue>(value);
 
@@ -39,7 +39,8 @@ const SizeComponent: FC<ISizeType> = ({ onChange, value = {} }) => {
     };
 
     const renderSizeInput = (label: string, property: keyof ISizeValue) => {
-        const currentValue = localValue[property] as ISizeValueWithUnit || { value: '', unit: 'px' };
+        console.log('property', property, localValue);
+        const currentValue = localValue[property] && localValue[property] as ISizeValueWithUnit || { value: '', unit: 'px' };
 
         const selectAfter = (
             <Select
@@ -68,7 +69,7 @@ const SizeComponent: FC<ISizeType> = ({ onChange, value = {} }) => {
     };
 
     return (
-        <CollapsiblePanel header='Size' className={styles.container} isSimpleDesign ghost>
+        <CollapsiblePanel className={styles.container} isSimpleDesign ghost>
             <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
                 {renderSizeInput('Width', 'width')}
                 {renderSizeInput('Height', 'height')}

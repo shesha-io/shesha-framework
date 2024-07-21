@@ -11,8 +11,8 @@ import { IKeyInformationBarProps } from './interfaces';
 import { ColorPicker, Show } from '@/components';
 import { strings } from '@/components/keyInformationBar/utils';
 import SizeComponent from '../_settings/size/sizeComponent';
-import BorderComponent from '../_settings/size/borderComponent';
 import BackgroundConfigurator from '../_settings/background/background';
+import BorderComponent from '../_settings/border/borderComponent';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
     const { readOnly } = props;
@@ -97,11 +97,11 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="size" label="Size" jsSetting>
+            <SettingsFormItem name="sizeStyle" label="Size" jsSetting>
                 <SizeComponent />
             </SettingsFormItem>
 
-            <SettingsFormItem name="border" label="Border" jsSetting>
+            <SettingsFormItem name="borderStyle" label="Border" jsSetting>
                 <BorderComponent />
             </SettingsFormItem>
             <SettingsFormItem name="background" label="Background" jsSetting>

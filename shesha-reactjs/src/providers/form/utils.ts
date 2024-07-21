@@ -85,6 +85,9 @@ import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { toCamelCase } from '@/utils/string';
 import { FormApi, getFormApi } from './formApi';
 
+import { useState } from "react";
+import { ISizeValue } from '@/designer-components/_settings/size/sizeComponent';
+
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
   application?: IApplicationApi;
@@ -309,7 +312,7 @@ export const updateModelToMoment = async (model: any, properties: NestedProperti
       if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
         const prop = props.find(i => toCamelCase(i.path) === key);
         if (prop && (prop.dataType === DataTypes.date || prop.dataType === DataTypes.dateTime))
-        newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
+          newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
         if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
           newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);
         }
@@ -1447,6 +1450,31 @@ export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: 
     return style;
   }
 };
+
+
+export const getSizeStyle = (input?: ISizeValue): React.CSSProperties => {
+  if (!input) return {};
+
+  const style: React.CSSProperties = {};
+  const sizeProperties: (keyof ISizeValue)[] = ['width', 'height', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight'];
+
+  sizeProperties.forEach(prop => {
+    const sizeValue = input[prop];
+    if (sizeValue && typeof sizeValue === 'object') {
+      const { value, unit } = sizeValue;
+      if (value && unit) {
+        style[prop] = `${value}${unit}`;
+      }
+    }
+  });
+
+  if (input.overflow) {
+    style.overflow = input.overflow;
+  }
+
+  return style;
+}
+
 
 export const getString = (expression: string, formData: any = {}, globalState: any = {}): string => {
   if (!expression) return null;

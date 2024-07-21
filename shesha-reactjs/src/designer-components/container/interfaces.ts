@@ -1,5 +1,8 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
+import { ISizeValue } from '../_settings/size/sizeComponent';
+import { IBorderValue } from '../_settings/border/interfaces';
+import { IBackgroundValue } from '../_settings/background/interfaces';
 
 export type JustifyContent =
   | 'center'
@@ -151,7 +154,7 @@ export interface ICommonContainerProps {
   justifySelf?: JustifySelf;
   noDefaultStyling?: boolean;
   gridColumnsCount?: number;
-  gap?: string | number;
+  gap?: number;
 }
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
@@ -169,4 +172,7 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, IC
   base64?: string;
   dataSource?: string;
   storedFileId?: string;
+  border?: IBorderValue;
+  background?: IBackgroundValue;
+  dimensions?: ISizeValue;
 }

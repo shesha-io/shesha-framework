@@ -1,7 +1,7 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
-import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evaluateValue } from '@/providers/form/utils';
+import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evaluateValue, getSizeStyle } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
@@ -11,6 +11,8 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { getBorderStyle } from '../_settings/border/utils';
+import { getBackgroundStyle } from '../_settings/background/utils';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -27,8 +29,12 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
-    console.log('ContainerComponent', model);
     if (model.hidden) return null;
+
+    const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
+    const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border, formData]);
+
+    console.log("Container component:::", "Background: ", model.background, ">>>", borderStyles, "Size: ", model.dimensions, ">>>", sizeStyles);
 
     const flexAndGridStyles: ICommonContainerProps = {
       display: model?.display,
@@ -45,6 +51,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       flexWrap: model?.flexWrap,
       gap: model?.gap,
     };
+
 
     let val;
     if (model?.dataSource === "storedFileId") {
@@ -73,11 +80,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       );
     };
 
-    const backgroundStyles = model?.backgroundType === 'image'
-      ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundRepeat }
-      : model?.backgroundType === 'color'
-        ? { background: model?.backgroundColor }
-        : {};
+    const backgroundStyles = getBackgroundStyle(model?.background);
 
     return (
       <ParentProvider model={model}>
@@ -90,10 +93,14 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             {...flexAndGridStyles}
             className={model.className}
             {...model}
-            wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
-            style={{
-              ...getStyle(model?.style, formData),
+            wrapperStyle={{
+              ...getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState }),
               ...backgroundStyles,
+              ...borderStyles,
+              ...sizeStyles,
+            }}
+            style={{
+              ...getStyle(model?.style, formData)
             }}
             dynamicComponents={model?.isDynamic ? model?.components : []}
           />
