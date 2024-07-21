@@ -2,7 +2,7 @@ import { Col, Input, InputNumber, Radio, RadioChangeEvent, Row, Select, Slider }
 import React, { FC, useState } from 'react'
 import { useStyles } from './styles';
 import { BorderBottomOutlined, BorderLeftOutlined, BorderOutlined, BorderRightOutlined, BorderTopOutlined, DashOutlined, ExpandOutlined, MinusOutlined, RadiusBottomleftOutlined, RadiusBottomrightOutlined, RadiusUpleftOutlined, RadiusUprightOutlined, SmallDashOutlined } from '@ant-design/icons';
-import { CollapsiblePanel, ColorPicker } from '@/components';
+import { ColorPicker } from '@/components';
 import { IBorderValue } from './interfaces';
 
 const { Option } = Select;
@@ -87,82 +87,80 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, value = {
         { value: 'dotted', icon: <SmallDashOutlined /> },
     ];
 
+
     return (
-        <CollapsiblePanel className={styles.container} isSimpleDesign ghost>
-            <Row gutter={[8, 8]} style={{ width: 200, fontSize: '11px' }}>
-                <Col className="gutter-row" span={24}>
-                    <span>Radius</span>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(radiusOptions, radiusType, (e) => setRadiusType(e.target.value))}
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <Row>
-                        <Col span={12}>
-                            <Slider
-                                min={0}
-                                max={100}
-                                value={localValue.radius[radiusType] || 0}
-                                onChange={(value) => updateRadius(radiusType, value)}
-                            />
-                        </Col>
-                        <Col span={4}>
-                            <InputNumber
-                                min={0}
-                                max={100}
-                                style={{ margin: '0 16px' }}
-                                value={localValue.radius[radiusType] || 0}
-                                onChange={(value) => updateRadius(radiusType, value)}
-                                className={styles.input}
-                            />
-                        </Col>
-                    </Row>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <span>Border</span>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(borderOptions, borderType, (e) => setBorderType(e.target.value))}
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <Col className="gutter-row" span={6}>
-                        <span>Width</span>
+        <Row gutter={[8, 8]} style={{ fontSize: '11px' }} className={styles.container}>
+            <Col className="gutter-row" span={24}>
+                <span>Radius</span>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                {renderRadioGroup(radiusOptions, radiusType, (e) => setRadiusType(e.target.value))}
+            </Col>
+            <Col className="gutter-row" span={24}>
+                <Row>
+                    <Col span={12}>
+                        <Slider
+                            min={0}
+                            max={100}
+                            value={localValue.radius[radiusType] || 0}
+                            onChange={(value) => updateRadius(radiusType, value)}
+                        />
                     </Col>
-                    <Col className="gutter-row" span={12}>
-                        <Input
-                            addonAfter={
-                                <Select
-                                    value={localValue.border[borderType]?.unit || 'px'}
-                                    onChange={(unit) => updateBorder(borderType, { ...localValue.border[borderType], unit })}
-                                >
-                                    {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
-                                </Select>
-                            }
+                    <Col span={4}>
+                        <InputNumber
+                            min={0}
+                            max={100}
+                            style={{ margin: '0 16px' }}
+                            value={localValue.radius[radiusType] || 0}
+                            onChange={(value) => updateRadius(radiusType, value)}
                             className={styles.input}
-                            value={localValue.border[borderType]?.width}
-                            onChange={(e) => updateBorder(borderType, { ...localValue.border[borderType], width: e.target.value || 0 })}
-                            style={{ width: 'calc(100%)' }}
                         />
                     </Col>
+                </Row>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                <span>Border</span>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                {renderRadioGroup(borderOptions, borderType, (e) => setBorderType(e.target.value))}
+            </Col>
+            <Col className="gutter-row" span={24}>
+                <Col className="gutter-row" span={6}>
+                    <span>Width</span>
                 </Col>
-                <Col className="gutter-row" span={24}>
-                    <span>Color</span>
-                    <div style={{ width: 'calc(100% - 35px)' }}>
-                        <ColorPicker
-                            allowClear
-                            value={localValue.border[borderType]?.color || '#000000'}
-                            onChange={(color) => updateBorder(borderType, { ...localValue.border[borderType], color })}
-                        />
-                    </div>
+                <Col className="gutter-row" span={12}>
+                    <Input
+                        addonAfter={
+                            <Select
+                                value={localValue.border[borderType]?.unit || 'px'}
+                                onChange={(unit) => updateBorder(borderType, { ...localValue.border[borderType], unit })}
+                            >
+                                {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
+                            </Select>
+                        }
+                        className={styles.input}
+                        value={localValue.border[borderType]?.width}
+                        onChange={(e) => updateBorder(borderType, { ...localValue.border[borderType], width: e.target.value })}
+                    />
                 </Col>
-                <Col className="gutter-row" span={24}>
-                    <span>Style</span>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(styleOptions, localValue.border[borderType]?.style || 'solid', (e) => updateBorder(borderType, { ...localValue.border[borderType], style: e.target.value }))}
-                </Col>
-            </Row>
-        </CollapsiblePanel>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                <span>Color</span>
+                <div style={{ width: 'calc(100% - 35px)' }}>
+                    <ColorPicker
+                        allowClear
+                        value={localValue.border[borderType]?.color || '#000000'}
+                        onChange={(color) => updateBorder(borderType, { ...localValue.border[borderType], color })}
+                    />
+                </div>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                <span>Style</span>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                {renderRadioGroup(styleOptions, localValue.border[borderType]?.style || 'solid', (e) => updateBorder(borderType, { ...localValue.border[borderType], style: e.target.value }))}
+            </Col>
+        </Row>
     )
 };
 

@@ -10,9 +10,6 @@ import ColumnsList from './columnsList';
 import { IKeyInformationBarProps } from './interfaces';
 import { ColorPicker, Show } from '@/components';
 import { strings } from '@/components/keyInformationBar/utils';
-import SizeComponent from '../_settings/size/sizeComponent';
-import BackgroundConfigurator from '../_settings/background/background';
-import BorderComponent from '../_settings/border/borderComponent';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
     const { readOnly } = props;
@@ -46,15 +43,13 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <ColumnsList readOnly={readOnly} />
             </SettingsFormItem>
 
-            <Show when={values.orientation === "horizontal"}>
-                <SettingsFormItem name="alignItems" label="Align Items">
-                    <Select >
-                        <Option value="flex-start">Flex Start</Option>
-                        <Option value="flex-end">Flex End</Option>
-                        <Option value="center">Center</Option>
-                    </Select>
-                </SettingsFormItem>
-            </Show>
+            <SettingsFormItem name="alignItems" label="Align Items">
+                <Select >
+                    <Option value="flex-start">Flex Start</Option>
+                    <Option value="flex-end">Flex End</Option>
+                    <Option value="center">Center</Option>
+                </Select>
+            </SettingsFormItem>
 
             <SectionSeparator title="Divider" />
 
@@ -73,11 +68,6 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                     <Input readOnly={readOnly} />
                 </SettingsFormItem>
             </Show>
-
-            <SettingsFormItem name="dividerThickness" label="Divider Thickness" jsSetting tooltip={tooltip}>
-                <Input readOnly={readOnly} />
-            </SettingsFormItem>
-
             <SettingsFormItem name="dividerColor" label="Divider Color" jsSetting >
                 <ColorPicker readOnly={readOnly} allowClear />
             </SettingsFormItem>
@@ -97,16 +87,7 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
                 <InputNumber readOnly={readOnly} />
             </SettingsFormItem>
 
-            <SettingsFormItem name="sizeStyle" label="Size" jsSetting>
-                <SizeComponent />
-            </SettingsFormItem>
 
-            <SettingsFormItem name="borderStyle" label="Border" jsSetting>
-                <BorderComponent />
-            </SettingsFormItem>
-            <SettingsFormItem name="background" label="Background" jsSetting>
-                <BackgroundConfigurator />
-            </SettingsFormItem>
             <SettingsFormItem name="stylingBox">
                 <StyleBox />
             </SettingsFormItem>

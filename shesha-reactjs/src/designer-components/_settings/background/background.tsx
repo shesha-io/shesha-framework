@@ -1,14 +1,16 @@
-import { Button, Col, Input, Radio, RadioChangeEvent, Row, Tag } from 'antd';
+import { Button, Col, Input, Radio, RadioChangeEvent, Row, Select, Tag } from 'antd';
 import React, { FC, useState, useEffect } from 'react';
 import { useStyles } from './styles';
 import { BgColorsOutlined, BoldOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from '@ant-design/icons';
-import { CollapsiblePanel, ColorPicker, FileUpload } from '@/components';
+import { ColorPicker, FileUpload } from '@/components';
 import { StoredFileProvider, useForm, useSheshaApplication } from '@/index';
 import { nanoid } from 'nanoid';
 import TextArea from 'antd/es/input/TextArea';
 
 interface IBackgroundValue {
     type: 'color' | 'url' | 'upload' | 'base64' | 'gradient';
+    size?: 'cover' | 'contain' | 'auto';
+    repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
     color?: string;
     url?: string;
     fileId?: string;
@@ -64,6 +66,41 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
         updateValue({ gradient: { ...localValue.gradient, colors: newColors } });
     };
 
+    const renderBackgroundSizeAndRepeatInput = () => {
+        return (
+            <Row gutter={[8, 8]} style={{ width: 200, fontSize: '11px' }}>
+                <Col className="gutter-row" span={24}>
+                    <span>Size</span>
+                </Col>
+                <Col className="gutter-row" span={24}>
+                    <Select
+                        defaultValue="auto"
+                        style={{ width: 120 }}
+                        onChange={(size: any) => updateValue({ size })}
+                        options={[
+                            { value: 'cover', label: 'Cover' },
+                            { value: 'contain', label: 'Contain', },
+                            { value: 'auto', label: 'Auto' }
+                        ]}
+                    />
+                </Col>
+                <Col className="gutter-row" span={24}>
+                    <span>Repeat</span>
+                </Col>
+                <Col className="gutter-row" span={24}>
+                    <Select
+                        onChange={(repeat) => updateValue({ repeat })}
+                        options={[
+                            { label: 'No repeat', value: 'no-repeat' },
+                            { label: 'Repeat', value: 'repeat' },
+                            { label: 'Repeat X', value: 'repeat-x' },
+                            { label: 'Repeat Y', value: 'repeat-y' },
+                        ]}
+                    />
+                </Col>
+            </Row>
+        );
+    }
     const renderBackgroundInput = () => {
         switch (localValue.type) {
             case 'gradient':
@@ -170,23 +207,22 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
     };
 
     return (
-        <CollapsiblePanel header='Background' className={styles.container} isSimpleDesign accordion={false}>
-            <Row gutter={[8, 8]} style={{ width: 200, fontSize: '11px' }}>
-                <Col className="gutter-row" span={24}>
-                    <span>Type</span>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <Radio.Group onChange={onTypeChange} value={localValue.type}>
-                        <Radio.Button value="color" title='Background color'><BgColorsOutlined /></Radio.Button>
-                        <Radio.Button value="gradient" title='Gradient background'><FormatPainterOutlined /></Radio.Button>
-                        <Radio.Button value="url" title='Image url'><LinkOutlined /></Radio.Button>
-                        <Radio.Button value="upload" title='Image upload'><UploadOutlined /></Radio.Button>
-                        <Radio.Button value="base64" title='Base 64 image'><BoldOutlined />ase64</Radio.Button>
-                    </Radio.Group>
-                </Col>
-                {renderBackgroundInput()}
-            </Row>
-        </CollapsiblePanel>
+        <Row gutter={[8, 8]} style={{ fontSize: '11px' }} className={styles.container}>
+            <Col className="gutter-row" span={24}>
+                <span>Type</span>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                <Radio.Group onChange={onTypeChange} value={localValue.type}>
+                    <Radio.Button value="color" title='Background color'><FormatPainterOutlined /></Radio.Button>
+                    <Radio.Button value="gradient" title='Gradient background'><BgColorsOutlined /></Radio.Button>
+                    <Radio.Button value="url" title='Image url'><LinkOutlined /></Radio.Button>
+                    <Radio.Button value="upload" title='Image upload'><UploadOutlined /></Radio.Button>
+                    <Radio.Button value="base64" title='Base 64 image'><BoldOutlined />ase64</Radio.Button>
+                </Radio.Group>
+            </Col>
+            {renderBackgroundInput()}
+            {value.type !== 'color' && value.type !== 'gradient' && renderBackgroundSizeAndRepeatInput()}
+        </Row>
     );
 };
 

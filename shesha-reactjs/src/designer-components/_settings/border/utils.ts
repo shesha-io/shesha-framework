@@ -17,8 +17,8 @@ export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
         const { all, top, right, bottom, left } = input.border;
 
         const handleBorderPart = (part, prefix: string) => {
-            if (part?.width) style[`${prefix}Width`] = `${part.width || 0}px`;
-            if (part?.style) style[`${prefix}Style`] = part.style;
+            if (part?.width) style[`${prefix}Width`] = `${part.width || 0}${part.unit || 'px'}`;
+            if (part?.style) style[`${prefix}Style`] = part.style || 'solid';
             if (part?.color) style[`${prefix}Color`] = part.color;
         };
 

@@ -5,6 +5,9 @@ export const getBackgroundStyle = (input?: IBackgroundValue): React.CSSPropertie
 
     const style: React.CSSProperties = {};
 
+    const backgroundSize = input?.size;
+    const backgroundRepeat = input.repeat;
+
     if (input.type === 'color') {
         style.backgroundColor = input.color;
     } else if (input.type === 'gradient') {
@@ -18,5 +21,5 @@ export const getBackgroundStyle = (input?: IBackgroundValue): React.CSSPropertie
         style.backgroundImage = `url(${input.base64})`;
     }
 
-    return style;
+    return { ...style, backgroundSize, backgroundRepeat };
 }

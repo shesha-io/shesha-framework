@@ -31,10 +31,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
 
     if (model.hidden) return null;
 
+    console.log('model border', model.border);
     const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border, formData]);
-
-    console.log("Container component:::", "Background: ", model.background, ">>>", borderStyles, "Size: ", model.dimensions, ">>>", sizeStyles);
 
     const flexAndGridStyles: ICommonContainerProps = {
       display: model?.display,

@@ -2,7 +2,6 @@ import { Col, Input, Radio, RadioChangeEvent, Row, Select } from 'antd';
 import React, { FC, useState } from 'react';
 import { useStyles } from './styles';
 import { BorderlessTableOutlined, ColumnWidthOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
-import { CollapsiblePanel } from '@/components';
 
 const { Option } = Select;
 
@@ -39,7 +38,6 @@ const SizeComponent: FC<ISizeType> = ({ onChange, value = { width: null, height:
     };
 
     const renderSizeInput = (label: string, property: keyof ISizeValue) => {
-        console.log('property', property, localValue);
         const currentValue = localValue[property] && localValue[property] as ISizeValueWithUnit || { value: '', unit: 'px' };
 
         const selectAfter = (
@@ -69,27 +67,25 @@ const SizeComponent: FC<ISizeType> = ({ onChange, value = { width: null, height:
     };
 
     return (
-        <CollapsiblePanel className={styles.container} isSimpleDesign ghost>
-            <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
-                {renderSizeInput('Width', 'width')}
-                {renderSizeInput('Height', 'height')}
-                {renderSizeInput('Min W', 'minWidth')}
-                {renderSizeInput('Min H', 'minHeight')}
-                {renderSizeInput('Max W', 'maxWidth')}
-                {renderSizeInput('Max H', 'maxHeight')}
-                <Col className="gutter-row" span={24}>
-                    <span>Overflow</span>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <Radio.Group onChange={onOverflowChange} value={localValue.overflow} >
-                        <Radio.Button value="visible" title="Visible"><EyeOutlined /></Radio.Button>
-                        <Radio.Button value="hidden" title="Hidden"><EyeInvisibleOutlined size={32} /></Radio.Button>
-                        <Radio.Button value="scroll" title="Scroll"><ColumnWidthOutlined /></Radio.Button>
-                        <Radio.Button value="auto" title="Auto"><BorderlessTableOutlined /></Radio.Button>
-                    </Radio.Group>
-                </Col>
-            </Row>
-        </CollapsiblePanel>
+        <Row gutter={[8, 8]} style={{ fontSize: '11px' }} className={styles.container}>
+            {renderSizeInput('Width', 'width')}
+            {renderSizeInput('Height', 'height')}
+            {renderSizeInput('Min W', 'minWidth')}
+            {renderSizeInput('Min H', 'minHeight')}
+            {renderSizeInput('Max W', 'maxWidth')}
+            {renderSizeInput('Max H', 'maxHeight')}
+            <Col className="gutter-row" span={24}>
+                <span>Overflow</span>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                <Radio.Group onChange={onOverflowChange} value={localValue.overflow} >
+                    <Radio.Button value="visible" title="Visible"><EyeOutlined /></Radio.Button>
+                    <Radio.Button value="hidden" title="Hidden"><EyeInvisibleOutlined size={32} /></Radio.Button>
+                    <Radio.Button value="scroll" title="Scroll"><ColumnWidthOutlined /></Radio.Button>
+                    <Radio.Button value="auto" title="Auto"><BorderlessTableOutlined /></Radio.Button>
+                </Radio.Group>
+            </Col>
+        </Row>
     );
 };
 

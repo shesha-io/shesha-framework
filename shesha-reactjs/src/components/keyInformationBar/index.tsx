@@ -1,31 +1,14 @@
-import React, { FC, useMemo } from 'react';
 import { IKeyInformationBarProps } from '@/designer-components/keyInformationBar/interfaces';
 import { ComponentsContainer, useFormData } from '@/index';
 import { getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import { Flex } from 'antd';
+import React, { FC } from 'react';
 import { useStyles } from './style';
 import { addPx } from './utils';
-import { getSizeStyle } from '@/designer-components/_settings/size/utils';
-import { getBorderStyle } from '@/designer-components/_settings/border/utils';
-
 export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
+
     const { data } = useFormData();
-    const {
-        columns = [],
-        hidden,
-        orientation,
-        style,
-        dividerMargin,
-        dividerHeight,
-        dividerWidth,
-        sizeStyle,
-        borderStyle,
-        dividerThickness = '0.62px',
-        dividerColor,
-        gap,
-        stylingBox,
-        alignItems,
-    } = props;
+    const { columns, hidden, orientation, style, dividerMargin, dividerHeight, dividerWidth, dividerColor, gap, stylingBox, alignItems, backgroundColor } = props;
     const { styles } = useStyles();
 
     const width = addPx(dividerWidth);
@@ -35,31 +18,10 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
 
     if (hidden) return null;
 
-    const computedStyle = useMemo(() => {
-        const stylingBoxJSON = JSON.parse(stylingBox || '{}');
-        const sizeStyles = getSizeStyle(sizeStyle);
-        const borderStyles = getBorderStyle(borderStyle)
-        console.log("Border styles:::", borderStyle);
-
-        return {
-            ...getStyle(style, data),
-            ...pickStyleFromModel(stylingBoxJSON),
-            ...sizeStyles,
-            ...borderStyles
-        }
-    }, [style, stylingBox, sizeStyle, data]);
-
+    const stylingBoxJSON = JSON.parse(stylingBox || '{}');
     const vertical = orientation === "vertical";
-    const divThickness = addPx(dividerThickness) !== '100%' ? addPx(dividerThickness) : '0.62px';
-
-    const dividerStyle = {
-        backgroundColor: dividerColor ?? '#b4b4b4',
-        width: !vertical && width ? divThickness ?? '0.62px' : width,
-        height: vertical && height ? divThickness ?? '0.62px' : height,
-        margin: vertical ? `${margin} 0` : `0 ${margin}`,
-    };
-
-    const barStyle = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems, backgroundColor: '' };
+    const computedStyle = { ...getStyle(style, data), ...pickStyleFromModel(stylingBoxJSON) };
+    const barStyle = !vertical ? { justifyContent: alignItems, backgroundColor } : { alignItems: alignItems, backgroundColor };
 
     const containerStyle = (item) => ({
         textAlign: item.textAlign,
@@ -70,15 +32,21 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         textOverflow: "ellipsis",
     });
 
-    console.log('Computed Style: ', computedStyle)
+    const dividerStyle = {
+        backgroundColor: dividerColor ?? '#b4b4b4',
+        width: !vertical && width ? '0.62px' : width,
+        height: vertical && height ? '0.62px' : height,
+        margin: vertical ? `${margin} 0` : `0 ${margin}`,
+    };
+
     return (
-        <Flex vertical={vertical} className={styles.flexContainer} style={{ ...computedStyle, ...barStyle }}>
-            {columns.map((item, i) => {
+        <Flex vertical={vertical} className={styles.flexContainer} style={{ ...computedStyle, ...barStyle }} >
+            {columns?.map((item, i) => {
                 const itemWidth = vertical ? "100%" : addPx(item.width);
                 return (
                     <div key={item.id} className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper} style={vertical ? { width: itemWidth, justifyContent: alignItems } : { maxWidth: itemWidth }}>
                         <div key={"divider" + i} className={styles.divider} style={{ ...dividerStyle, alignSelf: "center" }} />
-                        <div className={styles.content} style={{ justifyContent: item.textAlign }}>
+                        <div className={styles.content} style={{ textAlign: item.textAlign, ...(vertical ? { width: itemWidth, justifyContent: alignItems } : { maxWidth: itemWidth }) }}>
                             <ComponentsContainer
                                 containerId={item.id}
                                 gap={gap}
@@ -87,8 +55,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
                                 dynamicComponents={props?.isDynamic ? item?.components : []}
                             />
                         </div>
-                    </div>
-                );
+                    </div>);
             })}
         </Flex>
     );
