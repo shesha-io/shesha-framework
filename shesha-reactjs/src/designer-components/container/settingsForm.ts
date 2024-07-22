@@ -272,6 +272,84 @@ export const getSettings = (data: any) =>
       },
     })
     .addCollapsiblePanel({
+      id: '64664-cbc9-4cef-babc-dimea44cd0ca',
+      propertyName: 'pnlDimensions',
+      parentId: 'root',
+      label: 'Dimensions',
+      labelAlign: 'left',
+      expandIconPosition: 'start',
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl64664-cbc9-e30i-babc-6fbea44cd0ca',
+        components: [
+          ...new DesignerToolbarSettings()
+            .addSize({
+              id: 'f8c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
+              propertyName: 'dimensions',
+              label: 'Dimensions',
+              parentId: 'pnl64664-cbc9-e30i-babc-6fbea44cd0ca',
+              validate: {},
+              settingsValidationErrors: [],
+              jsSetting: true,
+            })
+            .toJson(),
+        ],
+      },
+    })
+    .addCollapsiblePanel({
+      id: '64664-cbc9-4cef-babc-v360a44cd0ca',
+      propertyName: 'pnlBorder',
+      parentId: 'root',
+      label: 'Border',
+      labelAlign: 'left',
+      expandIconPosition: 'start',
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl64664-cbc9-4cef-babc-6fbeat3cd0ca',
+        components: [
+          ...new DesignerToolbarSettings()
+            .addBorder({
+              id: '64664-cbc9-4cef-babc-v360a4ccd9ca',
+              propertyName: 'border',
+              label: 'Border',
+              parentId: 'pnl64664-cbc9-4cef-babc-6fbeat3cd0ca',
+              validate: {},
+              settingsValidationErrors: [],
+              jsSetting: true,
+            })
+            .toJson(),
+        ],
+      },
+    })
+    .addCollapsiblePanel({
+      id: '64664-cbc9-4cef-babc-offbeatcd0ca',
+      propertyName: 'pnlBackground',
+      parentId: 'root',
+      label: 'Background',
+      labelAlign: 'left',
+      expandIconPosition: 'start',
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl64664-cbc9-4cef-babc-6fbea44cdcar',
+        components: [
+          ...new DesignerToolbarSettings()
+            .addBackground({
+              id: '64664-cbc9-4cef-babc-backa44cd0ca',
+              propertyName: 'background',
+              label: 'Background',
+              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cdcar',
+              validate: {},
+              settingsValidationErrors: [],
+              jsSetting: true,
+            })
+            .toJson(),
+        ],
+      },
+    })
+    .addCollapsiblePanel({
       id: 'db6e32f3-7a8b-4686-a0eb-81b2e36796ef',
       propertyName: 'pnlStyle',
       parentId: 'root',
@@ -295,33 +373,6 @@ export const getSettings = (data: any) =>
               description: 'Custom CSS Class to add to this component',
               validate: {},
               settingsValidationErrors: [],
-            })
-            .addSize({
-              id: 'f8c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
-              propertyName: 'dimensions',
-              label: 'Dimensions',
-              parentId: 'root',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: true,
-            })
-            .addBackground({
-              id: '64664-cbc9-4cef-babc-6fbe444cd0ca',
-              propertyName: 'background',
-              label: 'Background',
-              parentId: 'root',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: true,
-            })
-            .addBorder({
-              id: '64664-cbc9-4cef-babc-v360a44cd0ca',
-              propertyName: 'border',
-              label: 'Border',
-              parentId: 'root',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: true,
             })
             .addCodeEditor({
               id: '4e319199-d27c-4ed0-9934-fa2cb62745d1',
@@ -352,94 +403,6 @@ export const getSettings = (data: any) =>
             }).toJson(),
         ],
       },
-    })
-    .addCollapsiblePanel({
-      id: nanoid(),
-      propertyName: 'pnlBackground',
-      parentId: 'root',
-      label: 'Background',
-      labelAlign: "left",
-      expandIconPosition: "start",
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: nanoid(),
-        components: [...new DesignerToolbarSettings()
-          .addBackground({
-            id: nanoid(),
-            propertyName: 'background',
-            label: 'Background',
-            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            validate: {},
-            settingsValidationErrors: [],
-            jsSetting: true,
-          })
-          .addDropdown({
-            id: nanoid(),
-            propertyName: 'backgroundCover',
-            label: 'Background Size',
-            labelAlign: 'right',
-            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-            dataSourceType: "values",
-            hidden: {
-              _code: "return getSettingValue(data?.backgroundType) !== 'image';",
-              _mode: 'code',
-              _value: false,
-            } as any,
-            values: [
-              {
-                label: "Contain",
-                value: "contain",
-                id: nanoid()
-              },
-              {
-                label: "Cover",
-                value: "cover",
-                id: nanoid()
-              }
-            ],
-          }).toJson()
-        ]
-      }
-    })
-    .addDropdown({
-      id: nanoid(),
-      propertyName: 'backgroundRepeat',
-      label: 'Background Repeat',
-      labelAlign: 'right',
-      parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-      dataSourceType: "values",
-      hidden: {
-        _code: "return getSettingValue(data?.backgroundType) !== 'image';",
-        _mode: 'code',
-        _value: false,
-      } as any,
-      values: [
-        {
-          label: "Repeat",
-          value: "repeat",
-          id: nanoid()
-        },
-        {
-          label: "No Repeat",
-          value: "no-repeat",
-          id: nanoid()
-        }, {
-          label: "Repeat-X",
-          value: "repeat-x",
-          id: nanoid()
-        },
-        {
-          label: "Repeat-Y",
-          value: "repeat-y",
-          id: nanoid()
-        },
-        {
-          label: "Round",
-          value: "round",
-          id: nanoid()
-        },
-      ],
     })
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',

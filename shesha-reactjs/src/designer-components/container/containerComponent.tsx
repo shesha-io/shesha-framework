@@ -25,15 +25,15 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const { backendUrl } = useSheshaApplication();
     const ownerId = evaluateValue(model.ownerId, { data, globalState });
 
+    const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
+    const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border, formData]);
+
     if (model.dataSource === 'storedFileId' && model.storedFileId && !isValidGuid(model.storedFileId)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
-    if (model.hidden) return null;
 
-    console.log('model border', model.border);
-    const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border, formData]);
+    if (model.hidden) return null;
 
     const flexAndGridStyles: ICommonContainerProps = {
       display: model?.display,
