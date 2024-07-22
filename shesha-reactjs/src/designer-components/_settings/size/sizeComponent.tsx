@@ -37,7 +37,7 @@ const SizeComponent: FC<ISizeType> = ({ onChange, value = { width: null, height:
         onChange?.(updatedValue);
     };
 
-    const renderSizeInput = (label: string, property: keyof ISizeValue) => {
+    const renderSizeInputWithUnits = (label: string, property: keyof ISizeValue) => {
         const currentValue = localValue[property] && localValue[property] as ISizeValueWithUnit || { value: '', unit: 'px' };
 
         const selectAfter = (
@@ -68,12 +68,12 @@ const SizeComponent: FC<ISizeType> = ({ onChange, value = { width: null, height:
 
     return (
         <Row gutter={[8, 8]} style={{ fontSize: '11px' }} className={styles.container}>
-            {renderSizeInput('Width', 'width')}
-            {renderSizeInput('Height', 'height')}
-            {renderSizeInput('Min W', 'minWidth')}
-            {renderSizeInput('Min H', 'minHeight')}
-            {renderSizeInput('Max W', 'maxWidth')}
-            {renderSizeInput('Max H', 'maxHeight')}
+            {renderSizeInputWithUnits('Width', 'width')}
+            {renderSizeInputWithUnits('Height', 'height')}
+            {renderSizeInputWithUnits('Min W', 'minWidth')}
+            {renderSizeInputWithUnits('Min H', 'minHeight')}
+            {renderSizeInputWithUnits('Max W', 'maxWidth')}
+            {renderSizeInputWithUnits('Max H', 'maxHeight')}
             <Col className="gutter-row" span={24}>
                 <span>Overflow</span>
             </Col>

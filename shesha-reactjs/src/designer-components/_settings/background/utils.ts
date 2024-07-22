@@ -5,9 +5,6 @@ export const getBackgroundStyle = (input?: IBackgroundValue): React.CSSPropertie
 
     const style: React.CSSProperties = {};
 
-    const backgroundSize = input?.size;
-    const backgroundRepeat = input.repeat;
-
     if (input.type === 'color') {
         style.backgroundColor = input.color;
     } else if (input.type === 'gradient') {
@@ -21,5 +18,29 @@ export const getBackgroundStyle = (input?: IBackgroundValue): React.CSSPropertie
         style.backgroundImage = `url(${input.base64})`;
     }
 
-    return { ...style, backgroundSize, backgroundRepeat };
-}
+    if (input.size) {
+        if (typeof input.size === 'string') {
+            style.backgroundSize = input.size;
+        } else {
+            const width = `${input.size.width.value}${input.size.width.unit}`;
+            const height = `${input.size.height.value}${input.size.height.unit}`;
+            style.backgroundSize = `${width} ${height}`;
+        }
+    }
+
+    if (input.position) {
+        if (typeof input.position === 'string') {
+            style.backgroundPosition = input.position;
+        } else {
+            const x = `${input.position.width.value}${input.position.width.unit}`;
+            const y = `${input.position.height.value}${input.position.height.unit}`;
+            style.backgroundPosition = `${x} ${y}`;
+        }
+    }
+
+    if (input.repeat) {
+        style.backgroundRepeat = input.repeat;
+    }
+
+    return style;
+};

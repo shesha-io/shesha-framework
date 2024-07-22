@@ -1,4 +1,4 @@
-import { Button, Col, Input, Radio, RadioChangeEvent, Row, Select, Tag } from 'antd';
+import { Button, Col, Input, Radio, RadioChangeEvent, Row, Tag } from 'antd';
 import React, { FC, useState, useEffect } from 'react';
 import { useStyles } from './styles';
 import { BgColorsOutlined, BoldOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from '@ant-design/icons';
@@ -6,10 +6,12 @@ import { ColorPicker, FileUpload } from '@/components';
 import { StoredFileProvider, useForm, useSheshaApplication } from '@/index';
 import { nanoid } from 'nanoid';
 import TextArea from 'antd/es/input/TextArea';
+import SizeAndRepeat from './sizeAndRepeat';
 
 interface IBackgroundValue {
     type: 'color' | 'url' | 'upload' | 'base64' | 'gradient';
     size?: 'cover' | 'contain' | 'auto';
+    position?: string;
     repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
     color?: string;
     url?: string;
@@ -66,41 +68,7 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
         updateValue({ gradient: { ...localValue.gradient, colors: newColors } });
     };
 
-    const renderBackgroundSizeAndRepeatInput = () => {
-        return (
-            <Row gutter={[8, 8]} style={{ width: 200, fontSize: '11px' }}>
-                <Col className="gutter-row" span={24}>
-                    <span>Size</span>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <Select
-                        defaultValue="auto"
-                        style={{ width: 120 }}
-                        onChange={(size: any) => updateValue({ size })}
-                        options={[
-                            { value: 'cover', label: 'Cover' },
-                            { value: 'contain', label: 'Contain', },
-                            { value: 'auto', label: 'Auto' }
-                        ]}
-                    />
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <span>Repeat</span>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <Select
-                        onChange={(repeat) => updateValue({ repeat })}
-                        options={[
-                            { label: 'No repeat', value: 'no-repeat' },
-                            { label: 'Repeat', value: 'repeat' },
-                            { label: 'Repeat X', value: 'repeat-x' },
-                            { label: 'Repeat Y', value: 'repeat-y' },
-                        ]}
-                    />
-                </Col>
-            </Row>
-        );
-    }
+
     const renderBackgroundInput = () => {
         switch (localValue.type) {
             case 'gradient':
@@ -221,7 +189,7 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
                 </Radio.Group>
             </Col>
             {renderBackgroundInput()}
-            {value.type !== 'color' && value.type !== 'gradient' && renderBackgroundSizeAndRepeatInput()}
+            {value.type !== 'color' && value.type !== 'gradient' && <SizeAndRepeat updateValue={updateValue} backgroundSize={value.size} backgroundPosition={value.position} />}
         </Row>
     );
 };

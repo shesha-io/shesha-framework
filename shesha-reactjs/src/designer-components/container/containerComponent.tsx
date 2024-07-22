@@ -32,6 +32,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
+    console.log('Background', model.background);
 
     if (model.hidden) return null;
 
