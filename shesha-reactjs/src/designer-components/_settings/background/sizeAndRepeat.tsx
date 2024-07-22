@@ -68,7 +68,7 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
             }
         } else {
             const newPosition = `${position.width.value}${position.width.unit} ${position.height.value}${position.height.unit}`;
-            setPosition
+            setPositions(positions => positions.splice(positions.length - 1, 1, newPosition));
             updateValue({ position: newPosition });
 
         }
