@@ -18,6 +18,7 @@ import { ReferenceListCell } from './default/referenceListCell';
 import { useCrud } from '@/providers/crudContext';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { editorAdapters, updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
 
 export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
   const { columnConfig } = props;
@@ -93,8 +94,10 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
       readOnly: actualModel.readOnly === undefined ? props.readOnly : actualModel.readOnly,
     };
 
-    if (component.linkToModelMetadata && propertyMeta) {
-      editorModel = component.linkToModelMetadata(editorModel, propertyMeta);
+    const adapter = editorAdapters[customComponent.type];
+
+    if (component.linkToModelMetadata && propertyMeta && adapter?.propertiesFilter) {
+      editorModel = updateModelExcludeFiltered(editorModel, component.linkToModelMetadata({}, propertyMeta), adapter.propertiesFilter);
     }
 
     return editorModel;

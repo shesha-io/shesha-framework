@@ -13,6 +13,15 @@ import { IDictionary } from '@/interfaces';
 
 type PropertyInclusionPredicate = (name: string) => boolean;
 
+export const updateModelExcludeFiltered = (model: any, updatedModel: any, filter: PropertyInclusionPredicate) => {
+  Object.keys(updatedModel).forEach((key) => {
+    if (!filter(key)) {
+      model[key] = updatedModel[key];
+    }
+  });
+  return model;
+};
+
 export interface IEditorAdapter {
   propertiesFilter: PropertyInclusionPredicate;
 }
