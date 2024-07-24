@@ -1,8 +1,8 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { ISizeValue } from '../_settings/size/sizeComponent';
-import { IBorderValue } from '../_settings/border/interfaces';
-import { IBackgroundValue } from '../_settings/background/interfaces';
+import { ISizeValue } from '../styleDimensions/components/size/sizeComponent';
+import { IBorderValue } from '../styleBorder/components/border/interfaces';
+import { IBackgroundValue } from '../styleBackground/components/background/interfaces';
 
 export type JustifyContent =
   | 'center'

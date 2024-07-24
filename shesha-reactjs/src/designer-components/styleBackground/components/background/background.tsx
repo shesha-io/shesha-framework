@@ -2,11 +2,10 @@ import { Button, Col, Input, Radio, RadioChangeEvent, Row, Tag } from 'antd';
 import React, { FC, useState, useEffect } from 'react';
 import { useStyles } from './styles';
 import { BgColorsOutlined, BoldOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from '@ant-design/icons';
-import { ColorPicker, FileUpload } from '@/components';
-import { StoredFileProvider, useForm, useSheshaApplication } from '@/index';
-import { nanoid } from 'nanoid';
+import { ColorPicker } from '@/components';
 import TextArea from 'antd/es/input/TextArea';
 import SizeAndRepeat from './sizeAndRepeat';
+import ImageUploader from '../imageUploader';
 
 interface IBackgroundValue {
     type: 'color' | 'url' | 'upload' | 'base64' | 'gradient';
@@ -15,7 +14,7 @@ interface IBackgroundValue {
     repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
     color?: string;
     url?: string;
-    fileId?: string;
+    file?: string;
     base64?: string;
     gradient?: { direction: string, colors: string[] };
 }
@@ -27,8 +26,6 @@ interface IBackgroundProps {
 
 const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type: 'color' } }) => {
     const { styles } = useStyles();
-    const { backendUrl } = useSheshaApplication();
-    const { formMode } = useForm();
     const [localValue, setLocalValue] = useState<IBackgroundValue>(value);
     const [colors, setColors] = useState<string[]>(value.gradient?.colors || []);
 
@@ -128,22 +125,11 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
                 );
             case 'upload':
                 return (
-                    <Col className="gutter-row" span={6}>
-                        <StoredFileProvider
-                            onChange={(fileId) => updateValue({ fileId })}
-                            fileId={localValue.fileId || nanoid()}
-                            baseUrl={backendUrl}
-                            propertyName={'backgroundImage'}
-                            uploadMode={'async'}
-                        >
-                            <FileUpload
-                                isStub={formMode === 'designer'}
-                                allowUpload={true}
-                                allowDelete={true}
-                                allowReplace={true}
-                                allowedFileTypes={['png', 'jpg', 'jpeg', 'gif', 'webp']}
-                            />
-                        </StoredFileProvider>
+                    <Col className="gutter-row" span={24}>
+                        <ImageUploader
+                            updateValue={updateValue}
+                            backgroundImage={localValue?.file}
+                        />
                     </Col>
                 );
             case 'base64':
@@ -189,7 +175,7 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
                 </Radio.Group>
             </Col>
             {renderBackgroundInput()}
-            {value.type !== 'color' && value.type !== 'gradient' && <SizeAndRepeat updateValue={updateValue} backgroundSize={value.size} backgroundPosition={value.position} />}
+            {value.type !== 'color' && value.type !== 'gradient' && <SizeAndRepeat updateValue={updateValue} backgroundSize={value.size} backgroundPosition={value.position} backgroundRepeat={value.repeat} />}
         </Row>
     );
 };

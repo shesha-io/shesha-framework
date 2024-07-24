@@ -72,6 +72,11 @@ export const useStyles = createStyles(({ css, cx }) => {
         .ant-input-group {
             width: auto !important; 
         }
+
+        .ant-upload-list-item {
+            width: 32px !important;
+            height: 32px !important;
+        }
     `);
 
     const radioBtn = cx(css`

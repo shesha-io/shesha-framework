@@ -16,6 +16,7 @@ import settingsFormJson from './settingsForm.json';
 import { executeFunction } from '@/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import Title from '../_common/components/title/title';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -38,9 +39,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       isSimpleDesign,
       hideCollapseContent,
       hideWhenEmpty,
+      description
     } = model;
 
-    const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
+    const evaluatedLabel = typeof label === 'string' && !description ? evaluateString(label, data) : description ? <Title title={label} tooltip={description} /> : label;
 
     if (model.hidden) return null;
 

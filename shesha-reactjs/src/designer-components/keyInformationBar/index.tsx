@@ -16,7 +16,6 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
 
-    console.log('model', model);
     return (
       <ParentProvider model={model}>
         <KeyInformationBar {...model} />

@@ -5,12 +5,12 @@ import { StrikethroughOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import { IBorderProps } from '../_settings/border/interfaces';
-import BorderComponent from '../_settings/border/borderComponent';
+import BackgroundConfigurator from './components/background/background';
+import { IBackgroundProps } from './components/background/interfaces';
 
-const BorderConfigurator: IToolboxComponent<IBorderProps> = {
-    type: 'border',
-    name: 'Border Configurator',
+const Background: IToolboxComponent<IBackgroundProps> = {
+    type: 'background',
+    name: 'Background Configurator',
     icon: <StrikethroughOutlined />,
     canBeJsSetting: true,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
@@ -19,17 +19,11 @@ const BorderConfigurator: IToolboxComponent<IBorderProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <BorderComponent value={value} onChange={onChange} />}
+                {(value, onChange) => <BackgroundConfigurator value={value} onChange={onChange} />}
             </ConfigurableFormItem>
         );
-    },
-    initModel: (model) => {
-        return {
-            ...model,
-            label: 'Size',
-        };
     },
     settingsFormMarkup: getSettings(),
 };
 
-export default BorderConfigurator;
+export default Background;

@@ -5,8 +5,8 @@ import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import SizeComponent from '../_settings/size/sizeComponent';
-import { ISizeComponentProps } from '../_settings/size/interfaces';
+import SizeComponent from './components/size/sizeComponent';
+import { ISizeComponentProps } from './components/size/interfaces';
 
 const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
     type: 'size',
@@ -22,12 +22,6 @@ const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
                 {(value, onChange) => <SizeComponent value={value} onChange={onChange} />}
             </ConfigurableFormItem>
         );
-    },
-    initModel: (model) => {
-        return {
-            ...model,
-            label: 'Size',
-        };
     },
     settingsFormMarkup: getSettings(),
 };

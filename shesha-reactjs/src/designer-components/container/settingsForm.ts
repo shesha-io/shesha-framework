@@ -272,84 +272,6 @@ export const getSettings = (data: any) =>
       },
     })
     .addCollapsiblePanel({
-      id: '64664-cbc9-4cef-babc-dimea44cd0ca',
-      propertyName: 'pnlDimensions',
-      parentId: 'root',
-      label: 'Dimensions',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnl64664-cbc9-e30i-babc-6fbea44cd0ca',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addSize({
-              id: 'f8c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
-              propertyName: 'dimensions',
-              label: 'Dimensions',
-              parentId: 'pnl64664-cbc9-e30i-babc-6fbea44cd0ca',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: true,
-            })
-            .toJson(),
-        ],
-      },
-    })
-    .addCollapsiblePanel({
-      id: '64664-cbc9-4cef-babc-v360a44cd0ca',
-      propertyName: 'pnlBorder',
-      parentId: 'root',
-      label: 'Border',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnl64664-cbc9-4cef-babc-6fbeat3cd0ca',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addBorder({
-              id: '64664-cbc9-4cef-babc-v360a4ccd9ca',
-              propertyName: 'border',
-              label: 'Border',
-              parentId: 'pnl64664-cbc9-4cef-babc-6fbeat3cd0ca',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: true,
-            })
-            .toJson(),
-        ],
-      },
-    })
-    .addCollapsiblePanel({
-      id: '64664-cbc9-4cef-babc-offbeatcd0ca',
-      propertyName: 'pnlBackground',
-      parentId: 'root',
-      label: 'Background',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnl64664-cbc9-4cef-babc-6fbea44cdcar',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addBackground({
-              id: '64664-cbc9-4cef-babc-backa44cd0ca',
-              propertyName: 'background',
-              label: 'Background',
-              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cdcar',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: true,
-            })
-            .toJson(),
-        ],
-      },
-    })
-    .addCollapsiblePanel({
       id: 'db6e32f3-7a8b-4686-a0eb-81b2e36796ef',
       propertyName: 'pnlStyle',
       parentId: 'root',
@@ -392,6 +314,84 @@ export const getSettings = (data: any) =>
               description: 'The style that will be applied to the container wrapper',
               exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
               hidden: { _code: 'return  getSettingValue(data?.noDefaultStyling);', _mode: 'code', _value: false } as any,
+            })
+            .addCollapsiblePanel({
+              id: '64664-cbc9-4cef-babc-dimea44cd0ca',
+              propertyName: 'pnlDimensions',
+              parentId: 'root',
+              label: 'Dimensions',
+              description: 'Configure the size of your object by entering values for width and height and selecting the appropriate units (px, %, em, etc.). Adjust the overflow settings to control how content is displayed beyond the boundaries of the object.',
+              labelAlign: 'left',
+              expandIconPosition: 'start',
+              ghost: true,
+              collapsible: 'header',
+              content: {
+                id: 'pnl64664-cbc9-e30i-babc-6fbea44cd0ca',
+                components: [
+                  ...new DesignerToolbarSettings()
+                    .addSize({
+                      id: 'f8c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
+                      propertyName: 'dimensions',
+                      parentId: 'pnl64664-cbc9-e30i-babc-6fbea44cd0ca',
+                      validate: {},
+                      settingsValidationErrors: [],
+                      jsSetting: true,
+                    })
+                    .toJson(),
+                ],
+              },
+            })
+            .addCollapsiblePanel({
+              id: '64664-cbc9-4cef-babc-v360a44cd0ca',
+              propertyName: 'pnlBorder',
+              parentId: 'root',
+              label: 'Border',
+              description: 'Customize the borders of your object by specifying the width, style, and color for each side. You can also add border radius to create rounded corners.',
+              labelAlign: 'left',
+              expandIconPosition: 'start',
+              ghost: true,
+              collapsible: 'header',
+              content: {
+                id: 'pnl64664-cbc9-4cef-babc-6fbeat3cd0ca',
+                components: [
+                  ...new DesignerToolbarSettings()
+                    .addBorder({
+                      id: '64664-cbc9-4cef-babc-v360a4ccd9ca',
+                      propertyName: 'border',
+                      parentId: 'pnl64664-cbc9-4cef-babc-6fbeat3cd0ca',
+                      validate: {},
+                      settingsValidationErrors: [],
+                      jsSetting: true,
+                    })
+                    .toJson(),
+                ],
+              },
+            })
+            .addCollapsiblePanel({
+              id: '64664-cbc9-4cef-babc-offbeatcd0ca',
+              propertyName: 'pnlBackground',
+              parentId: 'root',
+              label: 'Background',
+              description: 'Change the background of your object by selecting a color, gradient, URL, or uploading a file. Experiment with different options (background size, background repeat etc...) to achieve the desired look and feel.',
+              labelAlign: 'left',
+              expandIconPosition: 'start',
+              ghost: true,
+              collapsible: 'header',
+              content: {
+                id: 'pnl64664-cbc9-4cef-babc-6fbea44cdcar',
+                components: [
+                  ...new DesignerToolbarSettings()
+                    .addBackground({
+                      id: '64664-cbc9-4cef-babc-backa44cd0ca',
+                      propertyName: 'background',
+                      parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cdcar',
+                      validate: {},
+                      settingsValidationErrors: [],
+                      jsSetting: true,
+                    })
+                    .toJson(),
+                ],
+              },
             })
             .addStyleBox({
               id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',

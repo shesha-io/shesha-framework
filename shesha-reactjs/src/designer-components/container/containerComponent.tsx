@@ -1,7 +1,7 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
-import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evaluateValue, getSizeStyle } from '@/providers/form/utils';
+import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evaluateValue } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
@@ -11,8 +11,9 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
-import { getBorderStyle } from '../_settings/border/utils';
-import { getBackgroundStyle } from '../_settings/background/utils';
+import { getBorderStyle } from '../styleBorder/components/border/utils';
+import { getBackgroundStyle } from '../styleBackground/components/background/utils';
+import { getSizeStyle } from '../styleDimensions/components/size/utils';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -27,12 +28,20 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
 
     const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border, formData]);
+    const [backgroundStyles, setBackgroundStyles] = useState({});
+
+    useEffect(() => {
+      const fetchStyles = async () => {
+        getBackgroundStyle(model?.background).then((style) => {
+          setBackgroundStyles(style);
+        });
+      };
+      fetchStyles();
+    }, [model.background]);
 
     if (model.dataSource === 'storedFileId' && model.storedFileId && !isValidGuid(model.storedFileId)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-
-    console.log('Background', model.background);
 
     if (model.hidden) return null;
 
@@ -80,7 +89,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       );
     };
 
-    const backgroundStyles = getBackgroundStyle(model?.background);
 
     return (
       <ParentProvider model={model}>
@@ -116,7 +124,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         ...prev,
         direction: prev['direction'] ?? 'vertical',
         justifyContent: prev['justifyContent'] ?? 'left',
-        display: prev['display'] /* ?? 'block'*/,
+        display: prev['display'],
         flexWrap: prev['flexWrap'] ?? 'wrap',
         components: prev['components'] ?? [],
       }))

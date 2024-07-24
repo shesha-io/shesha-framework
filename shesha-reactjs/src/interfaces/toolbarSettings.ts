@@ -28,9 +28,9 @@ import { IRadioProps } from '@/designer-components/radio/utils';
 import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
-import { IBackgroundProps } from '@/designer-components/_settings/background/interfaces';
-import { IBorderProps } from '@/designer-components/_settings/border/interfaces';
-import { ISizeComponentProps } from '@/designer-components/_settings/size/interfaces';
+import { IBackgroundProps } from '@/designer-components/styleBackground/components/background/interfaces';
+import { IBorderProps } from '@/designer-components/styleBorder/components/border/interfaces';
+import { ISizeComponentProps } from '@/designer-components/styleDimensions/components/size/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;

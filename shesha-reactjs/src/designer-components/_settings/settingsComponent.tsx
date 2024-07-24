@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import SettingsControl from './settingsControl';
 import { ConfigurableFormItem } from '@/components';
-import { getSettings } from './settings';
+import { getSettings } from './stylerSettings';
 import { IConfigurableFormComponent } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';

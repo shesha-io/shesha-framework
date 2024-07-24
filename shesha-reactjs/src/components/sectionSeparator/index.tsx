@@ -53,7 +53,6 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     marginBottom: '8px',
   } as CSSProperties;
 
-
   const renderTitle = () => {
 
     const titleStyles = {

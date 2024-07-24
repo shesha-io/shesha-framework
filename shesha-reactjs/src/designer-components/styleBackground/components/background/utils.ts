@@ -1,8 +1,14 @@
 import { IBackgroundValue } from "./interfaces";
 
-export const getBackgroundStyle = (input?: IBackgroundValue): React.CSSProperties => {
-    if (!input) return {};
+export const toBase64 = file => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+});
 
+export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<React.CSSProperties> => {
+    if (!input) return {};
     const style: React.CSSProperties = {};
 
     if (input.type === 'color') {
@@ -13,7 +19,7 @@ export const getBackgroundStyle = (input?: IBackgroundValue): React.CSSPropertie
     } else if (input.type === 'url') {
         style.backgroundImage = `url(${input.url})`;
     } else if (input.type === 'upload') {
-        style.backgroundImage = `url(${input.fileId})`;
+        style.backgroundImage = `url(${input.file})`;
     } else if (input.type === 'base64') {
         style.backgroundImage = `url(${input.base64})`;
     }

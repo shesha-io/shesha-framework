@@ -7,12 +7,13 @@ type SizeAndRepeatProps = {
     updateValue: (value: any) => void;
     backgroundSize: string;
     backgroundPosition: string;
+    backgroundRepeat: string;
 };
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 const { Option } = Select;
 
-const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, backgroundPosition }) => {
+const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, backgroundPosition, backgroundRepeat }) => {
     const { styles } = useStyles();
 
     const defaultSizes = ['cover', 'contain', 'auto'];
@@ -32,6 +33,8 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
         }
         return initialPositions;
     });
+
+
     const [size, setSize] = useState<{ width: { value: string, unit: string }, height: { value: string, unit: string } }>({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
     const [position, setPosition] = useState<{ width: { value: string, unit: string }, height: { value: string, unit: string } }>({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
 
@@ -70,7 +73,6 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
             const newPosition = `${position.width.value}${position.width.unit} ${position.height.value}${position.height.unit}`;
             setPositions(positions => positions.splice(positions.length - 1, 1, newPosition));
             updateValue({ position: newPosition });
-
         }
     };
 
@@ -133,6 +135,7 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
             <Col className="gutter-row" span={24}>
                 <Select
                     onChange={(repeat) => updateValue({ repeat })}
+                    value={backgroundRepeat || 'no-repeat'}
                     options={[
                         { label: 'No repeat', value: 'no-repeat' },
                         { label: 'Repeat', value: 'repeat' },

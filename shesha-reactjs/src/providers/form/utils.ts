@@ -86,7 +86,7 @@ import { toCamelCase } from '@/utils/string';
 import { FormApi, getFormApi } from './formApi';
 
 import { useState } from "react";
-import { ISizeValue } from '@/designer-components/_settings/size/sizeComponent';
+import { ISizeValue } from '@/designer-components/styleDimensions/components/size/sizeComponent';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -1450,30 +1450,6 @@ export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: 
     return style;
   }
 };
-
-
-export const getSizeStyle = (input?: ISizeValue): React.CSSProperties => {
-  if (!input) return {};
-
-  const style: React.CSSProperties = {};
-  const sizeProperties: (keyof ISizeValue)[] = ['width', 'height', 'minWidth', 'minHeight', 'maxWidth', 'maxHeight'];
-
-  sizeProperties.forEach(prop => {
-    const sizeValue = input[prop];
-    if (sizeValue && typeof sizeValue === 'object') {
-      const { value, unit } = sizeValue;
-      if (value && unit) {
-        style[prop] = `${value}${unit}`;
-      }
-    }
-  });
-
-  if (input.overflow) {
-    style.overflow = input.overflow;
-  }
-
-  return style;
-}
 
 
 export const getString = (expression: string, formData: any = {}, globalState: any = {}): string => {

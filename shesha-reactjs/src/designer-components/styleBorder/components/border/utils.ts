@@ -1,7 +1,6 @@
 import { IBorderValue } from "./interfaces";
 
 export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
-    console.log("Border styles input:::", input);
     if (!input) return {};
 
     const style: React.CSSProperties = {};
