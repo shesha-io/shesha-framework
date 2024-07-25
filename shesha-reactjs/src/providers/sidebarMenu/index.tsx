@@ -96,7 +96,6 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       )
         .then((result) => {
           if (result.success) {
-            //const localItems = 
             itemsToCheck.forEach((item) => {
               return updatetItemVisible(item, result.result);
             });
@@ -111,7 +110,6 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   useDeepCompareEffect(() => {
     const itemsToCheck = [];
     const localItems = items.map((item) => requestItemVisible(getActualModel(item, allData), itemsToCheck));
-    dispatch(setItemsAction(localItems));
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
     }
