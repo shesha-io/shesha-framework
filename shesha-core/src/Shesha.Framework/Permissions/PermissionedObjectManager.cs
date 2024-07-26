@@ -288,15 +288,19 @@ namespace Shesha.Permissions
         {
             return await _permissionedObjectsCache.GetAsync(GetCacheName(objectName, objectType), async key =>
             {
-                using var uow = _unitOfWorkManager.Begin();
-                var dbObj = await _permissionedObjectRepository.GetAll()
-                    .WhereIf(!objectType.IsNullOrEmpty(), x => x.Type == objectType)
-                    .Where(x => x.Object == objectName)
-                    .FirstOrDefaultAsync();
-                await uow.CompleteAsync();
-                return dbObj != null
-                    ? await GetDtoAsync(dbObj)
-                    : null;
+                using (var uow = _unitOfWorkManager.Current == null ? _unitOfWorkManager.Begin() : null)
+                {
+                    var dbObj = await _permissionedObjectRepository.GetAll()
+                        .WhereIf(!objectType.IsNullOrEmpty(), x => x.Type == objectType)
+                        .Where(x => x.Object == objectName)
+                        .FirstOrDefaultAsync();
+                    var dto = dbObj != null
+                        ? await GetDtoAsync(dbObj)
+                        : null;
+                    if (uow != null)
+                        await uow.CompleteAsync();
+                    return dto;
+                }
             });
         }
 
