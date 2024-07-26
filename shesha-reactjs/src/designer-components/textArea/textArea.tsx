@@ -49,7 +49,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const { backendUrl } = useSheshaApplication();
 
     const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling)
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
 
     const additionalStyles: CSSProperties = {
       height: `${Number(model?.height) ? model?.height+'px' : model?.height}`,
