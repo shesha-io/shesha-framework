@@ -14,8 +14,8 @@ namespace Shesha.Domain
     public class Site : FullAuditedEntity<Guid>
     {
         public virtual string Name { get; set; }
-        public virtual DateTime? OperatingHoursStartTime { get; set; } // Property to store the opening time  of a facility
-        public virtual DateTime? OperatingHoursClosingTime { get; set; }// Property to store the closing time  of a facility
+        public virtual TimeSpan? OperatingHoursStartTime { get; set; } // Property to store the opening time  of a facility
+        public virtual TimeSpan? OperatingHoursClosingTime { get; set; }// Property to store the closing time  of a facility
 
         public virtual string ShortName { get; set; }
 
