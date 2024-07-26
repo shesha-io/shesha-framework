@@ -20,8 +20,6 @@ export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<Reac
         style.backgroundImage = `url(${input.url})`;
     } else if (input.type === 'upload') {
         style.backgroundImage = `url(${input.file})`;
-    } else if (input.type === 'base64') {
-        style.backgroundImage = `url(${input.base64})`;
     }
 
     if (input.size) {

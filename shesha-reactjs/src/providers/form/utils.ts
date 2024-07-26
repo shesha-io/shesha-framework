@@ -85,8 +85,6 @@ import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { toCamelCase } from '@/utils/string';
 import { FormApi, getFormApi } from './formApi';
 
-import { useState } from "react";
-import { ISizeValue } from '@/designer-components/styleDimensions/components/size/sizeComponent';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {

@@ -1,92 +1,70 @@
 import { Button, Col, Input, Radio, RadioChangeEvent, Row, Tag } from 'antd';
+import { Autocomplete } from '@/components/autocomplete';
 import React, { FC, useState, useEffect } from 'react';
 import { useStyles } from './styles';
-import { BgColorsOutlined, BoldOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from '@ant-design/icons';
+import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from '@ant-design/icons';
 import { ColorPicker } from '@/components';
-import TextArea from 'antd/es/input/TextArea';
 import SizeAndRepeat from './sizeAndRepeat';
 import ImageUploader from '../imageUploader';
-
-interface IBackgroundValue {
-    type: 'color' | 'url' | 'upload' | 'base64' | 'gradient';
-    size?: 'cover' | 'contain' | 'auto';
-    position?: string;
-    repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
-    color?: string;
-    url?: string;
-    file?: string;
-    base64?: string;
-    gradient?: { direction: string, colors: string[] };
-}
+import { IBackgroundValue } from './interfaces';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import { IContainerComponentProps } from '@/interfaces';
 
 interface IBackgroundProps {
-    onChange?: (value: IBackgroundValue) => void;
+    onValuesChange?: (value: IContainerComponentProps) => void;
     value?: IBackgroundValue;
+    model?: IContainerComponentProps;
 }
 
-const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type: 'color' } }) => {
+const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, model }) => {
     const { styles } = useStyles();
-    const [localValue, setLocalValue] = useState<IBackgroundValue>(value);
-    const [colors, setColors] = useState<string[]>(value.gradient?.colors || []);
-
-    useEffect(() => {
-        setLocalValue(value);
-        if (value.type === 'gradient' && value.gradient?.colors) {
-            setColors(value.gradient.colors);
-        }
-    }, [value]);
+    const [colors, setColors] = useState<string[]>(value?.gradient?.colors || []);
 
     const updateValue = (newValue: Partial<IBackgroundValue>) => {
-        const updatedValue = { ...localValue, ...newValue };
+        console.log("VALUE", value, newValue);
+        const updatedValue = { ...model, background: { ...value, ...newValue } };
 
-        setLocalValue(updatedValue);
-        onChange?.(updatedValue);
+        console.log("UPDATED VALUE", newValue, updatedValue);
+        onValuesChange(updatedValue);
     };
 
     const onTypeChange = (e: RadioChangeEvent) => {
-        updateValue({ type: e.target.value as IBackgroundValue['type'] });
+        updateValue({ backgroundType: e.target.value as IBackgroundValue['backgroundType'] });
     };
 
     const addColor = () => {
         const newColors = [...colors, ''];
         setColors(newColors);
-        updateValue({ gradient: { ...localValue.gradient, colors: newColors } });
+        updateValue({ gradient: { ...value?.gradient, colors: newColors } });
     };
 
     const updateColor = (color: string, index: number) => {
-        const newColors = colors.map((c, i) => (i === index ? color : c));
+        const newColors = colors?.map((c, i) => (i === index ? color : c));
         setColors(newColors);
-        updateValue({ gradient: { ...localValue.gradient, colors: newColors } });
+        updateValue({ gradient: { ...value?.gradient, colors: newColors } });
     };
 
     const removeColor = (index: number) => {
-        const newColors = colors.filter((_, i) => i !== index);
+        const newColors = colors?.filter((_, i) => i !== index);
         setColors(newColors);
-        updateValue({ gradient: { ...localValue.gradient, colors: newColors } });
+        updateValue({ gradient: { ...value?.gradient, colors: newColors } });
     };
 
 
     const renderBackgroundInput = () => {
-        switch (localValue.type) {
+        switch (value?.backgroundType) {
             case 'gradient':
                 return (
                     <Col className="gutter-row" span={24}>
-                        <span>Linear Gradient</span>
-                        <Col className="gutter-row" span={12}>
-                            <span>Direction</span>
-                        </Col>
-                        <Col className="gutter-row" span={12}>
+                        <SettingsFormItem name="background.gradient.direction" label="Direction" jsSetting>
                             <Input
                                 className={styles.input}
                                 style={{ width: '100%' }}
-                                value={localValue?.gradient?.direction}
-                                onChange={(e) => updateValue({ gradient: { ...localValue?.gradient, direction: e.target.value } })}
+                                value={value?.gradient?.direction}
+                                onChange={(e) => updateValue({ gradient: { ...value?.gradient, direction: e.target.value } })}
                             />
-                        </Col>
-                        <Col className="gutter-row" span={12}>
-                            <span>Colors</span>
-                        </Col>
-                        <Col className="gutter-row" span={24}>
+                        </SettingsFormItem>
+                        <SettingsFormItem name="background.gradient.colors" label="Colors" jsSetting>
                             <div className={styles.flex}>
                                 {colors.map((color, i) => (
                                     <Tag
@@ -99,62 +77,92 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
                                         }}
                                         className={styles.tag}
                                     >
-                                        <ColorPicker
-                                            allowClear
-                                            value={color}
-                                            onChange={(newColor) => updateColor(newColor.toString(), i)}
-                                        />
+                                        <SettingsFormItem key={color + i} name="background.gradient.colors" label="Colors" jsSetting>
+                                            <ColorPicker
+                                                allowClear
+                                                value={color}
+                                                onChange={(newColor) => updateColor(newColor.toString(), i)}
+                                            />
+                                        </SettingsFormItem>
                                     </Tag>
                                 ))}
                             </div>
-                            <Button onClick={addColor}>Add color</Button>
-                        </Col>
+                        </SettingsFormItem>
+                        <Button onClick={addColor}>Add color</Button>
                     </Col>
                 );
             case 'url':
                 return (
                     <Col className="gutter-row" span={24}>
-                        <span>URL</span>
-                        <Input
-                            className={styles.input}
-                            style={{ width: '100%' }}
-                            value={localValue.url}
-                            onChange={(e) => updateValue({ url: e.target.value })}
-                        />
+                        <SettingsFormItem name="background.url" label="URL" jsSetting>
+                            <Input
+                                className={styles.input}
+                                style={{ width: '100%' }}
+                                value={value?.url}
+                                onChange={(e) => updateValue({ url: e.target.value })}
+                            />
+                        </SettingsFormItem>
                     </Col>
                 );
             case 'upload':
                 return (
                     <Col className="gutter-row" span={24}>
-                        <ImageUploader
-                            updateValue={updateValue}
-                            backgroundImage={localValue?.file}
-                        />
+                        <SettingsFormItem name="background.file" label="File" jsSetting>
+                            <ImageUploader
+                                updateValue={updateValue}
+                                backgroundImage={value?.file}
+                            />
+                        </SettingsFormItem>
                     </Col>
+
                 );
-            case 'base64':
+            case 'storedFile':
                 return (
                     <Col className="gutter-row" span={24}>
-                        <span>Base64</span>
-                        <TextArea
-                            className={styles.input}
-                            style={{ width: '100%' }}
-                            value={localValue.base64}
-                            onChange={(e) => updateValue({ base64: e.target.value })}
-                        />
+                        <SettingsFormItem name="background.storedFile.id" label="File Id" jsSetting>
+                            <Input
+                                className={styles.input}
+                                style={{ width: '100%' }}
+                                value={value?.storedFile?.id}
+                                onChange={(e) => updateValue({ storedFile: { ...value?.storedFile, id: e.target.value } })} />
+                        </SettingsFormItem>
+                        <SettingsFormItem name="background.storedFile.ownerType" label="Owner Type" jsSetting>
+                            <Autocomplete.Raw
+                                dataSourceType="url"
+                                dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+                                className={styles.input}
+                                style={{ width: '100%' }}
+                                value={value?.storedFile?.ownerType}
+                                onChange={(e) => updateValue({ storedFile: { ...value?.storedFile, ownerType: e } })} />
+                        </SettingsFormItem>
+
+                        <SettingsFormItem name="background.storedFile.ownerId" label="Owner Id" jsSetting>
+                            <Input
+                                className={styles.input}
+                                style={{ width: '100%' }}
+                                value={value?.storedFile?.ownerId}
+                                onChange={(e) => updateValue({ storedFile: { ...value?.storedFile, ownerId: e.target.value } })} />
+                        </SettingsFormItem>
+
+                        <SettingsFormItem name="background.storedFile.fileCatergory" label="File Catergory" jsSetting>
+                            <Input
+                                className={styles.input}
+                                style={{ width: '100%' }}
+                                value={value?.storedFile?.fileCategory}
+                                onChange={(e) => updateValue({ storedFile: { ...value?.storedFile, fileCategory: e.target.value } })} />
+                        </SettingsFormItem>
                     </Col>
                 );
             default:
                 return (
-                    <Col className="gutter-row" span={18}>
-                        <span>Color</span>
-                        <div style={{ width: '100%' }}>
+                    <Col className="gutter-row" span={24}>
+                        <SettingsFormItem name="background.color" label="Color" jsSetting>
                             <ColorPicker
                                 allowClear
-                                value={localValue.color}
+                                value={value?.color}
                                 onChange={(color) => updateValue({ color: color.toString() })}
                             />
-                        </div>
+                        </SettingsFormItem>
                     </Col>
                 );
         }
@@ -163,19 +171,19 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onChange, value = { type
     return (
         <Row gutter={[8, 8]} style={{ fontSize: '11px' }} className={styles.container}>
             <Col className="gutter-row" span={24}>
-                <span>Type</span>
+                <SettingsFormItem name="background.backgroundType" label="Background Type" jsSetting>
+                    <Radio.Group onChange={onTypeChange} value={value?.backgroundType}>
+                        <Radio.Button value="color" title='Background color'><FormatPainterOutlined /></Radio.Button>
+                        <Radio.Button value="gradient" title='Gradient background'><BgColorsOutlined /></Radio.Button>
+                        <Radio.Button value="url" title='Image url'><LinkOutlined /></Radio.Button>
+                        <Radio.Button value="upload" title='Image upload'><UploadOutlined /></Radio.Button>
+                        <Radio.Button value="storedFile" title='Stored File'><DatabaseOutlined /></Radio.Button>
+                    </Radio.Group>
+                </SettingsFormItem>
             </Col>
-            <Col className="gutter-row" span={24}>
-                <Radio.Group onChange={onTypeChange} value={localValue.type}>
-                    <Radio.Button value="color" title='Background color'><FormatPainterOutlined /></Radio.Button>
-                    <Radio.Button value="gradient" title='Gradient background'><BgColorsOutlined /></Radio.Button>
-                    <Radio.Button value="url" title='Image url'><LinkOutlined /></Radio.Button>
-                    <Radio.Button value="upload" title='Image upload'><UploadOutlined /></Radio.Button>
-                    <Radio.Button value="base64" title='Base 64 image'><BoldOutlined />ase64</Radio.Button>
-                </Radio.Group>
-            </Col>
+
             {renderBackgroundInput()}
-            {value.type !== 'color' && value.type !== 'gradient' && <SizeAndRepeat updateValue={updateValue} backgroundSize={value.size} backgroundPosition={value.position} backgroundRepeat={value.repeat} />}
+            <SizeAndRepeat updateValue={updateValue} backgroundSize={value?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
         </Row>
     );
 };

@@ -5,6 +5,7 @@ import { useComponentContainer } from '@/providers/form/nesting/containerContext
 import { ICommonContainerProps } from '@/designer-components/container/interfaces';
 import { useStoredFile } from '@/index';
 import { isValidGuid } from '../components/utils';
+import { IBackgroundValue } from '@/designer-components/styleBackground/components/background/interfaces';
 
 export interface IComponentsContainerProps extends IComponentsContainerBaseProps, ICommonContainerProps {
   className?: string;
@@ -15,6 +16,7 @@ export interface IComponentsContainerProps extends IComponentsContainerBaseProps
   style?: CSSProperties;
   dataSource?: string;
   storedFileId?: string;
+  background?: IBackgroundValue
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
@@ -22,9 +24,10 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
   const { getStoredFile } = useStoredFile(false) ?? {};
   const [storedFile, setStoredFile] = useState<string>();
 
-  const isStoredFileId = props?.dataSource === 'storedFileId' && Boolean(props?.storedFileId);
+  const isStoredFileId = props?.background?.type === 'storedFile' && Boolean(props?.storedFileId);
 
   const fetchStoredFile = () => {
+    console.log('fetching stored file', props);
     if (isStoredFileId && isValidGuid(props?.storedFileId)) {
       getStoredFile({ id: props?.storedFileId }).then((file: string) => {
         setStoredFile(() => file);
@@ -39,7 +42,7 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
   const ContainerComponent = useComponentContainer();
 
   const updatedProps = useMemo(() => {
-    const updatedStyles = { ...props.style, background: `url(data:image/png;base64,${storedFile})` };
+    const updatedStyles = { ...props.wrapperStyle, background: `url(data:image/png;base64,${storedFile})` };
     return { ...{ ...props, style: isStoredFileId === true ? updatedStyles : props.style } };
   }, [props, props?.storedFileId, storedFile]);
 

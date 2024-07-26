@@ -2,7 +2,7 @@ import { GroupOutlined } from '@ant-design/icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
 import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evaluateValue } from '@/providers/form/utils';
-import { getSettings } from './settingsForm';
+import ContaineSettingsForm from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { ComponentsContainer, ValidationErrors } from '@/components';
@@ -24,8 +24,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const { globalState } = useGlobalState();
     const { formSettings } = useForm();
     const { backendUrl } = useSheshaApplication();
-    const ownerId = evaluateValue(model.ownerId, { data, globalState });
+    const ownerId = evaluateValue(model?.background?.storedFile?.ownerId, { data, globalState });
 
+    console.log("CONTAINER COMPONENT", model);
     const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border, formData]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -39,7 +40,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       fetchStyles();
     }, [model.background]);
 
-    if (model.dataSource === 'storedFileId' && model.storedFileId && !isValidGuid(model.storedFileId)) {
+    if (model?.background?.backgroundType === 'storedFile' && model?.background?.storedFile && !isValidGuid(model?.background?.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -61,16 +62,10 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       gap: model?.gap,
     };
 
-
     let val;
-    if (model?.dataSource === "storedFileId") {
-      val = model?.storedFileId;
-    } else if (model?.dataSource === "base64") {
-      val = model?.base64;
-    } else if (model?.dataSource === "url") {
-      val = model?.backgroundUrl;
+    if (model?.background?.backgroundType === "storedFile") {
+      val = model?.background.storedFile.id;
     }
-
     const fileProvider = (child) => {
       return (
         <StoredFileProvider
@@ -79,9 +74,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           baseUrl={backendUrl}
           ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
           ownerType={
-            Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
+            Boolean(model.background.storedFile.ownerType) ? model.background.storedFile.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
           }
-          fileCategory={model.fileCategory}
+          fileCategory={model.background.storedFile.fileCategory}
           propertyName={!model.context ? model.propertyName : null}
         >
           {child}
@@ -93,7 +88,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     return (
       <ParentProvider model={model}>
         <ConditionalWrap
-          condition={model.dataSource === 'storedFileId'}
+          condition={model?.background?.backgroundType === 'storedFile'}
           wrap={fileProvider}
         >
           <ComponentsContainer
@@ -116,8 +111,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       </ParentProvider>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormFactory: (props) => <ContaineSettingsForm {...props} />,
   migrator: (m) =>
     m
       .add<IContainerComponentProps>(0, (prev) => ({

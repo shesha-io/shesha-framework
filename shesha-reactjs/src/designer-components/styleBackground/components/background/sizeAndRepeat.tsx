@@ -2,11 +2,12 @@ import React, { FC, useState, useEffect } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Divider, Input, Row, Select, Space } from 'antd';
 import { useStyles } from './styles';
+import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
 type SizeAndRepeatProps = {
     updateValue: (value: any) => void;
-    backgroundSize: string;
-    backgroundPosition: string;
+    backgroundSize: any;
+    backgroundPosition: any;
     backgroundRepeat: string;
 };
 
@@ -76,38 +77,44 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
         }
     };
 
-    const renderMenu = (menu, value, setValue, label) => (
+    const renderOptions = (menu, value, setValue, label) => (
         <>
             {menu}
             <Divider style={{ margin: '8px 0' }} />
             <Space style={{ padding: '0 8px 4px' }}>
                 <Space.Compact size="large">
-                    <Input
-                        addonAfter={
-                            <Select
-                                value={value.width.unit}
-                                onChange={(unit) => setValue(prev => ({ ...prev, width: { ...prev.width, unit } }))}
-                            >
-                                {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
-                            </Select>
-                        }
-                        className={styles.input}
-                        value={value.width.value}
-                        onChange={(e) => setValue(prev => ({ ...prev, width: { ...prev.width, value: e.target.value } }))}
-                    />
-                    <Input
-                        addonAfter={
-                            <Select
-                                value={value.height.unit}
-                                onChange={(unit) => setValue(prev => ({ ...prev, height: { ...prev.height, unit } }))}
-                            >
-                                {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
-                            </Select>
-                        }
-                        className={styles.input}
-                        value={value.height.value}
-                        onChange={(e) => setValue(prev => ({ ...prev, height: { ...prev.height, value: e.target.value } }))}
-                    />
+                    <SettingsFormItem name='newValue.size' label="Size" jsSetting>
+                        <Input
+                            addonAfter={
+                                <Select
+                                    value={value.width.unit}
+                                    className={styles.select}
+                                    onChange={(unit) => setValue(prev => ({ ...prev, width: { ...prev.width, unit } }))}
+                                >
+
+                                    {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
+                                </Select>
+                            }
+                            className={styles.input}
+                            value={value.width.value}
+                            onChange={(e) => setValue(prev => ({ ...prev, width: { ...prev.width, value: e.target.value } }))}
+                        /></SettingsFormItem>
+                    <SettingsFormItem name='newValue.position' label="Position" jsSetting>
+                        <Input
+                            addonAfter={
+                                <Select
+                                    className={styles.select}
+                                    value={value.height.unit}
+                                    onChange={(unit) => setValue(prev => ({ ...prev, height: { ...prev.height, unit } }))}
+                                >
+                                    {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
+                                </Select>
+                            }
+                            className={styles.input}
+                            value={value.height.value}
+                            onChange={(e) => setValue(prev => ({ ...prev, height: { ...prev.height, value: e.target.value } }))}
+                        />
+                    </SettingsFormItem>
                 </Space.Compact>
                 <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
                     Apply {label}
@@ -117,43 +124,40 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
     );
 
     return (
-        <Row gutter={[8, 8]} style={{ width: 200, fontSize: '11px' }}>
+        <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
             <Col className="gutter-row" span={24}>
-                <span>Size</span>
+                <SettingsFormItem name='newValue.size' label="Size" jsSetting>
+                    <Select
+                        value={backgroundSize || 'auto'}
+                        onChange={(size) => updateValue({ size })}
+                        dropdownRender={(menu) => renderOptions(menu, size, setSize, 'size')}
+                        options={sizes.map((item) => ({ label: item, value: item }))}
+                    />
+                </SettingsFormItem>
             </Col>
             <Col className="gutter-row" span={24}>
-                <Select
-                    value={backgroundSize || 'auto'}
-                    onChange={(size) => updateValue({ size })}
-                    dropdownRender={(menu) => renderMenu(menu, size, setSize, 'size')}
-                    options={sizes.map((item) => ({ label: item, value: item }))}
-                />
+                <SettingsFormItem name='newValue.repeat' label="Repeat" jsSetting>
+                    <Select
+                        onChange={(repeat) => updateValue({ repeat })}
+                        value={backgroundRepeat || 'no-repeat'}
+                        options={[
+                            { label: 'No repeat', value: 'no-repeat' },
+                            { label: 'Repeat', value: 'repeat' },
+                            { label: 'Repeat X', value: 'repeat-x' },
+                            { label: 'Repeat Y', value: 'repeat-y' },
+                        ]}
+                    />
+                </SettingsFormItem>
             </Col>
             <Col className="gutter-row" span={24}>
-                <span>Repeat</span>
-            </Col>
-            <Col className="gutter-row" span={24}>
-                <Select
-                    onChange={(repeat) => updateValue({ repeat })}
-                    value={backgroundRepeat || 'no-repeat'}
-                    options={[
-                        { label: 'No repeat', value: 'no-repeat' },
-                        { label: 'Repeat', value: 'repeat' },
-                        { label: 'Repeat X', value: 'repeat-x' },
-                        { label: 'Repeat Y', value: 'repeat-y' },
-                    ]}
-                />
-            </Col>
-            <Col className="gutter-row" span={24}>
-                <span>Position</span>
-            </Col>
-            <Col className="gutter-row" span={24}>
-                <Select
-                    value={backgroundPosition || 'auto'}
-                    onChange={(position) => updateValue({ position })}
-                    dropdownRender={(menu) => renderMenu(menu, position, setPosition, 'position')}
-                    options={positions.map((item) => ({ label: item, value: item }))}
-                />
+                <SettingsFormItem name='newValue.position' label="Position" jsSetting>
+                    <Select
+                        value={backgroundPosition || 'auto'}
+                        onChange={(position) => updateValue({ position })}
+                        dropdownRender={(option) => renderOptions(option, position, setPosition, 'position')}
+                        options={positions.map((item) => ({ label: item, value: item }))}
+                    />
+                </SettingsFormItem>
             </Col>
         </Row>
     );

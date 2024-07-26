@@ -60,13 +60,9 @@ export const useStyles = createStyles(({ css, cx }) => {
         font-size: 12px;
         }
 
-        .ant-select-dropdown {
+        .ant-select-selection-item {
             padding: 0 4px !important;
-            background:red;
-        }
-
-        .ant-select-selector {
-            padding: 0 4px !important;
+            width: 100px !important;
             }
             
         .ant-input-group {
@@ -79,6 +75,16 @@ export const useStyles = createStyles(({ css, cx }) => {
         }
     `);
 
+    const select = cx(css`
+        width: 60px;
+        overflow-y: auto;
+        scrollbar-width: none !important;
+ 
+        &::-webkit-scrollbar {
+            display: none !important;
+      }
+    `);
+
     const radioBtn = cx(css`
         height: 100%;
     `);
@@ -86,6 +92,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     return {
         container,
         input,
+        select,
         radioBtn,
         tag,
         flex

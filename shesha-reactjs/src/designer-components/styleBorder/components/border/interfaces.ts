@@ -1,14 +1,14 @@
 import { IConfigurableFormComponent } from "@/providers";
 
 export interface IBorderValue {
-    radius: {
+    radius?: {
         all?: number;
         topLeft?: number;
         topRight?: number;
         bottomLeft?: number;
         bottomRight?: number;
     };
-    border: {
+    border?: {
         all?: {
             width: number | string;
             unit: string;
