@@ -94,8 +94,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       ? { background: model?.backgroundColor }
       : {};
 
-      console.log(widthStyles);
-
     return (
       <ParentProvider model={model}>
         <ConditionalWrap
