@@ -1,7 +1,7 @@
 import { FileSearchOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import moment from 'moment';
-import React, { Key } from 'react';
+import React, { CSSProperties, Key } from 'react';
 import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/autocomplete';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
@@ -15,6 +15,7 @@ import { FormMarkup } from '@/providers/form/models';
 import {
   evaluateString,
   getStyle,
+  pickStyleFromModel,
   replaceTags,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
@@ -164,6 +165,23 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       setGlobalState,
     };
 
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+  
+    const additionalStyles: CSSProperties = {
+      height: `${Number(model?.height) ? model?.height + 'px' : model?.height}`,
+      width: `${Number(model?.width) ? model?.width + 'px' : model?.width}`,
+      fontWeight: model?.fontWeight,
+      borderWidth: model?.borderSize, //this is handled in the entityAutcomplete.tsx
+      borderRadius: model?.borderRadius,
+      borderStyle: model?.borderType,
+      borderColor: model?.borderColor,
+      backgroundColor: model?.backgroundColor,
+      fontSize: model?.fontSize,
+      overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
+      ...stylingBoxAsCSS,
+    };
+
     const defaultValue = getDefaultValue();
 
     const autocompleteProps: IAutocompleteProps = {
@@ -188,7 +206,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       quickviewGetEntityUrl: model.quickviewGetEntityUrl,
       quickviewWidth: model.quickviewWidth,
       subscribedEventNames: model.subscribedEventNames,
-      style: getStyle(model.style, data),
+      style: {...getStyle(model.style, data), ...additionalStyles},
       size: model.size,
       allowFreeText: model.allowFreeText,
     };

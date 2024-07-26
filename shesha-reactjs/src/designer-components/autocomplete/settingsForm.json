@@ -70,6 +70,7 @@
             "propertyName": "hideLabel",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Hide Label",
+            "description": "Check this field to use your custom border.",
             "version": 2
           },
           {
@@ -770,6 +771,7 @@
             "propertyName": "borderSize",
             "label": "Border Width",
             "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "description": "To see your changes, check 'Hide Border'.",
             "version": 3
           },
           {
@@ -816,40 +818,6 @@
             "propertyName": "borderColor",
             "componentName": "borderColor",
             "label": "Border Color",
-            "labelAlign": "right",
-            "hidden": false,
-            "isDynamic": false,
-            "version": 2,
-            "settingsValidationErrors": [],
-            "title": "",
-            "fontSize": "",
-            "allowClear": true,
-            "showText": true
-          },
-          {
-            "id": "7faa1735-9480-4ee1-ad23-7e64e470d99a",
-            "type": "numberField",
-            "propertyName": "fontSize",
-            "label": "Font Size",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "version": 3
-          },
-          {
-            "id": "fa37ddbb-27a7-4ab8-b12e-9967764072f2",
-            "type": "numberField",
-            "propertyName": "fontWeight",
-            "label": "Font Weight",
-            "description": "Updates the thickness or 'weight' of each character. 0 to 900",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "version": 3
-          },
-          {
-            "id": "2729e575-16a7-45ff-9a60-97273484fe47",
-            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-            "type": "colorPicker",
-            "propertyName": "fontColor",
-            "componentName": "fontColor",
-            "label": "Font Color",
             "labelAlign": "right",
             "hidden": false,
             "isDynamic": false,

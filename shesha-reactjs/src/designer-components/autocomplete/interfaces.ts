@@ -32,4 +32,13 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
   minWidth?: number;
   maxWidth?: number;
   allowFreeText?: boolean;
+  borderSize?: number;
+  borderRadius?: number;
+  borderType?: string;
+  borderColor?: string;
+  fontSize?: string | number;
+  fontWeight?: string | number;
+  stylingBox?: string;
+  height?: string;
+  backgroundColor?: string;
 }
