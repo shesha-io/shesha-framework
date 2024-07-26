@@ -3,8 +3,8 @@ import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models'
 import { FileImageOutlined } from '@ant-design/icons';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { evaluateValue, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React from 'react';
+import { evaluateValue, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import React, { CSSProperties } from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
@@ -29,6 +29,16 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   fileCategory?: string;
   allowPreview?: boolean;
   allowedFileTypes?: string[];
+  alt?: string;
+  objectFit?: any;
+  objectPosition?: string;
+  filter?: string;
+  borderSize?: number;
+  borderRadius?: number;
+  borderType?: string;
+  borderColor?: string;
+  stylingBox?: string;
+  opacity?: number;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -50,6 +60,24 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     if (model.dataSource === 'storedFileId' && model.storedFileId && !isValidGuid(model.storedFileId)) {
       return <ValidationErrors error="The provided StoredFileId is inValid" />;
     }
+
+
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+    const additionalStyles: CSSProperties = {
+      objectFit: model?.objectFit,
+      objectPosition: model?.objectPosition,
+      filter: model?.filter,
+      borderWidth: model?.borderSize,
+      borderRadius: model?.borderRadius,
+      borderStyle: model?.borderType,
+      borderColor: model?.borderColor,
+      opacity: model?.opacity,
+      ...stylingBoxAsCSS
+    };
+
+   
   
     return (
       <ConfigurableFormItem model={model}>
@@ -90,11 +118,12 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               height={model.height}
               width={model.width}
               imageSource={model.dataSource}
-              styles={getStyle(model?.style, data)}
+              styles={{...getStyle(model?.style, data), ...additionalStyles}}
               value={val}
               readOnly={model?.readOnly}
               onChange={onChange}
               allowPreview={model?.allowPreview}
+              alt={model?.alt}
             />
             </ConditionalWrap>
           );
