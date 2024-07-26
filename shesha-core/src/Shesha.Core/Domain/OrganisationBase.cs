@@ -75,7 +75,7 @@ namespace Shesha.Domain
         /// 
         /// </summary>
 
-        [ReferenceList("Shesha.Core", "Status")]
+        [ReferenceList("Shesha.Core", "OrganisationStatus")]
         public virtual long? Status { get; set; }
         /// <summary>
         /// 

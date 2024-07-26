@@ -24,7 +24,7 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
   const { getStoredFile } = useStoredFile(false) ?? {};
   const [storedFile, setStoredFile] = useState<string>();
 
-  const isStoredFileId = props?.background?.type === 'storedFile' && Boolean(props?.storedFileId);
+  const isStoredFileId = props?.background?.backgroundType === 'storedFile' && Boolean(props?.storedFileId);
 
   const fetchStoredFile = () => {
     console.log('fetching stored file', props);
@@ -44,7 +44,7 @@ const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {
   const updatedProps = useMemo(() => {
     const updatedStyles = { ...props.wrapperStyle, background: `url(data:image/png;base64,${storedFile})` };
     return { ...{ ...props, style: isStoredFileId === true ? updatedStyles : props.style } };
-  }, [props, props?.storedFileId, storedFile]);
+  }, [props, props.storedFileId, storedFile]);
 
   return (
     <ContainerComponent {...updatedProps} />

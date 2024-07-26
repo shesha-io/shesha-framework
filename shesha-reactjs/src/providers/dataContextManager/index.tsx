@@ -242,10 +242,11 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     };
 
     const getDataContext = (contextId: string): IDataContextDescriptor => {
-        if (!contextId)
-            return undefined;
+      if (!contextId)
+          return undefined;
 
-        return getDataContexts('all').find(x => x.id === contextId);
+      const dc = getLocalDataContexts('all').find(x => x.id === contextId);
+      return dc ? dc : parentManager?.getDataContext(contextId);
     };
 
     const getDataContextData = (contextId: string): IDataContextFull => {

@@ -46,7 +46,6 @@ namespace Shesha.Permissions
 
 
         private IRepository<PermissionedObject, Guid> _permissionedObjectRepository;
-        private IRepository<PermissionedObjectFull, Guid> _permissionedObjectFullRepository;
         private IUnitOfWorkManager _unitOfWorkManager;
         private IObjectMapper _objectMapper;
         private readonly IRepository<Module, Guid> _moduleReporsitory;
@@ -56,7 +55,6 @@ namespace Shesha.Permissions
 
         public PermissionedObjectManager(
             IRepository<PermissionedObject, Guid> permissionedObjectRepository,
-            IRepository<PermissionedObjectFull, Guid> permissionedObjectFullRepository,
             IUnitOfWorkManager unitOfWorkManager,
             IObjectMapper objectMapper,
             ICacheManager cacheManager,
@@ -64,7 +62,6 @@ namespace Shesha.Permissions
         )
         {
             _permissionedObjectRepository = permissionedObjectRepository;
-            _permissionedObjectFullRepository = permissionedObjectFullRepository;
             _unitOfWorkManager = unitOfWorkManager;
             _objectMapper = objectMapper;
             _cacheManager = cacheManager;
@@ -92,29 +89,31 @@ namespace Shesha.Permissions
         [UnitOfWork]
         public virtual async Task<List<PermissionedObjectDto>> GetAllFlatAsync(string type = null, bool withNested = true, bool withHidden = false)
         {
-            var root = (await _permissionedObjectFullRepository.GetAll()
+            var root = (await _permissionedObjectRepository.GetAll()
                 .WhereIf(!string.IsNullOrEmpty(type?.Trim()), x => x.Type == type)
                 .WhereIf(!withHidden, x => !x.Hidden)
                 .ToListAsync())
-                .Select(x => {
-                    var dto =_objectMapper.Map<PermissionedObjectDto>(x);
+                .Select(async x => {
+                    var dto = await GetDtoAsync(x);
                     _permissionedObjectsCache.Set(GetCacheName(dto.Object, dto.Type), dto);
                     return dto;
                 })
+                .Select(x => x.Result)
                 .OrderBy(x => x.Name)
                 .ToList();
 
             if (withNested && !string.IsNullOrEmpty(type?.Trim()))
             {
-                var nested = (await _permissionedObjectFullRepository.GetAll()
+                var nested = (await _permissionedObjectRepository.GetAll()
                     .Where(x => x.Type.StartsWith($"{type}."))
                     .WhereIf(!withHidden, x => !x.Hidden)
                     .ToListAsync())
-                    .Select(x => {
-                        var dto = _objectMapper.Map<PermissionedObjectDto>(x);
+                    .Select(async x => {
+                        var dto = await GetDtoAsync(x);
                         _permissionedObjectsCache.Set(GetCacheName(dto.Object, dto.Type), dto);
                         return dto;
                     })
+                    .Select(x => x.Result)
                     .OrderBy(x => x.Name)
                     .ToList();
                 root.AddRange(nested);
@@ -137,14 +136,14 @@ namespace Shesha.Permissions
 
         public virtual async Task<PermissionedObjectDto> GetObjectWithChildAsync(string objectName, string type = null, bool withHidden = false)
         {
-            var pObject = (await _permissionedObjectFullRepository.GetAll()
+            var pObject = (await _permissionedObjectRepository.GetAll()
                 .WhereIf(!string.IsNullOrEmpty(type?.Trim()), x => x.Type == type)
                 .WhereIf(!withHidden, x => !x.Hidden)
                 .FirstOrDefaultAsync());
             if (pObject == null)
                 return null;
 
-            var obj = _objectMapper.Map<PermissionedObjectDto>(pObject);
+            var obj = await GetDtoAsync(pObject);
             var allTyped = await GetAllFlatAsync($"{pObject.Type}.", true);
             return GetObjectWithChild(obj, allTyped, withHidden);
         }
@@ -264,10 +263,10 @@ namespace Shesha.Permissions
         public virtual async Task<PermissionedObjectDto> GetOrCreateAsync(string objectName, string objectType, string inheritedFromName = null)
         {
             PermissionedObjectDto obj = null;
-            var dbObj = await _permissionedObjectFullRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
+            var dbObj = await _permissionedObjectRepository.GetAll().Where(x => x.Object == objectName).FirstOrDefaultAsync();
             if (dbObj != null)
             {
-                obj = _objectMapper.Map<PermissionedObjectDto>(dbObj);
+                obj = await GetDtoAsync(dbObj);
             }
             else
             {
@@ -279,8 +278,8 @@ namespace Shesha.Permissions
 
         public virtual async Task<PermissionedObjectDto> GetAsync(Guid id)
         {
-            var dbObj = _permissionedObjectFullRepository.GetAll().FirstOrDefault(x => x.Id == id);
-            var dto = await Task.FromResult(_objectMapper.Map<PermissionedObjectDto>(dbObj));
+            var dbObj = _permissionedObjectRepository.GetAll().FirstOrDefault(x => x.Id == id);
+            var dto = await GetDtoAsync(dbObj);
             await _permissionedObjectsCache.SetAsync(GetCacheName(dto.Object, dto.Type), dto);
             return dto;
         }
@@ -290,13 +289,13 @@ namespace Shesha.Permissions
             return await _permissionedObjectsCache.GetAsync(GetCacheName(objectName, objectType), async key =>
             {
                 using var uow = _unitOfWorkManager.Begin();
-                var dbObj = await _permissionedObjectFullRepository.GetAll()
+                var dbObj = await _permissionedObjectRepository.GetAll()
                     .WhereIf(!objectType.IsNullOrEmpty(), x => x.Type == objectType)
                     .Where(x => x.Object == objectName)
                     .FirstOrDefaultAsync();
                 await uow.CompleteAsync();
                 return dbObj != null
-                    ? _objectMapper.Map<PermissionedObjectDto>(dbObj)
+                    ? await GetDtoAsync(dbObj)
                     : null;
             });
         }
