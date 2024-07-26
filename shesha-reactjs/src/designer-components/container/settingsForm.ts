@@ -712,4 +712,4 @@ export const getSettings = (data: any) =>
         ]
       }
     })
-    .toJson()
+    .toJson();

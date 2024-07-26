@@ -46,12 +46,12 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       gap: model?.gap,
     };
 
-    const widthStyles:CSSProperties = {
+    const widthStyles: CSSProperties = {
       width: `${Number(model?.width) ? model?.width+'px' : model?.width}`,
       minWidth: `${Number(model?.minWidth) ? model?.minWidth+'px' : model?.minWidth}`,
       maxWidth: `${Number(model?.maxWidth) ? model?.maxWidth+'px' : model?.maxWidth}`,
       overflow: model?.overflow,
-    }
+    };
 
     
     const borderStyles: CSSProperties = {
