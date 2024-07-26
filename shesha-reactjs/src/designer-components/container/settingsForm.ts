@@ -287,7 +287,7 @@ export const getSettings = (data: any) =>
                 },
                 {
                   label: "Scroll",
-                  value: "scroll",
+                  value: "auto",
                   id: nanoid()
                 },
               
@@ -468,7 +468,7 @@ export const getSettings = (data: any) =>
             values: [
               {
                 label: "StoredFile",
-                value: "storedFileId",
+                value: "storedFile",
                 id: nanoid()
               },
               {
@@ -583,10 +583,10 @@ export const getSettings = (data: any) =>
             labelAlign: "right",
             parentId: nanoid(),
             hidden: {
-              _code: "return getSettingValue(data?.dataSource) !== 'storedFileId' && getSettingValue(data?.backgroundType !== 'image');",
-              _mode: "code",
-              _value: false
-            },
+              _code: "return getSettingValue(data?.dataSource) !== 'storedFile' || getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any,
             isDynamic: false,
             version: 4,
             expandIconPosition: "start",
