@@ -152,6 +152,15 @@ export interface ICommonContainerProps {
   noDefaultStyling?: boolean;
   gridColumnsCount?: number;
   gap?: string | number;
+  width?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  borderWidth?: string | number;
+  maxRadius?: string;
+  borderColor?: string;
+  borderStyle?: string;
+  borderRadius?: string | number;
+  overflow?: string;
 }
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
