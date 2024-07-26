@@ -79,7 +79,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: getStyle(model?.style, formData),
+      style: {...getStyle(model?.style, formData), ...additionalStyles},
     };
 
     const eventProps = {
