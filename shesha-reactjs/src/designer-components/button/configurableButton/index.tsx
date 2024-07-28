@@ -59,6 +59,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     return getUrlFromNavigationRequest(preparedArguments);
   }, [actionConfiguration], "");
 
+  const isSameUrl = navigationUrl === window.location.href;
+
   return (
     <Button
       href={navigationUrl}
@@ -73,7 +75,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
       size={props?.size}
       disabled={buttonDisabled}
-      style={props?.style}
+      style={{ ...props?.style, ...(isSameUrl && { backgroundColor: 'blue' }) }}
     >
       {props.label}
     </Button>
