@@ -16,7 +16,6 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Reflection;
-using Shesha.Services.ReferenceLists.Dto;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -51,7 +50,20 @@ namespace Shesha.Permissions
         private readonly IRepository<Module, Guid> _moduleReporsitory;
         private readonly ICacheManager _cacheManager;
 
-        protected ITypedCache<string, PermissionedObjectDto> _permissionedObjectsCache => _cacheManager.GetPermissionedObjectCache();
+        internal ITypedCache<string, PermissionedObjectDto> _poCache;
+        protected ITypedCache<string, PermissionedObjectDto> PermissionedObjectsCache 
+        {
+            get {
+                if (_poCache == null)
+                {
+                    var cache = _cacheManager.GetPermissionedObjectCache();
+                    cache.DefaultSlidingExpireTime = TimeSpan.FromHours(24);
+                    _poCache = cache;
+                }
+
+                return _poCache;                
+            }
+        }
 
         public PermissionedObjectManager(
             IRepository<PermissionedObject, Guid> permissionedObjectRepository,
@@ -95,7 +107,7 @@ namespace Shesha.Permissions
                 .ToListAsync())
                 .Select(async x => {
                     var dto = await GetDtoAsync(x);
-                    _permissionedObjectsCache.Set(GetCacheName(dto.Object, dto.Type), dto);
+                    PermissionedObjectsCache.Set(GetCacheName(dto.Object, dto.Type), dto);
                     return dto;
                 })
                 .Select(x => x.Result)
@@ -110,7 +122,7 @@ namespace Shesha.Permissions
                     .ToListAsync())
                     .Select(async x => {
                         var dto = await GetDtoAsync(x);
-                        _permissionedObjectsCache.Set(GetCacheName(dto.Object, dto.Type), dto);
+                        PermissionedObjectsCache.Set(GetCacheName(dto.Object, dto.Type), dto);
                         return dto;
                     })
                     .Select(x => x.Result)
@@ -280,13 +292,13 @@ namespace Shesha.Permissions
         {
             var dbObj = _permissionedObjectRepository.GetAll().FirstOrDefault(x => x.Id == id);
             var dto = await GetDtoAsync(dbObj);
-            await _permissionedObjectsCache.SetAsync(GetCacheName(dto.Object, dto.Type), dto);
+            await PermissionedObjectsCache.SetAsync(GetCacheName(dto.Object, dto.Type), dto);
             return dto;
         }
 
         public virtual async Task<PermissionedObjectDto> GetOrNullAsync(string objectName, string objectType)
         {
-            return await _permissionedObjectsCache.GetAsync(GetCacheName(objectName, objectType), async key =>
+            return await PermissionedObjectsCache.GetAsync(GetCacheName(objectName, objectType), async key =>
             {
                 using (var uow = _unitOfWorkManager.Current == null ? _unitOfWorkManager.Begin() : null)
                 {
@@ -310,7 +322,7 @@ namespace Shesha.Permissions
             if (obj == null)
             {
                 obj = await GetDtoAsync(InternalCreate(objectName, objectType));
-                _permissionedObjectsCache.Set(GetCacheName(objectName, objectType), obj);
+                PermissionedObjectsCache.Set(GetCacheName(objectName, objectType), obj);
             }
             return obj;
         }
@@ -410,7 +422,7 @@ namespace Shesha.Permissions
             var obj = _permissionedObjectRepository.GetAll().FirstOrDefault(x => x.Id == eventData.Entity.Id);
             if (obj != null)
             {
-                _permissionedObjectsCache.Remove(GetCacheName(obj.Object, obj.Type));
+                PermissionedObjectsCache.Remove(GetCacheName(obj.Object, obj.Type));
             };
             uow.Complete();
         }
