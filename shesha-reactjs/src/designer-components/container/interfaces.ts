@@ -155,6 +155,9 @@ export interface ICommonContainerProps {
   width?: string | number;
   minWidth?: string | number;
   maxWidth?: string | number;
+  height?: string | number;
+  minHeight?: string | number;
+  maxHeight?: string | number;
   borderWidth?: string | number;
   maxRadius?: string;
   borderColor?: string;

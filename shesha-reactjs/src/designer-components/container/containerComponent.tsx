@@ -53,6 +53,12 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       overflow: model?.overflow,
     };
 
+    const heightStyles: CSSProperties = {
+      height: `${Number(model?.height) ? model?.height+'px' : model?.height}`,
+      minHeight: `${Number(model?.minHeight) ? model?.minHeight+'px' : model?.minHeight}`,
+      maxHeight: `${Number(model?.maxHeight) ? model?.maxHeight+'px' : model?.maxHeight}`,
+    };
+
     
     const borderStyles: CSSProperties = {
       borderWidth: `${Number(model?.borderWidth) ? model?.borderWidth + 'px' : model?.borderWidth}`,
@@ -109,6 +115,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             style={{
               ...getStyle(model?.style, formData),
               ...widthStyles,
+              ...heightStyles,
               ...borderStyles,
               ...backgroundStyles
             }}

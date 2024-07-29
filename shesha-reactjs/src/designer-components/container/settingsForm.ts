@@ -341,6 +341,36 @@ export const getSettings = (data: any) =>
             validate: {},
             description:
               'Container maximum width (can be %, px, or vw)',
+          })
+          .addTextField({
+            id: '789ef4cf-843d-4cbf-a932-953d313a3293s',
+            propertyName: 'height',
+            label: 'Height',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container default height (can be %, px, or vw)',
+          })
+          .addTextField({
+            id: 'e5b2ef1b-e72b-4477-8794-e1aaa33c0efa',
+            propertyName: 'minHeight',
+            label: 'Min Height',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container minimum height (can be %, px, or vw)',
+          })
+          .addTextField({
+            id: '95f424dc-d307-47d8-bad8-ebe6be282cc0',
+            propertyName: 'maxHeight',
+            label: 'Max Height',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container maximum height (can be %, px, or vw)',
           }).toJson()
         ]
       }
