@@ -12,5 +12,10 @@ namespace Shesha.Settings.Dto
         /// NOTE: this parameter if optional with fallback to the `sha-frontend-application` header
         /// </summary>
         public string AppKey { get; set; }
+
+        /// <summary>
+        /// User Id. Is used for user-specific settings only.
+        /// </summary>
+        public long? UserId { get; set; }
     }
 }

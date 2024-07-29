@@ -40,6 +40,8 @@ namespace Shesha.FluentMigrator.Settings
         public PropertyUpdateDefinition<string> Category { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<bool> IsClientSpecific { get; set; } = new PropertyUpdateDefinition<bool>();
         public PropertyUpdateDefinition<SettingAccessMode> AccessMode { get; set; } = new PropertyUpdateDefinition<SettingAccessMode>();
+        public PropertyUpdateDefinition<bool> IsUserSpecific { get; set; } = new PropertyUpdateDefinition<bool>();
+        public PropertyUpdateDefinition<UserSettingAccessMode> ClientAccess { get; set; } = new PropertyUpdateDefinition<UserSettingAccessMode>();
         public PropertyUpdateDefinition<ConfigurationItemIdentifier> EditForm { get; set; } = new PropertyUpdateDefinition<ConfigurationItemIdentifier>();
         public PropertyUpdateDefinition<string> DataType { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<string?> DataFormat { get; set; } = new PropertyUpdateDefinition<string?>();
@@ -83,6 +85,10 @@ namespace Shesha.FluentMigrator.Settings
                         helper.UpdateIsClientSpecific(id, IsClientSpecific.Value);
                     if (AccessMode.IsSet)
                         helper.UpdateAccessMode(id, AccessMode.Value);
+                    if (IsUserSpecific.IsSet)
+                        helper.UpdateIsUserSpecific(id, IsUserSpecific.Value);
+                    if (ClientAccess.IsSet)
+                        helper.UpdateClientAccess(id, ClientAccess.Value);
                     if (EditForm.IsSet)
                         helper.UpdateEditForm(id, EditForm.Value);
                     if (ReferenceList.IsSet)

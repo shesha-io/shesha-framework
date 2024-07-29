@@ -107,5 +107,10 @@ namespace Shesha.Domain.ConfigurationItems
         /// Application the item belongs to
         /// </summary>
         public virtual FrontEndApp Application { get; set; }
+
+        /// <summary>
+        /// User the item belongs to
+        /// </summary>
+        public virtual User User { get; set; }
     }
 }

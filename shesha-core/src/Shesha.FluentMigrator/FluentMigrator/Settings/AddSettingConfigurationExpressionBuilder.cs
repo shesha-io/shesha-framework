@@ -45,6 +45,20 @@ namespace Shesha.FluentMigrator.Settings
         }
 
         /// inheritedDoc
+        public IAddSettingConfigurationSyntax IsUserSpecific()
+        {
+            Expression.IsUserSpecific.Set(true);
+            return this;
+        }
+
+        /// inheritedDoc
+        public IAddSettingConfigurationSyntax WithClientAccess(UserSettingAccessMode clientAccess)
+        {
+            Expression.ClientAccess.Set(clientAccess);
+            return this;
+        }
+
+        /// inheritedDoc
         public IAddSettingConfigurationSyntax WithCategory(string category)
         {
             Expression.Category.Set(category);

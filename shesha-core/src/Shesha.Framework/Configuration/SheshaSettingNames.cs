@@ -11,5 +11,9 @@
         public const string EmailSettings = "Shesha.EmailSettings";
 
         public const string SmsSettings = "Shesha.SmsSettings";
+
+        public const string TestUserSpecific = "Shesha.UserSpecific";
+
+        public const string CurrentOrganisation = "Shesha.CurrentOrganisation";
     }
 }

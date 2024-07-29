@@ -60,5 +60,14 @@ namespace Shesha.Services.Settings.Dto
         /// Specifies who can access the application setting value via the APIs.
         /// </summary>
         public SettingAccessMode AccessMode { get; set; }
+
+        /// <summary>
+        /// If true, indicates that this setting should be specific to each of the logged in user
+        /// </summary>
+        public virtual bool IsUserSpecific { get; set; }
+        /// <summary>
+        /// Indicate the accessibility of this user setting from client applications
+        /// </summary>
+        public virtual UserSettingAccessMode ClientAccess { get; set; }
     }
 }

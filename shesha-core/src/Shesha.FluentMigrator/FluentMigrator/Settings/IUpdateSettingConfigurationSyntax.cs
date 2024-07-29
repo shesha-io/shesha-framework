@@ -14,6 +14,10 @@
         /// Mark setting as client specific
         /// </summary>
         IUpdateSettingConfigurationSyntax SetIsClientSpecific(bool value);
+        /// <summary>
+        /// Mark setting as client specific
+        /// </summary>
+        IUpdateSettingConfigurationSyntax SetIsUserSpecific(bool value);
 
         /// <summary>
         /// Set custom edit for
@@ -24,6 +28,11 @@
         /// Set access mode
         /// </summary>
         IUpdateSettingConfigurationSyntax SetAccessMode(SettingAccessMode accessMode);
+
+        /// <summary>
+        /// Set access mode
+        /// </summary>
+        IUpdateSettingConfigurationSyntax SetClientAccess(UserSettingAccessMode clientAccess);
 
         /// <summary>
         /// Set category
@@ -43,5 +52,6 @@
         void SetValue(string value);
         void ResetValueToDefault();
         void SetValueForApplication(string appKey, string value);
+        void SetValueForUser(long? userId, string value);
     }
 }

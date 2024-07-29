@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Shesha.Authorization.Users;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Services.Settings.Dto;
@@ -24,12 +25,14 @@ namespace Shesha.Settings
         private readonly IRepository<Module, Guid> _moduleRepository;
         private readonly IRepository<FrontEndApp, Guid> _appRepository;
         private readonly Services.Settings.ISettingStore _settingStore;
+        private readonly IRepository<User, long> _userRepository;
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;        
 
         public ShaSettingManager(ISettingDefinitionManager settingDefinitionManager, IConfigurationFrameworkRuntime cfRuntime, IRepository<SettingValue, Guid> settingValueRepository, Services.Settings.ISettingStore settingStore, 
             IRepository<FrontEndApp, Guid> appRepository,
-            IRepository<Module, Guid> moduleRepository)
+            IRepository<Module, Guid> moduleRepository,
+            IRepository<User, long> userRepository)
         {
             _settingDefinitionManager = settingDefinitionManager;
             _cfRuntime = cfRuntime;
@@ -37,13 +40,16 @@ namespace Shesha.Settings
             _settingStore = settingStore;
             _appRepository = appRepository;
             _moduleRepository = moduleRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<object> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null) 
         {
+            context = context ?? GetCurrentContext();
+
             var setting = _settingDefinitionManager.Get(module, name);
 
-            var settingValue = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
+            var settingValue = await _settingStore.GetSettingValueAsync(setting, context);
 
             return settingValue != null
                 ? Deserialize(settingValue.Value, setting.GetValueType())
@@ -52,9 +58,11 @@ namespace Shesha.Settings
 
         public async Task<TValue> GetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, SettingManagementContext context = null) 
         {
+            context = context ?? GetCurrentContext();
+
             var setting = _settingDefinitionManager.Get(module, name);
 
-            var settingValue = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
+            var settingValue = await _settingStore.GetSettingValueAsync(setting, context);
 
             return settingValue != null
                 ? Deserialize<TValue>(settingValue.Value)
@@ -80,6 +88,13 @@ namespace Shesha.Settings
                 {
                     settingValue.Application = !string.IsNullOrWhiteSpace(context.AppKey)
                         ? await _appRepository.FirstOrDefaultAsync(a => a.AppKey == context.AppKey)
+                        : null;
+                }
+
+                if (setting.IsUserSpecific)
+                {
+                    settingValue.User = context.UserId.HasValue
+                        ? await _userRepository.GetAsync(context.UserId.Value)
                         : null;
                 }
             }
@@ -111,6 +126,7 @@ namespace Shesha.Settings
                 EditorFormModule = setting.EditForm?.Module,
                 EditorFormName = setting.EditForm?.Name,
                 ModuleId = module?.Id,
+                IsUserSpecific = setting.IsUserSpecific,
             });
         }
 
@@ -119,6 +135,7 @@ namespace Shesha.Settings
             return new SettingManagementContext {
                 TenantId = AbpSession.TenantId,
                 AppKey = _cfRuntime.FrontEndApplication,
+                UserId = AbpSession.UserId
             };
         }
 

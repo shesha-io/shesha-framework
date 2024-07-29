@@ -1,5 +1,6 @@
 ﻿using Abp.Auditing;
 using Abp.Domain.Entities.Auditing;
+using Shesha.Authorization.Users;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -27,5 +28,11 @@ namespace Shesha.Domain
         /// </summary>
         [Audited]
         public virtual FrontEndApp Application { get; set; }
+
+        /// <summary>
+        /// This is used for user specific settings only
+        /// </summary>
+        [Audited]
+        public virtual User User { get; set; }
     }
 }

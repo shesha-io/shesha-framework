@@ -142,6 +142,11 @@ namespace Shesha
             });
             IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
                 s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
+                s.TestingUser.WithDefaultValue("I am user specific");
+                s.CurrentOrganisation.WithDefaultValue(new OrganisationAccountSettings
+                {
+                    CurrentOrganisation = System.Guid.Empty,
+                });
             });
 
             IocManager.RegisterSettingAccessor<IEmailSettings>(s => {

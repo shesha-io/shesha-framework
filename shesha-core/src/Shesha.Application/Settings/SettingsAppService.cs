@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Abp.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.Settings.Dto;
 using System.Collections.Generic;
@@ -46,13 +47,9 @@ namespace Shesha.Settings
         [HttpGet]
         public async Task<object> GetValue(GetSettingValueInput input)
         {
-            var appKey = !string.IsNullOrWhiteSpace(input.AppKey)
-                ? input.AppKey
-                : _cfRuntime.FrontEndApplication;
-            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, 
-                new SettingManagementContext { 
-                    AppKey = appKey
-                });
+            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name,
+                input.UserId.HasValue || !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext { AppKey = input.AppKey, UserId = input.UserId } : null);
 
             return value;
         }
@@ -65,7 +62,9 @@ namespace Shesha.Settings
         [HttpPost]
         public async Task UpdateValue(UpdateSettingValueInput input)
         {
-            await _settingProvider.SetAsync(input.Module, input.Name, input.Value, new SettingManagementContext { AppKey = input.AppKey });
+            await _settingProvider.SetAsync(input.Module, input.Name, input.Value, 
+                input.UserId.HasValue || !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext { AppKey = input.AppKey, UserId = input.UserId } : null);
         }
 
         [HttpGet]

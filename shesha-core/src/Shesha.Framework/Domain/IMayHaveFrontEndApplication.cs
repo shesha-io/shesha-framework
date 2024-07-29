@@ -1,4 +1,6 @@
-﻿namespace Shesha.Domain
+﻿using Shesha.Authorization.Users;
+
+namespace Shesha.Domain
 {
     /// <summary>
     /// Implement this interface for an entity which may optionally have FrontEndApplication.
@@ -9,5 +11,9 @@
         /// Front-end application
         /// </summary>
         FrontEndApp Application { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        User User { get; set; }
     }
 }

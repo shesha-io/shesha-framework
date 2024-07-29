@@ -67,6 +67,8 @@ namespace Shesha.FluentMigrator.Settings
            ,OrderIndex
            ,IsClientSpecific
            ,AccessModeLkp
+           ,IsUserSpecific
+           ,ClientAccessLkp
             )
      VALUES
            (@id
@@ -75,6 +77,8 @@ namespace Shesha.FluentMigrator.Settings
            ,0
            ,0
            ,1/*BackEndOnly*/
+           ,0
+           ,3/*Full*/
            )", command =>
             {
                 command.AddParameter("@id", id);
@@ -151,6 +155,22 @@ where
             });
         }
 
+        internal void UpdateIsUserSpecific(Guid id, bool isUserSpecific)
+        {
+            ExecuteNonQuery("update Frwk_SettingConfigurations set IsUserSpecific = @IsUserSpecific where Id = @Id", command => {
+                command.AddParameter("@IsUserSpecific", isUserSpecific);
+                command.AddParameter("@Id", id);
+            });
+        }
+
+        internal void UpdateClientAccess(Guid id, UserSettingAccessMode clientAccess)
+        {
+            ExecuteNonQuery("update Frwk_SettingConfigurations set ClientAccessLkp = @clientAccess where Id = @Id", command => {
+                command.AddParameter("@clientAccess", clientAccess);
+                command.AddParameter("@Id", id);
+            });
+        }
+
         internal void UpdateEditForm(Guid id, ConfigurationItemIdentifier formId)
         {
             ExecuteNonQuery("update Frwk_SettingConfigurations set EditorFormModule = @EditorFormModule, EditorFormName = @EditorFormName where Id = @Id", command => {
@@ -191,7 +211,7 @@ where
             });
         }
 
-        internal Guid? GetSettingValueId(Guid settingId, Guid? appId)
+        internal Guid? GetSettingValueId(Guid settingId, Guid? appId, long? userId)
         {
             var sql = @"select 
 	Id 
@@ -199,18 +219,19 @@ from
 	Frwk_SettingValues
 where 
 	SettingConfigurationId = @settingId
-	and ApplicationId = @appId";
+	and (ApplicationId = @appId or UserId = @userId)";
 
             return ExecuteScalar<Guid?>(sql, command =>
             {
                 command.AddParameter("@settingId", settingId);
                 command.AddParameter("@appId", appId);
+                command.AddParameter("@userId", userId);
             });
         }
 
-        internal void UpdateSettingValue(Guid settingId, Guid? appId, string? value)
+        internal void UpdateSettingValue(Guid settingId, Guid? appId, long? userId, string? value)
         {
-            var valueId = GetSettingValueId(settingId, appId);
+            var valueId = GetSettingValueId(settingId, appId, userId);
             if (valueId != null)
             {
                 UpdateSettingValueById(valueId.Value, value);
