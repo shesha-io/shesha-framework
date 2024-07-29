@@ -15,6 +15,5 @@ namespace Shesha.Authorization
         {
             return cacheManager.GetCache<string, PermissionedObjectDto>(PermissionedObjectDto.CacheStoreName);
         }
-
     }
 }
