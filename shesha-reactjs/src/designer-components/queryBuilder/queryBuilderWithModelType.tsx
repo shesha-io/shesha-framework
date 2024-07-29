@@ -11,7 +11,14 @@ export interface IQueryBuilderWithModelType {
 export const QueryBuilderWithModelType: FC<PropsWithChildren<IQueryBuilderWithModelType>> = (props) => {
   const { formData } = useForm();
   const { modelType: modelTypeExpression } = props;
-  const modelType = evaluateString(modelTypeExpression, { data: formData });
+
+  let modelType = modelTypeExpression ? evaluateString(modelTypeExpression, { data: formData }) : null;
+
+
+  if (typeof formData?.entityTypeShortAlias == 'object' && formData.entityTypeShortAlias.hasOwnProperty('_code')) {
+
+    modelType = new Function('data', formData?.entityTypeShortAlias?._code)({ data: formData });
+  }
 
   return (
     <ConditionalWrap
