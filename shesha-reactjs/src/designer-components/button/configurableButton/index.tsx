@@ -6,7 +6,7 @@ import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { isNavigationActionConfiguration, useShaRouting } from '@/index';
+import { isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
@@ -21,6 +21,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
   const dynamicContext = useActionDynamicContext(actionConfiguration);
 
+  const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
@@ -75,7 +76,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
       size={props?.size}
       disabled={buttonDisabled}
-      style={{ ...props?.style, ...(isSameUrl && { backgroundColor: 'blue' }) }}
+      style={{ ...props?.style, ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }) }}
     >
       {props.label}
     </Button>
