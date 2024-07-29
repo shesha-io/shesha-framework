@@ -6,6 +6,7 @@ using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
+using Shesha.Attributes;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
@@ -13,6 +14,7 @@ using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Mvc;
@@ -95,13 +97,16 @@ namespace Shesha.Web.FormsDesigner.Services
 
         protected override FormConfigurationDto MapToEntityDto(FormConfiguration entity)
         {
+            return AsyncHelper.RunSync(() => MapToEntityDtoAsync(entity));
+        }
+        
+        protected async Task<FormConfigurationDto> MapToEntityDtoAsync(FormConfiguration entity)
+        {
             var dto = base.MapToEntityDto(entity);
-            
-            var permission = AsyncHelper.RunSync(() => 
-                _permissionedObjectManager.GetAsync(
-                    FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name, entity.VersionNo),
-                    ShaPermissionedObjectsTypes.Form
-                )
+
+            var permission = await _permissionedObjectManager.GetAsync(
+                FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name, entity.VersionNo),
+                ShaPermissionedObjectsTypes.Form
             );
             if (permission?.Access > RefListPermissionedAccess.Inherited) // permission exists
             {
@@ -242,7 +247,7 @@ namespace Shesha.Web.FormsDesigner.Services
             if (form == null)
                 throw new FormNotFoundException(input.Module, input.Name);
 
-            var dto = MapToEntityDto(form);
+            var dto = await MapToEntityDtoAsync(form);
 
             dto.CacheMd5 = GetMd5(dto);
             await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
@@ -268,7 +273,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var form = await Repository.GetAsync(input.Id);
 
-            var dto = MapToEntityDto(form);
+            var dto = await MapToEntityDtoAsync(form);
             dto.CacheMd5 = GetMd5(dto);
 
             // add MD5 to request
@@ -354,7 +359,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(form);
+            return await MapToEntityDtoAsync(form);
         }
 
         /// <summary>
@@ -383,7 +388,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var newVersion = await _formManager.CreateNewVersionAsync(item);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(newVersion);
+            return await MapToEntityDtoAsync(newVersion);
         }
 
         /// <summary>
@@ -411,7 +416,7 @@ namespace Shesha.Web.FormsDesigner.Services
             await _formManager.CancelVersoinAsync(item);
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(item);
+            return await MapToEntityDtoAsync(item);
         }
 
         /// <summary>
@@ -462,7 +467,7 @@ namespace Shesha.Web.FormsDesigner.Services
             }
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(item);
+            return await MapToEntityDtoAsync(item);
         }
 
         /// <summary>
@@ -496,7 +501,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(entity);
+            return await MapToEntityDtoAsync(entity);
         }
 
         /// <summary>
@@ -532,7 +537,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
-            return MapToEntityDto(form);
+            return await MapToEntityDtoAsync(form);
         }
 
         [HttpGet]
@@ -650,6 +655,32 @@ namespace Shesha.Web.FormsDesigner.Services
                     }
                 }
             }
+        }
+
+        [EntityAction(StandardEntityActions.List)]
+        public override async Task<PagedResultDto<FormConfigurationDto>> GetAllAsync(FilteredPagedAndSortedResultRequestDto input)
+        {
+            CheckGetAllPermission();
+
+            var query = CreateFilteredQuery(input);
+
+            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
+
+            query = ApplySorting(query, input);
+            query = ApplyPaging(query, input);
+
+            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+
+            var dtos = new List<FormConfigurationDto>();
+            foreach (var entity in entities) {
+                var dto = await MapToEntityDtoAsync(entity);
+                dtos.Add(dto);
+            }
+
+            return new PagedResultDto<FormConfigurationDto>(
+                totalCount,
+                dtos
+            );
         }
 
         public class ExportAllInput 
