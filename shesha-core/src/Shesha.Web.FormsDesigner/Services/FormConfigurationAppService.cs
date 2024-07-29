@@ -65,7 +65,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         private async Task<string[]> GetFormPermissionsAsync(string module, string name, int versionNo)
         {
-            var permission = await _permissionedObjectManager.GetAsync(
+            var permission = await _permissionedObjectManager.GetOrDefaultAsync(
                 FormManager.GetFormPermissionedObjectName(module, name, versionNo),
                 ShaPermissionedObjectsTypes.Form
             );
@@ -76,7 +76,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         private async Task<bool> CheckFormPermissions(string module, string name, int versionNo)
         {
-            var permission = await _permissionedObjectManager.GetAsync(
+            var permission = await _permissionedObjectManager.GetOrDefaultAsync(
                 FormManager.GetFormPermissionedObjectName(module, name, versionNo),
                 ShaPermissionedObjectsTypes.Form
             );
@@ -104,11 +104,11 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             var dto = base.MapToEntityDto(entity);
 
-            var permission = await _permissionedObjectManager.GetAsync(
+            var permission = await _permissionedObjectManager.GetOrNullAsync(
                 FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name, entity.VersionNo),
                 ShaPermissionedObjectsTypes.Form
             );
-            if (permission?.Access > RefListPermissionedAccess.Inherited) // permission exists
+            if (permission?.Access > RefListPermissionedAccess.Inherited) // Check if permission exists
             {
                 dto.Access = permission?.Access;
                 dto.Permissions = permission?.Permissions;
