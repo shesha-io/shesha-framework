@@ -10,15 +10,30 @@ namespace Shesha.Metadata
     /// <summary>
     ///  Base model provider
     /// </summary>
-    public abstract class BaseModelProvider<TModel> : IModelProvider where TModel: ModelDto
+    public abstract class BaseModelProvider<TModel> : IModelProvider where TModel : ModelDto
     {
         protected const string MainListCacheKey = "";
         private readonly ICacheManager _cacheManager;
 
+        private ITypedCache<string, List<TModel>> _modelsCache;
+
         /// <summary>
         /// Cache of the ReferenceListItems
         /// </summary>
-        protected ITypedCache<string, List<TModel>> ModelsCache => _cacheManager.GetCache<string, List<TModel>>($"{this.GetType().Name}ModelsCache");
+        protected ITypedCache<string, List<TModel>> ModelsCache
+        {
+            get
+            {
+                if (_modelsCache == null)
+                {
+                    var cache = _cacheManager.GetCache<string, List<TModel>>($"{this.GetType().Name}ModelsCache");
+                    cache.DefaultSlidingExpireTime = TimeSpan.FromHours(24);
+                    _modelsCache = cache;
+                }
+
+                return _modelsCache;
+            }
+        }
 
         public BaseModelProvider(ICacheManager cacheManager)
         {
