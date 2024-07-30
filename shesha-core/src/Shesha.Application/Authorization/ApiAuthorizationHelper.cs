@@ -4,9 +4,11 @@ using Abp.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Localization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Extensions;
 using Shesha.Permissions;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -38,6 +40,9 @@ namespace Shesha.Authorization
             {
                 return;
             }
+
+            if (type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>())
+                return;
 
             var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);

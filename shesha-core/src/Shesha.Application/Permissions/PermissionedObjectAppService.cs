@@ -63,7 +63,7 @@ namespace Shesha.Permissions
         /// <returns></returns>
         public async Task<PermissionedObjectDto> GetByObjectNameAsync(string objectName, string type)
         {
-            return await _permissionedObjectManager.GetAsync(objectName, type);
+            return await _permissionedObjectManager.GetOrDefaultAsync(objectName, type);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Shesha.Permissions
             var type = string.IsNullOrEmpty(actionName) 
                 ? ShaPermissionedObjectsTypes.WebApi 
                 : ShaPermissionedObjectsTypes.WebApiAction;
-            return await _permissionedObjectManager.GetAsync($"{serviceName}{action}", type);
+            return await _permissionedObjectManager.GetOrDefaultAsync($"{serviceName}{action}", type);
         }
 
         public override async Task<PermissionedObjectDto> GetAsync(EntityDto<Guid> input)
