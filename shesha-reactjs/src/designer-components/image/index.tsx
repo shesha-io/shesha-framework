@@ -30,7 +30,7 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   allowPreview?: boolean;
   allowedFileTypes?: string[];
   alt?: string;
-  objectFit?: any;
+  objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none';
   objectPosition?: string;
   filter?: string;
   borderSize?: number;
