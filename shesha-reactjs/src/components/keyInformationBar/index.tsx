@@ -11,11 +11,6 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
     const { columns, hidden, orientation, style, dividerMargin, dividerHeight, dividerWidth, dividerThickness = '0.62px', dividerColor, gap, stylingBox, alignItems, backgroundColor } = props;
     const { styles } = useStyles();
 
-    const width = addPx(dividerWidth);
-    const height = addPx(dividerHeight);
-    const margin = dividerMargin ? addPx(dividerMargin) : 0;
-
-
     if (hidden) return null;
 
     const stylingBoxJSON = JSON.parse(stylingBox || '{}');
@@ -32,12 +27,15 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
         textOverflow: "ellipsis",
     });
 
-    const divThickness = addPx(dividerThickness) !== '100%' ? addPx(dividerThickness) : '0.62px';
+    const divThickness = addPx(dividerThickness || '0.62px');
+    const width = addPx(dividerWidth || '100%');
+    const height = addPx(dividerHeight || '100%');
+    const margin = dividerMargin ? addPx(dividerMargin || 0) : 0;
 
     const dividerStyle = {
         backgroundColor: dividerColor ?? '#b4b4b4',
-        width: !vertical && width ? divThickness ?? '0.62px' : width,
-        height: vertical && height ? divThickness ?? '0.62px' : height,
+        width: !vertical && width ? divThickness || '0.62px' : width,
+        height: vertical && height ? divThickness || '0.62px' : height,
         margin: vertical ? `${margin} 0` : `0 ${margin}`,
     };
 

@@ -1,6 +1,5 @@
 
 export const addPx = (value) => {
-    value = (value == null || value === '' || value === undefined) ? "100%" : value;
     return /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 };
 
