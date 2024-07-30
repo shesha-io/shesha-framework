@@ -1,8 +1,9 @@
-import React, { CSSProperties, FC, ReactNode } from 'react';
-import { ConfigProvider, Divider } from 'antd';
+import React, { CSSProperties, FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useStyles } from './styles/styles';
 import { addPx } from './utils';
-import Title from './title';
+import Show from '../show';
+import { Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 export interface ISectionSeparatorProps {
   id?: string;
@@ -21,17 +22,19 @@ export interface ISectionSeparatorProps {
   titleMargin?: number;
   labelAlign?: 'left' | 'center' | 'right';
   orientation?: 'horizontal' | 'vertical';
+  fontWeight?: string;
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   id,
-  labelAlign,
-  fontSize,
-  fontColor,
+  labelAlign = 'left',
+  fontSize = 14,
+  fontColor = '#000',
+  fontWeight = '500',
   inline,
   dashed,
   lineColor,
-  lineThickness,
+  lineThickness = 2,
   lineWidth,
   lineHeight,
   orientation,
@@ -42,80 +45,81 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   titleMargin
 }) => {
   const { styles } = useStyles();
+  const titleRef = useRef<HTMLDivElement>(null);
+  const [titleWidth, setTitleWidth] = useState(0);
+
+  useEffect(() => {
+    if (titleRef.current) {
+      setTitleWidth(titleRef.current.offsetWidth);
+    }
+  }, [title]);
 
   const vertical = orientation === 'vertical';
 
-  const borderStyle = {
-    '--border-thickness': `${lineThickness || 2}px`,
+  const borderStyle: CSSProperties = {
+    '--border-thickness': `${lineThickness ?? 2}px`,
     '--border-style': dashed ? 'dashed' : 'solid',
     '--border-color': lineColor || styles.primaryColor,
-    textAlign: `${labelAlign || 'left'}`,
+    textAlign: labelAlign,
     marginBottom: '8px',
   } as CSSProperties;
 
+  const baseStyle: CSSProperties = {
+    borderBottom: inline ? `${lineThickness}px ${dashed ? 'dashed' : 'solid'} ${lineColor || styles.primaryColor}` : 'none',
+  };
+
+  const getLineStyles = (isLeft: boolean) => {
+
+    if ((isLeft && labelAlign === 'left') || (!isLeft && labelAlign === 'right')) {
+      return { width: `calc(${titleMargin || 0}% - ${titleWidth / 2}px)` };
+    }
+
+    return { flex: 1 };
+  };
 
   const renderTitle = () => {
+    if (!title) return null;
 
-    const titleStyles = {
-      ...titleStyle,
-      fontSize: fontSize || 14,
-      color: fontColor || '#000',
-    };
+    let titleMarginStyle: CSSProperties = { margin: '0 8px', display: 'flex', alignItems: 'center' };
+    if (titleMargin) {
+      titleMarginStyle = { margin: `0 8px`, display: 'flex', alignItems: 'center' };
+    } else if (labelAlign === 'left') {
+      titleMarginStyle = { margin: '0 8px 0 0', display: 'flex', alignItems: 'center' };
+    } else if (labelAlign === 'right') {
+      titleMarginStyle = { margin: '0 0 0 8px', display: 'flex', alignItems: 'center' };
+    }
 
-    return <Title
-      labelAlign={labelAlign}
-      title={title}
-      tooltip={tooltip}
-      titleStyles={{ ...titleStyles, }}
-      titleMargin={titleMargin} />;
-  };
-
-  const defaultWidth = vertical ? 'max-content' : '100%';
-  const commonStyle = {
-    ...containerStyle,
-    width: lineWidth && !vertical ? addPx(lineWidth)
-      : defaultWidth, margin: vertical ? 8 : '8px 0px'
-  };
-
-  const dividerMargin = Number((titleMargin / 100).toFixed(2));
-
-  if (inline && title || vertical) {
     return (
-      <div style={commonStyle} key={id}>
-        <ConfigProvider
-          theme={{
-            components: {
-              Divider: {
-                colorSplit: lineColor || styles.primaryColor,
-                colorText: fontColor || '#000',
-                lineWidth: lineThickness || 2,
-                fontSize: addPx(lineHeight) || addPx(fontSize) || 14,
-                orientationMargin: dividerMargin || 0.05,
-                margin: 8,
-              },
-            },
-          }}
-        >
-          <Divider
-            type={orientation}
-            orientation={labelAlign || 'left'}
-            dashed={dashed}
-            style={vertical ? { top: 0 } : {}}
-            orientationMargin={titleMargin === 0 ? '0' : null}
-          >
-            {renderTitle()}
-          </Divider>
-        </ConfigProvider>
+      <div className={styles.titleContainer} style={{ alignItems: 'center', display: 'flex', width: '100%' }
+      }>
+        <div style={{ ...getLineStyles(true), ...baseStyle }}></div>
+        < div ref={titleRef} style={{ ...titleStyle, ...titleMarginStyle, whiteSpace: 'nowrap', color: fontColor, fontSize, fontWeight }
+        }>
+          {title}
+          < Show when={Boolean(tooltip?.trim())}>
+            <Tooltip title={tooltip}>
+              <QuestionCircleOutlined
+                className={styles.helpIcon}
+              />
+            </Tooltip>
+          </Show>
+        </div>
+        < div style={{ ...getLineStyles(false), ...baseStyle }}> </div>
       </div>
     );
   }
 
   return (
-    <div style={commonStyle} key={id}>
-      <div className={styles.shaSectionSeparator} style={borderStyle}>
-        {renderTitle()}
+    vertical ? (<div className={styles.vertical} style={{ ...borderStyle, ...containerStyle, height: addPx(lineHeight || '0.9em') }}></div>) :
+      <div style={{
+        ...containerStyle,
+        width: addPx(lineWidth),
+        margin: '8px 0',
+      }} key={id} >
+        <div className={!inline || !title ? styles.shaSectionSeparator : ''} style={borderStyle} >
+          {renderTitle()}
+        </div>
       </div>
-    </div>
   );
 };
 
