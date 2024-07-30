@@ -22,7 +22,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const vertical = cx("vertical-separator", css`
         min-width: 0 !important;
         width: 0px;
-        margin: 0 8px;
+        margin: 16px;
         border-right: var(--border-thickness) var(--border-style) var(--border-color);
     `);
 
