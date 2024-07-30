@@ -79,7 +79,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
 
   const dividerMargin = Number((titleMargin / 100).toFixed(2));
 
-  if (inline || vertical) {
+  if (inline && title || vertical) {
     return (
       <div style={commonStyle} key={id}>
         <ConfigProvider
