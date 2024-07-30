@@ -334,7 +334,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${shaComponent} {
             position: relative;
             margin: 4px;
-            margin-left: 10px;
+            //margin-left: 10px;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;

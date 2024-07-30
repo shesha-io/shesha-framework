@@ -1338,5 +1338,201 @@ namespace Shesha.Tests.JsonLogic
         }
 
         #endregion
+
+        #region decimal
+
+        private static class NumberExpressions
+        {
+            public const string Equal = @"{
+  ""and"": [
+    {
+      ""=="": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string Equal_linq = @"ent => (ent.NotNullableNumeric == 100)";
+
+            public const string NotEqual = @"{
+  ""and"": [
+    {
+      ""!="": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+
+            public const string NotEqual_linq = @"ent => Not((ent.NotNullableNumeric == 100))";
+
+            public const string Greater = @"{
+  ""and"": [
+    {
+      "">"": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string Greater_linq = @"ent => (ent.NotNullableNumeric > 100)";
+
+            public const string GreaterOrEqual = @"{
+  ""and"": [
+    {
+      "">="": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string GreaterOrEqual_linq = @"ent => (ent.NotNullableNumeric >= 100)";
+
+            public const string Less = @"{
+  ""and"": [
+    {
+      ""<"": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string Less_linq = @"ent => (ent.NotNullableNumeric < 100)";
+
+            public const string LessOrEqual = @"{
+  ""and"": [
+    {
+      ""<="": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+
+            public const string LessOrEqual_linq = @"ent => (ent.NotNullableNumeric <= 100)";
+
+            public const string Between = @"{
+  ""and"": [
+    {
+      ""<="": [
+        0,
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string Between_linq = @"ent => ((0 <= ent.NotNullableNumeric) AndAlso (ent.NotNullableNumeric <= 100))";
+
+            public const string NotBetween = @"{
+  ""and"": [
+    {
+      ""!"": {
+        ""<="": [
+            0,
+            {
+              ""var"": ""NotNullableNumeric""
+            },
+            100
+        ]
+      }
+    }
+  ]
+}";
+            public const string NotBetween_linq = @"ent => Not(((0 <= ent.NotNullableNumeric) AndAlso (ent.NotNullableNumeric <= 100)))";
+        }
+
+
+
+
+        [Theory]
+        [InlineData("Equal", NumberExpressions.Equal, NumberExpressions.Equal_linq)]
+        [InlineData("NotEqual", NumberExpressions.NotEqual, NumberExpressions.NotEqual_linq)]
+        [InlineData("Greater", NumberExpressions.Greater, NumberExpressions.Greater_linq)]
+        [InlineData("GreaterOrEqual", NumberExpressions.GreaterOrEqual, NumberExpressions.GreaterOrEqual_linq)]
+        [InlineData("Less", NumberExpressions.Less, NumberExpressions.Less_linq)]
+        [InlineData("LessOrEqual", NumberExpressions.LessOrEqual, NumberExpressions.LessOrEqual_linq)]
+        [InlineData("Between", NumberExpressions.Between, NumberExpressions.Between_linq)]
+        [InlineData("NotBetween", NumberExpressions.NotBetween, NumberExpressions.NotBetween_linq)]
+        public void DecimalField_Convert(string name, string jsonLogicExpression, string expectation)
+        {
+            Console.WriteLine($"Test: '{name}'");
+
+            var linqExpression = ConvertToExpression<EntityWithNumericProp<decimal>>(jsonLogicExpression);
+            Assert.Equal(expectation, linqExpression.ToString());
+        }
+
+        [Theory]
+        [InlineData("Equal", NumberExpressions.Equal, NumberExpressions.Equal_linq)]
+        [InlineData("NotEqual", NumberExpressions.NotEqual, NumberExpressions.NotEqual_linq)]
+        [InlineData("Greater", NumberExpressions.Greater, NumberExpressions.Greater_linq)]
+        [InlineData("GreaterOrEqual", NumberExpressions.GreaterOrEqual, NumberExpressions.GreaterOrEqual_linq)]
+        [InlineData("Less", NumberExpressions.Less, NumberExpressions.Less_linq)]
+        [InlineData("LessOrEqual", NumberExpressions.LessOrEqual, NumberExpressions.LessOrEqual_linq)]
+        [InlineData("Between", NumberExpressions.Between, NumberExpressions.Between_linq)]
+        [InlineData("NotBetween", NumberExpressions.NotBetween, NumberExpressions.NotBetween_linq)]
+        public void FloatField_Convert(string name, string jsonLogicExpression, string expectation)
+        {
+            Console.WriteLine($"Test: '{name}'");
+
+            var linqExpression = ConvertToExpression<EntityWithNumericProp<float>>(jsonLogicExpression);
+            Assert.Equal(expectation, linqExpression.ToString());
+        }
+
+        [Theory]
+        [InlineData("Equal", NumberExpressions.Equal, NumberExpressions.Equal_linq)]
+        [InlineData("NotEqual", NumberExpressions.NotEqual, NumberExpressions.NotEqual_linq)]
+        [InlineData("Greater", NumberExpressions.Greater, NumberExpressions.Greater_linq)]
+        [InlineData("GreaterOrEqual", NumberExpressions.GreaterOrEqual, NumberExpressions.GreaterOrEqual_linq)]
+        [InlineData("Less", NumberExpressions.Less, NumberExpressions.Less_linq)]
+        [InlineData("LessOrEqual", NumberExpressions.LessOrEqual, NumberExpressions.LessOrEqual_linq)]
+        [InlineData("Between", NumberExpressions.Between, NumberExpressions.Between_linq)]
+        [InlineData("NotBetween", NumberExpressions.NotBetween, NumberExpressions.NotBetween_linq)]
+        public void DoubleField_Convert(string name, string jsonLogicExpression, string expectation)
+        {
+            Console.WriteLine($"Test: '{name}'");
+
+            var linqExpression = ConvertToExpression<EntityWithNumericProp<double>>(jsonLogicExpression);
+            Assert.Equal(expectation, linqExpression.ToString());
+        }
+
+        [Theory]
+        [InlineData("Equal", NumberExpressions.Equal, NumberExpressions.Equal_linq)]
+        [InlineData("NotEqual", NumberExpressions.NotEqual, NumberExpressions.NotEqual_linq)]
+        [InlineData("Greater", NumberExpressions.Greater, NumberExpressions.Greater_linq)]
+        [InlineData("GreaterOrEqual", NumberExpressions.GreaterOrEqual, NumberExpressions.GreaterOrEqual_linq)]
+        [InlineData("Less", NumberExpressions.Less, NumberExpressions.Less_linq)]
+        [InlineData("LessOrEqual", NumberExpressions.LessOrEqual, NumberExpressions.LessOrEqual_linq)]
+        [InlineData("Between", NumberExpressions.Between, NumberExpressions.Between_linq)]
+        [InlineData("NotBetween", NumberExpressions.NotBetween, NumberExpressions.NotBetween_linq)]
+        public void ByteField_Convert(string name, string jsonLogicExpression, string expectation)
+        {
+            Console.WriteLine($"Test: '{name}'");
+
+            var linqExpression = ConvertToExpression<EntityWithNumericProp<byte>>(jsonLogicExpression);
+            Assert.Equal(expectation, linqExpression.ToString());
+        }
+
+        #endregion
     }
 }

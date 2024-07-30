@@ -13,13 +13,13 @@ export interface IColumnsEditorModal {
   onChange?: any;
 }
 
-export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, visible, hideModal }) => {
+export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, visible, hideModal, readOnly }) => {
   const isSmall = useMedia('(max-width: 480px)');
 
   const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value));
 
   const onOk = () => {
-    onChange?.(localValue);
+    onChange?.(deepCopyViaJson(localValue)); // make copy of localValue to re-render table
     hideModal();
   };
 
@@ -39,7 +39,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
       destroyOnClose={true}
     >
       <ColumnsConfigurator
-        readOnly={false}
+        readOnly={readOnly}
         value={localValue}
         onChange={setLocalValue}
       />

@@ -138,18 +138,22 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
         private async Task SetPermissions(DistributedFormConfiguration item, FormConfiguration form)
         {
-            var permisson = new PermissionedObjectDto
+            // add only if permissions is available and access is not Inherited
+            if (item.Access != null && item.Access > Shesha.Domain.Enums.RefListPermissionedAccess.Inherited)
             {
-                Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
-                Name = $"{form.Module?.Name}.{form.Name} v.{form.VersionNo}",
-                Module = form.Module.Name,
-                ModuleId = form.Module.Id,
-                Type = ShaPermissionedObjectsTypes.Form,
-                Access = item.Access,
-                Permissions = item.Permissions,
-            };
+                var permisson = new PermissionedObjectDto
+                {
+                    Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
+                    Name = $"{form.Module?.Name}.{form.Name}",
+                    Module = form.Module.Name,
+                    ModuleId = form.Module.Id,
+                    Type = ShaPermissionedObjectsTypes.Form,
+                    Access = item.Access,
+                    Permissions = item.Permissions,
+                };
 
-            await _permissionedObjectManager.SetAsync(permisson);
+                await _permissionedObjectManager.SetAsync(permisson);
+            }
         }
 
         private void MapToForm(DistributedFormConfiguration item, FormConfiguration form) 

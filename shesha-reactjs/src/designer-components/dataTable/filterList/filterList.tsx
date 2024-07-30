@@ -26,19 +26,18 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
 
         if (filtersRef.current.scrollLeft <= 0) {
             scrollbarLeftArrow.current.classList.add("hidden");
+            filtersRef.current.style.marginLeft = '0px';
         } else {
             scrollbarLeftArrow.current.classList.remove("hidden");
+            filtersRef.current.style.marginLeft = '24px';
         }
 
         if (filtersRef.current.scrollLeft > maxScrollDistance + 24) {
             scrollbarRightArrow.current.classList.add("hidden");
+            filtersRef.current.style.marginRight = '0px';
         } else {
             scrollbarRightArrow.current.classList.remove("hidden");
-        }
-
-        if (filtersRef.current.scrollWidth <= filtersRef.current.clientWidth) {
-            scrollbarRightArrow.current.classList.remove("active");
-            scrollbarLeftArrow.current.classList.remove("active");
+            filtersRef.current.style.marginRight = '24px';
         }
     };
 
@@ -78,7 +77,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
     return (
         <div className={styles.wrapper}>
             <div className={styles.resultCount}>
-                {`Filters (${rows} results)`}
+                {`Filters (${rows} results):`}
             </div>
 
             <div className={styles.scrollableTagsContainer}>
@@ -87,7 +86,7 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
                     className={styles.arrowLeft}
                     onClick={scrollLeft}
                 />
-                <div className="filters" ref={filtersRef}>
+                <div className={styles.filters} ref={filtersRef}>
                     {filters?.map(({ columnId }) => {
                         return (
                             <Tag
@@ -109,17 +108,15 @@ export const FilterList: FC<IFilterListProps> = ({ filters, clearFilters, remove
                 />
             </div>
 
-            <div className={styles.clearAllButton}>
-                {filters.length > 1 &&
-                    <Button
-                        onClick={clearFilters}
-                        type='link'
-                        className={styles.clearAllButton}
-                    >
-                        clear all
-                    </Button>
-                }
-            </div>
+            {filters.length > 1 &&
+                <Button
+                    onClick={clearFilters}
+                    type='link'
+                    className={styles.clearAllButton}
+                >
+                    clear all
+                </Button>
+            }
         </div>
     );
 };

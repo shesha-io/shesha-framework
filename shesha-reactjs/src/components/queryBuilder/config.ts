@@ -12,6 +12,7 @@ import { getEvaluateFunc } from './funcs/evaluate';
 import GuidType from './types/guid';
 import { expressionFunc } from './funcs/expression';
 import { JavaScriptWidget } from './widgets/javascript/index';
+import { FieldWidget } from './widgets/field';
 
 interface TypeModifier extends Partial<Type> {
   operators?: string[];
@@ -122,6 +123,7 @@ const widgets = {
   },
   specification: SpecificationWidget,
   javascript: JavaScriptWidget,
+  field: FieldWidget,
 };
 
 const evaluateTypes = ['boolean', 'date', 'datetime', 'time', 'number', 'text', 'entityReference', 'refList'];

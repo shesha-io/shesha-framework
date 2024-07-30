@@ -1,31 +1,54 @@
 "use client";
 
-import { Alert, Card, Col, Row } from 'antd';
-import data from 'public/meta.json';
-import React from 'react';
-import { PageWithLayout, CollapsiblePanel } from '@shesha-io/reactjs';
-import styled from 'styled-components';
-import { PortalLayout } from 'src/components/index';
-import { LOGO } from 'src/app-constants/application';
-
-const StyledAlert = styled(Alert)`
-  margin-bottom: 15px;
-`;
+import Banner from "src/components/Banner";
+import Card from "src/components/NavCard";
+import React from "react";
+import { PageWithLayout } from "@shesha-io/reactjs";
+import { PortalLayout } from "@shesha-io/pd-publicportal";
 
 const Home: PageWithLayout<{}> = () => {
   return (
-    <PortalLayout imageProps={LOGO}>
-      <CollapsiblePanel header="Plugins">
-        <StyledAlert message="This is a list of plugins the boilerplate uses" type="info" />
-
-        <Row style={{ flex: 1 }}>
-          {(data?.plugins ?? []).map((plugin) => (
-            <Col md={6} key={plugin.name} data-testid="container">
-              <Card title={plugin.name}>{plugin.description}</Card>
-            </Col>
-          ))}
-        </Row>
-      </CollapsiblePanel>
+    <PortalLayout>
+      <div
+        style={{
+          padding: "15px",
+          backgroundColor: "white",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          rowGap: "30px",
+        }}
+      >
+        <Banner
+          url="https://www.youtube.com/embed/VYN6GBCEPGw?autoplay=1&controls=0"
+          image={"/images/get-to-know-shesha-banner.png"}
+        />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gridColumnGap: "20px",
+          }}
+        >
+          <Card
+            title="Build your first app"
+            url={"https://docs.shesha.io/docs/get-started/tutorial/the-basics/"}
+            description="A quickstart guide to help you build an app using Shesha"
+          />
+          <Card
+            title="Documentation"
+            url={"https://docs.shesha.io/docs/get-started/Introduction"}
+            description="A deeper dive into core Shesha functionality"
+          />
+          <Card
+            title="How to change landing page"
+            url={
+              "https://docs.shesha.io/docs/fundamentals/how-to-change-home-page/"
+            }
+            description="Change your landing page to a custom page"
+          />
+        </div>
+      </div>
     </PortalLayout>
   );
 };

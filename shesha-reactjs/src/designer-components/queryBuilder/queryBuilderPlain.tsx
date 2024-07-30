@@ -15,7 +15,6 @@ export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange
     if (readOnly) return;
     if (jsonLogicResult) {
       if (jsonLogicResult && jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
-        console.log(jsonLogicResult);
         // show errors
         return;
       }

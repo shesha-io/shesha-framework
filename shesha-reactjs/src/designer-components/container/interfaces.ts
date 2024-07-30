@@ -155,7 +155,18 @@ export interface ICommonContainerProps {
 }
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {
+  backgroundCover?: string;
+  backgroundRepeat?: string;
+  fileCategory?: string;
+  ownerType?: string;
   className?: string;
   wrapperStyle?: string;
   components: IConfigurableFormComponent[]; // Only important for fluent API
+  ownerId?: string;
+  backgroundType?: 'image' | 'color';
+  backgroundColor?: string;
+  backgroundUrl?: string;
+  base64?: string;
+  dataSource?: string;
+  storedFileId?: string;
 }

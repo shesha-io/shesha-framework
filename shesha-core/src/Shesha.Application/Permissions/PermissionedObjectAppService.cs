@@ -52,17 +52,18 @@ namespace Shesha.Permissions
         /// <returns></returns>
         public async Task<List<PermissionedObjectDto>> GetAllTreeAsync(string type, bool showHidden = false)
         {
-            return await Task.FromResult(_permissionedObjectManager.GetAllTree(type, showHidden));
+            return await _permissionedObjectManager.GetAllTreeAsync(type, showHidden);
         }
 
         /// <summary>
         /// Get protected object by name
         /// </summary>
         /// <param name="objectName"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        public async Task<PermissionedObjectDto> GetByObjectNameAsync(string objectName)
+        public async Task<PermissionedObjectDto> GetByObjectNameAsync(string objectName, string type)
         {
-            return await _permissionedObjectManager.GetAsync(objectName);
+            return await _permissionedObjectManager.GetOrDefaultAsync(objectName, type);
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace Shesha.Permissions
             var type = string.IsNullOrEmpty(actionName) 
                 ? ShaPermissionedObjectsTypes.WebApi 
                 : ShaPermissionedObjectsTypes.WebApiAction;
-            return await _permissionedObjectManager.GetAsync($"{serviceName}{action}", type);
+            return await _permissionedObjectManager.GetOrDefaultAsync($"{serviceName}{action}", type);
         }
 
         public override async Task<PermissionedObjectDto> GetAsync(EntityDto<Guid> input)

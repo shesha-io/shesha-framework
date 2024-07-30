@@ -6,7 +6,7 @@ import { FormLoadingState, UpToDateForm } from "./interfaces";
 export interface GetFormByMarkupResponse {
     state: FormLoadingState;
     form?: UpToDateForm;
-    error?: string;
+    error?: any;
     promise: Promise<UpToDateForm>;
 }
 
@@ -29,7 +29,7 @@ export const useFormByMarkup = (props: GetFormByMarkupPayload): GetFormByMarkupR
 export interface GetFormByIdResponse {
     state: FormLoadingState;
     form?: UpToDateForm;
-    error?: string;
+    error?: any;
     promise: Promise<UpToDateForm>;
 }
 

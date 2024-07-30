@@ -101,18 +101,6 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     if (onChange) onChange(null);
   };
 
-  // this part is required only for old forms to call the linkToModelMetadata
-  const modalData = useMemo(() => {
-    if (!value?.settings)
-      return undefined;
-
-    const component = value && value.type ? allComponents[value.type] : null;
-    if (!component || !component.linkToModelMetadata || !propertyMeta)
-      return value?.settings;
-
-    return component.linkToModelMetadata(value.settings, propertyMeta);
-  }, [value?.type, value?.settings, componentType, propertyMeta]);
-
   const onConfigureClick = () => {
     setIsSettingsVisible(true);
   };
@@ -156,7 +144,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         readOnly={readOnly}
         formComponent={formComponent}
         isVisible={isSettingsVisible}
-        model={modalData}
+        model={value?.settings}//modalData}
         onSave={onSettingsSaveClick}
         onCancel={onCancelConfigureClick}
         propertyFilter={propertyFilter}

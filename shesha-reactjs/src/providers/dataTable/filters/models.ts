@@ -4,7 +4,7 @@ export interface ITableViewProps {
   tooltip?: string;
   sortOrder: number;
   visibility?: string;
-  permissions?: string;
+  permissions?: string[];
   expression?: any;
   selected?: boolean;
   defaultSelected?: boolean;

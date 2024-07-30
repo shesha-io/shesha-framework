@@ -36,7 +36,9 @@ export interface IPrepareActionArgumentsPayload<TArguments = any> {
 }
 
 export interface IRegisterActionPayload<TArguments = IConfigurableActionArguments, TReponse = any>
-  extends IConfigurableActionDescriptor<TArguments, TReponse> { }
+  extends IConfigurableActionDescriptor<TArguments, TReponse> {
+  isPermament?: boolean;
+}
 
 export interface RegisterActionType {
   <TArguments = IConfigurableActionArguments, TResponse = any>(

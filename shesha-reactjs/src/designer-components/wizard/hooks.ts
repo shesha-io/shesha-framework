@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useFormExpression } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { useValidator } from '@/providers/validateProvider';
 
 interface IWizardComponent {
   back: () => void;
@@ -27,6 +28,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const allData = useAvailableConstantsData();
   const dataContext = useDataContext();
   const toolbox = useFormDesignerComponents();
+  const validator = useValidator(false);
 
   const formMode = useForm(false).formMode;
 
@@ -77,13 +79,29 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     for (const comp in flat.allComponents)
       if (Object.hasOwn(flat.allComponents, comp)) {
         const component = flat.allComponents[comp];
-        if (component.propertyName)
+        if (component.propertyName && !component.context)
           properties.push(component.propertyName.split("."));
       }
     return properties;
   }, [currentStep]);
 
-  const argumentsEvaluationContext = { ...allData, fieldsToValidate: componentsNames };
+  useEffect(() => {
+    if (validator)
+      validator.registerValidator({
+        id: model.id,
+        validate: () => {
+          var formInstance = allData?.form?.formInstance;
+          return formInstance?.validateFields(componentsNames, {recursive: false})
+            .catch(e => {
+              if (e.errorFields?.length > 0)
+                throw e;
+              return null;
+            });
+        },
+      });
+  }, [componentsNames]);
+
+  const argumentsEvaluationContext = { ...allData, fieldsToValidate: componentsNames, validate: validator?.validate };
 
   useEffect(() => {
     setCurrent(getDefaultStepIndex(defaultActiveStep));
@@ -259,6 +277,23 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       hasArguments: false,
       executer: () => {
         done();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Validate',
+      description: 'Validate the Wizard step data and show validation errors if any',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: async (_, actionContext) => {
+        if (actionContext?.validate) {
+          return actionContext.validate();
+        }
         return Promise.resolve();
       },
     },

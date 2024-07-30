@@ -1,7 +1,7 @@
 import React, { ComponentType, FC, Fragment, useEffect } from 'react';
-import { /*IdleTimerRenderer,*/ OverlayLoader } from '@/components';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
+import SheshaLoader from '@/components/sheshaLoader';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
@@ -28,11 +28,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
     }
   }, [isCheckingAuth]);
 
-  return isLoggedIn ? (
-    <Fragment>{props.children(router?.query)}</Fragment>
-  ) : (
-    <OverlayLoader loading={true} loadingText="Initializing..." />
-  );
+  return isLoggedIn ? <Fragment>{props.children(router?.query)}</Fragment> : <SheshaLoader message="Initializing..." />;
 };
 
 /**

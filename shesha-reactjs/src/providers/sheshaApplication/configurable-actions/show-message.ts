@@ -38,6 +38,7 @@ export const useShowMessageAction = () => {
   const { message: messageApi } = App.useApp();
 
   useConfigurableAction<IShowMessageArguments, boolean>({
+    isPermament: true,
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
     name: 'Show Message',

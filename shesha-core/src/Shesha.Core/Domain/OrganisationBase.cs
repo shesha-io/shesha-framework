@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -74,7 +75,7 @@ namespace Shesha.Domain
         /// 
         /// </summary>
 
-        [ReferenceList("Shesha.Core", "Status")]
+        [ReferenceList("Shesha.Core", "OrganisationStatus")]
         public virtual long? Status { get; set; }
         /// <summary>
         /// 
@@ -103,6 +104,11 @@ namespace Shesha.Domain
         [CascadeUpdateRules(true, true)]
         public virtual TPerson PrimaryContact { get; set; }
 
+        /// <summary>
+        /// Child organisations
+        /// </summary>
+        [InverseProperty("ParentId")]
+        public virtual IList<T> Units { get; set; }
     }
 
     public class OrganisationBase<T> : OrganisationBase<T, Address, Person>

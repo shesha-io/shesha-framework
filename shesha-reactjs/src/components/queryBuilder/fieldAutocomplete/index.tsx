@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { FactoryWithContext, FieldProps } from '@react-awesome-query-builder/antd';
 import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
-import { PropertySelect } from "../../propertyAutocomplete/propertySelect";
-import { IPropertyMetadata } from "@/interfaces/metadata";
+import { IPropertyItem, isPropertyMetadata, PropertySelect } from "../../propertyAutocomplete/propertySelect";
+import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
+import { useFieldWidget } from "../widgets/field/fieldWidgetContext";
+import { CustomFieldSettings } from "@/providers/queryBuilder/models";
+import { DataTypes } from "@/interfaces";
 
 export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
     const [text, setText] = useState(props.selectedKey);
+    const fieldWidget = useFieldWidget();
     const onSelect = (key, _propertyMetadata: IPropertyMetadata) => {
         // check fields and expand if needed
         if (typeof (key) === 'string')
@@ -14,6 +18,8 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
 
     const onChange = (key) => {
         setText(key);
+        if (!key)
+            props.setField(null);
     };
 
     const {
@@ -35,6 +41,29 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
 
     const readOnly = config.settings.immutableFieldsMode === true;
 
+    const isPropertyVisible = (property: IPropertyItem) => {
+        const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as CustomFieldSettings;
+        if (!propertyMetadata)
+            return true;
+
+        return isPropertyMetadata(property) && 
+            (property.dataType === propertyMetadata.dataType || property.dataType === DataTypes.entityReference || property.dataType === DataTypes.objectReference  || property.dataType === DataTypes.object);
+    };
+
+    const isPropertySelectable = (property: IPropertyItem) => {
+        const { propertyMetadata } = (fieldWidget?.fieldDefinition?.fieldSettings ?? {}) as CustomFieldSettings;
+        if (!propertyMetadata)
+            return true;
+
+        return isPropertyMetadata(property) && 
+            property.dataType === propertyMetadata.dataType &&
+            (isEntityReferencePropertyMetadata(propertyMetadata) 
+                ? !isEntityReferencePropertyMetadata(property) || property.entityType === propertyMetadata.entityType && property.entityModule === propertyMetadata.entityModule
+                : true
+            ) &&
+            property.dataType !== DataTypes.object;
+    };
+
     return (
         <PropertySelect
             readOnly={readOnly}
@@ -43,6 +72,8 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
             style={{ width }}
             size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
             onSelect={onSelect}
+            isPropertyVisible={isPropertyVisible}
+            isPropertySelectable={isPropertySelectable}            
         />
     );
 };
