@@ -28,7 +28,7 @@ export interface ISidebarMenuItem {
   itemType: SidebarItemType;
 
   icon?: ReactNode | string;
-  isHidden?: boolean;
+  hidden?: boolean;
   visibility?: string;
   requiredPermissions?: string[];
 }

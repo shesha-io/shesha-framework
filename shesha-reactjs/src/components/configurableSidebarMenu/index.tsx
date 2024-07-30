@@ -8,6 +8,7 @@ import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { migrateToConfigActions } from './migrations/migrateToConfigActions';
 import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
 import { Button } from 'antd';
+import { migrateFunctionToProp } from '@/designer-components/_common-migrations/migrateSettings';
 
 export interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
@@ -50,7 +51,14 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
         }}
         name={props.name}
         isApplicationSpecific={props.isApplicationSpecific}
-        migrator={m => m.add(1, prev => migrateToConfigActions(prev))}
+        migrator={m => m
+          .add(1, prev => migrateToConfigActions(prev))
+          .add(2, prev => {
+            const { items } = prev;
+            const newItems = items.map(item => migrateFunctionToProp(item as any, 'hidden', 'visibility', null, true));
+            return { ...prev, items: newItems };
+          })
+        }
       >
         {(componentState, BlockOverlay) => {
           return (
