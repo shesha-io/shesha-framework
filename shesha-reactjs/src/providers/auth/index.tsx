@@ -251,7 +251,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         })
         .catch((e) => {
           const message = error.message;
-          dispatch(fetchUserDataActionErrorAction({ message }));
           reject({ stackTrace: e, message, url: loginUrl });
         });
     });
@@ -341,7 +340,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
         loginUserHttp(loginEndpoint, loginFormData)
           .then(loginSuccessHandler(dispatchThunk, getState))
-          .then(resolve)
+          .then((response: any) => {
+            dispatch(fetchUserDataActionSuccessAction(response?.payload?.result?.user));
+            resolve(response);
+          })
           .catch((err) => {
             dispatchThunk(loginUserErrorAction(err?.data));
             reject(err);
@@ -350,16 +352,20 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     });
 
   const loginUser = (loginFormData: ILoginForm) => {
+    dispatch(fetchUserDataAction());
+
     loginUserAsync(loginFormData)
       .then((response) => {
-        const { payload, url } = response as { payload: GetCurrentLoginInfoOutputAjaxResponse; url: string };
+        const { url } = response as { payload: GetCurrentLoginInfoOutputAjaxResponse; url: string };
 
-        dispatch(fetchUserDataActionSuccessAction(payload?.result?.user));
         dispatch(setIsLoggedInAction(true));
         redirect(url);
       })
       .catch((e) => {
-        if (e?.url) redirect(e.url);
+        const message = e?.message;
+        const url = e?.url;
+        if (message) dispatch(fetchUserDataActionErrorAction({ message }));
+        if (url) redirect(url);
       });
   };
   //#endregion
