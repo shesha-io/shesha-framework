@@ -4,7 +4,7 @@ import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect }
 import { GetCurrentLoginInfoOutputAjaxResponse, sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
-import { IAccessToken } from '@/interfaces';
+import { IAccessToken, IEntityReferenceDto } from '@/interfaces';
 import { IHttpHeaders } from '@/interfaces/accessToken';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { IApiEndpoint } from '@/interfaces/metadata';
@@ -395,7 +395,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
   //#endregion
 
-  const anyOfPermissionsGranted = (permissions: string[]) => {
+  const anyOfPermissionsGranted = (permissions: string[], permissionedEntities?: IEntityReferenceDto[]) => {
     const { loginInfo } = state;
     if (!loginInfo) return false;
 
@@ -403,7 +403,16 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     const granted = loginInfo.grantedPermissions || [];
 
-    return permissions.some((p) => granted.includes(p));
+    return permissions.some((p) => 
+      granted.some(gp => 
+        gp.permission === p 
+        && (
+          !gp.permissionedEntity
+          || gp.permissionedEntity.length === 0 
+          || gp.permissionedEntity.some(pe => permissionedEntities?.some(ppe => pe?.id === ppe?.id && ppe?._className === pe?._className))
+        )
+      )
+    );
   };
 
   if (authRef) authRef.current = { anyOfPermissionsGranted, headers: state?.headers };
