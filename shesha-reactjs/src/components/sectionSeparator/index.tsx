@@ -61,7 +61,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
     '--border-style': dashed ? 'dashed' : 'solid',
     '--border-color': lineColor || styles.primaryColor,
     textAlign: labelAlign,
-    marginBottom: '8px',
+    marginBottom: vertical ? 0 : '8px',
   } as CSSProperties;
 
   const baseStyle: CSSProperties = {

@@ -19,9 +19,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
 
 
-    const vertical = cx("vertical-divider", css`
-        width: 0;
-        padding: 8;
+    const vertical = cx("vertical-separator", css`
+        min-width: 0 !important;
+        margin: 0 8px;
         border-right: var(--border-thickness) var(--border-style) var(--border-color);
     `);
 
