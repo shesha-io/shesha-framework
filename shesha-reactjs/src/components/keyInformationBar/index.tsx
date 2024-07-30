@@ -52,7 +52,7 @@ export const KeyInformationBar: FC<IKeyInformationBarProps> = (props) => {
                             <ComponentsContainer
                                 containerId={item.id}
                                 gap={gap}
-                                wrapperStyle={{ padding: item.padding, maxWidth: vertical ? '100%' : addPx(item.width), boxSizing: "border-box" }}
+                                wrapperStyle={{ padding: addPx(item.padding || 0), maxWidth: vertical ? '100%' : addPx(item.width), boxSizing: "border-box" }}
                                 style={containerStyle(item)}
                                 dynamicComponents={props?.isDynamic ? item?.components : []}
                             />

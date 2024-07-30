@@ -88,7 +88,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
       >
         {dataIndex === "textAlign" ?
           Dropdown(inputRef, textAlignValues) : dataIndex === "flexDirection" ?
-            Dropdown(inputRef, flexDirectionValues) : <Input ref={inputRef} onPressEnter={save} onBlur={save} prefix={tooltip()} />}
+            Dropdown(inputRef, flexDirectionValues) : <Input ref={inputRef} onPressEnter={save} onBlur={save} suffix={tooltip()} />}
       </Form.Item>
     ) : (
       <div
