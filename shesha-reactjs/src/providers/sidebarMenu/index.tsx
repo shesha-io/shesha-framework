@@ -2,7 +2,6 @@ import React, {
   FC,
   PropsWithChildren,
   useContext,
-  useEffect,
   useReducer
   } from 'react';
 import SidebarMenuReducer from './reducer';
@@ -19,6 +18,8 @@ import {
 } from './contexts';
 import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
+import { getActualModel, useAvailableConstantsData } from '../form/utils';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 export interface ISidebarMenuProviderProps {
   items: ISidebarMenuItem[];
@@ -33,26 +34,27 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   children,
 }) => {
   const { anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
+  const allData = useAvailableConstantsData();
 
   const [state, dispatch] = useReducer(SidebarMenuReducer, {
     ...SIDEBAR_MENU_CONTEXT_INITIAL_STATE,
     actions,
     accountDropdownListItems,
-    items,
+    items: [],
   });
 
   const requestItemVisible = (item: ISidebarMenuItem, itemsToCheck: ISidebarMenuItem[]): ISidebarMenuItem => {
-    if (item.isHidden)
+    if (item.hidden)
       return item;
 
     if (item.requiredPermissions?.length > 0)
       if (anyOfPermissionsGranted(item?.requiredPermissions))
         return item;
       else
-        return {...item, isHidden: true};
+        return {...item, hidden: true};
 
     if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0)
-      return {...item, isHidden: false, childItems: item.childItems.map((childItem) => requestItemVisible(childItem, itemsToCheck))} as ISidebarMenuItem;
+      return {...item, hidden: false, childItems: item.childItems.map((childItem) => requestItemVisible(childItem, itemsToCheck))} as ISidebarMenuItem;
 
     if (
       isNavigationActionConfiguration(item.actionConfiguration)
@@ -61,7 +63,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
     ) {
       // form navigation, check form permissions
-      const newItem = {...item, isHidden: true};
+      const newItem = {...item, hidden: true};
       itemsToCheck.push(newItem);
       return newItem;
     } 
@@ -82,7 +84,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
         x.module === item.actionConfiguration?.actionArguments?.formId?.module
         && x.name === item.actionConfiguration?.actionArguments?.formId?.name
       );
-      item.isHidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
+      item.hidden = form && form.permissions && !anyOfPermissionsGranted(form.permissions);
     }
   };
 
@@ -94,7 +96,6 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       )
         .then((result) => {
           if (result.success) {
-            //const localItems = 
             itemsToCheck.forEach((item) => {
               return updatetItemVisible(item, result.result);
             });
@@ -106,17 +107,13 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     }
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     const itemsToCheck = [];
-    const localItems = items.map((item) => {
-      if (item.isHidden === false) return item;
-      return requestItemVisible(item, itemsToCheck);
-    });
-    dispatch(setItemsAction(localItems));
+    const localItems = items.map((item) => requestItemVisible(getActualModel(item, allData), itemsToCheck));
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
     }
-  }, [items]);
+  }, [items, allData]);
 
   const collapse = () => {
     dispatch(toggleSidebarAction(false));
