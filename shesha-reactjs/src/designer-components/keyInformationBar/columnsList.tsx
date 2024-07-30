@@ -24,6 +24,13 @@ export interface IProps {
 
 const EditableContext = React.createContext(null);
 const DragHandleContext = React.createContext(null);
+
+const tooltip = () => (
+  <Tooltip title={strings.tooltip}>
+    {<QuestionCircleOutlined className='tooltip-question-icon' size={14} color='gray' />}
+  </Tooltip>
+);
+
 const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, isDropdown, ...restProps }) => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
@@ -56,11 +63,6 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   const { Option } = Select;
 
-  const tooltip = () => (
-    <Tooltip title={strings.tooltip}>
-      {<QuestionCircleOutlined className='tooltip-question-icon' size={14} color='gray' />}
-    </Tooltip>
-  );
 
   const textAlignValues = ['start', 'end', 'center', 'inherit'];
   const flexDirectionValues = ['row', 'column', 'row-reverse', 'column-reverse'];
@@ -88,7 +90,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
       >
         {dataIndex === "textAlign" ?
           Dropdown(inputRef, textAlignValues) : dataIndex === "flexDirection" ?
-            Dropdown(inputRef, flexDirectionValues) : <Input ref={inputRef} onPressEnter={save} onBlur={save} suffix={tooltip()} />}
+            Dropdown(inputRef, flexDirectionValues) : <Input ref={inputRef} onPressEnter={save} onBlur={save} />}
       </Form.Item>
     ) : (
       <div
@@ -284,7 +286,7 @@ export const ColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
       <Button onClick={toggleModal}>{readOnly ? 'View Columns' : 'Configure Columns'}</Button>
 
       <Modal
-        title={readOnly ? 'View Columns' : 'Configure Columns'}
+        title={readOnly ? 'View Columns' : <>Configure Columns {tooltip()}</>}
         open={showDialog}
         width="650px"
 
