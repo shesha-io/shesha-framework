@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
 using Abp.UI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authentication.External;
@@ -26,6 +27,7 @@ namespace Shesha.Authorization
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [AllowAnonymous]
     public class TokenAuthController : SheshaControllerBase
     {
         private readonly LogInManager _logInManager;

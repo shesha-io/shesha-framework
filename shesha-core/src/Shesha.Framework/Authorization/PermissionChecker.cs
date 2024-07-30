@@ -1,12 +1,11 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Domain.Uow;
 using Abp.Runtime.Caching;
 using Shesha.Authorization.Dtos;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using System;
+using System.Threading.Tasks;
 
 namespace Shesha.Authorization
 {
@@ -22,6 +21,21 @@ namespace Shesha.Authorization
         private readonly UserManager _userManager;
 
         public Guid Id { get; set; }
+
+        internal ITypedCache<string, CustomUserPermissionCacheItem> _cupCache;
+        protected ITypedCache<string, CustomUserPermissionCacheItem> CustomUserPermissionCache
+        {
+            get
+            {
+                if (_cupCache == null)
+                {
+                    var cache = _cacheManager.GetCustomUserPermissionCache();
+                    _cupCache = cache;
+                }
+
+                return _cupCache;
+            }
+        }
 
         /// <summary>
         /// Default constructor
@@ -60,7 +74,7 @@ namespace Shesha.Authorization
                 return true;
 
             var cacheKey = GetPermissionsCacheKey(userId, GetCurrentTenantId());
-            var customPermissionsItem = _cacheManager.GetCustomUserPermissionCache().GetOrDefault(cacheKey);
+            var customPermissionsItem = CustomUserPermissionCache.GetOrDefault(cacheKey);
 
             if (customPermissionsItem != null)
             {
@@ -77,7 +91,7 @@ namespace Shesha.Authorization
             else
                 customPermissionsItem.ProhibitedPermissions.Add(permissionName);
 
-            _cacheManager.GetCustomUserPermissionCache().Set(cacheKey, customPermissionsItem, slidingExpireTime: TimeSpan.FromMinutes(5));
+            CustomUserPermissionCache.Set(cacheKey, customPermissionsItem, slidingExpireTime: TimeSpan.FromMinutes(5));
 
             return isGranted;
         }
@@ -91,7 +105,7 @@ namespace Shesha.Authorization
                 return true;
 
             var cacheKey = GetPermissionsCacheKey(userId, GetCurrentTenantId());
-            var customPermissionsItem = await _cacheManager.GetCustomUserPermissionCache().GetOrDefaultAsync(cacheKey);
+            var customPermissionsItem = await CustomUserPermissionCache.GetOrDefaultAsync(cacheKey);
 
             if (customPermissionsItem != null)
             {
@@ -108,7 +122,7 @@ namespace Shesha.Authorization
             else
                 customPermissionsItem.ProhibitedPermissions.Add(permissionName);
 
-            await _cacheManager.GetCustomUserPermissionCache().SetAsync(cacheKey, customPermissionsItem, slidingExpireTime: TimeSpan.FromMinutes(5));
+            await CustomUserPermissionCache.SetAsync(cacheKey, customPermissionsItem, slidingExpireTime: TimeSpan.FromMinutes(5));
 
             return isGranted;
         }
@@ -164,13 +178,13 @@ namespace Shesha.Authorization
         public async Task ClearPermissionsCacheForUserAsync(long userId, int? tenantId)
         {
             var cacheKey = GetPermissionsCacheKey(userId, tenantId);
-            await _cacheManager.GetCustomUserPermissionCache().RemoveAsync(cacheKey);
+            await CustomUserPermissionCache.RemoveAsync(cacheKey);
         }
 
         /// inheritedDoc
         public async Task ClearPermissionsCacheAsync()
         {
-            await _cacheManager.GetCustomUserPermissionCache().ClearAsync();
+            await CustomUserPermissionCache.ClearAsync();
         }
     }
 }

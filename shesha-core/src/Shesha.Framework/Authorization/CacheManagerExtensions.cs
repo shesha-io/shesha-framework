@@ -1,5 +1,6 @@
 ﻿using Abp.Runtime.Caching;
 using Shesha.Authorization.Dtos;
+using Shesha.Cache;
 using Shesha.Permissions;
 
 namespace Shesha.Authorization
@@ -11,10 +12,9 @@ namespace Shesha.Authorization
             return cacheManager.GetCache<string, CustomUserPermissionCacheItem>(CustomUserPermissionCacheItem.CacheStoreName);
         }
 
-        public static ITypedCache<string, PermissionedObjectDto> GetPermissionedObjectCache(this ICacheManager cacheManager)
+        public static ITypedCache<string, CacheItemWrapper<PermissionedObjectDto>> GetPermissionedObjectCache(this ICacheManager cacheManager)
         {
-            return cacheManager.GetCache<string, PermissionedObjectDto>(PermissionedObjectDto.CacheStoreName);
+            return cacheManager.GetCache<string, CacheItemWrapper<PermissionedObjectDto>>(PermissionedObjectDto.CacheStoreName);
         }
-
     }
 }

@@ -107,6 +107,8 @@ export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
 export { SidebarConfigurator } from './configurableSidebarMenu/configurator';
+export { ConfigurableSidebarMenu } from './configurableSidebarMenu';
+export { ComponentSettingsModal } from './configurableSidebarMenu/settingsModal';
 export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
