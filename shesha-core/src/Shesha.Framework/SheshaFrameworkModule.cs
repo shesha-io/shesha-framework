@@ -76,7 +76,7 @@ namespace Shesha
                 cfg => cfg.AddMaps(thisAssembly)
             );
 
-            IocManager.Register<IShaPermissionChecker, PermissionChecker>(DependencyLifeStyle.Transient);
+            IocManager.Register<IShaPermissionChecker, ShaPermissionChecker>(DependencyLifeStyle.Transient);
 
             IocManager.Register<ILockFactory, NamedLockFactory>(DependencyLifeStyle.Singleton);
 
