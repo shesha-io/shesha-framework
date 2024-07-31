@@ -10,6 +10,8 @@ import ColumnsList from './columnsList';
 import { IKeyInformationBarProps } from './interfaces';
 import { ColorPicker, Show } from '@/components';
 import { strings } from '@/components/keyInformationBar/utils';
+import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarProps>> = (props) => {
     const { readOnly } = props;
@@ -98,6 +100,18 @@ const KeyInformationBarSettings: FC<ISettingsFormFactoryArgs<IKeyInformationBarP
             <SettingsFormItem name="stylingBox">
                 <StyleBox />
             </SettingsFormItem>
+
+            <SettingsCollapsiblePanel header="Security">
+                <SettingsFormItem
+                    jsSetting
+                    label="Permissions"
+                    name="permissions"
+                    initialValue={props.model.permissions}
+                    tooltip="Enter a list of permissions that should be associated with this component"
+                >
+                    <PermissionAutocomplete readOnly={readOnly} />
+                </SettingsFormItem>
+            </SettingsCollapsiblePanel>
         </>
     );
 };
