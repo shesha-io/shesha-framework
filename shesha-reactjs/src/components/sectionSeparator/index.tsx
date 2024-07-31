@@ -65,7 +65,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   } as CSSProperties;
 
   const baseStyle: CSSProperties = {
-    borderBottom: inline ? `${lineThickness}px ${dashed ? 'dashed' : 'solid'} ${lineColor || styles.primaryColor}` : 'none',
+    borderBottom: inline ? `${lineThickness || 2}px ${dashed ? 'dashed' : 'solid'} ${lineColor || styles.primaryColor}` : 'none',
   };
 
   const getLineStyles = (isLeft: boolean) => {
