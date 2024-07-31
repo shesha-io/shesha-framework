@@ -1,6 +1,6 @@
 import qs from "qs";
 import { HttpClientApi } from "../http/api";
-import { IAjaxResponse } from "@/interfaces";
+import { IAjaxResponse, IEntityReferenceDto } from "@/interfaces";
 
 const URLS = {
     IS_PERMISSION_GRANTED: '/api/services/app/Permission/IsPermissionGranted',
@@ -19,7 +19,7 @@ export interface ICurrentUserApi {
     readonly userName: string;
     readonly firstName: string;
     readonly lastName: string;
-    hasPermissionAsync(module: string, permissionName: string): Promise<boolean>;
+    hasPermissionAsync(mpermissionName: string, permissionedEntityId?: IEntityReferenceDto): Promise<boolean>;
     hasRoleAsync(roleName: string): Promise<boolean>;
 }
 
@@ -57,12 +57,14 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
         this.#profileInfo = profileInfo;
     }
 
-    async hasPermissionAsync(permissionName: string): Promise<boolean> {
+    async hasPermissionAsync(permissionName: string, permissionedEntity?: IEntityReferenceDto): Promise<boolean> {
         if (!this.isLoggedIn)
             return Promise.resolve(false);
         
         const requestParams = {
-            permissionName: permissionName
+            permissionName,
+            permissionedEntityId: permissionedEntity ? permissionedEntity?.id : undefined,
+            permissionedEntityClass: permissionedEntity ? permissionedEntity?._className : undefined
         };
         return this.#httpClient.get<IAjaxResponse<boolean>>(`${URLS.IS_PERMISSION_GRANTED}?${qs.stringify(requestParams)}`).then(response => response.data?.success ? response.data.result : false);
     };

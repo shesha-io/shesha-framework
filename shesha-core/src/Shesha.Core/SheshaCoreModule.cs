@@ -24,7 +24,7 @@ namespace Shesha
         public override void PreInitialize()
         {
             IocManager.IocContainer.Register(
-                Component.For<ICustomPermissionChecker>().Forward<ShaPermissionChecker>().ImplementedBy<ShaPermissionChecker>().LifestyleTransient()
+                Component.For<ICustomPermissionChecker>().Forward<ShaCustomPermissionChecker>().ImplementedBy<ShaCustomPermissionChecker>().LifestyleTransient()
             );
 
             Configuration.Auditing.IsEnabledForAnonymousUsers = true;
