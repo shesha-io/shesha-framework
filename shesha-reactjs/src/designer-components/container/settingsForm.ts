@@ -287,7 +287,7 @@ export const getSettings = (data: any) =>
                 },
                 {
                   label: "Scroll",
-                  value: "auto",
+                  value: "scroll",
                   id: nanoid()
                 },
               
