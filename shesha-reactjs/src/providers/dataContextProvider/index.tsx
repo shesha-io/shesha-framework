@@ -16,6 +16,7 @@ export interface IDataContextProviderProps {
   metadata?: Promise<IModelMetadata>;
   onChangeData?: ContextOnChangeData;
   onChangeAction?: IConfigurableActionConfiguration;
+  onInitAction?: IConfigurableActionConfiguration;
 }
 
 export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (props) => {
@@ -101,6 +102,10 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     initialDataRef.current = initialData;
     initialData.then((data) => {
       setDatainternal(data);
+      executeAction({
+        actionConfiguration: props.onInitAction,
+        argumentsEvaluationContext: {...allData.current},
+      });
     });
   }
 
