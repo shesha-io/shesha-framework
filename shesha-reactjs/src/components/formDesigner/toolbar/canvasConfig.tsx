@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { DialogButton } from './dialogButton';
 import { useStyles } from '../styles/styles';
 import { Radio } from 'antd';
-import { DesktopOutlined, TabletOutlined } from '@ant-design/icons';
+import { DesktopOutlined } from '@ant-design/icons';
 import { useCanvasConfig } from '@/providers';
 import { MobileOptions } from './mobileDropdown';
 
@@ -42,14 +42,6 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
           title="Desktop"
         >
           <DesktopOutlined />
-        </Radio.Button>
-        <Radio.Button className="radio-button" value="tablet" onClick={() => {
-          setRadioValue('tablet');
-          setCanvasWidth(75, 'tablet');
-        }}
-          title="Tablet"
-        >
-          <TabletOutlined rotate={-90} />
         </Radio.Button>
         <Radio.Button
           className="radio-button"

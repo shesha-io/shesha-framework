@@ -7,7 +7,7 @@ export type IFlagProgressFlags = 'fetchFileInfo' /* NEW_IN_PROGRESS_FLAG_GOES_HE
 export type IFlagSucceededFlags = 'fetchFileInfo' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
 export type IFlagErrorFlags = 'fetchFileInfo' /* NEW_ERROR_FLAG_GOES_HERE */;
 export type IFlagActionedFlags = '__DEFAULT__' /* NEW_ACTIONED_FLAG_GOES_HERE */;
-export type IDeviceTypes = 'desktop' | 'tablet' | 'mobile' | 'custom';    
+export type IDeviceTypes = 'desktop' | 'mobile' | 'custom';
 
 export interface ICanvasConfigStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
@@ -15,14 +15,14 @@ export interface ICanvasConfigStateContext
   zoom?: number;
   activeDevice?: IDeviceTypes;
 }
- 
-export interface ICanvasWidthProps{
+
+export interface ICanvasWidthProps {
   width: number;
   deviceType: string;
 }
 export interface ICanvasConfigActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  setCanvasWidth: (width: number,deviceType:string) => void;
+  setCanvasWidth: (width: number, deviceType: string) => void;
   setCanvasZoom: (zoom: number) => void;
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
