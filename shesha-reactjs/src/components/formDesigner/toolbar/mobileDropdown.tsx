@@ -6,34 +6,31 @@ import { TabletOutlined } from '@ant-design/icons';
 export interface IPreviewButtonProps {
   refLink: React.LegacyRef<HTMLSpanElement>;
   customEditRef?: React.LegacyRef<HTMLSpanElement> | any;
-};
-
-
+}
 
 export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef }) => {
   const { setCanvasWidth, width, activeDevice } = useCanvasConfig();
 
   const items: MenuProps['items'] = [
     {
-      label: <div style={{ width: '11rem' }}>
-        <h5 style={{ marginTop: '-5px', textDecorationLine: 'underline' }}> Dimensions: Responsive</h5>
-        <Select
-          showSearch
-          placeholder="Select a device"
-          optionFilterProp="label"
-          defaultValue={'428'}
-          value={activeDevice === 'mobile' ? width.toString() : '428'}
-          style={{ width: '100%' }}
-          onChange={val => {
-            if (val === '545') {
-              customEditRef.current.click();
-            } else {
-              setCanvasWidth(parseInt(val), 'mobile');
-            }
-          }}
-          options={
-
-            [
+      label: (
+        <div style={{ width: '11rem' }}>
+          <h5 style={{ marginTop: '-5px', textDecorationLine: 'underline' }}> Dimensions: Responsive</h5>
+          <Select
+            showSearch
+            placeholder="Select a device"
+            optionFilterProp="label"
+            defaultValue={'428'}
+            value={activeDevice === 'mobile' ? width.toString() : '428'}
+            style={{ width: '100%' }}
+            onChange={(val) => {
+              if (val === '545') {
+                customEditRef.current.click();
+              } else {
+                setCanvasWidth(parseInt(val, 10), 'mobile');
+              }
+            }}
+            options={[
               {
                 value: '320',
                 label: 'iPhone SE',
@@ -63,7 +60,6 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
                 label: 'Samsung Galaxy S20 Ultra',
               },
               {
-
                 value: '768',
                 label: 'iPad Mini',
               },
@@ -110,18 +106,15 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
               {
                 value: '545',
                 label: 'Edit...',
-              }
-            ]
-          }
-        />
-
-
-      </div>,
+              },
+            ]}
+          />
+        </div>
+      ),
       key: '1',
       disabled: true,
     },
   ];
-
 
   const menuProps = {
     items,
@@ -129,9 +122,8 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
   };
 
   return (
-    <Dropdown menu={menuProps} placement="bottom" trigger={['click']} overlayStyle={{ border: '1px dashed gray' }} >
+    <Dropdown menu={menuProps} placement="bottom" trigger={['click']} overlayStyle={{ border: '1px dashed gray' }}>
       <TabletOutlined ref={refLink} onClick={(e) => e.preventDefault()} />
     </Dropdown>
-
   );
 };
