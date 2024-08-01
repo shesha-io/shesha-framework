@@ -113,11 +113,11 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             {...model}
             wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
             style={{
-              ...getStyle(model?.style, formData),
               ...widthStyles,
               ...heightStyles,
               ...borderStyles,
-              ...backgroundStyles
+              ...backgroundStyles,
+              ...getStyle(model?.style, formData)
             }}
             dynamicComponents={model?.isDynamic ? model?.components : []}
             {...flexAndGridStyles}
