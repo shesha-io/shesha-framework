@@ -3,7 +3,7 @@ import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interfaces";
 import { getValuesFromSettings, updateSettingsFromVlues } from './utils';
 import { createNamedContext } from '@/utils/react';
-import { merge } from 'lodash';
+import { mergeWith } from 'lodash';
 
 interface SettingsFormState<TModel> {
     model?: TModel;
@@ -54,7 +54,11 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
     };
     
     const settingsChange = (changedValues) => {
-      const incomingState = merge({...state.model}, changedValues);
+      const incomingState = mergeWith(
+        {...state.model},
+        changedValues,
+        (objValue, srcValue) => (Array.isArray(objValue) ? srcValue : undefined),
+      );
       setState({model: incomingState, values: getValuesFromSettings(incomingState)});
       onValuesChange(changedValues, incomingState);
       form.setFieldsValue(incomingState);
