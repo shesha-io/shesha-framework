@@ -179,12 +179,19 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 display: flex;
                 justify-content: space-between;
                 gap: 1.5rem;
-                margin: 0 20%;
+                margin: 0;
                 padding-left:5%;
-
-                .radio-button {
-                    width: 33%;
-                  }
+                .radio-group {
+                    display: flex;
+                    flex-direction: row;
+                    .radio-button {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 25%;
+                    }
+                }
+        
             }
         }
         .${shaDesignerToolbox} {
