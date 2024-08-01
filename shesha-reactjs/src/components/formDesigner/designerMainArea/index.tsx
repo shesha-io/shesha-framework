@@ -16,10 +16,17 @@ export interface IDesignerMainAreaProps {
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { isDebug, readOnly } = useFormDesignerState();
     const { form, formMode } = useForm();
-    const { width, zoom } = useCanvasConfig();
+    const { width, zoom, activeDevice } = useCanvasConfig();
     const { styles } = useStyles();
 
     const magnifiedWidth = useMemo(() => width * (zoom / 100), [width, zoom]);
+
+    const customWidth = useMemo(() => {
+        if (activeDevice === 'mobile' || activeDevice === 'custom') {
+            return `${width}px`;
+        }
+        return `${magnifiedWidth}%`;
+    }, [activeDevice, magnifiedWidth]);
 
     return (
         <div className={styles.mainArea}>
@@ -39,7 +46,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                     placeholder: 'Properties',
                 }}
             >
-                <div style={{ width: `${magnifiedWidth}%`, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
+                <div style={{ width: customWidth, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
                     <ParentProvider model={{}} formMode='designer'>
                         <ConfigurableFormRenderer form={form} skipFetchData={true} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
                             {isDebug && (

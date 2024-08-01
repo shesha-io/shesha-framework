@@ -7,31 +7,20 @@ export interface IPreviewButtonProps {
   refLink?: React.LegacyRef<HTMLSpanElement>;
 };
 
-const calculatePercentageToPx = (value: number, browserWidth: number) => {
-  return Math.round((value / 100) * browserWidth);
-};
-
 
 export const DialogButton: FC<IPreviewButtonProps> = ({ refLink }) => {
-  const { setCanvasWidth, setCanvasZoom, width } = useCanvasConfig();
+  const { setCanvasWidth, setCanvasZoom, width, activeDevice } = useCanvasConfig();
   const [browserWidth, setBrowserWidth] = useState<number>();
-  const [currentWidth, setCurrentWidth] = useState(calculatePercentageToPx(width, browserWidth));
+  const [currentWidth, setCurrentWidth] = useState(width);
 
   useEffect(() => {
     if (!browserWidth) {
       setBrowserWidth(window.innerWidth);
     } else if (browserWidth) {
-      setCurrentWidth(calculatePercentageToPx(width, browserWidth));
-
+      setCurrentWidth(activeDevice == 'mobile' ? width : width);
     };
   }, [width, browserWidth]);
 
-  const calculatePercentage = (value: number) => {
-    if (!value) {
-      return 0;
-    }
-    return (value / browserWidth) * 100;
-  };
 
   const items: MenuProps['items'] = [
     {
@@ -40,7 +29,8 @@ export const DialogButton: FC<IPreviewButtonProps> = ({ refLink }) => {
         <Form>
           <Form.Item label="Width">
             <Input type="number" value={currentWidth} suffix={'px'} onChange={e => {
-              setCanvasWidth(calculatePercentage(parseInt(e.target.value, 10)));
+              console.log('currentWidth', currentWidth, parseInt(e.target.value, 10));
+              setCanvasWidth(parseInt(e.target.value, 10), 'custom');
             }
             } />
           </Form.Item>

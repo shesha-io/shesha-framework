@@ -4,6 +4,7 @@ import { useStyles } from '../styles/styles';
 import { Radio } from 'antd';
 import { DesktopOutlined, TabletOutlined } from '@ant-design/icons';
 import { useCanvasConfig } from '@/providers';
+import { MobileOptions } from './mobileDropdown';
 
 export interface ICanvasConfigProps {
 
@@ -14,11 +15,21 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
   const { setCanvasWidth } = useCanvasConfig();
   const [radioValue, setRadioValue] = useState('desktop');
   const dialogRef = useRef(null);
+  const mobileRef = useRef(null);
+
 
   useEffect(() => {
     dialogRef.current.addEventListener('click', () => {
       setRadioValue('dialog');
     });
+    mobileRef.current.addEventListener('click', () => {
+      setRadioValue('mobile');
+      setCanvasWidth(430, 'mobile');
+    });
+    setCanvasWidth(100, 'desktop');
+    return () => {
+      setRadioValue('desktop');
+    };
   }, []);
 
   return (
@@ -26,7 +37,7 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
       <Radio.Group className="radio-group" value={radioValue} buttonStyle="solid" size={'middle'}>
         <Radio.Button className="radio-button" value="desktop" onClick={() => {
           setRadioValue('desktop');
-          setCanvasWidth(100);
+          setCanvasWidth(100, 'desktop');
         }}
           title="Desktop"
         >
@@ -34,7 +45,7 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
         </Radio.Button>
         <Radio.Button className="radio-button" value="tablet" onClick={() => {
           setRadioValue('tablet');
-          setCanvasWidth(75);
+          setCanvasWidth(75, 'tablet');
         }}
           title="Tablet"
         >
@@ -43,13 +54,10 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
         <Radio.Button
           className="radio-button"
           value="mobile"
-          onClick={() => {
-            setRadioValue('mobile');
-            setCanvasWidth(40);
-          }}
+          onClick={() => mobileRef.current.click()}
           title="Mobile"
         >
-          <TabletOutlined />
+          <MobileOptions refLink={mobileRef} customEditRef={dialogRef} />
         </Radio.Button>
         <Radio.Button className="radio-button" value="dialog" onClick={() => dialogRef.current.click()} title="Custom-Width"
         >
