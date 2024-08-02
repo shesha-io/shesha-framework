@@ -43,7 +43,9 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
       'id category dataType editorFormModule editorFormName isClientSpecific name, module { id name }, label, description, versionNo',
     quickSearch: null,
     sorting: 'module.name, name',
-    filter: JSON.stringify({ '==': [{ var: 'versionStatus' }, ConfigurationItemVersionStatus.Live] }),
+    
+    filter: JSON.stringify({"and": [{"==": [{"var": "versionStatus"},ConfigurationItemVersionStatus.Live]},
+                           {"==": [{"var": "isUserSpecific"},false]}]}),
   };
 };
 interface SettingConfigurationDto {

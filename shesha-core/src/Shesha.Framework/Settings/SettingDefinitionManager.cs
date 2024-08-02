@@ -1,11 +1,15 @@
 ﻿using Abp;
 using Abp.Collections.Extensions;
 using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Reflection;
+using Shesha.ConfigurationItems.Specifications;
+using Shesha.Domain;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Settings
 {
@@ -16,13 +20,15 @@ namespace Shesha.Settings
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IIocManager _iocManager;
+        private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
 
         protected Lazy<IDictionary<SettingIdentifier, SettingDefinition>> SettingDefinitions { get; }
 
-        public SettingDefinitionManager(ITypeFinder typeFinder, IIocManager iocManager)
+        public SettingDefinitionManager(ITypeFinder typeFinder, IIocManager iocManager, IRepository<SettingConfiguration, Guid> settingConfigurationRepository)
         {
             _typeFinder = typeFinder;
             _iocManager = iocManager;
+            _settingConfigurationRepository = settingConfigurationRepository;
 
             SettingDefinitions = new Lazy<IDictionary<SettingIdentifier, SettingDefinition>>(CreateSettingDefinitions, true);
         }
@@ -39,10 +45,35 @@ namespace Shesha.Settings
             var definitionProviders = definitionProvidersTypes.Select(t => _iocManager.Resolve(t) as ISettingDefinitionProvider).ToList();
 
             var settings = new Dictionary<SettingIdentifier, SettingDefinition>();
+
+
             foreach (var definitionProvider in definitionProviders)
             {
                 definitionProvider.Define(new SettingDefinitionContext(settings, definitionProvider));
             }
+
+            var dbSettings = _settingConfigurationRepository.GetAll().ToList();
+
+            var dynamicallyCreatedSettings = dbSettings
+                .Where(c => !settings.Any(d => new ByNameAndModuleSpecification<SettingConfiguration>(d.Value.Name, d.Value.ModuleName).IsSatisfiedBy(c)))
+                .ToList();
+
+            foreach (var config in dynamicallyCreatedSettings)
+            {
+                var definition = CreateUserSettingDefinition(config.Name, new object { }, config.Module.Name);
+                var id = new SettingIdentifier(definition.ModuleName, definition.Name);
+                if (settings.ContainsKey(id))
+                {
+                    // Update existing setting if already present
+                    settings[id] = definition;
+                }
+                else
+                {
+                    // Add new setting
+                    settings.Add(id, definition);
+                }
+            }
+
             return settings;
         }
 
@@ -64,6 +95,11 @@ namespace Shesha.Settings
         public virtual IReadOnlyList<SettingDefinition> GetAll()
         {
             return SettingDefinitions.Value.Values.ToImmutableList();
+        }
+
+        public virtual void AddDefinition(SettingDefinition definition)
+        {
+            SettingDefinitions.Value.Add(new SettingIdentifier(definition.ModuleName, definition.Name), definition);
         }
 
         public virtual SettingDefinition GetOrNull(string moduleName, string name)

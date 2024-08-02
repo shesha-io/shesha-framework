@@ -63,6 +63,7 @@ namespace Shesha.Settings
             if (setting == null)
             {
                 setting = _settingDefinitionManager.CreateUserSettingDefinition(name, defaultValue, module);
+                _settingDefinitionManager.AddDefinition(setting);
                 var configuration = await EnsureConfigurationAsync(setting);
             }
 
@@ -84,6 +85,7 @@ namespace Shesha.Settings
             if (setting == null)
             {
                 setting = _settingDefinitionManager.CreateUserSettingDefinition(name, value, module);
+                _settingDefinitionManager.AddDefinition(setting);
             }
 
             configuration = await EnsureConfigurationAsync(setting);
