@@ -94,6 +94,7 @@ namespace Shesha.Settings
                         EditorFormModule = definition.EditForm?.Module,
                         EditorFormName = definition.EditForm?.Name,
                         ModuleId = module?.Id,
+                        IsUserSpecific = definition.IsUserSpecific,
                     });
                 }
 
@@ -111,6 +112,7 @@ namespace Shesha.Settings
                     config.Description = definition.Description;
                     config.Category = definition.Category;
                     config.IsClientSpecific = definition.IsClientSpecific;
+                    config.IsUserSpecific = definition.IsUserSpecific;
                     config.EditorFormModule = definition.EditForm?.Module;
                     config.EditorFormName = definition.EditForm?.Name;
 

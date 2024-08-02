@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Abp.Runtime.Session;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.Settings.Dto;
 using System.Collections.Generic;
@@ -49,13 +50,48 @@ namespace Shesha.Settings
             var appKey = !string.IsNullOrWhiteSpace(input.AppKey)
                 ? input.AppKey
                 : _cfRuntime.FrontEndApplication;
-            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, 
-                new SettingManagementContext { 
-                    AppKey = appKey
-                });
+            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext
+                {
+                    AppKey = input.AppKey,
+                    UserId = AbpSession.UserId
+                } : null);
 
             return value;
         }
+
+        /// <summary>
+        /// Get user setting value
+        /// </summary>
+        [HttpGet]
+        public async Task<object> GetUserValue(GetSettingValueInput input, object defaultValue = null)
+        {
+            var value = await _settingProvider.UserSpecificGetOrNullAsync(input.Module, input.Name,defaultValue, !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext
+                {
+                    AppKey = input.AppKey,
+                    UserId = AbpSession.UserId
+                } : null);
+
+            return value;
+        }
+
+        /// <summary>
+        /// Update setting value
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task UpdateUserValue(UpdateSettingValueInput input)
+        {
+            await _settingProvider.UpdateUserSettingAsync(input.Module, input.Name, input.Value, !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext
+                {
+                    AppKey = input.AppKey,
+                    UserId = AbpSession.UserId
+                } : null);
+        }
+
 
         /// <summary>
         /// Update setting value

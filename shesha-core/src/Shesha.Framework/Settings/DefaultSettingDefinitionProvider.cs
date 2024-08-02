@@ -84,6 +84,8 @@ namespace Shesha.Settings
             definition.Description = ReflectionHelper.GetDescription(property);
             definition.IsClientSpecific = settingAttribute?.IsClientSpecific ?? false;
 
+            definition.IsUserSpecific = settingAttribute?.IsUserSpecific ?? false;
+
             definition.ModuleName = moduleInfo.Name;
             definition.ModuleAccessor = moduleInfo.GetModuleAccessor();
 

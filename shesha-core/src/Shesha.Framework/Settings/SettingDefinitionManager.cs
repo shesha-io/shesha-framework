@@ -70,5 +70,18 @@ namespace Shesha.Settings
         {
             return SettingDefinitions.Value.GetOrDefault(new SettingIdentifier(moduleName, name));
         }
+
+        // Generic method to create a SettingDefinition
+        public static SettingDefinition<T> CreateUserSettingDefinition<T>(string name, T defaultValue, string module)
+        {
+            var setting = new SettingDefinition<T>(name, defaultValue, name)
+            {
+                Accessor = name,
+                Category = "User Settings",
+                IsUserSpecific = true,
+                ModuleName = module,
+            };
+            return setting;
+        }
     }
 }

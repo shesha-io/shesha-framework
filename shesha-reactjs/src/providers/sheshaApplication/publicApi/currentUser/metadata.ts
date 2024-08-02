@@ -40,6 +40,14 @@ const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinitio
         "     * Has permission",
         "     */",
         "    hasPermissionAsync: (permission: string, permissionedEntity?: IEntityReferenceDto) => Promise<boolean>;",
+        "    /**",
+        "     * Get User Setting",
+        "     */",
+        "    getuserSettingValueAsync(name: string, module: string): Promise<any>",
+        "    /**",
+        "     * Update User Setting",
+        "     */",
+        "    updateUserSettingValueAsync(name: string, module: string, value: any): Promise<void>",
         "}",
     ].join("\n");
     return Promise.resolve({

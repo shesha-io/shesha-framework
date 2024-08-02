@@ -14,5 +14,7 @@ namespace Shesha.Settings
         IReadOnlyList<SettingDefinition> GetAll();
 
         SettingDefinition GetOrNull([NotNull] string moduleName, string name);
+
+        SettingDefinition<T> CreateUserSettingDefinition<T>(string name, T defaultValue, string module)
     }
 }
