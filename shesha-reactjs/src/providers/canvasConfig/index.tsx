@@ -3,18 +3,18 @@ import React, {
   PropsWithChildren,
   useContext,
   useReducer
-  } from 'react';
+} from 'react';
 import CanvasReducer from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { setCanvasWidthAction, setCanvasZoomAction } from './actions';
 import {
-CANVAS_CONFIG_CONTEXT_INITIAL_STATE,
-CanvasConfigActionsContext,
-CanvasConfigStateContext
+  CANVAS_CONFIG_CONTEXT_INITIAL_STATE,
+  CanvasConfigActionsContext,
+  CanvasConfigStateContext
 } from './contexts';
 
 export interface ICanvasProviderProps {
- 
+
 }
 
 const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
@@ -25,12 +25,12 @@ const CanvasProvider: FC<PropsWithChildren<ICanvasProviderProps>> = ({
     ...CANVAS_CONFIG_CONTEXT_INITIAL_STATE,
   });
 
- 
 
-  const  setCanvasWidth = (width: number) => {
-    dispatch(setCanvasWidthAction(width));
+
+  const setCanvasWidth = (width: number, deviceType: string) => {
+    dispatch(setCanvasWidthAction({ width, deviceType }));
   };
-  const  setCanvasZoom = (zoom: number) => {
+  const setCanvasZoom = (zoom: number) => {
     dispatch(setCanvasZoomAction(zoom));
   };
   /* NEW_ACTION_DECLARATION_GOES_HERE */
