@@ -58,6 +58,6 @@ namespace Shesha.Domain
         /// Is true for last version of the file
         /// Note: updated by triggers in sql server side
         /// </summary>
-        public virtual bool IsLast { get; protected set; }
+        public virtual bool IsLast { get; set; }
     }
 }
