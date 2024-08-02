@@ -5,7 +5,7 @@ import { Input, message } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { axiosHttp } from '@/utils/fetchers';
@@ -48,7 +48,24 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const getTextAreaStyle = (style: CSSProperties = {}) => ({ ...style, marginBottom: model?.showCount ? '16px' : 0 });
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+    const additionalStyles: CSSProperties = {
+      height: `${Number(model?.height) ? model?.height+'px' : model?.height}`,
+      width: `${Number(model?.width) ? model?.width+'px' : model?.width}`,
+      borderWidth: model?.hideBorder ? 0 : model?.borderSize,
+      borderRadius: model?.borderRadius,
+      borderStyle: model?.borderType,
+      borderColor: model?.borderColor,
+      backgroundColor: model?.backgroundColor,
+      color: model?.fontColor,
+      fontWeight: model?.fontWeight,
+      fontSize: model?.fontSize,
+      ...stylingBoxAsCSS,
+    };
+
+    const getTextAreaStyle = (style: CSSProperties = {}) => ({ ...style, ...additionalStyles, marginBottom: model?.showCount ? '16px' : 0 });
 
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
