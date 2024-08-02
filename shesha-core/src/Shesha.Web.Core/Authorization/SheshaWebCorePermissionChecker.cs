@@ -1,5 +1,6 @@
 using Abp.Domain.Repositories;
 using Shesha.Authorization;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Utilities;
@@ -65,6 +66,16 @@ namespace Boxfusion.Authorization
         public bool IsGranted(long userId, string permissionName)
         {
             return AsyncHelper.RunSync(() => IsGrantedAsync(userId, permissionName));
+        }
+
+        public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            return await IsGrantedAsync(userId, permissionName);
+        }
+
+        public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            return IsGranted(userId, permissionName);
         }
     }
 }

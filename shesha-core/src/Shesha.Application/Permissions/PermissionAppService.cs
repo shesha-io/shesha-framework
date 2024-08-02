@@ -1,4 +1,5 @@
 ﻿using Abp.Authorization;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -198,7 +199,13 @@ namespace Shesha.Permissions
         [AbpAuthorize()]
         public async Task<bool> IsPermissionGranted(IsPermissionGrantedInput input) 
         {
-            return await _permissionChecker.IsGrantedAsync(input.PermissionName);
+            if (input.PermissionedEntityId.IsNullOrEmpty() || input.PermissionedEntityClass.IsNullOrEmpty())
+                return await _permissionChecker.IsGrantedAsync(input.PermissionName);
+
+            return await _permissionChecker.IsGrantedAsync(
+                input.PermissionName,
+                new EntityReferenceDto<string>(input.PermissionedEntityId, "", input.PermissionedEntityClass)
+            );
         }
     }
 }
