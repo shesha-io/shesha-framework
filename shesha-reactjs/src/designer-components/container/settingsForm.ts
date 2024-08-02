@@ -498,7 +498,7 @@ export const getSettings = (data: any) =>
             values: [
               {
                 label: "StoredFile",
-                value: "storedFile",
+                value: "storedFileId",
                 id: nanoid()
               },
               {
