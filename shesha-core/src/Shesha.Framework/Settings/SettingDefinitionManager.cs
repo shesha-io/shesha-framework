@@ -72,7 +72,7 @@ namespace Shesha.Settings
         }
 
         // Generic method to create a SettingDefinition
-        public static SettingDefinition<T> CreateUserSettingDefinition<T>(string name, T defaultValue, string module)
+        public virtual SettingDefinition<T> CreateUserSettingDefinition<T>(string name, T defaultValue, string module)
         {
             var setting = new SettingDefinition<T>(name, defaultValue, name)
             {
