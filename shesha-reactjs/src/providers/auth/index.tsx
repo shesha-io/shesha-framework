@@ -342,6 +342,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           .then(loginSuccessHandler(dispatchThunk, getState))
           .then((response: any) => {
             dispatch(fetchUserDataActionSuccessAction(response?.payload?.result?.user));
+            dispatch(setIsLoggedInAction(true));
             resolve(response);
           })
           .catch((err) => {
@@ -358,7 +359,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
       .then((response) => {
         const { url } = response as { payload: GetCurrentLoginInfoOutputAjaxResponse; url: string };
 
-        dispatch(setIsLoggedInAction(true));
         redirect(url);
       })
       .catch((e) => {
