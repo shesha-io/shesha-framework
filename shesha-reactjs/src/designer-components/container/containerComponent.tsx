@@ -117,7 +117,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
               ...heightStyles,
               ...borderStyles,
               ...backgroundStyles,
-              ...getStyle(model?.style, formData),
+              ...getStyle(model?.style, formData)
             }}
             dynamicComponents={model?.isDynamic ? model?.components : []}
             {...flexAndGridStyles}
