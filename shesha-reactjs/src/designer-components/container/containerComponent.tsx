@@ -47,19 +47,19 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     };
 
     const widthStyles: CSSProperties = {
-      width: `${Number(model?.width) ? model?.width+'px' : model?.width}`,
-      minWidth: `${Number(model?.minWidth) ? model?.minWidth+'px' : model?.minWidth}`,
-      maxWidth: `${Number(model?.maxWidth) ? model?.maxWidth+'px' : model?.maxWidth}`,
+      width: `${Number(model?.width) ? model?.width + 'px' : model?.width}`,
+      minWidth: `${Number(model?.minWidth) ? model?.minWidth + 'px' : model?.minWidth}`,
+      maxWidth: `${Number(model?.maxWidth) ? model?.maxWidth + 'px' : model?.maxWidth}`,
       overflow: model?.overflow,
     };
 
     const heightStyles: CSSProperties = {
-      height: `${Number(model?.height) ? model?.height+'px' : model?.height}`,
-      minHeight: `${Number(model?.minHeight) ? model?.minHeight+'px' : model?.minHeight}`,
-      maxHeight: `${Number(model?.maxHeight) ? model?.maxHeight+'px' : model?.maxHeight}`,
+      height: `${Number(model?.height) ? model?.height + 'px' : model?.height}`,
+      minHeight: `${Number(model?.minHeight) ? model?.minHeight + 'px' : model?.minHeight}`,
+      maxHeight: `${Number(model?.maxHeight) ? model?.maxHeight + 'px' : model?.maxHeight}`,
     };
 
-    
+
     const borderStyles: CSSProperties = {
       borderWidth: `${Number(model?.borderWidth) ? model?.borderWidth + 'px' : model?.borderWidth}`,
       borderColor: model?.borderColor,
@@ -97,8 +97,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const backgroundStyles = model?.backgroundType === 'image'
       ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundRepeat }
       : model?.backgroundType === 'color'
-      ? { background: model?.backgroundColor }
-      : {};
+        ? { background: model?.backgroundColor }
+        : {};
 
     return (
       <ParentProvider model={model}>
