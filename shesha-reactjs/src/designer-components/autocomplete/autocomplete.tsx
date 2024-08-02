@@ -172,9 +172,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       height: `${Number(model?.height) ? model?.height + 'px' : model?.height}`,
       width: `${Number(model?.width) ? model?.width + 'px' : model?.width}`,
       fontWeight: model?.fontWeight,
-      borderWidth: model?.borderSize, //this is handled in the entityAutcomplete.tsx
+      borderWidth: model?.hideBorder ? '0px' : model?.borderSize, //this is handled in the entityAutcomplete.tsx
       borderRadius: model?.borderRadius,
-      borderStyle: model?.borderType,
+      borderStyle: model?.hideBorder ? 'none' : model?.borderType,
       borderColor: model?.borderColor,
       backgroundColor: model?.backgroundColor,
       fontSize: model?.fontSize,
