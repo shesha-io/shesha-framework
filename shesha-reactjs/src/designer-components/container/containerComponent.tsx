@@ -11,6 +11,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { CSSProperties } from 'styled-components';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -45,6 +46,27 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       gap: model?.gap,
     };
 
+    const widthStyles: CSSProperties = {
+      width: `${Number(model?.width) ? model?.width + 'px' : model?.width}`,
+      minWidth: `${Number(model?.minWidth) ? model?.minWidth + 'px' : model?.minWidth}`,
+      maxWidth: `${Number(model?.maxWidth) ? model?.maxWidth + 'px' : model?.maxWidth}`,
+      overflow: model?.overflow,
+    };
+
+    const heightStyles: CSSProperties = {
+      height: `${Number(model?.height) ? model?.height + 'px' : model?.height}`,
+      minHeight: `${Number(model?.minHeight) ? model?.minHeight + 'px' : model?.minHeight}`,
+      maxHeight: `${Number(model?.maxHeight) ? model?.maxHeight + 'px' : model?.maxHeight}`,
+    };
+
+
+    const borderStyles: CSSProperties = {
+      borderWidth: `${Number(model?.borderWidth) ? model?.borderWidth + 'px' : model?.borderWidth}`,
+      borderColor: model?.borderColor,
+      borderStyle: model?.borderStyle,
+      borderRadius: `${Number(model?.borderRadius) ? model?.borderRadius + 'px' : model?.borderRadius}`,
+    };
+
     let val;
     if (model?.dataSource === "storedFileId") {
       val = model?.storedFileId;
@@ -75,8 +97,8 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const backgroundStyles = model?.backgroundType === 'image'
       ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundRepeat }
       : model?.backgroundType === 'color'
-      ? { background: model?.backgroundColor }
-      : {};
+        ? { background: model?.backgroundColor }
+        : {};
 
     return (
       <ParentProvider model={model}>
@@ -86,16 +108,19 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         >
           <ComponentsContainer
             containerId={model.id}
-            {...flexAndGridStyles}
             {...backgroundStyles}
             className={model.className}
             {...model}
             wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
             style={{
+              ...widthStyles,
+              ...heightStyles,
+              ...borderStyles,
               ...backgroundStyles,
               ...getStyle(model?.style, formData),
             }}
             dynamicComponents={model?.isDynamic ? model?.components : []}
+            {...flexAndGridStyles}
           />
         </ConditionalWrap>
       </ParentProvider>

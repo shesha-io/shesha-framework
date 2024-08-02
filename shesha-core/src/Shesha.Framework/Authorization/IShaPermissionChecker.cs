@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Abp.Authorization;
+using Shesha.AutoMapper.Dto;
 
 namespace Shesha.Authorization
 {
@@ -20,5 +21,18 @@ namespace Shesha.Authorization
         /// Clears permissions cache
         /// </summary>
         Task ClearPermissionsCacheAsync();
+
+        //
+        // Summary:
+        //     Checks if current user is granted for a permission.
+        //
+        // Parameters:
+        //   permissionName:
+        //     Name of the permission
+        Task<bool> IsGrantedAsync(string permissionName, EntityReferenceDto<string> permissionedEntity);
+        Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity);
+
+        bool IsGranted(string permissionName, EntityReferenceDto<string> permissionedEntity);
+        bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity);
     }
 }

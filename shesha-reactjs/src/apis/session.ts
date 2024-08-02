@@ -1,5 +1,11 @@
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
+import { IEntityReferenceDto } from '..';
+
+export interface GrantedPermissionDto {
+  permission: string;
+  permissionedEntity?: IEntityReferenceDto[] | null;
+}
 
 export interface UserLoginInfoDto {
   id?: number;
@@ -15,7 +21,7 @@ export interface UserLoginInfoDto {
   loginProvider?: string | null;
   homeUrl?: string | null;
   isSelfServiceUser?: boolean;
-  grantedPermissions?: string[] | null;
+  grantedPermissions?: GrantedPermissionDto[] | null;
 }
 export interface ApplicationInfoDto {
   version?: string | null;
