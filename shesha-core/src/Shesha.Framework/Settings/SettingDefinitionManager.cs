@@ -50,28 +50,7 @@ namespace Shesha.Settings
             foreach (var definitionProvider in definitionProviders)
             {
                 definitionProvider.Define(new SettingDefinitionContext(settings, definitionProvider));
-            }
 
-            var dbSettings = _settingConfigurationRepository.GetAll().ToList();
-
-            var dynamicallyCreatedSettings = dbSettings
-                .Where(c => !settings.Any(d => new ByNameAndModuleSpecification<SettingConfiguration>(d.Value.Name, d.Value.ModuleName).IsSatisfiedBy(c)))
-                .ToList();
-
-            foreach (var config in dynamicallyCreatedSettings)
-            {
-                var definition = CreateUserSettingDefinition(config.Name, new object { }, config.Module.Name);
-                var id = new SettingIdentifier(definition.ModuleName, definition.Name);
-                if (settings.ContainsKey(id))
-                {
-                    // Update existing setting if already present
-                    settings[id] = definition;
-                }
-                else
-                {
-                    // Add new setting
-                    settings.Add(id, definition);
-                }
             }
 
             return settings;
