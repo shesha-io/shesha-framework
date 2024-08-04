@@ -47,6 +47,7 @@ import Statistic from '@/designer-components/statistic';
 import StatusTag from '@/designer-components/statusTag';
 import StyleBox from '@/designer-components/styleBox';
 import SubForm from '@/designer-components/subForm';
+import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
 import Tabs from '@/designer-components/tabs';
 import Text from '@/designer-components/text';
@@ -117,6 +118,7 @@ export const getToolboxComponents = (
         Checkbox,
         CheckboxGroup,
         Radio,
+        Slider,
         Switch,
         DateField,
         TimeFieldComponent,
