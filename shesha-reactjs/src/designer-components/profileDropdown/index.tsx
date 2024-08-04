@@ -1,17 +1,19 @@
-import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, MenuProps } from 'antd';
 import React, { Fragment, useMemo } from 'react';
 import { IToolboxComponent, ShaLink, useAuth, useSidebarMenu } from '@/index';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
+import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 
 type MenuItem = MenuProps['items'][number];
 
 const ProfileDropdown: IToolboxComponent = {
   type: 'profileDropdown',
-  canBeJsSetting: false,
   name: 'Profile Dropdown',
+  canBeJsSetting: false,
   icon: <UserOutlined />,
-  Factory: () => {
+  Factory: ({ model }) => {
     const { styles } = useStyles();
     const { loginInfo, logoutUser } = useAuth();
     const sidebar = useSidebarMenu(false);
@@ -41,6 +43,8 @@ const ProfileDropdown: IToolboxComponent = {
       return result;
     }, [accountDropdownListItems, logoutUser]);
 
+    if (model.hidden) return null;
+
     return (
       <div className={styles.shaProfileDropdown}>
         <Dropdown menu={{ items: accountMenuItems }} trigger={['click']}>
@@ -52,6 +56,8 @@ const ProfileDropdown: IToolboxComponent = {
       </div>
     );
   },
+  settingsFormMarkup: (data) => getSettings(data),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
 
 export default ProfileDropdown;

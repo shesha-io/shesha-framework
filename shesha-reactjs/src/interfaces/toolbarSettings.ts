@@ -28,6 +28,7 @@ import { IRadioProps } from '@/designer-components/radio/utils';
 import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
+import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -93,6 +94,8 @@ type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
 type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, 'hidden' | 'type'>;
 
 type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
+
+type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -227,6 +230,10 @@ export class DesignerToolbarSettings<T> {
 
   public addStyleBox(props: StyleBoxType | ((data: T) => StyleBoxType)) {
     return this.addProperty(props, 'styleBox');
+  }
+
+  public addSlider(props: SliderType | ((data: T) => SliderType)) {
+    return this.addProperty(props, 'slider');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
