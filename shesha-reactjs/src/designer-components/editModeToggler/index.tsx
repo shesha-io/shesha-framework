@@ -12,16 +12,20 @@ const HeaderAppControl: IToolboxComponent = {
   name: 'Header App Control',
   canBeJsSetting: false,
   icon: <SwapOutlined />,
-  Factory: ({ model }) => (
-    <ParentProvider model={model}>
-      <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
-        <Space className="sha-header-app-control">
-          <AppEditModeToggler {...model} />
-          <ConfigurationItemViewModeToggler />
-        </Space>
-      </ProtectedContent>
-    </ParentProvider>
-  ),
+  Factory: ({ model }) => {
+    if (model.hidden) return null;
+
+    return (
+      <ParentProvider model={model}>
+        <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
+          <Space className="sha-header-app-control">
+            <AppEditModeToggler {...model} />
+            <ConfigurationItemViewModeToggler />
+          </Space>
+        </ProtectedContent>
+      </ParentProvider>
+    );
+  },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
 };
