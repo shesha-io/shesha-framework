@@ -186,16 +186,6 @@
             "propertyName": "editMode",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Edit mode"
-          },
-          {
-            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "s4gmBg31azZC0UjZjpfTm",
-            "hidden": false,
-            "validate": {},
-            "version": 2
           }
         ]
       },
@@ -632,11 +622,26 @@
             "textType": "text"
           },
           {
+            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "hidden": false,
+            "validate": {},
+            "version": 2
+          },
+          {
             "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
             "type": "numberField",
             "propertyName": "borderSize",
             "label": "Border Width",
             "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            },
             "version": 3
           },
           {
@@ -654,6 +659,11 @@
             "parentId": "RvNp_osTwoxjfKmj1mO9p",
             "label": "Border Type",
             "dataSourceType": "values",
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            },
             "values": [
               {
                 "label": "Solid",
@@ -684,7 +694,11 @@
             "componentName": "borderColor",
             "label": "Border Color",
             "labelAlign": "right",
-            "hidden": false,
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            },
             "isDynamic": false,
             "version": 2,
             "settingsValidationErrors": [],
