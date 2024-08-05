@@ -17,16 +17,18 @@ using System.Text.RegularExpressions;
 namespace Shesha.Settings
 {
     /// <summary>
-    /// User settings definition provider. Defines all settings dynamically created
+    /// Dynamic settings definition provider. Defines all settings dynamically created
     /// </summary>
-    public class UserSettingDefinitionProvider : ISettingDefinitionProvider, ITransientDependency
+    public class DynamicSettingDefinitionProvider : IOrderedSettingDefinitionProvider, ITransientDependency
     {
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
 
-        public UserSettingDefinitionProvider(IRepository<SettingConfiguration, Guid> settingConfigurationRepository)
+        public DynamicSettingDefinitionProvider(IRepository<SettingConfiguration, Guid> settingConfigurationRepository)
         {
             _settingConfigurationRepository = settingConfigurationRepository;
         }
+
+        public int OrderIndex => 2;
 
         public void Define(ISettingDefinitionContext context)
         {
@@ -45,6 +47,7 @@ namespace Shesha.Settings
                     Category = "User Settings",
                     IsUserSpecific = true,
                     ModuleName = config.Module.Name,
+                    DisplayName = config.Name,
                 };
 
                 var id = new SettingIdentifier(definition.ModuleName, definition.Name);

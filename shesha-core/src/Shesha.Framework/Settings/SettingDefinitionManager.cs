@@ -42,7 +42,7 @@ namespace Shesha.Settings
                     _iocManager.IsRegistered(t)
                 ).ToList();
 
-            var definitionProviders = definitionProvidersTypes.Select(t => _iocManager.Resolve(t) as ISettingDefinitionProvider).ToList();
+            var definitionProviders = definitionProvidersTypes.Select(t => _iocManager.Resolve(t) as ISettingDefinitionProvider).OrderBy(p => (p as IOrderedSettingDefinitionProvider)?.OrderIndex ?? int.MaxValue).ToList();
 
             var settings = new Dictionary<SettingIdentifier, SettingDefinition>();
 
@@ -95,6 +95,8 @@ namespace Shesha.Settings
                 Category = "User Settings",
                 IsUserSpecific = true,
                 ModuleName = module,
+                DefaultValue = defaultValue,
+                DisplayName = name,
             };
             return setting;
         }
