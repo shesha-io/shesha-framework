@@ -47,9 +47,6 @@ namespace Shesha.Settings
         [HttpGet]
         public async Task<object> GetValue(GetSettingValueInput input)
         {
-            var appKey = !string.IsNullOrWhiteSpace(input.AppKey)
-                ? input.AppKey
-                : _cfRuntime.FrontEndApplication;
             var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, !string.IsNullOrWhiteSpace(input.AppKey) ?
                 new SettingManagementContext
                 {
@@ -63,10 +60,10 @@ namespace Shesha.Settings
         /// <summary>
         /// Get user setting value
         /// </summary>
-        [HttpGet]
-        public async Task<object> GetUserValue(GetSettingValueInput input, object defaultValue = null)
+        [HttpPost]
+        public async Task<object> GetUserValue(GetDynamicSettingValueInput input)
         {
-            var value = await _settingProvider.UserSpecificGetOrNullAsync(input.Module, input.Name,defaultValue, !string.IsNullOrWhiteSpace(input.AppKey) ?
+            var value = await _settingProvider.UserSpecificGetOrNullAsync(input.Module, input.Name, input.Datatype, input.DefaultValue, !string.IsNullOrWhiteSpace(input.AppKey) ?
                 new SettingManagementContext
                 {
                     AppKey = input.AppKey,
@@ -82,9 +79,9 @@ namespace Shesha.Settings
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task UpdateUserValue(UpdateSettingValueInput input)
+        public async Task UpdateUserValue(UpdateDynamicSettingValueInput input)
         {
-            await _settingProvider.UpdateUserSettingAsync(input.Module, input.Name, input.Value, !string.IsNullOrWhiteSpace(input.AppKey) ?
+            await _settingProvider.UpdateUserSettingAsync(input.Module, input.Name, input.Datatype, input.Value, !string.IsNullOrWhiteSpace(input.AppKey) ?
                 new SettingManagementContext
                 {
                     AppKey = input.AppKey,
@@ -101,7 +98,12 @@ namespace Shesha.Settings
         [HttpPost]
         public async Task UpdateValue(UpdateSettingValueInput input)
         {
-            await _settingProvider.SetAsync(input.Module, input.Name, input.Value, new SettingManagementContext { AppKey = input.AppKey });
+            await _settingProvider.SetAsync(input.Module, input.Name, input.Value, !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext
+                {
+                    AppKey = input.AppKey,
+                    UserId = AbpSession.UserId
+                } : null);
         }
 
         [HttpGet]

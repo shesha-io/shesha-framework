@@ -43,11 +43,11 @@ const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinitio
         "    /**",
         "     * Get User Setting",
         "     */",
-        "    getuserSettingValueAsync(name: string, module: string): Promise<any>",
+        "    getuserSettingValueAsync(name: string, module: string, dataType?: string, defaultValue?: string): Promise<any>",
         "    /**",
         "     * Update User Setting",
         "     */",
-        "    updateUserSettingValueAsync(name: string, module: string, value: any): Promise<void>",
+        "    updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void>",
         "}",
     ].join("\n");
     return Promise.resolve({

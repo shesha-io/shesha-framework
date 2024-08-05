@@ -1,14 +1,18 @@
 ﻿using Abp;
 using Abp.Collections.Extensions;
+using Abp.Configuration;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Reflection;
+using Castle.MicroKernel.SubSystems.Conversion;
+using Newtonsoft.Json.Linq;
 using Shesha.ConfigurationItems.Specifications;
 using Shesha.Domain;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Shesha.Settings
@@ -46,11 +50,9 @@ namespace Shesha.Settings
 
             var settings = new Dictionary<SettingIdentifier, SettingDefinition>();
 
-
             foreach (var definitionProvider in definitionProviders)
             {
                 definitionProvider.Define(new SettingDefinitionContext(settings, definitionProvider));
-
             }
 
             return settings;
@@ -87,18 +89,53 @@ namespace Shesha.Settings
         }
 
         // Generic method to create a SettingDefinition
-        public virtual SettingDefinition<T> CreateUserSettingDefinition<T>(string name, T defaultValue, string module)
+        public virtual SettingDefinition CreateUserSettingDefinition(string module, string name, string dataType, object value = default)
         {
-            var setting = new SettingDefinition<T>(name, defaultValue, name)
+            var type = GetTypeFromName(dataType);
+
+            object convertedDefaultValue = value == null && type.IsValueType ? Activator.CreateInstance(type) : ConvertToType(value, type);
+
+            // Create the generic type SettingDefinition<TValue>
+            Type genericType = typeof(SettingDefinition<>).MakeGenericType(type);
+
+            // Create an instance of the generic type
+            ConstructorInfo constructor = genericType.GetConstructor(new[] { typeof(string), type, typeof(string) });
+            if (constructor == null)
             {
-                Accessor = name,
-                Category = "User Settings",
-                IsUserSpecific = true,
-                ModuleName = module,
-                DefaultValue = defaultValue,
-                DisplayName = name,
-            };
+                throw new InvalidOperationException($"Constructor not found for type '{genericType.FullName}'.");
+            }
+
+            SettingDefinition setting = (SettingDefinition)constructor.Invoke(new[] { name, convertedDefaultValue, name });
+
+            setting.ModuleName = module;
+            setting.DisplayName = name;
+            setting.IsUserSpecific = true;
+            setting.Accessor = name;
+            setting.Category = "Dynamic Settings";
             return setting;
+        }
+
+        public virtual Type GetTypeFromName(string dataType)
+        {
+            Type type = dataType switch
+            {
+                "string" => typeof(string),
+                "number" => typeof(int),
+                "boolean" => typeof(bool),
+                _ => typeof(string)
+            };
+
+            return type;
+        }
+
+        public static object ConvertToType(object value, Type type)
+        {
+            if (value == null || type.IsAssignableFrom(value.GetType()))
+            {
+                return value;
+            }
+
+            return Convert.ChangeType(value, type);
         }
     }
 }

@@ -44,8 +44,7 @@ const getListFetcherQueryParams = (maxResultCount): IGenericGetAllPayload => {
     quickSearch: null,
     sorting: 'module.name, name',
     
-    filter: JSON.stringify({"and": [{"==": [{"var": "versionStatus"},ConfigurationItemVersionStatus.Live]},
-                           {"==": [{"var": "isUserSpecific"},false]}]}),
+    filter: JSON.stringify({"and": [{"==": [{"var": "versionStatus"},ConfigurationItemVersionStatus.Live]}]}),
   };
 };
 interface SettingConfigurationDto {

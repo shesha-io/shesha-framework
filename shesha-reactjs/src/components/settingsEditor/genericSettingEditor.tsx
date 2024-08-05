@@ -79,6 +79,7 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
 
     return (
         <ConfigurableForm
+            key={JSON.stringify(formMarkup)}
             mode={editorMode}
             form={form}
             markup={formMarkup}

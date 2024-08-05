@@ -23,8 +23,8 @@ export interface ICurrentUserApi {
     readonly lastName: string;
     hasPermissionAsync(mpermissionName: string, permissionedEntityId?: IEntityReferenceDto): Promise<boolean>;
     hasRoleAsync(roleName: string): Promise<boolean>;
-    getuserSettingValueAsync(name: string, module: string): Promise<any>;
-    updateUserSettingValueAsync(name: string, module: string, value: any): Promise<void>;
+    getuserSettingValueAsync(name: string, module: string, dataType?: string, defaultValue?: string): Promise<any>;
+    updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void>;
 }
 
 export interface IInternalCurrentUserApi extends ICurrentUserApi {
@@ -83,16 +83,15 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
         return this.#httpClient.get<IAjaxResponse<boolean>>(`${URLS.IS_ROLE_GRANTED}?${qs.stringify(requestParams)}`).then(response => response.data?.success ? response.data.result : false);
     }
 
-    async getuserSettingValueAsync(name: string, module: string): Promise<any> {
-        const url = `${URLS.GET_USER_SETTING_VALUE}?name=${name}&module=${module}`;
-        return this.#httpClient.get<IAjaxResponse<any>>(url)
-            .then(res => {
+    async getuserSettingValueAsync(name: string, module: string, defaultValue?: string, dataType?: string): Promise<any> {
+        return this.#httpClient.post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, {name,module,defaultValue, dataType})
+        .then(res => {
                 return res.data.success ? res.data.result : undefined;
-            });
+        });
     };
 
-    async updateUserSettingValueAsync(name: string, module: string, value: any): Promise<void> {
-        return this.#httpClient.post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, {name,module,value})
+    async updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void> {
+        return this.#httpClient.post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, {name,module,value, dataType})
             .then(res => {
                 if (!res.data.success)
                     throw new Error("Failed to update setting value: " + res.data.error.message);

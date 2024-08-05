@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 
 namespace Shesha.Settings
@@ -17,6 +18,6 @@ namespace Shesha.Settings
 
         SettingDefinition GetOrNull([NotNull] string moduleName, string name);
 
-        SettingDefinition<T> CreateUserSettingDefinition<T>(string name, T defaultValue, string module);
+        SettingDefinition CreateUserSettingDefinition(string module, string name, string dataType, object value);
     }
 }
