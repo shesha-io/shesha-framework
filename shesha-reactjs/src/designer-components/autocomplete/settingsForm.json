@@ -785,6 +785,7 @@
             "propertyName": "borderRadius",
             "label": "Border Radius",
             "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "defaultValue": "8",
             "version": 3
           },
           {
