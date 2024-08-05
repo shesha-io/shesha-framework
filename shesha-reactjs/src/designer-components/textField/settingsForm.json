@@ -650,6 +650,7 @@
             "propertyName": "borderRadius",
             "label": "Border Radius",
             "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "defaultValue": "8",
             "version": 3
           },
           {
