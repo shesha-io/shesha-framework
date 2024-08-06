@@ -29,6 +29,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
+import cleanDeep from 'clean-deep';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -182,7 +183,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
       ...stylingBoxAsCSS,
     };
-
+    const finalStyle = cleanDeep({...getStyle(model.style, data), ...additionalStyles}, { undefinedValues: true });
+    
     const defaultValue = getDefaultValue();
 
     const autocompleteProps: IAutocompleteProps = {
@@ -207,7 +209,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       quickviewGetEntityUrl: model.quickviewGetEntityUrl,
       quickviewWidth: model.quickviewWidth,
       subscribedEventNames: model.subscribedEventNames,
-      style: {...getStyle(model.style, data), ...additionalStyles},
+      style: finalStyle,
       size: model.size,
       allowFreeText: model.allowFreeText,
     };
