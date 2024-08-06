@@ -10,6 +10,7 @@ import { StandardEntityActions } from '@/interfaces/metadata';
 import { useDynamicModals } from '@/providers';
 import { useGlobalState, useShaRouting } from '@/providers';
 import { useMedia } from 'react-use';
+import ConditionalWrap from '../conditionalWrapper';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
@@ -75,6 +76,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     onCancel,
     buttons = [],
     footerButtons = 'default',
+    wrapper,
   } = props;
 
   const [form] = Form.useForm();
@@ -168,13 +170,18 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
       content={
-        <ConfigurableForm {...formProps}>
-          <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
-            </div>
-          </Show>
-        </ConfigurableForm>
+        <ConditionalWrap
+          condition={Boolean(wrapper)}
+          wrap={(content) => (wrapper({ children: content }))}
+        >
+          <ConfigurableForm {...formProps}>
+            <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
+              </div>
+            </Show>
+          </ConfigurableForm>
+        </ConditionalWrap>
       }
     />
   );
