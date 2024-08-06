@@ -28,17 +28,17 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
   quickviewDisplayPropertyName?: string;
   quickviewGetEntityUrl?: string;
   quickviewWidth?: number;
-  width?: number;
-  minWidth?: number;
-  maxWidth?: number;
+  width?: string | number;
+  minWidth?: string | number;
+  maxWidth?: string | number;
   allowFreeText?: boolean;
-  borderSize?: number;
+  borderSize?: string | number;
   borderRadius?: number;
   borderType?: string;
   borderColor?: string;
   fontSize?: string | number;
   fontWeight?: string | number;
   stylingBox?: string;
-  height?: string;
+  height?: string | number;
   backgroundColor?: string;
 }

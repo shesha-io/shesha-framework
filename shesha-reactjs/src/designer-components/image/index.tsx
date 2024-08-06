@@ -66,14 +66,14 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
     const additionalStyles: CSSProperties = {
-      objectFit: model?.objectFit,
-      objectPosition: model?.objectPosition,
-      filter: model?.filter,
-      borderWidth: model?.borderSize,
-      borderRadius: model?.borderRadius,
-      borderStyle: model?.borderType,
-      borderColor: model?.borderColor,
-      opacity: model?.opacity,
+      objectFit: model.objectFit,
+      objectPosition: model.objectPosition,
+      filter: model.filter,
+      borderWidth: model.borderSize,
+      borderRadius: model.borderRadius,
+      borderStyle: model.borderType,
+      borderColor: model.borderColor,
+      opacity: model.opacity,
       ...stylingBoxAsCSS
     };
 

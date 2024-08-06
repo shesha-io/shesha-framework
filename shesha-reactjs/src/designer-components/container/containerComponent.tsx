@@ -12,6 +12,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { CSSProperties } from 'styled-components';
+import { toSizeCssProp } from '@/utils/form';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -47,33 +48,33 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     };
 
     const widthStyles: CSSProperties = {
-      width: `${Number(model?.width) ? model?.width + 'px' : model?.width}`,
-      minWidth: `${Number(model?.minWidth) ? model?.minWidth + 'px' : model?.minWidth}`,
-      maxWidth: `${Number(model?.maxWidth) ? model?.maxWidth + 'px' : model?.maxWidth}`,
+      width: toSizeCssProp(model.width),
+      minWidth: toSizeCssProp(model.minWidth),
+      maxWidth: toSizeCssProp(model.maxWidth),
       overflow: model?.overflow,
     };
 
     const heightStyles: CSSProperties = {
-      height: `${Number(model?.height) ? model?.height + 'px' : model?.height}`,
-      minHeight: `${Number(model?.minHeight) ? model?.minHeight + 'px' : model?.minHeight}`,
-      maxHeight: `${Number(model?.maxHeight) ? model?.maxHeight + 'px' : model?.maxHeight}`,
+      height: toSizeCssProp(model.height),
+      minHeight: toSizeCssProp(model.minHeight),
+      maxHeight: toSizeCssProp(model.maxHeight),
     };
 
 
     const borderStyles: CSSProperties = {
-      borderWidth: `${Number(model?.borderWidth) ? model?.borderWidth + 'px' : model?.borderWidth}`,
-      borderColor: model?.borderColor,
-      borderStyle: model?.borderStyle,
-      borderRadius: `${Number(model?.borderRadius) ? model?.borderRadius + 'px' : model?.borderRadius}`,
+      borderWidth: toSizeCssProp(model.borderWidth),
+      borderColor: model.borderColor,
+      borderStyle: model.borderStyle,
+      borderRadius: toSizeCssProp(model.borderRadius),
     };
 
     let val;
-    if (model?.dataSource === "storedFileId") {
-      val = model?.storedFileId;
-    } else if (model?.dataSource === "base64") {
-      val = model?.base64;
-    } else if (model?.dataSource === "url") {
-      val = model?.backgroundUrl;
+    if (model.dataSource === "storedFileId") {
+      val = model.storedFileId;
+    } else if (model.dataSource === "base64") {
+      val = model.base64;
+    } else if (model.dataSource === "url") {
+      val = model.backgroundUrl;
     }
 
     const fileProvider = (child) => {
