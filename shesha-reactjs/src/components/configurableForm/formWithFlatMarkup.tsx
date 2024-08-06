@@ -37,7 +37,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   } = props;
 
   const { formInfoBlockVisible } = useAppConfigurator();
-  const { loginInfo } = useAuth();
+  const auth = useAuth(false);
   const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
   if (!formFlatMarkup) return null;
 
@@ -45,7 +45,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     ? ConfigurationItemVersionStatusMap[persistedFormProps.versionStatus]
     : null;
 
-  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!loginInfo;
+  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
 
   return (
     <FormFlatMarkupProvider markup={formFlatMarkup}>
