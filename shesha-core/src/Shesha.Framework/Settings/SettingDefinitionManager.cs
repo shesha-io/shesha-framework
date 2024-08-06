@@ -111,7 +111,7 @@ namespace Shesha.Settings
             setting.DisplayName = name;
             setting.IsUserSpecific = true;
             setting.Accessor = name;
-            setting.Category = "Dynamic Settings";
+            setting.Category = "User Settings";
             return setting;
         }
 
