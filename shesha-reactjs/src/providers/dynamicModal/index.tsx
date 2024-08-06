@@ -4,7 +4,7 @@ import { DynamicModal } from '@/components/dynamicModal';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, evaluateKeyValuesToObject, recursiveEvaluator } from '../form/utils';
-import { createModalAction, openAction, removeModalAction } from './actions';
+import { createModalAction, openAction, removeModalAction, setSubmissionAction } from './actions';
 import {
   IShowConfirmationArguments,
   showConfirmationArgumentsForm,
@@ -65,6 +65,11 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
   const createModal = (modalProps: IModalProps) => {
     dispatch(createModalAction({ modalProps }));
+  };
+
+
+  const setSubmitLoader = (isSubmitting: boolean) => {
+    dispatch(setSubmissionAction(isSubmitting));
   };
 
   useConfigurableAction<IShowModalActionArguments>(
@@ -215,6 +220,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
           createModal,
           removeModal,
           modalExists,
+          setSubmitLoader,
         }}
       >
         {renderInstances()}
