@@ -47,6 +47,9 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const dcm = useDataContextManager(false);
   const pageContext = dcm.getPageContext();
   const app = App.useApp();
+  
+  const [formKey, setFormKey] = React.useState(() => (nanoid()));
+  
 
   const { publish } = usePubSub();
 
@@ -313,7 +316,11 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   }
 
   const refetchFormData = () => {
-    return formWithData.dataFetcher ? formWithData.dataFetcher() : Promise.reject('Data fetcher is not available');
+    if (formWithData.dataFetcher)
+      return formWithData.dataFetcher();
+
+    setFormKey(nanoid());
+    return Promise.resolve({});
   };
 
   return (
@@ -332,6 +339,7 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
             <MetadataProvider id="dynamic" modelType={formSettings?.modelType}>
               {formWithData.loadingState === 'ready' && (
                 <ConfigurableForm
+                  key={formKey}
                   formName='dynamic-page-form'
                   needDebug
                   formSettings={finalFormSettings}

@@ -60,6 +60,20 @@ function useConfigurableActionDispatcher(require: boolean = true) {
     : undefined;
 }
 
+const useConfigurableActionDispatcherProxy = (require: boolean = true): FC<PropsWithChildren> => {
+  const actionsContext = useConfigurableActionDispatcherActions(require);
+  const stateContext = useConfigurableActionDispatcherState(require);
+  return actionsContext !== undefined && stateContext !== undefined
+    ? ({ children }) => (
+      <ConfigurableActionDispatcherStateContext.Provider value={stateContext}>
+        <ConfigurableActionDispatcherActionsContext.Provider value={actionsContext}>
+          {children}
+        </ConfigurableActionDispatcherActionsContext.Provider>
+      </ConfigurableActionDispatcherStateContext.Provider>
+    )
+    : ({ children }) => (<>{children}</>);
+};
+
 const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
   children,
 }) => {
@@ -98,7 +112,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
   };
 
   const getActions = () => {
-    return {...parent?.getActions(), ...actions.current};
+    return { ...parent?.getActions(), ...actions.current };
   };
 
   const registerAction = (payload: IRegisterActionPayload) => {
@@ -267,5 +281,6 @@ export {
   ConfigurableActionDispatcherProvider,
   useConfigurableAction,
   useConfigurableActionDispatcher,
+  useConfigurableActionDispatcherProxy,
   type IConfigurableActionConfiguration
 };
