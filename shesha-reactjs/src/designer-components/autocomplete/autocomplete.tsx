@@ -28,6 +28,7 @@ import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { toSizeCssProp } from '@/utils/form';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -169,15 +170,15 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const stylingBoxAsCSS = pickStyleFromModel(styling);
   
     const additionalStyles: CSSProperties = {
-      height: `${Number(model?.height) ? model?.height + 'px' : model?.height}`,
-      width: `${Number(model?.width) ? model?.width + 'px' : model?.width}`,
-      fontWeight: model?.fontWeight,
-      borderWidth: model?.hideBorder ? '0px' : model?.borderSize, //this is handled in the entityAutcomplete.tsx
-      borderRadius: model?.borderRadius,
-      borderStyle: model?.hideBorder ? 'none' : model?.borderType,
-      borderColor: model?.borderColor,
-      backgroundColor: model?.backgroundColor,
-      fontSize: model?.fontSize,
+      height: toSizeCssProp(model.height),
+      width: toSizeCssProp(model.width),
+      fontWeight: model.fontWeight,
+      borderWidth: model.hideBorder ? '0px' : model.borderSize, //this is handled in the entityAutcomplete.tsx
+      borderRadius: model.borderRadius,
+      borderStyle: model.hideBorder ? 'none' : model.borderType,
+      borderColor: model.borderColor,
+      backgroundColor: model.backgroundColor,
+      fontSize: model.fontSize,
       overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
       ...stylingBoxAsCSS,
     };

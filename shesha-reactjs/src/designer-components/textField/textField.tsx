@@ -19,6 +19,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index'
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon } from '@/components';
+import { toSizeCssProp } from '@/utils/form';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -54,16 +55,16 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
     const additionalStyles: CSSProperties = {
-      height: `${Number(model?.height) ? model?.height+'px' : model?.height}`,
-      width: `${Number(model?.width) ? model?.width+'px' : model?.width}`,
-      borderWidth: model?.hideBorder ? 0 : model?.borderSize,
-      borderRadius: model?.borderRadius,
-      borderStyle: model?.borderType,
-      borderColor: model?.borderColor,
-      backgroundColor: model?.backgroundColor,
-      color: model?.fontColor,
-      fontWeight: model?.fontWeight,
-      fontSize: model?.fontSize,
+      height: toSizeCssProp(model.height),
+      width: toSizeCssProp(model.width),
+      borderWidth: model.hideBorder ? 0 : model.borderSize,
+      borderRadius: model.borderRadius,
+      borderStyle: model.borderType,
+      borderColor: model.borderColor,
+      backgroundColor: model.backgroundColor,
+      color: model.fontColor,
+      fontWeight: model.fontWeight,
+      fontSize: model.fontSize,
       ...stylingBoxAsCSS,
     };
 
