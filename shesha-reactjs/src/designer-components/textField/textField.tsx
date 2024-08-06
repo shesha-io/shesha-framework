@@ -2,14 +2,14 @@ import { CodeOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import moment from 'moment';
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
@@ -50,6 +50,23 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+    const additionalStyles: CSSProperties = {
+      height: `${Number(model?.height) ? model?.height+'px' : model?.height}`,
+      width: `${Number(model?.width) ? model?.width+'px' : model?.width}`,
+      borderWidth: model?.hideBorder ? 0 : model?.borderSize,
+      borderRadius: model?.borderRadius,
+      borderStyle: model?.borderType,
+      borderColor: model?.borderColor,
+      backgroundColor: model?.backgroundColor,
+      color: model?.fontColor,
+      fontWeight: model?.fontWeight,
+      fontSize: model?.fontSize,
+      ...stylingBoxAsCSS,
+    };
+
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
@@ -62,7 +79,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: getStyle(model?.style, formData),
+      style: {...getStyle(model?.style, formData), ...additionalStyles},
     };
 
     const eventProps = {
