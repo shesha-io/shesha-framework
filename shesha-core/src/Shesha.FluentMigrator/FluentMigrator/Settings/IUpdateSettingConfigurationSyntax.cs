@@ -40,8 +40,14 @@
         /// </summary>
         IUpdateSettingConfigurationSyntax OnModule(string moduleName);
 
+        /// <summary>
+        /// Set access mode
+        /// </summary>
+        IUpdateSettingConfigurationSyntax SetClientAccess(UserSettingAccessMode clientAccess);
+
         void SetValue(string value);
         void ResetValueToDefault();
         void SetValueForApplication(string appKey, string value);
+        void SetValueForUser(long? userId, string value);
     }
 }

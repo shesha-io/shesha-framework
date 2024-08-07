@@ -31,6 +31,13 @@ namespace Shesha.FluentMigrator.Settings
         }
 
         /// inheritedDoc
+        public IAddSettingConfigurationSyntax IsUserSpecific()
+        {
+            Expression.IsUserSpecific.Set(true);
+            return this;
+        }
+
+        /// inheritedDoc
         public IAddSettingConfigurationSyntax WithEditForm(string module, string name)
         {
             Expression.EditForm.Set(new ConfigurationItemIdentifier(module, name));
@@ -41,6 +48,13 @@ namespace Shesha.FluentMigrator.Settings
         public IAddSettingConfigurationSyntax WithAccessMode(SettingAccessMode accessMode)
         {
             Expression.AccessMode.Set(accessMode);
+            return this;
+        }
+
+        /// inheritedDoc
+        public IAddSettingConfigurationSyntax WithClientAccess (UserSettingAccessMode clientAccess)
+        {
+            Expression.ClientAccess.Set(clientAccess);
             return this;
         }
 

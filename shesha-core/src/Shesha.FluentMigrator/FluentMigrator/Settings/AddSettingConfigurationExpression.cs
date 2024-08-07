@@ -40,6 +40,8 @@ namespace Shesha.FluentMigrator.Settings
         public PropertyUpdateDefinition<string> Category { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<bool> IsClientSpecific { get; set; } = new PropertyUpdateDefinition<bool>();
         public PropertyUpdateDefinition<SettingAccessMode> AccessMode { get; set; } = new PropertyUpdateDefinition<SettingAccessMode>();
+        public PropertyUpdateDefinition<bool> IsUserSpecific { get; set; } = new PropertyUpdateDefinition<bool>();
+        public PropertyUpdateDefinition<UserSettingAccessMode> ClientAccess { get; set; } = new PropertyUpdateDefinition<UserSettingAccessMode>();
         public PropertyUpdateDefinition<ConfigurationItemIdentifier> EditForm { get; set; } = new PropertyUpdateDefinition<ConfigurationItemIdentifier>();
         public PropertyUpdateDefinition<string> DataType { get; set; } = new PropertyUpdateDefinition<string>();
         public PropertyUpdateDefinition<string?> DataFormat { get; set; } = new PropertyUpdateDefinition<string?>();
