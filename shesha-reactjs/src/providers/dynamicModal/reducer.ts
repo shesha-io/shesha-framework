@@ -52,12 +52,6 @@ export default handleActions<IDynamicModalStateContext, any>(
         ...state,
         instances: { ...newInstances },
       };
-    },
-    [DynamicModalActionEnums.SetSubmitLoader]: (state: IDynamicModalStateContext, action: ReduxActions.Action<boolean>) => {
-      return {
-        ...state,
-        isSubmitting: action.payload,
-      };
     }
   },
 

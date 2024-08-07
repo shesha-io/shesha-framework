@@ -4,8 +4,6 @@ import { createNamedContext } from '@/utils/react';
 export interface IDynamicModalStateContext {
   //instances: IModalInstance[];
   instances: { [index: string]: IModalInstance };
-  isSubmitting?: boolean;
-
 }
 
 export interface IDynamicModalActionsContext {
@@ -16,8 +14,6 @@ export interface IDynamicModalActionsContext {
   modalExists: (id: string) => boolean;
   createModal: (modalProps: ICommonModalProps) => void;
   removeModal: (id: string) => void;
-  setSubmitLoader: (isSubmitting: boolean) => void;
-
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }

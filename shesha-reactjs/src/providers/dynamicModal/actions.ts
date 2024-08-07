@@ -5,7 +5,6 @@ export enum DynamicModalActionEnums {
   Open = 'OPEN',
   CreateModal = 'CREATE_MODAL',
   RemoveModal = 'REMOVE_MODAL',
-  SetSubmitLoader = 'SET_SUBMIT_LOADER',
 
 }
 
@@ -21,8 +20,6 @@ export const createModalAction = createAction<ICreateModalPayload, ICreateModalP
 );
 
 export const removeModalAction = createAction<string, string>(DynamicModalActionEnums.RemoveModal, (p) => p);
-
-export const setSubmissionAction = createAction<boolean, boolean>(DynamicModalActionEnums.SetSubmitLoader, (p) => p);
 
 
 /* NEW_ACTION_GOES_HERE */

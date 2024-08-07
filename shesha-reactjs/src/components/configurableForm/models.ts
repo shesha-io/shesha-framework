@@ -83,6 +83,10 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
   refetcher?: () => void;
+  /**  
+   * Triggered when the form is submitted successfully but the response is not successful
+  **/
+  onSubmittedFailed?: () => void;
 }
 
 export interface IConfigurableFormProps<Values = any>
@@ -151,8 +155,14 @@ export interface IConfigurableFormProps<Values = any>
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
   refetcher?: () => void;
-  /**/
 
+
+  /**  
+ * Triggered when the form is submitted successfully but the response is not successful
+**/
+  onSubmittedFailed?: () => void;
+
+  /**/
   mode: FormMode;
   formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
   className?: string;
@@ -162,7 +172,7 @@ export interface IConfigurableFormProps<Values = any>
   propertyFilter?: (name: string) => boolean;
 
   markup?: FormMarkup;
-  cacheKey?: string;  
+  cacheKey?: string;
 }
 
 export interface IDataSourceComponent extends IConfigurableFormComponent {

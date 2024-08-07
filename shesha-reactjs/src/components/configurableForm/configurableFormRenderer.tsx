@@ -22,7 +22,7 @@ import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { ShaForm, useForm } from '@/providers/form';
 import { useFormDesignerState } from '@/providers/formDesigner';
-import { useDynamicModals, useGlobalState, useSheshaApplication } from '@/providers';
+import { useGlobalState, useSheshaApplication } from '@/providers';
 import { useModelApiEndpoint } from './useActionEndpoint';
 import { useMutate } from '@/hooks/useMutate';
 import { useStyles } from './styles/styles';
@@ -42,6 +42,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   initialValues,
   beforeSubmit,
   prepareInitialValues,
+  onSubmittedFailed,
   skipFetchData,
   ...props
 }) => {
@@ -64,7 +65,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
 
   const { onDataLoaded, onUpdate, onInitialized, uniqueFormId } = formSettings;
   const { globalState } = useGlobalState();
-  const {setSubmitLoader} = useDynamicModals();
 
   const urlEvaluationData: IMatchData[] = [
     { match: 'initialValues', data: initialValues },
@@ -180,11 +180,6 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   const { mutate: doSubmit, loading: submitting } = useMutate();
 
 
-  useEffect(() => {
-      setSubmitLoader(submitting);
-  
-  }, [submitting]);
-
   const options = { setValidationErrors };
 
   const convertToFormDataIfRequired = (data: any) => {
@@ -208,6 +203,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
                 if (props.onSubmitted) props.onSubmitted(postData, response?.result, options);
               })
               .catch((e) => {
+                onSubmittedFailed();
                 setValidationErrors(e?.data?.error || e);
                 console.error('Submit failed: ', e);
               });

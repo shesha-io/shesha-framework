@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { evaluateString } from '@/providers/form/utils';
@@ -14,14 +14,16 @@ import ConditionalWrap from '../conditionalWrapper';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
-  //content: ReactNode;
+  isSubmitted?: boolean;
   onCancel?: () => void;
   onOk?: () => void;
+
 }
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
-  const { id, title, isVisible, width, onCancel, onOk, content, footer, onClose } = props;
+  const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose } = props;
 
-  const { removeModal, isSubmitting } = useDynamicModals();
+  const { removeModal } = useDynamicModals();
+
   const isSmall = useMedia('(max-width: 480px)');
 
   const hideForm = () => {
@@ -45,7 +47,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       destroyOnClose
       width={isSmall ? '90%' : width || 900}
       maskClosable={false}
-      okButtonProps={{ disabled: isSubmitting }}
+      okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
     >
       {content}
     </Modal>
@@ -83,6 +85,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const { removeModal } = useDynamicModals();
   const { router } = useShaRouting();
   const { clearState } = useGlobalState();
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+
 
   // `showModalFooter` for now is for backward compatibility
   const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
@@ -128,11 +132,13 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const onOk = () => {
     if (submitLocally) {
       const formValues = form?.getFieldsValue();
-
       onSubmitted(null, formValues);
     } else {
       if (showDefaultSubmitButtons) {
-        form?.submit();
+        form?.validateFields().then(() => {
+          form?.submit();
+          setIsSubmitted(true);
+        });
       } else {
         closeModal();
       }
@@ -152,6 +158,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     prepareInitialValues: prepareInitialValues,
     onFinishFailed: onFailed,
     beforeSubmit: beforeSubmit,
+    onSubmittedFailed: () => { setIsSubmitted(false) },
     httpVerb: submitHttpVerb,
     initialValues: initialValues,
     parentFormValues: parentFormValues,
@@ -169,6 +176,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       onOk={onOk}
       onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
+      isSubmitted={isSubmitted}
       content={
         <ConditionalWrap
           condition={Boolean(wrapper)}

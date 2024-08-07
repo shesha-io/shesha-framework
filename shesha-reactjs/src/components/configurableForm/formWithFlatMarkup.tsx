@@ -26,11 +26,10 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     propertyFilter,
   } = props;
 
-  const { 
+  const {
     actions,
     sections,
     refetchData,
-
     parentFormValues,
     onValuesChange,
     form,
