@@ -181,6 +181,8 @@ namespace Shesha.Services.Settings.Distribution
             dst.Category = src.Category;
             dst.IsClientSpecific = src.IsClientSpecific;
             dst.AccessMode = src.AccessMode;
+            dst.IsUserSpecific = src.IsUserSpecific;
+            dst.ClientAccess = src.ClientAccess;
         }
     }
 }

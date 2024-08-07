@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { ValidateErrorEntity } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -104,6 +104,7 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
 
   buttons?: ButtonGroupItemProps[];
 
+  wrapper?: (props: PropsWithChildren) => React.ReactNode;
 }
 
 export interface IModalWithContentProps extends IModalBaseProps {

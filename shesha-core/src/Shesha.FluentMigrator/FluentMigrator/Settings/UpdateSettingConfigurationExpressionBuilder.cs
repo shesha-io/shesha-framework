@@ -29,6 +29,19 @@ namespace Shesha.FluentMigrator.Settings
             return this;
         }
 
+        public IUpdateSettingConfigurationSyntax SetIsUserSpecific(bool value)
+        {
+            Expression.IsUserSpecific.Set(value);
+            return this;
+        }
+
+        /// inheritedDoc
+        public IUpdateSettingConfigurationSyntax SetClientAccess(UserSettingAccessMode clientAccess)
+        {
+            Expression.ClientAccess.Set(clientAccess);
+            return this;
+        }
+
         /// inheritedDoc
         public IUpdateSettingConfigurationSyntax SetEditForm(string module, string name)
         {
@@ -74,6 +87,13 @@ namespace Shesha.FluentMigrator.Settings
         {
             Expression.Value.Set(value);
             Expression.ValueAppKey.Set(appKey);
+        }
+
+        /// inheritedDoc
+        public void SetValueForUser(long? userId, string value)
+        {
+            Expression.Value.Set(value);
+            Expression.ValueUserId.Set(userId);
         }
 
         public IUpdateSettingConfigurationSyntax OnModule(string moduleName)

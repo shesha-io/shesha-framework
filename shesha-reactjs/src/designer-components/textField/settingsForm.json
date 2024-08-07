@@ -53,6 +53,16 @@
                 "label": "password",
                 "value": "password",
                 "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+              },
+              {
+                "label": "email",
+                "value": "email",
+                "id": "fa24fbe1-5a55-4071-9fce-fe2ed32a68fe"
+              },
+              {
+                "label": "number",
+                "value": "number",
+                "id": "55df881f-f84c-42ce-bfc2-df3798643e2d"
               }
             ],
             "dataSourceType": "values",
@@ -176,16 +186,6 @@
             "propertyName": "editMode",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Edit mode"
-          },
-          {
-            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "s4gmBg31azZC0UjZjpfTm",
-            "hidden": false,
-            "validate": {},
-            "version": 2
           }
         ]
       },
@@ -599,7 +599,166 @@
             "version": 5,
             "referenceListId": null,
             "valueFormat": "listItem"
+          },
+          {
+            "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
+            "type": "textField",
+            "propertyName": "height",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "label": "Height",
+            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+            "version": 3,
+            "textType": "text"
           }
+          ,
+          {
+            "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
+            "type": "textField",
+            "propertyName": "width",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "label": "Width",
+            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "hidden": false,
+            "validate": {},
+            "version": 2
+          },
+          {
+            "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
+            "type": "numberField",
+            "propertyName": "borderSize",
+            "label": "Border Width",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 3
+          },
+          {
+            "id": "89accb3c-29a6-4636-a186-42916c9b10cc",
+            "type": "numberField",
+            "propertyName": "borderRadius",
+            "label": "Border Radius",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "defaultValue": "8",
+            "version": 3
+          },
+          {
+            "id": "cf3f18c5-3919-4634-95ef-8159629c6875",
+            "type": "dropdown",
+            "propertyName": "borderType",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "label": "Border Type",
+            "dataSourceType": "values",
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            },
+            "values": [
+              {
+                "label": "Solid",
+                "value": "solid",
+                "id": "1"
+              },
+              {
+                "label": "Dashed",
+                "value": "dashed",
+                "id": "2"
+              },
+              {
+                "label": "Dotted",
+                "value": "dotted",
+                "id": "3"
+              }
+            ],
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "74896512-c059-4324-8b0e-bf70aba2b6da",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "type": "colorPicker",
+            "propertyName": "borderColor",
+            "componentName": "borderColor",
+            "label": "Border Color",
+            "labelAlign": "right",
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            },
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true
+          },
+          {
+            "id": "7faa1735-9480-4ee1-ad23-7e64e470d99a",
+            "type": "numberField",
+            "propertyName": "fontSize",
+            "label": "Font Size",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "version": 3
+          },
+          {
+            "id": "2729e575-16a7-45ff-9a60-97273484fe47",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "type": "colorPicker",
+            "propertyName": "fontColor",
+            "componentName": "fontColor",
+            "label": "Font Color",
+            "labelAlign": "right",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true
+          },
+          {
+            "id": "edb5da32-d1c5-4167-bb05-37c89475601a",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "type": "colorPicker",
+            "propertyName": "backgroundColor",
+            "componentName": "borderColor",
+            "label": "Background Color",
+            "labelAlign": "right",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true
+          },
+          {
+            "id": "d9adcd79-771f-4585-a09d-9b769f594490",
+            "type": "styleBox",
+            "propertyName": "stylingBox",
+            "parentId": "RvNp_osTwoxjfKmj1mO9p",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "jsSetting": false
+            }
         ]
       },
       "collapsible": "header",

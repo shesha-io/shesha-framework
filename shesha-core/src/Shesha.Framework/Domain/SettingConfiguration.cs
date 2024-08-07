@@ -54,6 +54,33 @@ namespace Shesha.Domain
         [Column("AccessModeLkp")]
         [Audited]
         public virtual SettingAccessMode AccessMode { get; set; }
+
+        /// <summary>
+        /// If true, indicates that this setting should be specific to each of the logged in user
+        /// </summary>
+        [Audited]
+        public virtual bool IsUserSpecific { get; set; }
+        /// <summary>
+        /// Indicate the accessibility of this user setting from client applications
+        /// </summary>
+        [Column("ClientAccessLkp")]
+        [Audited]
+        public virtual UserSettingAccessMode ClientAccess { get; set; }
+    }
+
+    /// <summary>
+    /// Indicate the accessibility of this user setting from client applications.
+    /// </summary>
+    public enum UserSettingAccessMode
+    {
+        [Display(Name = "Not Accessible", Description = "Client Applications cannot access the setting. It is only used for a backend purposes.")]
+        NotAccessible = 1,
+
+        [Display(Name = "Read-only", Description = "Client Applications can read the setting, but cannot update it.")]
+        ReadOnly = 2,
+
+        [Display(Name = "Full", Description = "Client Applications can both read and update the setting.")]
+        Full = 3,
     }
 
     /// <summary>

@@ -70,6 +70,7 @@
             "propertyName": "hideLabel",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Hide Label",
+            "description": "Check this field to use your custom border.",
             "version": 2
           },
           {
@@ -137,16 +138,6 @@
             "propertyName": "editMode",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "label": "Edit mode"
-          },
-          {
-            "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
-            "hidden": false,
-            "validate": {},
-            "version": 2
           }
         ]
       }
@@ -743,7 +734,142 @@
             "version": 5,
             "referenceListId": null,
             "valueFormat": "listItem"
-          }
+          },
+          {
+            "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
+            "type": "textField",
+            "propertyName": "height",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "label": "Height",
+            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "c6ecd70c-7419-4ea7-a715-d42699d26e6e",
+            "type": "textField",
+            "propertyName": "width",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "label": "Width",
+            "description": "You can use any unit (%, px, em, etc). px by default if without unit",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "hidden": false,
+            "validate": {},
+            "version": 2
+          },
+          {
+            "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
+            "type": "numberField",
+            "propertyName": "borderSize",
+            "label": "Border Width",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "description": "To see your changes, check 'Hide Border'.",
+            "version": 3,
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            }
+          },
+          {
+            "id": "89accb3c-29a6-4636-a186-42916c9b10cc",
+            "type": "numberField",
+            "propertyName": "borderRadius",
+            "label": "Border Radius",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "defaultValue": "8",
+            "version": 3
+          },
+          {
+            "id": "cf3f18c5-3919-4634-95ef-8159629c6875",
+            "type": "dropdown",
+            "propertyName": "borderType",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "label": "Border Type",
+            "dataSourceType": "values",
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            },
+            "values": [
+              {
+                "label": "Solid",
+                "value": "solid",
+                "id": "1"
+              },
+              {
+                "label": "Dashed",
+                "value": "dashed",
+                "id": "2"
+              },
+              {
+                "label": "Dotted",
+                "value": "dotted",
+                "id": "3"
+              }
+            ],
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "74896512-c059-4324-8b0e-bf70aba2b6da",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "type": "colorPicker",
+            "propertyName": "borderColor",
+            "componentName": "borderColor",
+            "label": "Border Color",
+            "labelAlign": "right",
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true,
+            "hidden": {
+              "_code": "return getSettingValue(data?.hideBorder) == true;",
+              "_mode": "code",
+              "_value": false
+            }
+          },
+          {
+            "id": "edb5da32-d1c5-4167-bb05-37c89475601a",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "type": "colorPicker",
+            "propertyName": "backgroundColor",
+            "componentName": "borderColor",
+            "label": "Background Color",
+            "labelAlign": "right",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true
+          },
+          {
+            "id": "d9adcd79-771f-4585-a09d-9b769f594490",
+            "type": "styleBox",
+            "propertyName": "stylingBox",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "jsSetting": false
+            }
+          
         ]
       },
       "collapsible": "header",

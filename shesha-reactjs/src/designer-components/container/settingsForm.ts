@@ -613,7 +613,7 @@ export const getSettings = (data: any) =>
             labelAlign: "right",
             parentId: nanoid(),
             hidden: {
-              _code: "return getSettingValue(data?.dataSource) !== 'storedFile' || getSettingValue(data?.backgroundType) !== 'image';",
+              _code: "return getSettingValue(data?.dataSource) !== 'storedFileId' || getSettingValue(data?.backgroundType) !== 'image';",
               _mode: 'code',
               _value: false,
             } as any,

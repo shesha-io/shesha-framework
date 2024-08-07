@@ -16,6 +16,7 @@ import { ValidationErrors } from '@/components';
 import { ImageField, ImageSourceType } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { removeUndefinedProps } from '@/utils/object';
 
 export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   height?: number | string;
@@ -65,19 +66,19 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
-    const additionalStyles: CSSProperties = {
-      objectFit: model?.objectFit,
-      objectPosition: model?.objectPosition,
-      filter: model?.filter,
-      borderWidth: model?.borderSize,
-      borderRadius: model?.borderRadius,
-      borderStyle: model?.borderType,
-      borderColor: model?.borderColor,
-      opacity: model?.opacity,
+    const additionalStyles: CSSProperties = removeUndefinedProps({
+      objectFit: model.objectFit,
+      objectPosition: model.objectPosition,
+      filter: model.filter,
+      borderWidth: model.borderSize,
+      borderRadius: model.borderRadius,
+      borderStyle: model.borderType,
+      borderColor: model.borderColor,
+      opacity: model.opacity,
       ...stylingBoxAsCSS
-    };
-
-   
+    });
+    const jsStyle = getStyle(model.style, data);
+    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
   
     return (
       <ConfigurableFormItem model={model}>
@@ -118,7 +119,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               height={model.height}
               width={model.width}
               imageSource={model.dataSource}
-              styles={{...getStyle(model?.style, data), ...additionalStyles}}
+              styles={finalStyle}
               value={val}
               readOnly={model?.readOnly}
               onChange={onChange}

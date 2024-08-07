@@ -66,6 +66,8 @@ namespace Shesha.Services.Settings.Distribution
                 Category = settingConfig.Category,
                 IsClientSpecific = settingConfig.IsClientSpecific,
                 AccessMode = settingConfig.AccessMode,
+                ClientAccess = settingConfig.ClientAccess,
+                IsUserSpecific = settingConfig.IsUserSpecific,
             };
             result.Values = await ExportSettingValuesAsync(settingConfig);
 

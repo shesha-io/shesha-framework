@@ -1,7 +1,7 @@
 import { Modal } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, evaluateKeyValuesToObject, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction, setSubmissionAction } from './actions';
@@ -118,6 +118,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               else
                 reject(result);
             },
+            wrapper: context.configurableActionsDispatcherProxy,
           };
 
           createModal({ ...modalProps });
@@ -132,6 +133,10 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         };
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
       },
+      useDynamicContextHook: () => {
+        const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy(false);
+        return { configurableActionsDispatcherProxy };
+      }
     },
     actionDependencies
   );
