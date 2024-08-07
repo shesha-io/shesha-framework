@@ -27,7 +27,7 @@
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@next/bundle-analyzer": "^14.2.4",
     "@shesha-io/pd-publicportal": "^0.0.0-build72281",
-    "@shesha-io/reactjs": "file:shesha-local.tgz",
+    "@shesha-io/reactjs": "^0.0.0-build72303",
     "@types/react-dom": "^18.2.4",
     "antd": "5.17.4",
     "antd-style": "^3.6.2",
