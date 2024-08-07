@@ -29,7 +29,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
-import cleanDeep from 'clean-deep';
+import { removeUndefinedProps } from '@/utils/object';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -170,7 +170,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
   
-    const additionalStyles: CSSProperties = {
+    const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
       fontWeight: model.fontWeight,
@@ -182,8 +182,9 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       fontSize: model.fontSize,
       overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
       ...stylingBoxAsCSS,
-    };
-    const finalStyle = cleanDeep({...getStyle(model.style, data), ...additionalStyles}, { undefinedValues: true });
+    });
+    const jsStyle = getStyle(model.style, data);
+    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
     
     const defaultValue = getDefaultValue();
 

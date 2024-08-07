@@ -20,6 +20,7 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon } from '@/components';
 import { toSizeCssProp } from '@/utils/form';
+import { removeUndefinedProps } from '@/utils/object';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -54,7 +55,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
-    const additionalStyles: CSSProperties = {
+    const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
       borderWidth: model.hideBorder ? 0 : model.borderSize,
@@ -66,7 +67,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       fontWeight: model.fontWeight,
       fontSize: model.fontSize,
       ...stylingBoxAsCSS,
-    };
+    });
+    const jsStyle = getStyle(model.style, formData);
+    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
 
     const InputComponentType = renderInput(model.textType);
 
@@ -80,7 +83,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: {...getStyle(model?.style, formData), ...additionalStyles},
+      style: finalStyle,
     };
 
     const eventProps = {

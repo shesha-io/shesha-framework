@@ -19,6 +19,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
+import { removeUndefinedProps } from '@/utils/object';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -52,7 +53,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
-    const additionalStyles: CSSProperties = {
+    const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
       borderWidth: model.hideBorder ? 0 : model.borderSize,
@@ -64,9 +65,9 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       fontWeight: model.fontWeight,
       fontSize: model.fontSize,
       ...stylingBoxAsCSS,
-    };
-
-    const getTextAreaStyle = (style: CSSProperties = {}) => ({ ...style, ...additionalStyles, marginBottom: model?.showCount ? '16px' : 0 });
+    });
+    const jsStyle = getStyle(model.style, formData);
+    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
 
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
@@ -77,7 +78,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       allowClear: model.allowClear,
       variant: model.hideBorder ? 'borderless' : undefined,
       size: model?.size,
-      style: getTextAreaStyle(getStyle(model?.style, formData)),
+      style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
     };
 
     const eventProps = {

@@ -1,13 +1,15 @@
+import cleanDeep from "clean-deep";
+
 export const getValueByPropertyName = (data: any, propertyName: string): any => {
     if (!!data) {
         const path = propertyName.split('.');
         if (Array.isArray(path) && path.length > 0) {
-          let value = data[path[0]];
-          path.forEach((item, index) => {
-            if (index > 0)
-              value = typeof value === 'object' ? value[item] : undefined;
-          });
-          return value;
+            let value = data[path[0]];
+            path.forEach((item, index) => {
+                if (index > 0)
+                    value = typeof value === 'object' ? value[item] : undefined;
+            });
+            return value;
         }
     }
     return undefined;
@@ -15,7 +17,7 @@ export const getValueByPropertyName = (data: any, propertyName: string): any => 
 
 export const setValueByPropertyName = (data: any, propertyName: string, value: any, makeCopy: boolean = false) => {
     const propName = propertyName.split('.');
-    const resultData = makeCopy ? {...data} : data;
+    const resultData = makeCopy ? { ...data } : data;
 
     if (Array.isArray(propName) && propName.length > 0) {
         let prop = resultData;
@@ -25,7 +27,7 @@ export const setValueByPropertyName = (data: any, propertyName: string, value: a
                     prop = prop[item] = {};
                 } else {
                     if (makeCopy)
-                        prop = prop[item] = {...prop[item]};
+                        prop = prop[item] = { ...prop[item] };
                     else
                         prop = prop[item];
                 }
@@ -39,7 +41,13 @@ export const setValueByPropertyName = (data: any, propertyName: string, value: a
 
 export const deepCopyViaJson = <TValue = any>(value: TValue): TValue => {
     if (!value)
-      return value;
-  
+        return value;
+
     return JSON.parse(JSON.stringify(value));
-  };
+};
+
+export const removeUndefinedProps = <T extends object>(value: T): Partial<T> => {
+    return value
+        ? cleanDeep(value, { undefinedValues: true })
+        : value;
+};
