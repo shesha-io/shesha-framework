@@ -42,6 +42,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   initialValues,
   beforeSubmit,
   prepareInitialValues,
+  onSubmittedFailed,
   skipFetchData,
   ...props
 }) => {
@@ -201,6 +202,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
                 if (props.onSubmitted) props.onSubmitted(postData, response?.result, options);
               })
               .catch((e) => {
+                onSubmittedFailed();
                 setValidationErrors(e?.data?.error || e);
                 console.error('Submit failed: ', e);
               });
