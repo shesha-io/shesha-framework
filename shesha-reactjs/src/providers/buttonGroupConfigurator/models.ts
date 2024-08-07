@@ -34,6 +34,7 @@ export interface IButtonGroupItemBase {
   isDynamic?: boolean;
   itemType: ButtonGroupItemType;
   icon?: string;
+  iconPosition?: 'start' | 'end';
   downIcon?: string;
   buttonType?: ButtonType;
   ghost?: boolean;
@@ -42,6 +43,16 @@ export interface IButtonGroupItemBase {
   size?: SizeType;
   editMode?: EditMode;
   readOnly?: boolean;
+  width: string,
+  height: string,
+  backgroundColor: string,
+  fontSize: string,
+  color: string,
+  fontWeight: string,
+  borderWidth: string,
+  borderColor: string,
+  borderStyle: 'dotted' | 'solid' | 'dashed',
+  borderRadius: string,
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase {
