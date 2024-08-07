@@ -23,7 +23,7 @@ export interface ICurrentUserApi {
     readonly lastName: string;
     hasPermissionAsync(mpermissionName: string, permissionedEntityId?: IEntityReferenceDto): Promise<boolean>;
     hasRoleAsync(roleName: string): Promise<boolean>;
-    getUserSettingValueAsync(name: string, module: string, dataType?: string, defaultValue?: string): Promise<any>;
+    getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any>;
     updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void>;
 }
 
@@ -83,7 +83,7 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
         return this.#httpClient.get<IAjaxResponse<boolean>>(`${URLS.IS_ROLE_GRANTED}?${qs.stringify(requestParams)}`).then(response => response.data?.success ? response.data.result : false);
     }
 
-    async getUserSettingValueAsync(name: string, module: string, defaultValue?: string, dataType?: string): Promise<any> {
+    async getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any> {
         return this.#httpClient.post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, {name,module,defaultValue, dataType})
         .then(res => {
                 return res.data.success ? res.data.result : undefined;

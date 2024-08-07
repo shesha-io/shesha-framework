@@ -85,7 +85,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   const { removeModal } = useDynamicModals();
   const { router } = useShaRouting();
   const { clearState } = useGlobalState();
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
 
   // `showModalFooter` for now is for backward compatibility
@@ -158,7 +158,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     prepareInitialValues: prepareInitialValues,
     onFinishFailed: onFailed,
     beforeSubmit: beforeSubmit,
-    onSubmittedFailed: () => { setIsSubmitted(false) },
+    onSubmittedFailed: () => setIsSubmitted(false),
     httpVerb: submitHttpVerb,
     initialValues: initialValues,
     parentFormValues: parentFormValues,
