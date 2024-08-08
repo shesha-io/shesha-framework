@@ -63,10 +63,10 @@ namespace Shesha.Web.FormsDesigner.Services
             _permissionedObjectManager = permissionedObjectManager;
         }
 
-        private async Task<string[]> GetFormPermissionsAsync(string module, string name, int versionNo)
+        private async Task<string[]> GetFormPermissionsAsync(string module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
-                FormManager.GetFormPermissionedObjectName(module, name, versionNo),
+                FormManager.GetFormPermissionedObjectName(module, name),
                 ShaPermissionedObjectsTypes.Form
             );
             return permission?.Access == RefListPermissionedAccess.RequiresPermissions
@@ -74,10 +74,10 @@ namespace Shesha.Web.FormsDesigner.Services
                 : [];
         }
 
-        private async Task<bool> CheckFormPermissions(string module, string name, int versionNo)
+        private async Task<bool> CheckFormPermissions(string module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
-                FormManager.GetFormPermissionedObjectName(module, name, versionNo),
+                FormManager.GetFormPermissionedObjectName(module, name),
                 ShaPermissionedObjectsTypes.Form
             );
 
@@ -105,7 +105,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var dto = base.MapToEntityDto(entity);
 
             var permission = await _permissionedObjectManager.GetOrNullAsync(
-                FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name, entity.VersionNo),
+                FormManager.GetFormPermissionedObjectName(entity.Module?.Name, entity.Name),
                 ShaPermissionedObjectsTypes.Form
             );
             if (permission?.Access > RefListPermissionedAccess.Inherited) // Check if permission exists
@@ -124,63 +124,18 @@ namespace Shesha.Web.FormsDesigner.Services
         [HttpPost]
         public async Task<List<FormByFullNamePermissionsDto>> CheckPermissions(GetFormByFullNameInput[] input)
         {
-            var mode = _cfRuntime.ViewMode;
-
             var result = new List<FormByFullNamePermissionsDto>();
 
             foreach (var inputItem in input)
             {
-                var query = Repository.GetAll().Where(f => f.Module.Name == inputItem.Module && f.Name == inputItem.Name);
-
-                if (inputItem.Version.HasValue)
-                    query = query.Where(f => f.VersionNo == inputItem.Version.Value);
-                else
-                {
-                    switch (mode)
+                var permissions = await GetFormPermissionsAsync(inputItem.Module, inputItem.Name);
+                if (permissions.Length > 0)
+                    result.Add(new FormByFullNamePermissionsDto
                     {
-                        case ConfigurationItemViewMode.Live:
-                            query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                            break;
-                        case ConfigurationItemViewMode.Ready:
-                            {
-                                var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready
-                        };
-
-                                query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
-                                break;
-                            }
-                        case ConfigurationItemViewMode.Latest:
-                            {
-                                var statuses = new ConfigurationItemVersionStatus[] {
-                            ConfigurationItemVersionStatus.Live,
-                            ConfigurationItemVersionStatus.Ready,
-                            ConfigurationItemVersionStatus.Draft
-                        };
-                                query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
-                                break;
-                            }
-                    }
-                }
-
-                var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query.Select(x => new
-                {
-                    Module = x.Module.Name,
-                    x.Name,
-                    x.VersionNo
-                }));
-                if (form != null)
-                {
-                    var permissions = await GetFormPermissionsAsync(form.Module, form.Name, form.VersionNo);
-                    if (permissions.Length > 0)
-                        result.Add(new FormByFullNamePermissionsDto
-                        {
-                            Name = form.Name,
-                            Module = form.Module,
-                            Permissions = permissions,
-                        });
-                }
+                        Name = inputItem.Name,
+                        Module = inputItem.Module,
+                        Permissions = permissions,
+                    });
             }
 
             return result;
@@ -252,7 +207,7 @@ namespace Shesha.Web.FormsDesigner.Services
             dto.CacheMd5 = GetMd5(dto);
             await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
 
-            if (!await CheckFormPermissions(form.Module?.Name, form.Name, form.VersionNo))
+            if (!await CheckFormPermissions(form.Module?.Name, form.Name))
             {
                 dto.Markup = null;
                 dto.CacheMd5 = "";
@@ -279,7 +234,7 @@ namespace Shesha.Web.FormsDesigner.Services
             // add MD5 to request
             await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id, dto.CacheMd5);
 
-            if (!await CheckFormPermissions(form.Module?.Name, form.Name, form.VersionNo))
+            if (!await CheckFormPermissions(form.Module?.Name, form.Name))
             {
                 dto.Markup = null;
                 dto.CacheMd5 = "";
@@ -311,7 +266,7 @@ namespace Shesha.Web.FormsDesigner.Services
             {
                 var permisson = new PermissionedObjectDto
                 {
-                    Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
+                    Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name),
                     Name = $"{form.Module?.Name}.{form.Name}",
                     Module = form.Module.Name,
                     ModuleId = form.Module.Id,
