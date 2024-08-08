@@ -1,11 +1,13 @@
 import React from 'react';
 import { FC } from 'react';
-import { Row, Col } from 'antd';
 import SettingsMenu from './settingsMenu';
 import { SettingsEditorProvider } from './provider';
 import SettingEditor from './settingEditor';
 import SettingsEditorToolbar from './toolbar';
 import { useStyles } from './styles/styles';
+import { SizableColumns } from '../sizableColumns';
+import classNames from 'classnames';
+import AppSelector from './appSelector';
 
 export interface ISettingsEditorProps {
 
@@ -16,15 +18,27 @@ export const SettingsEditor: FC<ISettingsEditorProps> = () => {
   return (
     <SettingsEditorProvider>
       <div className={styles.shaSettingsEditor}>
-        <SettingsEditorToolbar />
-        <Row>
-          <Col span={8}>
+        <AppSelector />
+        <SizableColumns
+          sizes={[25, 75]}
+          minSize={150}
+          expandToMin={false}
+          gutterSize={8}
+          gutterAlign="center"
+          snapOffset={30}
+          dragInterval={1}
+          direction="horizontal"
+          cursor="col-resize"
+          className={classNames(styles.container)}
+        >
+          <div className={styles.mainArea}>
             <SettingsMenu />
-          </Col>
-          <Col span={16} className={styles.shaSettingsEditorMain}>
+          </div>
+          <div className={styles.propsPanel}>
+            <SettingsEditorToolbar />
             <SettingEditor />
-          </Col>
-        </Row>
+          </div>
+        </SizableColumns>
       </div>
     </SettingsEditorProvider>
   );

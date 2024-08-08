@@ -34,7 +34,7 @@ namespace Shesha.Settings
             var values = new Dictionary<SettingIdentifier, object>();
             foreach (var identifier in distinctIds)
             {
-                var value = await _settingProvider.GetOrNullAsync(identifier.Module, identifier.Name);
+                var value = await _settingProvider.GetJObjectOrNullAsync(identifier.Module, identifier.Name);
                 values.Add(identifier, value);
             }
 

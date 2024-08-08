@@ -26,6 +26,7 @@ export interface IFormStateInternalContext {
   sections: IFormSection[];
 
   // runtime props
+  initialValues?: any;
   formData?: any;
   validationErrors?: IFormValidationErrors;
 }

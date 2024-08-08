@@ -12,9 +12,11 @@ import {
   fetchConfigurationsAction,
   fetchConfigurationsErrorAction,
   fetchConfigurationsSuccessAction,
+  selectApplicationAction,
   selectSettingAction,
   setEditorBridgeAction,
   setEditorModeAction,
+  setSaveStatusAction,
 } from './actions';
 import {
   IEditorBridge,
@@ -119,7 +121,8 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
     )
       .then((response) => {
         if (response.success) {
-          dispatch(fetchApplicationsSuccessAction({ applications: response.result.items }));
+          const frontEndApps: FrontEndApplicationDto[] = [...response.result.items];
+          dispatch(fetchApplicationsSuccessAction({ applications: frontEndApps }));
         } else dispatch(fetchApplicationsErrorAction({ error: response.error }));
       })
       .catch((error) => {
@@ -133,18 +136,30 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
 
   const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication) => {
     dispatch(selectSettingAction({ setting, app }));
+    dispatch(setEditorModeAction('edit'));
+  };
+
+  const selectApplication = (app: IFrontEndApplication) => {
+    dispatch(selectApplicationAction({ app }));
   };
 
   const saveSetting = () => {
     if (!state.editorBridge) return Promise.reject('Setting editor not available');
 
-    return state.editorBridge.save();
+    dispatch(setSaveStatusAction('saving'));
+    return state.editorBridge.save().then(() => {
+      dispatch(setSaveStatusAction('success'));
+    }).catch(() => {
+      dispatch(setSaveStatusAction('error'));
+    });
   };
   const startEditSetting = () => {
+    dispatch(setSaveStatusAction('none'));
     dispatch(setEditorModeAction('edit'));
   };
   const cancelEditSetting = () => {
-    dispatch(setEditorModeAction('readonly'));
+    state.editorBridge.cancel();
+    dispatch(setSaveStatusAction('canceled'));
   };
 
   const fetchSettingValue = (settingId: ISettingIdentifier) => {
@@ -161,6 +176,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
   };
 
   const saveSettingValue = (settingId: ISettingIdentifier, value: SettingValue) => {
+    dispatch(setSaveStatusAction('saving'));
     return settingsUpdateValue(
       {
         name: settingId.name,
@@ -171,9 +187,11 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
       { base: backendUrl, headers: httpHeaders }
     )
       .then((response) => {
+        dispatch(setSaveStatusAction('success'));
         return response;
       })
       .catch((error) => {
+        dispatch(setSaveStatusAction('error'));
         console.error(error);
       });
   };
@@ -184,6 +202,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
 
   const contextValue: ISettingsEditorContext = {
     ...state,
+    selectApplication,
     selectSetting,
     saveSetting,
     startEditSetting,

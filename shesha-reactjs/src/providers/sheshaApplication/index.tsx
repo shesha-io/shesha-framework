@@ -52,6 +52,7 @@ import { useApplicationPlugin } from './context/applicationContext';
 import { FormManager } from '../formManager';
 import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
 import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/provider';
+import { MainMenuProvider } from '../mainMenu';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -75,7 +76,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     children,
     backendUrl,
     applicationName,
-    applicationKey,
+    applicationKey = 'default-app',
     accessTokenName,
     homePageUrl,
     router,
@@ -174,7 +175,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                             <DynamicModalProvider>
                                               <DebugPanel>
                                                 <ApplicationActionsProcessor>
-                                                  {children}
+                                                  <MainMenuProvider>
+                                                    {children}
+                                                  </MainMenuProvider>
                                                 </ApplicationActionsProcessor>
                                               </DebugPanel>
                                             </DynamicModalProvider>

@@ -13,6 +13,7 @@ import {
   registerComponentActionsAction,
   setFormDataAction,
   setFormModeAction,
+  setInitialValuesAction,
   setValidationErrorsAction,
 } from './actions';
 import {
@@ -108,6 +109,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
       actions: convertActions(null, actions),
       sections: convertSectionsToList(null, sections),
       formSettings: formSettings,
+      initialValues: props.initialValues,
     };
   };
   const [state, dispatch] = useThunkReducer(formReducer, undefined, getInitialData);
@@ -324,6 +326,7 @@ const FormProviderInternal: FC<PropsWithChildren<IFormProviderProps>> = ({
     } else {
       shouldSyncInitialData.current = true;
     }
+    dispatch(setInitialValuesAction(props.initialValues));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.initialValues]);
 

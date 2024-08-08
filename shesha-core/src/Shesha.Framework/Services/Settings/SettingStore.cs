@@ -142,7 +142,7 @@ namespace Shesha.Services.Settings
             return await WithUnitOfWorkAsync(async () => {
                 var settingConfiguration = await GetSettingConfiguration(setting);
                 var query = _settingValueRepository.GetAll()
-                    .Where(v => v.SettingConfiguration == settingConfiguration);
+                    .Where(v => v.SettingConfiguration.Id == settingConfiguration.Id);
 
                 if (setting.IsClientSpecific)
                 {

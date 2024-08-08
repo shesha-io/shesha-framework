@@ -1,12 +1,10 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useReducer } from 'react';
-import { THEME_CONFIG_NAME } from '@/shesha-constants';
-import { useDebouncedCallback } from 'use-debounce';
-import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { setThemeAction } from './actions';
 import { IConfigurableTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { uiReducer } from './reducer';
 import { defaultRequiredMark } from './shaRequiredMark';
+import { useSettingValue } from '..';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -25,35 +23,21 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     iconPrefixCls: iconPrefixCls,
   });
 
-  const { getComponent, updateComponent } = useConfigurationItemsLoader();
+  const { loadingState, value } = useSettingValue({module: 'Shesha', name: 'Shesha.ThemeSettings'});
 
-  // fetch theme
   useEffect(() => {
-    const promisedTheme = getComponent({ name: THEME_CONFIG_NAME, isApplicationSpecific: true, skipCache: false });
-    promisedTheme.promise.then((data) => {
-      const theme = data?.settings as IConfigurableTheme;
-      if (theme) dispatch(setThemeAction(theme));
-    });
-  }, []);
-
-  const debouncedSave = useDebouncedCallback((themeToSave) => {
-    updateComponent({ name: THEME_CONFIG_NAME, isApplicationSpecific: true, settings: themeToSave });
-  }, 300);
+    if (loadingState === 'ready')
+      dispatch(setThemeAction(value as IConfigurableTheme));
+  }, [loadingState]);
 
   const changeTheme = (theme: IConfigurableTheme) => {
     // save theme to the state
     dispatch(setThemeAction(theme));
-
-    // persist theme
-    debouncedSave(theme);
   };
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme?.application;
     const themeDefaults: ThemeConfig['token'] = {};
-    // paddingSM: 4,
-    // paddingMD: 8,
-    // paddingLG: 12,
 
     const theme: ThemeConfig['token'] = appTheme
       ? {

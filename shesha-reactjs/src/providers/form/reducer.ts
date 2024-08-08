@@ -36,6 +36,10 @@ const reducer = handleActions<IFormStateInternalContext, any>(
       };
     },
 
+    [FormActionEnums.SetInitialValues]: (state: IFormStateInternalContext, action: ReduxActions.Action<any>) => {
+      return {...state, initialValues: action.payload};
+    },
+
     [FormActionEnums.SetValidationErrors]: (
       state: IFormStateInternalContext,
       action: ReduxActions.Action<IFormValidationErrors>

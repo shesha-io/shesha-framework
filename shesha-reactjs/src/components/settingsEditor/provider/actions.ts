@@ -6,7 +6,8 @@ import {
   IFetchApplicationsSuccessPayload,
   IFetchConfigurationsErrorPayload,
   IFetchConfigurationsSuccessPayload,
-  ISettingSelection
+  ISettingSelection,
+  SaveStatus
   } from './contexts';
 
 export enum SettingsEditorActionEnums {
@@ -18,8 +19,10 @@ export enum SettingsEditorActionEnums {
   FetchApplicationsSuccess = 'FETCH_APPLICATIONS_SUCCESS',
   FetchApplicationsError = 'FETCH_APPLICATIONS_ERROR',
   SelectSetting = 'SELECT_SETTING',
+  SelectApplication = 'SELECT_APPLICATION',
   SetEditorMode = 'SET_EDITOR_MODE',
   SetEditorBridge = 'SET_EDITOR_BRIDGE',
+  setSaveStatus = 'SET_SAVE_STATUS',
 }
 
 /* NEW_ACTION_GOES_HERE */
@@ -55,6 +58,11 @@ export const selectSettingAction = createAction<ISettingSelection, ISettingSelec
   p => p
 );
 
+export const selectApplicationAction = createAction<ISettingSelection, ISettingSelection>(
+  SettingsEditorActionEnums.SelectApplication,
+  p => p
+);
+
 export const setEditorModeAction = createAction<FormMode, FormMode>(
   SettingsEditorActionEnums.SetEditorMode,
   p => p
@@ -62,5 +70,10 @@ export const setEditorModeAction = createAction<FormMode, FormMode>(
 
 export const setEditorBridgeAction = createAction<IEditorBridge, IEditorBridge>(
   SettingsEditorActionEnums.SetEditorBridge,
+  p => p
+);
+
+export const setSaveStatusAction = createAction<SaveStatus, SaveStatus>(
+  SettingsEditorActionEnums.setSaveStatus,
   p => p
 );

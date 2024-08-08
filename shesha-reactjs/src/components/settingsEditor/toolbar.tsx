@@ -59,7 +59,7 @@ export const SettingsEditorToolbar: FC<ISettingsEditorToolbarProps> = () => {
             isVisible: canCancelEdit,
             content: () => (
                 <Button onClick={onCancelEditClick} type="link">
-                    <CloseOutlined /> Cancel Edit
+                    <CloseOutlined /> Cancel changes
                 </Button>
             )
         },

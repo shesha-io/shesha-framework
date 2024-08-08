@@ -10,6 +10,7 @@ export enum FormActionEnums {
   SetFlatComponentsAction = 'SET_FLAT_COMPONENTS',
   SetFormMode = 'SET_FORM_MODE',
   SetFormData = 'SET_FORM_DATA',
+  SetInitialValues = 'SET_INITIAL_VALUES',
   SetValidationErrors = 'SET_VALIDATION_ERRORS',
   RegisterActions = 'REGISTER_ACTIONS',
 }
@@ -25,6 +26,8 @@ export const setFormDataAction = createAction<ISetFormDataPayload, ISetFormDataP
   FormActionEnums.SetFormData,
   (p) => p
 );
+
+export const setInitialValuesAction = createAction<any, any>(FormActionEnums.SetInitialValues, (p) => p);
 
 export const setValidationErrorsAction = createAction<IFormValidationErrors, IFormValidationErrors>(
   FormActionEnums.SetValidationErrors,

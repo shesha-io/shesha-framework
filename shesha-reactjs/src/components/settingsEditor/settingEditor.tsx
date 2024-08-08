@@ -14,6 +14,7 @@ interface ISettingEditorState {
     isLoading: boolean;
     loadingError?: any;
     value?: SettingValue;
+    initialValue?: SettingValue;
 }
 
 export const SettingEditor: FC<ISettingEditorProps> = () => {
@@ -28,7 +29,7 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
                 module: settingSelection.setting.module,
                 appKey: settingSelection.app?.appKey
             }).then(response => {
-                setState(prev => ({ ...prev, isLoading: false, value: response }));
+                setSatate(prev => ({ ...prev, isLoading: false, value: response, initialValue: response }));
             });
         } else
             setState(prev => ({ ...prev, isLoading: false, value: null, loadingError: null }));
@@ -37,8 +38,8 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
     return settingSelection
         ? (
             settingSelection.setting.editorForm
-                ? <CustomFormSettingEditor selection={settingSelection} value={state.value} />
-                : <GenericSettingEditor selection={settingSelection} value={state.value} />
+                ? <CustomFormSettingEditor selection={settingSelection} value={state.value} key={settingSelection.setting.name}/>
+                : <GenericSettingEditor selection={settingSelection} value={state.value} key={settingSelection.setting.name}/>
         )
         : (
             <Empty

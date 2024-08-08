@@ -7,9 +7,9 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { sidebarMenuItemToMenuItem } from './utils';
 import { evaluateString, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo, useLocalStorage } from '@/hooks';
-import { useSidebarMenu } from '@/providers/sidebarMenu';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { useMainMenu } from '@/providers/mainMenu';
 
 export interface ISidebarMenuProps {
   isCollapsed?: boolean;
@@ -18,7 +18,7 @@ export interface ISidebarMenuProps {
 
 const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('openedSidebarKeys', null);
-  const { items } = useSidebarMenu();
+  const { items } = useMainMenu();
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
   const executionContext = useAvailableConstantsData();
