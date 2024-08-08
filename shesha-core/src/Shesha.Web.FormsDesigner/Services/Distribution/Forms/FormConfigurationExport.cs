@@ -45,7 +45,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 throw new ArgumentException($"Wrong type of argument {item}. Expected {nameof(FormConfiguration)}, actual: {item.GetType().FullName}");
 
             var permission = await _permissionedObjectManager.GetOrNullAsync(
-                FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
+                FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name),
                 ShaPermissionedObjectsTypes.Form
             );
 
