@@ -13,7 +13,6 @@ export function storedFilesReducer(
   //#endregion
 
   switch (type) {
-    case StoredFileActionEnums.SetFileId:
     case StoredFileActionEnums.DownloadFileRequest:
     case StoredFileActionEnums.DownloadFileSuccess:
     case StoredFileActionEnums.DownloadFileError:

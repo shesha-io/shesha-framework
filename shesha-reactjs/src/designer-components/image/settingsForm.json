@@ -351,7 +351,7 @@
             "values": [
               {
                 "label": "StoredFile",
-                "value": "storedFileId",
+                "value": "storedFile",
                 "id": "1"
               },
               {
@@ -407,7 +407,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": {
-        "_code": "return getSettingValue(data?.dataSource) !== 'storedFileId';",
+        "_code": "return getSettingValue(data?.dataSource) !== 'storedFile';",
         "_mode": "code",
         "_value": false
       },
