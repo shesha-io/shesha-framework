@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Abstractions;
 using Shesha.Domain.Enums;
+using Shesha.Permissions.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -93,5 +94,11 @@ namespace Shesha.Permissions
         /// <param name="actionDescriptor">Action descriptor</param>
         /// <returns></returns>
         Task<bool> IsActionDescriptorEnabled(ActionDescriptor actionDescriptor);
+
+        /// <summary>
+        /// Gets all permissioned shesha forms with anonymous access
+        /// </summary>
+        /// <returns></returns>
+        Task<List<PermissionedFormDto>> GetAnonymousForms();
     }
 }

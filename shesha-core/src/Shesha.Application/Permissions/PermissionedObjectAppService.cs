@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
+using Shesha.Permissions.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -76,6 +77,15 @@ namespace Shesha.Permissions
         public async Task<PermissionedObjectDto> SetPermissionsAsync(string objectName, RefListPermissionedAccess access, List<string> permissions)
         {
             return await _permissionedObjectManager.SetPermissionsAsync(objectName, access, permissions);
+        }
+
+        /// <summary>
+        /// Gets all permissioned shesha forms with anonymous access
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<PermissionedFormDto>> GetAnonymousForms()
+        {
+            return await _permissionedObjectManager.GetAnonymousForms();
         }
 
         /// <summary>

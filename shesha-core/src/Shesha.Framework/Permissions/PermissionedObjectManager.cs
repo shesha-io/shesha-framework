@@ -17,6 +17,7 @@ using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 using Shesha.Extensions;
+using Shesha.Permissions.Dtos;
 using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
@@ -94,6 +95,30 @@ namespace Shesha.Permissions
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets all permissioned shesha forms with anonymous access
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<PermissionedFormDto>> GetAnonymousForms()
+        {
+            var forms = (await _permissionedObjectRepository.GetAll()
+                .Where(f => f.Type == ShaPermissionedObjectsTypes.Form && f.Access == RefListPermissionedAccess.AllowAnonymous)
+                .ToListAsync())
+                .Select(x =>
+                {
+                    var parts = x.Object.Split('.');
+                    return new PermissionedFormDto
+                    {
+                        Module = parts[0],
+                        Name = parts[1]
+                    };
+                })
+                .Distinct()
+                .ToList();
+
+            return forms;
         }
 
         private async Task SetCacheAsync(PermissionedObjectDto dto, CacheItemWrapper<PermissionedObjectDto> item = null)
