@@ -11,8 +11,6 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
-import { ValidationErrors } from '@/components';
 import { ImageField, ImageSourceType } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -57,12 +55,6 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     const { backendUrl } = useSheshaApplication();
     const ownerId = evaluateValue(model.ownerId, { data, globalState });
 
-
-    if (model.dataSource === 'storedFileId' && model.storedFileId && !isValidGuid(model.storedFileId)) {
-      return <ValidationErrors error="The provided StoredFileId is inValid" />;
-    }
-
-
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
@@ -83,10 +75,12 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => {
-          const val = model.dataSource === 'storedFileId' 
+          const base64 = model.base64 || value;
+
+          const val = model.dataSource === 'storedFile' 
             ? model.storedFileId || value?.id || value 
             : model.dataSource === 'base64'
-              ? model.base64 || value
+              ? (base64?.indexOf('data:image/png;base64,') > -1 ? base64 : `data:image/png;base64,${base64}`) 
               : model.url || value;
 
           const fileProvider = child => {
@@ -111,7 +105,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
 
           return (
             <ConditionalWrap
-              condition={model.dataSource === 'storedFileId'}
+              condition={model.dataSource === 'storedFile'}
               wrap={fileProvider}
             >
             <ImageField
@@ -149,6 +143,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       } as any;
     })
     .add<IImageProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<IImageProps>(4, (prev) => ({...prev, dataSource: prev.dataSource as any === 'storedFileId' ? 'storedFile' : prev.dataSource}))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

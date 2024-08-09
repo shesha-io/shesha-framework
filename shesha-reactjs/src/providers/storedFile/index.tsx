@@ -33,7 +33,6 @@ import {
   fileViewErrorAction,
   fileViewRequestAction,
   fileViewSuccessAction,
-  setFileIdAction,
   uploadFileErrorAction,
   uploadFileRequestAction,
   uploadFileSuccessAction,
@@ -94,14 +93,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
   const [state, dispatch] = useReducer(storedFileReducer, {
     ...STORED_FILE_CONTEXT_INITIAL_STATE,
-    fileId: newFileId,
   });
-
-  useEffect(() => {
-    if (state.fileId !== newFileId) {
-      dispatch(setFileIdAction(newFileId));
-    }
-  }, [newFileId]);
 
   const { httpHeaders: headers } = useSheshaApplication();
 
@@ -116,21 +108,19 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     loading: isFetchingFileInfo,
     error: fetchingFileInfoError,
     data: fetchingFileInfoResponse,
-  } = state.fileId ? fileFetcher : propertyFetcher;
+  } = newFileId ? fileFetcher : propertyFetcher;
 
   const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const doFetchFileInfo = () => {
     if (
       state.fileInfo?.id !== undefined &&
-      (state.fileInfo?.id === state.fileId
-      || state.fileInfo?.id === value
-      || state.fileInfo?.id === value?.id)
+      state.fileInfo?.id === newFileId
     )
       return;
 
-    if (state.fileId)
-      fileFetcher.refetch({ queryParams: { id: state.fileId } });
+    if (newFileId)
+      fileFetcher.refetch({ queryParams: { id: newFileId } });
     else
     if (ownerId && ownerType && propertyName)
       propertyFetcher.refetch({ queryParams: { ownerId, ownerType, propertyName, fileCategory } });
@@ -138,7 +128,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
 
   useEffect(() => {
     if (uploadMode === 'async') doFetchFileInfo();
-  }, [uploadMode, ownerId, ownerType, propertyName, fileId, value]);
+  }, [uploadMode, ownerId, ownerType, propertyName, newFileId]);
 
   useEffect(() => {
     if (uploadMode === 'sync' && value) {
@@ -237,7 +227,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     };
 
     formData.append('file', file);
-    appendIfDefined('id', state.fileId);
+    appendIfDefined('id', fileId);
     appendIfDefined('ownerId', ownerId);
     appendIfDefined('ownerType', ownerType);
     if (fileCategory)
@@ -255,7 +245,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     };
 
     if (
-      !Boolean(state.fileId) &&
+      !Boolean(fileId) &&
       !(Boolean(ownerId) && Boolean(propertyName)) &&
       typeof addDelayedUpdate !== 'function'
     ) {
@@ -318,7 +308,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     dispatch(deleteFileRequestAction());
 
     const deleteFileInput: StoredFileDeleteQueryParams = {
-      fileId: state.fileId ?? state.fileInfo?.id,
+      fileId: fileId ?? state.fileInfo?.id,
       ownerId,
       ownerType,
       fileCategory,

@@ -85,8 +85,8 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
   refetcher?: () => void;
 
   /**  
-* Triggered when the form is submitted successfully but the response is not successful
-**/
+   * Triggered when the form is submitted successfully but the response is not successful
+   **/
   onSubmittedFailed?: () => void;
 
 }
@@ -159,8 +159,8 @@ export interface IConfigurableFormProps<Values = any>
   refetcher?: () => void;
 
   /**  
-* Triggered when the form is submitted successfully but the response is not successful
-**/
+   * Triggered when the form is submitted successfully but the response is not successful
+   **/
   onSubmittedFailed?: () => void;
 
   /**/

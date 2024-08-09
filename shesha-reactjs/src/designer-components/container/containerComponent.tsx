@@ -1,15 +1,14 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ICommonContainerProps, IContainerComponentProps, IToolboxComponent } from '@/interfaces';
-import { getStyle, getLayoutStyle, validateConfigurableComponentSettings, evaluateValue } from '@/providers/form/utils';
+import { getStyle, getLayoutStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { StoredFileProvider, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { ComponentsContainer, ValidationErrors } from '@/components';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import ConditionalWrap from '@/components/conditionalWrapper';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { CSSProperties } from 'styled-components';
 import { toSizeCssProp } from '@/utils/form';
@@ -19,13 +18,25 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   name: 'Container',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
-    const { data: formData, data } = useFormData();
+    const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
-    const { formSettings } = useForm();
-    const { backendUrl } = useSheshaApplication();
-    const ownerId = evaluateValue(model.ownerId, { data, globalState });
+    const { backendUrl, httpHeaders } = useSheshaApplication();
+    const [ fileUrl, setFileUrl] = useState(null);
 
-    if (model.dataSource === 'storedFileId' && model.storedFileId && !isValidGuid(model.storedFileId)) {
+    useEffect(() => {
+      if (model.backgroundDataSource === 'storedFileId' && model.backgroundStoredFileId) {
+        fetch(`${backendUrl}/api/StoredFile/Download?id=${model.backgroundStoredFileId}`,
+          {headers: {...httpHeaders, "Content-Type": "application/octet-stream"}})
+          .then((response) => {
+            return response.blob();
+          })
+          .then((blob) => {
+            setFileUrl(URL.createObjectURL(blob));
+          });
+      }
+    }, [model.backgroundStoredFileId]);
+
+    if (model.backgroundDataSource === 'storedFileId' && model.backgroundStoredFileId && !isValidGuid(model.backgroundStoredFileId)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -60,7 +71,6 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       maxHeight: toSizeCssProp(model.maxHeight),
     };
 
-
     const borderStyles: CSSProperties = {
       borderWidth: toSizeCssProp(model.borderWidth),
       borderColor: model.borderColor,
@@ -68,62 +78,36 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       borderRadius: toSizeCssProp(model.borderRadius),
     };
 
-    let val;
-    if (model.dataSource === "storedFileId") {
-      val = model.storedFileId;
-    } else if (model.dataSource === "base64") {
-      val = model.base64;
-    } else if (model.dataSource === "url") {
-      val = model.backgroundUrl;
-    }
+    const val = model.backgroundDataSource === 'storedFileId'
+      ? fileUrl
+      : model.backgroundDataSource === 'base64'
+        ? (model.backgroundBase64?.indexOf('data:image/png;base64,') > -1 ? model.backgroundBase64 : `data:image/png;base64,${model.backgroundBase64}`)
+        : model.backgroundDataSource === 'url'
+          ? model.backgroundUrl
+          : '';
 
-    const fileProvider = (child) => {
-      return (
-        <StoredFileProvider
-          value={val}
-          fileId={val}
-          baseUrl={backendUrl}
-          ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-          ownerType={
-            Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
-          }
-          fileCategory={model.fileCategory}
-          propertyName={!model.context ? model.propertyName : null}
-        >
-          {child}
-        </StoredFileProvider>
-      );
-    };
-
-    const backgroundStyles = model?.backgroundType === 'image'
-      ? { background: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundRepeat }
+    const backgroundStyles: CSSProperties = model?.backgroundType === 'image' && val
+      ? { backgroundImage: `url(${val})`, backgroundSize: model?.backgroundCover, backgroundRepeat: model?.backgroundRepeat }
       : model?.backgroundType === 'color'
         ? { background: model?.backgroundColor }
         : {};
 
     return (
       <ParentProvider model={model}>
-        <ConditionalWrap
-          condition={model.dataSource === 'storedFileId'}
-          wrap={fileProvider}
-        >
-          <ComponentsContainer
-            containerId={model.id}
-            {...backgroundStyles}
-            className={model.className}
-            {...model}
-            wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
-            style={{
-              ...widthStyles,
-              ...heightStyles,
-              ...borderStyles,
-              ...backgroundStyles,
-              ...getStyle(model?.style, formData)
-            }}
-            dynamicComponents={model?.isDynamic ? model?.components : []}
-            {...flexAndGridStyles}
-          />
-        </ConditionalWrap>
+        <ComponentsContainer
+          containerId={model.id}
+          className={model.className}
+          wrapperStyle={getLayoutStyle({ ...model, style: model?.wrapperStyle }, { data: formData, globalState })}
+          style={{
+            ...widthStyles,
+            ...heightStyles,
+            ...borderStyles,
+            ...backgroundStyles,
+            ...getStyle(model?.style, formData)
+          }}
+          dynamicComponents={model?.isDynamic ? model?.components : []}
+          {...flexAndGridStyles}
+        />
       </ParentProvider>
     );
   },
@@ -142,6 +126,13 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       .add<IContainerComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IContainerComponentProps>(2, (prev) => migrateVisibility(prev))
       .add<IContainerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<IContainerComponentProps>(4, (prev) => (
+        { 
+          ...prev,
+          backgroundDataSource: prev.backgroundDataSource ?? prev['dataSource'],
+          backgroundBase64: prev.backgroundBase64 ?? prev['base64'],
+          backgroundStoredFileId: prev.backgroundStoredFileId ?? prev['storedFileId'],
+        }))
   ,
 };
 

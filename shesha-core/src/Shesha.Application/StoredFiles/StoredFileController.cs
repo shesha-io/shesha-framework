@@ -8,8 +8,10 @@ using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.OutputCaching;
 using Shesha.Domain;
 using Shesha.EntityReferences;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -57,11 +59,18 @@ namespace Shesha.StoredFiles
         }
 
         [HttpGet, Route("Download")]
-        public async Task<FileStreamResult> Download(Guid id, int? versionNo)
+        public async Task<ActionResult> Download(Guid id, int? versionNo)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
+
+            if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
+                return StatusCode(304);
+
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
             await _fileService.MarkDownloadedAsync(fileVersion);
+
+            HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
+            HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
 
             return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
         }
