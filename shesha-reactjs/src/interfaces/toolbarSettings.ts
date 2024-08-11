@@ -29,6 +29,7 @@ import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index'
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
+import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -126,9 +127,7 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'dropdown');
   }
 
-  public addColumnsEditor(
-    props: ColumnsEditorType | ((data: T) => ColumnsEditorType)
-  ) {
+  public addColumnsEditor(props: ColumnsEditorType | ((data: T) => ColumnsEditorType)) {
     return this.addProperty(props, 'columnsEditorComponent');
   }
 
@@ -234,6 +233,10 @@ export class DesignerToolbarSettings<T> {
 
   public addSlider(props: SliderType | ((data: T) => SliderType)) {
     return this.addProperty(props, 'slider');
+  }
+
+  public addDivider(props: IDividerProps | ((data: T) => IDividerProps)) {
+    return this.addProperty(props, 'divider');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {
