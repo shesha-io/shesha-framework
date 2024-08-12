@@ -74,6 +74,15 @@ namespace Shesha.Web.FormsDesigner.Services
                 : [];
         }
 
+        /// <summary>
+        /// Gets all permissioned shesha forms with anonymous access
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<PermissionedObjectDto>> GetAnonymousForms()
+        {
+            return await _permissionedObjectManager.GetObjectsByAccess(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
+        }
+
         private async Task<bool> CheckFormPermissions(string module, string name)
         {
             var permission = await _permissionedObjectManager.GetOrDefaultAsync(
