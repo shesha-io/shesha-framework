@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 import { getPropertySettingsFromValue } from './utils';
 import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { Button } from 'antd';
@@ -35,65 +35,73 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
 ];
 
 export const SettingsControl: FC<ISettingsControlProps> = (props) => {
-
   const { styles } = useStyles();
-
   const availableConstants = useAvailableStandardConstantsMetadata();
 
-  const setting = getPropertySettingsFromValue(props.value);
-  const { _mode: mode, _code: code } = setting;
+  const [internalState, setInternalState] = useState(() => {
+    const initialSetting = getPropertySettingsFromValue(props.value);
+    return {
+      mode: initialSetting._mode || props.mode,
+      codeValue: initialSetting._code || null,
+      value: initialSetting._value
+    };
+  });
 
-  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode) => {
-    const newSetting = { ...value, _mode: (m ?? mode) };
-    const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
-    if (props.onChange)
-      props.onChange(newValue);
+  const onInternalChange = (updates: Partial<typeof internalState>) => {
+    const newState = { ...internalState, ...updates };
+    setInternalState(newState);
+
+    if (props.onChange) {
+      const newSetting: IPropertySetting = {
+        _mode: newState.mode,
+        _code: newState.codeValue,
+        _value: newState.value
+      };
+      props.onChange(newSetting);
+    }
   };
 
-  const codeOnChange = (val: any) => {
-    const newValue = { ...setting, _code: val };
-    onInternalChange(newValue);
+  const codeOnChange = (val: string) => {
+    onInternalChange({ codeValue: val });
   };
 
   const valueOnChange = (val: any) => {
-    if (!isEqual(setting?._value, val)) {
-      const newValue = { ...setting, _value: val };
-      onInternalChange(newValue);
+    if (!isEqual(internalState.value, val)) {
+      onInternalChange({ value: val });
     }
   };
 
   const onSwitchMode = () => {
-    const newMode = mode === 'code' ? 'value' : 'code';
-    onInternalChange(setting, newMode);
+    const newMode = internalState.mode === 'code' ? 'value' : 'code';
+    onInternalChange({ mode: newMode });
   };
 
-  const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
-  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
+  const propertyName = internalState.mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   return (
-    <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
+    <div className={internalState.mode === 'code' ? styles.contentCode : styles.contentJs}>
       <Button
         hidden={props.readOnly}
         shape="round"
         className={styles.jsSwitch}
         type='primary'
-        danger={mode === 'value' && !!code}
+        danger={internalState.mode === 'value' && !!internalState.codeValue}
         ghost
         size='small'
         onClick={onSwitchMode}
       >
-        {mode === 'code' ? 'Value' : 'JS'}
+        {internalState.mode === 'code' ? 'Value' : 'JS'}
       </Button>
       <div className={styles.jsContent}>
-        {mode === 'code' &&
+        {internalState.mode === 'code' &&
           <CodeEditor
             readOnly={props.readOnly}
-            value={setting._code}
+            value={internalState.codeValue}
             onChange={codeOnChange}
             mode='dialog'
             language='typescript'
             propertyName={props.propertyName + 'Code'}
-
             fileName={props.propertyName}
             wrapInTemplate={true}
             templateSettings={{
@@ -103,7 +111,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
             exposedVariables={props.exposedVariables !== undefined ? props.exposedVariables : defaultExposedVariables}
           />
         }
-        {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
+        {internalState.mode === 'value' && props.children(internalState.value, valueOnChange, propertyName)}
       </div>
     </div>
   );

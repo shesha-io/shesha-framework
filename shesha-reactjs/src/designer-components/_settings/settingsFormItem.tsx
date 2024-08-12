@@ -123,7 +123,7 @@ const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
     }, [settingsPanel, props.name]);
 
     const { propertyFilter } = useSettingsForm<any>();
-    return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
+    return !propertyFilter || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
         ? <SettingsFormComponent {...props} />
         : null;
 };
