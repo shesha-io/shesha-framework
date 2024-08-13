@@ -25,7 +25,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     //allowInherited,
     onChange,
     disabled,
-    bordered = true,
     style,
     size,
     mode,
@@ -190,8 +189,8 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
 
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
-      className="sha-dropdown"
-      dropdownStyle={{...style, height: 'auto'}}
+      // className="sha-dropdown"
+      dropdownStyle={{ ...style, height: 'auto' }}
       showSearch={!disableSearch}
       labelInValue={true}
       notFoundContent={notFoundContent}
@@ -207,19 +206,19 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       loading={loading}
       placeholder={selectPlaceholder}
       disabled={disabled}
-      variant={!bordered ? 'borderless' : undefined}
       onSelect={handleSelect}
       style={style}
-      size={size}
+      variant='outlined'
       ref={selectRef}
+      size={size}
       mode={value && mode === 'multiple' ? mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
     >
       {options?.map(({ value: localValue, label, data }) => (
-      
-       <Select.Option value={localValue} key={localValue} data={data}>
+
+        <Select.Option value={localValue} key={localValue} data={data}>
           {label}
         </Select.Option>
-        
+
       ))}
     </Select>
   );

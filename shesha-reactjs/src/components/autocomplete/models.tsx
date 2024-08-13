@@ -108,7 +108,7 @@ export interface ICommonAutocompleteProps<TValue = any> extends IReadOnly {
 
 export interface IAutocompleteProps<TValue = any>
   extends IEntityAutocompleteProps<TValue>,
-    IUrlAutocompleteProps<TValue> {
+  IUrlAutocompleteProps<TValue> {
   /**
    * Data source of this Autocomplete
    */

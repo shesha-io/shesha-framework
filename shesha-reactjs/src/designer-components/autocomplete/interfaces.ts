@@ -41,4 +41,5 @@ export interface IAutocompleteComponentProps extends IConfigurableFormComponent 
   stylingBox?: string;
   height?: string | number;
   backgroundColor?: string;
+  variant?: 'borderless' | 'outlined' | 'filled';
 }

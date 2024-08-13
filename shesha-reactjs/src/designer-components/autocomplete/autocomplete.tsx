@@ -75,7 +75,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           },
           {
             match: 'pageContext',
-            data: {...pageContext?.getFull()} ?? {},
+            data: { ...pageContext?.getFull() } ?? {},
           },
         ],
         propertyMetadataAccessor
@@ -112,10 +112,10 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       useRawValues
         ? item[value]
         : {
-            id: item[value],
-            _displayName: item[displayText],
-            _className: model.entityTypeShortAlias,
-          };
+          id: item[value],
+          _displayName: item[displayText],
+          _className: model.entityTypeShortAlias,
+        };
 
     const getOptionFromFetchedItem = (item: object): ISelectOption => {
       const { dataSourceType, keyPropName, useRawValues, valuePropName } = model;
@@ -169,23 +169,20 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
-  
+
     const additionalStyles: CSSProperties = removeUndefinedProps({
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
       fontWeight: model.fontWeight,
-      borderWidth: model.hideBorder ? '0px' : model.borderSize, //this is handled in the entityAutcomplete.tsx
-      borderRadius: model.borderRadius,
-      borderStyle: model.hideBorder ? 'none' : model.borderType,
-      borderColor: model.borderColor,
-      backgroundColor: model.backgroundColor,
+      border: model.borderSize === 0 ? null : `${toSizeCssProp(model.borderSize) || '1px'} ${model.borderType || 'solid'} ${model.borderColor || '#d9d9d9'}`,
+      backgroundColor: model.backgroundColor || 'white',
       fontSize: model.fontSize,
-      overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
+      borderRadius: model.borderRadius || '8px',
       ...stylingBoxAsCSS,
     });
     const jsStyle = getStyle(model.style, data);
-    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
-    
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+
     const defaultValue = getDefaultValue();
 
     const autocompleteProps: IAutocompleteProps = {
@@ -193,7 +190,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       typeShortAlias: model.entityTypeShortAlias,
       entityDisplayProperty: model.entityDisplayProperty,
       allowInherited: true /*hardcoded for now*/,
-      bordered: !model.hideBorder,
       dataSourceUrl,
       dataSourceType: model.dataSourceType,
       mode: model.mode,
@@ -223,20 +219,20 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     return (
       <ConfigurableFormItem {...formProps}>
         {(value, onChange) => {
-          const customEvent =  customDropDownEventHandler(eventProps);
+          const customEvent = customDropDownEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function') 
+            if (typeof onChange === 'function')
               onChange(...args);
           };
-         
-          
+
+
           return (
-          model.useRawValues ? (
-            <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-          ) : (
-            <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal}/>
-          ));
+            model.useRawValues ? (
+              <Autocomplete.Raw {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
+            ) : (
+              <Autocomplete.EntityDto {...autocompleteProps} {...customEvent} value={value} onChange={onChangeInternal} />
+            ));
         }}
       </ConfigurableFormItem>
     );
