@@ -75,7 +75,7 @@ namespace Shesha.Authorization
             {
                 newPermission = GetPermissionOrNull(permission.Name);
                 var dbPermission = _permissionDefinitionRepository.Get(permission.Id);
-                if (newPermission != null && dbPermission.Name == permission.Name)
+                if (newPermission != null && dbPermission.Name.Equals(permission.Name))
                 {
                     return Task.FromResult(newPermission);
                 }
