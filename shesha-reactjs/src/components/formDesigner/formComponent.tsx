@@ -39,6 +39,10 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
         || !isComponentFiltered(componentModel)); // check `model` without modification
   actualModel.readOnly = actualModel.readOnly;
 
+  // binding only input and output components
+  if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
+    actualModel.propertyName = undefined;
+
   return (
     <CustomErrorBoundary>
       <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />

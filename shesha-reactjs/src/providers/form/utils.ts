@@ -870,7 +870,7 @@ export const getFilteredComponentIds = (
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
 export const getFieldNameFromExpression = (expression: string) => {
-  if (!expression) return '';
+  if (!expression) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
 };
