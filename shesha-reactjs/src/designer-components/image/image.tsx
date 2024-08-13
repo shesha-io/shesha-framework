@@ -47,8 +47,13 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   };
 
   useEffect(() => {
-    if (isStoredFile && fileInfo?.url)
-      fetchStoredFile(fileInfo?.url);
+    if (isStoredFile) {
+      if (fileInfo?.url)
+        fetchStoredFile(fileInfo?.url);
+      else
+        if (!fileInfo)
+          setFileUrl(null);
+    }
   }, [isStoredFile, fileInfo]);
 
   const content = useMemo(() => {

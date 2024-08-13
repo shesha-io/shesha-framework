@@ -81,7 +81,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const val = model.backgroundDataSource === 'storedFileId'
       ? fileUrl
       : model.backgroundDataSource === 'base64'
-        ? (model.backgroundBase64?.indexOf('data:image/png;base64,') > -1 ? model.backgroundBase64 : `data:image/png;base64,${model.backgroundBase64}`)
+        ? model.backgroundBase64
         : model.backgroundDataSource === 'url'
           ? model.backgroundUrl
           : '';
