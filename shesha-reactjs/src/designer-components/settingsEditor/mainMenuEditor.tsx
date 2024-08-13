@@ -58,7 +58,7 @@ const MainMenuEditorComponent: IToolboxComponent<any> = {
       const newData = {...menuProps, items: changedValue};
       setMenuProps(newData);
       form.setFormData({values: newData, mergeValues: true});
-    }
+    };
 
     return <SidebarConfigurator value={menuProps?.items} onChange={onChange} readOnly={editorMode === 'readonly'} />;
   },

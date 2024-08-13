@@ -19,6 +19,6 @@ export const AppSelector: FC = () => {
       </Select>
     </FormItem>
   );
-}
+};
 
 export default AppSelector;

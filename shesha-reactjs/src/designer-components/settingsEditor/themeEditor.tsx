@@ -35,7 +35,7 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
         else
           changeTheme(localTheme.current);
       };
-    },[])
+    }, []);
   
     useEffect(() => {
       if (form.formData)

@@ -29,7 +29,7 @@ export const SettingEditor: FC<ISettingEditorProps> = () => {
                 module: settingSelection.setting.module,
                 appKey: settingSelection.app?.appKey
             }).then(response => {
-                setSatate(prev => ({ ...prev, isLoading: false, value: response, initialValue: response }));
+                setState(prev => ({ ...prev, isLoading: false, value: response, initialValue: response }));
             });
         } else
             setState(prev => ({ ...prev, isLoading: false, value: null, loadingError: null }));

@@ -45,22 +45,22 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
 
   const context: IConfigurableComponentContext<ISideBarMenuProps> = {
     settings: loadedMenu,
-    load: () => {},
+    load: () => {/**/},
     save: (settings: ISideBarMenuProps) => {
       return saveMainMenu({...loadedMenu, ...settings})
         .then(() => {
           changeMainMenu({...loadedMenu, ...settings});
         });
     },
-    setIsInProgressFlag: () => {},
-    setSucceededFlag: () => {},
-    setFailedFlag: () => {},
-    setActionedFlag: () => {},
-    resetIsInProgressFlag: () => {},
-    resetSucceededFlag: () => {},
-    resetFailedFlag: () => {},
-    resetActionedFlag: () => {},
-    resetAllFlag: () => {},
+    setIsInProgressFlag: () => {/**/},
+    setSucceededFlag: () => {/**/},
+    setFailedFlag: () => {/**/},
+    setActionedFlag: () => {/**/},
+    resetIsInProgressFlag: () => {/**/},
+    resetSucceededFlag: () => {/**/},
+    resetFailedFlag: () => {/**/},
+    resetActionedFlag: () => {/**/},
+    resetAllFlag: () => {/**/},
   };
 
   return (
