@@ -311,3 +311,4 @@ storybook-static
 **/.next/**
 **/.rollup.cache/**
 
+/shesha-starter/frontend/package-lock.json
