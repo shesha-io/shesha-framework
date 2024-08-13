@@ -57,7 +57,11 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
       const incomingState = mergeWith(
         {...state.model},
         changedValues,
-        (objValue, srcValue) => (Array.isArray(objValue) ? srcValue : undefined),
+        (objValue, srcValue, key, obj) => {
+          if (srcValue === undefined)
+            obj[key] = undefined;
+          return Array.isArray(objValue) ? srcValue : undefined;
+        },
       );
       setState({model: incomingState, values: getValuesFromSettings(incomingState)});
       onValuesChange(changedValues, incomingState);
