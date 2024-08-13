@@ -7,7 +7,6 @@ import Link from 'next/link';
 import React from 'react';
 import { useAuth, ValidationErrors } from '@shesha-io/reactjs';
 import { URL_FORGOT_PASSWORD } from '@/routes';
-import { LoginPageWrapper } from './wrapper';
 
 interface ILoginForm {
   readonly userNameOrEmailAddress: string;
@@ -29,49 +28,43 @@ const Login = () => {
   };
 
   return (
-    <LoginPageWrapper
-      className="login-page"
-      heading="Welcome!"
-      hint="Please enter your personal details in order to access your profile."
-    >
-      <Form form={form} onFinish={handleLogin}>
-        <ValidationErrors error={errorInfo} />
+    <Form form={form} onFinish={handleLogin}>
+      <ValidationErrors error={errorInfo} />
 
-        <FormItem name="userNameOrEmailAddress" help="This field is required" rules={[{ required: true }]}>
-          <Input prefix={<MailOutlined />} placeholder="Username" />
-        </FormItem>
+      <FormItem name="userNameOrEmailAddress" help="This field is required" rules={[{ required: true }]}>
+        <Input prefix={<MailOutlined />} placeholder="Username" />
+      </FormItem>
 
-        <FormItem name="password" help="This field is required" rules={[{ required: true }]}>
-          <Input.Password
-            autoComplete="on"
-            prefix={<LockOutlined />}
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-            placeholder="Password"
-          />
-        </FormItem>
+      <FormItem name="password" help="This field is required" rules={[{ required: true }]}>
+        <Input.Password
+          autoComplete="on"
+          prefix={<LockOutlined />}
+          iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+          placeholder="Password"
+        />
+      </FormItem>
 
-        <FormItem className="un-authed-btn-container">
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-            block
-            loading={isLoggingInUser}
-            size="large"
-          >
-            {isLoggingInUser ? 'Signing in....' : 'Sign In'}
-          </Button>
-        </FormItem>
+      <FormItem className="un-authed-btn-container">
+        <Button
+          type="primary"
+          htmlType="submit"
+          className="login-form-button"
+          block
+          loading={isLoggingInUser}
+          size="large"
+        >
+          {isLoggingInUser ? 'Signing in....' : 'Sign In'}
+        </Button>
+      </FormItem>
 
-        <div className="custom-form-item">
-          <Checkbox>Remember me</Checkbox>
+      <div className="custom-form-item">
+        <Checkbox>Remember me</Checkbox>
 
-          <Link href={URL_FORGOT_PASSWORD} className="login-form-forgot">
-            Forgot password
-          </Link>
-        </div>
-      </Form>
-    </LoginPageWrapper>
+        <Link href={URL_FORGOT_PASSWORD} className="login-form-forgot">
+          Forgot password
+        </Link>
+      </div>
+    </Form>
   );
 };
 
