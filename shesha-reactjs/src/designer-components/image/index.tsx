@@ -77,10 +77,12 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
         {(value, onChange) => {
           const base64 = model.base64 || value;
 
+          const readonly = model?.readOnly || model.dataSource === 'base64' && Boolean(model.base64);
+
           const val = model.dataSource === 'storedFile' 
             ? model.storedFileId || value?.id || value 
             : model.dataSource === 'base64'
-              ? (base64?.indexOf('data:image/png;base64,') > -1 ? base64 : `data:image/png;base64,${base64}`) 
+              ? base64 
               : model.url || value;
 
           const fileProvider = child => {
@@ -115,7 +117,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
               imageSource={model.dataSource}
               styles={finalStyle}
               value={val}
-              readOnly={model?.readOnly}
+              readOnly={readonly}
               onChange={onChange}
               allowPreview={model?.allowPreview}
               alt={model?.alt}
