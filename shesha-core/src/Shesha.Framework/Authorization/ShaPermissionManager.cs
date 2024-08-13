@@ -74,8 +74,11 @@ namespace Shesha.Authorization
             if (permission.Id != Guid.Empty)
             {
                 newPermission = GetPermissionOrNull(permission.Name);
-                if (newPermission != null)
+                var dbPermission = _permissionDefinitionRepository.Get(permission.Id);
+                if (newPermission != null && dbPermission.Name == permission.Name)
+                {
                     return Task.FromResult(newPermission);
+                }
             }
 
             if (!string.IsNullOrEmpty(permission.Parent))
