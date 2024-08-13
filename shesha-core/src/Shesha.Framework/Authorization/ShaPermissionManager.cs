@@ -70,6 +70,14 @@ namespace Shesha.Authorization
         private Task<Abp.Authorization.Permission> _CreatePermissionAsync(PermissionDefinition permission)
         {
             Abp.Authorization.Permission newPermission = null;
+            // Check if the permission is not already created, in which case if it is just return it
+            if (permission.Id != Guid.Empty)
+            {
+                newPermission = GetPermissionOrNull(permission.Name);
+                if (newPermission != null)
+                    return Task.FromResult(newPermission);
+            }
+
             if (!string.IsNullOrEmpty(permission.Parent))
             {
                 // add new permission to parent
