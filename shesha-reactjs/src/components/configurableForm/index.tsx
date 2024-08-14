@@ -61,15 +61,11 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
 
   useEffect(() => {
     if (formId) {
-      console.log('LOG: form initialization by Id');
       shaForm.initByFormId({ formId: formId, configurationItemMode: configurationItemMode, formArguments: formArguments });
     }
   }, [shaForm, formId, configurationItemMode, formArguments]);
   useEffect(() => {
-    console.log('LOG: effect init raw', { markup, initialValues });
-
     if (markup) {
-      console.log('LOG: form initialization by markup');
       shaForm.initByRawMarkup({
         rawMarkup: markup,
         formArguments: formArguments,

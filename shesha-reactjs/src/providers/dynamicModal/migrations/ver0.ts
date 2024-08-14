@@ -80,7 +80,6 @@ const makeEvaluatorFromItems = (items: IKeyValue[]): string => {
 };
 
 export const migrateToV0 = (prev: IShowModalActionArgumentsV0): IShowModalActionArguments => {
-    console.log('LOG: migrate dialog 🔥');
     const { modalWidth, formMode, additionalProperties, submitHttpVerb, ...restProps } = prev;
     return {
         ...restProps,

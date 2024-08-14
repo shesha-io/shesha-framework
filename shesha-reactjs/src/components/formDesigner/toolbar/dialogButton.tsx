@@ -32,7 +32,6 @@ export const DialogButton: FC<IPreviewButtonProps> = ({ refLink }) => {
                 value={currentWidth}
                 suffix={'px'}
                 onChange={(e) => {
-                  console.log('currentWidth', currentWidth, parseInt(e.target.value, 10));
                   setCanvasWidth(parseInt(e.target.value, 10), 'custom');
                 }}
               />

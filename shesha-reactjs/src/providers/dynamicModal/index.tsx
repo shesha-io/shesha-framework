@@ -80,15 +80,12 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
         const { formMode, ...restArguments } = actionArgs;
 
-        console.log('LOG: dialog ??');
         const argumentsExpression = actionArgs.formArguments?.trim();
         const argumentsPromise = argumentsExpression
           ? executeScript(argumentsExpression, context)
           : Promise.resolve(undefined);
 
         return argumentsPromise.then(dialogArguments => {
-          console.log('LOG: dialog argumentsPromise ??', dialogArguments);
-
           const parentFormValues = context?.data ?? {};
 
           const { modalWidth, customWidth, widthUnits } = actionArgs;

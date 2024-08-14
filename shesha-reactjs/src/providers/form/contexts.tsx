@@ -2,11 +2,9 @@ import { FormInstance } from 'antd';
 import { IModelMetadata, IToolboxComponentGroup } from '@/interfaces';
 import {
   DEFAULT_FORM_SETTINGS,
-  FormAction,
   FormMode,
   FormSection,
   IConfigurableFormComponent,
-  IFormActions,
   IFormSections,
   IFormSettings,
 } from './models';
@@ -22,7 +20,6 @@ export interface IFormStateInternalContext {
   formSettings: IFormSettings;
   formMode: FormMode;
   form?: FormInstance<any>;
-  actions: IFormActions;
   sections: IFormSections;
 
   // runtime props
@@ -49,13 +46,6 @@ export interface IFormActionsContext {
   setFormMode: (formMode: FormMode) => void;
   setFormData: (payload: ISetFormDataPayload) => void;
 
-  /**
-   * Get closest form action by name
-   *
-   * @param id: id of the current component
-   * @param name: name of the action
-   */
-  getAction: (name: string) => FormAction;
   getSection: (name: string) => FormSection;
 
   isComponentFiltered: (component: IConfigurableFormComponent) => boolean;
@@ -64,7 +54,6 @@ export interface IFormActionsContext {
 /** Form initial state */
 export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   formMode: 'designer',
-  actions: {},
   sections: {},
   formSettings: DEFAULT_FORM_SETTINGS,
 };

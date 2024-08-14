@@ -188,7 +188,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         );
       }
     } catch (errInfo) {
-      console.log("Couldn't Proceed", errInfo);
+      console.error("Couldn't Proceed", errInfo);
     }
   };
 
@@ -214,7 +214,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         (tab) => tab.afterDoneActionConfiguration
       );
     } catch (errInfo) {
-      console.log("Couldn't Proceed", errInfo);
+      console.error("Couldn't Proceed", errInfo);
     }
   };
 

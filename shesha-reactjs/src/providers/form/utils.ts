@@ -1059,13 +1059,6 @@ const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean) 
 
     const evaluatedValue = container[match.groups.accessor];
 
-    // console.log({
-    //   msg: 'regex parsed',
-    //   key: match.groups.key,
-    //   accessor: match.groups.accessor,
-    //   evaluatedValue,
-    // });
-
     return evaluatedValue;
   }
 };

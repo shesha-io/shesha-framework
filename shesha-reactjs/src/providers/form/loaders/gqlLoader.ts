@@ -53,7 +53,6 @@ export class GqlLoader implements IFormDataLoader {
             }
             case 'dynamic': {
                 const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { });
-                console.log('LOG: dynamicEvaluated', dynamicEvaluated);                
                 return dynamicEvaluated;
             }
             default:
@@ -62,14 +61,9 @@ export class GqlLoader implements IFormDataLoader {
     };
 
     loadAsync = async (payload: FormDataLoadingPayload): Promise<any> => {
-        // dataId?: string, loadingCallback?: LoadingCallback
         const { dataId, loadingCallback, formSettings, formFlatStructure } = payload;
 
-        console.log('LOG: getUrl...');
-
         const endpoint = await this.getEndpointAsync(payload);
-
-        console.log('LOG: getUrl - ok', endpoint);
 
         // TODO: implement data loading using different http verbs
         const getDataUrl = endpoint && endpoint.httpVerb?.toLowerCase() === 'get' // note: support get only here

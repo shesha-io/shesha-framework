@@ -77,7 +77,7 @@ export const getSourcesTree = (monaco: Monaco): Directory => {
             cache.set(fileId, file);
             directory.files.push(file);
         } else {
-            console.log(`LOG: unknown file: '${model.uri}', path: '${clearFilePath}', scheme: '${model.uri.scheme}'`);
+            console.warn(`LOG: unknown file: '${model.uri}', path: '${clearFilePath}', scheme: '${model.uri.scheme}'`);
         }
     });
     

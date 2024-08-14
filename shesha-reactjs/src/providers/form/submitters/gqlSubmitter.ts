@@ -53,8 +53,6 @@ export class GqlSubmitter implements IFormDataSubmitter {
     */
 
     prepareDataForSubmit = async (payload: FormDataSubmitPayload): Promise<any> => {
-        console.log('LOG: prepareDataForSubmit', payload);
-
         const { formSettings, data, antdForm, getDelayedUpdates } = payload;
         const settings = this.#getGqlSettings(formSettings);
 
@@ -70,10 +68,8 @@ export class GqlSubmitter implements IFormDataSubmitter {
             : addFormFieldsList({}, postDataAfterPreparation, antdForm);
 
         // handle delayed updates
-        console.log('LOG: getDelayedUpdates');
         if (Boolean(getDelayedUpdates)) 
             postDataWithServiceFields._delayedUpdate = getDelayedUpdates();
-        console.log('LOG: getDelayedUpdates - ok', postDataWithServiceFields._delayedUpdate);
 
         const postDataWithoutGhosts = removeGhostKeys(postDataWithServiceFields);
 
@@ -128,7 +124,6 @@ export class GqlSubmitter implements IFormDataSubmitter {
             }
             case 'dynamic': {
                 const dynamicEvaluated = await payload.expressionExecuter(dynamicEndpoint, { data: payload.data });
-                console.log('LOG: dynamicEvaluated', dynamicEvaluated);                
                 return dynamicEvaluated;
             }
             default:

@@ -83,8 +83,6 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   };
 
   const onSubmitted = (_values: any, response: any) => {
-    console.log('LOG: dialog onSubmitted ??', { _values, response });
-
     if (props.onSubmitted) {
       props.onSubmitted(response);
     }
@@ -126,8 +124,6 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
 
     logEnabled: true,
   };
-
-  console.log('LOG: dialog formProps ??', formProps);
 
   return (
     <DynamicModalWithContent

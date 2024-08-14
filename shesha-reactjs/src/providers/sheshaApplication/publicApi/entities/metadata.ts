@@ -163,7 +163,6 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
     };
 
     const writeObject = async (sb: StringBuilder, typesImporter: TypesImporter, property: IEntityPropertyMetadata): Promise<void> => {
-        //console.log(`LOG: process property '${property.path}'`, property);
         if (property.description)
             sb.append(`/** ${property.description} */`);
 

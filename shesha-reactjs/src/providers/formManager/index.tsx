@@ -64,7 +64,6 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
 
     const getFormByIdLoader = (payload: GetFormByIdPayload): FormLoadingItem => {
         const cacheKey = getFormCacheKey(payload.formId, payload.configurationItemMode);
-        console.log('LOG: getFormByIdLoader', cacheKey);
         
         if (!payload.skipCache) {
             const cachedItem = cacheById.current[cacheKey];

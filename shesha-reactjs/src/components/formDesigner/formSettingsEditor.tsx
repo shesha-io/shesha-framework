@@ -28,7 +28,6 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
   formSettings.wrapperCol = { span: formSettings?.wrapperCol?.span || theme.componentSpan };
 
   const onSave = values => {
-    console.log('LOG: 🔥 onSave', values);
     if (!readOnly) {
       updateFormSettings(values);
       close();
@@ -44,7 +43,6 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
       width="50vw"
 
       onOk={() => {
-        console.log('LOG: 🔥 submit form settings 👌');
         formRef.current?.submit();
       }}
       okButtonProps={{ hidden: readOnly }}

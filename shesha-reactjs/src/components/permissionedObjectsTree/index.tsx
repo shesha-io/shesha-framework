@@ -3,12 +3,13 @@ import React, { FC, useEffect, useState } from 'react';
 import { ApiOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from '@/apis/permissionedObject';
-import { useConfigurableAction, useForm } from '@/providers';
+import { useConfigurableAction } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { ISetGroupingArguments, setGroupingArgumentsForm } from './set-grouping-arguments';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { ISetSearchTextArguments, setSearchTextArgumentsForm } from './set-search-text-arguments';
+import { useConfigurableFormActions } from '@/providers/form/actions';
 
 export interface IPermissionedObjectsTreeProps {
   objectsType?: string;
@@ -39,15 +40,10 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   const [objectId, setObjectId] = useState("");
 
-  const { getAction } = useForm(false) ?? {};
+  const { onChangeId } = useConfigurableFormActions(false) ?? {};
 
   useEffect(() => {
-    if (Boolean(getAction)) {
-      const action = getAction('onChangeId');
-      if (Boolean(action)) {
-        action(objectId);
-      }
-    }
+    onChangeId?.(objectId);
   }, [objectId]);
 
   useEffect(() => {
@@ -176,13 +172,9 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
         defaultSelected={objectId}
         isMatch={(item, searchText) => (
           item.name?.toLowerCase().includes(searchText.toLowerCase())
-          //|| item.object.toLowerCase().includes(searchText.toLowerCase())
         )}
         setOpenedKeys={setOpenedKeys}
         onChange={onChangeHandler}
-        /*getIcon={(item) => {
-          return (item.type === "Shesha.WebApi" ? <ApiOutlined /> : <InterfaceOutlined />);
-        }}*/
         onRenterItem={renderTitle}
       />
     </Spin>

@@ -48,8 +48,6 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
 
   const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
 
-  console.log('LOG: initialValues ??', props.initialValues);
-
   return (
     <MetadataProvider modelType={formSettings?.modelType}>
       <FormFlatMarkupProvider markup={formFlatMarkup}>

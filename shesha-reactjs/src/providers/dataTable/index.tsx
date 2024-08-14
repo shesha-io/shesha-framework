@@ -360,7 +360,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
             dispatch(fetchTableDataSuccessAction(response));
           })
           .catch((e) => {
-            console.log(e);
+            console.error(e);
             dispatch(fetchTableDataErrorAction());
           });
       } else {

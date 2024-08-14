@@ -18,6 +18,7 @@ import { FormFlatMarkupProvider, useChildComponentIds, useChildComponents, useCo
 import { useFormDesignerActions } from '../formDesigner';
 import { IShaFormInstance } from './store/interfaces';
 import { useShaFormActions } from './configurableActions';
+import { ConfigurableFormActionsProvider } from './actions';
 
 type ShaFormCompoundedComponent = {
   useMarkup: typeof useFormMarkup;
@@ -96,13 +97,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     props.shaForm.setFormData(payload);
   }, [props.shaForm]);
 
-  //#region form actions
-
-  const getAction = useCallback((name: string) => {
-    return actions[name];
-  }, [actions]);
-  //#endregion
-
   const getSection = useCallback((name: string) => {
     return sections[name];
   }, [sections]);
@@ -113,7 +107,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     setFormData,
     isComponentFiltered,
 
-    getAction,
     getSection,
   };
   if (formRef)
@@ -126,15 +119,16 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
 
     name: name,
     formMode: props.shaForm.formMode,
-    actions: actions, // from props
     sections: sections, // from props
     form: props.shaForm.antdForm,
-    formData: props.shaForm.formData,    
+    formData: props.shaForm.formData,
   };
   return (
     <FormStateContext.Provider value={realState}>
       <FormActionsContext.Provider value={configurableFormActions}>
-        {children}
+        <ConfigurableFormActionsProvider actions={actions}>
+          {children}
+        </ConfigurableFormActionsProvider>
       </FormActionsContext.Provider>
     </FormStateContext.Provider>
   );

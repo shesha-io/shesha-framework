@@ -26,7 +26,6 @@ export const useModelApiHelper = (): IEntityEndpointsEvaluator => {
   const { getMetadata } = useMetadataDispatcher();
 
   const getDefaultActionUrl = (payload: GetDefaultActionUrlPayload): Promise<IApiEndpoint> => {
-    console.log('LOG: getDefaultActionUrl', payload);
     if (!payload.modelType)
       return Promise.reject('`modelType` is not provided');
     if (!payload.actionName)

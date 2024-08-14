@@ -28,7 +28,6 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
     modelType,
   } = dataSource;
 
-  //const { selectedRow } = dataSelection;
   const { globalState } = useGlobalState();
   const pageContext = useDataContextManager(false)?.getPageContext();
 
@@ -39,10 +38,6 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
   }, [maxResultCount]);
 
   useDataSource({ id, name, dataSource }, [id, name, dataSource]);
-
-  /*const deleteRow = () => {
-    console.log(`deleteRow ${selectedRow?.id}`);
-  };*/
 
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(modelType);
 

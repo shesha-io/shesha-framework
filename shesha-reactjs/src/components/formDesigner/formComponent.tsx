@@ -6,7 +6,6 @@ import { useParent } from '@/providers/parentProvider/index';
 import { useForm, useSheshaApplication } from '@/providers';
 import { CustomErrorBoundary } from '..';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
-import { useShaFormInstance } from '@/providers/form/newProvider/shaFormProvider';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -22,29 +21,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
 
   const parent = useParent(false);
 
-  const closestShaForm = useShaFormInstance(false);
-  /*
-  const { data, form: formApi } = allData;
-  console.log('LOG: allData', {
-    data,
-    formApi
-  });
-  */
-
   const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
-    const { data, form: formApi } = allData;
-    if (componentModel.propertyName === 'dataLoaderType'){
-      console.log('LOG: actualModel', {
-        id: componentModel.id,
-        propertyName: componentModel.propertyName,
-        type: componentModel.type,
-        data,
-        formApi,
-        lastUpdate: allData.contexts.lastUpdate,
-        closestShaForm: closestShaForm
-      });
-    }
-
     const result = getActualModelWithParent(
       { ...componentModel, editMode: typeof componentModel.editMode === 'undefined' ? undefined : componentModel.editMode }, // add editMode property if not exists
       allData, parent

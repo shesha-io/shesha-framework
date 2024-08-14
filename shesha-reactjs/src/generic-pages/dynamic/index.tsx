@@ -13,7 +13,6 @@ const DynamicPageInternal: PageWithLayout<IDynamicPageProps> = (props) => {
   const { id, formId, mode } = props;
 
   const formArguments = useMemo(() => {
-    console.log('LOG: arguments', id);
     return { id };
   }, [id]);
 

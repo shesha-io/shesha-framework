@@ -43,8 +43,6 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
         const createUrlExpression = createUrl ? `{ httpVerb: 'POST', url: "${createUrl}" }` : 'form.defaultEndpoints.create';
         const updateUrlExpression = updateUrl ? `{ httpVerb: 'PUT', url: "${updateUrl}" }` : 'form.defaultEndpoints.update';
 
-        return `    console.log('LOG: GET dynamic endpoint');
-    return data?.id ? ${updateUrlExpression} : ${createUrlExpression}`;
         return `    return data?.id ? ${updateUrlExpression} : ${createUrlExpression}`;
     };
     const gqlSubmitterSettings: GqlSubmitterSettings = {

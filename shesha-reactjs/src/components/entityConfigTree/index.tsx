@@ -20,11 +20,11 @@ import {
 import { EntityConfigDto, EntityConfigDtoPagedResultDto, useEntityConfigGetMainDataList } from '@/apis/entityConfig';
 import { EntityConfigType, MetadataSourceType } from '@/interfaces/metadata';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
-import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { useStyles } from './styles/styles';
 import SectionSeparator from '../sectionSeparator';
+import { useConfigurableFormActions } from '@/providers/form/actions';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -64,7 +64,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   const [objectId, setObjectId] = useState(null);
   const [refershId, setRefreshId] = useState(props.defaultSelected);
 
-  const form = useForm(false);
+  const { onChangeId } = useConfigurableFormActions(false) ?? {};
 
   const {styles} = useStyles();
 
@@ -73,12 +73,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   }, [props.defaultSelected]);
 
   useEffect(() => {
-    if (Boolean(form?.getAction)) {
-      const action = form?.getAction('onChangeId');
-      if (Boolean(action)) {
-        action(objectId);
-      }
-    }
+    onChangeId?.(objectId);
   }, [objectId]);
 
   useEffect(() => {

@@ -13,7 +13,7 @@ import {
   Tooltip,
   Tree
 } from 'antd';
-import { useConfigurableAction, useForm } from '@/providers';
+import { useConfigurableAction } from '@/providers';
 import { useLocalStorage } from 'react-use';
 import {
   PermissionDto,
@@ -23,6 +23,7 @@ import {
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
 import { useShaFormInstance } from '@/providers/form/newProvider/shaFormProvider';
+import { useConfigurableFormActions } from '@/providers/form/actions';
 
 interface IDataNode {
   title: JSX.Element;
@@ -69,7 +70,7 @@ export interface IPermissionsTreeProps {
   readOnly?: boolean;
   height?: number;
   mode: PermissionsTreeMode;
-  
+
   hideSearch?: boolean;
   searchText?: string;
 }
@@ -103,7 +104,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const shaForm = useShaFormInstance();
   const { setFormMode } = shaForm;
 
-  const { getAction } = useForm(false);
+  const formActions = useConfigurableFormActions(false);
+  const { onChangeFormData, onChangeId } = formActions ?? {};  
 
   useEffect(() => {
     if (rest.mode === 'Select' && allItems) return; // skip refetch for selectmode if fetched
@@ -130,7 +132,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
           list.forEach(item => {
             if (item.child?.length > 0 && item.child.find(c => value.find(v => v === c.id))) {
               if (exp.find(e => e === item.id))
-              expand(item.id);
+                expand(item.id);
               f(item.child);
             }
           });
@@ -140,7 +142,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
 
       const modules: GuidEntityReferenceDto[] = [];
       const sorted = allItems.sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
-  
+
       sorted?.forEach(item => {
         //const module = item.module ? item.module._displayName ?? {withoutModule};
         if (!modules.find(m => m?.id === item.module?.id))
@@ -203,33 +205,23 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const onSelect = (keys: Key[]) => {
     if (!keys || keys.length === 0) {
       setSelected(null);
-      if (Boolean(getAction)) {
-        const action = getAction('onChangeFormData');
-        if (Boolean(action)) {
-          action({ values: { id: null }, mergeValues: false });
-        }
-      }
+
+      onChangeFormData?.({ values: { id: null }, mergeValues: false });
       return;
     }
 
     const ids = keys.map(item => {
       return item.toString();
     });
-    if (rest.mode === 'Edit' && Boolean(getAction)) {
+    if (rest.mode === 'Edit' && Boolean(formActions)) {
       const item = findItem(allItems, ids[0]);
       if (!item.isDbPermission) {
         setFormMode('readonly');
       }
       if (item.id === emptyId) {
-        const action = getAction('onChangeFormData');
-        if (Boolean(action)) {
-          action({ values: item, mergeValues: false });
-        }
+        onChangeFormData?.({ values: item, mergeValues: false });
       } else {
-        const action = getAction('onChangeId');
-        if (Boolean(action)) {
-          action(ids[0]);
-        }
+          onChangeId?.(ids[0]);
       }
     }
     setSelected(ids);
@@ -279,7 +271,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     setAllItems([...allItems]);
   };
 
-  const expandNode = (key: string) =>{
+  const expandNode = (key: string) => {
     if (expanded.length === 0 || !expanded.find(x => x === key))
       setExpanded(prev => [...prev, key]);
   };
@@ -369,7 +361,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     if (dropItem) {
       if (dragItem.parentName === dropItem.name || (!dragItem.parentName && info.dropToGap)) return;
       setDragInfo(info);
-      updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name, module: {...dropItem.module} });
+      updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name, module: { ...dropItem.module } });
       return;
     }
 
@@ -382,7 +374,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     const dropModule = allModules.find(x => x._displayName === info.node.key);
     if (dropModule) {
       setDragInfo(info);
-      updateParentRequest.mutate({ ...dragItem, parentName: null, module: {...dropModule} });
+      updateParentRequest.mutate({ ...dragItem, parentName: null, module: { ...dropModule } });
     }
   };
 
@@ -459,7 +451,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     } as IDataNode;
   };
 
-  const updateTree  = () => {
+  const updateTree = () => {
     const visible = getVisible(allItems, rest.hideSearch ? rest.searchText : searchText);
     if (searchText || rest.searchText) {
       const nodes = [];

@@ -43,7 +43,6 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   const toggleEdit = () => {
     setEditing(!editing);
-    console.log('toggleEdit', editing, record);
     form.setFieldsValue({
       [dataIndex]: record[dataIndex],
     });

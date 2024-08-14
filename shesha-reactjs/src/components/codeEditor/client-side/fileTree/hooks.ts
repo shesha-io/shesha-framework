@@ -9,7 +9,6 @@ export const useSourcesTree = (monaco: Monaco): Directory => {
     const [state, setState] = useState(() => getSourcesTree(monaco));
 
     useEffect(() => {
-        //console.log(`LOG: subscribe`);
         const onCreate = monaco.editor.onDidCreateModel(() => {
             setState(getSourcesTree(monaco));
         });
@@ -19,10 +18,8 @@ export const useSourcesTree = (monaco: Monaco): Directory => {
             setState(getSourcesTree(monaco));
         });
         subscriptions.add(onDispose);
-        //console.log(`LOG: sibscribed: ${subscriptions.count}`);
 
         return () => {
-            //console.log(`LOG: clearing subscriptions: ${subscriptions.count}`);
             subscriptions.clear();
         };
     }, [monaco, monaco.editor]);

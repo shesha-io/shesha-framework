@@ -14,14 +14,10 @@ export type IFormWithRawMarkupProps = IConfigurableFormRuntimeProps & {
 
 export const FormWithRawMarkup: FC<IFormWithRawMarkupProps> = (props) => {
     const { markup, cacheKey, isSettingsForm, ...restProps } = props;
-    //const [shaForm] = useShaForm({ form: props.shaForm });
     const [form] = Form.useForm(props.form);
     const [shaForm] = useShaForm({
         form: undefined,
-        //antdForm: form,
         init: (shaForm) => {
-            console.log('LOG: init form FormWithRawMarkup', { markup, cacheKey });
-
             shaForm.initByRawMarkup({
                 rawMarkup: markup,
                 cacheKey: cacheKey,
@@ -30,21 +26,7 @@ export const FormWithRawMarkup: FC<IFormWithRawMarkupProps> = (props) => {
             });
         }
     });
-    /*
-    const [shaForm] = useShaForm({
-        form: undefined,
-        antdForm: form,
-        init: (shaForm) => {
-          console.log('LOG: init form', { formSettings, formFlatMarkup });
     
-          shaForm.initByMarkup({
-            formSettings,
-            formFlatMarkup,
-            formArguments: undefined,
-          });
-        }
-      });
-    */
     const { markupLoadingState/*, dataLoadingState*/ } = shaForm;
 
     //const MarkupErrorRender = markupLoadingError ?? MarkupLoadingError;

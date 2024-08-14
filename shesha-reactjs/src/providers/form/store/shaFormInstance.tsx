@@ -148,7 +148,6 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     };
 
     setFormData = (payload: ISetFormDataPayload) => {
-        console.log('LOG: setFormData catch the crockodile !🐸', payload);
         const { values, mergeValues } = payload;
         const newData = payload.mergeValues && this.formData
             ? { ...this.formData, ...values }
@@ -167,8 +166,6 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         }
 
         this.forceRootUpdate();
-
-        // TODO: recheck shouldSyncInitialData (синхронизация при первом рендеринге)
     };
 
     setValidationErrors = (payload: IFormValidationErrors) => {
@@ -271,12 +268,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     };
 
     loadFormByRawMarkupAsync = async (): Promise<void> => {
-        if (!this.rawMarkup)
-            throw new Error("Raw markup is not defined");
         try {
-            if (!this.rawMarkup['formSettings'])
-                console.log('LOG: markup check. Settings is not defined!');
-
             const { components, formSettings } = getComponentsAndSettings(this.rawMarkup);
             const form = await this.formManager.getFormByMarkup({
                 markup: components,

@@ -21,14 +21,11 @@ export interface IFormProviderWrapperProps extends PropsWithChildren {
 }
 
 const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
-  console.log('LOG: render FormProviderWrapperInner');
   const { formSettings, formFlatMarkup } = useFormDesignerState();
   const [shaForm] = useShaForm({
     form: undefined,
     antdForm: form,
     init: (shaForm) => {
-      console.log('LOG: init form', { formSettings, formFlatMarkup });
-
       shaForm.setFormMode("designer");
       shaForm.initByMarkup({
         formSettings,

@@ -75,19 +75,15 @@ class PublicFormApiWrapper implements FormApi {
   }
 
   setFieldValue = (name: string, value: any) => {
-    // setFormData part of FormProvider
     this.#form?.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
   };
   setFieldsValue = (values: any) => {
-    // setFormData part of FormProvider
     this.#form?.setFormData({ values, mergeValues: true });
   };
   submit = () => {
-    // antd form (this._form?.form)
     this.#form?.form?.submit();
   };
   setFormData = (payload: ISetFormDataPayload) => {
-    // setFormData part of FormProvider
     this.#form?.setFormData(payload);
   };
   get formInstance(): FormInstance<any> {
@@ -114,37 +110,5 @@ class PublicFormApiWrapper implements FormApi {
 }
 
 export const getFormApi = (form: ConfigurableFormPublicApi): FormApi => {
-  /*
-  if (form && !form.shaForm)
-    console.log('LOG: getFormApi shaForm is dead ☠');
-  */
-
   return new PublicFormApiWrapper(form);
-  /*
-  const formArguments = form?.shaForm?.formArguments;
-  console.log('LOG: getFormApi', formArguments);
-
-  return {
-    setFieldValue: (name: string, value: any) => {
-      form?.setFormData({ values: setValueByPropertyName(form.formData, name, value, true), mergeValues: true });
-    },
-    setFieldsValue: (values: any) => {
-      form?.setFormData({ values, mergeValues: true });
-    },
-    submit: () => {
-      form?.form?.submit();
-    },
-    setFormData: (payload: ISetFormDataPayload) => {
-      form?.setFormData(payload);
-    },
-
-    data: form?.formData,
-    formInstance: form?.form,
-    formMode: form?.formMode,
-
-    formSettings: form?.formSettings ? { modelType: form.formSettings.modelType } : {},
-    defaultApiEndpoints: isEntityMetadata(form?.modelMetadata) ? form.modelMetadata.apiEndpoints : {},
-    formArguments: form?.shaForm?.formArguments,
-  };
-  */
 };
