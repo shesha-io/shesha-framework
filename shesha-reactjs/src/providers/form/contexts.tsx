@@ -3,9 +3,7 @@ import { IModelMetadata, IToolboxComponentGroup } from '@/interfaces';
 import {
   DEFAULT_FORM_SETTINGS,
   FormMode,
-  FormSection,
   IConfigurableFormComponent,
-  IFormSections,
   IFormSettings,
 } from './models';
 import { createNamedContext } from '@/utils/react';
@@ -20,7 +18,6 @@ export interface IFormStateInternalContext {
   formSettings: IFormSettings;
   formMode: FormMode;
   form?: FormInstance<any>;
-  sections: IFormSections;
 
   // runtime props
   formData?: any;
@@ -46,15 +43,12 @@ export interface IFormActionsContext {
   setFormMode: (formMode: FormMode) => void;
   setFormData: (payload: ISetFormDataPayload) => void;
 
-  getSection: (name: string) => FormSection;
-
   isComponentFiltered: (component: IConfigurableFormComponent) => boolean;
 }
 
 /** Form initial state */
 export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   formMode: 'designer',
-  sections: {},
   formSettings: DEFAULT_FORM_SETTINGS,
 };
 
