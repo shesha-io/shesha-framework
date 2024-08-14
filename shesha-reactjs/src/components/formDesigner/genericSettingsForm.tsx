@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import { IConfigurableFormComponent, FormMarkup } from '@/providers/form/models';
 import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { listComponentToModelMetadata } from '@/providers/form/utils';
+import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { FormWithRawMarkup } from '../configurableForm/formWithRawMarkup';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
@@ -36,7 +36,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     const currentModel = form.getFieldsValue() as TModel;
 
     const wrapper = toolboxComponent.linkToModelMetadata
-      ? m => listComponentToModelMetadata(toolboxComponent, m, metadata)
+      ? m => linkComponentToModelMetadata(toolboxComponent, m, metadata)
       : m => m;
 
     const newModel: TModel = wrapper({
