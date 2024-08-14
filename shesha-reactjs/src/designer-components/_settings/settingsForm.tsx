@@ -4,6 +4,8 @@ import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interf
 import { getValuesFromSettings, updateSettingsFromVlues } from './utils';
 import { createNamedContext } from '@/utils/react';
 import { mergeWith } from 'lodash';
+import { FormProvider, IPropertyMetadata } from '@/index';
+import { linkComponentToModelMetadata } from '@/providers/form/utils';
 
 interface SettingsFormState<TModel> {
     model?: TModel;
@@ -77,7 +79,24 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
         onValuesChange: valuesChange,
     };
 
+    const linkToModelMetadata = (metadata: IPropertyMetadata) => {
+      const currentModel = form.getFieldsValue() as TModel;
+  
+      const wrapper = props.toolboxComponent.linkToModelMetadata
+        ? m => linkComponentToModelMetadata(props.toolboxComponent, m, metadata)
+        : m => m;
+  
+      const newModel: TModel = wrapper({
+        ...currentModel,
+        label: metadata.label || metadata.path,
+        description: metadata.description,
+      });
+  
+      valuesChange(newModel);
+    };
+
     return (
+      <FormProvider name={''} formSettings={undefined} mode={'edit'} isActionsOwner={false} actions={{linkToModelMetadata}}>
         <SettingsFormStateContext.Provider value={state}>
             <SettingsFormActionsContext.Provider value={SettingsFormActions}>
                 <Form
@@ -91,6 +110,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
                 </Form>
             </SettingsFormActionsContext.Provider>
         </SettingsFormStateContext.Provider>
+      </FormProvider>
     );
 };
 
