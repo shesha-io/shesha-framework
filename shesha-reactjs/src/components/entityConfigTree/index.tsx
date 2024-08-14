@@ -74,7 +74,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
 
   useEffect(() => {
     if (Boolean(form?.getAction)) {
-      const action = form?.getAction(null, 'onChangeId');
+      const action = form?.getAction('onChangeId');
       if (Boolean(action)) {
         action(objectId);
       }

@@ -26,7 +26,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     dataTypeSupported: () => false,
     Factory: ({ model }) => {
 
-      const allData = useAvailableConstantsData(model.id);
+      const allData = useAvailableConstantsData({ topContextId: model.id });
 
       const metadata: Promise<IModelMetadata> = useMemo(() => {
         return Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name: model.componentName, properties: model.items ?? []} as IModelMetadata);

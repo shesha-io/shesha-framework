@@ -23,6 +23,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   type: 'space',
+  isInput: false,
   name: 'Space',
   icon: <ArrowsAltOutlined />,
   isHidden: true,

@@ -8,6 +8,7 @@ type MenuItem = MenuProps['items'][number];
 
 const ProfileDropdown: IToolboxComponent = {
   type: 'profileDropdown',
+  isInput: false,
   canBeJsSetting: false,
   name: 'Profile Dropdown',
   icon: <UserOutlined />,

@@ -5,7 +5,10 @@
       "type": "sectionSeparator",
       "propertyName": "separator1",
       "parentId": "root",
-      "label": "Display"
+      "label": "Display",
+      "version": 3,
+      "labelAlign": "left",
+      "titleMargin": null
     },
     {
       "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
@@ -15,14 +18,17 @@
       "label": "Property name",
       "validate": {
         "required": true
-      }
+      },
+      "version": 0
     },
     {
       "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
       "type": "textField",
       "propertyName": "label",
       "parentId": "root",
-      "label": "Label"
+      "label": "Label",
+      "version": 4,
+      "textType": "text"
     },
     {
       "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -42,7 +48,11 @@
           "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
         }
       ],
-      "dataSourceType": "values"
+      "dataSourceType": "values",
+      "version": 6,
+      "useRawValues": false,
+      "referenceListId": null,
+      "valueFormat": "listItem"
     },
     {
       "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
@@ -62,65 +72,62 @@
           "id": "9e89461b-f916-4689-8789-1854ccedc666"
         }
       ],
-      "dataSourceType": "values"
+      "dataSourceType": "values",
+      "version": 6,
+      "useRawValues": false,
+      "referenceListId": null,
+      "valueFormat": "listItem"
     },
     {
       "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
       "type": "textField",
       "propertyName": "placeholder",
       "parentId": "root",
-      "label": "Placeholder"
+      "label": "Placeholder",
+      "version": 4,
+      "textType": "text"
     },
     {
       "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
       "type": "textArea",
       "propertyName": "description",
       "parentId": "root",
-      "label": "Description"
+      "label": "Description",
+      "version": 3
     },
     {
       "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
       "type": "textField",
       "propertyName": "prefix",
       "parentId": "root",
-      "label": "Prefix"
+      "label": "Prefix",
+      "version": 4,
+      "textType": "text"
     },
     {
       "id": "d68b1754-682c-4f2c-b49a-a1f250467474",
       "type": "textField",
       "propertyName": "suffix",
       "parentId": "root",
-      "label": "Suffix"
-    },
-    {
-      "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
-      "type": "textField",
-      "propertyName": "initialValue",
-      "parentId": "root",
-      "label": "Default Value",
-      "description": "Enter default value of component. (formData, formMode, globalState) are exposed"
-    },
-    {
-      "id": "0225b82d-19aa-47c7-b665-90508112bd23",
-      "type": "checkbox",
-      "propertyName": "passEmptyStringByDefault",
-      "parentId": "root",
-      "label": "Empty as default",
-      "description": "Whether the component should be initialized with an empty string"
+      "label": "Suffix",
+      "version": 4,
+      "textType": "text"
     },
     {
       "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
       "type": "checkbox",
       "propertyName": "hidden",
       "parentId": "root",
-      "label": "Hidden"
+      "label": "Hidden",
+      "version": 3
     },
     {
       "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
       "type": "checkbox",
       "propertyName": "hideLabel",
       "parentId": "root",
-      "label": "Hide Label"
+      "label": "Hide Label",
+      "version": 3
     },
     {
       "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -129,7 +136,6 @@
       "parentId": "root",
       "label": "Edit mode"
     },
-
     {
       "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
       "type": "checkbox",
@@ -137,6 +143,74 @@
       "label": "Hide border",
       "parentId": "root",
       "hidden": false,
+      "validate": {},
+      "version": 3
+    },
+    {
+      "id": "EkWIBvRwOsal6JwViP5NUXqaW8GMGZ",
+      "type": "radio",
+      "propertyName": "mode",
+      "componentName": "mode",
+      "label": "Mode",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 5,
+      "dataSourceType": "values",
+      "direction": "horizontal",
+      "referenceListId": null,
+      "items": [
+        {
+          "label": "Url only",
+          "value": "url"
+        },
+        {
+          "label": "Endpoint (verb and url)",
+          "value": "endpoint"
+        }
+      ],
+      "validate": {}
+    },
+    {
+      "textType": "text",
+      "id": "OvwsR4Yjqatdg4NSrr8_yu8VqGA7lg",
+      "type": "textField",
+      "propertyName": "httpVerb",
+      "componentName": "httpVerb",
+      "label": "Http Verb",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_mode": "code",
+        "_code": "    return data?.mode !== 'url';",
+        "_value": false
+      },
+      "isDynamic": false,
+      "version": 4,
+      "description": "Is used to filter the autocomplete by http verb",
+      "validate": {}
+    },
+    {
+      "id": "uNoaYrXfRqe2UA6mia4ViP8WeJhJM4",
+      "type": "labelValueEditor",
+      "propertyName": "availableHttpVerbs",
+      "componentName": "availableHttpVerbs",
+      "label": "Http Verbs",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_mode": "code",
+        "_code": "    return data?.mode !== 'endpoint';",
+        "_value": false
+      },
+      "isDynamic": false,
+      "version": 3,
+      "mode": "dialog",
+      "labelTitle": "Label",
+      "labelName": "label",
+      "valueTitle": "Value",
+      "valueName": "value",
       "validate": {}
     },
     {
@@ -144,7 +218,10 @@
       "type": "sectionSeparator",
       "propertyName": "sectionEvent",
       "parentId": "root",
-      "label": "Events"
+      "label": "Events",
+      "version": 3,
+      "labelAlign": "left",
+      "titleMargin": null
     },
     {
       "id": "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
@@ -158,24 +235,54 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "data", "description": "Selected form values", "type": "object" },
-        { "name": "event", "description": "Event callback when user input", "type": "object" },
-        { "name": "form", "description": "Form instance", "type": "FormInstance" },
-        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "name": "globalState", "description": "The global state of the application", "type": "object" },
-        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
+        {
+          "name": "data",
+          "description": "Selected form values",
+          "type": "object"
+        },
+        {
+          "name": "event",
+          "description": "Event callback when user input",
+          "type": "object"
+        },
+        {
+          "name": "form",
+          "description": "Form instance",
+          "type": "FormInstance"
+        },
+        {
+          "name": "formMode",
+          "description": "The form mode",
+          "type": "'readonly' | 'edit' | 'designer'"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
         {
           "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
-        { "name": "moment", "description": "The moment.js object", "type": "object" },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
         {
           "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
         }
-      ]
+      ],
+      "version": 3,
+      "language": "typescript"
     },
     {
       "id": "88c2d96c-b808-4316-8a36-701b09e5f6c7",
@@ -189,24 +296,54 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "data", "description": "Selected form values", "type": "object" },
-        { "name": "event", "description": "Event callback when user input", "type": "object" },
-        { "name": "form", "description": "Form instance", "type": "FormInstance" },
-        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "name": "globalState", "description": "The global state of the application", "type": "object" },
-        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
+        {
+          "name": "data",
+          "description": "Selected form values",
+          "type": "object"
+        },
+        {
+          "name": "event",
+          "description": "Event callback when user input",
+          "type": "object"
+        },
+        {
+          "name": "form",
+          "description": "Form instance",
+          "type": "FormInstance"
+        },
+        {
+          "name": "formMode",
+          "description": "The form mode",
+          "type": "'readonly' | 'edit' | 'designer'"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
         {
           "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
-        { "name": "moment", "description": "The moment.js object", "type": "object" },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
         {
           "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
         }
-      ]
+      ],
+      "version": 3,
+      "language": "typescript"
     },
     {
       "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
@@ -220,38 +357,72 @@
       "validate": {},
       "settingsValidationErrors": [],
       "exposedVariables": [
-        { "name": "data", "description": "Selected form values", "type": "object" },
-        { "name": "event", "description": "Event callback when user input", "type": "object" },
-        { "name": "form", "description": "Form instance", "type": "FormInstance" },
-        { "name": "formMode", "description": "The form mode", "type": "'readonly' | 'edit' | 'designer'" },
-        { "name": "globalState", "description": "The global state of the application", "type": "object" },
-        { "name": "http", "description": "axios instance used to make http requests", "type": "object" },
+        {
+          "name": "data",
+          "description": "Selected form values",
+          "type": "object"
+        },
+        {
+          "name": "event",
+          "description": "Event callback when user input",
+          "type": "object"
+        },
+        {
+          "name": "form",
+          "description": "Form instance",
+          "type": "FormInstance"
+        },
+        {
+          "name": "formMode",
+          "description": "The form mode",
+          "type": "'readonly' | 'edit' | 'designer'"
+        },
+        {
+          "name": "globalState",
+          "description": "The global state of the application",
+          "type": "object"
+        },
+        {
+          "name": "http",
+          "description": "axios instance used to make http requests",
+          "type": "object"
+        },
         {
           "name": "message",
           "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
           "type": "object"
         },
-        { "name": "moment", "description": "The moment.js object", "type": "object" },
+        {
+          "name": "moment",
+          "description": "The moment.js object",
+          "type": "object"
+        },
         {
           "name": "setFormData",
           "description": "A function used to update the form data",
           "type": "({ values: object, mergeValues: boolean}) => void"
         }
-      ]
+      ],
+      "version": 3,
+      "language": "typescript"
     },
     {
       "id": "d675bfe4-ee69-431e-931b-b0e0b9ceee6f",
       "type": "sectionSeparator",
       "propertyName": "separator2",
       "parentId": "root",
-      "label": "Validation"
+      "label": "Validation",
+      "version": 3,
+      "labelAlign": "left",
+      "titleMargin": null
     },
     {
       "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
       "type": "checkbox",
       "propertyName": "validate.required",
       "parentId": "root",
-      "label": "Required"
+      "label": "Required",
+      "version": 3
     },
     {
       "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
@@ -259,7 +430,8 @@
       "propertyName": "validate.minLength",
       "parentId": "root",
       "label": "Min Length",
-      "validate": {}
+      "validate": {},
+      "version": 3
     },
     {
       "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
@@ -267,7 +439,8 @@
       "propertyName": "validate.maxLength",
       "parentId": "root",
       "label": "Max Length",
-      "validate": {}
+      "validate": {},
+      "version": 3
     },
     {
       "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
@@ -275,7 +448,9 @@
       "propertyName": "validate.message",
       "parentId": "root",
       "label": "Message",
-      "validate": {}
+      "validate": {},
+      "version": 4,
+      "textType": "text"
     },
     {
       "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
@@ -294,17 +469,34 @@
           "description": "Validate rules, only support customize validator",
           "type": "object"
         },
-        { "name": "value", "description": "Component current value", "type": "object" },
-        { "name": "callback", "description": "Callback called by component", "type": "function" },
-        { "name": "data", "description": "Form values", "type": "object" }
-      ]
+        {
+          "name": "value",
+          "description": "Component current value",
+          "type": "object"
+        },
+        {
+          "name": "callback",
+          "description": "Callback called by component",
+          "type": "function"
+        },
+        {
+          "name": "data",
+          "description": "Form values",
+          "type": "object"
+        }
+      ],
+      "version": 3,
+      "language": "typescript"
     },
     {
       "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
       "type": "sectionSeparator",
       "propertyName": "sectionStyle",
       "parentId": "root",
-      "label": "Style"
+      "label": "Style",
+      "version": 3,
+      "labelAlign": "left",
+      "titleMargin": null
     },
     {
       "id": "06ab0599-914d-4d2d-875c-765a495472f8",
@@ -315,7 +507,15 @@
       "validate": {},
       "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
-      "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
+      "exposedVariables": [
+        {
+          "name": "data",
+          "description": "Form values",
+          "type": "object"
+        }
+      ],
+      "version": 3,
+      "language": "typescript"
     },
     {
       "id": "494e8079-98f6-4a25-b9fd-40a77554ec89",
@@ -341,7 +541,11 @@
           "id": "1f2ac3db-3b3f-486c-991f-ad703088ab2d"
         }
       ],
-      "dataSourceType": "values"
+      "dataSourceType": "values",
+      "version": 6,
+      "useRawValues": false,
+      "referenceListId": null,
+      "valueFormat": "listItem"
     },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
@@ -351,7 +555,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "isDynamic": false,
-      "version": 4,
+      "version": 5,
       "expandIconPosition": "start",
       "header": {
         "id": "mbzE03mJnv_89oUvkmjPs",
@@ -391,6 +595,9 @@
       "description": "Default form settings",
       "displayName": "DEFAULT_FORM_SETTINGS",
       "props": {}
-    }
+    },
+    "access": null,
+    "permissions": null,
+    "version": 1
   }
 }

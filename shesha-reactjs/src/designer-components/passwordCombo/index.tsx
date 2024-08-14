@@ -21,6 +21,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
   type: 'passwordCombo',
+  isInput: true,
   name: 'Password combo',
   icon: <LockOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>

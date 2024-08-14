@@ -21,7 +21,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const { items } = useSidebarMenu();
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
-  const {executionContext, evaluationContext} = useAvailableConstantsData();
+  const executionContext = useAvailableConstantsData();
   
   const { styles } = useStyles();
 
@@ -49,11 +49,11 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
         onButtonClick,
         getFormUrl: (args) => {
           const url = getUrlFromNavigationRequest(args?.actionArguments);
-          const href = evaluateString(decodeURIComponent(url), evaluationContext);
+          const href = evaluateString(decodeURIComponent(url), executionContext);
           return href;
         },
         getUrl: (url) => {
-          const href = evaluateString(decodeURIComponent(url), evaluationContext);
+          const href = evaluateString(decodeURIComponent(url), executionContext);
           return href;
         },
         onItemEvaluation: (nestedItem) => {

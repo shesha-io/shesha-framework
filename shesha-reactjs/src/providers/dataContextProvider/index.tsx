@@ -33,7 +33,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const { onChangeContextData } = useDataContextManager();
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useRef<any>({});
-  allData.current = useAvailableConstantsData(id);
+  allData.current = useAvailableConstantsData({ topContextId: id });
 
   const dataRef = useRef<any>({});
   const initialDataRef = useRef<any>(undefined);

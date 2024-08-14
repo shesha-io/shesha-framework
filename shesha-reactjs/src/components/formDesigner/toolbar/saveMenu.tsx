@@ -8,9 +8,9 @@ import {
 import { componentsFlatStructureToTree } from '@/providers/form/utils';
 import { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
 import {
+  App,
   Dropdown,
   MenuProps,
-  message,
   Modal
   } from 'antd';
 import { FormMarkupWithSettings } from '@/providers/form/models';
@@ -34,6 +34,7 @@ export const SaveMenu: FC<ISaveMenuProps> = ({ onSaved }) => {
   const { formFlatMarkup, formSettings } = useFormDesignerState();
   const toolboxComponents = useFormDesignerComponents();
   const { backendUrl, httpHeaders } = useSheshaApplication();
+  const { message } = App.useApp();
 
   const saveFormInternal = (): Promise<void> => {
     const payload: FormMarkupWithSettings = {

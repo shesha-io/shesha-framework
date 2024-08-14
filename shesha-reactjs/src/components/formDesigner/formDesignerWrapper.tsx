@@ -13,35 +13,54 @@ import { FormPersisterStateConsumer } from '@/providers/formPersisterProvider/co
 import { FormProvider, ShaForm } from '@/providers/form';
 import { MetadataProvider } from '@/providers';
 import { ResultStatusType } from 'antd/lib/result';
+import { useShaForm } from '@/providers/form/store/shaFormInstance';
+import { ShaFormProvider } from '@/providers/form/newProvider/shaFormProvider';
 
 export interface IFormProviderWrapperProps extends PropsWithChildren {
   formId: FormIdentifier;
 }
 
 const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = ({ form, children }) => {
+  console.log('LOG: render FormProviderWrapperInner');
   const { formSettings, formFlatMarkup } = useFormDesignerState();
+  const [shaForm] = useShaForm({
+    form: undefined,
+    antdForm: form,
+    init: (shaForm) => {
+      console.log('LOG: init form', { formSettings, formFlatMarkup });
+
+      shaForm.setFormMode("designer");
+      shaForm.initByMarkup({
+        formSettings,
+        formFlatMarkup,
+        formArguments: undefined,
+      });
+    }
+  });
 
   return (
-    <ShaForm.MarkupProvider markup={formFlatMarkup}>
-      <FormProvider
-        needDebug
-        name="Form"
-        mode="designer"
-        formSettings={formSettings}
-        isActionsOwner={true}
-        form={form}
-      >
-        <>
-          {formSettings.modelType ? (
-            <MetadataProvider id="designer" modelType={formSettings.modelType}>
-              {children}
-            </MetadataProvider>
-          ) : (
-            <>{children}</>
-          )}
-        </>
-      </FormProvider>
-    </ShaForm.MarkupProvider>
+    <ShaFormProvider shaForm={shaForm}>
+      <ShaForm.MarkupProvider markup={formFlatMarkup}>
+        <FormProvider
+          name="Form"
+          mode="designer"
+          formSettings={formSettings}
+          isActionsOwner={true}
+          form={form}
+          shaForm={shaForm}
+        >
+          <>
+            {formSettings.modelType ? (
+              <MetadataProvider id="designer" modelType={formSettings.modelType}>
+                {children}
+              </MetadataProvider>
+            ) : (
+              <>{children}</>
+            )}
+          </>
+        </FormProvider>
+      </ShaForm.MarkupProvider>
+    </ShaFormProvider>
   );
 };
 

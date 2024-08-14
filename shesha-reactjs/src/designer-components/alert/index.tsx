@@ -13,6 +13,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
+  isInput: false,
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
   Factory: ({ model }) => {

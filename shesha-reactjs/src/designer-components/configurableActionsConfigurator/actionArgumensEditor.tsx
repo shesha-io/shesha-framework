@@ -9,6 +9,7 @@ import {
 import { FormMarkup } from '@/providers/form/models';
 import GenericArgumentsEditor from './genericArgumentsEditor';
 import { IObjectMetadata } from '@/interfaces';
+import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
 
 const { Panel } = Collapse;
 
@@ -69,9 +70,11 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
       if (onChange) onChange(values);
     };
 
+    const actualValue = getActualActionArguments(action, value);
+
     return settingsFormFactory
       ? settingsFormFactory({
-        model: value,
+        model: actualValue,
         onSave,
         onCancel,
         onValuesChange,

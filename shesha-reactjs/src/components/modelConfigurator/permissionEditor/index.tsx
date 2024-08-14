@@ -1,4 +1,4 @@
-import ConfigurableForm from '@/components/configurableForm';
+import { ConfigurableForm } from '@/components/configurableForm';
 import permissionSettingsMarkup from '../permissionSettings.json';
 import React, { FC } from 'react';
 import { Form } from 'antd';

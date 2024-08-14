@@ -1,7 +1,8 @@
 import React from 'react';
-import { Modal, Form } from 'antd';
+import { Modal } from 'antd';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { IConfigurableFormComponent } from '@/providers/form/models';
+import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
 
 export interface IProps<TModel = any> {
   title?: string;
@@ -16,19 +17,18 @@ export const ComponentSettingsModal = <TSettings extends any>({ title, markup, m
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
-  const [form] = Form.useForm();
+  const formRef = useShaFormRef();
 
   const onOk = () => {
-    form.submit();
+    formRef.current?.submit();
   };
 
   return (
     <Modal open={true} title={title} onCancel={onCancel} onOk={onOk}>
-      {/* <div>You can customize the Logo component from this screen or upload a new one.</div> */}
       <ConfigurableForm
         mode="edit"
         {...formLayout}
-        form={form}
+        shaFormRef={formRef}
         onFinish={onSave}
         markup={markup}
         initialValues={model}
@@ -36,5 +36,3 @@ export const ComponentSettingsModal = <TSettings extends any>({ title, markup, m
     </Modal>
   );
 };
-
-export default ComponentSettingsModal;

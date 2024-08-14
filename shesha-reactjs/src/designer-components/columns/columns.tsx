@@ -14,6 +14,7 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
+  isInput: false,
   name: 'Columns',
   icon: <SplitCellsOutlined />,
   Factory: ({ model }) => {

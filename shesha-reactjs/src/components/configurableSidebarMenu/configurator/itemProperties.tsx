@@ -10,7 +10,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
-import { FormWithRawMarkup } from '@/components/configurableForm/formWithRawMarkup';
+import { ConfigurableForm } from '@/components';
 
 export interface ISidebarItemPropertiesProps {
   item?: ISidebarMenuItem;
@@ -38,7 +38,7 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
       
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
-        <FormWithRawMarkup
+        <ConfigurableForm
           //key={item.id} // rerender for each item to initialize all controls
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}

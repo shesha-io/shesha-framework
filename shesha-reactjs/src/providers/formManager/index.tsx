@@ -7,6 +7,7 @@ import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { convertFormMarkupToFlatStructure } from '../form/utils';
 import { DEFAULT_FORM_SETTINGS, IFormSettings } from '../form/models';
 import { useFormById, useFormByMarkup } from './hooks';
+import { migrateFormSettings2 } from '../form/migration/formSettingsMigrations';
 
 export interface IFormManagerProps {
 
@@ -24,8 +25,8 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
     const designerComponents = useFormDesignerComponents();
     const { getForm } = useConfigurationItemsLoader();
 
-    const getFormByIdAsync = async ({ formId, skipCache }: GetFormByIdPayload): Promise<UpToDateForm> => {
-        const formDto = await getForm({ formId, skipCache });
+    const getFormByIdAsync = async ({ formId, skipCache, configurationItemMode }: GetFormByIdPayload): Promise<UpToDateForm> => {
+        const formDto = await getForm({ formId, skipCache, configurationItemMode });
         const { markup, settings = DEFAULT_FORM_SETTINGS } = formDto;
         const flatStructure = convertFormMarkupToFlatStructure(markup, settings, designerComponents);
 
@@ -63,6 +64,7 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
 
     const getFormByIdLoader = (payload: GetFormByIdPayload): FormLoadingItem => {
         const cacheKey = getFormCacheKey(payload.formId, payload.configurationItemMode);
+        console.log('LOG: getFormByIdLoader', cacheKey);
         
         if (!payload.skipCache) {
             const cachedItem = cacheById.current[cacheKey];
@@ -86,11 +88,12 @@ export const FormManager: FC<PropsWithChildren<IFormManagerProps>> = ({ children
             ? { ...formSettings, isSettingsForm: true }
             : formSettings;
 
-        const flatStructure = convertFormMarkupToFlatStructure(markup, settings, designerComponents);
+        const upToDateSettings = migrateFormSettings2(settings);        
+        const flatStructure = convertFormMarkupToFlatStructure(markup, upToDateSettings, designerComponents);
 
         const result: UpToDateForm = {
             flatStructure,
-            settings: settings,
+            settings: upToDateSettings,
         };
         return result;
     };

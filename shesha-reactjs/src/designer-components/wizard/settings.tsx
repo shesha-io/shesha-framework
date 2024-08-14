@@ -29,7 +29,7 @@ const wizardStepSettingsMarkup = getSettings();
 const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const allData = useAvailableConstantsData('all');
+  const allData = useAvailableConstantsData({ topContextId: 'all' });
   const { model } = useSettingsForm<IWizardComponentProps>();
 
   /*const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {

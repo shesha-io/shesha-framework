@@ -54,7 +54,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
 
   const navigationUrl = useAsyncMemo(async () => {
     if (!isNavigationActionConfiguration(actionConfiguration) || !actionConfiguration.actionArguments)
-      return null;
+      return undefined;
     const preparedArguments = await prepareArguments({ actionConfiguration, argumentsEvaluationContext: evaluationContext });
     return getUrlFromNavigationRequest(preparedArguments);
   }, [actionConfiguration], "");

@@ -20,10 +20,9 @@ const getPageSize = (value?: number) => {
 };
 
 const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: name, filters, maxResultCount }) => {
-  const { registerActions, formData, formMode } = useForm();
+  const { formData, formMode } = useForm();
   const dataSource = useDataTableStore();
   const {
-    refreshTable,
     setPredefinedFilters,
     changePageSize,
     modelType,
@@ -64,16 +63,6 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
   useDeepCompareEffect(() => {
     debounceEvaluateDynamicFiltersHelper();
   }, [filters, formData, globalState]);
-
-  // register available actions, refresh on every table configuration loading or change of the table Id
-  useEffect(
-    () =>
-      registerActions(id, {
-        refresh: refreshTable,
-        //deleteRow,
-      }),
-    [id]
-  );
 
   if (!isDesignMode)
     return null;
@@ -130,14 +119,6 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
 };
 
 export const DataSource: FC<IDataSourceComponentProps> = props => {
-  /*const [ provider, setProvider ] = useState(<></>);
-  const { entityType } = props;
-
-  useEffect(() => {
-    const uniqueKey = `${props.sourceType}_${props.name}_${props.entityType ?? 'empty'}`; // is used just for re-rendering
-    setProvider(<DataSourceInner key={uniqueKey} {...props} />);
-  }, [props]);*/
-
   const uniqueKey = `${props.sourceType}_${props.propertyName}_${props.entityType ?? props.endpoint}`; // is used just for re-rendering
   const provider = <DataSourceInner key={uniqueKey} {...props} />;
 

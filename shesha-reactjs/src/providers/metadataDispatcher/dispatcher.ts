@@ -70,9 +70,9 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
     //#endregion
 
-    getMetadata = (payload: IGetMetadataPayload): Promise<IModelMetadata> => {
+    getMetadata = async (payload: IGetMetadataPayload): Promise<IModelMetadata> => {
         const { modelType, dataType } = payload;
-        const loadedModel = this.#models[payload.modelType]; // TODO: split list by types
+        const loadedModel = this.#models[modelType]; // TODO: split list by types
         if (loadedModel) return loadedModel;
 
         if (dataType === DataTypes.entityReference || dataType === DataTypes.objectReference || dataType === null) {
@@ -97,16 +97,25 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
                     const properties = response.result.properties.map<IPropertyMetadata>(p => mapProperty(p));
                     const meta: IModelMetadata = {
-                        entityType: payload.modelType,
+                        entityType: modelType,
                         dataType: response.result.dataType,
-                        name: payload.modelType, // TODO: fetch name from server
+                        name: modelType, // TODO: fetch name from server
                         properties,
+                    };
+                    return meta;
+                }).catch((error) => {
+                    console.error(`Failed to fetch metadata of type "${modelType}"`, error);
+                    const meta: IModelMetadata = {
+                        entityType: modelType,
+                        dataType: 'object',
+                        name: modelType, // TODO: fetch name from server
+                        properties: [],
                     };
                     return meta;
                 });
             });
             this.#models[payload.modelType] = promise;
-            return promise;
+            return await promise;
         }
 
         return Promise.resolve(null);

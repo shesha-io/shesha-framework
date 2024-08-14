@@ -1,9 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { ConfigurableForm } from '@/components';
-import { ConfigurableFormInstance } from '@/providers/form/contexts';
-import { Form } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
 import { IProviderSettings } from './interfaces';
+import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
 
 export interface IProps<TModel extends IProviderSettings> {
   model: TModel;
@@ -21,20 +20,18 @@ export function GenericSettingsEditor<TModel extends IProviderSettings>({
   onValuesChange,
   readOnly = false,
 }: IProps<TModel>) {
-  const [form] = Form.useForm();
-  const formRef = useRef<ConfigurableFormInstance>(null);
+  const formRef = useShaFormRef();
 
   useEffect(() => {
-    form.resetFields();
+    formRef.current?.resetFields();
   });
 
   return (
     <ConfigurableForm
-      formRef={formRef}
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
-      form={form}
+      shaFormRef={formRef}
       onFinish={onSave}
       markup={markup}
       initialValues={model}

@@ -17,6 +17,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const SectionComponent: IToolboxComponent<ISectionProps> = {
   type: 'section',
+  isInput: false,
   name: 'Section',
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
@@ -27,7 +28,7 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
       return <Alert message={model.propertyName} />;
     }
 
-    const section = getSection(model.id, model.propertyName);
+    const section = getSection(model.propertyName);
 
     if (section) {
       return <Fragment>{section(formData)}</Fragment>;

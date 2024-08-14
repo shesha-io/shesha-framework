@@ -34,6 +34,8 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   const { formSettings } = useForm();
   const { value, onChange, readOnly = false, label = 'Action Name', description } = props;
 
+  console.log('LOG: ConfigurableActionConfigurator value', value);
+
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
 

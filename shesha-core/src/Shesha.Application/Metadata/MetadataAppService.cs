@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using System;
@@ -140,7 +141,7 @@ namespace Shesha.Metadata
             // ToDo: show Dynamic entities
             var containerType = await GetContainerTypeAsync(container);
             if (containerType == null)
-                throw new ArgumentException($"Type `{container}` not found");
+                throw new MetadataOfTypeNotFoundException(container);
 
             return await _metadataProvider.GetAsync(containerType, container);
         }

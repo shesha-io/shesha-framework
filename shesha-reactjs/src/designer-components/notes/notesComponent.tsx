@@ -25,6 +25,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const NotesComponent: IToolboxComponent<INotesProps> = {
   type: 'notes',
+  isInput: false,
   name: 'Notes',
   icon: <FormOutlined />,
   Factory: ({ model }) => {

@@ -7,6 +7,7 @@ import { Space } from 'antd';
 
 const HeaderAppControl: IToolboxComponent = {
   type: 'headerAppControl',
+  isInput: false,
   canBeJsSetting: false,
   name: 'Header App Control',
   icon: <SwapOutlined />,

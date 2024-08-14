@@ -153,6 +153,8 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
     dispatch(componentUpdateAction(payload));
 
     const component = flatMarkup.allComponents[payload.componentId];
+    if (!component)
+      return; // TODO: debug validation, component must be defined
     const toolboxComponent = getToolboxComponent(component.type) as IToolboxComponent;
     if (toolboxComponent.validateSettings) {
       toolboxComponent

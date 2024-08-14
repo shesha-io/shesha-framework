@@ -17,6 +17,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
+  isInput: true,
   name: 'Data Table',
   icon: <TableOutlined />,
   Factory: ({ model }) => {

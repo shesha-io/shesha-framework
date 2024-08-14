@@ -10,6 +10,7 @@ import { Tooltip } from 'antd';
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'datatable.filter',
+  isInput: false,
   name: 'Table Filter',
   icon: <FilterOutlined />,
   Factory: ({ model }) =>

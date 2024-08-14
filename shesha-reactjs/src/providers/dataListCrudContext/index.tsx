@@ -29,6 +29,8 @@ import ParentProvider from '../parentProvider/index';
 import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
+import { ShaFormProvider } from '../form/newProvider/shaFormProvider';
+import { useShaForm } from '../form/store/shaFormInstance';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -174,9 +176,9 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
         const postData = removeGhostKeys(
           filterDataByOutputComponents(
-          mergedData,
-          props.formFlatMarkup.allComponents,
-          toolboxComponents
+            mergedData,
+            props.formFlatMarkup.allComponents,
+            toolboxComponents
           )
         );
         // send data of stored files
@@ -313,23 +315,38 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
     children,
     mode = 'read',
     formSettings,
+    formFlatMarkup,
   } = props;
   const [form] = Form.useForm();
 
+  const [shaForm] = useShaForm({
+    antdForm: form,
+    form: undefined,
+    init: (form) => {
+      form.initByMarkup({
+        formFlatMarkup: formFlatMarkup,
+        formSettings: formSettings,
+      });
+    }
+  });
+
   return (
-    <ShaForm.MarkupProvider markup={props.formFlatMarkup}>
-      <FormProvider
-        form={form}
-        name={''}
-        formSettings={formSettings}
-        mode={mode === 'read' ? 'readonly' : 'edit'}
-        isActionsOwner={false}
-      >
-        <CrudProvider {...props}>
-          {children}
-        </CrudProvider>
-      </FormProvider>
-    </ShaForm.MarkupProvider>
+    <ShaFormProvider shaForm={shaForm}>
+      <ShaForm.MarkupProvider markup={formFlatMarkup}>
+        <FormProvider
+          form={form}
+          name={''}
+          formSettings={formSettings}
+          mode={mode === 'read' ? 'readonly' : 'edit'}
+          isActionsOwner={false}
+          shaForm={shaForm} // TODO: review
+        >
+          <CrudProvider {...props}>
+            {children}
+          </CrudProvider>
+        </FormProvider>
+      </ShaForm.MarkupProvider>
+    </ShaFormProvider>
   );
 };
 

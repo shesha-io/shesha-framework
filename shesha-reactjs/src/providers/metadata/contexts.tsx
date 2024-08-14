@@ -11,7 +11,6 @@ export interface IMetadataStateContext {
 }
 
 export interface IMetadataActionsContext {
-  //getMetadata: () => Promise<IModelMetadata>;
   getPropertyMeta: (name: string) => IPropertyMetadata;
 }
 

@@ -4,36 +4,37 @@ import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramewor
 import { FormProvider } from '@/providers/form';
 import Show from '../show';
 import FormInfo from './formInfo';
-import ConfigurableFormRenderer from './configurableFormRenderer';
+import { ConfigurableFormRenderer } from './configurableFormRenderer';
 import { useAppConfigurator } from '@/providers/appConfigurator';
-import { IConfigurableFormProps } from './models';
+import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
+import { useShaForm } from '@/providers/form/store/shaFormInstance';
+import { MetadataProvider } from '@/providers';
 
-export interface IFormWithFlatMarkupProps extends IConfigurableFormProps {
+export type IFormWithFlatMarkupProps = IConfigurableFormRuntimeProps & {
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   persistedFormProps?: IPersistedFormProps;
   onMarkupUpdated?: () => void;
-}
+};
 
 export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   const {
-    needDebug,
     mode,
     formRef,
     isActionsOwner,
     propertyFilter,
   } = props;
 
-  const { 
-    actions,
-    sections,
+  const {
     refetchData,
 
     parentFormValues,
     onValuesChange,
     form,
   } = props;
+
+  const [shaForm] = useShaForm({ form: props.shaForm });
 
   const { formInfoBlockVisible } = useAppConfigurator();
   const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
@@ -45,33 +46,40 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
 
   const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
 
+  console.log('LOG: initialValues 🍬', props.initialValues);
+
   return (
-    <FormFlatMarkupProvider markup={formFlatMarkup}>
-      <FormProvider
-        name={props.formName}
-        formSettings={formSettings}
-        needDebug={needDebug}
-        onValuesChange={onValuesChange}
+    <MetadataProvider modelType={formSettings?.modelType}>
+      <FormFlatMarkupProvider markup={formFlatMarkup}>
+        <FormProvider
+          shaForm={shaForm}
+          name={props.formName}
+          formSettings={formSettings}
+          onValuesChange={onValuesChange}
 
-        mode={mode}
-        form={form}
-        formRef={formRef}
-        actions={actions}
-        sections={sections}
-        
-        refetchData={refetchData}
-        isActionsOwner={isActionsOwner}
-        propertyFilter={propertyFilter}
+          mode={mode}
+          form={form}
+          formRef={formRef}
+          // actions={actions}
+          // sections={sections}
 
-        parentFormValues={parentFormValues}
-        initialValues={props.initialValues}
-      >
-        <Show when={Boolean(showFormInfo)}>
-          <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
-        </Show>
-        <ConfigurableFormRenderer {...props} />
-      </FormProvider>
-    </FormFlatMarkupProvider>
+          refetchData={refetchData}
+          isActionsOwner={isActionsOwner}
+          propertyFilter={propertyFilter}
+
+          parentFormValues={parentFormValues}
+          initialValues={props.initialValues}
+        >
+          <Show when={Boolean(showFormInfo)}>
+            <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
+          </Show>
+          <ConfigurableFormRenderer
+            shaForm={shaForm}
+            {...props}
+          />
+        </FormProvider>
+      </FormFlatMarkupProvider>
+    </MetadataProvider>
   );
 };
 

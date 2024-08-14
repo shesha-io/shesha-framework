@@ -14,6 +14,7 @@ import { isValidGuid } from '@/components/formDesigner/components/utils';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
+  isInput: false,
   name: 'Container',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {

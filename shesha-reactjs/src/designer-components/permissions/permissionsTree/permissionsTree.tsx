@@ -29,6 +29,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeComponentProps> = {
   type: 'permissionsTree',
+  isInput: false,
   name: 'Permissions tree',
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {

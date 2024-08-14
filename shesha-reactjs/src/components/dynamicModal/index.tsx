@@ -2,18 +2,13 @@ import _ from 'lodash';
 import React, { FC } from 'react';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
-import { evaluateString } from '@/providers/form/utils';
 import { Form, Modal } from 'antd';
 import { IModalWithConfigurableFormProps, IModalWithContentProps } from '@/providers/dynamicModal/models';
-import { MODAL_DATA } from '@/shesha-constants';
-import { StandardEntityActions } from '@/interfaces/metadata';
 import { useDynamicModals } from '@/providers';
-import { useGlobalState, useShaRouting } from '@/providers';
 import { useMedia } from 'react-use';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
-  //content: ReactNode;
   onCancel?: () => void;
   onOk?: () => void;
 }
@@ -42,7 +37,6 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       onCancel={hideForm}
       footer={footer}
       destroyOnClose
-      // width={width ? width : 800}
       width={isSmall ? '90%' : width || 900}
       maskClosable={false}
     >
@@ -61,17 +55,12 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     isVisible,
     formId,
     showModalFooter,
-    submitHttpVerb,
-    onSuccessRedirectUrl,
+    formArguments,
     initialValues,
     parentFormValues,
     width,
-    modalConfirmDialogMessage,
     onFailed,
-    prepareInitialValues,
     mode = 'edit',
-    skipFetchData,
-    submitLocally,
     onCancel,
     buttons = [],
     footerButtons = 'default',
@@ -79,33 +68,16 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
 
   const [form] = Form.useForm();
   const { removeModal } = useDynamicModals();
-  const { router } = useShaRouting();
-  const { clearState } = useGlobalState();
 
   // `showModalFooter` for now is for backward compatibility
   const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
 
-  const beforeSubmit = () => {
-    return new Promise<boolean>((resolve, reject) => {
-      if (modalConfirmDialogMessage) {
-        Modal.confirm({ content: modalConfirmDialogMessage, onOk: () => resolve(true), onCancel: () => reject(false) });
-      } else {
-        resolve(true);
-      }
-    });
-  };
-
   const closeModal = () => {
-    clearState(MODAL_DATA);
     removeModal(id);
   };
 
   const onSubmitted = (_values: any, response: any) => {
-    if (onSuccessRedirectUrl) {
-      const computedRedirectUrl = evaluateString(onSuccessRedirectUrl, response);
-
-      router?.push(computedRedirectUrl);
-    }
+    console.log('LOG: dialog onSubmitted 🔥', { _values, response });
 
     if (props.onSubmitted) {
       props.onSubmitted(response);
@@ -124,38 +96,27 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
   };
 
   const onOk = () => {
-    if (submitLocally) {
-      const formValues = form?.getFieldsValue();
-
-      onSubmitted(null, formValues);
+    if (showDefaultSubmitButtons) {
+      form?.submit();
     } else {
-      if (showDefaultSubmitButtons) {
-        form?.submit();
-      } else {
-        closeModal();
-      }
+      closeModal();
     }
   };
 
   const formProps: IConfigurableFormProps = {
     formId: formId,
-    submitAction:
-      submitHttpVerb === 'POST' || !submitHttpVerb ? StandardEntityActions.create : StandardEntityActions.update,
+    formArguments: formArguments,
     form: form,
     mode: mode,
-    actions: {
-      close: handleCancel,
-    },
     onSubmitted: onSubmitted,
-    prepareInitialValues: prepareInitialValues,
     onFinishFailed: onFailed,
-    beforeSubmit: beforeSubmit,
-    httpVerb: submitHttpVerb,
     initialValues: initialValues,
     parentFormValues: parentFormValues,
-    skipFetchData: skipFetchData,
+
+    logEnabled: true,
   };
 
+  console.log('LOG: dialog formProps 🔥', formProps);
 
   return (
     <DynamicModalWithContent

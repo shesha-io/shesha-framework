@@ -5,6 +5,7 @@ import { StandardNodeTypes } from './formComponent';
 import { IObjectMetadata } from './metadata';
 import { IApplicationApi } from '@/providers';
 import { FormApi } from '@/providers/form/formApi';
+import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 
 export interface IHasPreviousActionResponse {
   actionResponse?: any;
@@ -83,6 +84,17 @@ export interface IConfigurableActionIdentifier extends IHasActionOwner {
 export type DynamicContextHook = () => GenericDictionary;
 export const EMPTY_DYNAMIC_CONTEXT_HOOK: DynamicContextHook = () => ({});
 
+export interface ConfigurableActionArgumentsMigrationContext {
+
+}
+
+/**
+ * Arguments migrator
+ */
+export type ConfigurableActionArgumentsMigrator<TArguments> = (
+  migrator: Migrator<any, TArguments, ConfigurableActionArgumentsMigrationContext>
+) => MigratorFluent<TArguments, TArguments, ConfigurableActionArgumentsMigrationContext>;
+
 /**
  * Configurable action descriptor. Is used to define consigurable actions
  */
@@ -120,6 +132,11 @@ export interface IConfigurableActionDescriptor<TArguments = IConfigurableActionA
   executer: IConfigurableActionExecuter<TArguments, TReponse>;
 
   useDynamicContextHook?: DynamicContextHook;
+
+  /**
+   * Arguments migrations. Returns last version of arguments
+   */
+  migrator?: ConfigurableActionArgumentsMigrator<IConfigurableActionArguments>;
 }
 
 export interface IMayHaveType {

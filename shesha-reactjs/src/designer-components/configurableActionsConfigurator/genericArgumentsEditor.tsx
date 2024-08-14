@@ -1,9 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { ConfigurableForm } from '@/components';
-import { ConfigurableFormInstance } from '@/providers/form/contexts';
-import { Form } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
 import { IConfigurableActionArguments } from '@/interfaces/configurableAction';
+import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
 
 export interface IProps<TModel extends IConfigurableActionArguments> {
   model: TModel;
@@ -21,20 +20,18 @@ function GenericArgumentsEditor<TModel extends IConfigurableActionArguments>({
   onValuesChange,
   readOnly = false,
 }: IProps<TModel>) {
-  const [form] = Form.useForm();
-  const formRef = useRef<ConfigurableFormInstance>(null);
+  const formRef = useShaFormRef();
 
   useEffect(() => {
-    form.resetFields();
+    formRef.current?.resetFields();
   });
 
   return (
     <ConfigurableForm
-      formRef={formRef}
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
-      form={form}
+      shaFormRef={formRef}
       onFinish={onSave}
       markup={markup}
       initialValues={model}

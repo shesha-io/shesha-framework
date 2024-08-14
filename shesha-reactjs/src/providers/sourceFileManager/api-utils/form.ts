@@ -1,4 +1,6 @@
-export const formApiDefinition = `/** Form mode */
+export const formApiDefinition = `import { IEntityEndpoints } from 'entities/interfaces';
+
+/** Form mode */
 export type FormMode = 'readonly' | 'edit' | 'designer';
 
 export interface ISetFormDataPayload {
@@ -11,17 +13,11 @@ export interface ISetFormDataPayload {
 
 export interface IFormSettings {
   modelType?: string;
-
-  postUrl?: string;
-  putUrl?: string;
-  deleteUrl?: string;
-  getUrl?: string;
-
-  fieldsToFetch?: string[];
-
-  /** if true then need to update components structure for using Setting component */
-  isSettingsForm?: boolean;
 };
+
+export interface FormInstance<Values> {
+  
+}
 
 /**
  * Form instance API
@@ -58,26 +54,11 @@ export interface FormApi<Values = any> {
   formMode: FormMode;
   /** Form data */
   data: Values;
-};
+  
+  /** Form arguments passed by caller */
+  formArguments?: any;
 
-export const getFormApi = (form: ConfigurableFormInstance): FormApi => {
-  return {
-    setFieldValue: (name: string, value: any) => {
-      form?.setFormData({values: setValueByPropertyName(form.formData, name, value, true), mergeValues: true});
-    },
-    setFieldsValue: (values: any) => {
-      form?.setFormData({values, mergeValues: true});
-    },
-    submit: () => {
-      form?.form?.submit();
-    },
-    setFormData: (payload: ISetFormDataPayload) => {
-      form?.setFormData(payload);
-    },
-
-    formSettings: form?.formSettings,
-    formMode: form?.formMode,
-    data: form?.formData,
-  };
+  /** Default API endpoints (create, read, update, delete). Note: available only when model type is entity */
+  defaultApiEndpoints: IEntityEndpoints;
 };
 `;

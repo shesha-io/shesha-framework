@@ -1,0 +1,294 @@
+{
+    "components": [
+        {
+            "id": "12C40CB0-4C60-4171-9380-01D51FDF6212",
+            "propertyName": "modalTitle",
+            "label": "Title",
+            "validate": {
+                "required": true
+            },
+            "type": "textField",
+            "version": "latest",
+            "parentId": "root"
+        },
+        {
+            "id": "adbc3b29-9a53-4305-869a-f37ba6e8bb94",
+            "propertyName": "formId",
+            "label": "Modal form",
+            "validate": {
+                "required": true
+            },
+            "convertToFullId": true,
+            "type": "formAutocomplete",
+            "version": "latest",
+            "parentId": "root"
+        },
+        {
+            "id": "Xg4hnSjkMr-0d0GYmHj8limsR4tsa3",
+            "type": "radio",
+            "propertyName": "formMode",
+            "componentName": "formMode",
+            "label": "Form mode",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 5,
+            "dataSourceType": "values",
+            "direction": "horizontal",
+            "referenceListId": null,
+            "items": [
+                {
+                    "label": "Edit",
+                    "value": "edit"
+                },
+                {
+                    "label": "Read only",
+                    "value": "readonly"
+                }
+            ],
+            "validate": {}
+        },
+        {
+            "id": "264903ff-b525-4a6e-893f-d560b219df9d",
+            "propertyName": "modalWidth",
+            "label": "Dialog Width (%)",
+            "allowClear": true,
+            "values": [
+                {
+                    "label": "Small",
+                    "value": "40%",
+                    "id": "2f56ae38-e5f3-40ff-9830-bc048736ddb4"
+                },
+                {
+                    "label": "Medium",
+                    "value": "60%",
+                    "id": "470d820b-7cd7-439c-8e95-1f5b3134f80c"
+                },
+                {
+                    "label": "Large",
+                    "value": "80%",
+                    "id": "1f2ac3db-3b3f-486c-991f-ad703088ab2d"
+                },
+                {
+                    "label": "Custom",
+                    "value": "custom",
+                    "id": "fde460b0-1f84-4b64-9a6a-e02ba862937d"
+                }
+            ],
+            "dataSourceType": "values",
+            "type": "dropdown",
+            "version": "latest",
+            "parentId": "root"
+        },
+        {
+            "id": "Z0UNMvsu0o3yhaE-eA9iEuWyBip76Z",
+            "propertyName": "widthUnits",
+            "label": "Units",
+            "allowClear": true,
+            "values": [
+                {
+                    "label": "Percentage (%)",
+                    "value": "%",
+                    "id": "2f56ae38-e5f3-40ff-9830-bc048736ddb4"
+                },
+                {
+                    "label": "Pixels (px)",
+                    "value": "px",
+                    "id": "470d820b-7cd7-439c-8e95-1f5b3134f80c"
+                }
+            ],
+            "dataSourceType": "values",
+            "hidden": {
+                "_code": "return !(getSettingValue(data?.modalWidth) === \"custom\");",
+                "_mode": "code",
+                "_value": false
+            },
+            "type": "dropdown",
+            "version": "latest",
+            "parentId": "root"
+        },
+        {
+            "id": "W7dx6Aw1I_UeQgPM6GiGfauqocOeJk",
+            "propertyName": "customWidth",
+            "label": "Enter Custom Width",
+            "hidden": {
+                "_code": "return !(getSettingValue(data?.modalWidth) === \"custom\" && getSettingValue(data?.widthUnits));",
+                "_mode": "code",
+                "_value": false
+            },
+            "min": 0,
+            "type": "numberField",
+            "version": "latest",
+            "parentId": "root"
+        },
+        {
+            "id": "FwPdt-S-YTKKBKiQL4d8PoYXzvv4_S",
+            "type": "codeEditor",
+            "propertyName": "formArguments",
+            "componentName": "formArguments",
+            "label": "Arguments",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "mode": "dialog",
+            "version": 3,
+            "language": "typescript",
+            "description": "Arguments you want to be passed to the modal form",
+            "wrapInTemplate": true,
+            "validate": {},
+            "templateSettings": {
+                "useAsyncDeclaration": true,
+                "functionName": "getArguments"
+            }
+        },
+        {
+            "id": "O3Y7Zddxtoq79a541od-znjM81ZMIw",
+            "type": "collapsiblePanel",
+            "propertyName": "panel2",
+            "componentName": "panel2",
+            "label": "Footer",
+            "labelAlign": "right",
+            "parentId": "root",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 5,
+            "expandIconPosition": "end",
+            "components": [
+                {
+                    "id": "vCbxNvaSm1xPuF9wQQ6x9khi-1WS6r",
+                    "components": [],
+                    "parentId": "O3Y7Zddxtoq79a541od-znjM81ZMIw"
+                },
+                {
+                    "id": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7",
+                    "components": [
+                        {
+                            "id": "eX3ZelYUEIbGAcxXAsqW0ZI3u6t9Iy",
+                            "propertyName": "footerButtons",
+                            "label": "Buttons type",
+                            "dataSourceType": "values",
+                            "values": [
+                                {
+                                    "id": "7YrHI15F80sjgTDtLx5XLRg3kwGsMP",
+                                    "label": "Default",
+                                    "value": "default"
+                                },
+                                {
+                                    "id": "3dKvewJIJffZ5H5MM2YRooBLdiG6nV",
+                                    "label": "Custom",
+                                    "value": "custom"
+                                },
+                                {
+                                    "id": "H7t0zUbQmLRTNddNXq30iVxOf_nOSE",
+                                    "label": "None",
+                                    "value": "none"
+                                }
+                            ],
+                            "defaultValue": "default",
+                            "type": "dropdown",
+                            "version": "latest",
+                            "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
+                        },
+                        {
+                            "id": "qRRoct09timdmYy9ne60KFk3_99CiZ",
+                            "propertyName": "buttons",
+                            "hidden": {
+                                "_code": "return !(getSettingValue(data?.footerButtons) === \"custom\");",
+                                "_mode": "code",
+                                "_value": false
+                            },
+                            "label": "Configure Modal Buttons",
+                            "type": "buttons",
+                            "version": "latest",
+                            "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
+                        }
+                    ],
+                    "parentId": "O3Y7Zddxtoq79a541od-znjM81ZMIw"
+                }
+            ],
+            "header": {
+                "id": "vCbxNvaSm1xPuF9wQQ6x9khi-1WS6r",
+                "components": []
+            },
+            "content": {
+                "id": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7",
+                "components": [
+                    {
+                        "id": "eX3ZelYUEIbGAcxXAsqW0ZI3u6t9Iy",
+                        "propertyName": "footerButtons",
+                        "label": "Buttons type",
+                        "dataSourceType": "values",
+                        "values": [
+                            {
+                                "id": "7YrHI15F80sjgTDtLx5XLRg3kwGsMP",
+                                "label": "Default",
+                                "value": "default"
+                            },
+                            {
+                                "id": "3dKvewJIJffZ5H5MM2YRooBLdiG6nV",
+                                "label": "Custom",
+                                "value": "custom"
+                            },
+                            {
+                                "id": "H7t0zUbQmLRTNddNXq30iVxOf_nOSE",
+                                "label": "None",
+                                "value": "none"
+                            }
+                        ],
+                        "defaultValue": "default",
+                        "type": "dropdown",
+                        "version": "latest",
+                        "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
+                    },
+                    {
+                        "id": "qRRoct09timdmYy9ne60KFk3_99CiZ",
+                        "propertyName": "buttons",
+                        "hidden": {
+                            "_code": "return !(getSettingValue(data?.footerButtons) === \"custom\");",
+                            "_mode": "code",
+                            "_value": false
+                        },
+                        "label": "Configure Modal Buttons",
+                        "type": "buttons",
+                        "version": "latest",
+                        "parentId": "lJNgCkxagf_ibgKb7t3bIXlUxb6UC7"
+                    }
+                ]
+            },
+            "collapsible": "icon",
+            "ghost": true
+        }
+    ],
+    "formSettings": {
+        "access": null,
+        "permissions": null,
+        "version": 2,
+        "labelCol": {
+            "span": 5
+        },
+        "wrapperCol": {
+            "span": 19
+        },
+        "layout": "horizontal",
+        "colon": true,
+        "dataLoaderType": "gql",
+        "dataLoadersSettings": {
+            "gql": {
+                "endpointType": "default"
+            }
+        },
+        "dataSubmitterType": "gql",
+        "dataSubmittersSettings": {
+            "gql": {
+                "endpointType": "default",
+                "dynamicEndpoint": ""
+            }
+        },
+        "onAfterShow": null,
+        "onBeforeSubmit": null,
+        "onSubmitSuccess": null,
+        "onSubmitFailed": null
+    }
+}

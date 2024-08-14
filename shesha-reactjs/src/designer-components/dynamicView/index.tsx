@@ -13,6 +13,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const DynamicViewComponent: IToolboxComponent<DynamicViewComponentProps> = {
     type: 'dynamicView',
+    isInput: false,
     name: 'Dynamic View',
     icon: <AppstoreOutlined />,
     Factory: ({ model }) => {

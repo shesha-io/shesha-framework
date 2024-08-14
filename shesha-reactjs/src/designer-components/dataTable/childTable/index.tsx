@@ -15,6 +15,7 @@ export interface IChildTableComponentProps extends IChildTableSettingsProps, ICo
 
 const ChildTableComponent: IToolboxComponent<IPanelComponentProps> = {
   type: 'childTable',
+  isInput: false,
   name: 'Child Table',
   icon: <TableOutlined />,
   isHidden: true,

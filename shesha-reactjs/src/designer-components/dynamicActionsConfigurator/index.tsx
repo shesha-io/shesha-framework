@@ -9,6 +9,7 @@ import { ConfigurableFormItem } from '@/components';
 
 export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActionsConfiguratorComponentProps> = {
   type: 'dynamicItemsConfigurator',
+  isInput: true,
   name: 'Dynamic Items Configurator',
   icon: <ThunderboltOutlined />,
   Factory: ({ model }) => {

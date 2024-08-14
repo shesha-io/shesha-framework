@@ -530,18 +530,6 @@
               "functionName": "onChange"
             },
             "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"value\", \"Component current value\")\r\n        .addObject(\"option\", \"Meta data of component current value\")        \t\r\n        .build();"
-          },
-          {
-            "id": "40abba89-228f-41a4-8113-9bd44fe78263",
-            "type": "editableTagGroup",
-            "propertyName": "subscribedEventNames",
-            "label": "Subscribed Event Names",
-            "labelAlign": "right",
-            "parentId": "FcmCvh3CcsJbPrg0ryOI3",
-            "hidden": false,
-            "validate": {},
-            "description": "This is a list of event that, when dispatched, will trigger the refetching of items for the component",
-            "version": 2
           }
         ]
       },

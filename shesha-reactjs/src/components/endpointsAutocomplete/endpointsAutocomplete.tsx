@@ -1,18 +1,37 @@
 import React, { CSSProperties, FC, useEffect, useMemo } from 'react';
-import { AutoComplete, Input } from 'antd';
+import { AutoComplete, Input, Select, Space } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useApiEndpoints } from '@/apis/api';
 import { useDebouncedCallback } from 'use-debounce';
+import { IApiEndpoint } from '@/interfaces';
+import { DefaultOptionType } from 'antd/lib/select';
+
+export interface IHttpVerb {
+  id: string;
+  label: string;
+  value: string;
+}
+
+export type EndpointSelectionMode = 'url' | 'endpoint';
+
+export type EndpointsAutocompleteValue = string | IApiEndpoint;
+
+const isApiEndpoint = (value: EndpointsAutocompleteValue): value is IApiEndpoint => {
+  return value && typeof (value) === 'object';
+};
 
 export interface IEndpointsAutocompleteProps {
-  value?: string;
-  onChange?: (value: string) => void;
+  value?: EndpointsAutocompleteValue;
+  onChange?: (value: EndpointsAutocompleteValue) => void;
   dropdownStyle?: CSSProperties;
   size?: SizeType;
   readOnly?: boolean;
   httpVerb?: string;
   prefix?: string;
   suffix?: string;
+
+  availableHttpVerbs?: IHttpVerb[];
+  mode?: EndpointSelectionMode;
 }
 
 interface IOption {
@@ -20,32 +39,64 @@ interface IOption {
   label: string | React.ReactNode;
 }
 
-export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, ...props }) => {
+export interface VerbSelectorProps {
+  verbs?: IHttpVerb[];
+  value?: string;
+  onChange: (newValue?: string) => void;
+}
+export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange }) => {
+  const options: DefaultOptionType[] = useMemo(() => {
+    return (verbs ?? []).map<DefaultOptionType>(verb => ({
+      value: verb.value,
+      label: verb.label,
+    }));
+  }, [verbs]);
+
+  return (
+    <Select
+      style={{ width: '120px' }}
+      options={options}
+      value={value}
+      onChange={onChange}
+    >
+    </Select>
+  );
+};
+
+const getUrlFromValue = (value?: EndpointsAutocompleteValue) => {
+  if (!value)
+    return null;
+
+  return isApiEndpoint(value)
+    ? value.url
+    : value;
+};
+const getVerbFromValue = (value?: EndpointsAutocompleteValue) => {
+  return !value || !isApiEndpoint(value)
+    ? null
+    : value.httpVerb;
+};
+
+export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, mode = 'url', ...props }) => {
 
   const endpointsFetcher = useApiEndpoints({ lazy: true });
 
-  const doFetchItems = (term: string) => {
-    endpointsFetcher.refetch({ queryParams: { term, verb: props.httpVerb } });
+  const doFetchItems = (term: string, verb: string) => {
+    endpointsFetcher.refetch({ queryParams: { term, verb: verb } });
   };
-  const debouncedFetchItems = useDebouncedCallback<(value: string) => void>(
-    localValue => {
-      doFetchItems(localValue);
+  const debouncedFetchItems = useDebouncedCallback<(value: string, verb: string) => void>(
+    (localValue, localVerb) => {
+      doFetchItems(localValue, localVerb);
     },
     // delay in ms
     200
   );
 
-
+  const currentVerb = mode === 'url' ? props.httpVerb : getVerbFromValue(props.value);
   useEffect(() => {
-    debouncedFetchItems(props.value);
-  }, []);
-
-  const handleSearch = (localValue: string) => {
-    if (props.onChange) props.onChange(localValue);
-    if (localValue) {
-      debouncedFetchItems(localValue);
-    }
-  };
+    const url = getUrlFromValue(props.value);
+    debouncedFetchItems(url, currentVerb);
+  }, [currentVerb]);
 
   const loadedEndpoints = endpointsFetcher.data?.result;
   const options = useMemo(() => {
@@ -56,32 +107,57 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     }));
   }, [loadedEndpoints]);
 
-  const handleSelect = (data: string) => {
-    if (props.onChange) props.onChange(data);
-  };
-  
-  const handleChange = (data: string) => {
-    if (props.onChange) props.onChange(data);
+  const onChangeUrl = (newUrl: string) => {
+    const newValue: EndpointsAutocompleteValue = mode === 'url'
+      ? newUrl
+      : { httpVerb: getVerbFromValue(props.value), url: newUrl };
+
+    props.onChange?.(newValue);
   };
 
-  return (
-    <>
-      <AutoComplete
-        disabled={readOnly}
-        value={props.value}
-        options={options}
-        onSelect={handleSelect}
-        onChange={handleChange}
-        onSearch={handleSearch}
-        notFoundContent={null}
-        size={props.size}
-        dropdownStyle={props?.dropdownStyle}
-        popupMatchSelectWidth={false}
-      >
-        <Input addonBefore={props.prefix} addonAfter={props.suffix}/>
-      </AutoComplete>
-    </>
+  const onVerbChange = (newVerb: string) => {
+    if (mode === 'url')
+      return;
+
+    const newValue = { httpVerb: newVerb, url: getUrlFromValue(props.value) };
+    props.onChange?.(newValue);
+  };
+
+  const handleSearch = (localValue: string) => {
+    onChangeUrl(localValue);
+
+    if (localValue) {
+      debouncedFetchItems(localValue, currentVerb);
+    }
+  };
+
+  const url = getUrlFromValue(props.value);
+
+  const autocomplete = (
+    <AutoComplete
+      disabled={readOnly}
+      value={url}
+      options={options}
+      onSelect={onChangeUrl}
+      onChange={onChangeUrl}
+      onSearch={handleSearch}
+      notFoundContent={null}
+      size={props.size}
+      dropdownStyle={props?.dropdownStyle}
+      popupMatchSelectWidth={false}
+    >
+      <Input addonBefore={props.prefix} addonAfter={props.suffix} />
+    </AutoComplete>
   );
-};
 
-export default EndpointsAutocomplete;
+  return mode === 'endpoint'
+    ? (
+      <Space.Compact style={{ width: "100%" }}>
+        <VerbSelector verbs={props.availableHttpVerbs} onChange={onVerbChange} value={isApiEndpoint(props.value) ? props.value.httpVerb : null} />
+        {autocomplete}
+      </Space.Compact>
+    )
+    : (
+      <>{autocomplete}</>
+    );
+};

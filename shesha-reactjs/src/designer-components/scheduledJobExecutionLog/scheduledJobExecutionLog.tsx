@@ -19,6 +19,7 @@ const settingsForm = settingsFormJson as FormMarkup;
  */
 const ScheduledJobExecutionLog: IToolboxComponent<IScheduledJobExecutionLogProps> = {
   type: 'scheduledJobExecutionLog',
+  isInput: false,
   name: 'ScheduledJobExecutionLog',
   icon: <SmallDashOutlined />,
   Factory: ({ model }) => {

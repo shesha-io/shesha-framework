@@ -43,7 +43,7 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
 
   useEffect(() => {
     if (Boolean(getAction)) {
-      const action = getAction(null, 'onChangeId');
+      const action = getAction('onChangeId');
       if (Boolean(action)) {
         action(objectId);
       }

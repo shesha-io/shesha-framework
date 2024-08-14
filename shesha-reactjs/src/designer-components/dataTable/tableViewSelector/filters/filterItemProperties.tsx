@@ -1,4 +1,3 @@
-import { Form } from 'antd';
 import React, { FC, useMemo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableForm } from '@/components';
@@ -17,8 +16,6 @@ export interface IFilterItemPropertiesProps {
 const tableViewSettingsMarkup = tableViewSettingsJson as FormMarkup;
 
 export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, onChange, readOnly }) => {
-  const [form] = Form.useForm();
-
   const debouncedSave = useDebouncedCallback(
     (values) => {
       onChange({ ...value, ...values });
@@ -33,7 +30,6 @@ export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, on
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
       markup={tableViewSettingsMarkup}
-      form={form}
       initialValues={value}
       onValuesChange={debouncedSave}
     />);

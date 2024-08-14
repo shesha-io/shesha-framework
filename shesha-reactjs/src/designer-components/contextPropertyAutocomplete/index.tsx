@@ -153,6 +153,7 @@ const ContextPropertyAutocompleteComponent: IToolboxComponent<IContextPropertyAu
         defaultModelType={designerModelType ?? formSettings.modelType}
         formData={formData}
         onValuesChange={(values) => {
+          console.log('LOG: set value 💣', values);
           setFormData({ values: { ...values }, mergeValues: true });
         }}
       />

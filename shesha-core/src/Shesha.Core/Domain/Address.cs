@@ -19,6 +19,7 @@ namespace Shesha.Domain
 
         [StringLength(200)]
         [EntityDisplayNameAttribute]
+        [Required]
         public virtual string AddressLine1 { get; set; }
 
         [StringLength(200)]

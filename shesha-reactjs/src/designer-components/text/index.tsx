@@ -14,7 +14,7 @@ const TextComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'text',
   name: 'Text',
   icon: <LineHeightOutlined />,
-  isInput: true,
+  isInput: false,
   tooltip: 'Complete Typography component that combines Text, Paragraph and Title',
   Factory: ({ model }) => (
     <ConfigurableFormItem model={{ ...model, hideLabel: true }}>

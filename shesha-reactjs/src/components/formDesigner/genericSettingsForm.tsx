@@ -5,6 +5,7 @@ import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSett
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { listComponentToModelMetadata } from '@/providers/form/utils';
 import { FormWithRawMarkup } from '../configurableForm/formWithRawMarkup';
+import { ConfigurableForm } from '../configurableForm';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -61,6 +62,28 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       reset: () => form.resetFields(),
     };
 
+  return (
+    <ConfigurableForm
+      formName='componentSettings'
+      labelCol={layoutSettings?.labelCol}
+      wrapperCol={layoutSettings?.wrapperCol}
+      layout={layoutSettings?.layout}
+
+      mode={readOnly ? "readonly" : "edit"}
+      form={form}
+      onFinish={onSave}
+      markup={markup}
+      cacheKey={`form-designer:${toolboxComponent.type}`}
+      initialValues={model}
+      onValuesChange={onValuesChange}
+      actions={{
+        linkToModelMetadata
+      }}
+      onFinishFailed={onFinishFailed}
+      propertyFilter={propertyFilter}
+      isSettingsForm={true}
+    />
+  );
   return (
     <FormWithRawMarkup
       formName='componentSettings'

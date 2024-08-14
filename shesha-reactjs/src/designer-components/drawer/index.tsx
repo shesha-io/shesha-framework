@@ -15,6 +15,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
+  isInput: false,
   name: 'Drawer',
   icon: <SwapOutlined />,
   Factory: ({ model }) => {

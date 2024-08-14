@@ -16,6 +16,7 @@ import { getSettings } from './settings';
 
 const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
   type: 'styleBox',
+  isInput: true,
   name: 'Style Box',
   icon: <StrikethroughOutlined />,
   canBeJsSetting: true,

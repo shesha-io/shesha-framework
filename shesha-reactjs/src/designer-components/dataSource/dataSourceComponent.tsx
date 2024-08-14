@@ -10,6 +10,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
   type: 'dataSource',
+  isInput: false,
   name: 'DataSource',
   icon: <LayoutOutlined />,
   Factory: ({ model }) => {

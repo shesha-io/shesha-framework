@@ -43,6 +43,7 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { useFormManager } from '../formManager';
+import { useFormPersister } from '../formPersisterProvider';
 
 /**
  * Form configuration DTO
@@ -679,6 +680,12 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
   // call fetcher
   const { formFlatStructure, formSettings, urlEvaluationData, lazy } = args;
 
+  const { formProps } = useFormPersister() ?? {};
+  const formName = `${formProps?.module}/${formProps?.name}`;
+  const isHeader = formName === 'Shesha/header';
+  if (!isHeader)
+    console.log(`LOG: ${args.lazy ? '🟢(lazy)' : '🔴(non lazy)'} useFormData. ${formName}`, args);
+
   const [state, setState] = useState<UseFormDataState>({
     data: null,
     error: null,
@@ -700,6 +707,9 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
   const requestUidRef = useRef<string>();
 
   const fetcherPromise = useMemo<Promise<EntityFetcher>>(() => {
+    if (!isHeader)
+      console.log('LOG: readEndpoint: ', readEndpoint);
+
     if (!getUrl)
       return Promise.resolve(
         () =>
@@ -728,12 +738,17 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
 
       // fetch data and resolve
       queryParams = { ...queryParams, properties: gqlFields };
+      if (!isHeader)
+        console.log(`LOG: ✋ dataFetcher precheck. ${formName}`, { getDataUrl, queryParams });
+
       if (!queryParams['id'] && urlEvaluationData) {
         const initialValues = getMatchData(urlEvaluationData, 'initialValues');
         if (initialValues?.id) queryParams['id'] = initialValues?.id;
       }
 
       const dataFetcher = () => {
+        if (!isHeader)
+          console.log(`LOG: 🔥🔥🔥 dataFetcher call. ${formName}`, { getDataUrl, queryParams });
         return RestfulShesha.get<EntityAjaxResponse, any, any, any>(getDataUrl, queryParams, {
           base: backendUrl,
           headers: httpHeaders,

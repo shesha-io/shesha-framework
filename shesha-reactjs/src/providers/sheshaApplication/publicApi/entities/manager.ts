@@ -5,6 +5,7 @@ import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
 import { ICacheProvider } from "@/providers/metadataDispatcher/entities/models";
 import qs from "qs";
 import { IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";
+import { IEntityEndpoints } from "./entityTypeAccessor";
 
 export const ENTITIES_URLS = {
     GET_CONFIGURATIONS: '/api/services/app/EntityConfig/GetClientApiConfigurations',    
@@ -16,6 +17,14 @@ export class EntitiesManager {
     readonly _metadataFetcher: IEntityMetadataFetcher;
 
     static #configurationsPromise: Promise<EntityConfigurationDto[]> = undefined;
+
+    getApiEndpointsAsync = async (typeAccessor: IEntityTypeIndentifier): Promise<IEntityEndpoints> => {
+        const meta = await this.#resolveEntityTypeAsync(typeAccessor);
+        if (!meta?.apiEndpoints)
+            throw new Error("Failed to get endpoints");
+
+        return meta.apiEndpoints;
+    };
 
     createEntityAsync = async <TId, TEntity extends IEntity<TId>>(typeAccessor: IEntityTypeIndentifier, value: TEntity): Promise<TEntity> => {
         const meta = await this.#resolveEntityTypeAsync(typeAccessor);

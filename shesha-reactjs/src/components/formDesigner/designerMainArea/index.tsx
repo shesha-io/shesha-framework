@@ -4,10 +4,11 @@ import React, { FC, useMemo } from 'react';
 import Toolbox from '../toolbox';
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import { DebugPanel } from '../debugPanel';
-import { useCanvasConfig, useForm } from '@/providers';
+import { MetadataProvider, useCanvasConfig, useForm } from '@/providers';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 export interface IDesignerMainAreaProps {
 
@@ -15,7 +16,7 @@ export interface IDesignerMainAreaProps {
 
 export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { isDebug, readOnly } = useFormDesignerState();
-    const { form, formMode } = useForm();
+    const { form, formMode, formSettings } = useForm();
     const { width, zoom } = useCanvasConfig();
     const { styles } = useStyles();
 
@@ -40,13 +41,19 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                 }}
             >
                 <div style={{ width: `${magnifiedWidth}%`, zoom: `${zoom}%`, overflow: 'auto', margin: '0 auto' }}>
-                    <ParentProvider model={{}} formMode='designer'>
-                        <ConfigurableFormRenderer form={form} skipFetchData={true} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
-                            {isDebug && (
-                                <DebugPanel formData={form.getFieldsValue()} />
-                            )}
-                        </ConfigurableFormRenderer>
-                    </ParentProvider>
+                    <ConditionalWrap
+                        condition={Boolean(formSettings?.modelType)}
+                        wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
+                    >
+                        <ParentProvider model={{}} formMode='designer'>
+                            <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
+                                {isDebug && (
+                                    <DebugPanel formData={form.getFieldsValue()} />
+                                )}
+                            </ConfigurableFormRenderer>
+                        </ParentProvider>
+                    </ConditionalWrap>
+
                 </div>
             </SidebarContainer>
         </div>

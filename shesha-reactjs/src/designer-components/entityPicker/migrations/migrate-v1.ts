@@ -3,9 +3,9 @@ import { IConfigurableActionColumnsProps, IConfigurableColumnsProps } from '@/pr
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IEntityPickerComponentProps } from '..';
 import { IModalProps } from '@/providers/dynamicModal/models';
-import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
 import { SettingsMigrationContext } from '@/interfaces';
 import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
+import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
@@ -82,15 +82,17 @@ const getDeleteRowActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0, 
 
 const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0): IConfigurableActionConfiguration => {
     const actionConfiguration: IConfigurableActionConfiguration = makeAction({ actionOwner: 'Common', actionName: 'Show Dialog' });
-    const convertedProps = oldColumn as Omit<IModalProps, 'formId'>; // very strange code, took it from column renderer
+    const convertedProps = oldColumn as Omit<IModalProps, 'formId'> & { 
+        submitHttpVerb?: 'POST' | 'PUT';
+        onSuccessRedirectUrl?: string;
+    }; // very strange code, took it from column renderer
 
-    const modalArguments: IShowModalActionArguments = {
+    const modalArguments: IShowModalActionArgumentsV0 = {
         modalTitle: oldColumn.modalTitle,
         formId: oldColumn.modalFormId,
         additionalProperties: oldColumn.additionalProperties,
         modalWidth: oldColumn.modalWidth,
         showModalFooter: convertedProps?.showModalFooter ?? false,
-        skipFetchData: convertedProps?.skipFetchData,
         submitHttpVerb: convertedProps?.submitHttpVerb,
     };
     actionConfiguration.actionArguments = modalArguments;

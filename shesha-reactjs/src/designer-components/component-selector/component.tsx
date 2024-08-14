@@ -13,6 +13,7 @@ export type IActionParameters = [{ key: string; value: string }];
 
 export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorComponentProps> = {
   type: 'component-selector',
+  isInput: true,
   name: 'Component selector',
   icon: <BorderOutlined />,
   Factory: ({ model: passedModel }) => {

@@ -14,6 +14,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
+  isInput: false,
   name: 'SizableColumns',
   icon: <BorderHorizontalOutlined />,
   Factory: ({ model }) => {

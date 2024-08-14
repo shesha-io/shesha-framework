@@ -13,6 +13,7 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   type: 'configurableActionConfigurator',
   name: 'Configurable Action Configurator',
   icon: <ThunderboltOutlined />,
+  isInput: true,
   Factory: ({ model }) => {
 
     if (model.hidden) return null;

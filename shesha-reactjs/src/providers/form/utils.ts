@@ -4,7 +4,7 @@ import camelcase from 'camelcase';
 import Mustache from 'mustache';
 import { nanoid } from '@/utils/uuid';
 import nestedProperty from 'nested-property';
-import { CSSProperties } from 'react';
+import { CSSProperties, useRef } from 'react';
 import {
   DataTypes,
   IPropertySetting,
@@ -39,10 +39,6 @@ import {
   IComponentsDictionary,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
-  IFormAction,
-  IFormActions,
-  IFormSection,
-  IFormSections,
   IFormSettings,
   IFormValidationRulesOptions,
   EditMode,
@@ -59,31 +55,27 @@ import {
   useDataContextManager,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
-import { message } from 'antd';
+import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { ContextGetData, useDataContext } from '@/providers/dataContextProvider/contexts';
+import { ContextGetData, IDataContextFull, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
   IApplicationApi,
-  useDataTableStore,
-  useForm,
-  useFormData,
+  useDataTableState,
   useGlobalState,
   useSheshaApplication,
 } from '@/providers';
 import { axiosHttp } from '@/utils/fetchers';
-import { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
 import { IParentProviderProps } from '../parentProvider/index';
 import { SheshaCommonContexts } from '../dataContextManager/models';
-import { useDeepCompareMemo } from '@/hooks';
-import { removeGhostKeys } from '@/utils/form';
-import { useDelayedUpdate } from '../delayedUpdateProvider';
-import qs from 'qs';
-import { FormConfigurationDto } from './api';
-import { IAbpWrappedGetEntityResponse } from '@/interfaces/gql';
 import { toCamelCase } from '@/utils/string';
-import { FormApi, getFormApi } from './formApi';
+import { FormApi } from './formApi';
+import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
+import { ISetStatePayload } from '../globalState/contexts';
+import { IShaFormInstance } from './store/interfaces';
+import { useShaFormInstance } from './newProvider/shaFormProvider';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -105,77 +97,118 @@ export interface IApplicationContext<Value = any> {
   http: AxiosInstance;
   /** Message API */
   message: MessageInstance;
-  /** Other data */
-  [key: string]: any;
 
   /** Last updated date */
   lastUpdated?: Date;
+
+  pageContext?: IDataContextFull;
+  setGlobalState: (payload: ISetStatePayload) => void;
 }
 
-export function useFormProviderContext(): IApplicationContext {
+export type GetAvailableConstantsDataArgs = {
+  topContextId?: string;
+  shaForm?: IShaFormInstance;
+};
+
+export type AvailableConstantsContext = {
+  closestShaForm: IShaFormInstance;
+  selectedRow?: ISelectionProps;
+  dcm: IDataContextManagerFullInstance;
+  closestContextId: string;
+  globalState: IAnyObject;
+  setGlobalState: (payload: ISetStatePayload) => void;
+  backendUrl: string;
+  message: MessageInstance;
+};
+export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
+  const { message } = App.useApp();
   const { backendUrl } = useSheshaApplication();
-  const dcm = useDataContextManager(false);
   const { globalState, setState: setGlobalState } = useGlobalState();
-  return {
-    contextManager: dcm,
-    contexts: { ...dcm?.getDataContextsData('all') },
-    globalState,
-    setGlobalState,
-    selectedRow: useDataTableStore(false)?.selectedRow,
-    moment: moment,
-    http: axiosHttp(backendUrl),
-    message,
-  };
-}
-
-export function useAvailableConstantsData(topContextId?: string): IApplicationContext {
-  // get delayed update function
-  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
   // get closest data context Id
-  let tcId = useDataContext(false)?.id;
+  const closestContextId = useDataContext(false)?.id;
   // get DataContext Manager
   const dcm = useDataContextManager(false);
-  // get page context
-  const pc = dcm.getPageContext();
-  tcId = topContextId || tcId;
-  const { backendUrl } = useSheshaApplication();
-  // get closest form or page form
-  const form = useForm(false) ?? dcm.getRoot()?.getPageFormInstance();
-  // get full page context data
-  const pageContext = pc?.getFull();
-  // Get global state
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  // prepare data to support delayed update
-  const data = removeGhostKeys(useFormData()?.data); // TODO: replace GhostKeys
-  const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
-  if (Boolean(delayedUpdate)) data._delayedUpdate = delayedUpdate;
-  // get list of data contexts
-  const contexts = { ...dcm?.getDataContextsData(tcId) };
-  // get application context
-  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
-  const applicationData = application?.getData();
   // get selected row if exists
-  const selectedRow = useDataTableStore(false)?.selectedRow;
+  const selectedRow = useDataTableState(false)?.selectedRow;
 
-  // update last update date to to simplify general memoization
-  const lastUpdated = useDeepCompareMemo(() => new Date()
-    , [data, contexts.lastUpdate, form?.formMode, globalState, selectedRow]);
+  const closestShaForm = useShaFormInstance(false);
 
-  return {
-    application: applicationData,
-    contexts,
-    data,
-    form: getFormApi(form),
-    globalState,
-    http: axiosHttp(backendUrl),
-    lastUpdated,
-    message,
-    moment: moment,
-    pageContext,
+  const result: AvailableConstantsContext = {
+    closestShaForm,
     selectedRow,
+    dcm,
+    closestContextId,
+    globalState,
     setGlobalState,
+    backendUrl,
+    message,
   };
-}
+  return result;
+};
+
+export type WrapConstantsDataArgs = GetAvailableConstantsDataArgs & {
+  fullContext: AvailableConstantsContext;
+};
+export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesAccessors<IApplicationContext> => {
+  const { topContextId, shaForm, fullContext } = args;
+  const { closestShaForm,
+    selectedRow,
+    dcm,
+    closestContextId,
+    globalState,
+    setGlobalState,
+    backendUrl,
+    message
+  } = fullContext;
+  const shaFormInstance = shaForm ?? closestShaForm;
+
+  const accessors: ProxyPropertiesAccessors<IApplicationContext> = {
+    application: () => {
+      // get application context
+      const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+      const applicationData = application?.getData();
+      return applicationData;
+    },
+    contexts: () => {
+      const tcId = topContextId || closestContextId;
+      return { ...dcm?.getDataContextsData(tcId) };
+    },
+    pageContext: () => {
+      // get page context
+      const pc = dcm.getPageContext();
+      // get full page context data
+      const pageContext = pc?.getFull();
+      return pageContext;
+    },
+    selectedRow: () => selectedRow,
+    globalState: () => globalState,
+    setGlobalState: () => setGlobalState,
+    moment: () => moment,
+    http: () => axiosHttp(backendUrl),
+    message: () => message,
+    data: () => {
+      return shaFormInstance?.formData;
+    },
+    form: () => {
+      return shaFormInstance?.getPublicFormApi();
+    },
+  };
+  return accessors;
+};
+
+export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
+  const fullContext = useAvailableConstantsContexts();
+
+  const accessors = wrapConstantsData({...args, fullContext});
+
+  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
+  if (!contextProxyRef.current)
+    contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
+  else
+    contextProxyRef.current.refreshAccessors(accessors);
+
+  return contextProxyRef.current;
+};
 
 export const useApplicationContextData = (): ContextGetData => {
   const dcm = useDataContextManager(false);
@@ -203,8 +236,9 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
     // update setting value to actual
     if (isPropertySettings(value)) {
       switch (value._mode) {
-        case 'code':
+        case 'code': {
           return Boolean(value._code) ? calcFunction(value, allData) : undefined;
+        }
         case 'value':
           return value._value;
       }
@@ -227,7 +261,7 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
     let vars = 'staticValue, getSettingValue';
     const datas = [setting?._value, getSettingValue];
     if (allData)
-      for (let key in allData) {
+      for (const key in allData) {
         if (Object.hasOwn(allData, key)) {
           vars += `, ${key}`;
           datas.push(allData[key]);
@@ -309,7 +343,7 @@ export const updateModelToMoment = async (model: any, properties: NestedProperti
       if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
         const prop = props.find(i => toCamelCase(i.path) === key);
         if (prop && (prop.dataType === DataTypes.date || prop.dataType === DataTypes.dateTime))
-        newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
+          newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
         if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
           newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);
         }
@@ -870,7 +904,7 @@ export const getFilteredComponentIds = (
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
 export const getFieldNameFromExpression = (expression: string) => {
-  if (!expression) return '';
+  if (!expression) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
 };
@@ -1054,35 +1088,6 @@ export const replaceTags = (value: string, dictionary: any) => {
     const container = dictionary[key] || {};
     return container[accessor] || '';
   });
-
-  return result;
-};
-
-export const convertActions = (ownerId: string, actions: IFormActions): IFormAction[] => {
-  const result: IFormAction[] = [];
-  for (const key in actions) {
-    if (actions.hasOwnProperty(key)) {
-      result.push({
-        owner: ownerId,
-        name: key,
-        body: actions[key],
-      });
-    }
-  }
-  return result;
-};
-
-export const convertSectionsToList = (ownerId: string, sections: IFormSections): IFormSection[] => {
-  const result: IFormSection[] = [];
-  for (const key in sections) {
-    if (sections.hasOwnProperty(key)) {
-      result.push({
-        owner: ownerId,
-        name: key,
-        body: sections[key],
-      });
-    }
-  }
 
   return result;
 };
@@ -1531,6 +1536,11 @@ export const isFormFullName = (formId: FormIdentifier): formId is FormFullName =
   return formId && Boolean((formId as FormFullName)?.name);
 };
 
+export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {
+  return isFormRawId(id1) && isFormRawId(id2) && id1 === id2 ||
+    isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase() && id1.version === id2.version;
+};
+
 export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 'string' ? !!formId : !!formId?.name);
 
 export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?: boolean): FormMarkupWithSettings => {
@@ -1698,34 +1708,6 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
   return componentNames;
 };
 
-
-// TODO: move to Shesha API as a separate service and provide type definition
-export const getSheshaFormUtils = (http: AxiosInstance) => {
-  return {
-    prepareTemplate: (templateId: string, replacements: object): Promise<string> => {
-      if (!templateId) return Promise.resolve(null);
-
-      const payload = {
-        id: templateId,
-        properties: 'markup',
-      };
-      const url = `/api/services/Shesha/FormConfiguration/Query?${qs.stringify(payload)}`;
-      return http
-        .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url)
-        .then((response) => {
-          const markup = response.data.result.markup;
-
-          const preparedMarkup = evaluateString(markup, {
-            NEW_KEY: nanoid(),
-            GEN_KEY: nanoid(),
-            ...(replacements ?? {}),
-          }, true);
-
-          return preparedMarkup;
-        });
-    }
-  };
-};
 
 /**
  * Converts the given form markup to a flat structure of configurable form components.

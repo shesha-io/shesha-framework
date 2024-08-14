@@ -15,6 +15,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const SelectColumnsButtonComponent: IToolboxComponent<ISelectColumnsButtonComponentProps> = {
   type: 'datatable.selectColumnsButton',
+  isInput: false,
   name: 'Table Select Columns Button',
   icon: <SlidersOutlined />,
   Factory: ({ }) => {

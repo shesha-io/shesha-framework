@@ -224,7 +224,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           propertyName: 'contentType',
           parentId: '3pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Color',
-          defaultValue: [DEFAULT_CONTENT_TYPE],
+          defaultValue: DEFAULT_CONTENT_TYPE,
           values: [
             {
               label: 'Default',

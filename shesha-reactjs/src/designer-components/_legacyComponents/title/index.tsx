@@ -6,6 +6,7 @@ import { migratePropertyName, migrateCustomFunctions } from '@/designer-componen
 
 const TitleComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'title',
+  isInput: false,
   name: 'Title',
   icon: <LineHeightOutlined />,
   tooltip: "Deprecated! Please use 'Text (Full)'",

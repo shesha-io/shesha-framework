@@ -1,29 +1,26 @@
-import ConfigurableForm from '@/components/configurableForm';
-import { ConfigurableFormInstance } from '@/interfaces';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { FC } from 'react';
-import { Form } from 'antd';
 import { ISettingEditorWithValueProps } from './models';
 import { ISettingIdentifier } from './provider/models';
 import { useSettingsEditor } from './provider';
 import React, {
     useEffect,
     useMemo,
-    useRef,
 } from 'react';
+import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
 
 export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
     const { selection, value } = props;
     const { setting: configuration } = selection;
     const { editorForm } = configuration;
 
-    const [form] = Form.useForm();
-    const formRef = useRef<ConfigurableFormInstance>();
+    const formRef = useShaFormRef();
 
     const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
 
     const startSave = () => {
-        return form.validateFields().then(values => {
+        return formRef.current.validateFields().then(values => {
             const settingId: ISettingIdentifier = {
                 name: selection.setting.name,
                 module: selection.setting.module,
@@ -52,10 +49,9 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
     return (
         <ConfigurableForm
             mode={editorMode}
-            form={form}
+            shaFormRef={formRef}
             initialValues={initialValues}
             formId={editorForm}
-            formRef={formRef}
         />
     );
 };

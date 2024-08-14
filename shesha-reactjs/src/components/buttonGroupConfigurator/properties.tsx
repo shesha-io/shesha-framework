@@ -1,12 +1,11 @@
-import React, { FC, useMemo, useRef } from 'react';
-import { Empty, Form } from 'antd';
+import React, { FC, useMemo } from 'react';
+import { Empty } from 'antd';
 import itemSettingsJson from './itemSettings.json';
 import itemGroupSettingsJson from './itemGroupSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
-import ConfigurableForm from '@/components/configurableForm';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { ButtonGroupItemProps } from '@/providers';
 import { sheshaStyles } from '@/styles';
 
@@ -17,10 +16,6 @@ export interface IButtonGroupPropertiesProps {
 }
 
 export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, onChange, readOnly }) => {
-  const [form] = Form.useForm();
-
-  const formRef = useRef<ConfigurableFormInstance>(null);
-
   const debouncedSave = useDebouncedCallback(
     values => {
       onChange?.({ ...item, ...values });
@@ -44,12 +39,10 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
         <ConfigurableForm
           //key={selectedItemId} // rerender for each item to initialize all controls
-          formRef={formRef}
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
           markup={markup}
-          form={form}
           initialValues={item}
           onValuesChange={debouncedSave}
           className={sheshaStyles.verticalSettingsClass}

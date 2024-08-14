@@ -101,6 +101,7 @@ export interface ICommonAutocompleteProps<TValue = any> extends IReadOnly {
   readOnlyMultipleMode?: 'raw' | 'tags';
 
   /**
+   * @deprecated
    * A list of event names which, when triggered, will trigger the autocomplete to refetch items
    */
   subscribedEventNames?: string[];

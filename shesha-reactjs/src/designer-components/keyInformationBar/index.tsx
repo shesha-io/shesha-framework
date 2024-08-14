@@ -12,6 +12,7 @@ import KeyInformationBar from '@/components/keyInformationBar';
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   type: 'KeyInformationBar',
+  isInput: false,
   name: 'Key Information Bar',
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {

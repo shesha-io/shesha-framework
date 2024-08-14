@@ -22,6 +22,7 @@ import {
   usePermissionDelete,
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
+import { useShaFormInstance } from '@/providers/form/newProvider/shaFormProvider';
 
 interface IDataNode {
   title: JSX.Element;
@@ -99,7 +100,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
   const deleteRequest = usePermissionDelete();
   const { loading: isDeleting, error: deleteDataError } = deleteRequest;
 
-  const { getAction, setFormMode } = useForm(false);
+  const shaForm = useShaFormInstance();
+  const { setFormMode } = shaForm;
+
+  const { getAction } = useForm(false);
 
   useEffect(() => {
     if (rest.mode === 'Select' && allItems) return; // skip refetch for selectmode if fetched
@@ -200,7 +204,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
     if (!keys || keys.length === 0) {
       setSelected(null);
       if (Boolean(getAction)) {
-        const action = getAction(rest.formComponentId, 'onChangeFormData');
+        const action = getAction('onChangeFormData');
         if (Boolean(action)) {
           action({ values: { id: null }, mergeValues: false });
         }
@@ -217,12 +221,12 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, ..
         setFormMode('readonly');
       }
       if (item.id === emptyId) {
-        const action = getAction(rest.formComponentId, 'onChangeFormData');
+        const action = getAction('onChangeFormData');
         if (Boolean(action)) {
           action({ values: item, mergeValues: false });
         }
       } else {
-        const action = getAction(rest.formComponentId, 'onChangeId');
+        const action = getAction('onChangeId');
         if (Boolean(action)) {
           action(ids[0]);
         }

@@ -11,6 +11,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
+  isInput: false,
   name: 'Section Separator',
   icon: <LineOutlined />,
   Factory: ({ model }) => {

@@ -90,8 +90,6 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
     formId: addNewRecordsProps?.modalFormId,
     title: addNewRecordsProps?.modalTitle,
     showModalFooter: false, //doing this allows the modal to depend solely on the footerButtons prop
-    submitHttpVerb: addNewRecordsProps?.submitHttpVerb,
-    onSuccessRedirectUrl: addNewRecordsProps?.onSuccessRedirectUrl,
     width: addNewRecordsProps?.modalWidth,
     buttons: addNewRecordsProps?.buttons,
     footerButtons: addNewRecordsProps?.footerButtons,

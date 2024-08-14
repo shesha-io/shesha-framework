@@ -12,7 +12,6 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { ITableActionColumn } from '@/providers/dataTable/interfaces';
-import { MODAL_DATA } from '@/shesha-constants';
 import { axiosHttp } from '@/utils/fetchers';
 import { ICommonCellProps } from './interfaces';
 import Link from 'next/link';
@@ -26,7 +25,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
   const { changeActionedRow } = useDataTable();
   const { backendUrl } = useSheshaApplication();
   const { formData, formMode } = useForm();
-  const { globalState, setState } = useGlobalState();
+  const { globalState } = useGlobalState();
   const { executeAction, prepareArguments } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest } = useShaRouting();
 
@@ -51,10 +50,7 @@ export const ActionCell = <D extends object = {}, V = any>(props: IActionCellPro
 
     event.preventDefault();
 
-    const selectedRow = getRowData(data);
-
     if (actionConfiguration) {
-      setState({ data: selectedRow, key: MODAL_DATA });
       changeActionedRow(data.row.original);
       executeAction({
         actionConfiguration: actionConfiguration,

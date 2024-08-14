@@ -13,7 +13,6 @@ import { IToolboxComponentGroup } from '@/interfaces';
 import { ReferenceListDispatcherProvider } from '@/providers/referenceListDispatcher';
 import { IRouter } from '@/providers/shaRouting';
 import { SettingsProvider } from '@/providers/settings';
-import { StackedNavigationProvider } from '@/generic-pages/dynamic/navigation/stakedNavigation';
 import {
   FormIdentifier,
   IAuthProviderRefProps,
@@ -52,6 +51,8 @@ import { useApplicationPlugin } from './context/applicationContext';
 import { FormManager } from '../formManager';
 import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
 import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/provider';
+import { FormDataLoadersProvider } from '../form/loaders/formDataLoadersProvider';
+import { FormDataSubmittersProvider } from '../form/submitters/formDataSubmittersProvider';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -151,6 +152,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                 >
                   <ConfigurationItemsLoaderProvider>
                     <FormManager>
+
                       <ThemeProvider {...(themeProps || {})}>
                         <GlobalSheshaStyles />
                         <ShaFormStyles />
@@ -168,19 +170,21 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                       description={'Application data store context'}
                                       type={'root'}
                                     >
-                                      <CanvasProvider>
-                                        <StackedNavigationProvider>
-                                          <DataSourcesProvider>
-                                            <DynamicModalProvider>
-                                              <DebugPanel>
-                                                <ApplicationActionsProcessor>
-                                                  {children}
-                                                </ApplicationActionsProcessor>
-                                              </DebugPanel>
-                                            </DynamicModalProvider>
-                                          </DataSourcesProvider>
-                                        </StackedNavigationProvider>
-                                      </CanvasProvider>
+                                      <FormDataLoadersProvider>
+                                        <FormDataSubmittersProvider>
+                                          <CanvasProvider>
+                                            <DataSourcesProvider>
+                                              <DynamicModalProvider>
+                                                <DebugPanel>
+                                                  <ApplicationActionsProcessor>
+                                                    {children}
+                                                  </ApplicationActionsProcessor>
+                                                </DebugPanel>
+                                              </DynamicModalProvider>
+                                            </DataSourcesProvider>
+                                          </CanvasProvider>
+                                        </FormDataSubmittersProvider>
+                                      </FormDataLoadersProvider>
                                     </DataContextProvider>
                                   </ApplicationContextsProvider>
                                 </DataContextManager>

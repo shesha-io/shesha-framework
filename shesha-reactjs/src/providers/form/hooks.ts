@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { FormIdentifier, useSheshaApplication } from '..';
-import { IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
+import { IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
 import { getToolboxComponents } from './defaults/toolboxComponents';
 import { useLocalStorage } from '@/hooks';
 import { useFormPersister } from '../formPersisterProvider';
@@ -41,6 +41,17 @@ export const useFormDesignerComponents = (): IToolboxComponents => {
 
   const toolboxComponents = useMemo(() => toolbarGroupsToComponents(componentGroups), [componentGroups]);
   return toolboxComponents;
+};
+
+export type FormDesignerComponentGetter = (type: string) => IToolboxComponent;
+
+export const useFormDesignerComponentGetter = (): FormDesignerComponentGetter => {
+  const components = useFormDesignerComponents();
+  const getter = useCallback((type: string) => {
+    return components?.[type];
+  }, [components]);
+
+  return getter;
 };
 
 const getDesignerUrl = (designerUrl: string, fId: FormIdentifier) => {

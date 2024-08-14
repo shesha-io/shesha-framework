@@ -11,6 +11,7 @@ import { ListControlSettings } from './settingsv2';
 /** @deprecated: Use DataListComponent instead */
 const ListComponent: IToolboxComponent<IListComponentProps> = {
   type: 'list',
+  isInput: false,
   name: 'List',
   icon: <OrderedListOutlined />,
   isHidden: false /* Use DataList instead */,

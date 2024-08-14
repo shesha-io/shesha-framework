@@ -1,13 +1,15 @@
 import React, { FC } from 'react';
-import { Form, Modal, Tabs } from 'antd';
+import { Modal } from 'antd';
 import { ConfigurableForm } from '@/components';
 import formSettingsJson from './formSettings.json';
 import { FormMarkup } from '@/providers/form/models';
-import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { useTheme } from '@/index';
+import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
+
+const formSettingsMarkup = formSettingsJson as FormMarkup;
 
 export interface IFormSettingsEditorProps {
   isVisible: boolean;
@@ -17,15 +19,16 @@ export interface IFormSettingsEditorProps {
 
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
   const { theme } = useTheme();
-  const [form] = Form.useForm();
   const { formSettings } = useFormDesignerState();
   const { updateFormSettings } = useFormDesignerActions();
   const { formProps } = useFormPersister();
+  const formRef = useShaFormRef();
 
   formSettings.labelCol = { span: formSettings?.labelCol?.span || theme.labelSpan };
   formSettings.wrapperCol = { span: formSettings?.wrapperCol?.span || theme.componentSpan };
 
   const onSave = values => {
+    console.log('LOG: 🔥 onSave', values);
     if (!readOnly) {
       updateFormSettings(values);
       close();
@@ -41,71 +44,27 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
       width="50vw"
 
       onOk={() => {
-        form.submit();
+        console.log('LOG: 🔥 submit form settings 👌');
+        formRef.current?.submit();
       }}
       okButtonProps={{ hidden: readOnly }}
 
       onCancel={close}
       cancelText={readOnly ? 'Close' : undefined}
     >
-      <Tabs
-        items={[
-          {
-            key: "form",
-            label: "Form",
-            children: (
-              <SourceFilesFolderProvider folder={sourcesFolder}>
-                <ConfigurableForm
-                  layout="horizontal"
-                  labelCol={{ span: 7 }}
-                  wrapperCol={{ span: 17 }}
-                  mode={readOnly ? 'readonly' : 'edit'}
-                  form={form}
-                  onFinish={onSave}
-                  markup={formSettingsJson as FormMarkup}
-                  initialValues={formSettings}
-                />
-              </SourceFilesFolderProvider>
-            )
-          },
-          {
-            key: "variable",
-            label: "URL Variables",
-            children: (
-              <CodeVariablesTables
-                data={[
-                  {
-                    id: '6ea37032-2abd-4e80-a32c-ce143ad3294d',
-                    name: 'data',
-                    description: 'Form data',
-                    type: 'object',
-                  },
-                  {
-                    id: '00ce7c76-0a9d-4d7d-b864-6e3ac5e6916a',
-                    name: 'parentFormValues',
-                    description: 'The parent form. This is data for the form that will be rendering the current form',
-                    type: 'object',
-                  },
-                  {
-                    id: '3b96ab61-f978-482c-a34c-a61ddaa5357d',
-                    name: 'globalState',
-                    description: 'The global state',
-                    type: 'object',
-                  },
-                  {
-                    id: '48f2b593-1761-4f0c-8312-064a6bb1207e',
-                    name: 'query',
-                    description: 'query parameters object',
-                    type: 'object',
-                  },
-                ]}
-              />
-
-            )
-          }
-        ]}
-      >
-      </Tabs>
+      <SourceFilesFolderProvider folder={sourcesFolder}>
+        <ConfigurableForm
+          layout="horizontal"
+          labelCol={{ span: 7 }}
+          wrapperCol={{ span: 17 }}
+          mode={readOnly ? 'readonly' : 'edit'}
+          
+          shaFormRef={formRef}
+          onFinish={onSave}
+          markup={formSettingsMarkup}
+          initialValues={formSettings}
+        />
+      </SourceFilesFolderProvider>
     </Modal>
   );
 };
