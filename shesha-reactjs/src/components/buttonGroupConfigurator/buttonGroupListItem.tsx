@@ -16,7 +16,7 @@ export interface IButtonGroupListItemProps {
 
 export const ButtonGroupListItem: FC<IButtonGroupListItemProps> = ({ item, onChange, index, nestedRenderer, initNewItem, actualModelContext }) => {
   if (isItem(item))
-    return <ButtonGroupItem key={item.id} item={item} actualModelContext={actualModelContext}/>;
+    return <ButtonGroupItem key={item.id} item={item} actualModelContext={actualModelContext} />;
 
   if (isGroup(item))
     return (

@@ -94,6 +94,29 @@
           "jsSetting": true
         },
         {
+          "type": "dropdown",
+          "id": "5a6d6b4d-7d8e-4b5d-8b0b-0f9a6c1d1f4b",
+          "propertyName": "iconPosition",
+          "label": "Icon Position",
+          "labelAlign": "right",
+          "parentId": "345c2181-fb9f-48ed-9631-864ucl57807b",
+          "hidden": false,
+          "validate": {},
+          "dataSourceType": "values",
+          "values": [
+            {
+              "id": "f5e5b8e2-0b7b-4f7f-8b1f-0e8d7d9amg1a",
+              "label": "start",
+              "value": "start"
+            },
+            {
+              "id": "c9b1e4f7-6e8d-4f4f-8b1f-0e8d7da45d1a",
+              "label": "end",
+              "value": "end"
+            }
+          ]
+        },
+        {
           "id": "Vl0_92ZM-SeCukk5VlgXm",
           "type": "dropdown",
           "propertyName": "buttonType",
@@ -140,28 +163,11 @@
           "jsSetting": false
         },
         {
-          "id": "oXQyiI2WU5P0E4lVO-uLW",
-          "type": "checkbox",
-          "propertyName": "danger",
-          "label": "Danger",
-          "labelAlign": "right",
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
-          "validate": {}
-        },
-        {
           "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
           "type": "editModeSelector",
           "propertyName": "editMode",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "label": "Edit mode"
-        },
-        {
-          "id": "oW5driq-fQt8oyUTeB8rX",
-          "type": "checkbox",
-          "propertyName": "hidden",
-          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "label": "Hidden"
         },
         {
           "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
@@ -199,6 +205,120 @@
             }
           ],
           "version": 0
+        },
+        {
+          "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+          "type": "dropdown",
+          "propertyName": "size",
+          "parentId": "root",
+          "label": "Size",
+          "allowClear": true,
+          "dataSourceType": "values",
+          "values": [
+            {
+              "label": "Small",
+              "value": "small",
+              "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+            },
+            {
+              "label": "Middle",
+              "value": "middle",
+              "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+            },
+            {
+              "label": "Large",
+              "value": "large",
+              "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+            }
+          ]
+        },
+        {
+          "id": "d498779d-012a-4c6a-82a9-77231001ae28",
+          "type": "textField",
+          "propertyName": "width",
+          "parentId": "root",
+          "label": "Width"
+        },
+        {
+          "id": "d498779d-012a-4c6a-82a9-771121245ae28",
+          "type": "textField",
+          "propertyName": "height",
+          "parentId": "root",
+          "label": "Height"
+        },
+        {
+          "id": "d4987360d-012a-4c6a-82a9-77231245ae28",
+          "type": "colorPicker",
+          "propertyName": "backgroundColor",
+          "parentId": "root",
+          "label": "Background Color"
+        },
+        {
+          "id": "d498779d-012a-4c6a-82a9-77231234ve28",
+          "type": "textField",
+          "propertyName": "fontSize",
+          "parentId": "root",
+          "label": "Font Size"
+        },
+        {
+          "id": "d498779d-012p-4c6a-82a9-7723124uae28",
+          "type": "colorPicker",
+          "propertyName": "color",
+          "parentId": "root",
+          "label": "Color"
+        },
+        {
+          "id": "d498779d-012a-4c6a-82c9-00731245ae28",
+          "type": "textField",
+          "propertyName": "fontWeight",
+          "parentId": "root",
+          "label": "Font Weight"
+        },
+        {
+          "id": "d498779d-012a-4c6a-82a9-77231245ce33",
+          "type": "textField",
+          "propertyName": "borderWidth",
+          "parentId": "root",
+          "label": "Border Width"
+        },
+        {
+          "id": "d498779d-012a-4c6a-82a9-77231245ce28",
+          "type": "colorPicker",
+          "propertyName": "borderColor",
+          "parentId": "root",
+          "label": "Border Color"
+        },
+        {
+          "id": "d498779d-012a-4c6a-10ma9-77231245ae28",
+          "type": "dropdown",
+          "propertyName": "borderStyle",
+          "parentId": "root",
+          "label": "Border Style",
+          "dataSourceType": "values",
+          "values": [
+            {
+              "id": "c4a96833-8ed7-4085-8848-169d5607136d",
+              "label": "solid",
+              "value": "solid"
+            },
+            {
+              "id": "c6f974da-ad28-44e5-8e4d-50280cf24ae7",
+              "label": "dashed",
+              "value": "dashed"
+            },
+            {
+              "id": "71c0dc14-0473-4748-ae75-a4ed3bd6cffd",
+              "label": "dotted",
+              "value": "dotted"
+            }
+          ]
+        },
+        {
+          "id": "d498779d-012a-4c6a-82a9-77231245c4r3",
+          "type": "textField",
+          "propertyName": "borderRadius",
+          "parentId": "root",
+          "label": "Border Radius"
         }
       ],
       "version": 1,
@@ -219,7 +339,6 @@
         "_code": "return getSettingValue(data?.itemSubType) !== 'dynamic';",
         "_mode": "code"
       },
-
       "isDynamic": false,
       "version": 1,
       "direction": "vertical",
@@ -235,7 +354,6 @@
           "labelAlign": "right",
           "parentId": "P4lhbrJsly_2yCjgicaql",
           "hidden": false,
-
           "isDynamic": false,
           "settingsValidationErrors": [],
           "_formFields": [

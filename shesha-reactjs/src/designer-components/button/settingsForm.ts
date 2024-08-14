@@ -163,7 +163,7 @@ export const getSettings = (data: any) =>
     })
     .addCollapsiblePanel({
       id: '22224bf6-f76d-4139-a850-c99bf06c8b69',
-      propertyName: 'pnlData',
+      propertyName: 'pnlStyle',
       parentId: 'root',
       label: 'Style',
       labelAlign: "left",
@@ -277,11 +277,6 @@ export const getSettings = (data: any) =>
                 id: '71c0dc14-0473-4748-ae75-a4ed3bd6cffd',
                 label: 'dotted',
                 value: 'dotted',
-              },
-              {
-                id: '71c0dc14-0473-4748-ae75-a4ed3bd6cffd',
-                label: 'double',
-                value: 'double',
               },
             ],
           })
