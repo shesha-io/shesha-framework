@@ -19,7 +19,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const { columns } = model as ISizableColumnComponentProps;
+    const { columns = [] } = model as ISizableColumnComponentProps;
     const style = { ...getLayoutStyle(model, { data, globalState }), display: 'flex' };
 
     if (model.hidden) return null;
@@ -27,18 +27,11 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     return (
       <ParentProvider model={model}>
         <SizableColumns cursor="col-resize" style={style} sizes={columns.map((col) => col.size)}>
-          {columns &&
-            columns.map((col) => (
-              <Fragment key={col.id}>
-                <ComponentsContainer
-                  containerId={col.id}
-                  dynamicComponents={
-                    model?.isDynamic ? col?.components : []
-                  }
-                />
-              </Fragment>
-            ))}
-
+          {columns.map((col) => (
+            <Fragment key={col.id}>
+              <ComponentsContainer containerId={col.id} dynamicComponents={model?.isDynamic ? col?.components : []} />
+            </Fragment>
+          ))}
         </SizableColumns>
       </ParentProvider>
     );
