@@ -36,6 +36,10 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
 
   actualModel.readOnly = actualModel.readOnly;
 
+  // binding only input and output components
+  if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
+    actualModel.propertyName = undefined;
+
   return (
     <CustomErrorBoundary>
       <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />

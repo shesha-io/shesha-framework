@@ -55,7 +55,7 @@ namespace Shesha.Permissions
         /// <param name="objectName">Object name for search Protected Object (usually it has format "type@action")</param>
         /// <param name="objectType">Object type for search Protected Object</param>
         /// <returns></returns>
-        Task<PermissionedObjectDto> GetAsync(string objectName, string objectType);
+        Task<PermissionedObjectDto> GetOrDefaultAsync(string objectName, string objectType);
 
         Task<PermissionedObjectDto> GetAsync(Guid id);
 
@@ -93,5 +93,10 @@ namespace Shesha.Permissions
         /// <param name="actionDescriptor">Action descriptor</param>
         /// <returns></returns>
         Task<bool> IsActionDescriptorEnabled(ActionDescriptor actionDescriptor);
+        /// <summary>
+        /// Gets all permissioned shesha forms with anonymous access
+        /// </summary>
+        /// <returns></returns>
+        Task<List<PermissionedObjectDto>> GetObjectsByAccess(string type, RefListPermissionedAccess access);
     }
 }

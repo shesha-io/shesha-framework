@@ -6,11 +6,13 @@
     /// <typeparam name="TItem"></typeparam>
     public class CacheItemWrapper<TItem>
     {
-        public TItem Value { get; private set; }
+        public TItem DefaultValue { get; private set; }
+        public TItem DbValue { get; private set; }
 
-        public CacheItemWrapper(TItem value)
+        public CacheItemWrapper(TItem defaultValue, TItem dBValue)
         {
-            Value = value;
+            DefaultValue = defaultValue;
+            DbValue = dBValue;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Abp.Runtime.Session;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.Settings.Dto;
 using System.Collections.Generic;
@@ -46,13 +47,28 @@ namespace Shesha.Settings
         [HttpGet]
         public async Task<object> GetValue(GetSettingValueInput input)
         {
-            var appKey = !string.IsNullOrWhiteSpace(input.AppKey)
-                ? input.AppKey
-                : _cfRuntime.FrontEndApplication;
-            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, 
-                new SettingManagementContext { 
-                    AppKey = appKey
-                });
+            var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext
+                {
+                    AppKey = input.AppKey,
+                    UserId = AbpSession.UserId
+                } : null);
+
+            return value;
+        }
+
+        /// <summary>
+        /// Get user setting value
+        /// </summary>
+        [HttpPost]
+        public async Task<object> GetUserValue(GetDynamicSettingValueInput input)
+        {
+            var value = await _settingProvider.UserSpecificGetOrNullAsync(input.Module, input.Name, input.Datatype, input.DefaultValue, !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext
+                {
+                    AppKey = input.AppKey,
+                    UserId = AbpSession.UserId
+                } : null);
 
             return value;
         }
@@ -63,9 +79,31 @@ namespace Shesha.Settings
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
+        public async Task UpdateUserValue(UpdateDynamicSettingValueInput input)
+        {
+            await _settingProvider.UpdateUserSettingAsync(input.Module, input.Name, input.Datatype, input.Value, !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext
+                {
+                    AppKey = input.AppKey,
+                    UserId = AbpSession.UserId
+                } : null);
+        }
+
+
+        /// <summary>
+        /// Update setting value
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
         public async Task UpdateValue(UpdateSettingValueInput input)
         {
-            await _settingProvider.SetAsync(input.Module, input.Name, input.Value, new SettingManagementContext { AppKey = input.AppKey });
+            await _settingProvider.SetAsync(input.Module, input.Name, input.Value, !string.IsNullOrWhiteSpace(input.AppKey) ?
+                new SettingManagementContext
+                {
+                    AppKey = input.AppKey,
+                    UserId = AbpSession.UserId
+                } : null);
         }
 
         [HttpGet]

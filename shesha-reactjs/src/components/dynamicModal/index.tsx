@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { evaluateString } from '@/providers/form/utils';
@@ -10,15 +10,16 @@ import { StandardEntityActions } from '@/interfaces/metadata';
 import { useDynamicModals } from '@/providers';
 import { useGlobalState, useShaRouting } from '@/providers';
 import { useMedia } from 'react-use';
+import ConditionalWrap from '../conditionalWrapper';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
-  //content: ReactNode;
+  isSubmitted?: boolean;
   onCancel?: () => void;
   onOk?: () => void;
 }
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
-  const { id, title, isVisible, width, onCancel, onOk, content, footer, onClose } = props;
+  const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose } = props;
 
   const { removeModal } = useDynamicModals();
   const isSmall = useMedia('(max-width: 480px)');
@@ -42,9 +43,9 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       onCancel={hideForm}
       footer={footer}
       destroyOnClose
-      // width={width ? width : 800}
       width={isSmall ? '90%' : width || 900}
       maskClosable={false}
+      okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
     >
       {content}
     </Modal>
@@ -75,12 +76,15 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     onCancel,
     buttons = [],
     footerButtons = 'default',
+    wrapper,
   } = props;
 
   const [form] = Form.useForm();
   const { removeModal } = useDynamicModals();
   const { router } = useShaRouting();
   const { clearState } = useGlobalState();
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+
 
   // `showModalFooter` for now is for backward compatibility
   const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
@@ -131,6 +135,10 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     } else {
       if (showDefaultSubmitButtons) {
         form?.submit();
+        form?.validateFields().then(() => {
+          form?.submit();
+          setIsSubmitted(true);
+        });
       } else {
         closeModal();
       }
@@ -150,6 +158,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     prepareInitialValues: prepareInitialValues,
     onFinishFailed: onFailed,
     beforeSubmit: beforeSubmit,
+    onSubmittedFailed: () => setIsSubmitted(false),
     httpVerb: submitHttpVerb,
     initialValues: initialValues,
     parentFormValues: parentFormValues,
@@ -164,17 +173,23 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       title={title}
       width={width}
       isVisible={isVisible}
+      isSubmitted={isSubmitted}
       onOk={onOk}
       onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
       content={
-        <ConfigurableForm {...formProps}>
-          <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
-            </div>
-          </Show>
-        </ConfigurableForm>
+        <ConditionalWrap
+          condition={Boolean(wrapper)}
+          wrap={(content) => (wrapper({ children: content }))}
+        >
+          <ConfigurableForm {...formProps}>
+            <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <ButtonGroup items={buttons || []} id={''} size="middle" isInline noStyles form={form} />
+              </div>
+            </Show>
+          </ConfigurableForm>
+        </ConditionalWrap>
       }
     />
   );

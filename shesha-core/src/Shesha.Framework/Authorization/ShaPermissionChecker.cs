@@ -4,6 +4,7 @@ using Abp.Runtime.Caching;
 using Shesha.Authorization.Dtos;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Shesha.AutoMapper.Dto;
 using System;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace Shesha.Authorization
     /// <summary>
     /// Permissions checker
     /// </summary>
-    public class PermissionChecker : PermissionChecker<Role, User>, IShaPermissionChecker
+    public class ShaPermissionChecker : PermissionChecker<Role, User>, IShaPermissionChecker
     {
         private const string CustomUserPermissionsCacheName = "CustomUserPermissionsCache";
 
@@ -40,7 +41,7 @@ namespace Shesha.Authorization
         /// <summary>
         /// Default constructor
         /// </summary>
-        public PermissionChecker(UserManager userManager, ICacheManager cacheManager, IUnitOfWorkManager unitOfWorkManager)
+        public ShaPermissionChecker(UserManager userManager, ICacheManager cacheManager, IUnitOfWorkManager unitOfWorkManager)
             : base(userManager)
         {
             _cacheManager = cacheManager;
@@ -145,6 +146,18 @@ namespace Shesha.Authorization
             return false;
         }
 
+        public async Task<bool> IsGrantedCustomAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            var customCheckers = IocManager.ResolveAll<ICustomPermissionChecker>();
+            foreach (var customChecker in customCheckers)
+            {
+                if (await customChecker.IsGrantedAsync(userId, permissionName, permissionedEntity))
+                    return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Indicates is specified <paramref name="permissionName"/> granted to the user with <paramref name="userId"/> or not
         /// </summary>
@@ -163,15 +176,30 @@ namespace Shesha.Authorization
             return false;
         }
 
+        public bool IsGrantedCustom(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            var customCheckers = IocManager.ResolveAll<ICustomPermissionChecker>();
+            foreach (var customChecker in customCheckers)
+            {
+                if (customChecker.IsGranted(userId, permissionName, permissionedEntity))
+                    return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Returns cache key that is used to store permissions of the user
         /// </summary>
         /// <param name="userId">Id of the user</param>
         /// <param name="tenantId">Tenant Id</param>
+        /// <param name="permissionedEntity">Permissioned Entity</param>
         /// <returns></returns>
-        private string GetPermissionsCacheKey(long userId, int? tenantId)
+        private string GetPermissionsCacheKey(long userId, int? tenantId, EntityReferenceDto<string> permissionedEntity = null)
         {
-            return userId + "@" + (tenantId ?? 0);
+            if (permissionedEntity == null)
+                return userId + "@" + (tenantId ?? 0);
+            return userId + "@" + (tenantId ?? 0) + "#" + permissionedEntity._className + "@" + permissionedEntity.Id;
         }
 
         /// inheritedDoc
@@ -185,6 +213,77 @@ namespace Shesha.Authorization
         public async Task ClearPermissionsCacheAsync()
         {
             await CustomUserPermissionCache.ClearAsync();
+        }
+
+        public async Task<bool> IsGrantedAsync(string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            return AbpSession.UserId.HasValue && await IsGrantedAsync(AbpSession.UserId.Value, permissionName, permissionedEntity);
+        }
+
+        public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            var granted = await base.IsGrantedAsync(userId, permissionName);
+            if (granted)
+                return true;
+
+            var cacheKey = GetPermissionsCacheKey(userId, GetCurrentTenantId(), permissionedEntity);
+            var customPermissionsItem = await CustomUserPermissionCache.GetOrDefaultAsync(cacheKey);
+
+            if (customPermissionsItem != null)
+            {
+                if (customPermissionsItem.GrantedPermissions.Contains(permissionName))
+                    return true;
+                if (customPermissionsItem.ProhibitedPermissions.Contains(permissionName))
+                    return false;
+            }
+
+            customPermissionsItem ??= new CustomUserPermissionCacheItem(userId);
+            var isGranted = await IsGrantedCustomAsync(userId, permissionName, permissionedEntity);
+            if (isGranted)
+                customPermissionsItem.GrantedPermissions.Add(permissionName);
+            else
+                customPermissionsItem.ProhibitedPermissions.Add(permissionName);
+
+            await CustomUserPermissionCache.SetAsync(cacheKey, customPermissionsItem, slidingExpireTime: TimeSpan.FromMinutes(5));
+
+            return isGranted;
+        }
+
+        public bool IsGranted(string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            return AbpSession.UserId.HasValue && IsGranted(AbpSession.UserId.Value, permissionName, permissionedEntity);
+        }
+
+        public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            var manager = IocManager.Resolve<IPermissionManager>();
+
+            var granted = base.IsGranted(userId, permissionName);
+            if (granted)
+                return true;
+
+            var cacheKey = GetPermissionsCacheKey(userId, GetCurrentTenantId(), permissionedEntity);
+            var customPermissionsItem = CustomUserPermissionCache.GetOrDefault(cacheKey);
+
+            if (customPermissionsItem != null)
+            {
+                if (customPermissionsItem.GrantedPermissions.Contains(permissionName))
+                    return true;
+                if (customPermissionsItem.ProhibitedPermissions.Contains(permissionName))
+                    return false;
+            }
+
+            customPermissionsItem ??= new CustomUserPermissionCacheItem(userId);
+            var isGranted = IsGrantedCustom(userId, permissionName, permissionedEntity);
+            if (isGranted)
+                customPermissionsItem.GrantedPermissions.Add(permissionName);
+            else
+                customPermissionsItem.ProhibitedPermissions.Add(permissionName);
+
+            CustomUserPermissionCache.Set(cacheKey, customPermissionsItem, slidingExpireTime: TimeSpan.FromMinutes(5));
+
+            return isGranted;
+
         }
     }
 }

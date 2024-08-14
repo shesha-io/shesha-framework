@@ -8,8 +8,10 @@ using Abp.Runtime.Validation;
 using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.OutputCaching;
 using Shesha.Domain;
 using Shesha.EntityReferences;
+using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -57,11 +59,18 @@ namespace Shesha.StoredFiles
         }
 
         [HttpGet, Route("Download")]
-        public async Task<FileStreamResult> Download(Guid id, int? versionNo)
+        public async Task<ActionResult> Download(Guid id, int? versionNo)
         {
             var fileVersion = await GetStoredFileVersionAsync(id, versionNo);
+
+            if (fileVersion.Id.ToString().ToLower() == HttpContext.Request.Headers.IfNoneMatch.ToString().ToLower())
+                return StatusCode(304);
+
             var fileContents = await _fileService.GetStreamAsync(fileVersion);
             await _fileService.MarkDownloadedAsync(fileVersion);
+
+            HttpContext.Response.Headers.CacheControl = "no-cache, max-age=600"; //ten minuts
+            HttpContext.Response.Headers.ETag = fileVersion.Id.ToString().ToLower();
 
             return File(fileContents, fileVersion.FileType.GetContentType(), fileVersion.FileName);
         }
@@ -126,6 +135,8 @@ namespace Shesha.StoredFiles
 
             if (owner != null && !input.PropertyName.IsNullOrWhiteSpace())
             {
+                StoredFileVersion fileVersion = null;
+
                 // single file upload (stored as a property of an entity)
                 var property = ReflectionHelper.GetProperty(owner, input.PropertyName, out owner);
                 if (property == null || property.PropertyType != typeof(StoredFile))
@@ -138,39 +149,41 @@ namespace Shesha.StoredFiles
                 if (property.GetValue(owner, null) is StoredFile storedFile)
                 {
                     storedFile.IsVersionControlled = true;
-                    var version = await _fileService.GetNewOrDefaultVersionAsync(storedFile);
-                    version.FileName = fileName;
-                    version.FileType = Path.GetExtension(fileName);
-                    await _fileVersionRepository.InsertOrUpdateAsync(version);
+                    fileVersion = await _fileService.GetNewOrDefaultVersionAsync(storedFile);
+                    fileVersion.FileName = fileName;
+                    fileVersion.FileType = Path.GetExtension(fileName);
+                    await _fileVersionRepository.InsertOrUpdateAsync(fileVersion);
 
                     await using (var fileStream = input.File.OpenReadStream())
                     {
-                        await _fileService.UpdateVersionContentAsync(version, fileStream);
+                        await _fileService.UpdateVersionContentAsync(fileVersion, fileStream);
                     }
 
                     // copy to the main todo: remove duplicated properties (filename, filetype), add a link to the last version and update it using triggers
-                    storedFile.FileName = version.FileName;
-                    storedFile.FileType = version.FileType;
+                    storedFile.FileName = fileVersion.FileName;
+                    storedFile.FileType = fileVersion.FileType;
                     await _fileRepository.UpdateAsync(storedFile);
                 }
                 else
                 {
                     await using (var fileStream = input.File.OpenReadStream())
                     {
-                        storedFile = await _fileService.SaveFileAsync(fileStream, fileName);
+                        fileVersion = await _fileService.CreateFileAsync(fileStream, fileName);
+                        storedFile = fileVersion.File;
+
                         property.SetValue(owner, storedFile, null);
                     }
                 }
 
                 await _unitOfWorkManager.Current.SaveChangesAsync();
-                MapStoredFile(storedFile, uploadedFile);
+                MapStoredFile(fileVersion, uploadedFile);
             }
             else
             {
                 // add file as an attachment (linked to an entity using OwnerType and OwnerId)
                 await using (var fileStream = input.File.OpenReadStream())
                 {
-                    var storedFile = await _fileService.SaveFileAsync(fileStream, fileName, file =>
+                    var fileVersion = await _fileService.CreateFileAsync(fileStream, fileName, file =>
                     {
                         if (owner != null)
                         {
@@ -200,7 +213,7 @@ namespace Shesha.StoredFiles
                     });
 
                     await _unitOfWorkManager.Current.SaveChangesAsync();
-                    MapStoredFile(storedFile, uploadedFile);
+                    MapStoredFile(fileVersion, uploadedFile);
                 }
             }
 
@@ -246,7 +259,7 @@ namespace Shesha.StoredFiles
             {
                 await using (var fileStream = input.File.OpenReadStream())
                 {
-                    storedFile = await _fileService.SaveFileAsync(fileStream, fileName, file =>
+                    var fileVersion = await _fileService.CreateFileAsync(fileStream, fileName, file =>
                     {
                         if (input.Id.HasValue && input.Id.Value != Guid.Empty)
                             file.Id = input.Id.Value;
@@ -254,7 +267,7 @@ namespace Shesha.StoredFiles
                     });
 
                     await _unitOfWorkManager.Current.SaveChangesAsync();
-                    MapStoredFile(storedFile, uploadedFile);
+                    MapStoredFile(fileVersion, uploadedFile);
                 }
             }
             else
@@ -276,7 +289,7 @@ namespace Shesha.StoredFiles
                 storedFile.FileType = version.FileType;
                 await _fileRepository.UpdateAsync(storedFile);
 
-                MapStoredFile(storedFile, uploadedFile);
+                MapStoredFile(version, uploadedFile);
             }
 
             return uploadedFile;
@@ -335,30 +348,30 @@ namespace Shesha.StoredFiles
 
             await _unitOfWorkManager.Current.SaveChangesAsync();
 
-            MapStoredFile(storedFile, uploadedFile);
+            MapStoredFile(version, uploadedFile);
             return uploadedFile;
         }
 
-        private StoredFileDto GetFileDto(StoredFile file)
+        private StoredFileDto GetFileDto(StoredFileVersion fileVersion)
         {
-            if (file == null)
+            if (fileVersion == null)
                 return null;
             var dto = new StoredFileDto();
-            MapStoredFile(file, dto);
+            MapStoredFile(fileVersion, dto);
             return dto;
         }
 
-        private void MapStoredFile(StoredFile file, StoredFileDto fileDto)
+        private void MapStoredFile(StoredFileVersion fileVersion, StoredFileDto fileDto)
         {
-            fileDto.Id = file.Id;
-            fileDto.FileCategory = file.Category;
-            fileDto.Name = file.FileName;
-            fileDto.Url = Url.Action("Download", new { file.Id });
-            fileDto.Size = file.LastVersion()?.FileSize ?? 0;
-            fileDto.Type = !string.IsNullOrWhiteSpace(file.FileName)
-                ? Path.GetExtension(file.FileName)
+            fileDto.Id = fileVersion.File.Id;
+            fileDto.FileCategory = fileVersion.File.Category;
+            fileDto.Name = fileVersion.FileName;
+            fileDto.Url = Url.Action("Download", new { fileVersion.File.Id });
+            fileDto.Size = fileVersion.FileSize;
+            fileDto.Type = !string.IsNullOrWhiteSpace(fileVersion.FileName)
+                ? Path.GetExtension(fileVersion.FileName)
                 : null;
-            fileDto.Temporary = file.Temporary;
+            fileDto.Temporary = fileVersion.File.Temporary;
         }
 
         /// <summary>
@@ -509,75 +522,15 @@ namespace Shesha.StoredFiles
 
             var id = owner.GetId();
             var type = owner.GetType().StripCastleProxyType().FullName;
-            var files = input.FilesCategory.IsNullOrEmpty()
-                ? await _fileService.GetAttachmentsAsync(id, type)
-                : await _fileService.GetAttachmentsOfCategoryAsync(id, type, input.FilesCategory.ToCamelCase());
+            var fileVersions = input.FilesCategory.IsNullOrEmpty()
+                ? await _fileService.GetLastVersionsOfAttachmentsAsync(id, type)
+                : await _fileService.GetLastVersionsOfAttachmentsAsync(id, type, input.FilesCategory.ToCamelCase());
 
-            var list = files.Select(sf => GetFileDto(sf)).ToList();
+            var list = fileVersions.Select(v => GetFileDto(v)).ToList();
             return list;
         }
 
         #region REST
-
-        /*
-        /// <summary>
-        /// Create new file
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        [HttpPost, Route("")]
-        [Consumes("multipart/form-data")]
-        public async Task<StoredFileDto> CreateAsync([FromForm] CreateStoredFileInput input)
-        {
-            if (input.File == null)
-                ModelState.AddModelError(nameof(input.File), $"{nameof(input.File)} must not be null");
-
-            if (string.IsNullOrWhiteSpace(input.OwnerId) && !string.IsNullOrWhiteSpace(input.OwnerType))
-                ModelState.AddModelError(nameof(input.OwnerId), $"{nameof(input.OwnerId)} must not be null when {nameof(input.OwnerType)} is specified");
-
-            if (string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
-                ModelState.AddModelError(nameof(input.OwnerType), $"{nameof(input.OwnerType)} must not be null when {nameof(input.OwnerId)} is specified");
-
-            if (input.Id.HasValue)
-            {
-                using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
-                {
-                    if (await _fileRepository.GetAll().AnyAsync(f => f.Id == input.Id.Value))
-                        ModelState.AddModelError(nameof(input.Id), $"File with Id='{input.Id}' already exists");
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(input.OwnerType) && !string.IsNullOrWhiteSpace(input.OwnerId))
-            {
-                var owner = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
-                if (owner == null)
-                    ModelState.AddModelError(input.OwnerId, $"Owner not found (type = '{input.OwnerType}', id = '{input.OwnerId}')");
-            }
-
-            if (!ModelState.IsValid)
-                throw new AbpValidationException("Failed to upload file", GetValidationResults(ModelState));
-
-            var uploadedFile = new StoredFileDto();
-            var fileName = input.File.FileName.CleanupFileName();
-
-            // add file as an attachment (linked to an entity using OwnerType and OwnerId)
-            await using (var fileStream = input.File.OpenReadStream())
-            {
-                var storedFile = await _fileService.SaveFile(fileStream, fileName, file =>
-                {
-                    if (input.Id.HasValue)
-                        file.Id = input.Id.Value;
-                    file.SetOwner(input.OwnerType, input.OwnerId);
-                    file.Category = input.FilesCategory;
-                });
-
-                await _unitOfWorkManager.Current.SaveChangesAsync();
-                MapStoredFile(storedFile, uploadedFile);
-            }
-
-            return uploadedFile;
-        }
-        */
 
         /// <summary>
         /// Update existing file
@@ -629,6 +582,7 @@ namespace Shesha.StoredFiles
                 throw new AbpValidationException("Failed to upload file", GetValidationResults(ModelState));
 
             StoredFile storedFile;
+            StoredFileVersion fileVersion;
             // allow to use predefined Id and re-activate existing storedfile
             using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
@@ -647,12 +601,13 @@ namespace Shesha.StoredFiles
             {
                 await using (var fileStream = input.File.OpenReadStream())
                 {
-                    storedFile = await _fileService.SaveFileAsync(fileStream, fileName, file =>
+                    fileVersion = await _fileService.CreateFileAsync(fileStream, fileName, file =>
                     {
                         // set predefined Id
                         if (input.Id.HasValue && input.Id.Value != Guid.Empty)
                             file.Id = input.Id.Value;
                     });
+                    storedFile = fileVersion.File;
 
                     // set property if needed
                     if (property != null && owner != null)
@@ -677,26 +632,26 @@ namespace Shesha.StoredFiles
             {
                 storedFile.IsDeleted = false;
                 storedFile.IsVersionControlled = true;
-                var version = await _fileService.GetNewOrDefaultVersionAsync(storedFile);
-                version.FileName = fileName;
-                version.FileType = Path.GetExtension(fileName);
-                await _fileVersionRepository.InsertOrUpdateAsync(version);
+                fileVersion = await _fileService.GetNewOrDefaultVersionAsync(storedFile);
+                fileVersion.FileName = fileName;
+                fileVersion.FileType = Path.GetExtension(fileName);
+                await _fileVersionRepository.InsertOrUpdateAsync(fileVersion);
 
                 await using (var fileStream = input.File.OpenReadStream())
                 {
-                    await _fileService.UpdateVersionContentAsync(version, fileStream);
+                    await _fileService.UpdateVersionContentAsync(fileVersion, fileStream);
                 }
 
                 // copy to the main todo: remove duplicated properties (filename, filetype), add a link to the last version and update it using triggers
-                storedFile.FileName = version.FileName;
-                storedFile.FileType = version.FileType;
+                storedFile.FileName = fileVersion.FileName;
+                storedFile.FileType = fileVersion.FileType;
                 storedFile.Category = input.FilesCategory;
                 await _fileRepository.UpdateAsync(storedFile);
             }
 
             var uploadedFile = new StoredFileDto();
             await _unitOfWorkManager.Current.SaveChangesAsync();
-            MapStoredFile(storedFile, uploadedFile);
+            MapStoredFile(fileVersion, uploadedFile);
 
             return uploadedFile;
         }
@@ -711,7 +666,7 @@ namespace Shesha.StoredFiles
             var storedFile = await _fileRepository.GetAsync(id);
 
             return storedFile != null && !storedFile.IsDeleted
-                ? GetFileDto(storedFile)
+                ? GetFileDto(storedFile.LastVersion())
                 : null;
         }
 
@@ -741,13 +696,14 @@ namespace Shesha.StoredFiles
                 if (!(property.GetValue(owner) is StoredFile storedFile && !storedFile.IsDeleted))
                     return null;
 
-                return GetFileDto(storedFile);
+                return GetFileDto(storedFile.LastVersion());
             }
             else
             {
                 if (hasCategory)
                 {
-                    return  GetFileDto(await _fileRepository.GetAll().FirstOrDefaultAsync(x => x.Owner == null && x.Category == input.FileCategory));
+                    var version = await _fileVersionRepository.GetAll().FirstOrDefaultAsync(x => x.IsLast && x.File.Owner == null && x.File.Category == input.FileCategory);
+                    return  GetFileDto(version);
                 }
             }
             return null;

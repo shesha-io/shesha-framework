@@ -8,6 +8,7 @@ import ConfigurableFormRenderer from './configurableFormRenderer';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { IConfigurableFormProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
+import { useAuth } from '@/providers';
 
 export interface IFormWithFlatMarkupProps extends IConfigurableFormProps {
   formFlatMarkup: IFlatComponentsStructure;
@@ -36,6 +37,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   } = props;
 
   const { formInfoBlockVisible } = useAppConfigurator();
+  const auth = useAuth(false);
   const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
   if (!formFlatMarkup) return null;
 
@@ -43,7 +45,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     ? ConfigurationItemVersionStatusMap[persistedFormProps.versionStatus]
     : null;
 
-  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
+  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
 
   return (
     <FormFlatMarkupProvider markup={formFlatMarkup}>
@@ -52,17 +54,14 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
         formSettings={formSettings}
         needDebug={needDebug}
         onValuesChange={onValuesChange}
-
         mode={mode}
         form={form}
         formRef={formRef}
         actions={actions}
         sections={sections}
-        
         refetchData={refetchData}
         isActionsOwner={isActionsOwner}
         propertyFilter={propertyFilter}
-
         parentFormValues={parentFormValues}
         initialValues={props.initialValues}
       >
