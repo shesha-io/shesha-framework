@@ -47,6 +47,7 @@ import Statistic from '@/designer-components/statistic';
 import StatusTag from '@/designer-components/statusTag';
 import StyleBox from '@/designer-components/styleBox';
 import SubForm from '@/designer-components/subForm';
+import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
 import Tabs from '@/designer-components/tabs';
 import Text from '@/designer-components/text';
@@ -95,8 +96,9 @@ import PermissionAutocompleteComponent from '@/designer-components/permissions/p
 import EditModeToggler from '@/designer-components/editModeToggler';
 import ProfileDropdown from '@/designer-components/profileDropdown';
 import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/contexts';
-import { HEADER_CONFIGURATION } from '@/components/mainLayout/constant';
+import { HEADER_CONFIGURATION, HEADER_PUB_PORTAL_CONFIGURATION } from '@/components/mainLayout/constant';
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
+import { getToolboxComponentsVisibility } from '@/utils';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -116,6 +118,7 @@ export const getToolboxComponents = (
         Checkbox,
         CheckboxGroup,
         Radio,
+        Slider,
         Switch,
         DateField,
         TimeFieldComponent,
@@ -239,9 +242,10 @@ export const getToolboxComponents = (
     },
     {
       name: 'Header Components',
-      visible:
-        formMetadata?.formProps?.module === HEADER_CONFIGURATION.module &&
-        formMetadata?.formProps?.name === HEADER_CONFIGURATION.name,
+      visible: getToolboxComponentsVisibility(formMetadata?.formProps, [
+        HEADER_CONFIGURATION,
+        HEADER_PUB_PORTAL_CONFIGURATION,
+      ]),
       components: [EditModeToggler, ProfileDropdown],
     },
   ];

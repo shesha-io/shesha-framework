@@ -51,7 +51,7 @@ namespace Shesha.Swagger
                     {
                         // api service
                         var obj = $"{service.FullName}";
-                        var permission = pmo.Get(obj);
+                        var permission = pmo.Get(obj, ShaPermissionedObjectsTypes.WebApi);
                         if (permission != null && permission.ActualAccess == RefListPermissionedAccess.Disable)
                             continue;
                     }

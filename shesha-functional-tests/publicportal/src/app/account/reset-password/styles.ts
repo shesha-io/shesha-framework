@@ -1,5 +1,5 @@
-import { UnAuthedAccountPageLayout } from '@/components';
-import styled from 'styled-components';
+import { UnAuthedAccountPageLayout } from "@/components";
+import styled from "styled-components";
 
 export const ResetPasswordContainer = styled(UnAuthedAccountPageLayout)`
   &.not-authorized {

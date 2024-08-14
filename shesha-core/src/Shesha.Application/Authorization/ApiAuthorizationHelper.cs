@@ -4,8 +4,11 @@ using Abp.Authorization;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Localization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Extensions;
+using Shesha.Permissions;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -19,7 +22,6 @@ namespace Shesha.Authorization
 
         private readonly IAuthorizationConfiguration _authConfiguration;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
-        private readonly List<string> _crudMethods;
 
         public ApiAuthorizationHelper(
             IFeatureChecker featureChecker,
@@ -30,7 +32,6 @@ namespace Shesha.Authorization
         {
             _authConfiguration = authConfiguration;
             _objectPermissionChecker = objectPermissionChecker;
-            _crudMethods = new List<string>() { "GetAll", "QueryAll", "Get", "Query", "Create", "CreateGql", "Update", "UpdateGql", "Delete" };
         }
 
         public override async Task AuthorizeAsync(MethodInfo methodInfo, Type type)
@@ -40,6 +41,9 @@ namespace Shesha.Authorization
                 return;
             }
 
+            if (type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>())
+                return;
+
             var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);
             if (type == null || !shaServiceType.IsAssignableFrom(type) && !controllerType.IsAssignableFrom(type))
@@ -48,11 +52,18 @@ namespace Shesha.Authorization
             var typeName = type.FullName;
 
             var isCrud = type.FindBaseGenericType(typeof(AbpCrudAppService<,,,,,>)) != null;
-            if (isCrud && _crudMethods.Contains(methodInfo.Name.RemovePostfix("Async")))
+            if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodInfo.Name.RemovePostfix("Async")))
                 return;
 
             // ToDo: add RequireAll flag
-            await _objectPermissionChecker.AuthorizeAsync(false, typeName, methodInfo.Name, AbpSession.UserId.HasValue, Domain.Enums.RefListPermissionedAccess.AllowAnonymous);
+            await _objectPermissionChecker.AuthorizeAsync(
+                false,
+                typeName,
+                methodInfo.Name,
+                ShaPermissionedObjectsTypes.WebApiAction,
+                AbpSession.UserId.HasValue,
+                Domain.Enums.RefListPermissionedAccess.AllowAnonymous
+            );
         }
     }
 }

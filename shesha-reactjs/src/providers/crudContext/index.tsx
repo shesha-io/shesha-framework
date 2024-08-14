@@ -65,7 +65,6 @@ const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = 
   const {
     data,
     children,
-    formSettings,
   } = props;
 
   const form = useForm();
@@ -81,22 +80,15 @@ const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = 
       });
     } else {
       props.setInitialValues(data);
-      form.form.setFieldsValue(data);
+
+      form.setFormData({ values: data, mergeValues: true });
     }
   }, [data]);
 
   return (
     <CrudContext.Provider value={props.context}>
       <ParentProvider model={{ readOnly: props.context.mode === 'read' }} formMode={props.context.mode === 'read' ? 'readonly' : 'edit'}>
-        <FormWrapper
-          form={form.form}
-          initialValues={props.context.initialValues}
-          onValuesChange={props.onValuesChange}
-          formSettings={formSettings}
-          delayedUpdate={props.delayedUpdate}
-        >
           {children}
-        </FormWrapper>
       </ParentProvider>
     </CrudContext.Provider>
   );
@@ -339,11 +331,19 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           formRef={formRef}
           shaForm={shaForm}
         >
+        <FormWrapper
+          form={form}
+          initialValues={contextValue.initialValues}
+          onValuesChange={onValuesChange}
+          formSettings={formSettings}
+          delayedUpdate={delayedUpdate}
+        >
           <InternalCrudProvider {...props} context={contextValue} delayedUpdate={delayedUpdate}
             onValuesChange={onValuesChange}
             setInitialValues={setInitialValues}
             setInitialValuesLoading={setInitialValuesLoading}
           />
+        </FormWrapper>
         </FormProvider>
       </ShaForm.MarkupProvider>
     </ShaFormProvider>

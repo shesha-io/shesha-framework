@@ -30,6 +30,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   //shaForm,
   onFinish,
   onFinishFailed,
+  onSubmittedFailed,
   ...props
 }) => {
   const formInstance = useForm();
@@ -62,6 +63,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
         getDelayedUpdates: getDelayedUpdates,
       });
     } catch (error) {
+      onSubmittedFailed?.();
       setValidationErrors(error?.data?.error || error);
       console.error('Submit failed: ', error);
     }

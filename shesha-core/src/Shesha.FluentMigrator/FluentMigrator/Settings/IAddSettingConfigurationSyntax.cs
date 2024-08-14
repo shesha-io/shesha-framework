@@ -41,6 +41,16 @@
         /// </summary>
         IAddSettingConfigurationSyntax WithCategory(string category);
 
+        /// <summary>
+        /// Set client access mode
+        /// </summary>
+        IAddSettingConfigurationSyntax WithClientAccess(UserSettingAccessMode clientAccess);
+
+        /// <summary>
+        /// Mark setting as user specific
+        /// </summary>
+        IAddSettingConfigurationSyntax IsUserSpecific();
+
         #region data types
 
         IAddSettingConfigurationSyntax AsString(string? dataFormat = null);

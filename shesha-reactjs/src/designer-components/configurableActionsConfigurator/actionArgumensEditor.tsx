@@ -88,7 +88,7 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   if (!argumentsEditor) return null;
 
   return (
-    <Collapse defaultActiveKey={['1']}>
+    <Collapse defaultActiveKey={['1']} key={action.name}>
       <Panel header="Arguments" key="1">
         {argumentsEditor}
       </Panel>

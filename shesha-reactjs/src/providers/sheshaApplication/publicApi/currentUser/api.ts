@@ -1,10 +1,12 @@
 import qs from "qs";
 import { HttpClientApi } from "../http/api";
-import { IAjaxResponse } from "@/interfaces";
+import { IAjaxResponse, IEntityReferenceDto } from "@/interfaces";
 
 const URLS = {
     IS_PERMISSION_GRANTED: '/api/services/app/Permission/IsPermissionGranted',
     IS_ROLE_GRANTED: '/api/services/app/ShaRole/IsRoleGranted',
+    GET_USER_SETTING_VALUE: '/api/services/app/Settings/GetUserValue',
+    UPDATE_USER_SETTING_VALUE: '/api/services/app/Settings/UpdateUserValue'
 };
 
 export interface IUserProfileInfo {
@@ -19,8 +21,10 @@ export interface ICurrentUserApi {
     readonly userName: string;
     readonly firstName: string;
     readonly lastName: string;
-    hasPermissionAsync(module: string, permissionName: string): Promise<boolean>;
+    hasPermissionAsync(mpermissionName: string, permissionedEntityId?: IEntityReferenceDto): Promise<boolean>;
     hasRoleAsync(roleName: string): Promise<boolean>;
+    getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any>;
+    updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void>;
 }
 
 export interface IInternalCurrentUserApi extends ICurrentUserApi {
@@ -57,12 +61,14 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
         this.#profileInfo = profileInfo;
     }
 
-    async hasPermissionAsync(permissionName: string): Promise<boolean> {
+    async hasPermissionAsync(permissionName: string, permissionedEntity?: IEntityReferenceDto): Promise<boolean> {
         if (!this.isLoggedIn)
             return Promise.resolve(false);
         
         const requestParams = {
-            permissionName: permissionName
+            permissionName,
+            permissionedEntityId: permissionedEntity ? permissionedEntity?.id : undefined,
+            permissionedEntityClass: permissionedEntity ? permissionedEntity?._className : undefined
         };
         return this.#httpClient.get<IAjaxResponse<boolean>>(`${URLS.IS_PERMISSION_GRANTED}?${qs.stringify(requestParams)}`).then(response => response.data?.success ? response.data.result : false);
     };
@@ -76,4 +82,19 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
         };
         return this.#httpClient.get<IAjaxResponse<boolean>>(`${URLS.IS_ROLE_GRANTED}?${qs.stringify(requestParams)}`).then(response => response.data?.success ? response.data.result : false);
     }
+
+    async getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any> {
+        return this.#httpClient.post<IAjaxResponse<void>>(URLS.GET_USER_SETTING_VALUE, {name,module,defaultValue, dataType})
+        .then(res => {
+                return res.data.success ? res.data.result : undefined;
+        });
+    };
+
+    async updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void> {
+        return this.#httpClient.post<IAjaxResponse<void>>(URLS.UPDATE_USER_SETTING_VALUE, {name,module,value, dataType})
+            .then(res => {
+                if (!res.data.success)
+                    throw new Error("Failed to update setting value: " + res.data.error.message);
+            });
+    };
 }

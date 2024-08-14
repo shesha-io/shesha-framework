@@ -143,7 +143,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             {
                 var permisson = new PermissionedObjectDto
                 {
-                    Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
+                    Object = FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name),
                     Name = $"{form.Module?.Name}.{form.Name}",
                     Module = form.Module.Name,
                     ModuleId = form.Module.Id,

@@ -3,6 +3,9 @@ import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interfaces";
 import { getValuesFromSettings, updateSettingsFromVlues } from './utils';
 import { createNamedContext } from '@/utils/react';
+import { mergeWith } from 'lodash';
+import { FormProvider, IPropertyMetadata } from '@/index';
+import { linkComponentToModelMetadata } from '@/providers/form/utils';
 
 interface SettingsFormState<TModel> {
     model?: TModel;
@@ -53,7 +56,15 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
     };
     
     const settingsChange = (changedValues) => {
-      const incomingState = {...state.model, ...changedValues};
+      const incomingState = mergeWith(
+        {...state.model},
+        changedValues,
+        (objValue, srcValue, key, obj) => {
+          if (srcValue === undefined)
+            obj[key] = undefined;
+          return Array.isArray(objValue) ? srcValue : undefined;
+        },
+      );
       setState({model: incomingState, values: getValuesFromSettings(incomingState)});
       onValuesChange(changedValues, incomingState);
       form.setFieldsValue(incomingState);
@@ -68,7 +79,24 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
         onValuesChange: valuesChange,
     };
 
+    const linkToModelMetadata = (metadata: IPropertyMetadata) => {
+      const currentModel = form.getFieldsValue() as TModel;
+  
+      const wrapper = props.toolboxComponent.linkToModelMetadata
+        ? m => linkComponentToModelMetadata(props.toolboxComponent, m, metadata)
+        : m => m;
+  
+      const newModel: TModel = wrapper({
+        ...currentModel,
+        label: metadata.label || metadata.path,
+        description: metadata.description,
+      });
+  
+      valuesChange(newModel);
+    };
+
     return (
+      <FormProvider name={''} formSettings={undefined} mode={'edit'} isActionsOwner={false} actions={{linkToModelMetadata}} shaForm={undefined}>
         <SettingsFormStateContext.Provider value={state}>
             <SettingsFormActionsContext.Provider value={SettingsFormActions}>
                 <Form
@@ -82,6 +110,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
                 </Form>
             </SettingsFormActionsContext.Provider>
         </SettingsFormStateContext.Provider>
+      </FormProvider>
     );
 };
 

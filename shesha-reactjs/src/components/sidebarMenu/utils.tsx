@@ -61,7 +61,7 @@ export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluatio
 
   const navigationType = item?.actionConfiguration?.actionArguments?.navigationType;
 
-  if (item.isHidden) return null;
+  if (item.hidden) return null;
 
   const children = isSidebarGroup(item)
     ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }))

@@ -37,9 +37,9 @@ namespace Shesha.Web.FormsDesigner.Services
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
-        public static string GetFormPermissionedObjectName(string module, string name, int versionNo)
+        public static string GetFormPermissionedObjectName(string module, string name)
         {
-            return $"{module}.{name}#{versionNo}";
+            return $"{module}.{name}";
         }
 
         /// inheritedDoc
@@ -75,11 +75,6 @@ namespace Shesha.Web.FormsDesigner.Services
                 await ConfigurationItemRepository.UpdateAsync(form.Configuration);
             }
             */
-
-            await _permissionedObjectManager.CopyAsync(
-                FormManager.GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo),
-                FormManager.GetFormPermissionedObjectName(newVersion.Module?.Name, newVersion.Name, newVersion.VersionNo)
-            );
 
             return newVersion;
         }
@@ -257,8 +252,9 @@ namespace Shesha.Web.FormsDesigner.Services
             await Repository.InsertAsync(form);
 
             await _permissionedObjectManager.CopyAsync(
-                GetFormPermissionedObjectName(item.Module?.Name, item.Name, item.VersionNo),
-                GetFormPermissionedObjectName(form.Module?.Name, form.Name, form.VersionNo)
+                GetFormPermissionedObjectName(item.Module?.Name, item.Name),
+                GetFormPermissionedObjectName(form.Module?.Name, form.Name),
+                ShaPermissionedObjectsTypes.Form
             );
 
             return form;

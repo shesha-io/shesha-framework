@@ -82,6 +82,8 @@ namespace Shesha.Services.Settings
             definition.IsClientSpecific = input.IsClientSpecific;
             definition.AccessMode = input.AccessMode;
             definition.Category = input.Category;
+            definition.IsUserSpecific = input.IsUserSpecific;
+            definition.ClientAccess = input.ClientAccess;
 
             definition.Normalize();
 
@@ -112,6 +114,8 @@ namespace Shesha.Services.Settings
             newVersion.IsClientSpecific = item.IsClientSpecific;
             newVersion.AccessMode = item.AccessMode;
             newVersion.Category = item.Category;
+            newVersion.IsUserSpecific = item.IsUserSpecific;
+            newVersion.ClientAccess = item.ClientAccess;
             newVersion.Normalize();
 
             await Repository.InsertAsync(newVersion);
@@ -144,6 +148,11 @@ namespace Shesha.Services.Settings
                 {
                     var appKey = context.AppKey ?? _cfRuntime.FrontEndApplication;
                     query = query.Where(new ByApplicationSpecification<SettingValue>(appKey).ToExpression());
+                }
+
+                if (setting.IsUserSpecific)
+                {
+                    query = query.Where(new ByUserSpecification<SettingValue>(context.UserId).ToExpression());
                 }
 
                 return await query.FirstOrDefaultAsync();

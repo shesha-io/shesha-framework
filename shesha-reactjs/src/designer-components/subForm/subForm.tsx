@@ -2,7 +2,7 @@ import React, { CSSProperties, FC, useMemo } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
-import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useSheshaApplication } from '@/providers';
+import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useForm, useSheshaApplication } from '@/providers';
 import Show from '@/components/show';
 import FormInfo from '@/components/configurableForm/formInfo';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
@@ -12,6 +12,7 @@ import { ComponentsContainerSubForm } from './componentsContainerSubForm';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { Button, Result } from 'antd';
 import Link from 'antd/es/typography/Link';
+import { useValidator } from '@/providers/validateProvider';
 
 interface ISubFormProps {
   style?: CSSProperties;
@@ -29,11 +30,41 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     loading,
     formSettings,
     propertyName,
+    context,
     versionStatus,
     hasFetchedConfig,
     versionNo,
     description,
+    allComponents
   } = useSubForm();
+
+  const form = useForm();
+
+  const validator = useValidator(false);
+  if (validator && id && allComponents)
+    validator.registerValidator({
+      id,
+      validate: () => {
+        if (!context) {
+          const properties = [];
+          for (const comp in allComponents)
+            if (Object.hasOwn(allComponents, comp)) {
+              const component = allComponents[comp];
+              if (component.propertyName && !component.context)
+                properties.push([...propertyName.split("."), ...component.propertyName.split(".")]);
+            }
+        
+          if (properties.length > 0)
+            return form.form.validateFields(properties, {recursive: false})
+              .catch(e => {
+                if (e.errorFields?.length > 0)
+                  throw e;
+                return null;
+              });
+        }
+        return Promise.resolve();
+      },
+    });
 
   const formStatusInfo = versionStatus ? ConfigurationItemVersionStatusMap[versionStatus] : null;
 

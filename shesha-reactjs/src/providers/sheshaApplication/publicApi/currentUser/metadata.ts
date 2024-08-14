@@ -3,6 +3,11 @@ import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
 
 const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
     var userSource = [
+        "export interface IEntityReferenceDto {",
+        "  _className?: string;",
+        "  id?: string;",
+        "}",
+        "",
         "/**",
         " * Current logged in User API",
         " */",
@@ -34,7 +39,15 @@ const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinitio
         "    /**",
         "     * Has permission",
         "     */",
-        "    hasPermissionAsync: (permission: string) => Promise<boolean>;",
+        "    hasPermissionAsync: (permission: string, permissionedEntity?: IEntityReferenceDto) => Promise<boolean>;",
+        "    /**",
+        "     * Get User Setting",
+        "     */",
+        "    getUserSettingValueAsync(name: string, module: string, defaultValue?: any, dataType?: string): Promise<any>",
+        "    /**",
+        "     * Update User Setting",
+        "     */",
+        "    updateUserSettingValueAsync(name: string, module: string, value: any, dataType?: string): Promise<void>",
         "}",
     ].join("\n");
     return Promise.resolve({

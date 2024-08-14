@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 import { normalizeUrl } from '@/utils/url';
 import { isSidebarButton } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
@@ -6,7 +6,7 @@ import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { sidebarMenuItemToMenuItem } from './utils';
 import { evaluateString, useAvailableConstantsData } from '@/providers/form/utils';
-import { useLocalStorage } from '@/hooks';
+import { useDeepCompareMemo, useLocalStorage } from '@/hooks';
 import { useSidebarMenu } from '@/providers/sidebarMenu';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
@@ -39,11 +39,8 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     });
   };
 
-
-
-  const menuItems = useMemo(() => {
+  const menuItems = useDeepCompareMemo(() => {
     return (items ?? []).map((item) =>
-    
       sidebarMenuItemToMenuItem({
         item,
         onButtonClick,
@@ -69,7 +66,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
         },
       })
     );
-  }, [items]);
+  }, [items, executionContext]);
 
   if (menuItems.length === 0) return null;
 

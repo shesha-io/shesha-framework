@@ -880,6 +880,36 @@ namespace Shesha.JsonLogic
                 } else
                     numericConstToConvert = Expression.Constant(Convert.ToDouble(constExpr.Value));
             }
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Decimal))
+            {
+                if (constExpr.Type == typeof(string))
+                {
+                    if (decimal.TryParse((string)constExpr.Value, out var decimalValue))
+                        numericConstToConvert = Expression.Constant(decimalValue);
+                }
+                else
+                    numericConstToConvert = Expression.Constant(Convert.ToDecimal(constExpr.Value));
+            }
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(Single))
+            {
+                if (constExpr.Type == typeof(string))
+                {
+                    if (Single.TryParse((string)constExpr.Value, out var singleValue))
+                        numericConstToConvert = Expression.Constant(singleValue);
+                }
+                else
+                    numericConstToConvert = Expression.Constant(Convert.ToSingle(constExpr.Value));
+            }
+            if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(byte))
+            {
+                if (constExpr.Type == typeof(string))
+                {
+                    if (byte.TryParse((string)constExpr.Value, out var byteValue))
+                        numericConstToConvert = Expression.Constant(byteValue);
+                }
+                else
+                    numericConstToConvert = Expression.Constant(Convert.ToByte(constExpr.Value));
+            }
         }
 
         private void ConvertTicksTimeSpan(Expression a, ref Expression b)

@@ -6,7 +6,7 @@ namespace Shesha.Settings
     {
         SettingDefinition GetOrNull(string module, string name);
 
-        IReadOnlyList<SettingDefinition> GetAll();
+        Dictionary<SettingIdentifier, SettingDefinition> GetAll();
 
         void Add(params SettingDefinition[] definitions);
     }

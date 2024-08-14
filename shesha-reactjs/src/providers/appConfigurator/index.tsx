@@ -105,6 +105,7 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
+
   //#region Configuration Framework renamed to Configuration Items
 
   const actionsOwner = 'Configuration Items';
@@ -185,7 +186,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-
         return new Promise((resolve, reject) => {
           publishItem({ id: actionArgs.itemId, ...cfArgs })
             .then(() => {
@@ -195,7 +195,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
               reject(error);
             });
         });
-
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -218,7 +217,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
               reject(error);
             });
         });
-
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -246,7 +244,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
     },
     actionDependencies
   );
-
   //#endregion
 
   useEffect(() => {

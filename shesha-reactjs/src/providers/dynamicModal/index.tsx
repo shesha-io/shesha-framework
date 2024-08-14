@@ -1,7 +1,7 @@
 import { Modal } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';
@@ -80,14 +80,14 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
         const { formMode, ...restArguments } = actionArgs;
 
-        console.log('LOG: dialog 🔥');
+        console.log('LOG: dialog ??');
         const argumentsExpression = actionArgs.formArguments?.trim();
         const argumentsPromise = argumentsExpression
           ? executeScript(argumentsExpression, context)
           : Promise.resolve(undefined);
 
         return argumentsPromise.then(dialogArguments => {
-          console.log('LOG: dialog argumentsPromise 🔥', dialogArguments);
+          console.log('LOG: dialog argumentsPromise ??', dialogArguments);
 
           const parentFormValues = context?.data ?? {};
 
@@ -116,6 +116,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
                 else
                   reject(result);
               },
+            wrapper: context.configurableActionsDispatcherProxy,
             };
 
             createModal({ ...modalProps });
@@ -131,7 +132,11 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
         };
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
       },
-      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0)
+      useDynamicContextHook: () => {
+        const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy(false);
+        return { configurableActionsDispatcherProxy };
+      },
+      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
     },
     actionDependencies
   );

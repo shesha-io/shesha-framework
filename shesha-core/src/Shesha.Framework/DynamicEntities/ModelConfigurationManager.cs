@@ -189,8 +189,8 @@ namespace Shesha.DynamicEntities
         {
             var copyPermission = async (string method, string type) =>
             {
-                var sourcePermission = await _permissionedObjectManager.GetAsync($"{source.FullClassName}{method}");
-                var destinationPermission = await _permissionedObjectManager.GetAsync($"{destination.FullClassName}{method}");
+                var sourcePermission = await _permissionedObjectManager.GetOrDefaultAsync($"{source.FullClassName}{method}", type);
+                var destinationPermission = await _permissionedObjectManager.GetOrDefaultAsync($"{destination.FullClassName}{method}", type);
                 destinationPermission.Access = sourcePermission.Access;
                 destinationPermission.Type = type;
                 sourcePermission.Permissions.ToList().ForEach(x =>
@@ -524,11 +524,11 @@ namespace Shesha.DynamicEntities
             changeDates.Add(modelConfig.LastModificationTime ?? modelConfig.CreationTime);
             dto.ChangeTime = changeDates.Max();
 
-            dto.Permission = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}", ShaPermissionedObjectsTypes.Entity);
-            dto.PermissionGet = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Get", ShaPermissionedObjectsTypes.EntityAction);
-            dto.PermissionCreate = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Create", ShaPermissionedObjectsTypes.EntityAction);
-            dto.PermissionUpdate = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Update", ShaPermissionedObjectsTypes.EntityAction);
-            dto.PermissionDelete = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction);
+            dto.Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}", ShaPermissionedObjectsTypes.Entity);
+            dto.PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Get", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Create", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Update", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction);
 
             dto.NormalizeViewConfigurations(modelConfig);
 

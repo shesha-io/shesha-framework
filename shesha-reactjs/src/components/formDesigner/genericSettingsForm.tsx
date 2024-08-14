@@ -3,8 +3,7 @@ import { Form } from 'antd';
 import { IConfigurableFormComponent, FormMarkup } from '@/providers/form/models';
 import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
-import { listComponentToModelMetadata } from '@/providers/form/utils';
-import { FormWithRawMarkup } from '../configurableForm/formWithRawMarkup';
+import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableForm } from '../configurableForm';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
@@ -37,7 +36,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     const currentModel = form.getFieldsValue() as TModel;
 
     const wrapper = toolboxComponent.linkToModelMetadata
-      ? m => listComponentToModelMetadata(toolboxComponent, m, metadata)
+      ? m => linkComponentToModelMetadata(toolboxComponent, m, metadata)
       : m => m;
 
     const newModel: TModel = wrapper({
@@ -64,28 +63,6 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   return (
     <ConfigurableForm
-      formName='componentSettings'
-      labelCol={layoutSettings?.labelCol}
-      wrapperCol={layoutSettings?.wrapperCol}
-      layout={layoutSettings?.layout}
-
-      mode={readOnly ? "readonly" : "edit"}
-      form={form}
-      onFinish={onSave}
-      markup={markup}
-      cacheKey={`form-designer:${toolboxComponent.type}`}
-      initialValues={model}
-      onValuesChange={onValuesChange}
-      actions={{
-        linkToModelMetadata
-      }}
-      onFinishFailed={onFinishFailed}
-      propertyFilter={propertyFilter}
-      isSettingsForm={true}
-    />
-  );
-  return (
-    <FormWithRawMarkup
       formName='componentSettings'
       labelCol={layoutSettings?.labelCol}
       wrapperCol={layoutSettings?.wrapperCol}

@@ -1152,7 +1152,7 @@ export const validateConfigurableComponentSettings = (markup: FormMarkup, values
   return validator.validate(values);
 };
 
-export function listComponentToModelMetadata<TModel extends IConfigurableFormComponent>(
+export function linkComponentToModelMetadata<TModel extends IConfigurableFormComponent>(
   component: IToolboxComponent<TModel>,
   model: TModel,
   metadata: IPropertyMetadata
@@ -1310,7 +1310,7 @@ export const createComponentModelForDataProperty = (
 
   if (toolboxComponent.migrator && migrator) componentModel = migrator(componentModel, toolboxComponent);
 
-  componentModel = listComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
+  componentModel = linkComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 
   return componentModel;
 };

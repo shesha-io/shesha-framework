@@ -8,6 +8,7 @@ import { ConfigurableFormRenderer } from './configurableFormRenderer';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
+import { useAuth } from '@/providers';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
 import { MetadataProvider } from '@/providers';
 
@@ -37,6 +38,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   const [shaForm] = useShaForm({ form: props.shaForm });
 
   const { formInfoBlockVisible } = useAppConfigurator();
+  const auth = useAuth(false);
   const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
   if (!formFlatMarkup) return null;
 
@@ -44,9 +46,9 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     ? ConfigurationItemVersionStatusMap[persistedFormProps.versionStatus]
     : null;
 
-  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
+  const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
 
-  console.log('LOG: initialValues 🍬', props.initialValues);
+  console.log('LOG: initialValues ??', props.initialValues);
 
   return (
     <MetadataProvider modelType={formSettings?.modelType}>
@@ -56,17 +58,14 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
           name={props.formName}
           formSettings={formSettings}
           onValuesChange={onValuesChange}
-
           mode={mode}
           form={form}
           formRef={formRef}
           // actions={actions}
           // sections={sections}
-
           refetchData={refetchData}
           isActionsOwner={isActionsOwner}
           propertyFilter={propertyFilter}
-
           parentFormValues={parentFormValues}
           initialValues={props.initialValues}
         >

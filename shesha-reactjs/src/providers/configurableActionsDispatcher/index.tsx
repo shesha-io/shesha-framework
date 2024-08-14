@@ -75,6 +75,20 @@ function useConfigurableActionDispatcher(require: boolean = true) {
     : undefined;
 }
 
+const useConfigurableActionDispatcherProxy = (require: boolean = true): FC<PropsWithChildren> => {
+  const actionsContext = useConfigurableActionDispatcherActions(require);
+  const stateContext = useConfigurableActionDispatcherState(require);
+  return actionsContext !== undefined && stateContext !== undefined
+    ? ({ children }) => (
+      <ConfigurableActionDispatcherStateContext.Provider value={stateContext}>
+        <ConfigurableActionDispatcherActionsContext.Provider value={actionsContext}>
+          {children}
+        </ConfigurableActionDispatcherActionsContext.Provider>
+      </ConfigurableActionDispatcherStateContext.Provider>
+    )
+    : ({ children }) => (<>{children}</>);
+};
+
 const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
   children,
 }) => {
@@ -180,7 +194,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
           .then(async (actionResponse) => {
             if (handleSuccess) {
               if (onSuccess) {
-                const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
+                const onSuccessContext = { ...argumentsEvaluationContext, actionResponse };
                 await executeAction({
                   actionConfiguration: { ...onSuccess },
                   argumentsEvaluationContext: onSuccessContext,
@@ -272,9 +286,12 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
     if (!payload.owner || !payload.ownerUid) return undefined;
 
     registerAction(payload);
-    return () => {
+
+    return !payload.isPermament
+      ? () => {
       unregisterAction(payload);
-    };
+      }
+      : undefined;
   }, deps);
 }
 
@@ -283,6 +300,7 @@ export {
   ConfigurableActionDispatcherProvider,
   useConfigurableAction,
   useConfigurableActionDispatcher,
+  useConfigurableActionDispatcherProxy,
   getActualActionArguments,
   type IConfigurableActionConfiguration,  
 };

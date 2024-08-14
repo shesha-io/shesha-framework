@@ -192,17 +192,33 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.HardcodedPropertiesMD5 = item.PropertiesMD5;
 
             dbItem.ViewConfigurations = item.ViewConfigurations.ToList();
-            
+
             if (item.Permission != null)
+            {
+                // fix Type for old configurations
+                item.Permission.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.Permission);
+            }
             if (item.PermissionGet != null)
+            {
+                item.PermissionGet.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.PermissionGet);
+            }
             if (item.PermissionCreate != null)
+            {
+                item.PermissionCreate.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.PermissionCreate);
+            }
             if (item.PermissionUpdate != null)
+            {
+                item.PermissionUpdate.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.PermissionUpdate);
+            }
             if (item.PermissionDelete != null)
+            {
+                item.PermissionDelete.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.PermissionDelete);
+            }
 
             return dbItem;
         }

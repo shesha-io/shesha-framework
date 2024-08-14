@@ -1,4 +1,5 @@
 import { createAction } from 'redux-actions';
+import { ICanvasWidthProps } from './contexts';
 
 export enum CanvasConfigActionEnums {
   SetCanvasWidth= 'SET_FORM_WIDTH',
@@ -8,5 +9,5 @@ export enum CanvasConfigActionEnums {
 
 export const setCanvasZoomAction = createAction<number, number>(CanvasConfigActionEnums.SetCanvasZoom, (p) => p);
 
-export const setCanvasWidthAction = createAction<number, number>(CanvasConfigActionEnums.SetCanvasWidth, (p) => p);
+export const setCanvasWidthAction = createAction<ICanvasWidthProps, ICanvasWidthProps>(CanvasConfigActionEnums.SetCanvasWidth, (p) => p);
 /* NEW_ACTION_GOES_HERE */

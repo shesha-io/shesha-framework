@@ -1,10 +1,9 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Button, Image, Tooltip, Upload, UploadProps } from 'antd';
-import { useStoredFile } from '@/index';
-import { isValidGuid } from '@/components/formDesigner/components/utils';
+import { useSheshaApplication, useStoredFile } from '@/index';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 
-export type ImageSourceType = 'url' | 'storedFileId' | 'base64';
+export type ImageSourceType = 'url' | 'storedFile' | 'base64';
 
 export interface IImageFieldProps {
   height?: number | string;
@@ -18,6 +17,8 @@ export interface IImageFieldProps {
 
   allowPreview?: boolean;
   allowedFileTypes?: string[];
+
+  alt?: string;
 }
 
 export const ImageField: FC<IImageFieldProps> = (props) => {
@@ -25,41 +26,51 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
 
   const readOnly = props?.readOnly || props.imageSource === 'url';
 
-  const { getStoredFile, uploadFile, deleteFile } = useStoredFile(false) ?? {};
+  const { uploadFile, deleteFile, fileInfo } = useStoredFile(false) ?? {};
+  const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const [storedFile, setStoredFile] = useState<string>();
+  const [fileUrl, setFileUrl] = useState<string>();
 
-  const isStoredFileId = imageSource === 'storedFileId' && Boolean(value);
+  const isStoredFile = imageSource === 'storedFile';
   const isRawUrl = imageSource === 'url' && Boolean(value);
   const isBase64 = imageSource === 'base64' && Boolean(value);
 
-  const fetchStoredFile = () => {
-    if (isStoredFileId && isValidGuid(value)) {
-      getStoredFile({ id: value }).then((file: string) => {
-        setStoredFile(() => file);
-      });
-    }
+  const fetchStoredFile = (url: string) => {
+    fetch(`${backendUrl}${url}`,
+      {headers: {...httpHeaders, "Content-Type": "application/octet-stream"}})
+      .then((response) => {
+        return response.blob();
+      })
+    .then((blob) => {
+      setFileUrl(URL.createObjectURL(blob));
+    });
   };
 
   useEffect(() => {
-      fetchStoredFile();
-  }, [isStoredFileId, value]);
+    if (isStoredFile) {
+      if (fileInfo?.url)
+        fetchStoredFile(fileInfo?.url);
+      else
+        if (!fileInfo)
+          setFileUrl(null);
+    }
+  }, [isStoredFile, fileInfo]);
 
   const content = useMemo(() => {
     return isRawUrl 
       ? value 
       : isBase64
         ? value
-        : isStoredFileId && Boolean(storedFile)
-          ? `data:image/png;base64, ${storedFile}`
+        : isStoredFile && Boolean(fileUrl)
+          ? fileUrl
           : null;
-  }, [imageSource, value, storedFile]);
+  }, [imageSource, value, fileUrl]);
 
   const onRemove = () => {
     if (imageSource === 'base64') {
       if (onChange)
         onChange(null);
-    } else if (imageSource === 'storedFileId') {
+    } else if (imageSource === 'storedFile') {
       deleteFile();
     }
 };
@@ -78,10 +89,10 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
       if (imageSource === 'base64') {
         if (onChange)
           onChange(await toBase64(file));
-      } else if (imageSource === 'storedFileId') {
+      } else if (imageSource === 'storedFile') {
         uploadFile({ file: file }, () => {
-          if (value)
-            fetchStoredFile();
+          //if (value)
+            //fetchStoredFile();
         });
       }
     },
@@ -93,7 +104,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
       {content &&
         <Image
           src={content}
-          alt="image"
+          alt={props?.alt}
           width={Number(width) ? `${width}px` : width}
           height={Number(height) ? `${height}px` : height}
           preview={allowPreview}

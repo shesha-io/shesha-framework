@@ -10,6 +10,7 @@ export * from './shesha-constants';
 export * from './utils';
 export { type GetProps, type MutateProps, get, mutate } from './utils/fetchers';
 export * from './utils/publicUtils';
+export * from './components/mainLayout/constant';
 
 export { removeZeroWidthCharsFromString } from './providers/form/utils';
 export { requestHeaders } from './utils/requestHeaders';

@@ -61,6 +61,12 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
   refetcher?: () => void;
+
+  /**  
+   * Triggered when the form is submitted successfully but the response is not successful
+   **/
+  onSubmittedFailed?: () => void;
+
 }
 
 export type IConfigurableFormRuntimeProps<Values = any> = {
@@ -118,6 +124,12 @@ export type IConfigurableFormRuntimeProps<Values = any> = {
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
   refetcher?: () => void;
+
+  /**  
+   * Triggered when the form is submitted successfully but the response is not successful
+   **/
+  onSubmittedFailed?: () => void;
+
   /**/
 
   mode: FormMode;

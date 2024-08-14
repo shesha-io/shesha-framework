@@ -140,7 +140,6 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
         </ConfigurableFormItemContext>
       );
     } else {
-      formItemProps.name = getFieldNameFromExpression(propName);
       return (
         <ConfigurableFormItemForm
           formItemProps={formItemProps}

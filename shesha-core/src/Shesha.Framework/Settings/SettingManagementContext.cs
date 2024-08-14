@@ -16,5 +16,10 @@ namespace Shesha.Settings
         /// Tenant Id
         /// </summary>
         public int? TenantId { get; set; }
+
+        /// <summary>
+        /// User Id
+        /// </summary>
+        public long? UserId { get; set; }
     }
 }
