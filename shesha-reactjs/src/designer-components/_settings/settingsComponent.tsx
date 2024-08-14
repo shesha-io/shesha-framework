@@ -2,68 +2,72 @@ import React, { useMemo } from 'react';
 import SettingsControl from './settingsControl';
 import { ConfigurableFormItem } from '@/components';
 import { getSettings } from './settings';
-import { IConfigurableFormComponent } from '@/providers';
+import { IConfigurableFormComponent, ShaForm } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import { SettingOutlined } from '@ant-design/icons';
-import { SettingsControlRenderer } from './settingsControlRenderer';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import { SettingComponentContainer } from './settingContainer/settingComponentContainer';
+import { getActualModel, useAvailableConstantsData, useDeepCompareMemo } from '@/index';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
-    sourceComponent?: IConfigurableFormComponent;
-    exposedVariables?: ICodeExposedVariable[];
+  exposedVariables?: ICodeExposedVariable[];
+  components?: IConfigurableFormComponent[];
 }
 
 const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
-    type: 'setting',
-    isInput: true,
-    isOutput: true,
-    name: 'Setting',
-    icon: <SettingOutlined />,
-    Factory: ({ model }) => {
-        const component: IConfigurableFormComponent = useMemo(() => {
-            return {
-                ...model?.sourceComponent,
-                hideLabel: true,
-                readOnly: model?.readOnly,
-                editMode: model.editMode,
-                hidden: model.hidden
-            };
-        }, [model.hidden, model?.readOnly, model?.id]);
+  type: 'setting',
+  isInput: true,
+  isOutput: true,
+  name: 'Setting',
+  icon: <SettingOutlined />,
+  Factory: ({ model }) => {
 
-        const props = { ...(!!model?.label ? model : model?.sourceComponent) };
+    const sourceComponent = ShaForm.useChildComponents(model.id)[0];
 
-        if (model.hidden) return null;
+    const allData = useAvailableConstantsData();
 
-        return (
-            <ConfigurableFormItem model={props} className='sha-js-label' >
-                {(value, onChange) => (
-                    <SettingsControl
-                        readOnly={model.readOnly}
-                        propertyName={model.propertyName}
-                        mode={'value'}
-                        onChange={onChange}
-                        value={value}
-                        exposedVariables={model.exposedVariables}
-                    >
-                        {(_valueValue, _onChangeValue, propertyName) => {
-                            return (
-                                <SettingsControlRenderer
-                                    id={props.id}
-                                    component={component}
-                                    propertyName={propertyName}
-                                />
-                            );
-                        }}
-                    </SettingsControl>
-                )}
-            </ConfigurableFormItem>
-        );
-    },
-    settingsFormMarkup: getSettings(),
-    migrator: (m) => m
-        .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev))
-    ,
+    const actualSourceComponent = useDeepCompareMemo(() => {
+      return getActualModel(sourceComponent, allData, model.readOnly);
+    }, [sourceComponent, allData.lastUpdated]);
+
+    const component: IConfigurableFormComponent = useMemo(() => {
+      return {
+        ...actualSourceComponent,
+        hideLabel: true,
+        readOnly: model?.readOnly,
+        editMode: model.editMode,
+        hidden: model.hidden
+      };
+    }, [model.hidden, model?.readOnly, model?.id, actualSourceComponent]);
+
+    if (model.hidden) return null;
+    
+    return (
+        <ConfigurableFormItem model={model} className='sha-js-label' labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
+            {(value, onChange) => (
+                <SettingsControl
+                    readOnly={model.readOnly}
+                    propertyName={model.propertyName}
+                    mode={'value'}
+                    onChange={onChange}
+                    value={value}
+                    exposedVariables={model.exposedVariables}
+                >
+                    {(_valueValue, _onChangeValue, propertyName) => {
+                      return (
+                          <SettingComponentContainer containerId={model.id} propertyName={propertyName} component={component} />
+                      );
+                    }}
+                </SettingsControl>
+            )}
+        </ConfigurableFormItem>
+    );
+  },
+  settingsFormMarkup: getSettings(),
+  migrator: (m) => m
+    .add<ISettingsComponentProps>(0, (prev) => migrateReadOnly(prev))
+  ,
 };
 
 export default SettingsComponent;
