@@ -1,6 +1,7 @@
 using Abp.Domain.Repositories;
 using NHibernate.Linq;
 using Shesha.Authorization;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using System;
 using System.Linq;
@@ -100,6 +101,16 @@ namespace ShaCompanyName.ShaProjectName.Common.Authorization
         public async Task<bool> IsGlobalAdmin(Person person)
         {
             return await IsInAnyOfRoles(person, CommonRoles.GlobalAdmin);
+        }
+
+        Task<bool> ICustomPermissionChecker.IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool ICustomPermissionChecker.IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            throw new NotImplementedException();
         }
     }
 }
