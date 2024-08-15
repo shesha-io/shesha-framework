@@ -108,7 +108,6 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   }, [metadata?.properties, containerPath, containerPathMultiple]);
 
   const onSelect = (data: string) => {
-    if (props.onChange) props.onChange(data);
     const property = getProperty(data);
     if (props.onSelect) {
       props.onSelect(data, property);
@@ -119,6 +118,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
         action(property, form);
       }
     }
+    if (props.onChange) props.onChange(data);
   };
 
   const selectMultipleVlaue = (data: string) => {
