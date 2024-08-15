@@ -400,7 +400,7 @@ export const getSettings = (data: any) =>
           .addDropdown({
             id: nanoid(),
             propertyName: 'borderStyle',
-            label: 'Border Style',
+            label: 'Border Type',
             labelAlign: 'right',
             dataSourceType: "values",
             values: [

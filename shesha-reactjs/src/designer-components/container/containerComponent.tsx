@@ -12,6 +12,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { CSSProperties } from 'styled-components';
 import { toSizeCssProp } from '@/utils/form';
+import { useTheme } from 'antd-style';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -22,6 +23,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const { globalState } = useGlobalState();
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const [ fileUrl, setFileUrl] = useState(null);
+    const theme = useTheme();
 
     useEffect(() => {
       if (model.backgroundDataSource === 'storedFileId' && model.backgroundStoredFileId) {
@@ -72,9 +74,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     };
 
     const borderStyles: CSSProperties = {
-      borderWidth: toSizeCssProp(model.borderWidth),
-      borderColor: model.borderColor,
-      borderStyle: model.borderStyle,
+      borderWidth: toSizeCssProp(model.borderWidth) || 0,
+      borderColor: model.borderColor || theme.colorBorder,
+      borderStyle: model.borderStyle || 'solid',
       borderRadius: toSizeCssProp(model.borderRadius),
     };
 
