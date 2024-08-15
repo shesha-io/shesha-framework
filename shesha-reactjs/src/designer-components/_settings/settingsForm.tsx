@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interfaces";
-import { getValuesFromSettings, updateSettingsFromVlues } from './utils';
+import { getValuesFromSettings, updateSettingsFromValues } from './utils';
 import { createNamedContext } from '@/utils/react';
 import { mergeWith } from 'lodash';
 import { DEFAULT_FORM_SETTINGS, FormProvider, IPropertyMetadata } from '@/index';
@@ -49,10 +49,11 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
         };
 
     const valuesChange = (changedValues) => {
-        const incomingState = updateSettingsFromVlues(state.model, changedValues);
-        setState({model: incomingState, values: getValuesFromSettings(incomingState)});
-        onValuesChange(changedValues, incomingState);
-        form.setFieldsValue(incomingState);
+      const model = form.getFieldValue([]);
+      const incomingState = updateSettingsFromValues(model, changedValues);
+      setState({model: incomingState, values: getValuesFromSettings(incomingState)});
+      onValuesChange(changedValues, incomingState);
+      form.setFieldsValue(incomingState);
     };
     
     const settingsChange = (changedValues) => {

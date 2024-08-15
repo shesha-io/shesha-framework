@@ -31,7 +31,7 @@ export const getPropertySettingsFromData = (data: any, propName: string): IPrope
         return { _mode: 'value', _code: undefined, _value: val };
 };
 
-export const updateSettingsFromVlues = <T,>(model: T, values: T): T => {
+export const updateSettingsFromValues = <T,>(model: T, values: T): T => {
     const copy = { ...model };
     Object.keys(values).forEach(k => {
       if (isPropertySettings(copy[k]) && !isPropertySettings(values[k]))
