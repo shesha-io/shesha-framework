@@ -19,6 +19,7 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
   type: 'section',
   name: 'Section',
   icon: <BorderLeftOutlined />,
+  isOutput: true,
   Factory: ({ model }) => {
     const { getSection, formMode } = useForm();
     const { data: formData } = useFormData();
