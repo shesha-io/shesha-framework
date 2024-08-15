@@ -252,8 +252,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.events.onSubmitSuccess = makeCaller<void, void>(settings.onSubmitSuccess);
         this.events.onSubmitFailed = makeCaller<void, void>(settings.onSubmitFailed);
 
-        this.events.onBeforeShow = makeCaller<void, void>(settings.onBeforeShow);
-        this.events.onAfterShow = makeCaller<void, void>(settings.onAfterShow);
+        this.events.onBeforeDataLoad = makeCaller<void, void>(settings.onBeforeDataLoad);
+        this.events.onAfterDataLoad = makeCaller<void, void>(settings.onAfterDataLoad);
         this.events.onValuesChanged = makeCaller<Values, void>(settings.onValuesChanged);
 
         this.modelMetadata = settings.modelType
@@ -280,8 +280,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             this.form = form;
             await this.applyFormSettingsAsync();
 
-            if (this.events.onBeforeShow)
-                await this.events.onBeforeShow();
+            if (this.events.onBeforeDataLoad)
+                await this.events.onBeforeDataLoad();
 
             this.markupLoadingState = { status: 'ready' };
             this.forceRootUpdate();
@@ -311,8 +311,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             this.form = form;
             await this.applyFormSettingsAsync();
 
-            if (this.events.onBeforeShow)
-                await this.events.onBeforeShow();
+            if (this.events.onBeforeDataLoad)
+                await this.events.onBeforeDataLoad();
 
             this.markupLoadingState = { status: 'ready' };
             this.forceRootUpdate();
@@ -336,8 +336,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             };
             await this.applyFormSettingsAsync();
 
-            if (this.events.onBeforeShow)
-                await this.events.onBeforeShow();
+            if (this.events.onBeforeDataLoad)
+                await this.events.onBeforeDataLoad();
 
             this.markupLoadingState = { status: 'ready' };
             this.forceRootUpdate();
@@ -370,8 +370,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.dataLoadingState = { status: 'ready', hint: null, error: null };
         this.forceRootUpdate();
 
-        if (this.events.onAfterShow)
-            await this.events.onAfterShow();
+        if (this.events.onAfterDataLoad)
+            await this.events.onAfterDataLoad();
     };
 
     initByMarkup = async (payload: InitByMarkupPayload): Promise<void> => {
@@ -387,8 +387,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         await this.loadData(formArguments);
 
-        if (this.events.onAfterShow)
-            await this.events.onAfterShow();
+        if (this.events.onAfterDataLoad)
+            await this.events.onAfterDataLoad();
     };
 
     initByFormId = async (payload: InitByFormIdPayload): Promise<void> => {
@@ -407,8 +407,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         await this.loadFormByIdAsync();
         await this.loadData(formArguments);
 
-        if (this.events.onAfterShow)
-            await this.events.onAfterShow();
+        if (this.events.onAfterDataLoad)
+            await this.events.onAfterDataLoad();
     };
 
     private get dataLoader(): IFormDataLoader {

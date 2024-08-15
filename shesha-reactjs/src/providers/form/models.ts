@@ -255,8 +255,8 @@ export interface IFormLifecycleSettings {
   dataSubmittersSettings?: IDictionary<object>;
 
   //#region lifecycle 
-  onBeforeShow?: string;
-  onAfterShow?: string;
+  onBeforeDataLoad?: string;
+  onAfterDataLoad?: string;
 
   onValuesChanged?: string;
 

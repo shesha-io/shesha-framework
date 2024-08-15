@@ -11,22 +11,6 @@ import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entiti
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
 
-export interface IFormSettingsNew {
-    loaderType: LoaderType;
-    loaderSettings?: any;
-
-    onValuesUpdate?: string;
-    onBeforeShow?: string;
-    onAfterShow?: string;
-
-    submitterType: SubmitType;
-    submitterSettings?: any;
-
-    onBeforeSubmit?: string;
-    onSubmitSuccess?: string;
-    onSubmitFailed?: string;
-}
-
 export interface InitByFormIdPayload {
     formId: FormIdentifier;
     configurationItemMode: ConfigurationItemsViewMode;
@@ -122,8 +106,8 @@ export interface SubmitRelatedEvents<Values = any> {
 }
 
 export interface LiveFormEvents<Values = any> {
-    onBeforeShow?: () => Promise<void>;
-    onAfterShow?: () => Promise<void>;
+    onBeforeDataLoad?: () => Promise<void>;
+    onAfterDataLoad?: () => Promise<void>;
     onValuesChanged?: (data: Values) => Promise<void>;
     // TODO: handle for internal purposes (settings forms etc.)
     //onValuesChange?: (changedValues: any, values: Values) => void;

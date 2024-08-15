@@ -15,7 +15,7 @@ const getPrepareSubmitData = (preparedValues: string): string => {
     return { ..data, ...preparedValues() };`;
 };
 
-const getBeforeDataLoaded = (onInitialized: string): string => {
+const getBeforeDataLoad = (onInitialized: string): string => {
     let result = `    form.setFieldsValue({...form.formArguments});`;
     const normalizedJs = onInitialized?.trim();
     if (normalizedJs)
@@ -23,7 +23,7 @@ const getBeforeDataLoaded = (onInitialized: string): string => {
     return result;
 };
 
-const getAfterDataLoaded = (onDataLoaded: string, initialValues?: IKeyValue[]): string => {
+const getAfterDataLoad = (onDataLoaded: string, initialValues?: IKeyValue[]): string => {
     if (!initialValues || initialValues.length === 0)
         return null;
     
@@ -105,8 +105,8 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
             'gql': gqlSubmitterSettings,
         },
 
-        onBeforeShow: getBeforeDataLoaded(onInitialized),
-        onAfterShow: getAfterDataLoaded(onDataLoaded),
+        onBeforeDataLoad: getBeforeDataLoad(onInitialized),
+        onAfterDataLoad: getAfterDataLoad(onDataLoaded),
 
         onValuesChanged: onUpdate,
 
