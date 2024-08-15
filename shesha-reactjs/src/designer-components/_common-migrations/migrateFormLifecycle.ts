@@ -1,6 +1,49 @@
 import { IFormLifecycleSettings, IFormSettings } from "@/interfaces";
+import { IKeyValue } from "@/interfaces/keyValue";
 import { GqlLoaderSettings } from "@/providers/form/loaders/interfaces";
 import { GqlSubmitterSettings } from "@/providers/form/submitters/interfaces";
+import { extractJsFieldFromKeyValue } from "./keyValueUtils";
+
+const getPrepareSubmitData = (preparedValues: string): string => {
+    const normalizedPreparedValues = (preparedValues ?? "").trim();
+    if (!normalizedPreparedValues)
+        return null;
+
+    return `    const preparedValues = () => {
+    ${normalizedPreparedValues}
+    };
+    return { ..data, ...preparedValues() };`;
+};
+
+const getBeforeDataLoaded = (onInitialized: string): string => {
+    let result = `    form.setFieldsValue({...form.formArguments});`;
+    const normalizedJs = onInitialized?.trim();
+    if (normalizedJs)
+        result += `    ${normalizedJs}`;
+    return result;
+};
+
+const getAfterDataLoaded = (onDataLoaded: string, initialValues?: IKeyValue[]): string => {
+    if (!initialValues || initialValues.length === 0)
+        return null;
+    
+    let result = "    const initialValues = {\r\n";
+    initialValues.forEach(item => {
+        if (item.key) {
+            const value = extractJsFieldFromKeyValue(item.value?.trim());
+            const currentPropLine = `        ${item.key}: ${value},\r\n`;
+            result += currentPropLine;
+        }
+    });
+    result += "    };\r\n";
+    result += "    form.setFieldsValue(initialValues);";
+
+    const normalizedJs = onDataLoaded?.trim();
+    if (normalizedJs)
+        result += `    ${normalizedJs}`;    
+
+    return result;
+};
 
 export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => {
     const {
@@ -62,11 +105,12 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
             'gql': gqlSubmitterSettings,
         },
 
-        onBeforeShow: onInitialized,
-        onAfterShow: onDataLoaded,
+        onBeforeShow: getBeforeDataLoaded(onInitialized),
+        onAfterShow: getAfterDataLoaded(onDataLoaded),
 
         onValuesChanged: onUpdate,
 
+        onPrepareSubmitData: getPrepareSubmitData(preparedValues),
         onBeforeSubmit: null,
         onSubmitSuccess: null,
         onSubmitFailed: null,

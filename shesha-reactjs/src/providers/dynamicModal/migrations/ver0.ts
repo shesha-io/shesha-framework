@@ -3,6 +3,7 @@ import { IShowModalActionArguments } from "../configurable-actions/show-dialog-a
 import { IKeyValue } from "@/interfaces/keyValue";
 import { ButtonGroupItemProps } from "@/providers/buttonGroupConfigurator";
 import { ModalFooterButtons } from "../models";
+import { extractJsFieldFromKeyValue } from "@/designer-components/_common-migrations/keyValueUtils";
 
 export interface IShowModalActionArgumentsV0 {
     modalTitle: string;
@@ -21,46 +22,6 @@ export interface IShowModalActionArgumentsV0 {
     submitHttpVerb?: 'POST' | 'PUT';
 }
 
-interface DotNotation {
-    owner: string;
-    restPath: string;
-}
-
-const unquoteMustache = (value: string, quoteNumber: number): string | undefined => {
-    const regex = new RegExp(`^{{${quoteNumber}}([^{]+[^}]+)}{${quoteNumber}}$`);
-    const match = value?.match(regex);
-    return match && match.length === 2
-        ? match[1]
-        : undefined;
-};
-
-const extractMustache = (value: string): string | undefined => unquoteMustache(value, 2) ?? unquoteMustache(value, 3);
-
-const splitDotNotation = (value: string): DotNotation | undefined => {
-    const firstDot = value.indexOf('.');
-    return firstDot > -1
-        ? { owner: value.substring(0, firstDot), restPath: value.substring(firstDot + 1) }
-        : undefined;
-};
-
-const knownOwners = ['data', 'selectedRow', 'form'];
-const valuesToUnwrap = ['true', 'false'];
-const extractValue = (value: string): string => {
-    const mustacheExpression = extractMustache(value);
-    if (mustacheExpression) {
-        const dotNotation = splitDotNotation(mustacheExpression);
-        if (dotNotation) {
-            return knownOwners.includes(dotNotation.owner)
-                ? `${dotNotation.owner}.${dotNotation.restPath}`
-                : `application.utils.evaluateString("${value}")`; // TODO: pass context
-        }
-    }
-
-    const normalized = value?.toLowerCase();
-    return valuesToUnwrap.includes(normalized)
-        ? normalized
-        : `"${value}"`;
-};
 const makeEvaluatorFromItems = (items: IKeyValue[]): string => {
     if (!items)
         return undefined;
@@ -68,7 +29,7 @@ const makeEvaluatorFromItems = (items: IKeyValue[]): string => {
     let propsList = "    return {\r\n";
     items.forEach(item => {
         if (item.key) {
-            const value = extractValue(item.value?.trim());
+            const value = extractJsFieldFromKeyValue(item.value?.trim());
             const currentPropLine = `        ${item.key}: ${value},\r\n`;
             propsList += currentPropLine;
         }

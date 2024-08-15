@@ -364,6 +364,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         this.initialValues = initialValues;
         this.formData = initialValues;
+        this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
         //await this.loadData(formArguments);
         this.dataLoadingState = { status: 'ready', hint: null, error: null };
@@ -448,6 +449,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             this.dataLoadingState = { status: 'ready' };
             this.initialValues = data;
             this.formData = data;
+            this.antdForm.resetFields();
             this.antdForm.setFieldsValue(data);
             this.forceRootUpdate();
 
