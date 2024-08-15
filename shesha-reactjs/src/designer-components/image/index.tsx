@@ -57,8 +57,6 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     const ownerId = evaluateValue(model.ownerId, { data, globalState });
     const theme = useTheme();
 
-    console.log(theme.colorBorder, "app theme")
-
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
