@@ -4,7 +4,7 @@ import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interf
 import { getValuesFromSettings, updateSettingsFromVlues } from './utils';
 import { createNamedContext } from '@/utils/react';
 import { mergeWith } from 'lodash';
-import { FormProvider, IPropertyMetadata } from '@/index';
+import { DEFAULT_FORM_SETTINGS, FormProvider, IPropertyMetadata } from '@/index';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 
 interface SettingsFormState<TModel> {
@@ -96,7 +96,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
     };
 
     return (
-      <FormProvider name={''} formSettings={undefined} mode={'edit'} isActionsOwner={false} actions={{linkToModelMetadata}}>
+      <FormProvider name={''} formSettings={DEFAULT_FORM_SETTINGS} mode={'edit'} isActionsOwner={false} actions={{linkToModelMetadata}}>
         <SettingsFormStateContext.Provider value={state}>
             <SettingsFormActionsContext.Provider value={SettingsFormActions}>
                 <Form
