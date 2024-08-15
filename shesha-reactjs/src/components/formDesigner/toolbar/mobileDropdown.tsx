@@ -32,7 +32,7 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
             }}
             options={[
               {
-                value: '320',
+                value: '375',
                 label: 'iPhone SE',
               },
               {
@@ -48,7 +48,7 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
                 label: 'iPhone 14 Pro Max',
               },
               {
-                value: '411',
+                value: '412',
                 label: 'Pixel 7',
               },
               {
@@ -56,7 +56,7 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
                 label: 'Samsung Galaxy S8+',
               },
               {
-                value: '321',
+                value: '412',
                 label: 'Samsung Galaxy S20 Ultra',
               },
               {
@@ -64,7 +64,7 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
                 label: 'iPad Mini',
               },
               {
-                value: '834',
+                value: '820',
                 label: 'iPad Air',
               },
               {
@@ -72,7 +72,7 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
                 label: 'iPad Pro',
               },
               {
-                value: '1025',
+                value: '912',
                 label: 'Surface Pro 7',
               },
               {
@@ -80,19 +80,19 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
                 label: 'Surface Duo',
               },
               {
-                value: '280',
+                value: '344',
                 label: 'Galaxy Z Fold 5',
               },
               {
-                value: '1920',
+                value: '853',
                 label: 'Asus Zenbook Fold',
               },
               {
-                value: '1080',
+                value: '412',
                 label: 'Samsung Galaxy A51/71',
               },
               {
-                value: '1023',
+                value: '1024',
                 label: 'Nest Hub',
               },
               {

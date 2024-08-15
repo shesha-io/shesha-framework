@@ -492,6 +492,24 @@ namespace Shesha.Permissions
             RemoveCache(GetCacheKey(eventData.Entity.Object, eventData.Entity.Type));
         }
 
+        /// <summary>
+        /// Gets all permissioned shesha forms with anonymous access
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<PermissionedObjectDto>> GetObjectsByAccess(string type, RefListPermissionedAccess access)
+        {
+            var forms = (await _permissionedObjectRepository.GetAll()
+                .ToListAsync())
+                .Select(async x => {
+                    var dto = await GetDtoAsync(x);
+                    await SetCacheAsync(dto);
+                    return dto;
+                }).Where(x => x.Result.Type == type && x.Result.ActualAccess == access)
+                .Select(x => x.Result)
+                .ToList();
+            return forms;
+        }
+
         private class PermissionedObjectRelations
         {
             public PermissionedObjectRelations()
