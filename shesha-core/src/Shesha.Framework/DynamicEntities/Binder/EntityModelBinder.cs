@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Reflection;
 using Newtonsoft.Json;
@@ -88,6 +89,7 @@ namespace Shesha.DynamicEntities.Binder
             ;
         }
 
+        [UnitOfWork]
         public async Task<bool> BindPropertiesAsync(JObject jobject, object entity, EntityModelBindingContext context,
             string propertyName = null, List<string> formFields = null)
         {
