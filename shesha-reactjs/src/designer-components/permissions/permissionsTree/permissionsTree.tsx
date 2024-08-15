@@ -31,6 +31,8 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   type: 'permissionsTree',
   name: 'Permissions tree',
   icon: <ApartmentOutlined />,
+  isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
     if (model.mode === 'Edit') {
       return (

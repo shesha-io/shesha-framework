@@ -9,6 +9,8 @@ import { IToolboxComponent } from '@/interfaces';
 const ButtonsComponent: IToolboxComponent<IButtonsComponentProps> = {
   type: 'buttons',
   name: 'Buttons',
+  isInput: true,
+  isOutput: true,
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
     return (

@@ -16,8 +16,6 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   type: 'datatableContext',
   name: 'DataTable Context',
   icon: <LayoutOutlined />,
-  isOutput: true,
-  isInput: true,
   Factory: ({ model }) => {
     return model.hidden ? null : <TableContext {...model} />;
   },

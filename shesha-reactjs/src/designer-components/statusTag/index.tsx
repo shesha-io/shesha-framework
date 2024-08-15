@@ -19,7 +19,7 @@ export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, 
 const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
   type: 'statusTag',
   name: 'Status Tag',
-  isInput: true,
+  isOutput: true,
   icon: <ArrowsAltOutlined />,
   Factory: ({ model }) => {
     const { globalState } = useGlobalState();
