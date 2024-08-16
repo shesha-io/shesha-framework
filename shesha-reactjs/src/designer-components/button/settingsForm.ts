@@ -245,6 +245,7 @@ export const getSettings = (data: any) =>
             propertyName: 'fontWeight',
             parentId: 'root',
             label: 'Font Weight',
+            description: "Enter a numeric value between 100 and 900. Standard values: 400 for normal, 700 for bold. Lower values (100-300) are lighter, and higher values (800-900) are heavier."
           })
           .addTextField({
             id: 'd498779d-012a-4c6a-82a9-77231245ce33',
