@@ -31,6 +31,7 @@ import { useSheshaApplication } from '@/providers';
 import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { addPx } from '../util';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -40,13 +41,26 @@ type MenuButton = ButtonGroupItemProps & {
     childItems?: MenuButton[];
 };
 
-const renderButton = (props: ButtonGroupItemProps, uuid: string, size: SizeType, appContext: IApplicationContext,form?: FormInstance<any>) => {
+const renderButton = (props: ButtonGroupItemProps, uuid: string, size: SizeType, appContext: IApplicationContext, form?: FormInstance<any>) => {
+    const { width, height, backgroundColor, fontSize, color, fontWeight, borderWidth, borderColor, borderStyle, borderRadius } = props;
+    const newStyles = {
+        width: addPx(width),
+        height: addPx(height),
+        backgroundColor: backgroundColor,
+        fontSize: addPx(fontSize),
+        color: color,
+        fontWeight: fontWeight,
+        borderWidth: addPx(borderWidth),
+        borderColor: borderColor,
+        borderStyle: borderStyle,
+        borderRadius: addPx(borderRadius)
+    };
     return (
         <ConfigurableButton
             key={uuid}
             {...props}
             size={size}
-            style={getStyle(props?.style, appContext.data)}
+            style={{ ...getStyle(props?.style, appContext.data), ...newStyles }}
             readOnly={props.readOnly}
             buttonType={props.buttonType}
             form={form}

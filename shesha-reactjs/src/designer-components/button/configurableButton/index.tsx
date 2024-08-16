@@ -6,7 +6,7 @@ import { IButtonItem } from '@/providers/buttonGroupConfigurator/models';
 import { CSSProperties } from 'react';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { isNavigationActionConfiguration, useShaRouting } from '@/index';
+import { isNavigationActionConfiguration, useShaRouting, useTheme } from '@/index';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
@@ -21,6 +21,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const { executeAction, useActionDynamicContext, prepareArguments } = useConfigurableActionDispatcher();
   const dynamicContext = useActionDynamicContext(actionConfiguration);
 
+  const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
@@ -59,6 +60,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
     return getUrlFromNavigationRequest(preparedArguments);
   }, [actionConfiguration], "");
 
+  const isSameUrl = navigationUrl === window.location.href;
+
   return (
     <Button
       href={navigationUrl}
@@ -69,10 +72,11 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       type={props.buttonType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
+      iconPosition={props.iconPosition}
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
       size={props?.size}
       disabled={buttonDisabled}
-      style={props?.style}
+      style={{ ...props?.style, ...(isSameUrl && { background: theme.application.primaryColor, color: theme.text.default }) }}
     >
       {props.label}
     </Button>
