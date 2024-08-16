@@ -251,7 +251,8 @@
           "type": "colorPicker",
           "propertyName": "backgroundColor",
           "parentId": "root",
-          "label": "Background Color"
+          "label": "Background Color",
+          "allowClear": true
         },
         {
           "id": "d498779d-012a-4c6a-82a9-77231234ve28",
@@ -265,7 +266,8 @@
           "type": "colorPicker",
           "propertyName": "color",
           "parentId": "root",
-          "label": "Color"
+          "label": "Color",
+          "allowClear": true
         },
         {
           "id": "d498779d-012a-4c6a-82c9-00731245ae28",
@@ -286,7 +288,8 @@
           "type": "colorPicker",
           "propertyName": "borderColor",
           "parentId": "root",
-          "label": "Border Color"
+          "label": "Border Color",
+          "allowClear": true
         },
         {
           "id": "d498779d-012a-4c6a-10ma9-77231245ae28",

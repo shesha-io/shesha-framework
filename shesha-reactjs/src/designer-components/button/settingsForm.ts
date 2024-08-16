@@ -225,6 +225,7 @@ export const getSettings = (data: any) =>
             propertyName: 'backgroundColor',
             parentId: 'root',
             label: 'Background Color',
+            allowClear: true
           })
           .addTextField({
             id: 'd498779d-012a-4c6a-82a9-77231234ve28',
@@ -237,6 +238,7 @@ export const getSettings = (data: any) =>
             propertyName: 'color',
             parentId: 'root',
             label: 'Color',
+            allowClear: true
           })
           .addTextField({
             id: 'd498779d-012a-4c6a-82c9-00731245ae28',
@@ -255,6 +257,7 @@ export const getSettings = (data: any) =>
             propertyName: 'borderColor',
             parentId: 'root',
             label: 'Border Color',
+            allowClear: true
           })
           .addDropdown({
             id: 'd498779d-012a-4c6a-10ma9-77231245ae28',
