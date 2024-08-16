@@ -18,6 +18,7 @@ import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { useMetadataDispatcher } from "@/providers";
+import { isEmpty } from 'lodash';
 
 type ForceUpdateTrigger = () => void;
 interface ShaFormInstanceArguments {
@@ -149,6 +150,9 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
     setFormData = (payload: ISetFormDataPayload) => {
         const { values, mergeValues } = payload;
+        if (isEmpty(values) && mergeValues)
+            return;
+
         const newData = payload.mergeValues && this.formData
             ? { ...this.formData, ...values }
             : values;

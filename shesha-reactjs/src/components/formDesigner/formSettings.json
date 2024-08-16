@@ -1886,8 +1886,7 @@
                 }
             ],
             "version": 2,
-            "tabType": "line",
-            "defaultActiveKey": "tbData"
+            "tabType": "line"
         }
     ],
     "formSettings": {

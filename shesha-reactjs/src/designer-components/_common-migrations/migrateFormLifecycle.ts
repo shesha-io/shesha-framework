@@ -12,7 +12,7 @@ const getPrepareSubmitData = (preparedValues: string): string => {
     return `    const preparedValues = () => {
     ${normalizedPreparedValues}
     };
-    return { ..data, ...preparedValues() };`;
+    return { ...data, ...preparedValues() };`;
 };
 
 const getBeforeDataLoad = (onInitialized: string): string => {

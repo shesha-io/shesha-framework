@@ -112,14 +112,9 @@ export type IConfigurableFormRuntimeProps<Values = any> = {
    * @param response response data
    */
   onSubmitted?: (values: Values, response?: any, options?: object) => void;
-  parentFormValues?: Store;
 
   layout?: FormLayout;
   size?: SizeType;
-  /**
-   * External data fetcher, is used to refresh form data from the back-end.
-   */
-  refetchData?: () => Promise<any>;
   /**
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */

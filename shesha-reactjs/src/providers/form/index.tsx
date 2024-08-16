@@ -11,7 +11,7 @@ import {
   IFormStateContext,
   ISetFormDataPayload,
 } from './contexts';
-import { FormMode, IFormActions, IFormSections, IFormSettings, Store } from './models';
+import { FormMode, IFormActions, IFormSections, IFormSettings } from './models';
 import { getFilteredComponentIds } from './utils';
 import { useDeepCompareMemo } from '@/index';
 import { FormFlatMarkupProvider, useChildComponentIds, useChildComponents, useComponentModel, useFormMarkup } from './providers/formMarkupProvider';
@@ -44,19 +44,12 @@ export interface IFormProviderProps {
   actions?: IFormActions;
   sections?: IFormSections;
   formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
-  onValuesChange?: (changedValues: any, values: any /*Values*/) => void;
-  /**
-   * External data fetcher, is used to refresh form data from the back-end.
-   */
-  refetchData?: () => Promise<any>;
   /**
    * If true, form should register configurable actions. Should be enabled for main forms only
    */
   isActionsOwner: boolean;
 
   propertyFilter?: (name: string) => boolean;
-  initialValues?: Store;
-  parentFormValues?: Store;
   shaForm: IShaFormInstance;
 }
 
@@ -68,7 +61,6 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   sections,
   formRef,
   formSettings,
-  refetchData,
   isActionsOwner,
   propertyFilter,
   ...props

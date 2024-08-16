@@ -28,10 +28,6 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   } = props;
 
   const {
-    refetchData,
-
-    parentFormValues,
-    onValuesChange,
     form,
   } = props;
 
@@ -55,17 +51,11 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
           shaForm={shaForm}
           name={props.formName}
           formSettings={formSettings}
-          onValuesChange={onValuesChange}
           mode={mode}
           form={form}
           formRef={formRef}
-          // actions={actions}
-          // sections={sections}
-          refetchData={refetchData}
           isActionsOwner={isActionsOwner}
           propertyFilter={propertyFilter}
-          parentFormValues={parentFormValues}
-          initialValues={props.initialValues}
         >
           <Show when={Boolean(showFormInfo)}>
             <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
