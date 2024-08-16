@@ -240,12 +240,39 @@ export const getSettings = (data: any) =>
             label: 'Color',
             allowClear: true
           })
-          .addTextField({
+          .addDropdown({
             id: 'd498779d-012a-4c6a-82c9-00731245ae28',
             propertyName: 'fontWeight',
             parentId: 'root',
             label: 'Font Weight',
-            description: "Enter a numeric value between 100 and 900. Standard values: 400 for normal, 700 for bold. Lower values (100-300) are lighter, and higher values (800-900) are heavier."
+            dataSourceType: 'values',
+            values: [
+              {
+                id: 'c4a96833-8ed7-4085-8848-169d5607136d',
+                label: 'Thin',
+                value: '100',
+              },
+              {
+                id: 'c6f974da-ad28-44e5-8e4d-50280cf24ae7',
+                label: 'Normal',
+                value: '400',
+              },
+              {
+                id: '71c0dc14-0473-4748-ae75-a4ed3bd6c0fd',
+                label: 'Medium',
+                value: '500',
+              },
+              {
+                id: '71c0dc14-0473-4748-ae75-a4ed3bd90ffd',
+                label: 'Bold',
+                value: '700',
+              },
+              {
+                id: '71c04514-0473-4748-ae75-00ed3bd6cffd',
+                label: 'Extra bold',
+                value: '900',
+              }
+            ],
           })
           .addTextField({
             id: 'd498779d-012a-4c6a-82a9-77231245ce33',
