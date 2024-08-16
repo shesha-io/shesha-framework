@@ -4,6 +4,7 @@ import { httpApiDefinition } from "@/providers/sourceFileManager/api-utils/http"
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
+import { metadataBuilderDefinition } from '@/providers/sourceFileManager/api-utils/metadataBuilder';
 
 export const SheshaConstants = {
   http: "shesha:http",
@@ -118,6 +119,16 @@ export const registerFormAction: MetadataBuilderAction = (builder, name = "form"
     const definition: TypeDefinition = {
       typeName: 'FormApi',
       files: [{ content: formApiDefinition, fileName: 'apis/form.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerMetadataBuilderAction: MetadataBuilderAction = (builder, name = "metadataBuilder") => {
+  builder.addCustom(name, "Metadata builder", () => {
+    const definition: TypeDefinition = {
+      typeName: 'IMetadataBuilder',
+      files: [{ content: metadataBuilderDefinition, fileName: 'apis/metadataBuilder.ts' }],
     };
     return Promise.resolve(definition);
   });
