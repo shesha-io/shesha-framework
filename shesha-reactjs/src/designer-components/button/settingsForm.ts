@@ -246,6 +246,7 @@ export const getSettings = (data: any) =>
             parentId: 'root',
             label: 'Font Weight',
             dataSourceType: 'values',
+            description: "When using JS enter a numeric value between 100 and 900. Standard values: 400 for normal, 500 for medium, 700 for bold and 900 for extra bold",
             values: [
               {
                 id: 'c4a96833-8ed7-4085-8848-169d5607136d',

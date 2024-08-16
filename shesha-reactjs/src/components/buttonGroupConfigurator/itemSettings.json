@@ -275,6 +275,7 @@
           "propertyName": "fontWeight",
           "parentId": "root",
           "label": "Font Weight",
+          "description": "When using JS enter a numeric value between 100 and 900. Standard values: 400 for normal, 500 for medium, 700 for bold and 900 for extra bold",
           "dataSourceType": "values",
           "values": [
             {
