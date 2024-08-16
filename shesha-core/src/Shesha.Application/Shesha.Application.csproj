@@ -59,9 +59,6 @@
     <None Remove="ConfigMigrations\package20231105_1942.shaconfig" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ConfigMigrations\package20240123_1429.shaconfig" />
-    <EmbeddedResource Include="ConfigMigrations\package20240125_1144.shaconfig" />
-    <EmbeddedResource Include="ConfigMigrations\package20240130_1037.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240201_1221.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240208_1429.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240216_0954.shaconfig" />
@@ -71,7 +68,6 @@
     <EmbeddedResource Include="ConfigMigrations\package20240612_1013.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240617_1445.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240710_1635.shaconfig" />
-    <EmbeddedResource Include="ConfigMigrations\package20240711_1007.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240717_0924.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240717_0925.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240718_0640.shaconfig" />
@@ -80,7 +76,6 @@
     <EmbeddedResource Include="Excel\template.xlsx" />
     <EmbeddedResource Include="ConfigMigrations\package20230324_1835.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20230411_1238.shaconfig" />
-    <EmbeddedResource Include="ConfigMigrations\package20231105_1942.shaconfig" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.0" />
