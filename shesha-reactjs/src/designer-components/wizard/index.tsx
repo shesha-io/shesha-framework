@@ -18,6 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
+  isInput: false,
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   Factory: ({ model,form }) => {

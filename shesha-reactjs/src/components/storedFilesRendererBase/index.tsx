@@ -96,10 +96,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
 
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-
       if (status === 'done') {
         message.success(`${info.file.name} file uploaded successfully.`);
       } else if (status === 'error') {

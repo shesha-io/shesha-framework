@@ -21,6 +21,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentProps> = {
   type: 'collapsiblePanel',
+  isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {

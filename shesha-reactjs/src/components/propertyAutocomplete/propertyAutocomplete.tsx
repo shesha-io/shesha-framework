@@ -7,6 +7,7 @@ import { camelCase } from 'lodash';
 import { IPropertyMetadata, asPropertiesArray } from '@/interfaces/metadata';
 import camelcase from 'camelcase';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
+import { useConfigurableFormActions } from '@/providers/form/actions';
 
 export interface IPropertyAutocompleteProps {
   id?: string;
@@ -71,6 +72,7 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
   };
 
   const form = useForm(false);
+  const { linkToModelMetadata } = useConfigurableFormActions(false) ?? {};
 
   const containerPath = useMemo(() => {
     if (!props.value || Array.isArray(props.value))
@@ -112,11 +114,8 @@ export const PropertyAutocomplete: FC<IPropertyAutocompleteProps> = ({ mode = 's
     if (props.onSelect) {
       props.onSelect(data, property);
     }
-    if (props.autoFillProps !== false && form && !readOnly && property) {
-      const action = form.getAction(props.id, 'linkToModelMetadata');
-      if (typeof action === 'function') {
-        action(property, form);
-      }
+    if (props.autoFillProps !== false && form && !readOnly && property && linkToModelMetadata) {
+      linkToModelMetadata?.(property, form);
     }
     if (props.onChange) props.onChange(data);
   };

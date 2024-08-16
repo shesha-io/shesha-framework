@@ -101,7 +101,7 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
   );
 
   const context = {
-    data: allData.formData,
+    data: allData.data,
     globalState: allData.globalState,
   };
 

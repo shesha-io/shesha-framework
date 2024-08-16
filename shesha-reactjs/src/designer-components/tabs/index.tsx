@@ -19,6 +19,7 @@ type TabItem = TabsProps['items'][number];
 
 const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   type: 'tabs',
+  isInput: false,
   name: 'Tabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {

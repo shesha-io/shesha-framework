@@ -7,6 +7,7 @@ import { generateNewKey } from './utils';
 
 const TableTemplateComponent: IToolboxComponent = {
   type: 'datatable_template',
+  isInput: false,
   name: 'DataTable (Full)',
   isTemplate: true,
   icon: <TableOutlined />,

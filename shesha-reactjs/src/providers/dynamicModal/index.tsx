@@ -3,7 +3,7 @@ import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { EvaluationContext, evaluateKeyValuesToObject, recursiveEvaluator } from '../form/utils';
+import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
@@ -19,6 +19,7 @@ import {
 import { IModalProps } from './models';
 import DynamicModalReducer from './reducer';
 import { nanoid } from '@/utils/uuid';
+import { migrateToV0 } from './migrations/ver0';
 
 export interface IDynamicModalProviderProps { }
 
@@ -79,44 +80,44 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
         const { formMode, ...restArguments } = actionArgs;
 
-        const initialValues = evaluateKeyValuesToObject(actionArgs.additionalProperties, context ?? {});
-        const parentFormValues = context?.data ?? {};
+        const argumentsExpression = actionArgs.formArguments?.trim();
+        const argumentsPromise = argumentsExpression
+          ? executeScript(argumentsExpression, context)
+          : Promise.resolve(undefined);
 
-        const { modalWidth, customWidth, widthUnits } = actionArgs;
+        return argumentsPromise.then(dialogArguments => {
+          const parentFormValues = context?.data ?? {};
 
-        return new Promise((resolve, reject) => {
-          // fix wrong migration
-          const verb = !restArguments.submitHttpVerb || !Array.isArray(restArguments.submitHttpVerb)
-            ? restArguments.submitHttpVerb
-            : restArguments.submitHttpVerb[0];
+          const { modalWidth, customWidth, widthUnits } = actionArgs;
 
-          const modalProps: IModalProps = {
-            ...restArguments,
-            mode: formMode,
-            id: modalId,
-            title: actionArgs.modalTitle,
-            width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-            initialValues: initialValues,
-            parentFormValues: parentFormValues,
-            isVisible: true,
-            submitHttpVerb: verb,
-            onCancel: () => {
-              reject();
-            },
-            onSubmitted: (values) => {
-              removeModal(modalId);
-              resolve(values); // TODO: return result e.g. we may need to handle created entity id and navigate to edit/details page
-            },
-            onClose: (positive = false, result) => {
-              if (positive)
-                resolve(result);
-              else
-                reject(result);
-            },
+          return new Promise((resolve, reject) => {
+            const modalProps: IModalProps = {
+              ...restArguments,
+              mode: formMode,
+              id: modalId,
+              title: actionArgs.modalTitle,
+              width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+              formArguments: dialogArguments,
+              parentFormValues: parentFormValues,
+              isVisible: true,
+              onCancel: () => {
+                reject();
+              },
+              onSubmitted: (values) => {
+                removeModal(modalId);
+                resolve(values); // TODO: return result e.g. we may need to handle created entity id and navigate to edit/details page
+              },
+              onClose: (positive = false, result) => {
+                if (positive)
+                  resolve(result);
+                else
+                  reject(result);
+              },
             wrapper: context.configurableActionsDispatcherProxy,
-          };
+            };
 
-          createModal({ ...modalProps });
+            createModal({ ...modalProps });
+          });
         });
       },
       argumentsFormMarkup: dialogArgumentsForm,
@@ -131,7 +132,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       useDynamicContextHook: () => {
         const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy(false);
         return { configurableActionsDispatcherProxy };
-      }
+      },
+      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
     },
     actionDependencies
   );

@@ -5,6 +5,7 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { useForm, useSheshaApplication } from '@/index';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
@@ -14,7 +15,8 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
   const allData = useAvailableConstantsData();
   const formInstance = useForm();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { form, getToolboxComponent } = formInstance;
+  const { form } = formInstance;
+  const getToolboxComponent = useFormDesignerComponentGetter();
 
   const componentRef = useRef();
   const toolboxComponent = getToolboxComponent(model.type);

@@ -16,6 +16,7 @@ import { useStyles } from './styles';
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
   type: 'card',
+  isInput: false,
   name: 'Card',
   icon: <CodeSandboxSquareFilled />,
   Factory: ({ model }) => {

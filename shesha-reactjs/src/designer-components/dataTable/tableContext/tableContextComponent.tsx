@@ -14,6 +14,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   type: 'datatableContext',
+  isInput: false,
   name: 'DataTable Context',
   icon: <LayoutOutlined />,
   Factory: ({ model }) => {

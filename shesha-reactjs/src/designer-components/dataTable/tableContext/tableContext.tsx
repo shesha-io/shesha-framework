@@ -2,8 +2,6 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import DataTableProvider from '@/providers/dataTable';
 import React, {
     FC,
-    Fragment,
-    useEffect,
     useMemo
 } from 'react';
 import { Alert } from 'antd';
@@ -11,7 +9,6 @@ import { ConfigurableFormItem } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
 import {
-    useDataTableStore,
     useForm,
     useFormData,
     useNestedPropertyMetadatAccessor
@@ -21,37 +18,6 @@ import { ITableContextComponentProps } from './models';
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
 }
-
-const TableContextAccessor: FC<ITableContextComponentProps> = ({ id }) => {
-    const { registerActions } = useForm();
-    const { selectedRow, refreshTable, exportToExcel, setIsInProgressFlag } = useDataTableStore();
-
-    const toggleColumnsSelector = () => {
-        setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
-    };
-
-    const toggleAdvancedFilter = () => {
-        setIsInProgressFlag({ isFiltering: true, isSelectingColumns: false });
-    };
-
-    // register available actions, refresh on every table configuration loading or change of the table Id
-    useEffect(
-        () =>
-            registerActions(id, {
-                refresh: refreshTable,
-                toggleColumnsSelector,
-                toggleAdvancedFilter,
-                exportToExcel,
-            }),
-        [selectedRow]
-    );
-
-    return (
-        <Fragment>
-            <ComponentsContainer containerId={id} />
-        </Fragment>
-    );
-};
 
 export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
@@ -86,7 +52,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             />
         );
 
-    const provider = (getFieldValue = undefined, onChange = undefined) =>
+    const provider = (getFieldValue = undefined, onChange = undefined) => (
         <DataTableProvider
             userConfigId={props.id}
             entityType={entityType}
@@ -107,9 +73,9 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
             allowReordering={evaluateYesNo(allowReordering, formMode)}
             permanentFilter={permanentFilter}
         >
-            <TableContextAccessor {...props} />
+            <ComponentsContainer containerId={id} />
         </DataTableProvider>
-        ;
+    );
 
     if (props?.hidden) {
         return null;

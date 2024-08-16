@@ -2,9 +2,9 @@ import { getClosestTableId } from '@/providers/form/utils';
 import { IConfigurableActionColumnsProps, IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IModalProps } from '@/providers/dynamicModal/models';
-import { IShowModalActionArguments } from '@/providers/dynamicModal/configurable-actions/show-dialog-arguments';
 import { ITableComponentProps } from '../models';
 import { SettingsMigrationContext } from '@/interfaces';
+import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
@@ -84,16 +84,18 @@ const getShowDialogActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0)
         actionOwner: 'Common',
         actionName: 'Show Dialog',
     });
-    const convertedProps = oldColumn as Omit<IModalProps, 'formId'>; // very strange code, took it from column renderer
+    const convertedProps = oldColumn as Omit<IModalProps, 'formId'> & { 
+        submitHttpVerb?: 'POST' | 'PUT';
+        onSuccessRedirectUrl?: string;
+    }; // very strange code, took it from column renderer
 
-    const modalArguments: IShowModalActionArguments = {
+    const modalArguments: IShowModalActionArgumentsV0 = {
         modalTitle: oldColumn.modalTitle,
         formId: oldColumn.modalFormId,
         additionalProperties: oldColumn.additionalProperties,
         modalWidth: oldColumn.modalWidth,
 
         showModalFooter: convertedProps?.showModalFooter ?? false,
-        skipFetchData: convertedProps?.skipFetchData,
         submitHttpVerb: convertedProps?.submitHttpVerb,
     };
     actionConfiguration.actionArguments = modalArguments;

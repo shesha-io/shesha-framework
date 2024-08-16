@@ -12,6 +12,7 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps> = {
   type: 'htmlRender',
   name: 'HTML Render',
   icon: <HighlightOutlined />,
+  isInput: false,
   isOutput: true,
   Factory: ({ model }) => {
     const  ctx = useAvailableConstantsData();    

@@ -9,7 +9,6 @@ import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
 import { Select } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEntityAutocomplete } from '@/utils/autocomplete';
-import { useSubscribe } from '@/hooks';
 
 /**
  * Entity autocomplete
@@ -40,7 +39,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
     quickviewWidth,
-    subscribedEventNames,
     filter,
   } = props;
 
@@ -94,14 +92,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     // delay in ms
     200
   );
-
-  const debouncedClear = useDebouncedCallback((localValue) => {
-    searchEntity(localValue);
-
-    if (onChange) onChange(null);
-  }, 300);
-
-  useSubscribe(subscribedEventNames, () => debouncedClear(autocompleteText));
 
   const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
     if (!Boolean(localValue)) return undefined;

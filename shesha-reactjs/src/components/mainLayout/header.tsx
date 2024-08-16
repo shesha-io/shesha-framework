@@ -19,6 +19,9 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed }) => {
         <ConfigurableForm
           mode={'readonly'}
           formId={{ name: HEADER_CONFIGURATION.name, module: HEADER_CONFIGURATION.module }}
+          showFormInfoOverlay={false}
+          showDataLoadingIndicator={false}
+          showMarkupLoadingIndicator={false}
         />
       </div>
     </div>

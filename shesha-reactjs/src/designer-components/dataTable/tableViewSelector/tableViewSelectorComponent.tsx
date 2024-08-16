@@ -12,6 +12,7 @@ import { useDataTableStore } from '@/index';
 
 const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentProps> = {
   type: 'tableViewSelector',
+  isInput: false,
   name: 'Table view selector',
   icon: <SelectOutlined />,
   Factory: ({ model, componentRef }) => {

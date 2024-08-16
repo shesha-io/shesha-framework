@@ -17,6 +17,7 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   type: 'markdown',
   name: 'Markdown',
   icon: <EditOutlined />,
+  isInput: false,
   isOutput: true,
   Factory: ({ model }) => {
     return (

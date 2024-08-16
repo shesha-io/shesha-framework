@@ -40,6 +40,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent {
 
 const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
   type: 'attachmentsEditor',
+  isInput: true,
   name: 'File list',
   icon: <FolderAddOutlined />,
   Factory: ({ model }) => {

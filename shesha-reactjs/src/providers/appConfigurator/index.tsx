@@ -27,8 +27,9 @@ import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfigurat
 import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
+import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
 
-export interface IAppConfiguratorProviderProps {}
+export interface IAppConfiguratorProviderProps { }
 
 interface IAppConfiguratorModesState {
   mode: ConfigurationItemsViewMode;
@@ -41,8 +42,6 @@ interface IUseAppConfiguratorSettingsResponse extends IAppConfiguratorModesState
   setMode: (mode: ConfigurationItemsViewMode) => void;
   setIsInformerVisible: (isInformerVisible: boolean) => void;
 }
-
-const ITEM_MODE_HEADER = 'sha-config-item-mode';
 
 const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
   const [itemMode, setItemMode] = useLocalStorage<ConfigurationItemsViewMode>(
@@ -57,8 +56,8 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
   const { httpHeaders, setRequestHeaders } = useSheshaApplication();
 
   const setHeaderValue = (mode: ConfigurationItemsViewMode) => {
-    const currentHeaderValue = httpHeaders[ITEM_MODE_HEADER];
-    if (currentHeaderValue !== mode) setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+    const currentHeaderValue = httpHeaders[SheshaHttpHeaders.ConfigItemsMode];
+    if (currentHeaderValue !== mode) setRequestHeaders({ [SheshaHttpHeaders.ConfigItemsMode]: mode });
   };
 
   const hasRights = useMemo(() => {
@@ -74,23 +73,23 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
 
   const result: IUseAppConfiguratorSettingsResponse = hasRights
     ? {
-        mode: itemMode,
-        isInformerVisible: isFormInfoVisible,
-        setMode: (mode) => {
-          setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
-          setItemMode(mode);
-        },
-        setIsInformerVisible: setIsFormInfoVisible,
-      }
+      mode: itemMode,
+      isInformerVisible: isFormInfoVisible,
+      setMode: (mode) => {
+        setRequestHeaders({ [SheshaHttpHeaders.ConfigItemsMode]: mode });
+        setItemMode(mode);
+      },
+      setIsInformerVisible: setIsFormInfoVisible,
+    }
     : {
-        ...AppConfiguratorModeDefaults,
-        setMode: () => {
-          /*nop*/
-        },
-        setIsInformerVisible: () => {
-          /*nop*/
-        },
-      };
+      ...AppConfiguratorModeDefaults,
+      setMode: () => {
+        /*nop*/
+      },
+      setIsInformerVisible: () => {
+        /*nop*/
+      },
+    };
   return result;
 };
 

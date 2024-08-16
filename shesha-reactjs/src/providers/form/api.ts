@@ -728,6 +728,7 @@ export const useFormData = (args: UseFormDataArguments): UseFormDataResult => {
 
       // fetch data and resolve
       queryParams = { ...queryParams, properties: gqlFields };
+
       if (!queryParams['id'] && urlEvaluationData) {
         const initialValues = getMatchData(urlEvaluationData, 'initialValues');
         if (initialValues?.id) queryParams['id'] = initialValues?.id;
