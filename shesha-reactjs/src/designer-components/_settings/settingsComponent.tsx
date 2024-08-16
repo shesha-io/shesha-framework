@@ -6,13 +6,12 @@ import { IConfigurableFormComponent, ShaForm } from '@/providers';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
 import { SettingOutlined } from '@ant-design/icons';
-import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { SettingComponentContainer } from './settingContainer/settingComponentContainer';
 import { getActualModel, useAvailableConstantsData, useDeepCompareMemo } from '@/index';
 
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
-  exposedVariables?: ICodeExposedVariable[];
   components?: IConfigurableFormComponent[];
+  availableConstantsExpression?: string;
 }
 
 const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
@@ -52,7 +51,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                     mode={'value'}
                     onChange={onChange}
                     value={value}
-                    exposedVariables={model.exposedVariables}
+                    availableConstantsExpression={model.availableConstantsExpression}
                 >
                     {(_valueValue, _onChangeValue, propertyName) => {
                       return (
