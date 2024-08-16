@@ -13,9 +13,10 @@ export type IActionParameters = [{ key: string; value: string }];
 
 export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorComponentProps> = {
   type: 'component-selector',
-  isInput: true,
   name: 'Component selector',
   icon: <BorderOutlined />,
+  isInput: true,
+  isOutput: true,
   Factory: ({ model: passedModel }) => {
     const { style, ...model } = passedModel;
     const { data: formData } = useFormData();

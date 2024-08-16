@@ -27,11 +27,11 @@ import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
-interface IConfigurableFormComponentDesignerProps {
+export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
   componentRef: MutableRefObject<any>;
 }
-const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
+export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
   const { styles } = useStyles();
   const allData = useAvailableConstantsData({ topContextId: 'all' });
   const {

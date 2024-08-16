@@ -20,6 +20,7 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
   isInput: false,
   name: 'Section',
   icon: <BorderLeftOutlined />,
+  isOutput: true,
   Factory: ({ model }) => {
     const { formMode } = useForm();
     const sections = useConfigurableFormSections(false) ?? {};

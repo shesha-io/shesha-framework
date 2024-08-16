@@ -19,8 +19,7 @@ export interface IDataContextComponentProps extends IConfigurableFormComponent {
 
 const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     type: 'dataContext',
-    isInput: true,
-    isOutput: true,
+    isInput: false,
     name: 'DataContext ',
     icon: <CodeOutlined />,
     dataTypeSupported: () => false,

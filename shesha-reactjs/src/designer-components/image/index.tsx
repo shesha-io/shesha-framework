@@ -47,7 +47,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   name: 'Image',
   icon: <FileImageOutlined />,
   isInput: true,
-
+  isOutput: true,
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { formSettings } = useForm();

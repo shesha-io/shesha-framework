@@ -17,6 +17,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
   isInput: true,
+  isOutput: true,
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
   Factory: ({ model }) => {
