@@ -82,7 +82,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
   };
 
   const linkToModelMetadata = (metadata: IPropertyMetadata) => {
-    const currentModel = form.getFieldsValue() as TModel;
+    const currentModel = form.getFieldValue([]) as TModel;
 
     const wrapper = props.toolboxComponent.linkToModelMetadata
       ? m => linkComponentToModelMetadata(props.toolboxComponent, m, metadata)
