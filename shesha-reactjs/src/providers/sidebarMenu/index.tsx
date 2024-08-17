@@ -3,7 +3,7 @@ import React, {
   PropsWithChildren,
   useContext,
   useReducer
-  } from 'react';
+} from 'react';
 import SidebarMenuReducer from './reducer';
 import { getFlagSetters } from '../utils/flagsSetters';
 import { IHeaderAction } from './models';
@@ -47,28 +47,27 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
     if (item.hidden)
       return item;
 
-    if (item.requiredPermissions?.length > 0)
-      if (anyOfPermissionsGranted(item?.requiredPermissions))
-        return item;
-      else
-        return {...item, hidden: true};
+    const availableByPermissions = item.requiredPermissions?.length > 0
+      ? anyOfPermissionsGranted(item?.requiredPermissions)
+      : true;
 
     if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0)
-      return {...item, hidden: false, childItems: item.childItems.map((childItem) => requestItemVisible(childItem, itemsToCheck))} as ISidebarMenuItem;
+      return { ...item, hidden: !availableByPermissions, childItems: item.childItems.map((childItem) => requestItemVisible(childItem, itemsToCheck)) } as ISidebarMenuItem;
 
     if (
+      availableByPermissions &&
       isNavigationActionConfiguration(item.actionConfiguration)
       && item.actionConfiguration?.actionArguments?.navigationType === 'form'
       && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
       && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
     ) {
       // form navigation, check form permissions
-      const newItem = {...item, hidden: true};
+      const newItem = { ...item, hidden: true };
       itemsToCheck.push(newItem);
       return newItem;
-    } 
-    
-    return item;
+    }
+
+    return { ...item, hidden: !availableByPermissions };
   };
 
   const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
@@ -80,7 +79,7 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
       && item.actionConfiguration?.actionArguments?.formId?.module
     ) {
       // form navigation, check form permissions
-      const form = formsPermission.find(x => 
+      const form = formsPermission.find(x =>
         x.module === item.actionConfiguration?.actionArguments?.formId?.module
         && x.name === item.actionConfiguration?.actionArguments?.formId?.name
       );
@@ -110,9 +109,14 @@ const SidebarMenuProvider: FC<PropsWithChildren<ISidebarMenuProviderProps>> = ({
   useDeepCompareEffect(() => {
     const itemsToCheck = [];
     const localItems = items.map((item) => requestItemVisible(getActualModel(item, allData), itemsToCheck));
+    
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
-    }
+    } else
+      if (localItems.length > 0) {
+        // no forms to check set items as is
+        dispatch(setItemsAction([...items]));
+      }
   }, [items, allData]);
 
   const collapse = () => {
@@ -149,7 +153,7 @@ function useSidebarMenuState(require: boolean) {
     throw new Error('useSidebarMenuState must be used within a SidebarMenuProvider');
   }
 
-  return {...context, ...actions};
+  return { ...context, ...actions };
 }
 
 function useSidebarMenuActions(require: boolean) {
