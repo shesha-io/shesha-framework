@@ -10,7 +10,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             top: 4px;
             font-size: 12px;
             height: 20px;
-            width: 2.5rem;
+            width: max-content;
             margin-left: 5px;
             margin-right: 5px;
             display: flex;
@@ -39,6 +39,10 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
     const contentJs = cx(css`
         position: relative;
         top: 0px;
+
+        &.${prefixCls}-label {
+            font-weight: 300;
+        }
     `);
     const contentCode = cx(css`
         position: relative;

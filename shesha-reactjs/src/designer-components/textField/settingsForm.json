@@ -9,6 +9,7 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
+      "className": "collapsible-",
       "version": 4,
       "expandIconPosition": "start",
       "header": {

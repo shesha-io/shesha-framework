@@ -41,26 +41,27 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     }, [model.hidden, model?.readOnly, model?.id, actualSourceComponent]);
 
     if (model.hidden) return null;
-    
+
+    console.log('SettingsComponent', model, component);
     return (
-        <ConfigurableFormItem model={model} className='sha-js-label' labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
-            {(value, onChange) => (
-                <SettingsControl
-                    readOnly={model.readOnly}
-                    propertyName={model.propertyName}
-                    mode={'value'}
-                    onChange={onChange}
-                    value={value}
-                    availableConstantsExpression={model.availableConstantsExpression}
-                >
-                    {(_valueValue, _onChangeValue, propertyName) => {
-                      return (
-                          <SettingComponentContainer containerId={model.id} propertyName={propertyName} component={component} />
-                      );
-                    }}
-                </SettingsControl>
-            )}
-        </ConfigurableFormItem>
+      <ConfigurableFormItem model={model} className='sha-js-label' labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
+        {(value, onChange) => (
+          <SettingsControl
+            readOnly={model.readOnly}
+            propertyName={model.propertyName}
+            mode={'value'}
+            onChange={onChange}
+            value={value}
+            availableConstantsExpression={model.availableConstantsExpression}
+          >
+            {(_valueValue, _onChangeValue, propertyName) => {
+              return (
+                <SettingComponentContainer containerId={model.id} propertyName={propertyName} component={component} />
+              );
+            }}
+          </SettingsControl>
+        )}
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: getSettings(),

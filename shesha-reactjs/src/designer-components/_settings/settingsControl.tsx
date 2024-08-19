@@ -49,7 +49,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
       return Promise.reject("AvailableConstantsExpression is mandatory");
 
     const metadataBuilder = metadataBuilderFactory("baseProperties");
-  
+
     return executeScript<IObjectMetadata>(props.availableConstantsExpression, { data: formData, metadataBuilder });
   }, [props.availableConstantsExpression, metadataBuilderFactory, formData]);
 
@@ -81,7 +81,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
-  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: props.readOnly,
@@ -97,14 +97,13 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const editor = usePassedConstants
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor}/>
-    : <CodeEditorWithStandardConstants {...codeEditorProps}/>;
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
       <Button
         hidden={props.readOnly}
-        shape="round"
         className={styles.jsSwitch}
         type='primary'
         danger={mode === 'value' && !!code}

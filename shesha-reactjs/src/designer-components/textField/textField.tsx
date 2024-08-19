@@ -1,28 +1,28 @@
 import { CodeOutlined } from '@ant-design/icons';
-import { Input, message } from 'antd';
+import { ConfigProvider, Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import moment from 'moment';
-import React, { CSSProperties } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customEventHandler } from '@/components/formDesigner/components/utils';
+import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { FormMarkup } from '@/providers/form/models';
-import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import { ITextFieldComponentProps, TextType } from './interfaces';
-import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IconType, ShaIcon } from '@/components';
-import { toSizeCssProp } from '@/utils/form';
-import { removeUndefinedProps } from '@/utils/object';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { IconType, ShaIcon, ValidationErrors } from '@/components';
+import { TextFieldSettingsForm } from './settings';
+import { getSizeStyle } from '../styleDimensions/components/size/utils';
+import { getBorderStyle } from '../styleBorder/components/border/utils';
+import { getBackgroundStyle } from '../styleBackground/components/background/utils';
+import { getFontStyle } from '../styleFont/components/font/utils';
+import { useStyles } from './styles/styles';
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -48,33 +48,32 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
     const form = useForm();
+    const { styles } = useStyles();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const styling = JSON.parse(model.stylingBox || '{}');
-    const stylingBoxAsCSS = pickStyleFromModel(styling);
+    const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
+    const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border]);
+    const fontStyles = useMemo(() => getFontStyle(model.font), [model.font]);
+    const [backgroundStyles, setBackgroundStyles] = useState({});
 
-    const additionalStyles: CSSProperties = removeUndefinedProps({
-      height: toSizeCssProp(model.height),
-      width: toSizeCssProp(model.width),
-      borderWidth: model.hideBorder ? 0 : model.borderSize,
-      borderRadius: model.borderRadius,
-      borderStyle: model.borderType,
-      borderColor: model.borderColor,
-      backgroundColor: model.backgroundColor,
-      color: model.fontColor,
-      fontWeight: model.fontWeight,
-      fontSize: model.fontSize,
-      ...stylingBoxAsCSS,
-    });
-    const jsStyle = getStyle(model.style, formData);
-    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
+    useEffect(() => {
+      const fetchStyles = async () => {
+        getBackgroundStyle(model?.background).then((style) => {
+          setBackgroundStyles(style);
+        });
+      };
+      fetchStyles();
+    }, [model.background]);
 
+    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
+      return <ValidationErrors error="The provided StoredFileId is invalid" />;
+    }
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
-      className: 'sha-input',
+      className: `sha-input ${styles.textFieldInput}`,
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
@@ -83,7 +82,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: finalStyle,
+      style: { ...getStyle(model?.style, formData), ...sizeStyles, ...borderStyles, ...backgroundStyles, ...fontStyles },
     };
 
     const eventProps = {
@@ -114,13 +113,23 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
           };
           return inputProps.readOnly
             ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•') : value} disabled={model.readOnly} />
-            : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+            :
+            <ConfigProvider
+              theme={{
+                token: {
+                  fontFamily: model.font?.type || 'Arial',
+                  fontSize: Number(model.font?.size?.value) || 14,
+                  lineHeight: Number(model.font?.lineHeight?.value) || 1.5,
+                },
+              }}
+            >
+              <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
+            </ConfigProvider>;
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
   initModel: (model) => ({
     textType: 'text',
     ...model,
