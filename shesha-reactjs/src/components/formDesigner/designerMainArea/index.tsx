@@ -55,7 +55,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
                         <ParentProvider model={{}} formMode='designer'>
                             <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}  >
                                 {isDebug && (
-                                    <DebugPanel formData={form.getFieldsValue()} />
+                                    <DebugPanel formData={form.getFieldValue([])} />
                                 )}
                             </ConfigurableFormRenderer>
                         </ParentProvider>

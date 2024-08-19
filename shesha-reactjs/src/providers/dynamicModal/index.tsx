@@ -101,7 +101,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
               parentFormValues: parentFormValues,
               isVisible: true,
               onCancel: () => {
-                reject();
+                reject("Cancelled");
               },
               onSubmitted: (values) => {
                 removeModal(modalId);

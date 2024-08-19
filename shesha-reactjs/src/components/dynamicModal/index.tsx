@@ -39,7 +39,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       onCancel={hideForm}
       footer={footer}
       destroyOnClose
-      width={isSmall ? '90%' : width || 900}
+      width={isSmall ? '90%' : width}
       maskClosable={false}
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
     >
@@ -119,7 +119,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     onFinishFailed: onFailed,
     onSubmittedFailed: () => setIsSubmitted(false),
     initialValues: initialValues,
-    logEnabled: true,
+    //logEnabled: true,
   };
 
   return (

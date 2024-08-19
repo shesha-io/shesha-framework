@@ -39,6 +39,8 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     showMarkupLoadingIndicator = true,
     shaFormRef,
     mode = 'readonly',
+    actions,
+    sections,
   } = props;
   const { switchApplicationMode, configurationItemMode } = useAppConfigurator();
   const app = useSheshaApplication();
@@ -135,6 +137,8 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
                     shaForm.reloadMarkup();
                   }}
                   shaForm={shaForm}
+                  actions={actions}
+                  sections={sections}
                 />
               )}
               {markupLoadingState.status === 'failed' && (

@@ -33,7 +33,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   const [form] = Form.useForm();
 
   const linkToModelMetadata = (metadata: IPropertyMetadata, settingsForm: ConfigurableFormInstance) => {
-    const currentModel = form.getFieldsValue() as TModel;
+    const currentModel = form.getFieldValue([]) as TModel;
 
     const wrapper = toolboxComponent.linkToModelMetadata
       ? m => linkComponentToModelMetadata(toolboxComponent, m, metadata)

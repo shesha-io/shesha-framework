@@ -408,8 +408,9 @@ namespace Shesha
             }
 
             sb.AppendLine("id");
-            sb.AppendLine("_className");
-            sb.AppendLine("_displayName");
+            
+            sb.AppendLine(EntityConstants.ClassNameField);
+            sb.AppendLine(EntityConstants.DisplayNameField);
 
             return sb.ToString();
         }
