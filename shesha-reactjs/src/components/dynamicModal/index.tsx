@@ -119,7 +119,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     onFinishFailed: onFailed,
     onSubmittedFailed: () => setIsSubmitted(false),
     initialValues: initialValues,
-    logEnabled: true,
+    //logEnabled: true,
   };
 
   return (
