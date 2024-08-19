@@ -42,7 +42,6 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
 
     if (model.hidden) return null;
 
-    console.log('SettingsComponent', model, component);
     return (
       <ConfigurableFormItem model={model} className='sha-js-label' labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
         {(value, onChange) => (

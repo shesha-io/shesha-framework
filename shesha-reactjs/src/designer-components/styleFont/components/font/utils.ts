@@ -29,10 +29,8 @@ export const getFontStyle = (input?: IFontValue): React.CSSProperties => {
     }
 
     if (input.align) {
-        console.log("Align::", input.align);
         style.textAlign = input.align;
     }
 
-    console.log("Font Style::", input, style);
     return style;
 };

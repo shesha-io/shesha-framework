@@ -27,9 +27,10 @@ export interface ISizeType {
     value?: ISizeValue;
     readOnly?: boolean;
     model?: any;
+    noOverflow?: boolean;
 }
 
-const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model }) => {
+const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model, noOverflow }) => {
 
     const updateValue = (key: keyof ISizeValue, newUnit: string) => {
         const updatedValue = {
@@ -71,7 +72,7 @@ const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model }) => {
             {renderSizeInputWithUnits('Min H', 'minHeight')}
             {renderSizeInputWithUnits('Max W', 'maxWidth')}
             {renderSizeInputWithUnits('Max H', 'maxHeight')}
-            <Col className="gutter-row" span={24}>
+            {!noOverflow && <Col className="gutter-row" span={24}>
                 <SettingsFormItem readOnly={readOnly} name="overflow" label="Overflow" jsSetting>
                     <Radio.Group value={value?.overflow} >
                         <Radio.Button value="visible" title="Visible"><EyeOutlined /></Radio.Button>
@@ -80,7 +81,7 @@ const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model }) => {
                         <Radio.Button value="auto" title="Auto"><BorderlessTableOutlined /></Radio.Button>
                     </Radio.Group>
                 </SettingsFormItem>
-            </Col>
+            </Col>}
         </Row>
     );
 };

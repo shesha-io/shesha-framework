@@ -71,7 +71,7 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
         onChange(updatedValue);
     };
 
-    const renderSizeInputWithUnits = (property, label) => {
+    const renderSizeInputWithUnits = (property, label, noUnits?: boolean) => {
         const currentValue = value?.[property] || { value: '', unit: 'px' };
 
         const selectAfter = (
@@ -87,7 +87,7 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
             <Col className="gutter-row" span={12}>
                 <SettingsFormItem name={`font.${property}.value`} label={label} jsSetting>
                     <Input
-                        addonAfter={selectAfter}
+                        addonAfter={noUnits ? null : selectAfter}
                         value={currentValue.value}
                         readOnly={readOnly}
                         onChange={(e) => updateValue({ [property]: { ...currentValue, value: e.target.value } })}
@@ -100,9 +100,14 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
     return (
         <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
             <Col className="gutter-row" span={24}>
+                <SettingsFormItem name="font.color" label="Font color" jsSetting>
+                    <ColorPicker value={value?.color} readOnly={readOnly} />
+                </SettingsFormItem>
+            </Col>
+            <Col className="gutter-row" span={24}>
                 <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
-                    {renderSizeInputWithUnits("size", "Font Size")}
-                    {renderSizeInputWithUnits("lineHeight", "Line Height")}
+                    {renderSizeInputWithUnits("size", "Font Size", true)}
+                    {renderSizeInputWithUnits("lineHeight", "Line Height", true)}
                 </Row>
 
                 <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
@@ -118,18 +123,15 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
                     </Col>
                 </Row>
 
-                <SettingsFormItem name="font.color" label="Font color" jsSetting>
-                    <ColorPicker value={value?.color} readOnly={readOnly} />
-                </SettingsFormItem>
-            </Col>
-            <Col className="gutter-row" span={24}>
-                <SettingsFormItem readOnly={readOnly} name="font.align" label="Align" jsSetting>
-                    <Radio.Group value={value?.align} onChange={(e) => updateValue({ align: e.target.value })}>
-                        {alignOptions.map(({ value, icon, title }) => (
-                            <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
-                        ))}
-                    </Radio.Group>
-                </SettingsFormItem>
+                <Col className="gutter-row" span={24}>
+                    <SettingsFormItem readOnly={readOnly} name="font.align" label="Align" jsSetting>
+                        <Radio.Group value={value?.align} onChange={(e) => updateValue({ align: e.target.value })}>
+                            {alignOptions.map(({ value, icon, title }) => (
+                                <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                            ))}
+                        </Radio.Group>
+                    </SettingsFormItem>
+                </Col>
             </Col>
         </Row>
     );
