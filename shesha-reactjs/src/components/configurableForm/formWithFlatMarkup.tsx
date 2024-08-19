@@ -1,4 +1,4 @@
-import { IFlatComponentsStructure, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
+import { IFlatComponentsStructure, IFormActions, IFormSections, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
 import React, { FC } from 'react';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { FormProvider } from '@/providers/form';
@@ -8,15 +8,16 @@ import { ConfigurableFormRenderer } from './configurableFormRenderer';
 import { useAppConfigurator } from '@/providers/appConfigurator';
 import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
-import { useAuth } from '@/providers';
+import { ConditionalMetadataProvider, useAuth } from '@/providers';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
-import { MetadataProvider } from '@/providers';
 
 export type IFormWithFlatMarkupProps = IConfigurableFormRuntimeProps & {
   formFlatMarkup: IFlatComponentsStructure;
   formSettings: IFormSettings;
   persistedFormProps?: IPersistedFormProps;
   onMarkupUpdated?: () => void;
+  actions?: IFormActions;
+  sections?: IFormSections;
 };
 
 export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
@@ -25,6 +26,8 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     formRef,
     isActionsOwner,
     propertyFilter,
+    actions, 
+    sections,
   } = props;
 
   const {
@@ -45,28 +48,30 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
 
   return (
-    <MetadataProvider modelType={formSettings?.modelType}>
-      <FormFlatMarkupProvider markup={formFlatMarkup}>
-        <FormProvider
-          shaForm={shaForm}
-          name={props.formName}
-          formSettings={formSettings}
-          mode={mode}
-          form={form}
-          formRef={formRef}
-          isActionsOwner={isActionsOwner}
-          propertyFilter={propertyFilter}
-        >
-          <Show when={Boolean(showFormInfo)}>
-            <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
-          </Show>
-          <ConfigurableFormRenderer
+      <ConditionalMetadataProvider modelType={formSettings?.modelType}>
+        <FormFlatMarkupProvider markup={formFlatMarkup}>
+          <FormProvider
             shaForm={shaForm}
-            {...props}
-          />
-        </FormProvider>
-      </FormFlatMarkupProvider>
-    </MetadataProvider>
+            name={props.formName}
+            formSettings={formSettings}
+            mode={mode}
+            form={form}
+            formRef={formRef}
+            isActionsOwner={isActionsOwner}
+            propertyFilter={propertyFilter}
+            actions={actions}
+            sections={sections}
+          >
+            <Show when={Boolean(showFormInfo)}>
+              <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
+            </Show>
+            <ConfigurableFormRenderer
+              shaForm={shaForm}
+              {...props}
+            />
+          </FormProvider>
+        </FormFlatMarkupProvider>
+      </ConditionalMetadataProvider>
   );
 };
 
