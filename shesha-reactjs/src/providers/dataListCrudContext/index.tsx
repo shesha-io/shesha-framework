@@ -29,7 +29,7 @@ import ParentProvider from '../parentProvider/index';
 import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
-import { ShaFormProvider } from '../form/newProvider/shaFormProvider';
+import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
 
 export type DataProcessor = (data: any) => Promise<any>;

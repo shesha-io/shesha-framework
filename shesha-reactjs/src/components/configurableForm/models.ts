@@ -113,6 +113,12 @@ export type IConfigurableFormRuntimeProps<Values = any> = {
    */
   onSubmitted?: (values: Values, response?: any, options?: object) => void;
 
+  /**
+   * Fires after loading of the form markup. Can be used for additional initialization purposes.
+   * @returns Promise<void>
+   */
+  onMarkupLoaded?: (shaForm: IShaFormInstance<Values>) => Promise<void>;
+
   layout?: FormLayout;
   size?: SizeType;
   /**

@@ -1,7 +1,7 @@
 import React, { FC, MutableRefObject, PropsWithChildren, useContext, useRef } from "react";
 import { IShaFormInstance } from '../store/interfaces';
 import { DelayedUpdateProvider } from "../../delayedUpdateProvider";
-import { ShaFormInstanceContext } from "./contexts";
+import { ShaFormInstanceContext } from "../providers/contexts";
 
 export interface IShaFormProviderProps {
     shaForm: IShaFormInstance;

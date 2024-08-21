@@ -75,7 +75,7 @@ import { FormApi } from './formApi';
 import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstance } from './newProvider/shaFormProvider';
+import { useShaFormInstance } from './providers/shaFormProvider';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
