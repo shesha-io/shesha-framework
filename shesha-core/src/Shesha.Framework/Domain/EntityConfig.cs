@@ -47,7 +47,8 @@ namespace Shesha.Domain
         /// MD5 hash of the hardcoded properties, is used for performance optimization of the bootstrapper
         /// </summary>
         [StringLength(40)]
-        public virtual string PropertiesMD5 { get; set; }
+        [Column("PropertiesMD5")]
+        public virtual string HardcodedPropertiesMD5 { get; set; }
 
         public override string ItemType => ItemTypeName;
 
@@ -63,6 +64,12 @@ namespace Shesha.Domain
         }
 
         [NotMapped]
-        public virtual string FullClassName => $"{Namespace}.{ClassName}";       
+        public virtual string FullClassName => $"{Namespace}.{ClassName}";
+
+        /// <summary>
+        /// Code identifier that can be used in the client-side code to reference current module
+        /// </summary>
+        [StringLength(200)]
+        public virtual string Accessor { get; set; }
     }
 }

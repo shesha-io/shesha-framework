@@ -1,5 +1,5 @@
+import { createNamedContext } from '@/utils/react';
 import { ColProps } from 'antd';
-import React from 'react';
 
 export interface IListItemState {
   index?: number;
@@ -10,7 +10,7 @@ export interface IListItemState {
   };
 }
 
-export const ListItemContext = React.createContext<IListItemState>({
+export const ListItemContext = createNamedContext<IListItemState>({
   index: undefined,
   prefix: undefined,
-});
+}, "ListItemContext");

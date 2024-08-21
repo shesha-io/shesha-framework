@@ -172,7 +172,7 @@ namespace Shesha.NHibernate.EntityHistory
                     ChangeTime = Clock.Now,
                     EntityEntry = entity, // [NotMapped]
                     EntityId = id,
-                    EntityTypeFullName = entity.GetType().FullName,
+                    EntityTypeFullName = entity.GetType().StripCastleProxyType().FullName,
                     TenantId = abpSession.TenantId,
                 };
 

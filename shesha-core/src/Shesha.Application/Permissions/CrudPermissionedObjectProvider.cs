@@ -19,16 +19,6 @@ namespace Shesha.Permissions
         {
         }
 
-        private Dictionary<string, string> CrudMethods = new Dictionary<string, string>
-        {
-            { "Get", "Get" }, 
-            { "GetAll", "Get" },
-            { "Create", "Create" },
-            { "Update", "Update" },
-            { "Delete", "Delete" },
-            { "Remove", "Delete" }
-        };
-
         public string GetObjectType()
         {
             return PermissionedObjectsSheshaTypes.WebCrudApi;

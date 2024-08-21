@@ -1,57 +1,114 @@
 import classNames from 'classnames';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
-import ConfigurableFormRenderer from './configurableFormRenderer';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import FormInfo from './formInfo';
-import ParentProvider from '@/providers/parentProvider';
-import React, { FC } from 'react';
-import Show from '@/components/show';
-import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
-import { convertToMarkupWithSettings } from '@/providers/form/utils';
-import { FormMarkupConverter } from '@/providers/formMarkupConverter';
-import { FormPersisterActionsContext } from '@/providers/formPersisterProvider/contexts';
-import { FormPersisterConsumer, FormPersisterProvider } from '@/providers/formPersisterProvider';
-import { FormProvider } from '@/providers/form';
-import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import { getFormNotFoundMessage } from '@/providers/configurationItemsLoader/utils';
-import { IConfigurableFormProps } from './models';
-import { Result } from 'antd';
-import { MetadataProvider, useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
+import React, { FC, MutableRefObject, useEffect } from 'react';
+import { IConfigurableFormProps, SheshaFormProps } from './models';
+import { Form, FormInstance, Spin } from 'antd';
+import { useAppConfigurator, useShaRouting, useSheshaApplication } from '@/providers';
 import { useFormDesignerUrl } from '@/providers/form/hooks';
+import { FormWithFlatMarkup } from './formWithFlatMarkup';
+import { useShaForm } from '@/providers/form/store/shaFormInstance';
+import { MarkupLoadingError } from './markupLoadingError';
+import { LoadingOutlined } from '@ant-design/icons';
+import { ConfigurableFormInstance } from '@/interfaces';
+import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
+import { IShaFormInstance } from '@/providers/form/store/interfaces';
 
-interface RenderWithMarkupArgs {
-  providedMarkup: FormRawMarkup;
-  formSettings: IFormSettings;
-  persistedFormProps?: IPersistedFormProps;
-  onMarkupUpdated?: () => void;
-}
+export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
+  form?: FormInstance<any>;
+  formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
+  // TODO: merge with formRef
+  shaFormRef?: MutableRefObject<IShaFormInstance>;
+  isSettingsForm?: boolean;
+} & SheshaFormProps;
 
-export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
+export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
   const {
-    needDebug,
     formId,
     markup,
-    mode,
+    cacheKey,
+    isSettingsForm = false,
+    onFinish,
+    initialValues,
+    onSubmitted,
+    onValuesChange,
+    onMarkupLoaded,
+    formArguments,
+    markupLoadingError,
+    showFormInfoOverlay = true,
+    showDataLoadingIndicator = true,
+    showMarkupLoadingIndicator = true,
+    shaFormRef,
+    mode = 'readonly',
     actions,
     sections,
-    context,
-    formRef,
-    refetchData,
-    refetcher: refetchMarkup,
-    formProps,
-    isActionsOwner,
-    propertyFilter,
-    isSettings,
-    ...restProps
   } = props;
-  const { switchApplicationMode, formInfoBlockVisible } = useAppConfigurator();
+  const { switchApplicationMode, configurationItemMode } = useAppConfigurator();
   const app = useSheshaApplication();
+
+  const [form] = Form.useForm(props.form);
+  const [shaForm] = useShaForm({
+    form: undefined,
+    antdForm: form,
+    init: (instance) => {
+      instance.setFormMode(props.mode);
+    }
+  });
+  shaForm.setOnMarkupLoaded(onMarkupLoaded);
+
+  if (shaFormRef)
+    shaFormRef.current = shaForm;
+
+  //#region shaForm sync
+  useEffect(() => {
+    shaForm.setLogEnabled(Boolean(props.logEnabled));
+  }, [shaForm, props.logEnabled]);
+
+  useEffect(() => {
+    if (formId) {
+      shaForm.initByFormId({ 
+        formId: formId, 
+        configurationItemMode: configurationItemMode, 
+        formArguments: formArguments,
+        initialValues: initialValues,
+      });
+    }
+  }, [shaForm, formId, configurationItemMode, formArguments]);
+  useEffect(() => {
+    if (markup) {
+      shaForm.initByRawMarkup({
+        rawMarkup: markup,
+        formArguments: formArguments,
+        initialValues: initialValues,
+        cacheKey: cacheKey,
+        isSettingsForm: isSettingsForm,
+      });
+    }
+  }, [shaForm, markup, formArguments, initialValues, isSettingsForm, cacheKey]);
+
+  useEffect(() => {
+    shaForm.setFormMode(mode);
+  }, [shaForm, mode]);
+
+  useEffect(() => {
+    shaForm.setSubmitHandler(onFinish);
+  }, [shaForm, onFinish]);
+
+  useEffect(() => {
+    shaForm.setOnValuesChange(onValuesChange);
+  }, [shaForm, onValuesChange]);
+
+
+  useEffect(() => {
+    shaForm.setAfterSubmitHandler(onSubmitted);
+  }, [shaForm, onSubmitted]);
+  //#endregion shaForm sync
 
   const canConfigure = Boolean(app.routes.formsDesigner) && Boolean(formId);
   const { router } = useShaRouting(false) ?? {};
 
   const formDesignerUrl = useFormDesignerUrl(formId);
-  
+
   const openInDesigner = () => {
     if (formDesignerUrl && router) {
       router.push(formDesignerUrl);
@@ -59,106 +116,49 @@ export const ConfigurableForm: FC<IConfigurableFormProps> = (props) => {
     }
   };
 
-  const markupWithSettings = convertToMarkupWithSettings(markup, isSettings);
+  const { markupLoadingState, dataLoadingState } = shaForm;
 
-  const renderWithMarkup = (args: RenderWithMarkupArgs) => {
-    const { providedMarkup, formSettings, persistedFormProps, onMarkupUpdated } = args;
-    if (!providedMarkup) return null;
-
-    const formStatusInfo = persistedFormProps?.versionStatus
-      ? ConfigurationItemVersionStatusMap[persistedFormProps.versionStatus]
-      : null;
-
-    const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo;
-
-    return (
-      <FormMarkupConverter markup={providedMarkup} formSettings={formSettings}>
-        {(flatComponents) => (
-          <ParentProvider model={{}} formMode={mode}>
-            <FormProvider
-              needDebug={needDebug}
-              name="Form"
-              {...flatComponents}
-              formSettings={formSettings}
-              formMarkup={providedMarkup}
-              mode={mode}
-              form={restProps.form}
-              actions={actions}
-              sections={sections}
-              context={context}
-              formRef={formRef}
-              onValuesChange={restProps.onValuesChange}
-              refetchData={refetchData}
-              isActionsOwner={isActionsOwner}
-              propertyFilter={propertyFilter}
-            >
-              <Show when={Boolean(showFormInfo)}>
-                <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
-              </Show>
-              <ConfigurableFormRenderer {...restProps} />
-            </FormProvider>
-          </ParentProvider>
-        )}
-      </FormMarkupConverter>
-    );
-  };
+  const MarkupErrorRender = markupLoadingError ?? MarkupLoadingError;
 
   return (
-    <ConfigurableComponent canConfigure={canConfigure} onStartEdit={openInDesigner}>
-      {(componentState, BlockOverlay) => (
-        <div className={classNames(componentState.wrapperClassName, props?.className)}>
-          <BlockOverlay>
-            <EditViewMsg persistedFormProps={formProps}/>
-          </BlockOverlay>
-          {markup ? (
-            renderWithMarkup({
-              providedMarkup: markupWithSettings.components,
-              formSettings: markupWithSettings.formSettings,
-              persistedFormProps: formProps,
-              onMarkupUpdated: refetchMarkup
-                ? () => {
-                  refetchMarkup();
-                }
-                : undefined
-            })
-          ) : (
-            <FormPersisterProvider formId={formId}>
-              <FormPersisterActionsContext.Consumer>
-                {(persisterActions) => (
-                  <FormPersisterConsumer>
-                    {(persister) => (
-                      <>
-                        {persister.loadError?.code === 404 && (
-                          <Result
-                            status="404"
-                            //style={{ height: '100vh - 55px' }}
-                            title="404"
-                            subTitle={getFormNotFoundMessage(formId)}
-                          />
-                        )}
-                        {persister.loaded &&
-                          <MetadataProvider modelType={persister.formSettings?.modelType}>
-                            {renderWithMarkup({
-                              providedMarkup: persister.markup,
-                              formSettings: persister.formSettings,
-                              persistedFormProps: persister.formProps,
-                              onMarkupUpdated: () => {
-                                persisterActions.loadForm({ skipCache: true });
-                              }
-                            })}
-                          </MetadataProvider>
-                        }
-                      </>
-                    )}
-                  </FormPersisterConsumer>
-                )}
-              </FormPersisterActionsContext.Consumer>
-            </FormPersisterProvider>
-          )}
-        </div>
-      )}
-    </ConfigurableComponent>
+    <Spin
+      spinning={showMarkupLoadingIndicator && markupLoadingState.status === 'loading' || showDataLoadingIndicator && dataLoadingState.status === 'loading'}
+      tip={dataLoadingState.hint}
+      indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
+    >
+      <ConfigurableComponent canConfigure={canConfigure} onStartEdit={openInDesigner}>
+        {(componentState, BlockOverlay) => (
+          <div className={classNames(componentState.wrapperClassName, props?.className)}>
+            <BlockOverlay>
+              <EditViewMsg persistedFormProps={showFormInfoOverlay ? shaForm.form : undefined} />
+            </BlockOverlay>
+            <ShaFormProvider shaForm={shaForm}>
+              {markupLoadingState.status === 'ready' && (
+                <FormWithFlatMarkup
+                  {...props}
+                  form={form}
+                  initialValues={shaForm.initialValues}
+                  formFlatMarkup={shaForm.flatStructure}
+                  formSettings={shaForm.settings}
+                  persistedFormProps={shaForm.form}
+                  onMarkupUpdated={() => {
+                    shaForm.reloadMarkup();
+                  }}
+                  shaForm={shaForm}
+                  actions={actions}
+                  sections={sections}
+                />
+              )}
+              {markupLoadingState.status === 'failed' && (
+                <MarkupErrorRender formId={formId} markupLoadingState={markupLoadingState} />
+              )}
+              {markupLoadingState.status === 'loading' && (
+                <></>
+              )}
+            </ShaFormProvider>
+          </div>
+        )}
+      </ConfigurableComponent>
+    </Spin>
   );
 };
-
-export default ConfigurableForm;

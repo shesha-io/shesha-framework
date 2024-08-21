@@ -1,6 +1,5 @@
 ﻿using FluentMigrator.Builders;
 using FluentMigrator.Infrastructure;
-using System;
 
 namespace Shesha.FluentMigrator.ReferenceLists
 {
@@ -13,20 +12,13 @@ namespace Shesha.FluentMigrator.ReferenceLists
             _context = context;
         }
 
-        public IAddReferenceListSyntax AddItem(long value, string item, Int64? orderIndex = null, string description = null)
+        public IAddReferenceListSyntax AddItem(long value, string item, Int64? orderIndex = null, string? description = null)
         {
-            var listItem = new ReferenceListItemDefinition { 
-                Item = item, 
-                ItemValue = value,
+            var listItem = new ReferenceListItemDefinition(value, item) { 
                 OrderIndex = orderIndex,
                 Description = description
             };
-            var addRefListItem = new AddReferenceListItemExpression(_context.QuerySchema)
-            {
-                Item = listItem,
-                Namespace = Expression.Namespace,
-                Name = Expression.Name
-            };
+            var addRefListItem = new AddReferenceListItemExpression(_context.QuerySchema, Expression.Namespace, Expression.Name, listItem);
 
             _context.Expressions.Add(addRefListItem);
             

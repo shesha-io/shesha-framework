@@ -132,6 +132,68 @@
             "validate": {},
             "settingsValidationErrors": [],
             "version": 1
+          },
+          {
+            "id": "7e5fc1c1-a804-4f0a-8327-1a92e963e5e1",
+            "type": "checkbox",
+            "propertyName": "hideCollapseContent",
+            "label": "Hide Top Bar",
+            "labelAlign": "right",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "hidden": false,
+            "isDynamic": false,
+            "description": "Hides the collapsible panel",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "version": 1
+          },
+          {
+            "id": "cd7d29fe-63d4-4c43-96c3-d4456f9ef237",
+            "type": "checkbox",
+            "propertyName": "isSimpleDesign",
+            "label": "Simple Design",
+            "labelAlign": "right",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "hidden": false,
+            "isDynamic": false,
+            "description": "Make the collapse borderless, background transparent and simple design",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "version": 1
+          },
+          {
+            "id": "d95693e6-f8dc-4f77-9ec4-68a14612cf34",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "type": "colorPicker",
+            "propertyName": "headerColor",
+            "componentName": "headerColor",
+            "label": "Header Background Color",
+            "labelAlign": "right",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true
+          },
+          {
+            "id": "09f31142-4053-45e6-ab3d-e9b063acbfa7",
+            "parentId": "b8954bf6-f76d-4139-a850-c99bf06c8b69",
+            "type": "colorPicker",
+            "propertyName": "bodyColor",
+            "componentName": "bodyColor",
+            "label": "Body Background Color",
+            "labelAlign": "right",
+            "hidden": false,
+            "isDynamic": false,
+            "version": 2,
+            "settingsValidationErrors": [],
+            "title": "",
+            "fontSize": "",
+            "allowClear": true,
+            "showText": true
           }
         ]
       }
@@ -248,6 +310,39 @@
           }
         ]
       }
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {

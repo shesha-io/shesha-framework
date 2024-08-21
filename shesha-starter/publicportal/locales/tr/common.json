@@ -1,0 +1,10 @@
+{
+    "hello": "Merhaba",
+    "greet": "Merhaba, {{name}}!",
+    "world": "Dünya",
+    "documentation": "Dökümantasyona Git",
+    "language": {
+        "tr": "🇹🇷 Türkçe",
+        "en": "🇺🇸 English"
+    }
+}

@@ -11,7 +11,7 @@ import {
 import ActionCell from './actionCell';
 import CrudOperationsCell from './crudOperationsCell';
 import DataCell from './dataCell';
-import FormCell from './formCell';
+import FormCell from './formCell/formCell';
 
 export const getCellRenderer = <D extends object = {}, V = any>(
   column: ITableColumn,
@@ -19,7 +19,7 @@ export const getCellRenderer = <D extends object = {}, V = any>(
 ): Renderer<CellProps<D, V>> | undefined => {
   switch (column.columnType) {
     case 'data': {
-      // todo: move to the column settings and use pre-=processor that adds a metadata to the column settings
+      // TODO: move to the column settings and use pre-=processor that adds a metadata to the column settings
       const baseProps = { columnConfig: column as ITableDataColumn, propertyMeta };
       return (cellProps: CellProps<D, V>) => <DataCell<D, V> {...cellProps} {...baseProps} />;
     }

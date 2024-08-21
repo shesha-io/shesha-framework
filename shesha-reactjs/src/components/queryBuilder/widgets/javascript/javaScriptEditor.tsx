@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { CodeEditor } from '../../../formDesigner/components/codeEditor/codeEditor';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 
 interface JavaScriptEditorProps {
     value?: string;

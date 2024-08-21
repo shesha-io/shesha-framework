@@ -25,5 +25,9 @@ namespace Shesha.FluentMigrator.Notifications
             };
             processor.Process(exp);
         }
+
+        public UpdateNotificationExpression(string @namespace, string name) : base(@namespace, name) 
+        { 
+        }
     }
 }

@@ -21,6 +21,8 @@ import {
   useSheshaApplication
 } from '@/providers';
 import { Dropdown } from '@/components/dropdown/dropdown';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -32,21 +34,19 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
+  Factory: ({ model }) => {
+    const form = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const { data: formData } = useFormData();
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
 
@@ -95,6 +95,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
             ? 'simple' 
             : 'listItem',
     }))
+    .add<IDropdownComponentProps>(6, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;

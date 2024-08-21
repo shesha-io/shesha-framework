@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<localizationDictionary culture="de">
+  <texts>
+    <text name="HomePage" value="Startseite" />
+    <text name="About" value="Über" />
+    <text name="WelcomeMessage" value="Willkomen bei Shesha!" />
+    <text name="FormIsNotValidMessage" value="Das Formular ist nicht gültig. Bitte überprüfen und korrigieren Sie die Fehler." />
+    <text name="TenantNameCanNotBeEmpty" value="Der Name des Tenants darf nicht leer sein" />
+    <text name="InvalidUserNameOrPassword" value="Ungültiger Benutzername oder Passwort" />
+	<text name="UserNotFound" value="Benutzer nicht gefunden" />
+	<text name="InvalidOTP" value="Ungültiges Einmalpasswort" />
+	<text name="ThereIsNoTenantDefinedWithName{0}" value="Es ist kein Tenant mit dem Namen {0} definiert" />
+    <text name="TenantIsNotActive" value="Tenant {0} ist inaktiv." />
+    <text name="UserIsNotActiveAndCanNotLogin" value="Benutzer {0} ist inaktiv und darf sich nicht anmelden." />
+    <text name="UserEmailIsNotConfirmedAndCanNotLogin">Ihre E-Mail Adresse ist noch nicht bestätigt. Sie können sich nicht anmelden.</text>
+    <text name="UserLockedOutMessage">Das Benutzerkonto wurde gesperrt. Bitte versuchen Sie es später noch einmal.</text>
+    <text name="DeviceNotRegisteredMessage">Dieses Gerät ist derzeit nicht registriert. Bitte kontaktieren Sie einen Administrator für weitere Details.</text>
+    <text name="PleaseEnterLoginInformation" value="Bitte Anmeldeinformationen eingeben" />
+    <text name="TenancyName" value="Name des Tenancy" />
+    <text name="UserNameOrEmail" value="Benutzername oder E-Mail Adresse" />
+    <text name="Password" value="Passwort" />
+    <text name="ResetPassword" value="Passwort zurücksetzen" />
+    <text name="UpdatePassword" value="Passwort ändern" />
+    <text name="RememberMe" value="Angemeldet bleiben" />
+    <text name="LogIn" value="Anmelden" />
+    <text name="LoginFailed" value="Anmeldung fehlgeschlagen!" />
+    <text name="NameSurname" value="Vorname Nachname" />
+    <text name="UserName" value="User Vorname" />
+    <text name="Name" value="Vorname" />
+    <text name="Surname" value="Nachname" />
+    <text name="EmailAddress" value="E-Mail Adresse" />
+    <text name="Tenants" value="Tenants" />
+    <text name="SavedSuccessfully" value="Erfolgreich gespeichert" />
+    <text name="CreateNewTenant" value="Neuen Tenant anlegen" />
+    <text name="AdminEmailAddress" value="E-Mail Adresse der Administration" />
+    <text name="AdminPassword" value="Administrator-Passwort" />
+    <text name="Save" value="Speichern" />
+    <text name="Cancel" value="Abbrechen" />
+    <text name="TenantName_Regex_Description" value="Der Name des Tenant muss aus mindestens 2 Zeichen bestehen, mit einem Buchstaben beginnen und mit einem Buchstaben, einer Zahl, einem Bindestrich oder einem Unterstrich fortgesetzt werden." />
+    <text name="DefaultPasswordIs" value="Das Standardpasswort lautet {0}" />
+    <text name="CanBeEmptyToLoginAsHost" value="Kann leer sein, um sich als Host anzumelden." />
+    <text name="Register" value="Registrieren" />
+    <text name="OrLoginWith" value="Oder melden Sie sich an mit" />
+    <text name="WaitingForActivationMessage" value="Ihr Konto wartet darauf, vom Systemadministrator aktiviert zu werden." />
+    <text name="TenantSelection" value="Auswahl des Tenant" />
+    <text name="TenantSelection_Detail" value="Bitte wählen Sie einen der folgenden Tenants aus." />
+    <text name="Logout" value="Abmelden" />
+    <text name="RegisterFormUserNameInvalidMessage">Bitte geben Sie keine E-Mail-Adresse als Benutzernamen ein.</text>
+    <text name="DatabaseConnectionString" value="Datenbank-Verbindungszeichenfolge" />
+    <text name="Users" value="Benutzer" />
+    <text name="IsActive" value="Ist aktiv" />
+    <text name="FullName" value="Vollständiger Name" />
+    <text name="CreateNewUser" value="Neuen Benutzer anlegen" />
+    <text name="Yes" value="Ja" />
+    <text name="No" value="Nein" />
+    <text name="Optional" value="Optional" />
+    <text name="LeaveEmptyToSwitchToHost">Leer lassen, um zum Host zu wechseln</text>
+    <text name="CurrentTenant">Aktueller Tenant</text>
+    <text name="NotSelected">Nicht ausgewählt</text>
+    <text name="Change">Wechseln</text>
+    <text name="ChangeTenant">Tenant wechseln</text>
+    <text name="MultiLevelMenu">Mehrstufiges Menü</text>
+    <text name="Back">Zurück</text>
+    <text name="SuccessfullyRegistered">Erfolgreich registriert</text>
+    <text name="WaitingForEmailActivation">Ihre E-Mail Adresse sollte aktiviert sein</text>
+    <text name="Roles">Rollen</text>
+    <text name="DisplayName">Anzeigename</text>
+    <text name="Edit">Bearbeiten</text>
+    <text name="Delete">Löschen</text>
+    <text name="CreateNewRole">Neue Rolle anlegen</text>
+    <text name="RoleName">Name der Rolle</text>
+    <text name="Actions">Aktionen</text>
+    <text name="CouldNotCompleteLoginOperation">Der Anmeldevorgang konnte nicht abgeschlossen werden. Bitte versuchen Sie es später noch einmal.</text>
+    <text name="CouldNotValidateExternalUser">Externer Benutzer konnte nicht validiert werden</text>
+    <text name="EditRole">Rolle bearbeiten</text>
+    <text name="EditTenant">Tenant bearbeiten</text>
+    <text name="EditUser">Benutzer bearbeiten</text>
+    <text name="TenantIdIsNotActive{0}">TenantId {0} ist nicht aktiv</text>
+    <text name="UnknownTenantId{0}">Unbekannte tenantId {0}</text>
+    <text name="ThisFieldIsRequired">Dieses Feld ist erforderlich</text>
+    <text name="PleaseWait">Bitte warten...</text>
+    <text name="Administration">Administration</text>
+    <text name="ClearAll">Alle leeren</text>
+    <text name="ClearOthers">Andere leeren</text>
+    <text name="LabelOptions">Label-Optionen</text>
+    <text name="Permissions">Berechtigungen</text>
+    <text name="RoleDescription">Rollenbeschreibung</text>
+    <text name="Refresh">Aktualisieren</text>
+    <text name="Create">Erstellen</text>
+    <text name="UserDetails">Benutzerstammdaten</text>
+    <text name="UserRoles">Benutzerrollen</text>
+    <text name="ConfirmPassword">Passwort bestätigen</text>
+    <text name="Version">Version</text>
+    <text name="On">Ein</text>
+    <text name="Off">Aus</text>
+    <text name="AreYouSureWantToDelete">Sind Sie sicher, dass Sie  {0} löschen wollen?</text>
+    <text name="StartTyping">Beginne zu tippen</text>
+    <text name="Skins">Skins</text>
+    <text name="Settings">Einstellungen</text>
+    <text name="Filter">Filter</text>
+    <text name="Users_ResetPassword">Password zurücksetzen</text>
+    <text name="Hangfire">Hangfire Dashboard</text>
+
+    <text name="Persons">Personen</text>
+    <text name="ShaRoles">Rollen</text>
+    <text name="ApplicationSettings">Application Settings</text>
+
+    <text name="Clickatell_Host">Host</text>
+    <text name="Clickatell_ApiId">API Id</text>
+    <text name="Clickatell_ApiUsername">Benutzername</text>
+    <text name="Clickatell_ApiPassword">Passwort</text>
+    <text name="Clickatell_UseProxy">Proxy nutzen</text>
+    <text name="Clickatell_WebProxyAddress">Proxy-Adresse</text>
+
+    <text name="Xml2Sms_Host">Host</text>
+    <text name="Xml2Sms_ApiUsername">Benutzername</text>
+    <text name="Xml2Sms_ApiPassword">Passwort</text>
+    <text name="Xml2Sms_UseProxy">Proxy nutzen</text>
+    <text name="Xml2Sms_UseADProxy">AD-Proxy nutzen</text>
+    <text name="Xml2Sms_WebProxyAddress">Proxy-Adresse</text>
+  </texts>
+</localizationDictionary>

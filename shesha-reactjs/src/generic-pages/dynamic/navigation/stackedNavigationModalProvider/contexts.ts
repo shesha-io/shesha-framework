@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createNamedContext } from "@/utils/react";
 
 export interface IStackedNavigationModalStateContext {
   isMaxWidth?: boolean;
@@ -9,6 +9,7 @@ export interface IStackedNavigationModalActionsContext {}
 
 export const STACKED_NAVIGATION_MODAL_CONTEXT_INITIAL_STATE: IStackedNavigationModalStateContext = {};
 
-export const StackedNavigationModalStateContext = createContext<IStackedNavigationModalStateContext>(
-  STACKED_NAVIGATION_MODAL_CONTEXT_INITIAL_STATE
+export const StackedNavigationModalStateContext = createNamedContext<IStackedNavigationModalStateContext>(
+  STACKED_NAVIGATION_MODAL_CONTEXT_INITIAL_STATE,
+  "StackedNavigationModalStateContext"
 );

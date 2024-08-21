@@ -30,7 +30,7 @@ namespace Shesha.FluentMigrator
         [Obsolete]
         public IAddReferenceListSyntax ReferenceListCreate(string @namespace, string name) 
         {
-            var expression = new AddReferenceListExpression(_context.QuerySchema) { Namespace = @namespace, Name = name };
+            var expression = new AddReferenceListExpression(_context.QuerySchema, @namespace, name);
             
             _context.Expressions.Add(expression);
 
@@ -40,7 +40,7 @@ namespace Shesha.FluentMigrator
         [Obsolete]
         public IDeleteReferenceListSyntax ReferenceListDelete(string @namespace, string name)
         {
-            var expression = new DeleteReferenceListExpression(_context.QuerySchema) { Namespace = @namespace, Name = name };
+            var expression = new DeleteReferenceListExpression(_context.QuerySchema, @namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -50,7 +50,7 @@ namespace Shesha.FluentMigrator
         [Obsolete]
         public IUpdateReferenceListSyntax ReferenceListUpdate(string @namespace, string name)
         {
-            var expression = new UpdateReferenceListExpression(_context.QuerySchema) { Namespace = @namespace, Name = name };
+            var expression = new UpdateReferenceListExpression(_context.QuerySchema, @namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -64,7 +64,7 @@ namespace Shesha.FluentMigrator
 
         public IAddNotificationSyntax NotificationCreate(string @namespace, string name)
         {
-            var expression = new AddNotificationExpression { Namespace = @namespace, Name = name };
+            var expression = new AddNotificationExpression(@namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -73,7 +73,7 @@ namespace Shesha.FluentMigrator
 
         public IDeleteNotificationSyntax NotificationDelete(string @namespace, string name)
         {
-            var expression = new DeleteNotificationExpression { Namespace = @namespace, Name = name };
+            var expression = new DeleteNotificationExpression(@namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -82,7 +82,7 @@ namespace Shesha.FluentMigrator
 
         public IUpdateNotificationSyntax NotificationUpdate(string @namespace, string name)
         {
-            var expression = new UpdateNotificationExpression { Namespace = @namespace, Name = name };
+            var expression = new UpdateNotificationExpression (@namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -92,7 +92,7 @@ namespace Shesha.FluentMigrator
         
         public IAddNotificationTemplateSyntax NotificationTemplateCreate(string @namespace, string name)
         {
-            var expression = new AddNotificationTemplateExpression { Namespace = @namespace, Name = name };
+            var expression = new AddNotificationTemplateExpression(@namespace, name);
 
             _context.Expressions.Add(expression);
 
@@ -123,7 +123,7 @@ namespace Shesha.FluentMigrator
 
         public IAddSettingConfigurationSyntax SettingCreate(string name, string displayName)
         {
-            var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
+            var moduleLocator = _context.ServiceProvider.GetRequiredService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
 
             var expression = new AddSettingConfigurationExpression(moduleName, name, displayName);
@@ -135,7 +135,7 @@ namespace Shesha.FluentMigrator
 
         public IUpdateSettingConfigurationSyntax SettingUpdate(string name) 
         {
-            var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
+            var moduleLocator = _context.ServiceProvider.GetRequiredService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
 
             var expression = new UpdateSettingConfigurationExpression(moduleName, name);
@@ -147,7 +147,7 @@ namespace Shesha.FluentMigrator
 
         public IDeleteSettingConfigurationSyntax SettingDelete(string name)
         {
-            var moduleLocator = _context.ServiceProvider.GetService<IModuleLocator>();
+            var moduleLocator = _context.ServiceProvider.GetRequiredService<IModuleLocator>();
             var moduleName = moduleLocator.GetModuleName(_migration.GetType());
 
             var expression = new DeleteSettingConfigurationExpression(moduleName, name);

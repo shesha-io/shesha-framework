@@ -1,20 +1,16 @@
-import { createContext } from 'react';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import {
-  DEFAULT_FORM_SETTINGS,
   FormIdentifier,
   FormMarkupWithSettings,
-  FormRawMarkup,
   IFormSettings,
-  IPersistedFormProps,
 } from '../form/models';
+import { UpToDateForm } from '../formManager/interfaces';
+import { createNamedContext } from '@/utils/react';
 
 export interface IFormPersisterStateContext {
   formId: FormIdentifier;
   skipCache: boolean;
-  formProps: IPersistedFormProps;
-  formSettings: IFormSettings;
-  markup: FormRawMarkup;
+  formProps: UpToDateForm;
   loaded: boolean;
   loading: boolean;
   loadError?: IErrorInfo;
@@ -41,8 +37,6 @@ export interface IFormPersisterActionsContext {
 export const FORM_PERSISTER_CONTEXT_INITIAL_STATE: IFormPersisterStateContext = {
   formId: null,
   skipCache: false,
-  markup: null,
-  formSettings: DEFAULT_FORM_SETTINGS,
   formProps: null,
   loaded: false,
   loading: false,
@@ -50,10 +44,11 @@ export const FORM_PERSISTER_CONTEXT_INITIAL_STATE: IFormPersisterStateContext = 
   saving: false,
 };
 
-export const FormPersisterStateContext = createContext<IFormPersisterStateContext>(
-  FORM_PERSISTER_CONTEXT_INITIAL_STATE
+export const FormPersisterStateContext = createNamedContext<IFormPersisterStateContext>(
+  FORM_PERSISTER_CONTEXT_INITIAL_STATE,
+  "FormPersisterStateContext"
 );
 
-export const FormPersisterActionsContext = createContext<IFormPersisterActionsContext>(undefined);
+export const FormPersisterActionsContext = createNamedContext<IFormPersisterActionsContext>(undefined, "FormPersisterActionsContext");
 
 export const FormPersisterStateConsumer = FormPersisterStateContext.Consumer;

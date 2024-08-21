@@ -1,8 +1,9 @@
 import { handleActions } from 'redux-actions';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { IFormSettings, IPersistedFormProps } from '../form/models';
+import { IFormSettings } from '../form/models';
 import { FormPersisterActionEnums } from './actions';
 import { FORM_PERSISTER_CONTEXT_INITIAL_STATE, IFormPersisterStateContext, ILoadRequestPayload } from './contexts';
+import { UpToDateForm } from '../formManager/interfaces';
 
 const reducer = handleActions<IFormPersisterStateContext, any>(
   {
@@ -22,24 +23,13 @@ const reducer = handleActions<IFormPersisterStateContext, any>(
 
     [FormPersisterActionEnums.LoadSuccess]: (
       state: IFormPersisterStateContext,
-      action: ReduxActions.Action<IPersistedFormProps>
+      action: ReduxActions.Action<UpToDateForm>
     ) => {
       const { payload } = action;
 
       return {
         ...state,
-        formProps: {
-          id: payload.id,
-          module: payload.module,
-          name: payload.name,
-          label: payload.label,
-          description: payload.description,
-          versionNo: payload.versionNo,
-          versionStatus: payload.versionStatus,
-          isLastVersion: payload.isLastVersion,
-        },
-        markup: payload.markup,
-        formSettings: payload.formSettings,
+        formProps: {...payload},        
         loaded: true,
         loading: false,
         loadError: null,

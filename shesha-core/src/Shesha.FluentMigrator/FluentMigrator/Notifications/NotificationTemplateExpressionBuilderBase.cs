@@ -12,6 +12,8 @@ namespace Shesha.FluentMigrator.Notifications
             _context = context;
         }
 
+        private TNext NextExpression => this as TNext ?? throw new Exception($"Type mismatch. Expected {typeof(TNext).FullName}, actual: {this.GetType().FullName}");
+
         public TNext AddEmailTemplate(Guid id, string name, string subject, string body)
         {
             var template = new NotificationTemplateDefinition();
@@ -24,14 +26,12 @@ namespace Shesha.FluentMigrator.Notifications
             template.SendType.Set(NotificationSendType.Email);
             template.BodyFormat.Set(NotificationTemplateType.Html);
 
-            _context.Expressions.Add(new AddNotificationTemplateExpression
+            _context.Expressions.Add(new AddNotificationTemplateExpression(Expression.Namespace, Expression.Name)
             {
-                Template = template,
-                Namespace = Expression.Namespace,
-                Name = Expression.Name
+                Template = template
             });
 
-            return this as TNext;
+            return NextExpression;
         }
 
         public TNext AddPushTemplate(Guid id, string name, string subject, string body)
@@ -46,14 +46,12 @@ namespace Shesha.FluentMigrator.Notifications
             template.SendType.Set(NotificationSendType.Push);
             template.BodyFormat.Set(NotificationTemplateType.PlainText);
 
-            _context.Expressions.Add(new AddNotificationTemplateExpression
+            _context.Expressions.Add(new AddNotificationTemplateExpression(Expression.Namespace, Expression.Name)
             {
-                Template = template,
-                Namespace = Expression.Namespace,
-                Name = Expression.Name
+                Template = template
             });
 
-            return this as TNext;
+            return NextExpression;
         }
 
         public TNext AddSmsTemplate(Guid id, string name, string body)
@@ -67,15 +65,12 @@ namespace Shesha.FluentMigrator.Notifications
             template.SendType.Set(NotificationSendType.SMS);
             template.BodyFormat.Set(NotificationTemplateType.PlainText);
 
-            _context.Expressions.Add(new AddNotificationTemplateExpression
+            _context.Expressions.Add(new AddNotificationTemplateExpression(Expression.Namespace, Expression.Name)
             {
-                Template = template,
-                Namespace = Expression.Namespace,
-                Name = Expression.Name
+                Template = template
             });
 
-            return this as TNext;
+            return NextExpression;
         }
-
     }
 }

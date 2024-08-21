@@ -12,10 +12,12 @@ import { executeCustomExpression, getStyle } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
   isInput: true,
+  isOutput: true,
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
   Factory: ({ model }) => {
@@ -88,6 +90,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     })
     .add<IRefListStatusProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRefListStatusProps>(3, (prev) => migrateVisibility(prev))
+    .add<IRefListStatusProps>(4, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   settingsFormMarkup: RefListStatusSettingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(RefListStatusSettingsForm, model),

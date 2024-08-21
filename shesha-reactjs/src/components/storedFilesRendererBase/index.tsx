@@ -9,7 +9,7 @@ import {
   Upload
   } from 'antd';
 import { DraggerStub } from '@/components/fileUpload/stubs';
-import { FileZipOutlined, InboxOutlined, UploadOutlined } from '@ant-design/icons';
+import { FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import { IDownloadFilePayload, IStoredFile, IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { useStyles } from './styles/styles';
@@ -22,6 +22,7 @@ interface IUploaderFileTypes {
 export interface IStoredFilesRendererBaseProps {
   fileList?: IStoredFile[];
   allowUpload?: boolean;
+  allowDelete?: boolean;
   showDragger?: boolean;
   ownerId?: string;
   ownerType?: string;
@@ -67,7 +68,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   isStub = false,
   allowedFileTypes = [],
   maxHeight,
-  downloadZip
+  downloadZip,
+  allowDelete
 }) => {
   const hasFiles = !!fileList.length;
   const { styles } = useStyles();
@@ -93,10 +95,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     disabled,
     onChange(info: UploadChangeParam) {
       const { status } = info.file;
-
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
 
       if (status === 'done') {
         message.success(`${info.file.name} file uploaded successfully.`);
@@ -137,20 +135,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     onPreview: ({ uid, name }) => {
       downloadFile({ fileId: uid, fileName: name });
     },
-  };
-
-  const renderDraggerContent = () => {
-    return (
-      <>
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-        <p className="ant-upload-hint">
-          Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
-        </p>
-      </>
-    );
+    showUploadList: {
+      showRemoveIcon: allowDelete,
+    }
   };
 
   const renderUploadContent = () => {
@@ -163,17 +150,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   return (
     <div className={styles.shaStoredFilesRenderer} style={{ maxHeight }}>
-      {isDragger ? (
-        isStub ? (
-          <DraggerStub />
-        ) : (
-          <Dragger {...props}>{renderDraggerContent()}</Dragger>
-        )
-      ) : isStub ? (
-        <div>{renderUploadContent()}</div>
-      ) : (
-        <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
-      )}
+      {isStub 
+        ? isDragger
+          ? <Dragger disabled><DraggerStub /></Dragger>
+          : <div>{renderUploadContent()}</div>
+        : props.disabled
+          ? <Upload {...props} />
+          : isDragger
+            ? <Dragger {...props}><DraggerStub /></Dragger>
+            : <Upload {...props}>{!props.disabled ? renderUploadContent() : null}</Upload>
+      }
 
       {fetchFilesError && (
         <Alert message="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />

@@ -1,5 +1,6 @@
-import { createContext, MutableRefObject } from 'react';
+import { MutableRefObject } from 'react';
 import { IModelItem } from '@/interfaces/modelConfigurator';
+import { createNamedContext } from '@/utils/react';
 
 export interface IUpdateChildItemsPayload {
   index: number[];
@@ -38,8 +39,9 @@ export const PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE: IPropertiesEditorStateCont
   items: [],  
 };
 
-export const PropertiesEditorStateContext = createContext<IPropertiesEditorStateContext>(
-  PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE
+export const PropertiesEditorStateContext = createNamedContext<IPropertiesEditorStateContext>(
+  PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
+  "PropertiesEditorStateContext"
 );
 
-export const PropertiesEditorActionsContext = createContext<IPropertiesEditorActionsContext>(undefined);
+export const PropertiesEditorActionsContext = createNamedContext<IPropertiesEditorActionsContext>(undefined, "PropertiesEditorActionsContext");

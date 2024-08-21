@@ -6,13 +6,15 @@ export type RowDroppedMode = 'executeScript' | 'showDialog';
 
 export interface ITableComponentBaseProps extends IShaDataTableInlineEditableProps {
   items: IConfigurableColumnsProps[];
-
   useMultiselect?: boolean;
   freezeHeaders?: boolean;
   containerStyle?: string;
   tableStyle?: string;
   minHeight?: number;
   maxHeight?: number;
+  noDataText?: string;
+  noDataSecondaryText?: string;
+  noDataIcon?: string;
 }
 
 /** Table component props */

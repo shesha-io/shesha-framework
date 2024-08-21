@@ -9,6 +9,7 @@ using Shesha.ConfigurationItems.Distribution;
 using Shesha.ConfigurationItems.Distribution.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Permissions;
 using Shesha.Services;
 using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Domain;
@@ -48,7 +49,8 @@ namespace Shesha.Tests.ConfigurationItems
             });
             await formRepository.InsertAsync(formConfig1);
 
-            var export = new FormConfigurationExport(formRepository);
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new FormConfigurationExport(formRepository, permissionedObjectManager);
 
             var exported = await export.ExportItemAsync(formConfig1.Id);
             exported.ShouldNotBeNull();
@@ -75,15 +77,16 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Module = await src.GetOrCreateModule("test-module");
             });
 
-            var export = new FormConfigurationExport(src.FormRepo);
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new FormConfigurationExport(src.FormRepo, permissionedObjectManager);
             var exported = await export.ExportItemAsync(srcForm.Id);
 
             var dst = PrepareImportContext();
 
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
+            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
             var importContext = new PackageImportContext()
             {
                 CreateModules = true
@@ -133,7 +136,8 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Module = await src.GetOrCreateModule("test-module");
             });
 
-            var export = new FormConfigurationExport(src.FormRepo);
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new FormConfigurationExport(src.FormRepo, permissionedObjectManager);
             var exported = await export.ExportItemAsync(srcForm.Id);
 
             var dst = PrepareImportContext();
@@ -152,8 +156,8 @@ namespace Shesha.Tests.ConfigurationItems
 
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
+            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
             var importContext = new PackageImportContext()
             {
                 CreateModules = true
@@ -207,7 +211,8 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Module = await src.GetOrCreateModule("test-module");
             });
 
-            var export = new FormConfigurationExport(src.FormRepo);
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new FormConfigurationExport(src.FormRepo, permissionedObjectManager);
             var exported = await export.ExportItemAsync(srcForm.Id);
 
             var dst = PrepareImportContext();
@@ -226,8 +231,8 @@ namespace Shesha.Tests.ConfigurationItems
 
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
+            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
             var importContext = new PackageImportContext()
             {
                 CreateModules = true,
@@ -282,7 +287,8 @@ namespace Shesha.Tests.ConfigurationItems
                 c.Module = await src.GetOrCreateModule("test-module");
             });
 
-            var export = new FormConfigurationExport(src.FormRepo);
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var export = new FormConfigurationExport(src.FormRepo, permissionedObjectManager);
             var exported = await export.ExportItemAsync(srcForm.Id);
 
             var dst = PrepareImportContext();
@@ -306,8 +312,8 @@ namespace Shesha.Tests.ConfigurationItems
 
             using (var uow = uowManager.Begin()) 
             {
-                var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-                var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
+                var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+                var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
                 var importContext = new PackageImportContext()
                 {
                     CreateModules = true
@@ -379,7 +385,8 @@ namespace Shesha.Tests.ConfigurationItems
             var formRepo = Resolve<IRepository<FormConfiguration, Guid>>();
             var itemsBaseRepo = Resolve<IRepository<ConfigurationItemBase, Guid>>();
 
-            var exporter = new FormConfigurationExport(formRepo);
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var exporter = new FormConfigurationExport(formRepo, permissionedObjectManager);
             var packageManager = Resolve<IConfigurationPackageManager>();
 
             /*
@@ -437,8 +444,9 @@ namespace Shesha.Tests.ConfigurationItems
             var dst = PrepareImportContext();
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager);
-            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager);
+            var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
+            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+            var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
             
             var packageManager = Resolve<IConfigurationPackageManager>();
 

@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     const shaUpload = "sha-upload";
@@ -50,6 +50,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         .${shaUploadReplaceControl},
         .${shaUploadRemoveControl} {
           margin-left: 5px;
+        }
+
+        .${prefixCls}-upload {
+          &.${prefixCls}-upload-btn {
+            padding: 8px 0;
+      
+            .${prefixCls}-upload-drag-icon {
+              margin: unset;
+            }
+          }
         }
     `);
     return {

@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
     const dragHandle = "sha-drag-handle";
@@ -8,9 +8,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     const listInsertPlaceholder = "sha-list-insert-placeholder";
     const listInsertRow = "sha-list-insert-row";
     const listItem = "sha-list-item";
+    const listItemSelected = "sha-list-item-selected";
     const listItemContent = "sha-list-item-content";
     const listItemControls = "sha-list-item-controls";
     const listItemGhost = "sha-list-item-ghost";
+    const listItemName = "sha-list-item-name";
+    const helpIcon = "sha-help-icon";
     
     const list = cx("sha-list", css`
         padding-left: 4px;
@@ -20,9 +23,14 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             align-items: flex-end;
             justify-content: flex-end;
             margin: 5px 0;
+            &:empty {
+                margin: 0;
+            }
         }
 
         .${listContainer} {
+            padding-top: 7px;
+            padding-bottom: 7px;
             .${listItem} {
                 position: relative;
                 padding: 5px;
@@ -31,6 +39,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 border: 1px solid #ddd;
                 border-radius: 4px;
                 margin-bottom: 4px;
+
+                &.${listItemSelected}{
+                    border: #61affe 1px dashed;
+                    border-radius: 4px;
+                    background-color: #ebf3fb;
+                }
 
                 .${listInsertPlaceholder} {
                     width: 100%;
@@ -70,6 +84,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
                 .${dragHandle} {
                     transition: opacity 0.2s;
+                    opacity: 0;
                     cursor: grab;
 
                     margin-right: 8px;
@@ -79,23 +94,32 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
                 .${listItemContent} {
                     flex: 1;
-                    display: flex;
-                    flex-direction: column;
+
+                    .${listItemName} {
+                        margin-left: 10px;
+                        margin-right: 10px;
+                    }
+                    .${helpIcon} {
+                        cursor: help;
+                        font-size: 14px;
+                        color: #aaa;
+                    }
                 }
 
                 .${listItemControls} {
                     transition: opacity 0.2s;
+                    opacity: 0;
                     display: flex;
                     align-items: center;
                 }
 
-                &:not(:hover) {
-                    .${listItemControls} {
-                        opacity: 0;
+                &:hover:not(:has(.${listContainer}:hover)) {
+                    >.${listItemControls} {
+                        opacity: 1;
                     }
 
-                    .${dragHandle} {
-                        opacity: 0;
+                    >.${dragHandle} {
+                        opacity: 0.8;
                     }
                 }
             }
@@ -111,8 +135,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         listInsertPlaceholder,
         listInsertRow,
         listItem,
+        listItemSelected,
         listItemContent,
         listItemControls,
         listItemGhost,
+        listItemName,
+        helpIcon,
     };
 });

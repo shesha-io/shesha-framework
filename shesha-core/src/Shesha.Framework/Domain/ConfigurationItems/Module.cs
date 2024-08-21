@@ -73,6 +73,17 @@ namespace Shesha.Domain.ConfigurationItems
         /// If true, indicates that the module is enabled
         /// </summary>
         public virtual bool IsEnabled { get; set; }
+
+        /// <summary>
+        /// Code identifier that can be used in the client-side code to reference current module
+        /// </summary>
+        [StringLength(200)]
+        public virtual string Accessor { get; set; }
+
+        public override string ToString()
+        {
+            return FriendlyName;
+        }
     }
 
     public class ModuleValidator : AbstractValidator<Module>

@@ -8,6 +8,8 @@ import {
 } from '@/interfaces/configurableAction';
 import { FormMarkup } from '@/providers/form/models';
 import GenericArgumentsEditor from './genericArgumentsEditor';
+import { IObjectMetadata } from '@/interfaces';
+import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
 
 const { Panel } = Collapse;
 
@@ -17,16 +19,17 @@ export interface IActionArgumentsEditorProps {
   onChange?: (value: any) => void;
   readOnly?: boolean;
   exposedVariables?: ICodeExposedVariable[];
+  availableConstants?: IObjectMetadata;
 }
 
 const getDefaultFactory = (
   markup: FormMarkup | FormMarkupFactory,
   readOnly: boolean
 ): IConfigurableActionArgumentsFormFactory => {
-  return ({ model, onSave, onCancel, onValuesChange, exposedVariables }) => {
+  return ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
 
-    const formMarkup = markupFactory({ exposedVariables });
+    const formMarkup = markupFactory({ exposedVariables, availableConstants });
     return (
       <GenericArgumentsEditor
         model={model}
@@ -46,13 +49,14 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
   onChange,
   readOnly = false,
   exposedVariables,
+  availableConstants,
 }) => {
   const argumentsEditor = useMemo(() => {
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
-      ? getDefaultFactory(action.argumentsFormMarkup, readOnly)
-      : null;
+        ? getDefaultFactory(action.argumentsFormMarkup, readOnly)
+        : null;
 
     const onCancel = () => {
       //
@@ -66,22 +70,25 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
       if (onChange) onChange(values);
     };
 
+    const actualValue = getActualActionArguments(action, value);
+
     return settingsFormFactory
       ? settingsFormFactory({
-          model: value,
-          onSave,
-          onCancel,
-          onValuesChange,
-          readOnly,
-          exposedVariables,
-        })
+        model: actualValue,
+        onSave,
+        onCancel,
+        onValuesChange,
+        readOnly,
+        exposedVariables,
+        availableConstants,
+      })
       : null;
   }, [action]);
 
   if (!argumentsEditor) return null;
 
   return (
-    <Collapse defaultActiveKey={['1']}>
+    <Collapse defaultActiveKey={['1']} key={action.name}>
       <Panel header="Arguments" key="1">
         {argumentsEditor}
       </Panel>

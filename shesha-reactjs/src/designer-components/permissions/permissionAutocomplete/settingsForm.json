@@ -1,0 +1,249 @@
+{
+  "components": [
+    {
+      "id": "aIMnm2re1exM1M7pEEur9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvoIoyeq1cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "y9SNudmMM0Wd1Sc_YI1ng",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Label",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            "type": "dropdown",
+            "propertyName": "labelAlign",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Label align",
+            "values": [
+              {
+                "label": "left",
+                "value": "left",
+                "id": "f01e54aa-a1a4-4bd6-ba73-c395e48af8ce"
+              },
+              {
+                "label": "right",
+                "value": "right",
+                "id": "b920ef96-ae27-4a01-bfad-b5b7d07218da"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "propertyName": "hideLabel",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Hide Label",
+            "version": 2
+          },
+          {
+            "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+            "type": "textArea",
+            "propertyName": "description",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Description",
+            "version": 2
+          },
+          {
+            "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+            "type": "textField",
+            "propertyName": "placeholder",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Placeholder",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412466",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Hidden",
+            "version": 2
+          },
+          {
+            "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
+            "type": "editModeSelector",
+            "propertyName": "editMode",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "label": "Edit mode"
+          },
+          {
+            "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
+            "hidden": false,
+            "validate": {},
+            "version": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "7UJDsvMw_E9kg5mvIL6XT",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlStyle",
+      "label": "Style",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "_FeSUC4a-2dcJrU2A7fc9",
+        "components": []
+      },
+      "content": {
+        "id": "G670M5i5T85_M0HrSligg",
+        "components": [
+          {
+            "id": "06ab0599-914d-4d2d-875c-765a495472f8",
+            "type": "codeEditor",
+            "propertyName": "style",
+            "label": "Style",
+            "parentId": "G670M5i5T85_M0HrSligg",
+            "validate": {},
+            "settingsValidationErrors": [],
+            "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
+            "exposedVariables": [
+              {
+                "name": "data",
+                "description": "Form values",
+                "type": "object"
+              }
+            ],
+            "version": 3,
+            "language": "typescript",
+            "placeholder": "",
+            "wrapInTemplate": true,
+            "templateSettings": {
+              "functionName": "getStyle"
+            },
+            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+          },
+          {
+            "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
+            "type": "dropdown",
+            "propertyName": "size",
+            "parentId": "G670M5i5T85_M0HrSligg",
+            "label": "Size",
+            "allowClear": true,
+            "values": [
+              {
+                "label": "Small",
+                "value": "small",
+                "id": "4f11403c-95fd-4e49-bb60-cb8c25f0f3c3"
+              },
+              {
+                "label": "Middle",
+                "value": "middle",
+                "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
+              },
+              {
+                "label": "Large",
+                "value": "large",
+                "id": "F4A7F447-68D6-457F-94D4-C1220C6EA630"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIp",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_oy",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_oy",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

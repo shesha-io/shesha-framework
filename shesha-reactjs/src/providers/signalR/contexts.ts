@@ -1,5 +1,5 @@
+import { createNamedContext } from '@/utils/react';
 import { HubConnection } from '@microsoft/signalr';
-import { createContext } from 'react';
 
 export type IFlagProgressFlags = '__DEFAULT__' /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
 export type IFlagSucceededFlags = '__DEFAULT__' /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
@@ -20,6 +20,6 @@ export const SIGNAL_R_CONTEXT_INITIAL_STATE: ISignalRStateContext = {
   connection: null,
 };
 
-export const SignalRStateContext = createContext<ISignalRStateContext>(SIGNAL_R_CONTEXT_INITIAL_STATE);
+export const SignalRStateContext = createNamedContext<ISignalRStateContext>(SIGNAL_R_CONTEXT_INITIAL_STATE, "SignalRStateContext");
 
-export const SignalRActionsContext = createContext<ISignalRActionsContext>(undefined);
+export const SignalRActionsContext = createNamedContext<ISignalRActionsContext>(undefined, "SignalRActionsContext");

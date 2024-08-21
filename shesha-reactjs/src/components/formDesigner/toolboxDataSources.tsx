@@ -1,19 +1,18 @@
 import React, { FC, useMemo } from 'react';
 import { Collapse, Empty, Tooltip } from 'antd';
 import { useLocalStorage } from '@/hooks';
-import { useMetadata } from '@/providers';
 import { IDataSource } from '@/providers/formDesigner/models';
 import SearchBox from './toolboxSearchBox';
 import DataSourceTree from './dataSourceTree';
-import { IPropertyMetadata, isEntityMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { getClassNameFromFullName } from '@/providers/metadataDispatcher/utils';
-import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
-import classNames from 'classnames';
 
 const { Panel } = Collapse;
 
-export interface IToolboxDataSourcesProps {}
+export interface IToolboxDataSourcesProps {
+  dataSources: IDataSource[];
+}
 
 interface FilteredDataSource {
   datasource: IDataSource;
@@ -26,7 +25,7 @@ const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): I
 
   items.forEach(item => {
     if (!item.isFrameworkRelated && item.isVisible) {
-      const childItems = getVisibleProperties(item.properties, searchText);
+      const childItems = isPropertiesArray(item.properties) ? getVisibleProperties(item.properties, searchText) : [];
       const matched =
         (searchText ?? '') === '' ||
         item.path?.toLowerCase().includes(searchText) ||
@@ -42,43 +41,26 @@ const getVisibleProperties = (items: IPropertyMetadata[], searchText: string): I
   return result;
 };
 
-export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
+export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = ({ dataSources }) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.datasources.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.datasources.search', '');
   const { styles } = useStyles();
 
-  const currentMeta = useMetadata(false);
-
-  const { dataSources: formDs, activeDataSourceId } = useFormDesigner();
-
-  const allDataSources = useMemo<IDataSource[]>(() => {
-    const dataSources = [...formDs];
-    if (isEntityMetadata(currentMeta?.metadata)) dataSources.push({
-      id: currentMeta.id,
-      name: currentMeta.metadata.name,
-      containerType: currentMeta.metadata.entityType,
-      items: currentMeta.metadata.properties,
-    });
-
-    return dataSources;
-  }, [formDs, currentMeta?.metadata]);
-
   const datasourcesWithVisible = useMemo<FilteredDataSource[]>(() => {
-    const dataSources = allDataSources.map<FilteredDataSource>(ds => ({
+    const dataSourcesX = dataSources.map<FilteredDataSource>(ds => ({
       datasource: ds,
       visibleItems: getVisibleProperties(ds.items, searchText),
     }));
-    return dataSources;
-  }, [allDataSources, searchText]);
+    return dataSourcesX;
 
-  if (allDataSources.length === 0) return null;
+  }, [searchText, dataSources]);
+
 
   const onCollapseChange = (key: string | string[]) => {
     setOpenedKeys(Array.isArray(key) ? key : [key]);
   };
   return (
     <>
-      <div className="sidebar-subheader">Data</div>
       <SearchBox value={searchText} onChange={setSearchText} placeholder="Search data properties" />
 
       {datasourcesWithVisible.length > 0 && (
@@ -87,24 +69,29 @@ export const ToolboxDataSources: FC<IToolboxDataSourcesProps> = () => {
             const visibleItems = ds.visibleItems;
             const shortName = getClassNameFromFullName(ds.datasource.name);
 
-            let header = (
+            const header = (
               <Tooltip placement="bottom" title={ds.datasource.name} mouseEnterDelay={1}>
                 {shortName}
               </Tooltip>
             );
       
             return visibleItems.length === 0 ? null : (
-              <Panel header={header} key={dsIndex.toString()} className={classNames(styles.shaToolboxPanel, { active: ds.datasource.id === activeDataSourceId })}>
+              <Panel header={header} key={dsIndex.toString()} className={styles.shaToolboxPanel}>
+                <div className={styles.shaToolboxPanelItems} >
                 <DataSourceTree
                   items={visibleItems}
                   searchText={searchText}
                   defaultExpandAll={(searchText ?? '') !== ''}
+
                 />
+                </div>
+
               </Panel>
             );
           })}
         </Collapse>
       )}
+
       {datasourcesWithVisible.length === 0 && (
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
       )}

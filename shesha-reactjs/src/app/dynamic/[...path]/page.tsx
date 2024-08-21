@@ -34,7 +34,9 @@ const DynamicPageInternal: FC<PageProps> = (props) => {
     name: formName
   };
 
-  return <DynamicPage {...searchParams} formId={ formId }/>;
+  return (
+    <DynamicPage {...searchParams} formId={ formId }/>
+  );
 };
 
 export default DynamicPageInternal;

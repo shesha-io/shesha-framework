@@ -1,9 +1,9 @@
-import { createContext } from 'react';
 import { IReferenceList } from '@/interfaces/referenceList';
 import { PromisedValue } from '@/utils/promises';
 import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormIdentifier, IFormDto } from '../form/models';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { createNamedContext } from '@/utils/react';
 
 export interface IConfigurationItemsLoaderStateContext {
   activeProvider?: string;
@@ -38,6 +38,7 @@ export interface IClearFormCachePayload {
 }
 
 export interface IConfigurationItemsLoaderActionsContext {
+  getCachedForm: (payload: IGetFormPayload) => Promise<IFormDto>;
   getForm: (payload: IGetFormPayload) => Promise<IFormDto>;
   getRefList: (payload: IGetRefListPayload) => PromisedValue<IReferenceList>;
   getComponent: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
@@ -50,8 +51,9 @@ export interface IConfigurationItemsLoaderActionsContext {
 /** initial state */
 export const CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE: IConfigurationItemsLoaderStateContext = {};
 
-export const ConfigurationItemsLoaderStateContext = createContext<IConfigurationItemsLoaderStateContext>(
-  CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE
+export const ConfigurationItemsLoaderStateContext = createNamedContext<IConfigurationItemsLoaderStateContext>(
+  CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE,
+  "ConfigurationItemsLoaderStateContext"
 );
 
-export const ConfigurationItemsLoaderActionsContext = createContext<IConfigurationItemsLoaderActionsContext>(undefined);
+export const ConfigurationItemsLoaderActionsContext = createNamedContext<IConfigurationItemsLoaderActionsContext>(undefined, "ConfigurationItemsLoaderActionsContext");

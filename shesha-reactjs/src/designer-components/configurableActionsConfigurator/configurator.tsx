@@ -7,6 +7,8 @@ import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { ActionSelect } from './actionSelect';
+import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 
 const { Panel } = Collapse;
 
@@ -34,6 +36,8 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
+
+  const availableConstants = useAvailableStandardConstantsMetadata();
 
   const formValues = useMemo<IActionFormModel>(() => {
     if (!value)
@@ -70,6 +74,13 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       : null;
   }, [actionName, actionOwner]);
 
+  const filteredActions = props?.allowedActions?.reduce((acc, key) => {
+      if (actions[key]) {
+        acc[key] = actions[key];
+      }
+      return acc;
+  }, {});
+
   return (
     <div
       style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
@@ -84,16 +95,19 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         initialValues={formValues}
       >
         <Form.Item name="actionFullName" label={label} tooltip={description}>
-          <ActionSelect actions={actions} readOnly={readOnly}></ActionSelect>
+          <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
         </Form.Item>
         {selectedAction && selectedAction.hasArguments && (
-          <Form.Item name="actionArguments" label={null}>
-            <ActionArgumentsEditor
-              action={selectedAction}
-              readOnly={readOnly}
-              exposedVariables={props.exposedVariables}
-            />
-          </Form.Item>
+          <SourceFilesFolderProvider folder={`action-${props.level}`}>
+            <Form.Item name="actionArguments" label={null}>
+              <ActionArgumentsEditor
+                action={selectedAction}
+                readOnly={readOnly}
+                exposedVariables={props.exposedVariables}
+                availableConstants={availableConstants}
+              />
+            </Form.Item>
+          </SourceFilesFolderProvider>
         )}
         {selectedAction && (
           <>
@@ -141,6 +155,7 @@ interface IConfigurableActionConfiguratorProps {
   level: number;
   readOnly?: boolean;
   exposedVariables?: ICodeExposedVariable[];
+  allowedActions?: string[];
 }
 
 interface IActionFormModel extends Omit<IConfigurableActionConfiguration, 'actionOwner' | 'actionName'> {

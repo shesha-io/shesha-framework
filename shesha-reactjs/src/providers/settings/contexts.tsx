@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createNamedContext } from '@/utils/react';
 import { ISettingIdentifier } from './models';
 
 export interface ILoadSettingPayload {
@@ -17,4 +17,4 @@ export interface ISettingsContext extends ISettingsStateContext, ISettingsAction
 /** initial state */
 export const SETTINGS_CONTEXT_INITIAL_STATE: ISettingsStateContext = {};
 
-export const SettingsContext = createContext<ISettingsActionsContext>(undefined);
+export const SettingsContext = createNamedContext<ISettingsActionsContext>(undefined, "SettingsContext");

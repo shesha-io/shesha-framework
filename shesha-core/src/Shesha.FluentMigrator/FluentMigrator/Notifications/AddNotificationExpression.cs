@@ -8,7 +8,7 @@ namespace Shesha.FluentMigrator.Notifications
     /// </summary>
     public class AddNotificationExpression : NotificationExpressionBase
     {
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public override void ExecuteWith(IMigrationProcessor processor)
         {
             var exp = new PerformDBOperationExpression() { Operation = (connection, transaction) => {
@@ -18,5 +18,9 @@ namespace Shesha.FluentMigrator.Notifications
             };
             processor.Process(exp);
         }
+
+        public AddNotificationExpression(string @namespace, string name): base(@namespace, name) 
+        { 
+        }        
     }
 }

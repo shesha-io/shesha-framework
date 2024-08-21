@@ -4,7 +4,7 @@ import React, {
   MutableRefObject,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { Button, notification } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import { ICommonModalProps } from '../../dynamicModal/models';
@@ -14,8 +14,9 @@ import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
+import _ from 'lodash';
 
-const actionsOwner = 'Configuration Framework';
+const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;
@@ -24,9 +25,9 @@ interface IConfigurationItemsExportFooterProps {
 
 const displayNotificationError = (message: string, error: IErrorInfo) => {
   notification.error({
-      message: message,
-      icon: null,
-      description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+    message: message,
+    icon: null,
+    description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
   });
 };
 
@@ -38,10 +39,8 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
     setInProgress(true);
 
     exporterRef.current.exportExecuter().then(() => {
-      console.log('then in footer');
       hideModal();
     }).catch((e) => {
-      console.log('catch in footer');
       displayNotificationError('Failed to export package', e);
       setInProgress(false);
     });
@@ -68,14 +67,14 @@ export const useConfigurationItemsExportAction = () => {
     executer: (actionArgs) => {
       const modalId = nanoid();
 
-      return new Promise((resolve, _reject) => {
+      return new Promise((resolve, reject) => {
 
         const hideModal = () => {
+          reject();
           removeModal(modalId);
         };
 
         const onExported = () => {
-          console.log('onExported');
           removeModal(modalId);
           resolve(true);
         };
@@ -86,11 +85,20 @@ export const useConfigurationItemsExportAction = () => {
           title: "Export Configuration Items",
           isVisible: true,
           showModalFooter: false,
-          content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef}/>,
+          width: "60%",
+          onClose: (positive, result) => {
+            if (positive) {
+              resolve(result);
+            } else {
+              reject();
+            }
+          },
+          content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef} />,
           footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />
         };
-        createModal({ ...modalProps, isVisible: true });
+        createModal({ ...modalProps });
       });
     },
   }, [appConfigState]);
 };
+

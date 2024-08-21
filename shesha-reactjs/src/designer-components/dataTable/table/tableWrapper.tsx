@@ -1,13 +1,10 @@
 import React, {
     FC,
     Fragment,
-    useEffect,
-    useRef
 } from 'react';
 import { filterVisibility } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
-import { useDeepCompareEffect } from 'react-use';
 import {
     SidebarContainer,
     DataTable,
@@ -15,6 +12,7 @@ import {
     DatatableColumnsSelector,
 } from '@/components';
 import {
+    useDataTable,
     useDataTableStore,
     useForm,
     useFormData,
@@ -23,6 +21,8 @@ import {
 } from '@/providers';
 import { GlobalTableStyles } from './styles/styles';
 import { Alert } from 'antd';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { FilterList } from '../filterList/filterList';
 
 const NotConfiguredWarning: FC = () => {
     return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
@@ -36,26 +36,28 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
     const { anyOfPermissionsGranted } = useSheshaApplication();
-
     const isDesignMode = formMode === 'designer';
-
     const {
         getRepository,
         isInProgress: { isFiltering, isSelectingColumns },
         setIsInProgressFlag,
         registerConfigurableColumns,
-        tableData,
         selectedRow,
         setMultiSelectedRow,
         requireColumns,
         allowReordering,
+        clearFilters,
+        removeColumnFilter,
+        tableFilter,
     } = useDataTableStore();
+
+    const { totalRows } = useDataTable();
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
 
     const repository = getRepository();
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         // register columns
         const permissibleColumns = isDesignMode
             ? items
@@ -78,18 +80,13 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         return <Fragment />;
     };
 
-    const tableDataItems = useRef(tableData);
-
-    useDeepCompareEffect(() => {
-        tableDataItems.current = tableData;
-    }, [tableData]);
-
     if (isDesignMode && !repository) return <NotConfiguredWarning />;
 
     const toggleFieldPropertiesSidebar = () => {
         if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
         else setIsInProgressFlag({ isFiltering: false, isSelectingColumns: false });
     };
+
 
     return (
         <SidebarContainer
@@ -103,6 +100,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
+            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}
@@ -128,6 +126,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
                 inlineEditMode={props.inlineEditMode}
                 minHeight={props.minHeight}
                 maxHeight={props.maxHeight}
+                noDataText={props.noDataText}
+                noDataSecondaryText={props.noDataSecondaryText}
+                noDataIcon={props.noDataIcon}
             />
         </SidebarContainer>
     );

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using ConcurrentCollections;
+using Shesha.AutoMapper.Dto;
 using Shesha.Permissions.Dtos;
 
 namespace Shesha.ShaRoles.Dto
@@ -24,6 +25,8 @@ namespace Shesha.ShaRoles.Dto
 
         [StringLength(2000)]
         public string Description { get; set; }
+
+        public Guid? Module { get; set; }
 
         public ConcurrentHashSet<string> Permissions { get; set; }
 

@@ -1,27 +1,21 @@
 "use client";
 
-import FormItem from 'antd/lib/form/FormItem';
-import React, { useState } from 'react';
-import {
-  Alert,
-  Button,
-  Form,
-  Input
-  } from 'antd';
-import { ForgotPasswordPage, VerifyOtpModal } from './styles';
-import { IdcardOutlined } from '@ant-design/icons';
+import FormItem from "antd/lib/form/FormItem";
+import React, { useState } from "react";
+import { Alert, Button, Form, Input } from "antd";
+import { ForgotPasswordPage, VerifyOtpModal } from "./styles";
+import { IdcardOutlined } from "@ant-design/icons";
 import {
   ResetPasswordVerifyOtpInput,
   useResetPasswordSendOtp,
   useResetPasswordVerifyOtp,
-  UserResetPasswordSendOtpQueryParams
-  } from '@/api/user';
-import { useRouter } from 'next/navigation';
-import { useAuth, ValidationErrors, PageWithLayout } from '@shesha-io/reactjs';
-import { URL_LOGIN_PAGE } from '@/routes';
+  UserResetPasswordSendOtpQueryParams,
+} from "@/api/user";
+import { useRouter } from "next/navigation";
+import { useAuth, ValidationErrors, PageWithLayout } from "@shesha-io/reactjs";
+import { URL_LOGIN_PAGE } from "@/routes";
 
-
-interface IProps { }
+interface IProps {}
 
 const ForgotPassword: PageWithLayout<IProps> = () => {
   const router = useRouter();
@@ -30,7 +24,7 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
 
   const [isVerifyOtpModalVisible, setIsVerifyOtpModalVisible] = useState(false);
 
-  const [operationId, setOperationId] = useState('');
+  const [operationId, setOperationId] = useState("");
 
   const [sentOtpForm] = Form.useForm<UserResetPasswordSendOtpQueryParams>();
 
@@ -42,11 +36,15 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
     loading: isSendingOtp,
   } = useResetPasswordSendOtp();
 
-  const { mutate: verifyOtpHttp, loading: isVerifyingOtp, error: verifyOtpError } = useResetPasswordVerifyOtp();
+  const {
+    mutate: verifyOtpHttp,
+    loading: isVerifyingOtp,
+    error: verifyOtpError,
+  } = useResetPasswordVerifyOtp();
 
-  const toggleVerifyOtpModalVisibility = () => setIsVerifyOtpModalVisible((visible) => !visible);
-  
-  const handleSendOtpFormFinish = ({ mobileNo }: UserResetPasswordSendOtpQueryParams) => {
+  const handleSendOtpFormFinish = ({
+    mobileNo,
+  }: UserResetPasswordSendOtpQueryParams) => {
     if (mobileNo) {
       sendOtpHttp({ mobileNo })
         .then((response) => {
@@ -54,22 +52,24 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
           toggleVerifyOtpModalVisibility();
         })
         .catch((e) => {
-          console.error('Failed to send OTP:', e);
+          console.error("Failed to send OTP:", e);
           toggleVerifyOtpModalVisibility();
         });
     }
   };
 
   const handleVerifyOtpFormFinish = ({ pin }: ResetPasswordVerifyOtpInput) => {
-    verifyOtpHttp(
-      {
-        mobileNo: sentOtpForm?.getFieldValue('mobileNo'),
-        pin,
-        operationId,
-      }).then((response) => {
-        verifyOtpSuccess(response?.result);
-      });
+    verifyOtpHttp({
+      mobileNo: sentOtpForm?.getFieldValue("mobileNo"),
+      pin,
+      operationId,
+    }).then((response) => {
+      verifyOtpSuccess(response?.result);
+    });
   };
+
+  const toggleVerifyOtpModalVisibility = () =>
+    setIsVerifyOtpModalVisible((visible) => !visible);
 
   return (
     <ForgotPasswordPage
@@ -80,13 +80,27 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
       <ValidationErrors error={sendOtpError?.data} />
 
       <Form form={sentOtpForm} onFinish={handleSendOtpFormFinish}>
-        <FormItem name="mobileNo" help="This field is required" rules={[{ required: true }]}>
-          <Input prefix={<IdcardOutlined />} placeholder="Phone number" required />
+        <FormItem
+          name="mobileNo"
+          help="This field is required"
+          rules={[{ required: true }]}
+        >
+          <Input
+            prefix={<IdcardOutlined />}
+            placeholder="Phone number"
+            required
+          />
         </FormItem>
 
         <FormItem className="un-authed-btn-container">
-          <Button type="primary" htmlType="submit" className="login-form-button" block loading={isSendingOtp}>
-            {isSendingOtp ? 'Sending Otp....' : 'Send Otp'}
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+            block
+            loading={isSendingOtp}
+          >
+            {isSendingOtp ? "Sending Otp...." : "Send Otp"}
           </Button>
         </FormItem>
 
@@ -108,7 +122,8 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
         <Alert
           message={
             <span>
-              A One-Time Pin has successfully been sent to . Please check your phone and enter the OTP in the text below
+              A One-Time Pin has successfully been sent to . Please check your
+              phone and enter the OTP in the text below
             </span>
           }
           type="success"
@@ -116,13 +131,26 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
         <ValidationErrors error={verifyOtpError?.data as any} />
 
         <Form form={verifyOtpForm} onFinish={handleVerifyOtpFormFinish}>
-          <FormItem name="pin" help="This field is required" rules={[{ required: true }]}>
-            <Input placeholder="One-Time Pin" disabled={isSendingOtp || isVerifyingOtp} />
+          <FormItem
+            name="pin"
+            help="This field is required"
+            rules={[{ required: true }]}
+          >
+            <Input
+              placeholder="One-Time Pin"
+              disabled={isSendingOtp || isVerifyingOtp}
+            />
           </FormItem>
 
           <FormItem>
-            <Button type="primary" htmlType="submit" className="login-form-button" block loading={isVerifyingOtp}>
-              {isSendingOtp ? 'Verifying Otp....' : 'Verify Otp'}
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+              block
+              loading={isVerifyingOtp}
+            >
+              {isSendingOtp ? "Verifying Otp...." : "Verify Otp"}
             </Button>
           </FormItem>
 
@@ -135,7 +163,7 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
               loading={isSendingOtp}
               disabled={isSendingOtp}
             >
-              {isSendingOtp ? 'Resending Otp....' : 'Resend Otp'}
+              {isSendingOtp ? "Resending Otp...." : "Resend Otp"}
             </Button>
           </FormItem>
         </Form>
@@ -144,6 +172,6 @@ const ForgotPassword: PageWithLayout<IProps> = () => {
   );
 };
 
-//ForgotPassword.requireAuth = false;
+ForgotPassword.requireAuth = false;
 
 export default ForgotPassword;

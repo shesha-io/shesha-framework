@@ -3,10 +3,8 @@ import { useAsyncMemo } from "@/hooks/useAsyncMemo";
 import { IMatchData } from "@/providers/form/utils";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { evaluateDynamicFilters } from "@/utils/index";
-import { isEmpty } from "lodash";
 import { FilterExpression, IStoredFilter } from "../interfaces";
-import camelCaseKeys from 'camelcase-keys';
-import { useFormData, useGlobalState } from "@/providers/index";
+import { useDataContextManager, useFormData, useGlobalState } from "@/providers/index";
 
 interface IMatchDataWithPreparation extends IMatchData {
     prepare?: (data: any) => any;
@@ -39,7 +37,8 @@ export const useEvaluatedFilter = (args: UseEvaluatedFilterArgs): string => {
             metadataAccessor
         );
 
-        if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
+        // note: don't return empty filter to take unevaluated filters into account
+        //if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
 
         return JSON.stringify(response[0]?.expression) || '';
     }, useDeepCompareMemoize([filter, mappings]));
@@ -54,18 +53,22 @@ export interface UseFormEvaluatedFilterArgs {
 export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs) => {
     const { data: formData } = useFormData();
     const { globalState } = useGlobalState();
+    const pageContext = useDataContextManager(false)?.getPageContext();
     
     return useEvaluatedFilter({ 
         ...args, 
         mappings:  [
             {
               match: 'data',
-              data: formData,
-              prepare: (data) => (!isEmpty(data) ? camelCaseKeys(data, { deep: true, pascalCase: true }) : data)
+              data: formData,              
             },
             {
               match: 'globalState',
               data: globalState,
+            },
+            {
+              match: 'pageContext',
+              data: {...pageContext?.getFull()} ?? {},
             },
           ]
     });

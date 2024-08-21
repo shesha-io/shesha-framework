@@ -20,6 +20,7 @@ import { ShaLink, ValidationErrors } from '@/components';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import {
+  ButtonGroupItemProps,
   FormIdentifier,
 
   useConfigurableActionDispatcher,
@@ -29,6 +30,10 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { useStyles } from './styles/styles';
+import { isPropertiesArray } from '@/interfaces/metadata';
+import { ModalFooterButtons } from '@/providers/dynamicModal/models';
+import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
+import { getFormApi } from '@/providers/form/formApi';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
 
@@ -60,6 +65,8 @@ export interface IEntityReferenceProps {
   modalWidth?: number | string;
   customWidth?: number;
   widthUnits?: '%' | 'px';
+  footerButtons?: ModalFooterButtons;
+  buttons?: ButtonGroupItemProps[];
   /**
    * If specified, the form data will not be fetched, even if the GET Url has query parameters that can be used to fetch the data.
    * This is useful in cases whereby one form is used both for create and edit mode
@@ -73,6 +80,7 @@ export interface IEntityReferenceProps {
   onSuccess?: IConfigurableActionConfiguration;
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration;
+  style?: string;
 }
 
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
@@ -80,15 +88,14 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { globalState } = useGlobalState();
   const { styles } = useStyles();
 
-  const useFormLocal = useForm(false);
-  // fix for storybook
-  const form = useFormLocal?.form;
-  const formData = useFormLocal?.formData;
-  const formMode = useFormLocal?.formMode;
+  const localForm = useForm(false);
+  const formData = localForm?.formData;
+  const formMode = localForm?.formMode;
 
   const { getEntityFormId } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { getMetadata } = useMetadataDispatcher();
+  const executionContext = useAvailableConstantsData();
 
   const [formIdentifier, setFormIdentifier] = useState<FormIdentifier>(
     props.formSelectionMode === 'name' ? props.formIdentifier : null
@@ -101,6 +108,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const entityId = props.value?.id ?? props.value;
   const entityType = props.entityType ?? props.value?._className;
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
+
+  const style = getStyle(props.style, formData);
 
   useEffect(() => {
     if (
@@ -119,7 +128,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   useEffect(() => {
     if (entityType) {
       getMetadata({ modelType: entityType, dataType: null }).then((res) => {
-        setProperty(res?.properties ?? []);
+        setProperty(isPropertiesArray(res?.properties) ? res.properties : []);
       });
     }
   }, [entityType]);
@@ -168,7 +177,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       actionArguments: {
         formId: formIdentifier,
         modalTitle: props.modalTitle,
-        showModalFooter: props.showModalFooter ?? true,
+        buttons: props.buttons,
+        footerButtons: props?.footerButtons,
         additionalProperties:
           Boolean(props.additionalProperties) && props.additionalProperties?.length > 0
             ? props.additionalProperties
@@ -182,10 +192,11 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     };
 
     const evaluationContext = {
+      ...executionContext,
       entityReference: { id: entityId, entity: props.value },
       data: formData,
       moment: moment,
-      form: form,
+      form: getFormApi(localForm),
       formMode: formMode,
       http: axiosHttp(backendUrl),
       message: message,
@@ -208,7 +219,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         </Button>
       );
 
-    if (props.disabled)
+    if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
         <Button className={styles.entityReferenceBtn} disabled type="link">
           {displayText}
@@ -217,9 +228,11 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
-          {displayText}
-        </ShaLink>
+        <Button className={styles.entityReferenceBtn} style={style} type="link">
+          <ShaLink className={styles.entityReferenceBtn} linkToForm={formIdentifier} params={{ id: entityId }}>
+            {displayText}
+          </ShaLink>
+        </Button>
       );
 
     if (props.entityReferenceType === 'Quickview')
@@ -234,11 +247,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           width={props.quickviewWidth}
           formIdentifier={formIdentifier}
           formType={formType}
+          disabled={props.disabled}
+          style={props.style}
         />
       );
 
     return (
-      <Button className={styles.entityReferenceBtn} type="link" onClick={dialogExecute}>
+      <Button className={styles.entityReferenceBtn} style={style} type="link" onClick={dialogExecute}>
         {displayText}
       </Button>
     );

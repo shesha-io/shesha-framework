@@ -10,6 +10,7 @@ import { Form, FormItemProps } from 'antd';
 import { getPropertySettingsFromData } from './utils';
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
+import { getFieldNameFromExpression } from '@/index';
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
@@ -24,23 +25,38 @@ interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model
 }
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
-    const { getFieldsValue } = useSettingsForm<any>();
+    const { model } = useSettingsForm<any>();
 
     if (!props.name)
         return null;
 
-    const formData = getFieldsValue();
-    const { _mode: mode } = getPropertySettingsFromData(formData, props.name?.toString());
+    const { _mode: mode } = getPropertySettingsFromData(model, props.name?.toString());
 
     if (typeof props.children === 'function') {
-        const children = props.children as SettingsControlChildrenType;
-        return (
-            <Form.Item {...props} label={props.label} >
-                <SettingsControl propertyName={props.name.toString()} mode={mode}>
-                    {(value, onChange, propertyName) => children(value, onChange, propertyName)}
-                </SettingsControl>
-            </Form.Item>
-        );
+      const children = props.children as SettingsControlChildrenType;
+      if (!props.jsSetting) {
+        return <ConfigurableFormItem
+          model={{
+            propertyName: props.name,
+            label: props.label,
+            type: '',
+            id: '',
+            description: props.tooltip,
+            validate: { required: props.required },
+            hidden: props.hidden
+          }}
+          className='sha-js-label'
+        >
+          {children}
+        </ConfigurableFormItem>;
+      }
+      return (
+        <Form.Item {...{...props, name: getFieldNameFromExpression(props.name)}} label={props.label} >
+          <SettingsControl propertyName={props.name} mode={mode}>
+            {(value, onChange, propertyName) => children(value, onChange, propertyName)}
+          </SettingsControl>
+        </Form.Item>
+      );
     }
 
     if (!props.jsSetting) {
@@ -67,7 +83,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             {(value, onChange) => {
                 return (
                     <SettingsControl
-                        propertyName={props.name.toString()}
+                        propertyName={props.name}
                         mode={'value'}
                         onChange={onChange}
                         value={value}

@@ -14,16 +14,36 @@ export interface IListStateProps<TItem = any> {
   value: TItem[];
 }
 
+export interface NestedItemsRenderingArgs<TItem = any> {
+  items: TItem[];
+  onChange: (newValue: TItem[], changeDetails?: ItemChangeDetails) => void;
+  initNewItem: (items: TItem[]) => TItem;
+}
+
+export interface ItemChangeDetails {
+  isReorder: boolean;
+  childsLengthDelta?: number; 
+}
 export interface ListItemRenderingArgs<TItem = any> {
   item: TItem;
-  itemOnChange: (newValue: TItem) => void;
+  itemOnChange: (newValue: TItem, changeDetails?: ItemChangeDetails) => void;
   index: number;
   readOnly: boolean;
+  nestedRenderer?: (args: NestedItemsRenderingArgs<TItem>) => React.ReactNode | null;
 }
 export type ListEditorChildrenFn<TItem = any> = (args: ListItemRenderingArgs<TItem>) => React.ReactNode | null;
 
+export interface ListEditorSectionRenderingArgs<TItem = any> {
+  contextAccessor: () => IListEditorContext<TItem>;
+  parentItem?: TItem;
+  level: number;
+  addItemText?: string;
+}
+export type ListEditorSectionRenderingFn<TItem = any> = (args: ListEditorSectionRenderingArgs<TItem>) => React.ReactNode | null;
+
 export interface IListEditorProps<TItem = any> extends IGenericListEditorProps<TItem> {
   children: ListEditorChildrenFn<TItem>;
+  header?: ListEditorSectionRenderingFn<TItem>;
   initNewItem: (items: TItem[]) => TItem;
 }
 
@@ -53,7 +73,7 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
   const ListEditorProvider = <T extends PropsWithChildren<IGenericListEditorProps<TItem>>>(
     props: T
   ) => {
-    const { value, onChange, initNewItem, readOnly } = props;
+    const { value, onChange, onSelectionChange, initNewItem, readOnly } = props;
     const initialState = useMemo(() => {
       return getListEditorContextInitialState<TItem>(value);
     }, []);
@@ -65,6 +85,7 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
         actionContext={ActionContext}
         value={value}
         onChange={onChange}
+        onSelectionChange={onSelectionChange}
         initNewItem={initNewItem}
         readOnly={readOnly}
       >
@@ -78,8 +99,10 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
 
 export const ListEditor = <TItem extends ListItem>({
   children,
+  header,
   value,
   onChange,
+  onSelectionChange,
   initNewItem,
   readOnly = false,
 }: IListEditorProps<TItem>) => {
@@ -94,9 +117,11 @@ export const ListEditor = <TItem extends ListItem>({
       onChange={onChange}
       initNewItem={initNewItem}
       readOnly={readOnly}
+      onSelectionChange={onSelectionChange}
     >
       <ListEditorRenderer
         contextAccessor={useListEditorComponent}
+        header={header}
       >
         {children}
       </ListEditorRenderer>

@@ -38,8 +38,8 @@ const getItemsLevel = (items: ButtonGroupItemProps[], onDynamicItem: (dynamicIte
             if (isResolvedDynamicItem(item)) {
                 return item;
             } else {
-                // todo: start promise, on success - fill resolvedItems and fire recalculation of main list
-                // todo: return lists of all promises to be able to cancel loading. it can be used for triggering of recalculations
+                // TODO: start promise, on success - fill resolvedItems and fire recalculation of main list
+                // TODO: return lists of all promises to be able to cancel loading. it can be used for triggering of recalculations
                 const dynamicItem: IResolvedDynamicItem = {
                     ...item,
                     isResolved: false,
@@ -75,15 +75,19 @@ const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
 const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = ({ item, onEvaluated }) => {
     const dispatcher = useDynamicActionsDispatcher();
 
+    const { providerUid } = item?.dynamicItemsConfiguration ?? {};
     const providers = dispatcher.getProviders();
-    const provider = providers[item.dynamicItemsConfiguration.providerUid];
+    const provider = providerUid
+        ? providers[providerUid]
+        : undefined;
     const actionsContext = provider 
         ? provider.contextValue 
         : DEFAULT_DYNAMIC_EVALUATOR;
 
     // call a hook
     const evaluatedItems = actionsContext.useEvaluator({
-        item
+        item,
+        settings: item?.dynamicItemsConfiguration?.settings
     });
 
     useEffect(() => {

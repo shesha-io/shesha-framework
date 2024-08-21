@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FluentMigrator;
 using System.Data;
-using System.Text;
-using FluentMigrator;
 
 namespace Shesha.FluentMigrator
 {

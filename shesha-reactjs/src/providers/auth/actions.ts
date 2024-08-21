@@ -11,6 +11,7 @@ export enum AuthActionEnums {
   LoginUserSuccess = 'LOGIN_USER_SUCCESS',
   LoginUserError = 'LOGIN_USER_ERROR',
   LogoutUser = 'LOGOUT_USER',
+  FetchedUserDataAsyncRequest = 'FETCHED_USER_DATA_ASYNC_REQUEST',
   FetchUserDataRequest = 'FETCH_USER_DATA_REQUEST',
   FetchUserDataSuccess = 'FETCH_USER_DATA_SUCCESS',
   FetchUserDataError = 'FETCH_USER_DATA_ERROR',
@@ -40,6 +41,8 @@ export const loginUserErrorAction = createAction<IHasErrorInfo, IErrorInfo>(Auth
 //#region Fetch user data
 
 export const fetchUserDataAction = createAction(AuthActionEnums.FetchUserDataRequest);
+
+export const fetchedUserDataAsyncAction = createAction(AuthActionEnums.FetchedUserDataAsyncRequest);
 
 export const fetchUserDataActionSuccessAction = createAction<UserLoginInfoDto, UserLoginInfoDto>(
   AuthActionEnums.FetchUserDataSuccess,

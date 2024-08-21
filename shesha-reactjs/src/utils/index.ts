@@ -3,6 +3,7 @@ import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/co
 import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
 import { Cell } from 'react-table';
+import { IPersistedFormProps } from '@/providers';
 
 export type NumberOrString = number | string;
 /**
@@ -52,7 +53,7 @@ export const horizontalMouseScroll = (scrollableId: string) => {
       // );
     }
   } catch (error) {
-    console.log('horizontalMouseScroll error: ', error);
+    console.error('horizontalMouseScroll error: ', error);
   }
 };
 
@@ -140,8 +141,7 @@ export const getColumnAnchored = (anchored: string) => {
 };
 
 export const calculateTotalColumnsOnFixed = (row: Cell<any, any, any>[], direction: IAnchoredDirection) => {
-  return row?.filter(({ column }: any) => getColumnAnchored(column?.anchored).direction === direction)
-    ?.length;
+  return row?.filter(({ column }: any) => getColumnAnchored(column?.anchored).direction === direction)?.length;
 };
 
 export const calculatePositionShift = (row: Cell<any, any, any>[], start: number, end: number) => {
@@ -182,7 +182,7 @@ export const evaluateDynamicFilters = async (
         const evaluator = (operator: string, args: object[], argIndex: number): IArgumentEvaluationResult => {
           const argValue = args[argIndex];
           // special handling for specifications
-          // todo: move `is_satisfied` operator name to constant
+          // TODO: move `is_satisfied` operator name to constant
           if (operator === 'is_satisfied' && argIndex === 1) {
             // second argument is an expression that should be converted to boolean
             if (typeof argValue === 'string') {
@@ -244,10 +244,16 @@ export const removeEmptyArrayValues = (list: any[]) =>
 
 export const executeFunction = (expression: string, args: { [key: string]: any }) => {
   try {
-    return executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args);
+    return expression
+      ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
+      : null;
   } catch (_e) {
     return null;
   }
 };
 
+export const getToolboxComponentsVisibility = (props: IPersistedFormProps, configs: IPersistedFormProps[]) =>
+  configs.some(({ name: n, module: m }) => props?.module === m && props?.name === n);
+
 export { unwrapAbpResponse } from './fetchers';
+export * from './metadata/index';

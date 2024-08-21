@@ -14,6 +14,7 @@ import { BorderlessTableOutlined } from '@ant-design/icons';
 import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ILabelValueEditorPropsBase } from './interfaces';
 import { ListEditor } from '@/components';
+import { ItemChangeDetails } from '../listEditor';
 
 export interface ILabelValueItem {
   [key: string]: string;
@@ -41,7 +42,7 @@ export interface ILabelValueEditorProps extends ILabelValueEditorPropsBase {
 
 interface InputPropertyEditorProps<TItem> {
   item: TItem;
-  itemOnChange: (newValue: TItem) => void;
+  itemOnChange: (newValue: TItem, changeDetails: ItemChangeDetails) => void;
   readOnly: boolean;
   placeholder?: string;
   propertyName: string;
@@ -54,7 +55,7 @@ const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorPro
       title={placeholder}
       value={item[propertyName]}
       onChange={(e) => {
-        itemOnChange({ ...item, [propertyName]: e.target.value });
+        itemOnChange({ ...item, [propertyName]: e.target.value }, undefined);
       }}
     />
   );

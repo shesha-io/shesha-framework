@@ -2,9 +2,9 @@ import { Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
 import React, { FC, useMemo, useState, useEffect } from 'react';
 import { ReactSortable } from 'react-sortablejs';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerActions } from '@/providers/formDesigner';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { useStyles } from '../styles/styles';
 
@@ -18,11 +18,11 @@ const getTreeData = (prop: IPropertyMetadata, onAddItem: (prop: IPropertyMetadat
   const node: DataNodeWithMeta = {
     key: prop.path,
     title: prop.label ?? prop.path,
-    isLeaf: prop.properties.length === 0,
+    isLeaf: !isPropertiesArray(prop.properties) || prop.properties.length === 0,
     selectable: false,
     meta: prop,
   };
-  node.children = prop.properties.map<DataNodeWithMeta>(childProp => getTreeData(childProp, onAddItem));
+  node.children = isPropertiesArray(prop.properties) ? prop.properties.map<DataNodeWithMeta>(childProp => getTreeData(childProp, onAddItem)) : [];
 
   onAddItem(prop);
 
@@ -41,7 +41,7 @@ interface NodesWithExpanded {
 const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => {
   const { styles } = useStyles();
   const [manuallyExpanded, setManuallyExpanded] = useState<string[]>(null);
-  const { startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
+  const { startDraggingNewItem, endDraggingNewItem } = useFormDesignerActions();
   const treeData = useMemo<NodesWithExpanded>(() => {
     const expanded: string[] = [];
     const nodes = items.map(item =>
@@ -113,9 +113,9 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
         onStart={onDragStart}
         onEnd={onDragEnd}
       >
-        <div className={styles.shaToolboxComponent}>
+        <div className={styles.shaToolboxComponent} >
           {icon}
-          <span className={styles.shaComponentTitle}>{getTitle(node.meta)}</span>
+          <div className={styles.shaComponentTitle}>{getTitle(node.meta)}</div>
         </div>
       </ReactSortable>
     );

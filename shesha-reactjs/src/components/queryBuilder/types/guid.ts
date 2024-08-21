@@ -19,7 +19,7 @@ export const GuidType: CustomType = {
 };
 
 
-// todo: implement guid widget and use validation
+// TODO: implement guid widget and use validation
 // export const validateGuidField: ValidateValue<string> = (val: string/*, fieldSettings: FieldSettings, op: string, opDef: Operator, rightFieldDef?: Field*/): boolean | string | null => {
 //   var pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 //   if (!val)

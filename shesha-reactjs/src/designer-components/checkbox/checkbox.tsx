@@ -12,6 +12,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { ICheckboxComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -45,6 +46,7 @@ const CheckboxComponent: IToolboxComponent<ICheckboxComponentProps> = {
     .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ICheckboxComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ICheckboxComponentProps>(2, (prev) => migrateReadOnly(prev))
+    .add<ICheckboxComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
 };

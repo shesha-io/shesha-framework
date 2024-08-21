@@ -82,16 +82,7 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
       (onChange as TimePickerChangeEvent)(seconds, timeString);
     }
   };
-  const handleTimePickerSelect = (newValue: Moment) => {
-    if (onChange){
-      const seconds = getTotalSeconds(newValue);
-      const timeString = seconds
-        ? moment(seconds * 1000).format(format)
-        : undefined;
-      (onChange as TimePickerChangeEvent)(seconds, timeString);
-    }
-  };  
-
+  
   const handleRangePicker = (values: Moment[], timeString: [string, string]) => {
     if (onChange){
       const seconds = values?.map(value => getTotalSeconds(value));
@@ -126,7 +117,6 @@ export const TimePickerWrapper: FC<ITimePickerProps> = ({
     <TimePicker
       variant={hideBorder ? 'borderless' : undefined }
       onChange={handleTimePickerChange}
-      onSelect={handleTimePickerSelect}
       format={format}
       value={evaluatedValue|| (defaultValue && moment(defaultValue))}
       {...steps}

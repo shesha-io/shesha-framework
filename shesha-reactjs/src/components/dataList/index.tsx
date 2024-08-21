@@ -10,7 +10,7 @@ import FormInfo from '../configurableForm/formInfo';
 import ShaSpin from '@/components/shaSpin';
 import Show from '@/components/show';
 import { GroupLevelInfo, GroupLevels, IDataListProps, NewItemInitializer, Row, RowOrGroup, RowsGroup } from './models';
-import { useApplicationContext, executeScriptSync, getStyle } from '@/providers/form/utils';
+import { useAvailableConstantsData, executeScriptSync, getStyle } from '@/providers/form/utils';
 import { isEqual } from 'lodash';
 import { useDeepCompareMemo } from '@/hooks';
 import { ValueRenderer } from '@/components/valueRenderer/index';
@@ -21,6 +21,7 @@ import { useMemo } from 'react';
 import moment from 'moment';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useStyles } from './styles/styles';
+import {EmptyState} from "..";
 
 interface EntityForm {
   entityType: string;
@@ -67,8 +68,17 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   inlineEditMode,
   inlineSaveMode,
   actionRef,
+  noDataIcon,
+  noDataSecondaryText,
+  noDataText,
+  cardHeight,
+  cardMaxWidth = '350px',
+  cardMinWidth = '350px',
+  showBorder,
+  cardSpacing,
   ...props
 }) => {
+
   const { styles } = useStyles();
   //const refreshRef = useRef(0);
 
@@ -104,7 +114,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
     updateContent();
   }, [selectedRow, selectedRows, selectionMode]);
 
-  const allData = useApplicationContext();
+  const allData = useAvailableConstantsData();
   const { configurationItemMode } = useAppConfigurator();
   const { executeAction } = useConfigurableActionDispatcher();
 
@@ -178,12 +188,26 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   const [measuredRef, measured] = useMeasure();
   const [itemWidthCalc, setItemWidth] = useState({});
 
-  // ToDo: Horisontal orientation works incorrect under Container with Display = `grid`
+  // TODO: Horisontal orientation works incorrect under Container with Display = `grid`
+
+  //The below forces the card to use max-width, therefore avoiding the issue of having cards
+  //with varying sizes. This is only a problem when selection mode is not "none"
+
+  if(orientation === "wrap" && selectionMode !== "none"){
+    cardMinWidth = cardMaxWidth;
+  }  
+
 
   useEffect(() => {
     if (measured?.width === 0) return;
-    let res = null;
-    if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
+     let res = null;
+    if(orientation === "horizontal" && listItemWidth !== 'custom'){
+      res = ({ width: '100%', minWidth: listItemWidth as unknown as number * 100 + '%' } as React.CSSProperties);
+
+    }else if (orientation === "horizontal" && listItemWidth === "custom") {
+      res = ({width: `${customListItemWidth}px`} as React.CSSProperties);
+
+    }else if (orientation === 'vertical' || !listItemWidth || (listItemWidth === 'custom' && !customListItemWidth)) {
       res =
         selectionMode === 'none'
           ? ({ width: '100%' } as React.CSSProperties)
@@ -283,7 +307,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText]);
 
   const renderSubForm = (item: any, index: number) => {
     let className = null;
@@ -303,7 +327,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
     const dblClick = () => {
       if (props.dblClickActionConfiguration) {
-        // todo: implement generic context collector
+        // TODO: implement generic context collector
         const evaluationContext = {
           ...allData,
           selectedRow: item,
@@ -335,6 +359,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'update' : 'read'}
           autoSave={inlineSaveMode === 'auto'}
           />
+         
       </div>
     );
   };
@@ -416,6 +441,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
   };
 
   const renderRow = (item: any, index: number, isLastItem: Boolean) => {
+  
     const selected =
       selectedRow?.index === index && !(selectedRows?.length > 0) ||
       (selectedRows?.length > 0 && selectedRows?.some(({ id }) => id === item?.id));
@@ -435,17 +461,19 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             </Checkbox>
           )}
         >
+
           <div
-            className={classNames(styles.shaDatalistComponentItem, { selected })}
+            className={classNames(orientation === 'wrap' ? styles.shaDatalistCard : styles.shaDatalistComponentItem, { selected })}
             onClick={() => {
               onSelectRowLocal(index, item);
             }}
-            style={itemWidthCalc}
+            style={orientation === 'wrap' ? {minWidth: `${Number(cardMinWidth) ? cardMinWidth+'px' : cardMinWidth}`, maxWidth: `${Number(cardMaxWidth) ? cardMaxWidth+'px' : cardMaxWidth}`, height: `${Number(cardHeight) ? cardHeight+'px' : cardHeight}`,
+            ...(showBorder && {border: '1px #d3d3d3 solid'})} : itemWidthCalc}
           >
             {rows.current?.length > index ? rows.current[index] : null}
           </div>
         </ConditionalWrap>{' '}
-        {!isLastItem && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />}
+        {(orientation !== "wrap" && (!isLastItem) && <Divider className={classNames(styles.shaDatalistComponentDivider, { selected })} />)}
       </div>
     );
   };
@@ -459,14 +487,14 @@ export const DataList: FC<Partial<IDataListProps>> = ({
 
   const onNewListItemInitializeExecuter = useMemo<Function>(() => {
     return props.onNewListItemInitialize
-      ? new Function('formData, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize)
+      ? new Function('form, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize)
       : null;
   }, [props.onNewListItemInitialize]);
 
   const onNewListItemInitialize = useMemo<NewItemInitializer>(() => {
     return () => Promise.resolve(
       props.onNewListItemInitialize
-        ? onNewListItemInitializeExecuter(allData.data ?? {}, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
+        ? onNewListItemInitializeExecuter(allData.form, allData.contexts ?? {}, allData.globalState, allData.contexts, allData.http, moment)
         : {}
     );
   }, [onNewListItemInitializeExecuter, allData.data, allData.globalState, allData.contexts.lastUpdate]);
@@ -536,8 +564,35 @@ export const DataList: FC<Partial<IDataListProps>> = ({
             horizontal: orientation === 'horizontal',
           })}
         >
+
+          <Show when={records?.length === 0}>
+              <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
+          </Show>
+
           <Show when={records?.length > 0}>
-            { content }
+            {orientation === "wrap" &&
+              <div className={styles.shaDatalistWrapParent} style={{gap: `${cardSpacing}`, gridTemplateColumns: `repeat(auto-fit, minmax(${cardMinWidth}, 1fr))`}}>
+                {content}
+              </div>
+            }
+
+
+            {orientation === "horizontal" && 
+              <div className={styles.shaDatalistHorizontal}>
+              {React.Children.map(content, child => {
+              return React.cloneElement(child, { style: itemWidthCalc });
+              })}
+              </div>
+            }
+
+            {orientation === "vertical" && 
+              <div style={itemWidthCalc}>
+              {React.Children.map(content, child => {
+              return React.cloneElement(child, { style: itemWidthCalc });
+              })}
+              </div>
+            }
+
           </Show>
         </div>
       </ShaSpin>

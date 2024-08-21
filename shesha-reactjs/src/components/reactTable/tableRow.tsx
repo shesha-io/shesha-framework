@@ -1,6 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useRef } from 'react';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from '@/providers/crudContext';
@@ -69,15 +69,9 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
   const { styles } = useStyles();
   const { hoverRowId, setHoverRowId, dragState: draggingRowId, setDragState } = useDataTableStore();
   const tableRef = useRef(null);
-  const [selected, setSelected] = useState<Number>(selectedRowIndex);
 
   const handleRowClick = () => {
-    if (selected === row?.index) {
-      setSelected(-1);
-    } else {
-      onClick(row);
-      setSelected(row?.index);
-    }
+    onClick(row);
   };
 
   const handleRowDoubleClick = () => {
@@ -86,14 +80,15 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
 
   prepareRow(row);
 
-  useEffect(() => {
+  // Review if deselecting is required for click outside
+  /*useEffect(() => {
     const onClickOutside = (event) => {
       if (tableRef.current && !tableRef.current.contains(event.target)) {
-        setSelected(-1);
+        onClick(null);
       }
     };
     document.addEventListener('click', onClickOutside);
-  }, []);
+  }, []);*/
 
   const rowId = row.original.id ?? row.id;
 
@@ -133,7 +128,7 @@ export const TableRow: FC<ISortableRowProps> = (props) => {
           styles.tr,
           styles.trBody,
           { [styles.trOdd]: index % 2 === 0 },
-          { [styles.trSelected]: selected === row?.index },
+          { [styles.trSelected]: selectedRowIndex === row?.index },
           { [styles.shaHover]: hoverRowId === rowId },
         )}
         key={rowId}

@@ -146,3 +146,34 @@ export const capitalizeFirstLetter = (str: string) => {
 
   return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
 };
+
+
+export const verifiedCamelCase = (value: string): string => {
+  return camelcase(value);
+};
+
+/**
+ * Trims the specified suffix from the given string.
+ *
+ * @param {string} s - the input string
+ * @param {string} w - the suffix to be trimmed
+ * @return {string} the modified string with the suffix trimmed
+ */
+export const trimSuffix = (s: string, w: string) => {
+  return s && s.endsWith(w)
+    ? s.slice(0, -w.length)
+    : s;
+};
+
+/**
+ * Removes the specified prefix from the given string if it exists.
+ *
+ * @param {string} s - The string to remove the prefix from.
+ * @param {string} w - The prefix to remove.
+ * @return {string} The modified string after removing the prefix.
+ */
+export const trimPrefix = (s: string, w: string) => {
+  return s && s.startsWith(w)
+    ? s.slice(w.length)
+    : s;
+};

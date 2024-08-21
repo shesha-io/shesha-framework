@@ -41,6 +41,10 @@ const baseAuthReducer = handleActions<IAuthStateContext, any>(
       };
     },
 
+    [AuthActionEnums.FetchedUserDataAsyncRequest]: (state: IAuthStateContext) => {
+      return { ...state, hasFetchedUserInfoAsync: true };
+    },
+    
     [AuthActionEnums.FetchUserDataRequest]: (state: IAuthStateContext) => {
       return { ...state, isFetchingUserInfo: true };
     },

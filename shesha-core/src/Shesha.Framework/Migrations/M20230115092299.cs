@@ -10,11 +10,12 @@ namespace Shesha.Migrations
         public override void Up()
         {
             // remove settings configuration without corresponding configurations
+
             Execute.Sql(@"delete from 
-	Frwk_ConfigurationItems
+	""Frwk_ConfigurationItems""
 where
-	ItemType = 'setting-configuration'
-	and not exists (select 1 from Frwk_SettingConfigurations where Id = Frwk_ConfigurationItems.Id)");
+	""ItemType"" = 'setting-configuration'
+	and not exists (select 1 from ""Frwk_SettingConfigurations"" where ""Id"" = ""Frwk_ConfigurationItems"".""Id"")");
         }
     }
 }

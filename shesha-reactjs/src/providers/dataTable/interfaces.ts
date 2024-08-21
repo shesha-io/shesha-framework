@@ -95,6 +95,8 @@ export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {
   displayFormId?: FormIdentifier;
   createFormId?: FormIdentifier;
   editFormId?: FormIdentifier;
+
+  minHeight?: number;
 }
 
 export const isDataColumn = (column: ITableColumn): column is ITableDataColumn => {
@@ -248,34 +250,6 @@ export interface DataTableColumnDto {
   isSortable?: boolean;
   metadata?: IPropertyMetadata;
 }
-
-//#region todo: remove
-export interface GetColumnsInput {
-  entityType: string;
-  properties?: string[] | null;
-}
-
-export interface DataTableColumnDtoListAjaxResponse {
-  targetUrl?: string | null;
-  success?: boolean;
-  error?: ErrorInfo;
-  unAuthorizedRequest?: boolean;
-  __abp?: boolean;
-  result?: DataTableColumnDto[] | null;
-}
-
-export interface ValidationErrorInfo {
-  message?: string | null;
-  members?: string[] | null;
-}
-
-export interface ErrorInfo {
-  code?: number;
-  message?: string | null;
-  details?: string | null;
-  validationErrors?: ValidationErrorInfo[] | null;
-}
-//#endregion
 
 export interface ITableColumnsBuilder {
   columns: IDataColumnsProps[];

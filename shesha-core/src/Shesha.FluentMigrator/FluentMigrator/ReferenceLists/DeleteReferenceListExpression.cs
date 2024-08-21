@@ -8,8 +8,10 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     public class DeleteReferenceListExpression : SheshaMigrationExpressionBase
     {
-        public DeleteReferenceListExpression(IQuerySchema querySchema) : base(querySchema)
+        public DeleteReferenceListExpression(IQuerySchema querySchema, string @namespace, string name) : base(querySchema)
         {
+            Namespace = @namespace;
+            Name = name;
         }
 
         public string Name { get; set; }

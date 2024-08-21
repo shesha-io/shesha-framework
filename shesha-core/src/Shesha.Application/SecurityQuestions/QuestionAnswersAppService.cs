@@ -3,6 +3,7 @@ using Abp.Domain.Repositories;
 using Abp.UI;
 using Shesha.Authorization.Users;
 using Shesha.Configuration;
+using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.SecurityQuestions.Dto;
 using System;
@@ -13,11 +14,11 @@ namespace Shesha.SecurityQuestions
     public class QuestionAnswersAppService : SheshaCrudServiceBase<QuestionAssignment, UserAnswerDto, Guid>
     {
         private readonly IRepository<User, long> _userRepository;
-        private readonly IAuthenticationSettings _setting;
+        private readonly ISecuritySettings _setting;
 
         public QuestionAnswersAppService(IRepository<QuestionAssignment, Guid> repository,
             IRepository<User, long> userRepository,
-            IAuthenticationSettings setting) : base(repository)
+            ISecuritySettings setting) : base(repository)
         {
             _userRepository = userRepository;
             _setting = setting;
@@ -35,8 +36,9 @@ namespace Shesha.SecurityQuestions
 
             var user = await _userRepository.GetAsync(currentUserId.Value);
 
+            var settings = await _setting.SecuritySettings.GetValueAsync();
 
-            var numberOfQuestionsAllowed = await _setting.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.GetValueAsync();
+            var numberOfQuestionsAllowed = settings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed;
 
             var numberOfQuestionsSelected = await Repository.CountAsync(q => q.User == user);
 

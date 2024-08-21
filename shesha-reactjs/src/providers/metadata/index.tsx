@@ -1,6 +1,6 @@
 import React, { FC, PropsWithChildren, useContext, useEffect, useMemo } from 'react';
 import useThunkReducer from '@/hooks/thunkReducer';
-import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
+import { IPropertyMetadata, ProperyDataType, asPropertiesArray } from '@/interfaces/metadata';
 import { useMetadataDispatcher } from '@/providers';
 import { setMetadataAction } from './actions';
 import {
@@ -31,33 +31,33 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, m
   const [state, dispatch] = useThunkReducer(metadataReducer, initial);
 
   // register provider in the dispatcher if exists
-  const { registerProvider, getMetadata: fetchMeta } = useMetadataDispatcher();
+  const { getMetadata } = useMetadataDispatcher();
 
   useEffect(() => {
-    if (modelType)
-      fetchMeta({ modelType, dataType }).then(meta => {
+    if (modelType) {
+      getMetadata({ modelType, dataType }).then(meta => {
         dispatch(setMetadataAction({ metadata: meta, dataType, modelType }));
       });
+    }
   }, [modelType, dataType]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
-  const getMetadata = () => {
-    return fetchMeta({ dataType, modelType });
-  };
+  // const getMetadata = () => {
+  //   return fetchMeta({ dataType, modelType });
+  // };
 
   const getPropertyMeta = (name: string): IPropertyMetadata => {
-    return (state.metadata?.properties ?? []).find(p => camelcase(p.path) === name);
+    return asPropertiesArray(state.metadata?.properties, []).find(p => camelcase(p.path) === name);
   };
 
   const metadataActions: IMetadataActionsContext = {
     /* NEW_ACTION_GOES_HERE */
-    getMetadata,
+    // getMetadata,
     getPropertyMeta,
   };
 
   const contextValue: IMetadataContext = { ...state, ...metadataActions };
-  registerProvider({ id, modelType, contextValue });
 
   return <MetadataContext.Provider value={contextValue}>{children}</MetadataContext.Provider>;
 };
@@ -82,7 +82,9 @@ const useMetaProperties = (dataTypes: ProperyDataType[]): IPropertyMetadata[] =>
   const meta = useMetadata(false);
 
   const properties = useMemo(() => {
-    const { properties = [] } = meta?.metadata ?? {};
+    const { properties: metaProperties } = meta?.metadata ?? {};
+    const properties = asPropertiesArray(metaProperties, []);
+
     return dataTypes
       ? properties.filter(({ dataType }) => dataTypes.includes(dataType as ProperyDataType))
       : properties;
@@ -91,4 +93,18 @@ const useMetaProperties = (dataTypes: ProperyDataType[]): IPropertyMetadata[] =>
   return properties;
 };
 
-export { MetadataProvider, useMetaProperties, useMetadata };
+const ConditionalMetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = (props) => {
+  return props.modelType
+    ? (
+      <MetadataProvider {...props}>
+        {props.children}
+      </MetadataProvider>
+    )
+    : (
+      <>
+        {props.children}
+      </>
+    );
+};
+
+export { MetadataProvider, ConditionalMetadataProvider, useMetaProperties, useMetadata };

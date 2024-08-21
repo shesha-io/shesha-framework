@@ -1,19 +1,23 @@
 ﻿using Abp.Dependency;
+using Shesha.Attributes;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Modules;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
+using Shesha.Utilities;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Shesha.Settings
 {
     /// <summary>
     /// Default settings definition provider. Defines all settings registered using <see cref="IocManagerExtensions.RegisterSettingAccessor"/>
     /// </summary>
-    public class DefaultSettingDefinitionProvider : ISettingDefinitionProvider, ITransientDependency
+    public class DefaultSettingDefinitionProvider : IOrderedSettingDefinitionProvider, ITransientDependency
     {
         private readonly IIocManager _iocManager;
 
@@ -21,6 +25,8 @@ namespace Shesha.Settings
         {
             _iocManager = iocManager;
         }
+
+        public int OrderIndex => 1;
 
         public void Define(ISettingDefinitionContext context)
         {
@@ -31,9 +37,9 @@ namespace Shesha.Settings
                 var accessorType = accessor.GetType();
 
                 var interfaceType = accessorType.GetInterfaces().Where(t => t != typeof(ISettingAccessors) && typeof(ISettingAccessors).IsAssignableFrom(t)).FirstOrDefault();
-                var moduleName = interfaceType.GetConfigurableModuleName();
 
-                if (string.IsNullOrWhiteSpace(moduleName))
+                var moduleInfo = interfaceType.GetConfigurableModuleInfo();
+                if (moduleInfo == null)
                     continue; // note: we automatically define only settings in the Shesha modules
 
                 var properties = accessorType.GetProperties().Where(t => typeof(ISettingAccessor).IsAssignableFrom(t.PropertyType)).ToList();
@@ -44,7 +50,7 @@ namespace Shesha.Settings
                     if (propertyInstance == null)
                         continue;
 
-                    var definition = GetSettingDefinition(propertyInstance, property, moduleName);
+                    var definition = GetSettingDefinition(propertyInstance, property, moduleInfo);
                     
                     if (definition != null)
                         context.Add(definition);
@@ -52,7 +58,7 @@ namespace Shesha.Settings
             }
         }
 
-        private SettingDefinition GetSettingDefinition(ISettingAccessor propertyInstance, PropertyInfo property, string moduleName)
+        private SettingDefinition GetSettingDefinition(ISettingAccessor propertyInstance, PropertyInfo property, SheshaModuleInfo moduleInfo)
         {
             var valueType = property.PropertyType.IsGenericType
                 ? property.PropertyType.GenericTypeArguments[0]
@@ -74,17 +80,30 @@ namespace Shesha.Settings
             var defaultValue = propertyInstance.GetDefaultValue();
 
             var definition = Activator.CreateInstance(definitionType, name, defaultValue, displayName) as SettingDefinition;
+
+            definition.Accessor = property.GetPropertyAccessor();
+
             definition.Description = ReflectionHelper.GetDescription(property);
             definition.IsClientSpecific = settingAttribute?.IsClientSpecific ?? false;
 
-            definition.ModuleName = moduleName;
+            definition.IsUserSpecific = settingAttribute?.IsUserSpecific ?? false;
+
+            definition.ModuleName = moduleInfo.Name;
+            definition.ModuleAccessor = moduleInfo.GetModuleAccessor();
+
             definition.EditForm = !string.IsNullOrWhiteSpace(settingAttribute?.EditorFormName)
                 ? new SettingConfigurationIdentifier(definition.ModuleName, settingAttribute.EditorFormName)
                 : null;            
 
             definition.Category = property.GetCategory() ?? property.DeclaringType.GetCategory();
+            definition.CategoryAccessor = CodeNamingHelper.GetAccessor(UnwrapSettingAccessorName(property.DeclaringType.Name), property.DeclaringType.GetAttribute<AliasAttribute>()?.Alias);
 
             return definition;
+        }
+
+        private string UnwrapSettingAccessorName(string name) 
+        {
+            return name.RemovePostfix("SettingsDefault").RemovePostfix("SettingDefault");
         }
     }
 }

@@ -9,15 +9,11 @@ using Microsoft.IdentityModel.Tokens;
 using Shesha;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
-using Shesha.AzureAD;
 using Shesha.Configuration;
 using Shesha.Configuration.Startup;
+using Shesha.Elmah;
 using Shesha.Import;
-using Shesha.Ldap;
-using Shesha.Sms.BulkSms;
 using Shesha.Sms.Clickatell;
-using Shesha.Sms.SmsPortal;
-using Shesha.Sms.Xml2Sms;
 using Shesha.Web.FormsDesigner;
 using System;
 using System.Text;
@@ -33,14 +29,9 @@ namespace Boxfusion.SheshaFunctionalTests
         typeof(SheshaApplicationModule),
         typeof(SheshaFormsDesignerModule),
         typeof(SheshaImportModule),
-        typeof(SheshaLdapModule),
-        typeof(SheshaAzureADModule),
-        typeof(SheshaFirebaseModule),
         typeof(SheshaClickatellModule),
-        typeof(SheshaBulkSmsModule),
-        typeof(SheshaXml2SmsModule),
-        typeof(SheshaSmsPortalModule),
         typeof(SheshaFunctionalTestsCommonModule),
+        typeof(SheshaElmahModule),
         typeof(SheshaFunctionalTestsCommonApplicationModule)
      )]
     public class SheshaFunctionalTestsWebCoreModule : AbpModule

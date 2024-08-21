@@ -18,8 +18,6 @@ export interface ISubFormProviderProps extends IValuable, IChangeable {
 
   formId?: FormIdentifier;
 
-  submitUrl?: string;
-  onSubmit?: string;
   buttons?: any[];
   labelCol?: ColProps;
   wrapperCol?: ColProps;

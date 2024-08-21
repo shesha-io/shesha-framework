@@ -8,7 +8,7 @@ import {
 import { IHasQueryBuilderConfig, IProperty, IPropertyMetadataWithQBSettings, propertyHasQBConfig } from './models';
 import { getPropertyFullPath, propertyMetadata2QbProperty, useMetadataFields } from './utils';
 import { useMetadataDispatcher } from '@/providers';
-import { IModelMetadata, isEntityMetadata } from '@/interfaces/metadata';
+import { IModelMetadata, asPropertiesArray, isEntityMetadata } from '@/interfaces/metadata';
 import { Widgets } from '@react-awesome-query-builder/antd';
 
 export interface IQueryBuilderProviderProps {
@@ -32,7 +32,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
 
   const getPropertiesFromMeta = (modelMeta: IModelMetadata, prefix: string): IProperty[] => {
     // handle properties
-    const properties = modelMeta.properties.map(p => {
+    const properties = asPropertiesArray(modelMeta.properties, []).map(p => {
       const qbProp = propertyMetadata2QbProperty(p);
       qbProp.propertyName = getPropertyFullPath(p.path, prefix);
       return qbProp;
@@ -113,7 +113,7 @@ const QueryBuilderProvider: FC<PropsWithChildren<IQueryBuilderProviderProps>> = 
         });
       });
 
-      // add unknown fields todo: find a good way to handle these fields
+      // add unknown fields TODO: find a good way to handle these fields
       const unknownFields = fieldNames.filter(f => !missingProperties.find(p => p.propertyName === f));
       if (unknownFields.length > 0) {
         unknownFields.forEach(f => {

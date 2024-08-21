@@ -1,7 +1,7 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
 export { default as ConfigurableLogo } from './configurableLogo';
 export { default as FileUpload, type IFileUploadProps } from './fileUpload';
-export { default as ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
+export { ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
 export { default as MultiCheckBoxRefList, type IMultiCheckBoxRefListProps } from './multiCheckBoxRefList';
 export {
   default as MultiReadCheckBoxRefList,
@@ -11,14 +11,14 @@ export {
 export { ReactTable } from './reactTable';
 export { type IReactTableProps } from './reactTable/interfaces';
 export {
-  default as ConfigurableFormComponent,
+  ConfigurableFormComponent,
   type IConfigurableFormComponentProps,
 } from './formDesigner/configurableFormComponent';
 export { default as ConfigurableFormItem, type IConfigurableFormItemProps } from './formDesigner/components/formItem';
 export { default as BooleanDropDown } from './booleanDropDown';
 export { SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
-export { default as EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
+export { EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
 export { default as FormAutocomplete } from './formAutocomplete';
 export { default as CustomFile } from './customFile';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
@@ -73,19 +73,22 @@ export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
 export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
+export { default as EmptyState, type IEmptyStateProps } from './emptyState';
 export {
   AppEditModeToggler,
   type IAppEditModeTogglerProps as IEditModeTogglerProps,
-} from './appConfigurator/editModeToggler'; // todo: convert to subtype
-export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // todo: convert to subtype
+} from './appConfigurator/editModeToggler'; // TODO: convert to subtype
+export { default as ConfigurableComponent } from './appConfigurator/configurableComponent'; // TODO: convert to subtype
 export { FormDesigner, type IFormDesignerProps } from './formDesigner/index';
 export { QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
 export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 
-export { default as ConfigurableForm } from './configurableForm';
+export { ConfigurableForm } from './configurableForm';
+export { FormWithFlatMarkup, type IFormWithFlatMarkupProps } from './configurableForm/formWithFlatMarkup';
+
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';
 export { default as Show, type IShowProps } from './show';
-export { default as CodeEditor } from './formDesigner/components/codeEditor/codeEditor';
+export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 export { default as ModelConfigurator } from './modelConfigurator';
 
 export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
@@ -103,9 +106,9 @@ export { default as EditableTagGroup, type IEditableTagGroupProps } from './edit
 export { default as QuickView, type IQuickViewProps } from './quickView';
 export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 
-export { default as SidebarConfigurator } from './configurableSidebarMenu/configurator';
-export { default as ButtonGroupConfigurator } from './formDesigner/components/button/buttonGroup/configurator';
-export { default as CodeEditorModal } from './formDesigner/components/codeEditor/codeEditor';
+export { SidebarConfigurator } from './configurableSidebarMenu/configurator';
+export { ConfigurableSidebarMenu } from './configurableSidebarMenu';
+export { ComponentSettingsModal } from './configurableSidebarMenu/settingsModal';
 export { LabelValueEditor } from './labelValueEditor/labelValueEditor';
 export { default as RichTextEditor, type IRichTextEditorProps } from './richTextEditor';
 export { default as SettingsEditor, type ISettingsEditorProps } from './settingsEditor';
@@ -113,9 +116,9 @@ export { FormComponentSelector, type IFormComponentSelectorProps } from './formC
 export { default as PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
 export { ColorPicker } from '@/components/colorPicker';
 export { default as ComponentsContainer } from './formDesigner/containers/componentsContainer';
-export { default as Properties } from '@/components/properties';
 export { HelpTextPopover } from './helpTextPopover';
 export { StatusTag } from './statusTag';
 export { RefListStatus, type IRefListStatusProps } from './refListStatus';
 
 export { ListEditor } from './listEditor';
+export { ButtonGroupConfigurator } from './buttonGroupConfigurator';

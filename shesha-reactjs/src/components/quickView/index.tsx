@@ -8,14 +8,13 @@ import React, {
 import ValidationErrors from '@/components/validationErrors';
 import {
   Button,
-  Form,
   notification,
   Popover,
   PopoverProps,
   Spin
   } from 'antd';
 import { ConfigurableForm } from '@/components/';
-import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication, useUi } from '@/providers';
+import { FormItemProvider, FormMarkupWithSettings, MetadataProvider, useSheshaApplication } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useFormConfiguration } from '@/providers/form/api';
 import { entitiesGet } from '@/apis/entities';
@@ -23,6 +22,7 @@ import { FormIdentifier } from '@/providers/form/models';
 import { get } from '@/utils/fetchers';
 import { getQuickViewInitialValues } from './utils';
 import { useStyles } from '../entityReference/styles/styles';
+import { getStyle } from '@/providers/form/utils';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -47,7 +47,23 @@ export interface IQuickViewProps extends PropsWithChildren {
   initialFormData?: any;
 
   popoverProps?: PopoverProps;
+
+  disabled?: boolean;
+  style?: string;
 }
+
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    md: { span: 8 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    md: { span: 16 },
+    sm: { span: 16 },
+  },
+};
 
 const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   children,
@@ -61,15 +77,17 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   width = 600,
   popoverProps,
   dataProperties = [],
+  disabled,
+  style
 }) => {
   const [formData, setFormData] = useState(initialFormData);
   const [formTitle, setFormTitle] = useState(displayName);
   const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings>(null);
   const { backendUrl, httpHeaders } = useSheshaApplication();
-  const [form] = Form.useForm();
-  const { formItemLayout } = useUi();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { styles } = useStyles();
+
+  const cssStyle = getStyle(style, formData);
 
   useEffect(() => {
     if (formIdentifier) {
@@ -104,9 +122,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
             mode="readonly"
             {...formItemLayout}
             markup={formMarkup}
-            form={form}
             initialValues={getQuickViewInitialValues(formData, dataProperties)}
-            skipFetchData={true}
           />
         </MetadataProvider>
       </FormItemProvider>
@@ -117,11 +133,11 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   const render = () => {
     if (children) {
-      return <>{children}</>;
+      return <div style={cssStyle}>{children}</div>;
     }
 
     return (
-      <Button className={styles.entityReferenceBtn} type="link">
+      <Button className={styles.entityReferenceBtn} style={formTitle ? cssStyle : null} type="link">
         {formTitle ?? (
           <span>
             <Spin size="small" /> Loading...
@@ -130,6 +146,13 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
       </Button>
     );
   };
+
+  if (disabled)
+   return (
+    <Button className={styles.entityReferenceBtn} disabled type="link">
+      {formTitle}
+      </Button>
+      );
 
   return (
     <Popover
@@ -154,7 +177,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   }, [props.className, props.formType, formConfig]);
 
   return formConfig ? (
-    <QuickView {...props} formIdentifier={formConfig} />
+    <QuickView {...props} formIdentifier={formConfig}/>
   ) : (
     <Button type="link">
       <span>

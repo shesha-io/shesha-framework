@@ -18,20 +18,20 @@ interface ISettingEditorState {
 
 export const SettingEditor: FC<ISettingEditorProps> = () => {
     const { settingSelection, fetchSettingValue } = useSettingsEditor();
-    const [state, setSatate] = useState<ISettingEditorState>({ isLoading: false });
+    const [state, setState] = useState<ISettingEditorState>({ isLoading: false });
 
     useEffect(() => {
         if (settingSelection) {
-            setSatate(prev => ({ ...prev, isLoading: true, value: null }));
+            setState(prev => ({ ...prev, isLoading: true, value: null }));
             fetchSettingValue({
                 name: settingSelection.setting.name,
                 module: settingSelection.setting.module,
                 appKey: settingSelection.app?.appKey
             }).then(response => {
-                setSatate(prev => ({ ...prev, isLoading: false, value: response }));
+                setState(prev => ({ ...prev, isLoading: false, value: response }));
             });
         } else
-            setSatate(prev => ({ ...prev, isLoading: false, value: null, loadingError: null }));
+            setState(prev => ({ ...prev, isLoading: false, value: null, loadingError: null }));
     }, [settingSelection]);
 
     return settingSelection

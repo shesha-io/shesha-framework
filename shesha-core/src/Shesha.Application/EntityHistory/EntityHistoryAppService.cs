@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
-using Shesha.Application.Services.Dto;
 using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
@@ -23,20 +22,17 @@ namespace Shesha.EntityHistory
             _entityHistoryProvider = entityHistoryProvider;
         }
 
-        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrail(FilteredPagedAndSortedResultRequestDto input, string entityId, string entityTypeFullName)
+        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrail(EntityHistoryResultRequestDto input, string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
         {
-            var history = _entityHistoryProvider.GetAuditTrail(entityId, entityTypeFullName);
+            var history = await _entityHistoryProvider.GetAuditTrailAsync(entityId, entityTypeFullName, includeEventsOnChildEntities);
 
             var totalRowsBeforeFilter = history.Count();
 
             // Dynamic filter
-            /*if (!string.IsNullOrEmpty(input.QuickSearch))
+            if (!string.IsNullOrEmpty(input.QuickSearch))
             {
-                if (input.properties.Length > 0)
-                {
-                    history = history.LikeDynamic(properties, input.QuickSearch).ToList();
-                }
-            }*/
+                history = history.LikeDynamic(input.QuickSearch).ToList();
+            }
 
             var totalRows = history.Count();
             var totalPages = (int)Math.Ceiling((double)history.Count() / input.MaxResultCount);
@@ -44,14 +40,14 @@ namespace Shesha.EntityHistory
             var takeCount = input.MaxResultCount > -1 ? input.MaxResultCount : int.MaxValue;
             var skipCount = input.SkipCount;
 
-            history = history.OrderBy(x => x.CreationTime).ToList();
-
             // Dynamic order by property name
-            /*var sort = input.Sorting.FirstOrDefault();
-            if (sort != null)
+            if (input.Sorting != null)
             {
-                history = history.OrderByDynamic(sort.Id, sort.Desc ? "desc" : "asc").ToList();
-            }*/
+                var sorting = input.Sorting.Split(",");
+                var sort = sorting[0].Split(" ");
+                var sortOrder = sort.Length > 1 ? sort[1] : "asc";
+                history = history.OrderByDynamic(sort[0], sortOrder.ToLower()).ToList();
+            }
 
             if (skipCount > history.Count) skipCount = 0;
 
@@ -81,7 +77,7 @@ namespace Shesha.EntityHistory
                 Items = history
             };
 
-            return await Task.FromResult(result);
+            return result;
         }
     }
 }

@@ -1,33 +1,35 @@
 import { IConfigurableFormComponent, IPropertySetting } from '.';
-import { IAlertComponentProps } from '@/components/formDesigner/components/alert/interfaces';
-import { ICodeEditorComponentProps } from '@/components/formDesigner/components/codeEditor/interfaces';
-import { IColorPickerComponentProps } from '@/components/formDesigner/components/colorPicker/interfaces';
-import { IEditableTagGroupComponentProps } from '@/components/formDesigner/components/editableTagGroup/interfaces';
-import { IEndpointsAutocompleteComponentProps } from '@/components/formDesigner/components/endpointsAutocomplete/interfaces';
-import { IFormAutocompleteComponentProps } from '@/components/formDesigner/components/formAutocomplete/interfaces';
-import { IIconPickerComponentProps } from '@/components/formDesigner/components/iconPicker/interfaces';
-import { IPropertyAutocompleteComponentProps } from '@/components/formDesigner/components/propertyAutocomplete/interfaces';
-import { IReferenceListAutocompleteProps } from '@/components/formDesigner/components/referenceListAutocomplete';
-import { ISectionSeparatorComponentProps } from '@/components/formDesigner/components/sectionSeprator/interfaces';
-import { ISwitchComponentProps } from '@/components/formDesigner/components/switch/interfaces';
+import { IAlertComponentProps } from '@/designer-components/alert/interfaces';
+import { ICodeEditorComponentProps } from '@/designer-components/codeEditor/interfaces';
+import { IColorPickerComponentProps } from '@/designer-components/colorPicker/interfaces';
+import { IEditableTagGroupComponentProps } from '@/designer-components/editableTagGroup/interfaces';
+import { IEndpointsAutocompleteComponentProps } from '@/designer-components/endpointsAutocomplete/interfaces';
+import { IFormAutocompleteComponentProps } from '@/designer-components/formAutocomplete/interfaces';
+import { IIconPickerComponentProps } from '@/designer-components/iconPicker/interfaces';
+import { IPropertyAutocompleteComponentProps } from '@/designer-components/propertyAutocomplete/interfaces';
+import { IReferenceListAutocompleteProps } from '@/designer-components/referenceListAutocomplete';
+import { ISectionSeparatorComponentProps } from '@/designer-components/sectionSeprator/interfaces';
+import { ISwitchComponentProps } from '@/designer-components/switch/interfaces';
 import { IAutocompleteComponentProps } from '@/designer-components/autocomplete/interfaces';
 import { ICheckboxComponentProps } from '@/designer-components/checkbox/interfaces';
 import { ICollapsiblePanelComponentProps } from '@/designer-components/collapsiblePanel/interfaces';
 import { IConfigurableActionConfiguratorComponentProps } from '@/designer-components/configurableActionsConfigurator/interfaces';
 import { IContainerComponentProps } from '@/designer-components/container/interfaces';
-import { ICustomFilterComponentProps } from '@/designer-components/dataTable/filter/interfaces';
 import { IColumnsEditorComponentProps } from '@/designer-components/dataTable/table/columnsEditor/interfaces';
 import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
 import { INumberFieldComponentProps } from '@/designer-components/numberField/interfaces';
 import { IQueryBuilderComponentProps } from '@/designer-components/queryBuilder/interfaces';
 import { ITextFieldComponentProps } from '@/designer-components/textField/interfaces';
-import { IButtonsProps } from './../components/formDesigner/components/button/buttonGroup/buttonsComponent/interfaces';
+import { IButtonsProps } from '@/designer-components/button/buttonGroup/buttonsComponent/interfaces';
 import { ILabelValueEditorComponentProps } from '@/designer-components/labelValueEditor/interfaces';
 import { IContextPropertyAutocompleteComponentProps } from '@/designer-components/contextPropertyAutocomplete';
 import { ITextAreaComponentProps } from '@/designer-components/textArea/interfaces';
-import { IRadioProps } from '@/components/formDesigner/components/radio/utils';
+import { IRadioProps } from '@/designer-components/radio/utils';
 import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
-import { IStyleBoxComponentProps } from '@/components/formDesigner/components/styleBox/interfaces';
+import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
+import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
+import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
+import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -73,16 +75,16 @@ type ContainerType = ToolbarSettingsProp & Omit<IContainerComponentProps, 'hidde
 
 type ButtonGroupType = ToolbarSettingsProp & Omit<IButtonsProps, 'hidden' | 'type'>;
 
-type CustomFilterType = ToolbarSettingsProp & Omit<ICustomFilterComponentProps, 'hidden' | 'type'>;
-
 type ConfigurableActionConfiguratorType = ToolbarSettingsProp &
   Omit<IConfigurableActionConfiguratorComponentProps, 'hidden' | 'type'>;
 
 type EditableTagGroupType = ToolbarSettingsProp & Omit<IEditableTagGroupComponentProps, 'hidden' | 'type'>;
 
+type PermissionAutocompleteType = ToolbarSettingsProp & Omit<IPermissionAutocompleteComponentProps, 'hidden' | 'type'>;
+
 type ColorPickerType = ToolbarSettingsProp & Omit<IColorPickerComponentProps, 'hidden' | 'type'>;
 
-type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
+type ColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
 
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
@@ -93,6 +95,8 @@ type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
 type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, 'hidden' | 'type'>;
 
 type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
+
+type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -123,10 +127,8 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'dropdown');
   }
 
-  public addEntityPickerColumnsEditor(
-    props: EntityPickerColumnsEditorType | ((data: T) => EntityPickerColumnsEditorType)
-  ) {
-    return this.addProperty(props, 'entityPickerColumnsEditorComponent');
+  public addColumnsEditor(props: ColumnsEditorType | ((data: T) => ColumnsEditorType)) {
+    return this.addProperty(props, 'columnsEditorComponent');
   }
 
   public addSectionSeparator(props: SectionSeparatorType | ((data: T) => SectionSeparatorType)) {
@@ -203,10 +205,6 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'queryBuilder');
   }
 
-  public addCustomFilter(props: CustomFilterType | ((data: T) => CustomFilterType)) {
-    return this.addProperty(props, 'filter');
-  }
-
   public addRadio(props: RadioType | ((data: T) => RadioType)) {
     return this.addProperty(props, 'radio');
   }
@@ -221,12 +219,24 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'editableTagGroup');
   }
 
+  public addPermissionAutocomplete(props: PermissionAutocompleteType | ((data: T) => PermissionAutocompleteType)) {
+    return this.addProperty(props, 'permissionAutocomplete');
+  }
+
   public addEditMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
     return this.addProperty(props, 'editModeSelector');
   }
 
   public addStyleBox(props: StyleBoxType | ((data: T) => StyleBoxType)) {
     return this.addProperty(props, 'styleBox');
+  }
+
+  public addSlider(props: SliderType | ((data: T) => SliderType)) {
+    return this.addProperty(props, 'slider');
+  }
+
+  public addDivider(props: IDividerProps | ((data: T) => IDividerProps)) {
+    return this.addProperty(props, 'divider');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {

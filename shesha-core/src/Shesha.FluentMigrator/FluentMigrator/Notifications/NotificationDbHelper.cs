@@ -14,7 +14,7 @@ namespace Shesha.FluentMigrator.Notifications
 
         #region Notifications
 
-        internal Guid InsertNotification(string @namespace, string name, string description)
+        internal Guid InsertNotification(string @namespace, string name, string? description)
         {
             var id = Guid.NewGuid();
             var sql = @"INSERT INTO Core_Notifications

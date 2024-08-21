@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Shesha.Authorization.Settings.Dto;
 using Shesha.Configuration;
+using Shesha.Configuration.Security;
 using System;
 using System.Threading.Tasks;
 
@@ -10,22 +11,34 @@ namespace Shesha.Authorization.Settings
     public class AuthorizationSettingsAppService: ApplicationService
     {
         private readonly IPasswordComplexitySettings _passwordComplexitySettings;
-        private readonly IAuthenticationSettings _authenticationSettings;
+        private readonly ISecuritySettings _securitySettings;
 
-        public AuthorizationSettingsAppService(IPasswordComplexitySettings passwordComplexitySettings, IAuthenticationSettings authenticationSettings)
+        public AuthorizationSettingsAppService(IPasswordComplexitySettings passwordComplexitySettings, ISecuritySettings securitySettings)
         {
             _passwordComplexitySettings = passwordComplexitySettings;
-            _authenticationSettings = authenticationSettings;
+            _securitySettings = securitySettings;
         }
 
         public async Task UpdateSettings(AuthorizationSettingsDto dto)
         {
             //Lockout
-            await _authenticationSettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
-            await _authenticationSettings.DefaultAccountLockoutSeconds.SetValueAsync(dto.DefaultAccountLockoutSeconds);
-            await _authenticationSettings.MaxFailedAccessAttemptsBeforeLockout.SetValueAsync(dto.MaxFailedAccessAttemptsBeforeLockout);
-            await _authenticationSettings.AutoLogoffTimeout.SetValueAsync(dto.AutoLogoffTimeout);
-            await _authenticationSettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
+            await _securitySettings.UserLockOutEnabled.SetValueAsync(dto.IsLockoutEnabled);
+            await _securitySettings.DefaultAccountLockoutSeconds.SetValueAsync(dto.DefaultAccountLockoutSeconds);
+            await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.SetValueAsync(dto.MaxFailedAccessAttemptsBeforeLockout);
+            await _securitySettings.SecuritySettings.SetValueAsync(new SecuritySettings 
+            { 
+                AutoLogoffTimeout = dto.AutoLogoffTimeout,
+
+                // Password reset
+                UseResetPasswordViaEmailLink = dto.ResetPasswordWithEmailLinkIsSupported,
+                ResetPasswordEmailLinkLifetime = dto.ResetPasswordWithEmailLinkExpiryDelay,
+
+                UseResetPasswordViaSmsOtp = dto.ResetPasswordWithSmsOtpIsSupported,
+                ResetPasswordSmsOtpLifetime = dto.ResetPasswordWithSmsOtpExpiryDelay,
+
+                UseResetPasswordViaSecurityQuestions = dto.ResetPasswordWithSecurityQuestionsIsSupported,
+                ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed
+            });
 
             //Password complexity
             await _passwordComplexitySettings.RequireDigit.SetValueAsync(dto.RequireDigit);
@@ -33,27 +46,18 @@ namespace Shesha.Authorization.Settings
             await _passwordComplexitySettings.RequireNonAlphanumeric.SetValueAsync(dto.RequireNonAlphanumeric);
             await _passwordComplexitySettings.RequireUppercase.SetValueAsync(dto.RequireUppercase);
             await _passwordComplexitySettings.RequiredLength.SetValueAsync(dto.RequiredLength);
-
-            // Password reset
-            await _authenticationSettings.UseResetPasswordViaEmailLink.SetValueAsync(dto.ResetPasswordWithEmailLinkIsSupported);
-            await _authenticationSettings.ResetPasswordEmailLinkLifetime.SetValueAsync(dto.ResetPasswordWithEmailLinkExpiryDelay);
-
-            await _authenticationSettings.UseResetPasswordViaSmsOtp.SetValueAsync(dto.ResetPasswordWithSmsOtpIsSupported);
-            await _authenticationSettings.ResetPasswordSmsOtpLifetime.SetValueAsync(dto.ResetPasswordWithSmsOtpExpiryDelay);
-
-            await _authenticationSettings.UseResetPasswordViaSecurityQuestions.SetValueAsync(dto.ResetPasswordWithSecurityQuestionsIsSupported);
-            await _authenticationSettings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.SetValueAsync(dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed);
         }
 
         public async Task<AuthorizationSettingsDto> GetSettings()
         {
+            var settings = await _securitySettings.SecuritySettings.GetValueAsync();
             var dto = new AuthorizationSettingsDto();
             
             //Lockout
-            dto.IsLockoutEnabled = await _authenticationSettings.UserLockOutEnabled.GetValueAsync();
-            dto.DefaultAccountLockoutSeconds = await _authenticationSettings.DefaultAccountLockoutSeconds.GetValueAsync();
-            dto.MaxFailedAccessAttemptsBeforeLockout = await _authenticationSettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
-            dto.AutoLogoffTimeout = await _authenticationSettings.AutoLogoffTimeout.GetValueAsync();
+            dto.IsLockoutEnabled = await _securitySettings.UserLockOutEnabled.GetValueAsync();
+            dto.DefaultAccountLockoutSeconds = await _securitySettings.DefaultAccountLockoutSeconds.GetValueAsync();
+            dto.MaxFailedAccessAttemptsBeforeLockout = await _securitySettings.MaxFailedAccessAttemptsBeforeLockout.GetValueAsync();
+            dto.AutoLogoffTimeout = settings.AutoLogoffTimeout;
 
             //Password complexity
             dto.RequireDigit = await _passwordComplexitySettings.RequireDigit.GetValueAsync();
@@ -63,12 +67,12 @@ namespace Shesha.Authorization.Settings
             dto.RequiredLength = await _passwordComplexitySettings.RequiredLength.GetValueAsync();
 
             // Password reset
-            dto.ResetPasswordWithEmailLinkIsSupported = await _authenticationSettings.UseResetPasswordViaEmailLink.GetValueAsync();
-            dto.ResetPasswordWithEmailLinkExpiryDelay = await _authenticationSettings.ResetPasswordEmailLinkLifetime.GetValueAsync();
-            dto.ResetPasswordWithSmsOtpIsSupported = await _authenticationSettings.UseResetPasswordViaSmsOtp.GetValueAsync();
-            dto.ResetPasswordWithSmsOtpExpiryDelay = await _authenticationSettings.ResetPasswordSmsOtpLifetime.GetValueAsync();
-            dto.ResetPasswordWithSecurityQuestionsIsSupported = await _authenticationSettings.UseResetPasswordViaSecurityQuestions.GetValueAsync();
-            dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed = await _authenticationSettings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.GetValueAsync();
+            dto.ResetPasswordWithEmailLinkIsSupported =  settings.UseResetPasswordViaEmailLink;
+            dto.ResetPasswordWithEmailLinkExpiryDelay = settings.ResetPasswordEmailLinkLifetime;
+            dto.ResetPasswordWithSmsOtpIsSupported = settings.UseResetPasswordViaSmsOtp;
+            dto.ResetPasswordWithSmsOtpExpiryDelay = settings.ResetPasswordSmsOtpLifetime;
+            dto.ResetPasswordWithSecurityQuestionsIsSupported = settings.UseResetPasswordViaSecurityQuestions;
+            dto.ResetPasswordWithSecurityQuestionsNumQuestionsAllowed = settings.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed;
 
             return dto;
         }

@@ -33,7 +33,7 @@ namespace Shesha.StoredFiles.Dto
         /// Category of the file. Is used to split attachments into groups
         /// </summary>
         [BindProperty(Name = "filesCategory")]
-        public int? FilesCategory { get; set; }
+        public string FilesCategory { get; set; }
 
         /// <summary>
         /// Property name of the owner entity. Is used for direct links only (when owner references file using foreign key)

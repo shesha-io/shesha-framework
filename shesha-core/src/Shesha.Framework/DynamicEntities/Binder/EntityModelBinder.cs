@@ -1,6 +1,7 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Reflection;
 using Newtonsoft.Json;
@@ -38,7 +39,7 @@ namespace Shesha.DynamicEntities.Binder
         private readonly IDynamicRepository _dynamicRepository;
         private readonly IRepository<EntityProperty, Guid> _entityPropertyRepository;
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
-        private readonly IMetadataProvider _metadataProvider;
+        private readonly IHardcodeMetadataProvider _metadataProvider;
         private readonly IIocManager _iocManager;
         private readonly ITypeFinder _typeFinder;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
@@ -48,7 +49,7 @@ namespace Shesha.DynamicEntities.Binder
             IDynamicRepository dynamicRepository,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IRepository<EntityConfig, Guid> entityConfigRepository,
-            IMetadataProvider metadataProvider,
+            IHardcodeMetadataProvider metadataProvider,
             IIocManager iocManager,
             ITypeFinder typeFinder,
             IEntityConfigurationStore entityConfigurationStore,
@@ -88,6 +89,7 @@ namespace Shesha.DynamicEntities.Binder
             ;
         }
 
+        [UnitOfWork]
         public async Task<bool> BindPropertiesAsync(JObject jobject, object entity, EntityModelBindingContext context,
             string propertyName = null, List<string> formFields = null)
         {

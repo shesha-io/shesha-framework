@@ -1,4 +1,3 @@
-import camelCaseKeys from 'camelcase-keys';
 import React, {
   FC,
   PropsWithChildren,
@@ -58,6 +57,7 @@ import {
   setDraggingRowAction,
   setStandardSortingAction,
   onGroupAction,
+  removeColumFilterAction,
 } from './actions';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -132,7 +132,7 @@ interface IDataTableProviderWithRepositoryProps extends IDataTableProviderBasePr
 interface IHasDataSourceType {
   sourceType: 'Form' | 'Entity' | 'Url';
 }
-interface IHasFormDataSourceConfig {
+export interface IHasFormDataSourceConfig {
   propertyName: string;
   getFieldValue?: (propertyName: string) => object[];
   onChange?: (...args: any[]) => void;
@@ -141,7 +141,7 @@ interface IUrlDataSourceConfig {
   getDataPath?: string;
   getExportToExcelPath?: string;
 }
-interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
+export interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
   /** Type of entity */
   entityType: string;
 }
@@ -351,7 +351,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const debouncedFetchInternal = useDebouncedCallback(
     (payload: IGetListDataPayload) => {
-      // todo: check payload and skip fetching if the filters (or other required things) are not calculated
+      // TODO: check payload and skip fetching if the filters (or other required things) are not calculated
       const canFetch = true;
       if (canFetch) {
         repository
@@ -360,7 +360,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
             dispatch(fetchTableDataSuccessAction(response));
           })
           .catch((e) => {
-            console.log(e);
+            console.error(e);
             dispatch(fetchTableDataErrorAction());
           });
       } else {
@@ -380,7 +380,6 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
   );
 
   const debouncedFetch = (payload: IGetListDataPayload) => {
-    //console.log('LOG: fetch', payload);
     debouncedFetchInternal(payload);
   };
 
@@ -416,7 +415,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
     setUserConfig(settings);
   };
-    
+
   const fetchTableData = (providedState: IDataTableStateContext) => {
     // save user settings before fetch
     saveUserSettings(providedState);
@@ -478,7 +477,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       if (userColumn)
         userColumn.width = wc.width;
     });
-    setUserConfig(userConfig);    
+    setUserConfig(userConfig);
   };
 
   const setCurrentPage = (val: number) => {
@@ -539,8 +538,12 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     }
   };
 
+  const removeColumnFilter = (columnId: string) => {
+    dispatch(removeColumFilterAction(columnId));
+  };
+
   const changeActionedRow = (val: any) => {
-    dispatch(changeActionedRowAction(val ? camelCaseKeys(val, { deep: true }) : null));
+    dispatch(changeActionedRowAction(val));
   };
 
   const changeSelectedStoredFilterIds = (selectedFilterIds: string[]) => {
@@ -647,7 +650,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       ownerUid: actionOwnerId,
       hasArguments: false,
       executer: () => {
-        refreshTable(); // todo: return correct promise
+        refreshTable(); // TODO: return correct promise
         return Promise.resolve();
       },
     },
@@ -698,7 +701,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   //#endregion
 
-  // todo: pass row index
+  // TODO: pass row index
   const setRowData = (rowIndex: number, rowData: any) => {
     dispatch(setRowDataAction({ rowIndex, rowData: rowData }));
   };
@@ -732,6 +735,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     changePageSize,
     toggleColumnVisibility,
     toggleColumnFilter,
+    removeColumnFilter,
     changeFilterOption,
     changeFilter,
     applyFilters,
@@ -762,7 +766,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   /* Data Context section */
 
-  const contextOnChangeData = <T,>(_data: T, changedData: IDataTableStateContext) => {
+  const contextOnChangeData = (_, changedData: IDataTableStateContext) => {
     if (!changedData)
       return;
 
@@ -811,17 +815,13 @@ const getTableProviderComponent = (props: IDataTableProviderProps): FC<IDataTabl
   const { sourceType } = props;
   switch (sourceType) {
     case 'Entity': {
-      const { entityType, getDataPath } = props as IHasEntityDataSourceConfig;
-      return withBackendRepository(DataTableProviderWithRepository, { entityType, getListUrl: getDataPath });
+      return withBackendRepository(DataTableProviderWithRepository);
     }
     case 'Form': {
-      const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
-
-      return withFormFieldRepository(DataTableProviderWithRepository, { propertyName, getFieldValue, onChange });
+      return withFormFieldRepository(DataTableProviderWithRepository);
     };
     case 'Url':
-      const { getDataPath } = props as IHasEntityDataSourceConfig;
-      return withUrlRepository(DataTableProviderWithRepository, { getListUrl: getDataPath });
+      return withUrlRepository(DataTableProviderWithRepository);
     default: {
       return withNullRepository(DataTableProviderWithRepository, {});
     }

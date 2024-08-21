@@ -1,4 +1,4 @@
-import { Button, Input, Select } from 'antd';
+import { Button, Space, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
@@ -34,7 +34,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     const result: IToolboxComponent[] = [];
     for (const key in allComponents) {
       if (allComponents.hasOwnProperty(key)) {
-        if (!editorAdapters[key]) continue; // skip components without adapters, will be changed later after review of the all components
+        if (!editorAdapters[key]) continue; // skip components without adapters
         const component = allComponents[key];
 
         if (
@@ -73,8 +73,6 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
       type: toolboxComponent.type,
       propertyName: 'editor',
       hidden: false,
-      visibilityFunc: (_data) => true,
-      enabledFunc: (_data) => true,
       isDynamic: false,
     };
     if (toolboxComponent.initModel) componentModel = toolboxComponent.initModel(componentModel);
@@ -103,18 +101,6 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     if (onChange) onChange(null);
   };
 
-  // this part is required only for old forms to call the linkToModelMetadata
-  const modalData = useMemo(() => {
-    if (!value?.settings)
-      return undefined;
-
-    const component = value && value.type ? allComponents[value.type] : null;
-    if (!component || !component.linkToModelMetadata || !propertyMeta)
-      return value?.settings;
-
-    return component.linkToModelMetadata(value.settings, propertyMeta);
-  }, [value?.type, value?.settings, componentType, propertyMeta]);
-
   const onConfigureClick = () => {
     setIsSettingsVisible(true);
   };
@@ -139,7 +125,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   };
 
   return (
-    <Input.Group>
+    <Space.Compact style={{ width: "100%" }}>
       <Select<string>
         disabled={readOnly}
         options={options}
@@ -158,12 +144,12 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         readOnly={readOnly}
         formComponent={formComponent}
         isVisible={isSettingsVisible}
-        model={modalData}
+        model={value?.settings}//modalData}
         onSave={onSettingsSaveClick}
         onCancel={onCancelConfigureClick}
         propertyFilter={propertyFilter}
       />
-    </Input.Group>
+    </Space.Compact>
   );
 };
 

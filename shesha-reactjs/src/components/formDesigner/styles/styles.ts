@@ -1,78 +1,48 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 import { sheshaStyles } from '@/styles';
 
+const designerClassNames = {
+    componentDragHandle: "sha-component-drag-handle",
+    componentPropertiesActions: "component-properties-actions",
+    designerWorkArea: "sha-designer-work-area",
+    hasConfigErrors: "has-config-errors",
+    mainArea: "sha-designer-main-area",
+    shaComponent: "sha-component",
+    shaComponentControls: "sha-component-controls",
+    shaComponentGhost: "sha-component-ghost",
+    shaComponentIndicator: "sha-component-indicator",
+    shaComponentSearch: "sha-component-search",
+    shaComponentTitle: "sha-component-title",
+    shaComponentValidationIcon: "sha-component-validation-icon",
+    shaComponentsContainer: "sha-components-container",
+    shaComponentsContainerInner: "sha-components-container-inner",
+    shaDatasourceTree: "sha-datasource-tree",
+    shaDesignerCanvasConfig: "sha-designer-canvas-config",
+    shaDesignerHeader: "sha-designer-header",
+    shaDesignerHeaderRight: "sha-designer-header-right",
+    shaDesignerToolbar: "sha-designer-toolbar",
+    shaToolboxComponents: "sha-toolbox-components",
+    shaDesignerToolbarLeft: "sha-designer-toolbar-left",
+    shaDesignerToolbarRight: "sha-designer-toolbar-right",
+    shaDesignerToolbox: "sha-designer-toolbox",
+    shaDesignerWarning: "sha-designer-warning",
+    shaDragging: "sha-dragging",
+    shaDropHint: "sha-drop-hint",
+    shaForm: "sha-form",
+    shaHelpIcon: "sha-help-icon",
+    shaToolboxComponent: "sha-toolbox-component",
+    shaToolboxPanelComponents: "sha-toolbox-panel-components",
+    shaToolboxPanel: "sha-toolbox-panel",
+    shaToolboxPanelItems: "sha-toolbox-panel-items",
+    sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
+    sidebarHeaderTitle: "sidebar-header-title",
+    siteTreeSearchValue: "site-tree-search-value",
+};
+const useStylesResponse = {
+    styles: designerClassNames,
+};
 export const useStyles = () => {
-    const shaForm = "sha-form";
-    const shaHelpIcon = "sha-help-icon";
-    const shaDragging = "sha-dragging";
-    const componentDragHandle = "sha-component-drag-handle";
-
-    const sidebarContainerMainAreaBody = "sidebar-container-main-area-body";
-    const shaDesignerToolbar = "sha-designer-toolbar";
-    const shaDesignerToolbarLeft = "sha-designer-toolbar-left";
-    const shaDesignerToolbarRight = "sha-designer-toolbar-right";
-
-    const shaDesignerToolbox = "sha-designer-toolbox";
-    const shaDatasourceTree = "sha-datasource-tree";
-    const shaToolboxComponent = "sha-toolbox-component";
-    const shaComponentTitle = "sha-component-title";
-    const shaComponentSearch = "sha-component-search";
-    const shaToolboxPanel = "sha-toolbox-panel";
-
-    const sidebarHeaderTitle = "sidebar-header-title";
-    const shaDesignerHeader = "sha-designer-header";
-    const componentPropertiesActions = "component-properties-actions";
-
-    const shaComponentGhost = "sha-component-ghost";
-    const shaComponent = "sha-component";
-    const shaComponentsContainer = "sha-components-container";
-    const shaComponentsContainerInner = "sha-components-container-inner";
-    const shaDropHint = "sha-drop-hint";
-
-    const shaComponentIndicator = "sha-component-indicator";
-    const shaComponentControls = "sha-component-controls";
-    const designerWorkArea = "sha-designer-work-area";
-
-    const siteTreeSearchValue = "site-tree-search-value";
-    const shaDesignerWarning = "sha-designer-warning";
-    const hasConfigErrors = "has-config-errors";
-    const shaComponentValidationIcon = "sha-component-validation-icon";
-    const shaDesignerHeaderRight = "sha-designer-header-right";
-
-    return {
-        styles: {
-            shaHelpIcon,
-            shaDragging,
-            componentDragHandle,
-            sidebarContainerMainAreaBody,
-            shaDesignerToolbar,
-            shaDesignerToolbarLeft,
-            shaDesignerToolbarRight,
-            shaDesignerToolbox,
-            sidebarHeaderTitle,
-            shaDesignerHeader,
-            shaComponentGhost,
-            shaComponent,
-            shaToolboxComponent,
-            shaComponentTitle,
-            shaComponentSearch,
-            shaToolboxPanel,
-            shaDatasourceTree,
-            shaComponentIndicator,
-            shaComponentsContainer,
-            shaComponentsContainerInner,
-            shaDropHint,
-            designerWorkArea,
-            componentPropertiesActions,
-            shaComponentControls,
-            siteTreeSearchValue,
-            shaDesignerWarning,
-            hasConfigErrors,
-            shaComponentValidationIcon,
-            shaDesignerHeaderRight,
-            shaForm,
-        }
-    };
+    return useStylesResponse;
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
@@ -82,21 +52,24 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         componentDragHandle,
         sidebarContainerMainAreaBody,
         shaDesignerToolbar,
+        shaToolboxComponents,
         shaDesignerToolbarLeft,
         shaDesignerToolbarRight,
+        shaDesignerCanvasConfig,
         shaDesignerToolbox,
         sidebarHeaderTitle,
         shaDesignerHeader,
         shaComponentGhost,
         shaComponent,
         shaToolboxComponent,
+        shaToolboxPanelComponents,
         shaComponentTitle,
         shaComponentSearch,
         shaToolboxPanel,
+        shaToolboxPanelItems,
         shaDatasourceTree,
         shaComponentIndicator,
         shaComponentsContainer,
-        //shaComponentsContainerInner,
         shaDropHint,
         designerWorkArea,
         componentPropertiesActions,
@@ -107,6 +80,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaComponentValidationIcon,
         shaDesignerHeaderRight,
         shaForm,
+        //mainArea,
     } = useStyles().styles;
 
     const quickEditModal = cx("sha-designer-modal", css`
@@ -120,7 +94,35 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
     `);
 
-    const formDesigner = cx("sha-form-designer", css`
+    const formDesignerClassName = "sha-form-designer";
+    const designerPage = "sha-designer-page";
+    /*
+    const flexColumns = `
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: stretch;
+        align-content: flex-start;
+    `;
+    const flexFitHorizontal = 'flex-grow: 1;';
+    const designerPage = cx("sha-designer-page", css`
+        ${flexColumns}
+        
+        .${formDesignerClassName} {
+            ${flexFitHorizontal}
+            ${flexColumns}
+
+            .${mainArea} {
+                ${flexFitHorizontal}
+                .sidebar-container {
+                    height: 100%;
+                }
+            }
+        }
+   `);
+    */
+    const formDesigner = cx(formDesignerClassName, css`
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
@@ -147,6 +149,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
         }
+        .${shaToolboxComponents}{
+            height: 100%;
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            margin-bottom: 1rem;
+        }
         .${shaDesignerToolbar} {
             background: white;
             padding: 12px;
@@ -167,8 +175,28 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 margin-left: 2px;
                 }
             }
+            .${shaDesignerCanvasConfig} {
+                display: flex;
+                justify-content: space-between;
+                gap: 1.5rem;
+                margin: 0;
+                padding-left:5%;
+                .radio-group {
+                    display: flex;
+                    flex-direction: row;
+                    .radio-button {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        width: 25%;
+                    }
+                }
+        
+            }
         }
         .${shaDesignerToolbox} {
+            height: 85vh;
+            margin-bottom: 3rem;
             .${shaDatasourceTree} {
                 .${prefixCls}-tree-switcher-noop {
                     display: none;
@@ -176,15 +204,16 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
                 .${shaToolboxComponent} {
                     margin: 0;
-                    display: block;
-                    white-space: nowrap;
+                    display: flex;
+                    white-space: normal;
                     overflow: hidden;
-                    max-width: 225px;
-                    text-overflow: ellipsis;
+                    max-width: 100%;
+                    overflow: auto;
         
                     .${shaComponentTitle} {
                         margin-right: 10px;
                     }
+                 
                 }
         
                 .${siteTreeSearchValue} {
@@ -219,6 +248,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 &.active {
                     background-color: #ebf3fb;
                 }
+                .${shaToolboxPanelItems} {
+                    margin:-1rem -0.8rem;
+            }
             }
         
             .${shaToolboxComponent} {
@@ -299,11 +331,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             border: 1px dashed #4099ff;
             border-radius: 2px;
             opacity: 0.7;
+
+          
+
+        }
+        .${shaToolboxPanelComponents}{
+            margin: -1rem -0.8rem;
         }
         .${shaComponent} {
             position: relative;
             margin: 4px;
-            margin-left: 10px;
+            //margin-left: 10px;
         
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
@@ -345,6 +383,15 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               border: 1px dashed #61affe;
               box-sizing: border-box;
             }
+            &:not(:hover) {
+                .${shaComponentControls} {
+                    display: none;
+                }
+            
+                .${componentDragHandle} {
+                    border: 1px solid white;
+                }
+            }
         
             .${shaComponentIndicator} {
               display: inline-block;
@@ -377,13 +424,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         
               .${componentDragHandle} {
                 background-color: transparent;
-                border: none;
               }
             }
           }
     `);
 
     return {
+        designerPage,
         formDesigner,
         quickEditModal,
     };

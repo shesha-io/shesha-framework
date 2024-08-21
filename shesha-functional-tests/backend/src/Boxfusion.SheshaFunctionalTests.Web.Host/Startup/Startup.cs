@@ -5,7 +5,6 @@ using Abp.Extensions;
 using Abp.PlugIns;
 using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Castle.Facilities.Logging;
-using ElmahCore;
 using ElmahCore.Mvc;
 using GraphQL;
 using Hangfire;
@@ -21,13 +20,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Shesha;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Swagger;
+using Shesha.Elmah;
 using Shesha.Exceptions;
 using Shesha.Extensions;
-using Shesha.FluentMigrator;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.Identity;
@@ -59,30 +59,25 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			{
 				options.AllowSynchronousIO = true;
 			});
+            
+            services.AddSheshaElmah(_appConfiguration);
 
-			services.AddElmah<XmlFileErrorLog>(options =>
-			{
-				options.Path = @"elmah";
-				options.LogPath = Path.Combine(_hostEnvironment.ContentRootPath, "App_Data", "ElmahLogs");
-				options.Filters.Add(new ElmahFilter());
-			});
-
-			services.AddMvcCore(options =>
+            services.AddMvcCore(options =>
 			{
 				options.EnableEndpointRouting = false;
 				options.Conventions.Add(new Shesha.Swagger.ApiExplorerGroupPerControllerConvention());
 
-				options.EnableDynamicDtoBinding();
+                options.EnableDynamicDtoBinding();
 				options.AddDynamicAppServices(services);
 
-                    options.Filters.AddService(typeof(SheshaAuthorizationFilter));
-                    options.Filters.AddService(typeof(SheshaExceptionFilter), order: 1);
-                })
-                .AddApiExplorer()
-                .AddNewtonsoftJson(options =>
-                {
-                    options.UseCamelCasing(true);
-                });
+                options.Filters.AddService(typeof(SheshaAuthorizationFilter));
+                options.Filters.AddService(typeof(SheshaExceptionFilter), order: 1);
+            })
+            .AddApiExplorer()
+            .AddNewtonsoftJson(options =>
+            {
+                options.UseCamelCasing(true);
+            });
 
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
@@ -138,7 +133,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 		public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
 		{
-			app.UseElmah();
+			app.UseSheshaElmah();
 
 			// note: already registered in the ABP
 			AppContextHelper.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
@@ -219,6 +214,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
+				options.DocumentFilter<SwaggerDocumentFilter>();
 
 				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
@@ -253,5 +249,5 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.SubstituteApiVersionInUrl = true;
 			});
 		}
-	}
+    }
 }

@@ -13,6 +13,7 @@ import {
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'> {
   ownerId: string;
@@ -29,12 +30,13 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
   type: 'fileUpload',
   name: 'File',
   icon: <FileAddOutlined />,
-
+  isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
     const { backendUrl } = useSheshaApplication();
 
-    // todo: refactor and implement a generic way for values evaluation
-    const { formMode, formSettings } = useForm();
+    // TODO: refactor and implement a generic way for values evaluation
+    const { formSettings, formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const ownerId = evaluateValue(model.ownerId, { data, globalState });
@@ -54,7 +56,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
               ownerType={
                 Boolean(model.ownerType) ? model.ownerType : Boolean(formSettings?.modelType) ? formSettings?.modelType : ''
               }
-              propertyName={Boolean(model.propertyName) ? model.propertyName : model.propertyName}
+              propertyName={model.propertyName}
               uploadMode={model.useSync ? 'sync' : 'async'}
             >
               <FileUpload
@@ -77,7 +79,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       allowReplace: true,
       allowDelete: true,
       allowUpload: true,
-      ownerId: '{data.id}',
+      ownerId: '',
       ownerType: '',
       isDragger: false,
     };
@@ -104,6 +106,7 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
     })
     .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
     .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
+    .add<IFileUploadProps>(5, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   settingsFormMarkup: getSettings(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),

@@ -4,7 +4,7 @@ import React, {
   MutableRefObject,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { Button, message, notification } from 'antd';
 import { ICommonModalProps } from '../../dynamicModal/models';
 import { IErrorInfo } from '@/interfaces/errorInfo';
@@ -15,7 +15,7 @@ import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { ValidationErrors } from '@/components';
 
-const actionsOwner = 'Configuration Framework';
+const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;
@@ -24,9 +24,9 @@ interface IConfigurationItemsExportFooterProps {
 
 const displayNotificationError = (message: string, error: IErrorInfo) => {
   notification.error({
-      message: message,
-      icon: null,
-      description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+    message: message,
+    icon: null,
+    description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
   });
 };
 
@@ -41,7 +41,6 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
       message.info('Items imported successfully');
       hideModal();
     }).catch((e) => {
-      console.log('catch in footer');
       displayNotificationError('Failed to import package', e);
       setInProgress(false);
     });
@@ -68,14 +67,14 @@ export const useConfigurationItemsImportAction = () => {
     executer: (actionArgs) => {
       const modalId = nanoid();
 
-      return new Promise((resolve, _reject) => {
+      return new Promise((resolve, reject) => {
 
         const hideModal = () => {
+          reject();
           removeModal(modalId);
         };
 
         const onImported = () => {
-          console.log('onImported');
           removeModal(modalId);
           resolve(true);
         };
@@ -84,12 +83,20 @@ export const useConfigurationItemsImportAction = () => {
           ...actionArgs,
           id: modalId,
           title: "Import Configuration Items",
+          width: "60%",
           isVisible: true,
+          onClose: (positive, result) => {
+            if (positive) {
+              resolve(result);
+            } else {
+              reject();
+            }
+          },
           showModalFooter: false,
           content: <ConfigurationItemsImport onImported={onImported} importRef={exporterRef} />,
           footer: <ConfigurationItemsExportFooter hideModal={hideModal} importerRef={exporterRef} />
         };
-        createModal({ ...modalProps, isVisible: true });
+        createModal({ ...modalProps });
       });
     },
   }, [appConfigState]);

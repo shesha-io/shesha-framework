@@ -204,6 +204,9 @@ export interface IReactTableProps extends ITableRowDragProps {
   maxHeight?: number;
 
   tableStyle?: CSSProperties;
+  noDataText?: string;
+  noDataSecondaryText?: string;
+  noDataIcon?: string;
 
   canDeleteInline?: boolean;
   deleteAction?: (rowIndex: number, data: any) => Promise<any>;

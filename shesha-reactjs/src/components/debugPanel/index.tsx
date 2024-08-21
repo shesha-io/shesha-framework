@@ -2,7 +2,6 @@ import React, { FC, PropsWithChildren, useEffect, useState } from "react";
 import { Drawer, Select, Space } from "antd";
 import { useConfigurableAction } from "@/providers";
 import { useKeyPress } from "react-use";
-import { Option } from "antd/lib/mentions";
 import { useLocalStorage } from "@/hooks";
 import { CloseOutlined } from "@ant-design/icons";
 import DebugPanelDataContent from "./dataContent";
@@ -117,10 +116,10 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
       <CloseOutlined onClick={onClose}/>
       <span>Debug panel</span>
       <Select onChange={onChangePosition} value={position} style={{minWidth: '7em'}}>
-        <Option key={'1'} value='top'>Top</Option>
-        <Option key={'2'} value='bottom'>Bottom</Option>
-        <Option key={'3'} value='left'>Left</Option>
-        <Option key={'4'} value='right'>Right</Option>
+        <Select.Option key={'1'} value='top'>Top</Select.Option>
+        <Select.Option key={'2'} value='bottom'>Bottom</Select.Option>
+        <Select.Option key={'3'} value='left'>Left</Select.Option>
+        <Select.Option key={'4'} value='right'>Right</Select.Option>
       </Select>
     </Space>
   </>;
@@ -135,8 +134,8 @@ export const DebugPanel: FC<PropsWithChildren<DebugPanelProps>> = ({children}) =
         width={width}
         maskClosable={false}
         className={styles.debugPanelDrawer}
-        maskStyle={{height: 0}}
-        styles={{ 
+        styles={{
+          mask: {height: 0},
           header: {padding: '4px 12px 12px 8px', fontSize: 12},
           body:  {padding: '4px 4px 12px 4px', overflow: 'hidden'},          
         }}

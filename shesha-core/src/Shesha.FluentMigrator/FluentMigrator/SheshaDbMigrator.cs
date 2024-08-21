@@ -41,7 +41,7 @@ namespace Shesha.FluentMigrator
             CreateOrMigrateForHost(null);
         }
 
-        public virtual void CreateOrMigrateForHost(Action seedAction)
+        public virtual void CreateOrMigrateForHost(Action? seedAction)
         {
             CreateOrMigrate(null, seedAction);
         }
@@ -52,7 +52,7 @@ namespace Shesha.FluentMigrator
             CreateOrMigrateForTenant(tenant, null);
         }
 
-        public virtual void CreateOrMigrateForTenant(AbpTenantBase tenant, Action seedAction)
+        public virtual void CreateOrMigrateForTenant(AbpTenantBase tenant, Action? seedAction)
         {
             if (tenant.ConnectionString.IsNullOrEmpty())
                 return;
@@ -121,7 +121,7 @@ namespace Shesha.FluentMigrator
         /// <summary>
         /// Update the database
         /// </summary>
-        private void CreateOrMigrate(AbpTenantBase tenant, Action seedAction)
+        private void CreateOrMigrate(AbpTenantBase? tenant, Action? seedAction)
         {
             var args = new DbPerTenantConnectionStringResolveArgs(
                 tenant == null ? (int?)null : (int?)tenant.Id,

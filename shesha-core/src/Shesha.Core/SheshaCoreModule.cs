@@ -7,6 +7,9 @@ using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Shesha.ConfigurationItems;
+using Shesha.Domain;
+using Shesha.DynamicEntities.Distribution;
 using Shesha.Localization;
 using Shesha.Modules;
 using Shesha.MultiTenancy;
@@ -21,7 +24,7 @@ namespace Shesha
         public override void PreInitialize()
         {
             IocManager.IocContainer.Register(
-                Component.For<ICustomPermissionChecker>().Forward<ShaPermissionChecker>().ImplementedBy<ShaPermissionChecker>().LifestyleTransient()
+                Component.For<ICustomPermissionChecker>().Forward<ShaCustomPermissionChecker>().ImplementedBy<ShaCustomPermissionChecker>().LifestyleTransient()
             );
 
             Configuration.Auditing.IsEnabledForAnonymousUsers = true;
@@ -42,6 +45,10 @@ namespace Shesha
 
         public override void Initialize()
         {
+            IocManager
+                .RegisterConfigurableItemExport<ShaRole, IShaRoleExport, ShaRoleExport>()
+                .RegisterConfigurableItemImport<ShaRole, ShaRoleImport, ShaRoleImport>();
+
             IocManager.RegisterAssemblyByConvention(typeof(SheshaCoreModule).GetAssembly());
         }
 

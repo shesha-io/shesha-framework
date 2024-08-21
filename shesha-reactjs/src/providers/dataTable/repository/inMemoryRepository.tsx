@@ -3,6 +3,7 @@ import React, { ComponentType, useCallback, useMemo } from "react";
 import { FC } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse } from "../interfaces";
 import { IHasModelType, IHasRepository, IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
+import { IHasFormDataSourceConfig } from "@/providers";
 
 export interface IWithInMemoryRepositoryArgs {
     valueAccessor: () => object[];
@@ -59,9 +60,9 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
                     referenceListName: null,
                     referenceListModule: null,
                     entityReferenceTypeShortAlias: null,
-                    allowInherited: false, // todo: add to metadata
-                    isFilterable: true, // todo: add to metadata
-                    isSortable: true, // todo: add to metadata 
+                    allowInherited: false, // TODO: add to metadata
+                    isFilterable: true, // TODO: add to metadata
+                    isSortable: true, // TODO: add to metadata 
                 });
             }
         });
@@ -142,10 +143,10 @@ export interface IWithFormFieldRepositoryArgs {
     getFieldValue?: (propertyName: string) => object[];
     onChange?: (...args: any[]) => void;
 }
-export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>, args: IWithFormFieldRepositoryArgs): FC<WrappedProps> {
-    const { propertyName, getFieldValue, onChange } = args;
-
+export function withFormFieldRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>): FC<WrappedProps> {
     return props => {
+        const { propertyName, getFieldValue, onChange } = props as IHasFormDataSourceConfig;
+        
         const valueAccessor = useCallback(() => getFieldValue(propertyName), [propertyName]);
         const onChangeAccessor = useCallback((newValue: object[]) => {
             if (onChange)

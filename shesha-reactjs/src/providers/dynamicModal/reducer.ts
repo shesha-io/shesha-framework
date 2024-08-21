@@ -33,6 +33,7 @@ export default handleActions<IDynamicModalStateContext, any>(
         props: payload.modalProps,
         isVisible: payload.modalProps.isVisible,
         index: Object.keys(instances ?? {})?.length,
+        onClose: payload.modalProps.onClose,
       };
 
       return {

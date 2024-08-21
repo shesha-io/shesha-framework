@@ -8,14 +8,16 @@ import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
 const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentProps> = {
-  isHidden: true,
   type: 'labelValueEditor',
   name: 'Label Value editor',
   icon: <OneToOneOutlined />,
+  isInput: true,
+  isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
 
@@ -42,6 +44,7 @@ const LabelValueEditorComponent: IToolboxComponent<ILabelValueEditorComponentPro
       };
     })
     .add<ILabelValueEditorComponentProps>(2, (prev) => migrateReadOnly(prev))
+    .add<ILabelValueEditorComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),

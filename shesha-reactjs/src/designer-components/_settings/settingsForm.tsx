@@ -1,94 +1,131 @@
-import React, { createContext, PropsWithChildren, useContext, useState } from 'react';
+import React, { PropsWithChildren, useContext, useState } from 'react';
 import { Form } from "antd";
 import { DEFAULT_FORM_LAYOUT_SETTINGS, ISettingsFormFactoryArgs } from "@/interfaces";
+import { getValuesFromSettings, updateSettingsFromValues } from './utils';
+import { createNamedContext } from '@/utils/react';
+import { mergeWith } from 'lodash';
+import { IPropertyMetadata } from '@/index';
+import { linkComponentToModelMetadata } from '@/providers/form/utils';
+import { ConfigurableFormActionsProvider } from '@/providers/form/actions';
 
 interface SettingsFormState<TModel> {
-    model?: TModel;
+  model?: TModel;
+  values?: TModel;
 }
 
-interface ISettingsFormActions<TModel> {
-    getFieldsValue: () => TModel;
-    propertyFilter: (name: string) => boolean;
-    onValuesChange?: (changedValues: any) => void;
+interface ISettingsFormActions {
+  propertyFilter: (name: string) => boolean;
+  onValuesChange?: (changedValues: any) => void;
 }
 
 /** initial state */
 export const DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE: SettingsFormState<any> = {
 };
 
-export const SettingsFormStateContext = createContext<SettingsFormState<any>>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE);
+export const SettingsFormStateContext = createNamedContext<SettingsFormState<any>>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE, "SettingsFormStateContext");
 
-export const SettingsFormActionsContext = createContext<ISettingsFormActions<any>>(undefined);
+export const SettingsFormActionsContext = createNamedContext<ISettingsFormActions>(undefined, "SettingsFormActionsContext");
 
 export interface SettingsFormProps<TModel> extends ISettingsFormFactoryArgs<TModel> {
 }
 
 const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel>>) => {
 
-    const {
-        onSave,
-        model,
-        onValuesChange,
-        propertyFilter,
-        formRef,
-        layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS
-    } = props;
+  const {
+    onSave,
+    model,
+    onValuesChange,
+    propertyFilter,
+    formRef,
+    layoutSettings = DEFAULT_FORM_LAYOUT_SETTINGS
+  } = props;
 
-    const [form] = Form.useForm();
-    const [state, setState] = useState<SettingsFormState<TModel>>({model});
-  
-    if (formRef)
-        formRef.current = {
-            submit: () => form.submit(),
-            reset: () => form.resetFields(),
-        };
+  const [form] = Form.useForm();
+  const [state, setState] = useState<SettingsFormState<TModel>>({ model, values: getValuesFromSettings(model) });
 
-    const getFieldsValue = () => (state.model);
-
-    const valuesChange = (changedValues) => {
-        const incomingState = { ...state.model, ...changedValues };
-        setState({model: incomingState});
-        onValuesChange(changedValues, incomingState);
-        form.setFieldsValue(incomingState);
+  if (formRef)
+    formRef.current = {
+      submit: () => form.submit(),
+      reset: () => form.resetFields(),
     };
 
-    const onSaveInternal = () => {
-        onSave(state.model);
-    };
+  const valuesChange = (changedValues) => {
+      const model = form.getFieldValue([]);
+      const incomingState = updateSettingsFromValues(model, changedValues);
+      setState({model: incomingState, values: getValuesFromSettings(incomingState)});
+      onValuesChange(changedValues, incomingState);
+      form.setFieldsValue(incomingState);
+  };
 
-    const SettingsFormActions = {
-        getFieldsValue,
-        propertyFilter,
-        onValuesChange: valuesChange
-    };
-
-    return (
-        <SettingsFormStateContext.Provider value={state}>
-            <SettingsFormActionsContext.Provider value={SettingsFormActions}>
-                <Form
-                    form={form}
-                    onFinish={onSaveInternal}
-                    {...layoutSettings}
-                    onValuesChange={valuesChange}
-                    initialValues={model}
-                >
-                    {props.children}
-                </Form>
-            </SettingsFormActionsContext.Provider>
-        </SettingsFormStateContext.Provider>
+  const settingsChange = (changedValues) => {
+    const incomingState = mergeWith(
+      { ...state.model },
+      changedValues,
+      (objValue, srcValue, key, obj) => {
+        if (srcValue === undefined)
+          obj[key] = undefined;
+        return Array.isArray(objValue) ? srcValue : undefined;
+      },
     );
+    setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
+    onValuesChange(changedValues, incomingState);
+    form.setFieldsValue(incomingState);
+  };
+
+  const onSaveInternal = () => {
+    onSave(state.model);
+  };
+
+  const SettingsFormActions: ISettingsFormActions = {
+    propertyFilter,
+    onValuesChange: valuesChange,
+  };
+
+  const linkToModelMetadata = (metadata: IPropertyMetadata) => {
+    const currentModel = form.getFieldValue([]) as TModel;
+
+    const wrapper = props.toolboxComponent.linkToModelMetadata
+      ? m => linkComponentToModelMetadata(props.toolboxComponent, m, metadata)
+      : m => m;
+
+    const newModel: TModel = wrapper({
+      ...currentModel,
+      label: metadata.label || metadata.path,
+      description: metadata.description,
+    });
+
+    valuesChange(newModel);
+  };
+
+  return (
+    <ConfigurableFormActionsProvider actions={{ linkToModelMetadata }}>
+      <SettingsFormStateContext.Provider value={state}>
+        <SettingsFormActionsContext.Provider value={SettingsFormActions}>
+          <Form
+            form={form}
+            onFinish={onSaveInternal}
+            {...layoutSettings}
+            onValuesChange={settingsChange}
+            initialValues={model}
+          >
+            {props.children}
+          </Form>
+        </SettingsFormActionsContext.Provider>
+      </SettingsFormStateContext.Provider>
+    </ConfigurableFormActionsProvider>
+  );
 };
 
 export function useSettingsForm<TModel>(require: boolean = true) {
-    const actionsContext = useContext(SettingsFormActionsContext);
-    const stateContext = useContext<SettingsFormState<TModel>>(SettingsFormStateContext);
-  
-    if ((actionsContext === undefined || stateContext === undefined) && require) {
-      throw new Error('useSettingsForm must be used within a SettingsForm');
-    }
-    return actionsContext !== undefined && stateContext !== undefined
-      ? { ...actionsContext, ...stateContext }
-      : undefined;
+  const actionsContext = useContext(SettingsFormActionsContext);
+  const stateContext = useContext<SettingsFormState<TModel>>(SettingsFormStateContext);
+
+  if ((actionsContext === undefined || stateContext === undefined) && require) {
+    throw new Error('useSettingsForm must be used within a SettingsForm');
+  }
+  return actionsContext !== undefined && stateContext !== undefined
+    ? { ...actionsContext, ...stateContext }
+    : undefined;
 }
 
 export default SettingsForm;

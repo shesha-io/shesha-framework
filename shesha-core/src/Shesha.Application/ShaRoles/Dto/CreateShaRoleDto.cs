@@ -1,3 +1,5 @@
+using Shesha.AutoMapper.Dto;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.ShaRoles.Dto
@@ -13,6 +15,8 @@ namespace Shesha.ShaRoles.Dto
 
         [StringLength(2000)]
         public string Description { get; set; }
+
+        public Guid? Module { get; set; }
 
         public bool CanAssignToMultiple { get; set; }
         public bool CanAssignToPerson { get; set; }

@@ -1,6 +1,7 @@
 import { createGlobalStyle } from "antd-style";
 import { sheshaStyles } from '@/styles';
 
+
 export const GlobalTableStyles = createGlobalStyle`
   .sha-components-container.sha-index-table-control {
     background: white;
@@ -62,6 +63,15 @@ export const GlobalTableStyles = createGlobalStyle`
     
             .${p => p.theme.prefixCls}-picker, .${p => p.theme.prefixCls}-input-number {
               width: 100%;
+            }
+          }
+        }
+      }
+      .sha-form-cell {
+        .${p => p.theme.prefixCls}-form-item {
+          .${p => p.theme.prefixCls}-row {
+            &.${p => p.theme.prefixCls}-form-item-row {
+              margin-bottom: 5px;
             }
           }
         }

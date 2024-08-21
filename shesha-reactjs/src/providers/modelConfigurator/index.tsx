@@ -93,7 +93,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
 
   const save = (values: ModelConfigurationDto): Promise<ModelConfigurationDto> =>
     new Promise<ModelConfigurationDto>((resolve, reject) => {
-      // todo: validate all properties
+      // TODO: validate all properties
       const preparedValues = prepareValues(values);
 
       dispatch(saveRequestAction());

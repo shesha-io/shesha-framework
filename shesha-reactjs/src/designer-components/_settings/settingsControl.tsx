@@ -1,10 +1,15 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactElement, useCallback } from 'react';
 import { getPropertySettingsFromValue } from './utils';
-import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
+import { CodeEditor, IObjectMetadata, IPropertySetting, PropertySettingMode, useFormData } from '@/index';
 import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import camelcase from 'camelcase';
+import { executeScript } from '@/providers/form/utils';
+import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
+import { ICodeEditorProps } from '../codeEditor/interfaces';
+import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -15,17 +20,16 @@ export interface ISettingsControlProps {
   mode: PropertySettingMode;
   onChange?: (value: IPropertySetting) => void;
   readonly children?: SettingsControlChildrenType;
-  exposedVariables?: ICodeExposedVariable[];
+  availableConstantsExpression?: string;
 }
 
 const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "data", description: "Selected form values", type: "object" },
+  { name: "pageContext", description: "Contexts data of current page", type: "object" },
   { name: "contexts", description: "Contexts data", type: "object" },
   { name: "globalState", description: "Global state", type: "object" },
   { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
   { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-  { name: "staticValue", description: "Static value of this setting", type: "any" },
-  { name: "getSettingValue", description: "Functiont to get actual setting value", type: "function" },
   { name: "form", description: "Form instance", type: "object" },
   { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
   { name: "moment", description: "moment", type: "object" },
@@ -36,6 +40,18 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
 export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   const { styles } = useStyles();
+  const metadataBuilderFactory = useMetadataBuilderFactory();
+  const { data: formData } = useFormData();
+
+  const usePassedConstants = props.availableConstantsExpression?.trim();
+  const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
+    if (!props.availableConstantsExpression?.trim())
+      return Promise.reject("AvailableConstantsExpression is mandatory");
+
+    const metadataBuilder = metadataBuilderFactory("baseProperties");
+  
+    return executeScript<IObjectMetadata>(props.availableConstantsExpression, { data: formData, metadataBuilder });
+  }, [props.availableConstantsExpression, metadataBuilderFactory, formData]);
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
@@ -65,6 +81,24 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
+
+  const codeEditorProps: ICodeEditorProps = {
+    readOnly: props.readOnly,
+    value: setting._code,
+    onChange: codeOnChange,
+    mode: 'dialog',
+    language: 'typescript',
+    propertyName: props.propertyName + 'Code',
+    fileName: props.propertyName,
+    wrapInTemplate: true,
+    templateSettings: { functionName: functionName },
+    exposedVariables: defaultExposedVariables
+  };
+
+  const editor = usePassedConstants
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor}/>
+    : <CodeEditorWithStandardConstants {...codeEditorProps}/>;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
@@ -81,17 +115,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
         {mode === 'code' ? 'Value' : 'JS'}
       </Button>
       <div className={styles.jsContent}>
-        {mode === 'code' &&
-          <CodeEditor
-            readOnly={props.readOnly}
-            value={setting._code}
-            onChange={codeOnChange}
-            mode='dialog'
-            language='typescript'
-            propertyName={props.propertyName + 'Code'}
-            exposedVariables={props.exposedVariables !== undefined ? props.exposedVariables : defaultExposedVariables}
-          />
-        }
+        {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
       </div>
     </div>

@@ -3,19 +3,17 @@ import { InboxOutlined } from '@ant-design/icons';
 import { useStyles } from './styles/styles';
 
 export const DraggerStub: FC = () => {
-  const { styles, prefixCls } = useStyles();
+  const { styles } = useStyles();
 
   return (
-    <div className={`${prefixCls}-upload ${prefixCls}-upload-drag`}>
-      <span className={`${prefixCls}-upload ${prefixCls}-upload-btn`}>
+    <div>
         <p className={styles.antUploadDragIcon}>
-          <InboxOutlined />
+          <InboxOutlined className={`${styles.antUploadDragIcon} icon`}/>
         </p>
         <p className={styles.antUploadText}>Click or drag file to this area to upload</p>
         <p className={styles.antUploadHint}>
           Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files
         </p>
-      </span>
     </div>
   );
 };

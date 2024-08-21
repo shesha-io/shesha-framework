@@ -47,7 +47,7 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
         <div>
             {props.value && props.value.map(item =>
                 <Row className={'ant-form-item-row'}>
-                    <Col span={8} style={{ textAlign: 'right' }}>
+                    <Col span={6} style={{ textAlign: 'right' }}>
                         <div className='ant-form-item-label'>
                             {item.isStandard
                                 ? <label>{item.type}</label>
@@ -57,7 +57,7 @@ const ViewsEditor: FC<IViewsEditorProps> = (props) => {
                             }
                         </div>
                     </Col>
-                    <Col span={16}>
+                    <Col span={18}>
                         <Row>
                             <Col span={22}>
                                 <FormAutocomplete convertToFullId={true} value={item.formId as FormIdentifier} onChange={(e) => onChangeForm(item, e)} />

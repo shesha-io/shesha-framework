@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useMetadataDispatcher, useSheshaApplication } from '@/providers';
+import { IHasEntityDataSourceConfig, useMetadataDispatcher, useSheshaApplication } from '@/providers';
 import { IResult } from '@/interfaces/result';
 import { IHttpHeadersDictionary } from '@/providers/sheshaApplication/contexts';
 import qs from 'qs';
@@ -17,7 +17,7 @@ import {
 import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
-import { IMetadataDispatcherActionsContext } from '@/providers/metadataDispatcher/contexts';
+import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { getUrlKeyParam } from '@/utils';
@@ -33,7 +33,7 @@ export interface IUrlRepository extends IRepository { }
 interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
   backendUrl: string;
   httpHeaders: IHttpHeadersDictionary;
-  metadataDispatcher: IMetadataDispatcherActionsContext;
+  metadataDispatcher: IMetadataDispatcher;
   apiHelper: IEntityEndpointsEvaluator;
   mutator: IUseMutateResponse<any>;
 }
@@ -121,7 +121,6 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     });
   };
 
-  // ToDo: have to be implemented
   const prepareColumns = (_: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
     return Promise.resolve([]);
   };
@@ -180,11 +179,12 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
 };
 
 export function withUrlRepository<WrappedProps>(
-  WrappedComponent: ComponentType<WrappedProps & IHasRepository>,
-  args: IWithUrlRepositoryArgs
+  WrappedComponent: ComponentType<WrappedProps & IHasRepository>
 ): FC<WrappedProps> {
   return (props) => {
-    const repository = useUrlRepository(args);
+    const { getDataPath } = props as IHasEntityDataSourceConfig;
+    const repository = useUrlRepository({ getListUrl: getDataPath });
+
     return <WrappedComponent {...props} repository={repository} />;
   };
 }

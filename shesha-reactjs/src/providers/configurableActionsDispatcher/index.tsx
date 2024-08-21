@@ -8,161 +8,37 @@ import {
   IConfigurableActionDispatcherStateContext,
   IExecuteActionPayload,
   IGetConfigurableActionPayload,
+  IPrepareActionArgumentsPayload,
   IRegisterActionPayload,
 } from './contexts';
 import { IConfigurableActionGroupDictionary } from './models';
 import metadataReducer from './reducer';
 import {
+  DynamicContextHook,
+  EMPTY_DYNAMIC_CONTEXT_HOOK,
   IConfigurableActionArguments,
   IConfigurableActionConfiguration,
   IConfigurableActionDescriptor,
   IConfigurableActionIdentifier,
 } from '@/interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
+import { GenericDictionary } from '@/interfaces';
+import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 
-export interface IConfigurableActionDispatcherProviderProps {}
+export interface IConfigurableActionDispatcherProviderProps { }
 
-const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
-  children,
-}) => {
-  const initial: IConfigurableActionDispatcherStateContext = {
-    ...CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
-  };
+const getActualActionArguments = (action: IConfigurableActionDescriptor, actionArguments: any) => {
+  const { migrator } = action ?? {};
+  if (!migrator) 
+      return actionArguments;
 
-  const actions = useRef<IConfigurableActionGroupDictionary>({});
-
-  const [state] = useThunkReducer(metadataReducer, initial);
-
-  const getConfigurableActionOrNull = (
-    payload: IGetConfigurableActionPayload
-  ): IConfigurableActionDescriptor | null => {
-    const { owner, name } = payload;
-
-    if (!owner || !name) return null;
-
-    // todo: search action in the dictionary and return action
-    const actionsGroup = actions.current[owner];
-    if (!actionsGroup?.actions) return null;
-
-    const action = actionsGroup.actions.find((a) => a.name === name);
-    if (!action) return null;
-
-    return action;
-  };
-
-  const getConfigurableAction = (payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor => {
-    const action = getConfigurableActionOrNull(payload);
-    if (!action) throw `Action '${payload.name}' in the owner '${payload.owner}' not found.`;
-
-    return action;
-  };
-
-  const getActions = () => {
-    return actions.current;
-  };
-
-  const registerAction = (payload: IRegisterActionPayload) => {
-    const ownerActions = actions.current[payload.ownerUid] ?? { ownerName: payload.owner, actions: [] };
-
-    const newActions = ownerActions.actions.filter((action) => action.name !== payload.name);
-    newActions.push(payload);
-
-    actions.current = {
-      ...actions.current,
-      [payload.ownerUid]: { ...ownerActions, actions: newActions },
-    };
-  };
-
-  const unregisterAction = (payload: IConfigurableActionIdentifier) => {
-    if (!payload.ownerUid) return;
-    const ownerActions = actions.current[payload.ownerUid];
-    if (!ownerActions) return;
-
-    const newActions = ownerActions.actions.filter((action) => action.name !== payload.name);
-    if (newActions.length > 0) {
-      actions.current = {
-        ...actions.current,
-        [payload.ownerUid]: { ...ownerActions, actions: newActions },
-      };
-    } else {
-      delete actions.current[payload.ownerUid];
-    }
-  };
-
-  const prepareArguments = (_actionArguments: any) => {
-    // nop
-  };
-
-  const executeAction = (payload: IExecuteActionPayload) => {
-    const { actionConfiguration, argumentsEvaluationContext } = payload;
-    if (!actionConfiguration) return Promise.reject('Action configuration is mandatory');
-    const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } =
-      actionConfiguration;
-    if (!actionName) return Promise.reject('Action name is mandatory');
-
-    const action = getConfigurableAction({ owner: actionOwner, name: actionName });
-    if (!action) return Promise.reject(`Action '${actionOwner}:${actionName}' not found`);
-
-    const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
-
-    //console.log('evaluate action arguments', { actionArguments, argumentsEvaluationContext })
-    return argumentsEvaluator(actionArguments, argumentsEvaluationContext) //getFormActionArguments(actionArguments, argumentsEvaluationContext)
-      .then((preparedActionArguments) => {
-        //console.log('preparedActionArguments', preparedActionArguments);
-        return action
-          .executer(preparedActionArguments, argumentsEvaluationContext)
-          .then((actionResponse) => {
-            //console.log(`Action '${actionOwner}:${actionName}' executed successfully, response:`, actionResponse);
-            if (handleSuccess) {
-              if (onSuccess) {
-                const onSuccessContext = { ...argumentsEvaluationContext, actionResponse: actionResponse };
-                executeAction({
-                  actionConfiguration: onSuccess,
-                  argumentsEvaluationContext: onSuccessContext,
-                  success: payload.success,
-                  fail: payload.fail,
-                });
-              } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
-            } else {
-              if (payload.success) payload.success(actionResponse);
-            }
-          })
-          .catch((error) => {
-            console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error);
-            if (handleFail) {
-              if (onFail) {
-                const onFailContext = { ...argumentsEvaluationContext, actionError: error };
-                executeAction({
-                  actionConfiguration: onFail,
-                  argumentsEvaluationContext: onFailContext,
-                  success: payload.success,
-                  fail: payload.fail,
-                });
-              } else console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
-            } else {
-              if (payload.fail) payload.fail(error);
-            }
-          });
-      });
-  };
-
-  const configurableActionActions: IConfigurableActionDispatcherActionsContext = {
-    registerAction,
-    unregisterAction,
-    getConfigurableAction,
-    getConfigurableActionOrNull,
-    getActions,
-    prepareArguments,
-    executeAction,
-  };
-
-  return (
-    <ConfigurableActionDispatcherStateContext.Provider value={state}>
-      <ConfigurableActionDispatcherActionsContext.Provider value={configurableActionActions}>
-        {children}
-      </ConfigurableActionDispatcherActionsContext.Provider>
-    </ConfigurableActionDispatcherStateContext.Provider>
-  );
+    const migratorInstance = new Migrator<any, any>();
+    const fluent = migrator(migratorInstance);
+    const versionedValue = {...actionArguments} as IHasVersion;
+    if (versionedValue.version === undefined) 
+      versionedValue.version = -1;
+    const model = fluent.migrator.upgrade(versionedValue, {});
+    return model;
 };
 
 function useConfigurableActionDispatcherState(require: boolean) {
@@ -199,6 +75,202 @@ function useConfigurableActionDispatcher(require: boolean = true) {
     : undefined;
 }
 
+const useConfigurableActionDispatcherProxy = (require: boolean = true): FC<PropsWithChildren> => {
+  const actionsContext = useConfigurableActionDispatcherActions(require);
+  const stateContext = useConfigurableActionDispatcherState(require);
+  return actionsContext !== undefined && stateContext !== undefined
+    ? ({ children }) => (
+      <ConfigurableActionDispatcherStateContext.Provider value={stateContext}>
+        <ConfigurableActionDispatcherActionsContext.Provider value={actionsContext}>
+          {children}
+        </ConfigurableActionDispatcherActionsContext.Provider>
+      </ConfigurableActionDispatcherStateContext.Provider>
+    )
+    : ({ children }) => (<>{children}</>);
+};
+
+const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableActionDispatcherProviderProps>> = ({
+  children,
+}) => {
+  const initial: IConfigurableActionDispatcherStateContext = {
+    ...CONFIGURABLE_ACTION_DISPATCHER_CONTEXT_INITIAL_STATE,
+  };
+
+  const actions = useRef<IConfigurableActionGroupDictionary>({});
+
+  const [state] = useThunkReducer(metadataReducer, initial);
+
+  const parent = useConfigurableActionDispatcher(false);
+
+  const getConfigurableActionOrNull = (
+    payload: IGetConfigurableActionPayload
+  ): IConfigurableActionDescriptor | null => {
+    const { owner, name } = payload;
+
+    if (!owner || !name) return null;
+
+    // TODO: search action in the dictionary and return action
+    const actionsGroup = actions.current[owner];
+    if (!actionsGroup?.actions) return parent?.getConfigurableActionOrNull(payload);
+
+    const action = actionsGroup.actions.find((a) => a.name === name);
+    if (!action) return parent?.getConfigurableActionOrNull(payload);
+
+    return action;
+  };
+
+  const getConfigurableAction = <TArguments = IConfigurableActionArguments>(payload: IGetConfigurableActionPayload): IConfigurableActionDescriptor<TArguments> => {
+    const action = getConfigurableActionOrNull(payload);
+    if (!action) throw `Action '${payload.name}' in the owner '${payload.owner}' not found.`;
+
+    return action as IConfigurableActionDescriptor<TArguments>;
+  };
+
+  const getActions = () => {
+    return {...parent?.getActions(), ...actions.current};
+  };
+
+  const registerAction = (payload: IRegisterActionPayload) => {
+    const ownerActions = actions.current[payload.ownerUid] ?? { ownerName: payload.owner, actions: [] };
+
+    const newActions = ownerActions.actions.filter((action) => action.name !== payload.name);
+    newActions.push(payload);
+
+    actions.current = {
+      ...actions.current,
+      [payload.ownerUid]: { ...ownerActions, actions: newActions },
+    };
+  };
+
+  const unregisterAction = (payload: IConfigurableActionIdentifier) => {
+    if (!payload.ownerUid) return;
+    const ownerActions = actions.current[payload.ownerUid];
+    if (!ownerActions) return;
+
+    const newActions = ownerActions.actions.filter((action) => action.name !== payload.name);
+    if (newActions.length > 0) {
+      actions.current = {
+        ...actions.current,
+        [payload.ownerUid]: { ...ownerActions, actions: newActions },
+      };
+    } else {
+      delete actions.current[payload.ownerUid];
+    }
+  };
+
+  const prepareArguments = <TArguments = any>(payload: IPrepareActionArgumentsPayload<TArguments>): Promise<TArguments> => {
+    const { actionConfiguration, argumentsEvaluationContext } = payload;
+    const { actionOwner, actionName, actionArguments } = actionConfiguration;
+    const action = getConfigurableAction<TArguments>({ owner: actionOwner, name: actionName });
+    if (!action)
+      return undefined;
+
+    const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
+    return argumentsEvaluator(actionArguments, argumentsEvaluationContext);
+  };
+
+  const executeAction = (payload: IExecuteActionPayload) => {
+    const { actionConfiguration, argumentsEvaluationContext } = payload;
+    if (!actionConfiguration) return Promise.reject('Action configuration is mandatory');
+    const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } = actionConfiguration;
+    if (!actionName) return Promise.reject('Action name is mandatory');
+
+    const action = getConfigurableAction({ owner: actionOwner, name: actionName });
+
+    if (!action) return Promise.reject(`Action '${actionOwner}:${actionName}' not found`);
+
+    // migrate arguments
+    const actualArguments = action.hasArguments
+      ? getActualActionArguments(action, actionArguments)
+      : undefined;
+
+    const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
+    const executionContext = argumentsEvaluationContext;
+
+    return argumentsEvaluator({ ...actualArguments }, argumentsEvaluationContext)
+      .then((preparedActionArguments) => {
+        return action
+          .executer(preparedActionArguments, executionContext)
+          .then(async (actionResponse) => {
+            if (handleSuccess) {
+              if (onSuccess) {
+                const onSuccessContext = { ...argumentsEvaluationContext, actionResponse };
+                await executeAction({
+                  actionConfiguration: { ...onSuccess },
+                  argumentsEvaluationContext: onSuccessContext,
+                  success: payload.success,
+                  fail: payload.fail
+                });
+              } else {
+                console.warn(`onSuccess handled is not defined for action '${actionOwner}:${actionName}'`);
+              };
+            } else {
+              if (payload.success) payload.success(actionResponse);
+            };
+          })
+          .catch(async (error) => {
+            console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error);
+            if (handleFail) {
+              if (onFail) {
+                const onFailContext = { ...argumentsEvaluationContext, actionError: error };
+                await executeAction({
+                  actionConfiguration: { ...onFail },
+                  argumentsEvaluationContext: onFailContext,
+                  success: payload.success,
+                  fail: payload.fail,
+                });
+              } else {
+                console.warn(`onFail handled is not defined for action '${actionOwner}:${actionName}'`);
+              }
+            } else {
+              if (payload.fail) payload.fail(error);
+            };
+          });
+      });
+  };
+
+  const getDynamicContextHook = (actionConfiguration: IConfigurableActionConfiguration): DynamicContextHook => {
+    if (!actionConfiguration)
+      return EMPTY_DYNAMIC_CONTEXT_HOOK;
+
+    const { actionOwner, actionName } = actionConfiguration;
+    if (!actionName)
+      return EMPTY_DYNAMIC_CONTEXT_HOOK;
+
+    const action = getConfigurableActionOrNull({ owner: actionOwner, name: actionName });
+    if (!action)
+      return EMPTY_DYNAMIC_CONTEXT_HOOK;
+
+    return action.useDynamicContextHook ?? EMPTY_DYNAMIC_CONTEXT_HOOK;
+  };
+
+  const useActionDynamicContext = (actionConfiguration: IConfigurableActionConfiguration): GenericDictionary => {
+    const useDynamicData = getDynamicContextHook(actionConfiguration);
+
+    return useDynamicData();
+  };
+
+  const configurableActionActions: IConfigurableActionDispatcherActionsContext = {
+    registerAction,
+    unregisterAction,
+    getConfigurableAction,
+    getConfigurableActionOrNull,
+    getActions,
+    prepareArguments,
+    executeAction,
+    useActionDynamicContext,
+  };
+
+
+  return (
+    <ConfigurableActionDispatcherStateContext.Provider value={state}>
+      <ConfigurableActionDispatcherActionsContext.Provider value={configurableActionActions}>
+        {children}
+      </ConfigurableActionDispatcherActionsContext.Provider>
+    </ConfigurableActionDispatcherStateContext.Provider>
+  );
+};
+
 const ConfigurableActionDispatcherConsumer = ConfigurableActionDispatcherActionsContext.Consumer;
 
 /**
@@ -214,9 +286,12 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
     if (!payload.owner || !payload.ownerUid) return undefined;
 
     registerAction(payload);
-    return () => {
+
+    return !payload.isPermament
+      ? () => {
       unregisterAction(payload);
-    };
+      }
+      : undefined;
   }, deps);
 }
 
@@ -225,5 +300,7 @@ export {
   ConfigurableActionDispatcherProvider,
   useConfigurableAction,
   useConfigurableActionDispatcher,
-  type IConfigurableActionConfiguration
+  useConfigurableActionDispatcherProxy,
+  getActualActionArguments,
+  type IConfigurableActionConfiguration,  
 };

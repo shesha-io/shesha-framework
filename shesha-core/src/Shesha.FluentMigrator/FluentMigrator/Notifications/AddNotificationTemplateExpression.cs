@@ -46,5 +46,10 @@ namespace Shesha.FluentMigrator.Notifications
             processor.Process(exp);
         }
 
+        public AddNotificationTemplateExpression(string @namespace, string name)
+        {
+            Namespace = @namespace;
+            Name = name;
+        }
     }
 }

@@ -3,6 +3,7 @@ using Abp.Dependency;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.DelayedUpdate;
@@ -19,7 +20,7 @@ namespace Shesha
 {
     [DynamicControllerNameConvention]
     public class DynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey> : SheshaCrudServiceBase<TEntity,
-        TDynamicDto, TPrimaryKey, FilteredPagedAndSortedResultRequestDto, TDynamicDto, TDynamicDto, GetDynamicEntityInput<TPrimaryKey>>, IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>, ITransientDependency
+        TDynamicDto, TPrimaryKey, PropsFilteredPagedAndSortedResultRequestDto, TDynamicDto, TDynamicDto, GetDynamicEntityInput<TPrimaryKey>>, IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>, ITransientDependency
         where TEntity : class, IEntity<TPrimaryKey>
         where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
     {
@@ -37,6 +38,57 @@ namespace Shesha
 
             var entity = await Repository.GetAsync(input.Id);
 
+            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+            {
+                UseDtoForEntityReferences = true
+            });
+        }
+
+        [EntityAction(StandardEntityActions.List)]
+        public override async Task<PagedResultDto<TDynamicDto>> GetAllAsync(PropsFilteredPagedAndSortedResultRequestDto input)
+        {
+            CheckGetAllPermission();
+
+            var query = CreateFilteredQuery(input);
+
+            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
+
+            query = ApplySorting(query, input);
+            query = ApplyPaging(query, input);
+
+            var entities = await AsyncQueryableExecuter.ToListAsync(query);
+
+            var list = new List<TDynamicDto>();
+            foreach (var entity in entities)
+            {
+                list.Add(await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+                {
+                    UseDtoForEntityReferences = true
+                }));
+            }
+
+            return new PagedResultDto<TDynamicDto>(
+                totalCount,
+                list
+            );
+        }
+
+        [EntityAction(StandardEntityActions.Create)]
+        public override async Task<TDynamicDto> CreateAsync(TDynamicDto input)
+        {
+            CheckCreatePermission();
+            var entity = await InternalCreateAsync(input);
+            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
+            {
+                UseDtoForEntityReferences = true
+            });
+        }
+
+        [EntityAction(StandardEntityActions.Update)]
+        public override async Task<TDynamicDto> UpdateAsync(TDynamicDto input)
+        {
+            CheckUpdatePermission();
+            var entity = await InternalUpdateAsync(input);
             return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
             {
                 UseDtoForEntityReferences = true
@@ -90,28 +142,18 @@ namespace Shesha
 
         /// <summary>
         /// Update entity data. 
-        /// NOTE: don't use on prod, will be merged with the `Update`endpoint soon
+        /// NOTE: don't use on prod, this is merged with the `Update`endpoint
         /// </summary>
         /// <param name="properties">List of properties to fetch in GraphQL-like syntax. Supports nested properties</param>
         /// <param name="input"></param>
         /// <returns></returns>
         /// <response code="200">NOTE: shape of the `result` depends on the `properties` argument. When `properties` argument is not specified - it returns top level properties of the entity, all referenced entities are presented as their Id values</response>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public virtual async Task<GraphQLDataResult<TEntity>> UpdateGqlAsync(string properties, TDynamicDto input)
         {
             CheckUpdatePermission();
             var entity = await InternalUpdateAsync(input);
             return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
-        }
-
-        [EntityAction(StandardEntityActions.Update)]
-        public override async Task<TDynamicDto> UpdateAsync(TDynamicDto input)
-        {
-            CheckUpdatePermission();
-            var entity = await InternalUpdateAsync(input);
-            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
-            {
-                UseDtoForEntityReferences = true
-            });
         }
 
         private async Task<TEntity> InternalCreateAsync(TDynamicDto input)
@@ -184,56 +226,18 @@ namespace Shesha
 
         /// <summary>
         /// Create entity.
-        /// NOTE: don't use on prod, will be merged with the `Update`endpoint soon
+        /// NOTE: don't use on prod, this is merged with the `Create`endpoint
         /// </summary>
         /// <param name="properties">List of properties to fetch in GraphQL-like syntax. Supports nested properties</param>
         /// <param name="input"></param>
         /// <returns></returns>
         /// <response code="200">NOTE: shape of the `result` depends on the `properties` argument. When `properties` argument is not specified - it returns top level properties of the entity, all referenced entities are presented as their Id values</response>
+        [ApiExplorerSettings(IgnoreApi = true)]
         public virtual async Task<GraphQLDataResult<TEntity>> CreateGqlAsync(string properties, TDynamicDto input)
         {
             CheckUpdatePermission();
             var entity = await InternalCreateAsync(input);
             return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
-        }
-
-        [EntityAction(StandardEntityActions.Create)]
-        public override async Task<TDynamicDto> CreateAsync(TDynamicDto input)
-        {
-            CheckCreatePermission();
-            var entity = await InternalCreateAsync(input);
-            return await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
-            {
-                UseDtoForEntityReferences = true
-            });
-        }
-
-        public override async Task<PagedResultDto<TDynamicDto>> GetAllAsync(FilteredPagedAndSortedResultRequestDto input)
-        {
-            CheckGetAllPermission();
-
-            var query = CreateFilteredQuery(input);
-
-            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
-
-            query = ApplySorting(query, input);
-            query = ApplyPaging(query, input);
-
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
-
-            var list = new List<TDynamicDto>();
-            foreach (var entity in entities)
-            {
-                list.Add(await MapToCustomDynamicDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(entity, new DynamicMappingSettings()
-                {
-                    UseDtoForEntityReferences = true
-                }));
-            }
-
-            return new PagedResultDto<TDynamicDto>(
-                totalCount,
-                list
-            );
         }
     }
 }

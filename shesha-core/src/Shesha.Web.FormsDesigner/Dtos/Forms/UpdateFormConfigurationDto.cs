@@ -11,6 +11,10 @@ namespace Shesha.Web.FormsDesigner.Dtos
         /// <summary>
         /// Label
         /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// Label
+        /// </summary>
         public string Label { get; set; }
 
         /// <summary>

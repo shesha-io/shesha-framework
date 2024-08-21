@@ -23,10 +23,10 @@ module.exports = {
     '/example/**',
     '/src/apis/*',
     '**/__tests__/**',
-    '/.storybook/**',
     '.eslintrc.js',
     'rollup.config.mjs',
     'next.config.js',
+    'jest.config.js',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -47,12 +47,17 @@ module.exports = {
         {
           "name": "nanoid",
           "message": "Please import nanoid from `@/utils/uuid` instead."
-        }] }
+        },
+        /*{
+          "name": "antd",
+          "importNames": ["message"],
+          "message": "Please get `message` via the App instead, see example: const { message } = App.useApp();"
+        }*/] }
     ],
     'sort-imports': [
       'off',
       {
-        /* todo: enable and auto-fix */ ignoreCase: false,
+        /* TODO: enable and auto-fix */ ignoreCase: false,
         ignoreDeclarationSort: false,
         ignoreMemberSort: false,
         memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
@@ -261,5 +266,5 @@ module.exports = {
     'import/core-modules': [],
     'import/ignore': ['node_modules', '\\.(coffee|scss|css|less|hbs|svg|json)$'],
   },
-  extends: ['plugin:storybook/recommended', 'plugin:react-hooks/recommended', 'plugin:@next/next/recommended'],
+  extends: ['plugin:react-hooks/recommended', 'plugin:@next/next/recommended'],
 };

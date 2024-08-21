@@ -524,6 +524,8 @@ namespace Shesha.FluentMigrator
             if (contextProp == null)
                 throw new Exception("Failed to get migration context");
             var context = contextProp.GetValue(migration) as IMigrationContext;
+            if (context == null)
+                throw new SheshaMigrationException($"Migration context must implement {nameof(IMigrationContext)} interface");
                 
             return new SheshaExpressionRoot(context, migration);
         }

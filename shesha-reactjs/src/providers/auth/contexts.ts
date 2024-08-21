@@ -1,4 +1,3 @@
-import { createContext } from 'react';
 import { UserLoginInfoDto } from '@/apis/session';
 import {
   ResetPasswordUsingTokenInput,
@@ -11,6 +10,7 @@ import { IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { EMPTY_FLAGS_STATE } from '@/interfaces/flagsState';
 import IRequestHeaders from '@/interfaces/requestHeaders';
+import { createNamedContext } from '@/utils/react';
 
 export type IFlagProgressFlags =
   | 'isIdle'
@@ -50,6 +50,7 @@ export interface IAuthStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   isCheckingAuth?: boolean;
   isFetchingUserInfo?: boolean;
+  hasFetchedUserInfoAsync?: boolean;
   loginInfo?: UserLoginInfoDto;
   requireChangePassword?: boolean;
   isLoggedIn: boolean;
@@ -74,7 +75,11 @@ export interface IAuthStateContext
 
 export interface IAuthActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
+  /**
+   * @deprecated - Use loginUserAsync instead.
+   */
   loginUser?: (loginFormData: ILoginForm) => void;
+  loginUserAsync?: (loginFormData: ILoginForm) => Promise<unknown>;
 
   logoutUser?: () => Promise<unknown>;
 
@@ -101,6 +106,6 @@ export const AUTH_CONTEXT_INITIAL_STATE: IAuthStateContext = {
   isLoggedIn: false,
 };
 
-export const AuthStateContext = createContext<IAuthStateContext>(AUTH_CONTEXT_INITIAL_STATE);
+export const AuthStateContext = createNamedContext<IAuthStateContext>(AUTH_CONTEXT_INITIAL_STATE, 'AuthStateContext');
 
-export const AuthActionsContext = createContext<IAuthActionsContext | undefined>(undefined);
+export const AuthActionsContext = createNamedContext<IAuthActionsContext | undefined>(undefined, 'AuthActionsContext');

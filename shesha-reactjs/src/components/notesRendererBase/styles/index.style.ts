@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 import { sheshaStyles, getTextHoverEffects } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
@@ -34,7 +34,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     }
   `;
   const commentList = cx(css`
-    maxHeight: "480px",
+    maxheight: '480px';
   `);
 
   const commentItemBody = css`
@@ -48,8 +48,8 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   `;
 
   const commentItem = css`
-    min-height: 96px;
-    height: auto;
+    margin: 15px;
+    height: 50px;
   `;
 
   const notes = css`

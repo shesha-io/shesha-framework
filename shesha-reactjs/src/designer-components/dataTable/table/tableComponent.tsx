@@ -13,14 +13,17 @@ import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/mo
 import { TableOutlined } from '@ant-design/icons';
 import { TableWrapper } from './tableWrapper';
 import { useDataTableStore } from '@/providers';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
+  isInput: true,
   name: 'Data Table',
   icon: <TableOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
-
+    if (model.hidden)
+      return null;
     return store ? (
       <TableWrapper {...model} />
     ) : (
@@ -89,6 +92,11 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
             ? { ...item, actionConfiguration: migrateNavigateAction(item.actionConfiguration) }
             : item;
         })
+      }))
+      .add<ITableComponentProps>(10, (prev) => ({
+        ...migrateFormApi.properties(prev),
+        onNewRowInitialize: migrateFormApi.full(prev.onNewRowInitialize),
+        onRowSave: migrateFormApi.full(prev.onRowSave)
       }))
   ,
   settingsFormFactory: (props) => <TableSettings {...props} />,

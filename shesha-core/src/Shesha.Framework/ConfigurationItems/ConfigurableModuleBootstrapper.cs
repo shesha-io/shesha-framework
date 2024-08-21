@@ -7,7 +7,9 @@ using Shesha.Bootstrappers;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Modules;
+using Shesha.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,92 +34,98 @@ namespace Shesha.ConfigurationItems
             _iocManager = iocManager;
         }
 
+        [UnitOfWork(IsDisabled = true)]
         public async Task ProcessAsync()
         {
+            await DoProcess();
+        }
+
+        private async Task<List<ModuleItem>> GetCodeModulesAsync() 
+        {
+            var result = new List<ModuleItem>();
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
                 using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
-                    await DoProcess();
+                    var dbModules = await _moduleRepo.GetAll().ToListAsync();
+                    var moduleTypes = _typeFinder.Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type)).ToList();
+                    foreach (var type in moduleTypes) 
+                    {
+                        var instance = _iocManager.Resolve(type) as SheshaModule;
+
+                        var moduleInfo = instance.ModuleInfo;
+                        var version = moduleInfo.UseAssemblyVersion
+                            ? FileVersionInfo.GetVersionInfo(type.Assembly.Location).FileVersion
+                            : moduleInfo.VersionNo;
+                        var accessor = moduleInfo.GetModuleAccessor();
+
+                        var dbModule = dbModules.FirstOrDefault(m => m.Name.ToLower() == moduleInfo.Name.ToLower());
+                        var isNew = dbModule == null;
+                        if (dbModule == null)
+                        {
+                            dbModule = new Module
+                            {
+                                Name = moduleInfo.Name,
+                                FriendlyName = moduleInfo.FriendlyName,
+                                Accessor = accessor,
+                                Description = moduleInfo.Description,
+                                Publisher = moduleInfo.Publisher,
+                                IsEditable = moduleInfo.IsEditable,
+                                IsRootModule = moduleInfo.IsRootModule,
+                                IsEnabled = true,
+
+                                CurrentVersionNo = version,
+                                FirstInitializedDate = Clock.Now,
+                            };
+                            await _moduleRepo.InsertAsync(dbModule);
+                        }
+
+                        result.Add(new ModuleItem
+                        {
+                            ModuleType = type,
+                            Instance = instance,
+                            ModuleInfo = moduleInfo,
+                            Version = version,
+                            Accessor = accessor,
+                            Id = dbModule.Id,
+                            IsNewModule = isNew,
+                        });                        
+                    }
                 }
                 await unitOfWork.CompleteAsync();
             }
+            return result;
         }
 
         private async Task DoProcess()
         {
-            var codeModules = _typeFinder
-                .Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type))
-                .Select(type => {
-
-                    var instance = _iocManager.Resolve(type) as SheshaModule;
-
-                    var moduleInfo = instance.ModuleInfo;
-                    var version = moduleInfo.UseAssemblyVersion
-                        ? FileVersionInfo.GetVersionInfo(type.Assembly.Location).FileVersion
-                        : moduleInfo.VersionNo;
-
-                    return new
-                    {
-                        ModuleType = type,
-                        Instance = instance,
-                        ModuleInfo = moduleInfo,
-                        Version = version,
-                    };
-                })
-                .ToList();
+            var codeModules = await GetCodeModulesAsync();
             var allSubModules = _typeFinder.Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
                 .Select(t => {
                     return _iocManager.Resolve(t) as ISheshaSubmodule;
                 })
                 .ToList();
 
-            var dbModules = await _moduleRepo.GetAll().ToListAsync();
-
             foreach (var codeModule in codeModules)
             {
-                var dbModule = dbModules.FirstOrDefault(m => m.Name.ToLower() == codeModule.ModuleInfo.Name.ToLower());
-
-                
-                var isNewModule = dbModule == null;
-
-                if (isNewModule)
+                using (var unitOfWork = _unitOfWorkManager.Begin()) 
                 {
-                    // Add module if missing
-                    dbModule = new Module
+                    var dbModule = await _moduleRepo.GetAsync(codeModule.Id);
+
+                    if (!codeModule.IsNewModule) 
                     {
-                        Name = codeModule.ModuleInfo.Name,
-                        FriendlyName = codeModule.ModuleInfo.FriendlyName,
-                        Description = codeModule.ModuleInfo.Description,
-                        Publisher = codeModule.ModuleInfo.Publisher,
-                        IsEditable = codeModule.ModuleInfo.IsEditable,
-                        IsRootModule = codeModule.ModuleInfo.IsRootModule,
-                        IsEnabled = true,
+                        dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
+                        dbModule.Accessor = codeModule.Accessor;
+                        dbModule.FriendlyName = codeModule.ModuleInfo.FriendlyName;
+                        dbModule.Description = codeModule.ModuleInfo.Description;
+                        dbModule.Publisher = codeModule.ModuleInfo.Publisher;
+                        dbModule.IsEditable = codeModule.ModuleInfo.IsEditable;
+                        dbModule.IsRootModule = codeModule.ModuleInfo.IsRootModule;
+                        dbModule.CurrentVersionNo = codeModule.Version;
+                        dbModule.FirstInitializedDate = dbModule.FirstInitializedDate ?? Clock.Now;
+                        await _moduleRepo.UpdateAsync(dbModule);
+                    }
 
-                        CurrentVersionNo = codeModule.Version,
-                        FirstInitializedDate = Clock.Now,
-                    };
-                    await _moduleRepo.InsertAsync(dbModule);
-                }
-                else {
-                    dbModule.Name = codeModule.ModuleInfo.Name; // update name to ensure that the case is correct
-                    dbModule.FriendlyName = codeModule.ModuleInfo.FriendlyName;
-                    dbModule.Description = codeModule.ModuleInfo.Description;
-                    dbModule.Publisher = codeModule.ModuleInfo.Publisher;
-                    dbModule.IsEditable = codeModule.ModuleInfo.IsEditable;
-                    dbModule.IsRootModule = codeModule.ModuleInfo.IsRootModule;
-                    dbModule.CurrentVersionNo = codeModule.Version;
-                    
-                    dbModule.FirstInitializedDate = dbModule.FirstInitializedDate ?? Clock.Now;
-
-                    await _moduleRepo.UpdateAsync(dbModule);
-
-                }
-
-                await _unitOfWorkManager.Current.SaveChangesAsync();
-
-                using (_unitOfWorkManager.Current.EnableFilter(AbpDataFilters.SoftDelete)) 
-                {
                     // initialize main module
                     var mainModuleInitialized = await codeModule.Instance.InitializeConfigurationAsync();
 
@@ -131,15 +139,27 @@ namespace Shesha.ConfigurationItems
 
                     if (mainModuleInitialized || submodulesInitialized)
                     {
-                        if (isNewModule)
+                        if (codeModule.IsNewModule)
                             dbModule.FirstInitializedDate = Clock.Now;
                         else
                             dbModule.LastInitializedDate = Clock.Now;
 
                         await _moduleRepo.UpdateAsync(dbModule);
                     }
+
+                    await unitOfWork.CompleteAsync();
                 }
             }
+        }
+        private class ModuleItem
+        {
+            public Guid Id { get; set; }
+            public Type ModuleType { get; set; }
+            public SheshaModule Instance { get;set; }
+            public SheshaModuleInfo ModuleInfo { get; set; }
+            public string Version { get; set; }
+            public string Accessor { get; set; }
+            public bool IsNewModule { get; set; }            
         }
     }
 }

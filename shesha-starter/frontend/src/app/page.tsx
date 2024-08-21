@@ -3,10 +3,11 @@
 import Banner from 'src/components/Banner';
 import Card from 'src/components/NavCard';
 import React from 'react';
-import { PageWithLayout } from '@shesha-io/reactjs';
+import { MainLayout, PageWithLayout } from '@shesha-io/reactjs';
 
 const Home: PageWithLayout<{}> = () => {
   return (
+    <MainLayout noPadding>
       <div
         style={{
           padding: "15px",
@@ -41,12 +42,13 @@ const Home: PageWithLayout<{}> = () => {
           <Card
             title="How to change landing page"
             url={
-              "https://docs.shesha.io/docs/fundamentals/how-to-change-landing-page"
+              "https://docs.shesha.io/docs/fundamentals/how-to-change-home-page/"
             }
             description="Change your landing page to a custom page"
           />
         </div>
       </div>
+    </MainLayout>
   );
 };
 

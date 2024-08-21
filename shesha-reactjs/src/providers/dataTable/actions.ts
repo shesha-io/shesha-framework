@@ -37,6 +37,7 @@ export enum DataTableActionEnums {
 
   ToggleColumnVisibility = 'TOGGLE_COLUMN_VISIBILITY',
   ToggleColumnFilter = 'TOGGLE_COLUMN_FILTER',
+  RemoveColumnFilter = 'REMOVE_COLUMN_FILTER',
   ChangeFilterOption = 'CHANGE_FILTER_OPTION',
   ChangeFilter = 'CHANGE_FILTER',
   ApplyFilter = 'APPLY_FILTER',
@@ -149,6 +150,8 @@ export const toggleColumnFilterAction = createAction<string[], string[]>(
   DataTableActionEnums.ToggleColumnFilter,
   (p) => p
 );
+
+export const removeColumFilterAction = createAction<string, any>(DataTableActionEnums.RemoveColumnFilter, (p) => p);
 
 export interface IChangeFilterOptionPayload {
   filterColumnId: string;

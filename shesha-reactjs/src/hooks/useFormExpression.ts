@@ -1,10 +1,9 @@
-import { message } from 'antd';
-import moment from 'moment';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { GenericDictionary, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { GenericDictionary } from '@/providers';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
 import { IExecuteActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
-import { axiosHttp } from '@/utils/fetchers';
+import { useAvailableConstantsData } from '..';
+import { executeScriptSync } from '@/providers/form/utils';
 
 interface IFormExpression {
   argumentsEvaluationContext: GenericDictionary;
@@ -14,29 +13,15 @@ interface IFormExpression {
 }
 
 export const useFormExpression = (): IFormExpression => {
-  const { form, formMode, setFormData } = useForm();
-  const { data: formData } = useFormData();
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  const { backendUrl } = useSheshaApplication();
   const { executeAction: executeConfig } = useConfigurableActionDispatcher();
 
-  const argumentsEvaluationContext: GenericDictionary = {
-    data: formData,
-    formMode,
-    globalState,
-    form,
-    http: axiosHttp(backendUrl),
-    message,
-    setGlobalState,
-    setFormData,
-    moment,
-  };
+  const allData: GenericDictionary = useAvailableConstantsData();
 
   const executeAction = (payload: IExecuteActionPayload | IConfigurableActionConfiguration) => {
     if ((payload as IExecuteActionPayload)?.argumentsEvaluationContext) {
       executeConfig(payload as IExecuteActionPayload);
     } else {
-      executeConfig({ actionConfiguration: payload as IConfigurableActionConfiguration, argumentsEvaluationContext });
+      executeConfig({ actionConfiguration: payload as IConfigurableActionConfiguration, argumentsEvaluationContext: allData });
     }
   };
 
@@ -50,36 +35,11 @@ export const useFormExpression = (): IFormExpression => {
       }
     }
 
-    const evaluated = new Function(
-      'data, formMode, form, globalState, http, message, setGlobalState, setFormData, moment',
-      expression
-    )(
-      formData,
-      formMode,
-      form,
-      globalState,
-      axiosHttp(backendUrl),
-      message,
-      setGlobalState,
-      setFormData,
-      moment
-    );
-
+    const evaluated = executeScriptSync(expression, allData);
     return typeof evaluated === 'boolean' ? evaluated : true;
   };
 
-  const executeExpression = (expression: string = '') =>
-    new Function('data, formMode, form, globalState, http, message, setGlobalState, setFormData, moment', expression)(
-      formData,
-      formMode,
-      form,
-      globalState,
-      axiosHttp(backendUrl),
-      message,
-      setGlobalState,
-      setFormData,
-      moment
-    );
+  const executeExpression = (expression: string = '') => executeScriptSync(expression, allData);
 
-  return { argumentsEvaluationContext, executeAction, executeBooleanExpression, executeExpression };
+  return { argumentsEvaluationContext: allData, executeAction, executeBooleanExpression, executeExpression };
 };

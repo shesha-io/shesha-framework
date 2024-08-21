@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Abp.Auditing;
+﻿using Abp.Auditing;
 using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.EntityHistory;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
 {
     [Entity(TypeShortAlias = "Shesha.Core.ShaRole")]
     [DisplayManyToManyAuditTrail(typeof(ShaRoleAppointedPerson), "Person", DisplayName = "Member")]
-    public class ShaRole: FullPowerEntity
+    [JoinedProperty("Core_ShaRoles")]
+    [Prefix(UsePrefixes = false)]
+    [DiscriminatorValue(ItemTypeName)]
+    public class ShaRole : ConfigurationItemBase
     {
+        public const string ItemTypeName = "role";
+
         public ShaRole()
         {
             Permissions = new List<ShaRolePermission>();
@@ -23,11 +27,11 @@ namespace Shesha.Domain
 
         [StringLength(500)]
         [Audited]
-        public virtual string Name { get; set; }
+        public override string Name { get; set; }
 
         [StringLength(2000)]
         [Audited]
-        public virtual string Description { get; set; }
+        public override string Description { get; set; }
 
         [Obsolete]
         public virtual int SortIndex { get; set; }

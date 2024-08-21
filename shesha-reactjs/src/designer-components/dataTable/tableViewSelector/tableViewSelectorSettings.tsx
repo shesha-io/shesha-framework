@@ -1,8 +1,9 @@
 import React from 'react';
-import TableViewSelectorSettingsModal from './tableViewSelectorSettingsModal';
 import { Checkbox, Form } from 'antd';
 import { ITableViewSelectorComponentProps } from './models';
 import { SectionSeparator } from '@/components';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { FiltersList } from './filters/filtersList';
 
 export interface ITableViewSelectorSettingsProps {
   readOnly: boolean;
@@ -25,10 +26,17 @@ function TableViewSelectorSettings(props: ITableViewSelectorSettingsProps) {
     <Form form={form} onFinish={props.onSave} onValuesChange={handleValuesChange} initialValues={props.model}>
       <SectionSeparator title="Filters" />
       <Form.Item name="filters">
-        <TableViewSelectorSettingsModal readOnly={props.readOnly} />
+        <FiltersList readOnly={props.readOnly} />
       </Form.Item>
       <Form.Item name="hidden" label="Hidden" valuePropName="checked">
         <Checkbox disabled={props.readOnly} />
+      </Form.Item>
+      <Form.Item
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component">
+          <PermissionAutocomplete readOnly={props.readOnly} />
       </Form.Item>
     </Form>
   );

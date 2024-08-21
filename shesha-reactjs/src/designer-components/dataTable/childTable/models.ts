@@ -1,5 +1,5 @@
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
-import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
+import { ITableViewProps } from '@/providers/dataTable/filters/models';
 
 export interface IChildTableSettingsProps {
   title?: string;

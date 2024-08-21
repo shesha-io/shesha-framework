@@ -1,10 +1,11 @@
 import React, { FC, PropsWithChildren } from 'react';
-import ConfigurableFormComponent from '../configurableFormComponent';
-import { useForm } from '@/providers/form';
+import { ConfigurableFormComponent } from '../configurableFormComponent';
+import { ShaForm } from '@/providers/form';
 import { IComponentsContainerProps } from './componentsContainer';
 import { useStyles } from '../styles/styles';
 import classNames from 'classnames';
 import { getAlignmentStyle } from './util';
+import { useParent } from '@/providers/parentProvider';
 
 export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const {
@@ -18,13 +19,13 @@ export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerP
     noDefaultStyling,
   } = props;
   const { styles } = useStyles();
-  const { getChildComponents } = useForm();
+  const parent = useParent();
 
-  const components = getChildComponents(containerId);
+  const components = ShaForm.useChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
   const renderComponents = () => {
-    const renderedComponents = components.map((c, index) => (
-      <ConfigurableFormComponent id={c.id} index={index} key={c.id} />
+    const renderedComponents = components.map((c) => (
+      <ConfigurableFormComponent id={c.id} key={c.id} />
     ));
 
     return typeof render === 'function' ? render(renderedComponents) : renderedComponents;

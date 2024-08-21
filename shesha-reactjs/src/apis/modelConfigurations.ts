@@ -13,6 +13,7 @@ export interface PermissionedObjectDto {
   object?: string | null;
   category?: string | null;
   module?: string | null;
+  moduleName?: string | null;
   type?: string | null;
   name?: string | null;
   description?: string | null;

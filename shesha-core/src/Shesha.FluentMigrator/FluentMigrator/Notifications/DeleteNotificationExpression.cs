@@ -23,5 +23,10 @@ namespace Shesha.FluentMigrator.Notifications
             processor.Process(exp);
         }
 
+        public DeleteNotificationExpression(string @namespace, string name)
+        {
+            Namespace = @namespace;
+            Name = name;
+        }
     }
 }

@@ -148,6 +148,8 @@ namespace Shesha.ConfigurationItems
                 await _packageManager.ImportAsync(package, importContext);
             }
 
+            UnitOfWorkManager.Current.SaveChanges();
+
             // todo: return statistic
             return new PackageImportResult();
         }

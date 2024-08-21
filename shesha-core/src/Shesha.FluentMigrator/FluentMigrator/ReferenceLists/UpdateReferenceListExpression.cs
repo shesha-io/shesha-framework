@@ -9,8 +9,10 @@ namespace Shesha.FluentMigrator.ReferenceLists
     /// </summary>
     public class UpdateReferenceListExpression : SheshaMigrationExpressionBase
     {
-        public UpdateReferenceListExpression(IQuerySchema querySchema) : base(querySchema)
+        public UpdateReferenceListExpression(IQuerySchema querySchema, string @namespace, string name) : base(querySchema)
         {
+            Namespace = @namespace;
+            Name = name;
         }
 
         public string Name { get; set; }

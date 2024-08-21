@@ -19,8 +19,12 @@ export interface IRegisterDataContextPayload extends IDataContextDescriptor {
   initialData?: any;
 }
 
+export const SHESHA_ROOT_DATA_CONTEXT_MANAGER = 'SHESHA_ROOT_DATA_CONTEXT_MANAGER';
+
+
 export enum SheshaCommonContexts {
-  ApplicationContext = 'appContext'
+  ApplicationContext = 'application',
+  AppContext = 'appContext'
 }
 
 export const DEFAULT_CONTEXT_METADATA = {

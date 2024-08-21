@@ -81,6 +81,7 @@ export const useApiCallAction = () => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   useConfigurableAction<IApiCallArguments>({
+    isPermament: true,
     owner: 'Common',
     ownerUid: SheshaActionOwners.Common,
     name: 'API Call',

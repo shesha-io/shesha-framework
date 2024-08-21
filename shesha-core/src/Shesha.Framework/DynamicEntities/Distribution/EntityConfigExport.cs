@@ -75,16 +75,16 @@ namespace Shesha.DynamicEntities.Distribution
                 GenerateAppService = entityConfig.GenerateAppService,
                 Source = entityConfig.Source,
                 EntityConfigType = entityConfig.EntityConfigType,
-                PropertiesMD5 = entityConfig.PropertiesMD5,
+                PropertiesMD5 = entityConfig.HardcodedPropertiesMD5,
                
                 ViewConfigurations = MapViewConfigurations(entityConfig),
                 Properties = await MapPropertiesAsync(entityConfig),
 
-                Permission = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}"),
-                PermissionGet = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Get"),
-                PermissionCreate = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Create"),
-                PermissionUpdate = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Update"),
-                PermissionDelete = await _permissionedObjectManager.GetAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Delete"),
+                Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}", ShaPermissionedObjectsTypes.Entity),
+                PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Get", ShaPermissionedObjectsTypes.EntityAction),
+                PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Create", ShaPermissionedObjectsTypes.EntityAction),
+                PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Update", ShaPermissionedObjectsTypes.EntityAction),
+                PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{entityConfig.Namespace}.{entityConfig.ClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction),
             };
 
             return result;

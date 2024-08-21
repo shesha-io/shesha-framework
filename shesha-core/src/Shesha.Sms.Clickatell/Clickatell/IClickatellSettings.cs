@@ -7,14 +7,14 @@ namespace Shesha.Sms.Clickatell
     /// <summary>
     /// Clickatell settings
     /// </summary>
-    [Category("Clickatell")]
+    [Category("SMS")]
     public interface IClickatellSettings : ISettingAccessors
     {
         /// <summary>
-        /// Gateway Settings
+        /// Clickatell Gateway
         /// </summary>
-        [Display(Name = "Gateway Settings")]
+        [Display(Name = "Clickatell Gateway")]
         [Setting(ClickatellSettingNames.GatewaySettings, EditorFormName = "gateway-settings")]
-        ISettingAccessor<GatewaySettings> GatewaySettings { get; }
+        ISettingAccessor<GatewaySettings> ClickatellGateway { get; }
     }
 }

@@ -4,19 +4,36 @@
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>ShaCompanyName.ShaProjectName.Common</RootNamespace>
     <Nullable>enable</Nullable>
+    <!-- Optional: Embed source files within the PDBs -->
+    <EmbedAllSources>true</EmbedAllSources>
+
+    <!-- Generate full debug information embedded in the DLLs -->
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+
+    <!-- Include DLLs and XML documentation files in the NuGet package output -->
+    <AllowedOutputExtensionsInPackageBuildOutput>.dll;.xml;.pdb</AllowedOutputExtensionsInPackageBuildOutput>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Abp" Version="9.0.0" />
     <PackageReference Include="Intent.RoslynWeaver.Attributes" Version="2.1.3" />
-    <PackageReference Include="NHibernate" Version="5.4.7" />
+    <PackageReference Include="NHibernate" Version="5.5.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shesha.Application" Version="0.31.0-beta.63610" />
-    <PackageReference Include="Shesha.Core" Version="0.31.0-beta.63610" />
-    <PackageReference Include="Shesha.Framework" Version="0.31.0-beta.63610" />
-    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.31.0-beta.63610" />
+    <PackageReference Include="Shesha.Application" Version="0.37.0" />
+    <PackageReference Include="Shesha.Core" Version="0.37.0" />
+    <PackageReference Include="Shesha.Framework" Version="0.37.0" />
+    <PackageReference Include="Shesha.Web.FormsDesigner" Version="0.37.0" />
     <ProjectReference Include="..\ShaCompanyName.ShaProjectName.Domain\ShaCompanyName.ShaProjectName.Domain.csproj" />
   </ItemGroup>
 

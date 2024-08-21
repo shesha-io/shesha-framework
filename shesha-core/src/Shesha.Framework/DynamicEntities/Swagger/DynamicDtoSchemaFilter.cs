@@ -58,8 +58,10 @@ namespace Shesha.DynamicEntities.Swagger
 
                 // note: Nullable is not processed by GenerateSchema
                 propertySchema.Nullable = property.PropertyType.IsNullableType();
-
-                schema.Properties.Add(property.Name.ToCamelCase(), propertySchema);
+              
+                if(!schema.Properties.Keys.Contains(property.Name.ToCamelCase()))
+                    schema.Properties.Add(property.Name.ToCamelCase(), propertySchema);
+    
             }
 
             if (schema.Properties.ContainsKey(nameof(IHasJObjectField._jObject).ToCamelCase()))

@@ -18,8 +18,6 @@ using Shesha.Modules;
 using Shesha.Notifications;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
-using Shesha.Push;
-using Shesha.Push.Configuration;
 using Shesha.Reflection;
 using Shesha.Settings.Ioc;
 using Shesha.Sms;
@@ -53,7 +51,6 @@ namespace Shesha
             Configuration.Notifications.Providers.Add<ShaNotificationProvider>();
             Configuration.Notifications.Notifiers.Add<EmailRealTimeNotifier>();
             Configuration.Notifications.Notifiers.Add<SmsRealTimeNotifier>();
-            Configuration.Notifications.Notifiers.Add<PushRealTimeNotifier>();
 
             Configuration.Authorization.Providers.Add<SheshaAuthorizationProvider>();
             Configuration.Authorization.Providers.Add<DbAuthorizationProvider>();
@@ -73,44 +70,22 @@ namespace Shesha
                 Component.For(typeof(IEntityReorderer<,,>)).ImplementedBy(typeof(EntityReorderer<,,>)).LifestyleTransient()
             );
 
-            #region Push notifications
-
-            IocManager.RegisterSettingAccessor<IPushSettings>(s => {
-                s.PushNotifier.WithDefaultValue(NullPushNotifier.Uid);
-            });
-            IocManager.Register<NullPushNotifier, NullPushNotifier>(DependencyLifeStyle.Transient);
-            IocManager.IocContainer.Register(
-                Component.For<IPushNotifier>().UsingFactoryMethod(f =>
-                {
-                    var settings = f.Resolve<IPushSettings>();
-                    var pushNotifier = settings.PushNotifier.GetValue();
-
-                    var pushNotifierType = !string.IsNullOrWhiteSpace(pushNotifier)
-                        ? f.Resolve<ITypeFinder>().Find(t => typeof(IPushNotifier).IsAssignableFrom(t) && t.GetClassUid() == pushNotifier).FirstOrDefault()
-                        : null;
-
-                    if (pushNotifierType == null)
-                        pushNotifierType = typeof(NullPushNotifier);
-
-                    return pushNotifierType != null
-                        ? f.Resolve(pushNotifierType) as IPushNotifier
-                        : null;
-                }, managedExternally: true).LifestyleTransient()
-            );
-
-            #endregion
-
             #region SMS Gateways
 
             IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
-                s.SmsGateway.WithDefaultValue(NullSmsGateway.Uid);
+                s.SmsSettings.WithDefaultValue(new SmsSettings
+                {
+                    SmsGateway = NullSmsGateway.Uid
+                });
             });
+
             IocManager.Register<NullSmsGateway, NullSmsGateway>(DependencyLifeStyle.Transient);
+
             IocManager.IocContainer.Register(
                 Component.For<ISmsGateway>().UsingFactoryMethod(f =>
                 {
                     var settings = f.Resolve<ISmsSettings>();
-                    var gatewayUid = settings.SmsGateway.GetValue();
+                    var gatewayUid = settings.SmsSettings.GetValue().SmsGateway;
 
                     var gatewayType = !string.IsNullOrWhiteSpace(gatewayUid)
                         ? f.Resolve<ITypeFinder>().Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.GetClassUid() == gatewayUid).FirstOrDefault()
@@ -135,14 +110,17 @@ namespace Shesha
         public override void Initialize()
         {
             IocManager.RegisterSettingAccessor<IOtpSettings>(s => {
-                s.PasswordLength.WithDefaultValue(OtpDefaults.DefaultPasswordLength);
-                s.Alphabet.WithDefaultValue(OtpDefaults.DefaultAlphabet);
-                s.DefaultLifetime.WithDefaultValue(OtpDefaults.DefaultLifetime);
-                s.DefaultSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultSubjectTemplate);
-                s.DefaultBodyTemplate.WithDefaultValue(OtpDefaults.DefaultBodyTemplate);
+                s.OneTimePins.WithDefaultValue(new OtpSettings
+                {
+                    Alphabet = OtpDefaults.DefaultAlphabet,
+                    PasswordLength = OtpDefaults.DefaultPasswordLength,
+                    DefaultLifetime = OtpDefaults.DefaultLifetime,
+                    DefaultSubjectTemplate = OtpDefaults.DefaultSubjectTemplate,
+                    DefaultBodyTemplate = OtpDefaults.DefaultBodyTemplate,
+                    DefaultEmailSubjectTemplate = OtpDefaults.DefaultEmailSubjectTemplate,
+                    DefaultEmailBodyTemplate = OtpDefaults.DefaultEmailBodyTemplate
 
-                s.DefaultEmailSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultEmailSubjectTemplate);
-                s.DefaultEmailSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultEmailBodyTemplate);
+                });
             });
 
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);

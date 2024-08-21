@@ -14,7 +14,8 @@ import {
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
   executeScript,
-  upgradeComponents
+  upgradeComponents,
+  useApplicationContextData
   } from '@/providers/form/utils';
 import { DEFAULT_FORM_SETTINGS } from '../form/models';
 import { EntitiesGetQueryParams } from '@/apis/entities';
@@ -23,7 +24,6 @@ import {
   GetDataError,
   useDeepCompareMemoKeepReference,
   useMutate,
-  usePubSub
   } from '@/hooks';
 import { getQueryParams, QueryStringParams } from '@/utils/url';
 import { IAnyObject } from '@/interfaces';
@@ -31,7 +31,7 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { useAppConfigurator, useSheshaApplication } from '@/providers';
+import { MetadataProvider, useAppConfigurator, useSheshaApplication } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -49,6 +49,7 @@ import {
   setMarkupWithSettingsAction,
 } from './actions';
 import ParentProvider from '../parentProvider/index';
+import ConditionalWrap from '@/components/conditionalWrapper';
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -91,12 +92,17 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
 
-  const { publish } = usePubSub();
   const { formData = {}, formMode } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
+  const appContextData = useApplicationContextData();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
   
   const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  const onChangeInternal = (newValue: any) => {
+    if (onChange) 
+      onChange({...(typeof value === 'object' ? value : {} ), ...newValue });
+  };
 
   /**
    * Evaluate url using js expression
@@ -107,7 +113,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (!urlExpression) return '';
     return (() => {
       // tslint:disable-next-line:function-constructor
-      return new Function('data, query, globalState', urlExpression)(formData, getQueryParams(), globalState); // Pass data, query, globalState
+      return new Function('data, query, globalState, application', urlExpression)(formData, getQueryParams(), globalState, appContextData); // Pass data, query, globalState
     })();
   };
 
@@ -118,6 +124,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       data: formData,
       query: getQueryParams(),
       globalState: globalState,
+      application: appContextData,
     });
   };
 
@@ -240,8 +247,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     let params: EntitiesGetQueryParams = { entityType: internalEntityType };
 
-    params.properties =
-      typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' '); // Always include the `id` property/. Useful for deleting
+    params.properties = !!properties
+      ? typeof properties === 'string' ? `id ${properties}` : ['id', ...Array.from(new Set(properties || []))].join(' ') // Always include the `id` property/. Useful for deleting
+      : null;
 
     const queryParamsFromJs = queryParamsEvaluator({
       data: formData ?? {},
@@ -251,6 +259,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (queryParams) {
       params = { ...params, ...(typeof queryParamsFromJs === 'object' ? queryParamsFromJs : {}) };
     }
+    
+    if (!params.id && !!value && !!value['id'])
+      params.id = value['id'];
 
     return params;
   };
@@ -277,8 +288,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     // Skip loading if we work with entity and the `id` is not specified
     if (internalEntityType && !finalQueryParams?.id) {
-      if (typeof onChange === 'function')
-        onChange({});
       return;
     }
 
@@ -287,7 +296,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     dataRequestAbortController.current = new AbortController();
 
-    console.log('fetch subForm');
     dispatch(fetchDataRequestAction());
     getReadUrl().then((getUrl) => {
       if (!Boolean(getUrl)) {
@@ -307,9 +315,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           dataRequestAbortController.current = null;
 
           if (dataResponse.success) {
-            if (typeof onChange === 'function') {
-              onChange(dataResponse?.result);
-            }
+            onChangeInternal(dataResponse?.result);
             dispatch(fetchDataSuccessAction({entityId: dataResponse?.result?.id}));
           } else {
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
@@ -328,7 +334,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   // fetch data on first rendering and on change of some properties
   useDeepCompareEffect(() => {
     if (dataSource === 'api') fetchData();
-  }, [dataSource, finalQueryParams]); // todo: memoize final getUrl and add as a dependency
+  }, [dataSource, finalQueryParams]); // TODO: memoize final getUrl and add as a dependency
 
   const postData = useDebouncedCallback(() => {
     if (!postUrl) {
@@ -339,16 +345,16 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       });
     } else {
       postHttp(value).then((submittedValue) => {
-        onChange(submittedValue?.result);
+        onChangeInternal(submittedValue?.result);
         if (onCreated) {
           const evaluateOnCreated = () => {
             // tslint:disable-next-line:function-constructor
-            return new Function('data, globalState, submittedValue, message, publish', onCreated)(
+            return new Function('data, globalState, submittedValue, message, application', onCreated)(
               formData,
               globalState,
               submittedValue?.result,
               message,
-              publish
+              appContextData,
             );
           };
 
@@ -367,16 +373,15 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       });
     } else {
       putHttp(value).then((submittedValue) => {
-        onChange(submittedValue?.result);
+        onChangeInternal(submittedValue?.result);
         if (onUpdated) {
           const evaluateOnUpdated = () => {
             // tslint:disable-next-line:function-constructor
-            return new Function('data, globalState, response, message, publish', onUpdated)(
+            return new Function('data, globalState, response, message', onUpdated)(
               formData,
               globalState,
               submittedValue?.result,
               message,
-              publish
             );
           };
 
@@ -458,7 +463,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       ownerUid: id,
       hasArguments: false,
       executer: () => {
-        debouncedFetchData(true); // todo: return real promise
+        debouncedFetchData(true); // TODO: return real promise
         return Promise.resolve();
       },
     },
@@ -472,7 +477,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       ownerUid: id,
       hasArguments: false,
       executer: () => {
-        postData(); // todo: return real promise
+        postData(); // TODO: return real promise
         return Promise.resolve();
       },
     },
@@ -486,7 +491,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       ownerUid: id,
       hasArguments: false,
       executer: () => {
-        putData(); // todo: return real promise
+        putData(); // TODO: return real promise
         return Promise.resolve();
       },
     },
@@ -537,9 +542,16 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           getChildComponents,
         }}
       >
-        <ParentProvider model={props} subFormIdPrefix={id} context={context}>
-          {children}
-        </ParentProvider>
+        <ConditionalWrap
+          condition={Boolean(state.formSettings?.modelType)}
+          wrap={(children) => <MetadataProvider modelType={state.formSettings.modelType}>{children}</MetadataProvider>}
+        >
+          <ParentProvider model={props} context={context} isScope
+            formFlatMarkup={{allComponents: state.allComponents, componentRelations: state.componentRelations}}
+          >
+            {children}
+          </ParentProvider>
+        </ConditionalWrap>
       </SubFormActionsContext.Provider>
     </SubFormContext.Provider>
   );

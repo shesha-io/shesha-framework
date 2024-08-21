@@ -10,15 +10,15 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Audit\**" />
     <Compile Remove="Email\**" />
     <Compile Remove="StoredFiles\**" />
+    <EmbeddedResource Remove="Audit\**" />
     <EmbeddedResource Remove="Email\**" />
     <EmbeddedResource Remove="StoredFiles\**" />
+    <None Remove="Audit\**" />
     <None Remove="Email\**" />
     <None Remove="StoredFiles\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Audit\Audit_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="DynamicEntities\Resources\entityReference_DtoMode.json" />
@@ -50,8 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Shesha.Application\Shesha.Application.csproj" />
-    <ProjectReference Include="..\..\src\Shesha.AzureAD\Shesha.AzureAD.csproj" />
-    <ProjectReference Include="..\..\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
+	<ProjectReference Include="..\..\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Scheduler\Shesha.Scheduler.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Web.Core\Shesha.Web.Core.csproj" />
     <ProjectReference Include="..\..\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
@@ -61,15 +60,14 @@
     <PackageReference Include="Abp.MemoryDb" Version="9.0.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="GraphQL" Version="5.3.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.58.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="NSubstitute" Version="5.1.0" />
     <PackageReference Include="Shouldly" Version="4.2.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
-    <PackageReference Include="xunit" Version="2.6.3" />
-    <PackageReference Include="xunit.extensibility.execution" Version="2.6.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.5">
+    <PackageReference Include="xunit" Version="2.8.1" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.8.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -83,9 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Audit\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />

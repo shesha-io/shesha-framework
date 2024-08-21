@@ -36,7 +36,7 @@ const CreateModal: FC<ICreateModalProps> = ({
       switchMode('read');
       onToggle(false);
     } catch (error) {
-      console.log('Update failed: ', error);
+      console.error('Update failed: ', error);
     }
 
   };
@@ -106,7 +106,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
           mode='create'
           allowChangeMode={false}
           autoSave={false}
-          flatComponents={flatComponents}
+          formFlatMarkup={flatComponents}
           formSettings={formSettings}
         >
           <CreateModal

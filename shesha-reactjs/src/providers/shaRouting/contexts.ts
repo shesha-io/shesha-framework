@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import { FormIdentifier, INavigateActoinArguments, IRouter } from '@/providers';
+import { createNamedContext } from '@/utils/react';
 
 export interface IShaRoutingStateContext {
   router?: IRouter;
@@ -15,6 +15,6 @@ export interface IShaRoutingActionsContext {
 
 export const SHA_ROUTING_CONTEXT_INITIAL_STATE: IShaRoutingStateContext = {};
 
-export const ShaRoutingStateContext = createContext<IShaRoutingStateContext>(SHA_ROUTING_CONTEXT_INITIAL_STATE);
+export const ShaRoutingStateContext = createNamedContext<IShaRoutingStateContext>(SHA_ROUTING_CONTEXT_INITIAL_STATE, "ShaRoutingStateContext");
 
-export const ShaRoutingActionsContext = createContext<IShaRoutingActionsContext>(undefined);
+export const ShaRoutingActionsContext = createNamedContext<IShaRoutingActionsContext>(undefined, "ShaRoutingActionsContext");

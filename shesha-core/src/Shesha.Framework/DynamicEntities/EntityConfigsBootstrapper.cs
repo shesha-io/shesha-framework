@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
@@ -35,7 +34,7 @@ namespace Shesha.DynamicEntities
         // todo: remove usage of IEntityConfigurationStore
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IAssemblyFinder _assembleFinder;
-        private readonly IMetadataProvider _metadataProvider;
+        private readonly IHardcodeMetadataProvider _metadataProvider;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
@@ -44,7 +43,7 @@ namespace Shesha.DynamicEntities
             IEntityConfigurationStore entityConfigurationStore,
             IAssemblyFinder assembleFinder,
             IRepository<EntityProperty, Guid> entityPropertyRepository,
-            IMetadataProvider metadataProvider,
+            IHardcodeMetadataProvider metadataProvider,
             IModuleManager moduleManager,
             IUnitOfWorkManager unitOfWorkManager)
         {
@@ -135,7 +134,7 @@ namespace Shesha.DynamicEntities
                 {
                     Config = config,
                     Properties = codeProperties,
-                    PropertiesMD5 = GetPropertiesMD5(codeProperties),
+                    PropertiesMD5 = PropertyMetadataDto.GetPropertiesMD5(codeProperties),
                 };
             }).ToList();
 
@@ -170,9 +169,10 @@ namespace Shesha.DynamicEntities
                         c.code != null &&
                         (c.db.FriendlyName != c.code.Config.FriendlyName ||
                         c.db.TableName != c.code.Config.TableName ||
+                        c.db.Accessor != c.code.Config.Accessor ||
                         c.db.TypeShortAlias != c.code.Config.SafeTypeShortAlias ||
                         c.db.DiscriminatorValue != c.code.Config.DiscriminatorValue ||
-                        c.db.PropertiesMD5 != c.code.PropertiesMD5 ||
+                        c.db.HardcodedPropertiesMD5 != c.code.PropertiesMD5 ||
                         c.db.Module != module ||
                         c.attr != null
                             && c.attr.GenerateApplicationService != GenerateApplicationServiceState.UseConfiguration
@@ -187,6 +187,7 @@ namespace Shesha.DynamicEntities
             foreach (var config in toUpdate)
             {
                 config.db.FriendlyName = config.code.Config.FriendlyName;
+                config.db.Accessor = config.code.Config.Accessor;
                 config.db.TableName = config.code.Config.TableName;
                 config.db.TypeShortAlias = config.code.Config.SafeTypeShortAlias;
                 config.db.DiscriminatorValue = config.code.Config.DiscriminatorValue;
@@ -199,7 +200,7 @@ namespace Shesha.DynamicEntities
 
                 await _entityConfigRepository.UpdateAsync(config.db);
 
-                if (config.db.PropertiesMD5 != config.code.PropertiesMD5)
+                if (config.db.HardcodedPropertiesMD5 != config.code.PropertiesMD5)
                     await UpdatePropertiesAsync(config.db, config.code.Config.EntityType, config.code.Properties, config.code.PropertiesMD5);
 
             }
@@ -218,6 +219,7 @@ namespace Shesha.DynamicEntities
                 var ec = new EntityConfig()
                 {
                     FriendlyName = config.Config.FriendlyName,
+                    Accessor = config.Config.Accessor,
                     TableName = config.Config.TableName,
                     TypeShortAlias = config.Config.SafeTypeShortAlias,
                     DiscriminatorValue = config.Config.DiscriminatorValue,
@@ -252,42 +254,6 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private string GetPropertiesMD5(List<PropertyMetadataDto> dtos)
-        {
-            var propertyProps = typeof(PropertyMetadataDto).GetProperties().OrderBy(p => p.Name).ToList();
-
-            Action<List<PropertyMetadataDto>, List<PropertyMetadataDto>> expr = null;
-            expr = (List<PropertyMetadataDto> l, List<PropertyMetadataDto> props) =>
-            {
-                foreach (var prop in props)
-                {
-                    l.Add(prop);
-                    if (prop.Properties?.Any() ?? false)
-                    {
-                        expr(l, prop.Properties);
-                    }
-                }
-            };
-
-            var newDtos = new List<PropertyMetadataDto>();
-            expr(newDtos, dtos);
-
-            var ordered = newDtos.OrderBy(p => p.Path).ToList();
-
-            var sb = new StringBuilder();
-            foreach (var dto in ordered)
-            {
-                foreach (var prop in propertyProps)
-                {
-                    var propValue = prop.GetValue(dto)?.ToString();
-                    sb.Append(propValue);
-                    sb.Append(";");
-                }
-                sb.AppendLine();
-            }
-            return sb.ToString().ToMd5Fingerprint();
-        }
-
         private async Task UpdatePropertiesAsync(
             EntityConfig entityConfig, List<PropertyMetadataDto> codeProperties, List<EntityProperty> dbProperties, EntityProperty parentProp = null)
         {
@@ -298,7 +264,10 @@ namespace Shesha.DynamicEntities
                     : 0;
                 foreach (var cp in codeProperties)
                 {
-                    var dbp = dbProperties.FirstOrDefault(p => p.Name == cp.Path && p.ParentProperty?.Id == parentProp?.Id);
+                    var dbp = dbProperties.Where(p => p.Name.Equals(cp.Path, StringComparison.InvariantCultureIgnoreCase) && p.ParentProperty?.Id == parentProp?.Id)
+                        .OrderBy(p => !p.IsDeleted ? 0 : 1)
+                        .ThenByDescending(p => p.CreationTime)
+                        .FirstOrDefault();
                     if (dbp == null)
                     {
                         dbp = new EntityProperty
@@ -319,7 +288,7 @@ namespace Shesha.DynamicEntities
                         MapProperty(cp, dbp);
                         // update hardcoded part
                         dbp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
-                            
+
                         // restore property
                         dbp.IsDeleted = false;
                         dbp.DeletionTime = null;
@@ -344,7 +313,7 @@ namespace Shesha.DynamicEntities
                 var deletedProperties = dbProperties
                     .Where(p =>
                         p.Source == Domain.Enums.MetadataSourceType.ApplicationCode
-                        && !codeProperties.Any(cp => cp.Path == p.Name)
+                        && !codeProperties.Any(cp => cp.Path.Equals(p.Name, StringComparison.InvariantCultureIgnoreCase))
                         && p.ParentProperty?.Id == parentProp?.Id
                         )
                     .ToList();
@@ -366,7 +335,7 @@ namespace Shesha.DynamicEntities
                 // todo: handle inactive flag
                 var dbProperties = await _entityPropertyRepository.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
 
-                var duplicates = codeProperties.GroupBy(p => p.Path, (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
+                var duplicates = codeProperties.GroupBy(p => p.Path.ToCamelCase(), (p, items) => new { Path = p, Items = items }).Where(g => g.Items.Count() > 1).ToList();
                 if (duplicates.Any())
                 {
                 }
@@ -374,7 +343,7 @@ namespace Shesha.DynamicEntities
                 await UpdatePropertiesAsync(entityConfig, codeProperties, dbProperties);
 
                 // update properties MD5 to prevent unneeded updates in future
-                entityConfig.PropertiesMD5 = propertiesMD5;
+                entityConfig.HardcodedPropertiesMD5 = propertiesMD5;
                 await _entityConfigRepository.UpdateAsync(entityConfig);
             }
             catch (Exception)
@@ -399,17 +368,20 @@ namespace Shesha.DynamicEntities
             }
             else
             {
-                if (dbp.ItemsType == null)
-                    dbp.ItemsType = new EntityProperty();
+                var itemsTypeProp = dbp.ItemsType ?? (dbp.ItemsType = new EntityProperty());
 
-                dbp.ItemsType.EntityConfig = dbp.EntityConfig;
-                cp.ItemsType.Label = dbp.ItemsType.Label;
-                cp.ItemsType.Description = dbp.ItemsType.Description;
+                itemsTypeProp.EntityConfig = dbp.EntityConfig;
+                // keep label and description???
+                cp.ItemsType.Label = itemsTypeProp.Label;
+                cp.ItemsType.Description = itemsTypeProp.Description;
 
-                MapProperty(cp.ItemsType, dbp.ItemsType);
+                MapProperty(cp.ItemsType, itemsTypeProp);
 
-                dbp.ItemsType.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
-                dbp.ItemsType.SortOrder = 0;
+                itemsTypeProp.Source = Domain.Enums.MetadataSourceType.ApplicationCode;
+                itemsTypeProp.SortOrder = 0;
+                itemsTypeProp.ParentProperty = dbp;
+                await _entityPropertyRepository.InsertOrUpdateAsync(itemsTypeProp);
+
                 await _entityPropertyRepository.UpdateAsync(dbp);
             }
         }
@@ -418,7 +390,7 @@ namespace Shesha.DynamicEntities
         {
             dst.Name = src.Path;
             dst.DataType = src.DataType;
-            dst.EntityType = src.EntityTypeShortAlias;
+            dst.EntityType = src.EntityType;
             dst.ReferenceListName = src.ReferenceListName;
             dst.ReferenceListModule = src.ReferenceListModule;
             dst.IsFrameworkRelated = src.IsFrameworkRelated;
@@ -439,7 +411,7 @@ namespace Shesha.DynamicEntities
             // leave validation message from DB property if exists
             // To allow change validation message even it is hardcoded
             dst.ValidationMessage = dst.ValidationMessage.GetDefaultIfEmpty(src.ValidationMessage);
-            
+
             dst.CascadeCreate = src.CascadeCreate ?? dst.CascadeCreate;
             dst.CascadeUpdate = src.CascadeUpdate ?? dst.CascadeUpdate;
             dst.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced ?? dst.CascadeDeleteUnreferenced;

@@ -21,7 +21,7 @@ namespace Shesha.Elmah
                 if (severity == LogSeverity.Error || severity == LogSeverity.Fatal) 
                 {
                     ElmahExtensions.RaiseError(eventData.Exception);
-                    eventData.Exception.MarkExceptionAsLogged();
+                    //eventData.Exception.MarkExceptionAsLogged();
                 }
             }
         }

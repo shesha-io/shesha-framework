@@ -1,10 +1,9 @@
 import { Modal } from 'antd';
-import { nanoid } from '@/utils/uuid';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
+import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { EvaluationContext, evaluateKeyValuesToObject, recursiveEvaluator } from '../form/utils';
+import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
@@ -19,15 +18,17 @@ import {
 } from './contexts';
 import { IModalProps } from './models';
 import DynamicModalReducer from './reducer';
+import { nanoid } from '@/utils/uuid';
+import { migrateToV0 } from './migrations/ver0';
 
-export interface IDynamicModalProviderProps {}
+export interface IDynamicModalProviderProps { }
 
 const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = ({ children }) => {
   const [state, dispatch] = useReducer(DynamicModalReducer, {
     ...DYNAMIC_MODAL_CONTEXT_INITIAL_STATE,
   });
-
   const actionDependencies = [state];
+
   useConfigurableAction<IShowConfirmationArguments>(
     {
       name: 'Show Confirmation Dialog',
@@ -35,7 +36,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (actionArgs, _context) => {
-        return new Promise((resolve, _reject) => {
+        return new Promise((resolve, reject) => {
           Modal.confirm({
             title: actionArgs.title,
             content: actionArgs.content,
@@ -44,6 +45,9 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             okButtonProps: {
               type: 'primary',
               danger: true,
+            },
+            onCancel: () => {
+              reject();
             },
             onOk: () => {
               resolve(true);
@@ -61,7 +65,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   };
 
   const createModal = (modalProps: IModalProps) => {
-    dispatch(createModalAction({ modalProps }));
+    dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
   };
 
   useConfigurableAction<IShowModalActionArguments>(
@@ -71,54 +75,67 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ownerUid: SheshaActionOwners.Common,
       hasArguments: true,
       executer: (actionArgs, context) => {
+
         const modalId = nanoid();
 
         const { formMode, ...restArguments } = actionArgs;
 
-        const initialValues = evaluateKeyValuesToObject(actionArgs.additionalProperties, context ?? {});
-        const parentFormValues = context?.data ?? {};
+        const argumentsExpression = actionArgs.formArguments?.trim();
+        const argumentsPromise = argumentsExpression
+          ? executeScript(argumentsExpression, context)
+          : Promise.resolve(undefined);
 
-        const { modalWidth, customWidth, widthUnits } = actionArgs;
+        return argumentsPromise.then(dialogArguments => {
+          const parentFormValues = context?.data ?? {};
 
-        return new Promise((resolve, _reject) => {
-          // fix wrong migration
-          const verb = !restArguments.submitHttpVerb || !Array.isArray(restArguments.submitHttpVerb)
-            ? restArguments.submitHttpVerb
-            : restArguments.submitHttpVerb[0];
+          const { modalWidth, customWidth, widthUnits } = actionArgs;
 
-          const modalProps: IModalProps = {
-            ...restArguments,
-            mode: formMode,
-            id: modalId,
-            title: actionArgs.modalTitle,
-            width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-            initialValues: initialValues,
-            parentFormValues: parentFormValues,
-            isVisible: true,
-            submitHttpVerb: verb,
-            onSubmitted: (values) => {
-              removeModal(modalId);
+          return new Promise((resolve, reject) => {
+            const modalProps: IModalProps = {
+              ...restArguments,
+              mode: formMode,
+              id: modalId,
+              title: actionArgs.modalTitle,
+              width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+              formArguments: dialogArguments,
+              parentFormValues: parentFormValues,
+              isVisible: true,
+              onCancel: () => {
+                reject("Cancelled");
+              },
+              onSubmitted: (values) => {
+                removeModal(modalId);
+                resolve(values); // TODO: return result e.g. we may need to handle created entity id and navigate to edit/details page
+              },
+              onClose: (positive = false, result) => {
+                if (positive)
+                  resolve(result);
+                else
+                  reject(result);
+              },
+            wrapper: context.configurableActionsDispatcherProxy,
+            };
 
-              console.log('dialog success:', { values });
-              resolve(values); // todo: return result e.g. we may need to handle created entity id and navigate to edit/details page
-            },
-          };
-
-          createModal({ ...modalProps, isVisible: true });
+            createModal({ ...modalProps });
+          });
         });
       },
       argumentsFormMarkup: dialogArgumentsForm,
-      evaluateArguments: (argumentsConfiguration, evaluationData) =>  {
+      evaluateArguments: (argumentsConfiguration, evaluationData) => {
         const evaluationContext: EvaluationContext = {
           contextData: evaluationData,
           path: '',
           evaluationFilter: (context, _data) => context.path !== 'buttons'
         };
-      
         return recursiveEvaluator(argumentsConfiguration, evaluationContext);
-      }
+      },
+      useDynamicContextHook: () => {
+        const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy(false);
+        return { configurableActionsDispatcherProxy };
+      },
+      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
     },
-    actionDependencies,
+    actionDependencies
   );
 
   const getLatestVisibleInstance = () => {
@@ -133,7 +150,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       ) {
         highestIndexKey = keys[i];
       }
-    }
+    };
 
     return highestIndexKey ? instances[highestIndexKey] : null;
   };
@@ -151,6 +168,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
           if (latestInstance) {
             removeModal(latestInstance?.id);
+            latestInstance.onClose();
             resolve({});
           } else {
             reject('There is no open dialog to close');
@@ -183,9 +201,9 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
             key={instance.id}
             value={{
               instance,
-              // show: () => show(instance.id),
-              // hide: () => hide(instance.id),
-              close: () => removeModal(instance.id),
+              close: () => {
+                removeModal(instance.id);
+              }
             }}
           >
             <DynamicModal {...instanceProps} key={instance.id} id={instance.id} isVisible={instance.isVisible} />

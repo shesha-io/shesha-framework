@@ -18,6 +18,7 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Mapper;
+using Shesha.Elmah;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Services;
@@ -36,17 +37,14 @@ namespace Shesha
     /// </summary>
     public abstract class SheshaAppServiceBase : ApplicationService
     {
-
-        protected readonly IObjectValidatorManager _objectValidatorManager;
-
         public SheshaAppServiceBase()
         {
             AsyncQueryableExecuter = NullAsyncQueryableExecuter.Instance;
-        
-            _objectValidatorManager = StaticContext.IocManager.Resolve<IObjectValidatorManager>(StaticContext.IocManager);
         }
 
         public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
+        public IObjectValidatorManager ValidatorManager { get; set; }
+        public ILoggingContextCollector LoggingScope { get; set; }
 
         /// <summary>
         /// Reference to the IoC manager.
@@ -240,48 +238,64 @@ namespace Shesha
         {
             await FluentValidationsOnEntityAsync(entity, validationResults);
             var result = !validationResults.Any();
-            result = result && await _objectValidatorManager.ValidateObject(entity, validationResults);
+            if (ValidatorManager != null)
+                result = result && await ValidatorManager.ValidateObject(entity, validationResults);
             return result && Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
         }
 
-        /// <summary>
-        /// Runs validation defined on entity through fluentValidation
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="validationResults"></param>
-        /// <returns></returns>
-        protected async Task FluentValidationsOnEntityAsync<TEntity>(TEntity entity, List<ValidationResult> validationResults)
-        {
-            if (StaticContext.IocManager.IsRegistered(typeof(IValidator<TEntity>)))
-            {
-                var validator = Abp.Dependency.IocManager.Instance.Resolve<IValidator<TEntity>>();
-                FluentValidationResult fluentValidationResults = await validator.ValidateAsync(entity);
+		/// <summary>
+		/// Runs validation defined on entity through fluentValidation
+		/// </summary>
+		/// <param name="entity"></param>
+		/// <param name="validationResults"></param>
+		/// <returns></returns>
+		protected async Task FluentValidationsOnEntityAsync<TEntity>(TEntity entity, List<ValidationResult> validationResults)
+		{
+			if (StaticContext.IocManager.IsRegistered(typeof(IValidator<TEntity>)))
+			{
+				var validators = StaticContext.IocManager.ResolveAll<IValidator<TEntity>>();
 
-                //Map FluentValidationResult to normal System.ComponentModel.DataAnnotations.ValidationResult,
-                //so to throw one same Validations Exceptions on AbpValidationException
-                if (!fluentValidationResults.IsValid)
-                    fluentValidationResults.Errors.ForEach(err =>
-                    {
-                        var memberNames = new List<string>() { err.PropertyName };
-                        var valResult = new ValidationResult(err.ErrorMessage, memberNames);
-                        validationResults.Add(valResult);
-                    });
-            }
-        }
+				foreach (var validator in validators)
+				{
+					FluentValidationResult fluentValidationResults = await validator.ValidateAsync(entity);
 
-        #region Dynamic DTOs
+					//Map FluentValidationResult to normal System.ComponentModel.DataAnnotations.ValidationResult,
+					//so to throw one same Validations Exceptions on AbpValidationException
+					if (!fluentValidationResults.IsValid)
+						fluentValidationResults.Errors.ForEach(err =>
+						{
+							var memberNames = new List<string>() { err.PropertyName };
+							var valResult = new ValidationResult(err.ErrorMessage, memberNames);
+							validationResults.Add(valResult);
+						});
+				}
+			}
+		}
 
-        /// <summary>
-        /// Map entity to a <see cref="DynamicDto{TEntity, TPrimaryKey}"/>
-        /// </summary>
-        /// <typeparam name="TEntity">Type of entity</typeparam>
-        /// <typeparam name="TPrimaryKey">Type of entity primary key</typeparam>
-        /// <param name="entity">entity to map</param>
-        /// <param name="settings">mapping settings</param>
-        /// <returns></returns>
-        protected async Task<DynamicDto<TEntity, TPrimaryKey>> MapToDynamicDtoAsync<TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null) where TEntity : class, IEntity<TPrimaryKey>
+		#region Dynamic DTOs
+
+		/// <summary>
+		/// Map entity to a <see cref="DynamicDto{TEntity, TPrimaryKey}"/>
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <typeparam name="TPrimaryKey">Type of entity primary key</typeparam>
+		/// <param name="entity">entity to map</param>
+		/// <param name="settings">mapping settings</param>
+		/// <returns></returns>
+		protected async Task<DynamicDto<TEntity, TPrimaryKey>> MapToDynamicDtoAsync<TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null) where TEntity : class, IEntity<TPrimaryKey>
         {
             return await MapToCustomDynamicDtoAsync<DynamicDto<TEntity, TPrimaryKey>, TEntity, TPrimaryKey>(entity, settings);
+        }
+
+        protected async Task<List<DynamicDto<TEntity, TPrimaryKey>>> MapToDynamicDtoListAsync<TEntity, TPrimaryKey>(IEnumerable<TEntity> entities) where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var dtoList = await Task.WhenAll(
+                entities.Select(async entity =>
+                {
+                    return await MapToDynamicDtoAsync<TEntity, TPrimaryKey>(entity);
+                }));
+
+            return dtoList.ToList();
         }
 
         /// <summary>

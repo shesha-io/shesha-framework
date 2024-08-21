@@ -1,7 +1,6 @@
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { nanoid } from '@/utils/uuid';
-import { useSheshaApplication } from '@/providers';
 import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
@@ -88,15 +87,26 @@ const executeScriptArgumentsForm: FormMarkupFactory = (props) => {
       propertyName: 'expression',
       label: 'Expression',
       mode: 'dialog',
+
+      fileName: 'expression',
+      wrapInTemplate: true,
+      templateSettings: {
+        functionName: "executeScriptAsync",
+        useAsyncDeclaration: true,        
+      },
+      availableConstants: props.availableConstants,
+      /**
+       * @deprecated to be removed
+       */
       exposedVariables: variables,
     })
     .toJson();
 };
 
 export const useExecuteScriptAction = () => {
-  const { backendUrl, httpHeaders } = useSheshaApplication();
   useConfigurableAction<IExecuteScriptArguments>(
     {
+      isPermament: true,
       owner: 'Common',
       ownerUid: SheshaActionOwners.Common,
       name: 'Execute Script',
@@ -107,8 +117,8 @@ export const useExecuteScriptAction = () => {
           return Promise.reject('Expected expression to be defined but it was found to be empty.');
 
         return executeScript(actionArgs.expression, context);
-      },
+      },      
     },
-    [backendUrl, httpHeaders]
+    []
   );
 };

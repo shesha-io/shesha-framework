@@ -1,7 +1,7 @@
 import { GetDataError } from '@/hooks';
-import { createContext } from 'react';
 import { IConfigurableFormComponent, IFlatComponentsStructure } from '@/interfaces';
 import { IFormSettings, IPersistedFormProps } from '../form/models';
+import { createNamedContext } from '@/utils/react';
 
 export interface IPersistedFormPayload
   extends Pick<IPersistedFormProps, 'id' | 'versionNo' | 'versionStatus' | 'description' | 'module' | 'name'> { }
@@ -57,6 +57,6 @@ export const SUB_FORM_CONTEXT_INITIAL_STATE: ISubFormStateContext = {
   errors: {},
 };
 
-export const SubFormContext = createContext<ISubFormStateContext>(SUB_FORM_CONTEXT_INITIAL_STATE);
+export const SubFormContext = createNamedContext<ISubFormStateContext>(SUB_FORM_CONTEXT_INITIAL_STATE, "SubFormContext");
 
-export const SubFormActionsContext = createContext<ISubFormActionsContext>(undefined);
+export const SubFormActionsContext = createNamedContext<ISubFormActionsContext>(undefined, "SubFormActionsContext");

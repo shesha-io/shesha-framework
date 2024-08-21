@@ -278,8 +278,8 @@ const reducer = handleActions<IDataTableStateContext, any>(
       } = action;
 
       const cols = configurableColumns
-        .map<ITableColumn>((col) => prepareColumn(col, columns, userConfig))
-        .filter((c) => c !== null);
+        ?.map<ITableColumn>((col) => prepareColumn(col, columns, userConfig))
+        .filter((c) => c !== null) ?? [];
 
       const userFilters =
         userConfig?.selectedFilterIds?.length > 0 && state.predefinedFilters?.length > 0
@@ -338,6 +338,22 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       return {
         ...state,
+        tableFilterDirty: filter,
+      };
+    },
+
+    [DataTableActionEnums.RemoveColumnFilter]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<string>
+    ) => {
+      const { payload: columnIdToRemove } = action;
+
+      const currentFilter = getDirtyFilter(state);
+      const filter = currentFilter.filter((f) => f.columnId !== columnIdToRemove);
+
+      return {
+        ...state,
+        tableFilter: filter,
         tableFilterDirty: filter,
       };
     },
@@ -452,7 +468,7 @@ const reducer = handleActions<IDataTableStateContext, any>(
 
       return {
         ...state,
-        configurableColumns: [...payload.columns],
+        configurableColumns: payload?.columns?.length > 0 ? [...payload.columns] : [],
       };
     },
 

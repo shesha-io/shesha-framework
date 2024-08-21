@@ -1,18 +1,18 @@
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
 import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from "@/interfaces";
 
-export const isPropertySettings = (data: any) => {
+/**
+ * Checks if the provided data is an instance of IPropertySetting.
+ *
+ * @param {any} data - The data to be checked
+ * @return {boolean} Indicates whether the data is an instance of IPropertySetting
+ */
+export const isPropertySettings = <Value = any>(data: any): data is IPropertySetting<Value> => {
     if (!data || typeof data !== 'object')
         return false;
     
-    if (data.hasOwnProperty('_mode')
-        && (data._mode === 'code' || data._mode === 'value'))
-        /*&& data.hasOwnProperty('_value') 
-        && data.hasOwnProperty('_code')
-        && Object.keys(data).length === 3)*/
-        return true;
-    
-    return false;
+    const typed = data as IPropertySetting;
+    return typed._mode === 'code' || typed._mode === 'value';
 };
 
 export const getPropertySettingsFromData = (data: any, propName: string): IPropertySetting => {
@@ -31,11 +31,30 @@ export const getPropertySettingsFromData = (data: any, propName: string): IPrope
         return { _mode: 'value', _code: undefined, _value: val };
 };
 
+export const updateSettingsFromValues = <T,>(model: T, values: T): T => {
+    const copy = { ...model };
+    Object.keys(values).forEach(k => {
+      if (isPropertySettings(copy[k]) && !isPropertySettings(values[k]))
+        copy[k]._value = values[k];
+      else 
+        copy[k] = values[k];
+    });
+    return copy;
+};
+
 export const getValueFromPropertySettings = (value: any): any => {
     if (isPropertySettings(value))
         return value._value;
     else
         return value;
+};
+
+export const getValuesFromSettings = <T,>(model: T): T => {
+  const copy = { ...model };
+  Object.keys(copy).forEach(k => {
+      copy[k] = getValueFromPropertySettings(copy[k]);
+  });
+  return copy;
 };
 
 export const getPropertySettingsFromValue = (value: any): IPropertySetting => {
@@ -77,18 +96,18 @@ export const updateSettingsComponents = (
             
                 // Add source component as a child of Setting component
                 if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {
-                    newComponent['sourceComponent'] = {
+                    newComponent['components'] = [{
                         ...oldComponent,
                         components: oldComponent['components'].map(c => {
                             return processComponent(c);
                         }),
                         parentId: newComponent.id
-                    } as IContainerComponentProps;
+                    } as IContainerComponentProps];
                 } else {
-                    newComponent['sourceComponent'] = {
+                    newComponent['components'] = [{
                         ...oldComponent,
                         parentId: newComponent.id
-                    } as IConfigurableFormComponent;
+                    } as IConfigurableFormComponent];
                 }
                 return newComponent;
             } else {

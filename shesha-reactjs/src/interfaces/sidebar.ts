@@ -21,22 +21,16 @@ export interface ISidebarMenuItemV0 {
 }
 
 export interface ISidebarMenuItem {
+  actionConfiguration?: IConfigurableActionConfiguration;
   id: string;
   title: string;
   tooltip?: ReactNode | string;
   itemType: SidebarItemType;
 
   icon?: ReactNode | string;
-  isHidden?: boolean;
+  hidden?: boolean;
   visibility?: string;
   requiredPermissions?: string[];
-
-  /*
-  isRootItem?: boolean;
-  buttonAction?: ButtonActionType;
-  target?: string;
-  selected?: boolean;
-  */
 }
 
 export interface ISidebarButton extends ISidebarMenuItem {
@@ -53,4 +47,8 @@ export const isSidebarGroup = (item: ISidebarMenuItem): item is ISidebarGroup =>
 
 export const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
   return item && item.itemType === 'button';
+};
+
+export const isSidebarDivider = (item: ISidebarMenuItem): item is ISidebarButton => {
+  return item && item.itemType === 'divider';
 };

@@ -4,20 +4,19 @@ import camelcase from 'camelcase';
 import Mustache from 'mustache';
 import { nanoid } from '@/utils/uuid';
 import nestedProperty from 'nested-property';
-import { CSSProperties } from 'react';
+import { CSSProperties, useRef } from 'react';
 import {
-  ConfigurableFormInstance,
+  DataTypes,
   IPropertySetting,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
   SettingsMigrationContext,
 } from '@/interfaces';
-import { IPropertyMetadata } from '@/interfaces/metadata';
+import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
 import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { getFullPath } from '@/utils/metadata';
 import { IAnyObject } from './../../interfaces/anyObject';
-import { FormMode } from '@/generic-pages/dynamic/interfaces';
 import blankViewMarkup from './defaults/markups/blankView.json';
 import dashboardViewMarkup from './defaults/markups/dashboardView.json';
 import detailsViewMarkup from './defaults/markups/detailsView.json';
@@ -40,18 +39,15 @@ import {
   IComponentsDictionary,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
-  IFormAction,
-  IFormActions,
-  IFormSection,
-  IFormSections,
   IFormSettings,
   IFormValidationRulesOptions,
   EditMode,
   ROOT_COMPONENT_KEY,
   SILENT_KEY,
   ViewType,
+  FormRawMarkup,
 } from './models';
-import { isPropertySettings } from '@/designer-components/_settings/utils';
+import { isPropertySettings, updateSettingsComponents } from '@/designer-components/_settings/utils';
 import {
   IDataContextManagerFullInstance,
   IDataContextsData,
@@ -59,14 +55,12 @@ import {
   useDataContextManager,
 } from '@/providers/dataContextManager';
 import moment from 'moment';
-import { message } from 'antd';
+import { App } from 'antd';
 import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
+import { ContextGetData, IDataContextFull, useDataContext } from '@/providers/dataContextProvider/contexts';
 import {
-  IConfigurableActionConfiguration,
-  useDataTableStore,
-  useForm,
-  useFormData,
+  IApplicationApi,
+  useDataTableState,
   useGlobalState,
   useSheshaApplication,
 } from '@/providers';
@@ -74,22 +68,23 @@ import { axiosHttp } from '@/utils/fetchers';
 import { AxiosInstance } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { executeFunction } from '@/utils';
-import { ISetFormDataPayload } from './contexts';
-import { StandardNodeTypes } from '@/interfaces/formComponent';
-import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { IParentProviderStateContext } from '../parentProvider/index';
+import { IParentProviderProps } from '../parentProvider/index';
+import { SheshaCommonContexts } from '../dataContextManager/models';
+import { toCamelCase } from '@/utils/string';
+import { FormApi } from './formApi';
+import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
+import { ISetStatePayload } from '../globalState/contexts';
+import { IShaFormInstance } from './store/interfaces';
+import { useShaFormInstance } from './providers/shaFormProvider';
 
-/** Interface to geat all avalilable data */
-export interface IApplicationContext {
+/** Interface to get all avalilable data */
+export interface IApplicationContext<Value = any> {
+  application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
   /** Form data */
   data?: any;
-  /** Form mode */
-  formMode?: FormMode;
 
-  setFormData?: (payload: ISetFormDataPayload) => void;
-
-  form?: ConfigurableFormInstance;
+  form?: FormApi<Value>;
   /** Contexts datas */
   contexts: IDataContextsData;
   /** Global state */
@@ -102,47 +97,124 @@ export interface IApplicationContext {
   http: AxiosInstance;
   /** Message API */
   message: MessageInstance;
-  /** Other data */
-  [key: string]: any;
+
+  /** Last updated date */
+  lastUpdated?: Date;
+
+  pageContext?: IDataContextFull;
+  setGlobalState: (payload: ISetStatePayload) => void;
 }
 
-export function useFormProviderContext(): IApplicationContext {
-  const { backendUrl } = useSheshaApplication();
-  const dcm = useDataContextManager(false);
-  const { globalState, setState: setGlobalState } = useGlobalState();
-  return {
-    contextManager: dcm,
-    contexts: { ...dcm?.getDataContextsData('all') },
-    globalState,
-    setGlobalState,
-    selectedRow: useDataTableStore(false)?.selectedRow,
-    moment: moment,
-    http: axiosHttp(backendUrl),
-    message,
-  };
-}
+export type GetAvailableConstantsDataArgs = {
+  topContextId?: string;
+  shaForm?: IShaFormInstance;
+};
 
-export function useApplicationContext(topContextId?: string): IApplicationContext {
-  let tcId = useDataContext(false)?.id;
-  tcId = topContextId || tcId;
+export type AvailableConstantsContext = {
+  closestShaForm: IShaFormInstance;
+  selectedRow?: ISelectionProps;
+  dcm: IDataContextManagerFullInstance;
+  closestContextId: string;
+  globalState: IAnyObject;
+  setGlobalState: (payload: ISetStatePayload) => void;
+  backendUrl: string;
+  message: MessageInstance;
+};
+export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
+  const { message } = App.useApp();
   const { backendUrl } = useSheshaApplication();
-  const dcm = useDataContextManager(false);
-  const form = useForm(false) ?? dcm.getFormInstance();
   const { globalState, setState: setGlobalState } = useGlobalState();
-  return {
-    data: useFormData()?.data,
-    contexts: { ...dcm?.getDataContextsData(tcId) },
-    setFormData: form?.setFormData,
-    formMode: form?.formMode,
+  // get closest data context Id
+  const closestContextId = useDataContext(false)?.id;
+  // get DataContext Manager
+  const dcm = useDataContextManager(false);
+  // get selected row if exists
+  const selectedRow = useDataTableState(false)?.selectedRow;
+
+  const closestShaForm = useShaFormInstance(false);
+
+  const result: AvailableConstantsContext = {
+    closestShaForm,
+    selectedRow,
+    dcm,
+    closestContextId,
     globalState,
     setGlobalState,
-    form,
-    selectedRow: useDataTableStore(false)?.selectedRow,
-    moment: moment,
-    http: axiosHttp(backendUrl),
+    backendUrl,
     message,
   };
-}
+  return result;
+};
+
+export type WrapConstantsDataArgs = GetAvailableConstantsDataArgs & {
+  fullContext: AvailableConstantsContext;
+};
+export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesAccessors<IApplicationContext> => {
+  const { topContextId, shaForm, fullContext } = args;
+  const { closestShaForm,
+    selectedRow,
+    dcm,
+    closestContextId,
+    globalState,
+    setGlobalState,
+    backendUrl,
+    message
+  } = fullContext;
+  const shaFormInstance = shaForm ?? closestShaForm;
+
+  const accessors: ProxyPropertiesAccessors<IApplicationContext> = {
+    application: () => {
+      // get application context
+      const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+      const applicationData = application?.getData();
+      return applicationData;
+    },
+    contexts: () => {
+      const tcId = topContextId || closestContextId;
+      return { ...dcm?.getDataContextsData(tcId) };
+    },
+    pageContext: () => {
+      // get page context
+      const pc = dcm.getPageContext();
+      // get full page context data
+      const pageContext = pc?.getFull();
+      return pageContext;
+    },
+    selectedRow: () => selectedRow,
+    globalState: () => globalState,
+    setGlobalState: () => setGlobalState,
+    moment: () => moment,
+    http: () => axiosHttp(backendUrl),
+    message: () => message,
+    data: () => {
+      return shaFormInstance?.formData;
+    },
+    form: () => {
+      return shaFormInstance?.getPublicFormApi();
+    },
+  };
+  return accessors;
+};
+
+export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
+  const fullContext = useAvailableConstantsContexts();
+
+  const accessors = wrapConstantsData({...args, fullContext});
+
+  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
+  if (!contextProxyRef.current)
+    contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
+  else
+    contextProxyRef.current.refreshAccessors(accessors);
+
+  return contextProxyRef.current;
+};
+
+export const useApplicationContextData = (): ContextGetData => {
+  const dcm = useDataContextManager(false);
+  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+  return application?.getData();
+};
 
 const getSettingValue = (value: any, allData: any, calcFunction: (setting: IPropertySetting, allData: any) => any) => {
   if (!value) return value;
@@ -151,7 +223,7 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
     // If array - update all items
     if (Array.isArray(value)) {
       return value;
-      // ToDo: infinity loop
+      // TODO: infinity loop
       /*
       if (value.length === 0) return value;
       const v = value.map((x) => {
@@ -163,12 +235,12 @@ const getSettingValue = (value: any, allData: any, calcFunction: (setting: IProp
 
     // update setting value to actual
     if (isPropertySettings(value)) {
-      const v = value as IPropertySetting;
-      if (v?._mode === 'code' && Boolean(v?._code)) {
-        const val = calcFunction(v, allData);
-        return val;
-      } else {
-        return v?._value;
+      switch (value._mode) {
+        case 'code': {
+          return Boolean(value._code) ? calcFunction(value, allData) : undefined;
+        }
+        case 'value':
+          return value._value;
       }
     }
 
@@ -189,7 +261,7 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
     let vars = 'staticValue, getSettingValue';
     const datas = [setting?._value, getSettingValue];
     if (allData)
-      for (let key in allData) {
+      for (const key in allData) {
         if (Object.hasOwn(allData, key)) {
           vars += `, ${key}`;
           datas.push(allData[key]);
@@ -197,7 +269,8 @@ const calcValue = (setting: IPropertySetting, allData: any) => {
       }
     const res = new Function(vars, setting?._code)(...datas);
     return res;
-  } catch {
+  } catch (error) {
+    console.error("calcValue failed", error);
     return undefined;
   }
 };
@@ -238,54 +311,46 @@ export const isCommonContext = (name: string): boolean => {
   return r.filter(i => i === name)?.length > 0;
 };
 
-const updateConfigurableActionParent = (model: any, parentId: string) => {
-  for (const key in model) {
-    if (model.hasOwnProperty(key) && typeof model[key] === 'object') {
-      const config = model[key] as IConfigurableActionConfiguration;
-
-      if (config?._type === StandardNodeTypes.ConfigurableActionConfig) {
-        // skip SheshaActionOwners actions since they are common
-        if (Object.values(SheshaActionOwners).filter(i => i === config.actionOwner)?.length > 0)
-          continue;
-        model[key] = { ...config, actionOwner: `${parentId}.${config.actionOwner}` };
-      } else {
-        updateConfigurableActionParent(config, parentId);
-      }
-    }
-  }
-};
-
 export const getActualModelWithParent = <T>(
   model: T,
   allData: any,
-  parent: IParentProviderStateContext
+  parent: IParentProviderProps
 ): T => {
   const parentReadOnly =
-    allData.formMode !== 'designer' 
-    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.formMode === 'readonly'));
-    
-  const actualModel = getActualModel(model, allData, parentReadOnly);
-  // update Id for complex containers (SubForm, DataList item, etc)
-  if (!!parent?.subFormIdPrefix) {
-    actualModel['id'] = `${parent?.subFormIdPrefix}.${actualModel['id']}`;
-    actualModel['parentId'] = `${parent?.subFormIdPrefix}.${actualModel['parentId']}`;
-    actualModel['componentName'] = !!parent?.model?.componentName
-      ? `${parent?.model?.componentName}.${actualModel['componentName']}`
-      : actualModel['componentName'];
+    allData.form?.formMode !== 'designer'
+    && (parent?.model?.readOnly ?? (parent?.formMode === 'readonly' || allData.form?.formMode === 'readonly'));
 
-    actualModel['context'] =
-      !!actualModel['context']
-        && parent?.context !== actualModel['context'] // If the subForm has the same context then don't update context name
-        && !isCommonContext(actualModel['context']) // If a common context then don't update context name
-        ? `${parent?.subFormIdPrefix}.${actualModel['context']}`
-        : actualModel['context'];
-    updateConfigurableActionParent(actualModel, parent?.subFormIdPrefix);
-  }
+  const actualModel = getActualModel(model, allData, parentReadOnly);
   return actualModel;
 };
 
 export const getActualPropertyValue = <T>(model: T, allData: any, propertyName: string) => {
   return { ...model, [propertyName]: getSettingValue(model[propertyName], allData, calcValue) } as T;
+};
+
+//const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
+export const updateModelToMoment = async (model: any, properties: NestedProperties): Promise<any> => {
+  if (properties === null)
+    return model;
+  const newModel = { ...model };
+  const propsPromise = isPropertiesArray(properties)
+    ? Promise.resolve(properties)
+    : isPropertiesLoader(properties)
+      ? properties()
+      : Promise.resolve([]);
+  return await propsPromise.then(async (props: IPropertyMetadata[]) => {
+    for (const key in newModel) {
+      if (newModel.hasOwnProperty(key)) {// regexp.test(newModel[key])) {
+        const prop = props.find(i => toCamelCase(i.path) === key);
+        if (prop && (prop.dataType === DataTypes.date || prop.dataType === DataTypes.dateTime))
+          newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
+        if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
+          newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);
+        }
+      }
+    }
+    return newModel;
+  });
 };
 
 /**
@@ -308,8 +373,6 @@ export const componentsTreeToFlatStructure = (
     result.allComponents[component.id] = {
       ...component,
       parentId,
-      //visibilityFunc: getCustomVisibilityFunc(component),
-      //enabledFunc: getCustomEnabledFunc(component),
     };
 
     const level = result.componentRelations[parentId] || [];
@@ -472,6 +535,19 @@ export const upgradeComponentsTree = (
   return componentsFlatStructureToTree(toolboxComponents, flatStructure);
 };
 
+class StaticMustacheTag {
+  #value: string;
+  constructor(value: string) {
+    this.#value = value;
+  }
+  toEscapedString() {
+    return `{{${this.#value}}}`;
+  }
+  toString() {
+    return `{{{${this.#value}}}}`;
+  }
+}
+
 /**
  * Evaluates the string using Mustache template.
  *
@@ -489,27 +565,69 @@ export const upgradeComponentsTree = (
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
-export const evaluateString = (template: string = '', data: any) => {
-  const localData: IAnyObject = data ? { ...data } : undefined;
-  // The function throws an exception if the expression passed doesn't have a corresponding curly braces
-  try {
-    if (localData) {
-      //adding a function to the data object that will format datetime
+export const evaluateString = (template: string = '', data: any, skipUnknownTags: boolean = false) => {
 
-      localData.dateFormat = function () {
-        return function (timestamp, render) {
-          return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          });
+  // store moment toString function to get ISO format of datetime
+  var toString = moment.prototype.toString;
+  moment.prototype.toString = function () {
+    return this.format('YYYY-MM-DDTHH:mm:ss');
+  };
+
+  try {
+
+    if (!template || typeof template !== 'string')
+      return template;
+
+    const localData: IAnyObject = data ? { ...data } : undefined;
+    // The function throws an exception if the expression passed doesn't have a corresponding curly braces
+    try {
+      if (localData) {
+        //adding a function to the data object that will format datetime
+
+        localData.dateFormat = function () {
+          return function (timestamp, render) {
+            return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            });
+          };
         };
-      };
+      }
+
+      const view = localData ?? {};
+
+      if (skipUnknownTags) {
+        template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
+          const mathes = x.match(/[\w\.]+/);
+          const tag = mathes.length ? mathes[0] : undefined;
+
+          const parts = tag.split('.');
+          const field = parts.pop();
+          const container = parts.reduce((level, key) => {
+            return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
+          }, view);
+          if (!container.hasOwnProperty(field)) {
+            container[field] = new StaticMustacheTag(tag);
+          }
+        });
+
+        const escape = (value: any): string => {
+          return value instanceof StaticMustacheTag
+            ? value.toEscapedString()
+            : value;
+        };
+
+        return Mustache.render(template, view, undefined, { escape });
+      } else
+        return Mustache.render(template, view);
+    } catch (error) {
+      console.warn('evaluateString ', error);
+      return template;
     }
-    return template && typeof template === 'string' ? Mustache.render(template, localData ?? {}) : template;
-  } catch (error) {
-    console.warn('evaluateString ', error);
-    return template;
+  } finally {
+    // restore moment toString function
+    moment.prototype.toString = toString;
   }
 };
 
@@ -655,33 +773,6 @@ export const evaluateComplexStringWithResult = (
   return { result, success, unevaluatedExpressions: Array.from(new Set(unevaluatedExpressions)) };
 };
 
-export const getVisibilityFunc2 = (expression, name) => {
-  if (expression) {
-    try {
-      const customVisibilityExecutor = expression ? new Function('data, context, formMode', expression) : null;
-
-      const getIsVisible = (data = {}, context = {}, formMode = '') => {
-        if (customVisibilityExecutor) {
-          try {
-            return customVisibilityExecutor(data, context, formMode);
-          } catch (e) {
-            console.warn(`Custom Visibility of ${name} throws exception: ${e}`);
-            return true;
-          }
-        }
-
-        return true;
-      };
-
-      return getIsVisible;
-    } catch (e) {
-      return () => {
-        console.warn(`Incorrect syntax of the 'Custom Visibility', component: ${name}, error: ${e}`);
-      };
-    }
-  } else return () => true;
-};
-
 export interface IExpressionExecuterArguments {
   [key: string]: any;
 }
@@ -714,14 +805,6 @@ export function executeExpression<TResult>(
   return defaultValue;
 }
 
-export const isPropertySetting = <Value = any>(value: any): value is IPropertySetting<Value> => {
-  const typed = value as IPropertySetting<Value>;
-  return typed && typeof (typed) === 'object'
-    && typed._mode
-    && typeof (typed._mode) === 'string'
-    && (typed._mode === 'code' || typed._mode === 'value');
-};
-
 interface FunctionArgument {
   name: string;
   description?: string;
@@ -739,6 +822,9 @@ export const getFunctionExecutor = <TResult = any>(
   return expressionExecuter as FunctionExecutor<TResult>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+
 export function executeScript<TResult = any>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments
@@ -746,19 +832,22 @@ export function executeScript<TResult = any>(
   return new Promise<TResult>((resolve, reject) => {
     if (!expression) reject('Expression must be defined');
 
-    let argsDefinition = '';
-    const argList: any[] = [];
-    for (const argumentName in expressionArgs) {
-      if (expressionArgs.hasOwnProperty(argumentName)) {
-        argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-        argList.push(expressionArgs[argumentName]);
+    try {
+      let argsDefinition = '';
+      const argList: any[] = [];
+      for (const argumentName in expressionArgs) {
+        if (expressionArgs.hasOwnProperty(argumentName)) {
+          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+          argList.push(expressionArgs[argumentName]);
+        }
       }
+
+      const asyncFn = new AsyncFunction(argsDefinition, expression);
+      const result = asyncFn.apply(null, argList);
+      resolve(result);
+    } catch (e) {
+      reject(e);
     }
-
-    const expressionExecuter = new Function(argsDefinition, expression);
-
-    const result = expressionExecuter.apply(null, argList);
-    resolve(result);
   });
 }
 
@@ -778,28 +867,6 @@ export function executeScriptSync<TResult = any>(expression: string, context: IE
     return null;
   }
 }
-
-/**
- * Return ids of visible components according to the custom visibility
- */
-export const getVisibleComponentIds = (
-  components: IComponentsDictionary,
-  allData: IApplicationContext,
-  filteredComponents?: string[]
-): string[] => {
-  const visibleComponents: string[] = [];
-  for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      const component = components[key] as IConfigurableFormComponent;
-
-      if (filteredComponents?.includes(component.id)
-        && !getActualPropertyValue(component, allData, 'hidden')?.hidden
-        && (component.visibilityFunc == null || component.visibilityFunc(allData.data, allData.globalState, allData.formMode)))
-        visibleComponents.push(key);
-    }
-  }
-  return visibleComponents;
-};
 
 const isComponentFiltered = (
   component: IConfigurableFormComponent,
@@ -832,33 +899,12 @@ export const getFilteredComponentIds = (
 };
 
 /**
- * Return ids of enabled components according to the custom enabled
- */
-export const getEnabledComponentIds = (components: IComponentsDictionary, allData: IApplicationContext): string[] => {
-  const enabledComponents: string[] = [];
-  for (const key in components) {
-    if (components.hasOwnProperty(key)) {
-      const component = components[key] as IConfigurableFormComponent;
-      const readOnly = getReadOnlyBool(getActualPropertyValue(component, allData, 'editMode')?.editMode, false); // use false because components will use parent enabled by default
-      const isEnabled =
-        !readOnly &&
-        (!Boolean(component?.enabledFunc) ||
-          (typeof component?.enabledFunc === 'function' &&
-            component?.enabledFunc(allData.data, allData.globalState, allData.formMode)));
-
-      if (isEnabled) enabledComponents.push(key);
-    }
-  }
-  return enabledComponents;
-};
-
-/**
  * Return field name for the antd form by a given expression
  *
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
 export const getFieldNameFromExpression = (expression: string) => {
-  if (!expression) return '';
+  if (!expression) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
 };
@@ -891,7 +937,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
   const { validate } = component;
   const rules: Rule[] = [];
 
-  // todo: implement more generic way (e.g. using validation providers)
+  // TODO: implement more generic way (e.g. using validation providers)
 
   if (validate) {
     if (validate.required)
@@ -1013,13 +1059,6 @@ const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean) 
 
     const evaluatedValue = container[match.groups.accessor];
 
-    // console.log({
-    //   msg: 'regex parsed',
-    //   key: match.groups.key,
-    //   accessor: match.groups.accessor,
-    //   evaluatedValue,
-    // });
-
     return evaluatedValue;
   }
 };
@@ -1042,35 +1081,6 @@ export const replaceTags = (value: string, dictionary: any) => {
     const container = dictionary[key] || {};
     return container[accessor] || '';
   });
-
-  return result;
-};
-
-export const convertActions = (ownerId: string, actions: IFormActions): IFormAction[] => {
-  const result: IFormAction[] = [];
-  for (const key in actions) {
-    if (actions.hasOwnProperty(key)) {
-      result.push({
-        owner: ownerId,
-        name: key,
-        body: actions[key],
-      });
-    }
-  }
-  return result;
-};
-
-export const convertSectionsToList = (ownerId: string, sections: IFormSections): IFormSection[] => {
-  const result: IFormSection[] = [];
-  for (const key in sections) {
-    if (sections.hasOwnProperty(key)) {
-      result.push({
-        owner: ownerId,
-        name: key,
-        body: sections[key],
-      });
-    }
-  }
 
   return result;
 };
@@ -1135,7 +1145,7 @@ export const validateConfigurableComponentSettings = (markup: FormMarkup, values
   return validator.validate(values);
 };
 
-export function listComponentToModelMetadata<TModel extends IConfigurableFormComponent>(
+export function linkComponentToModelMetadata<TModel extends IConfigurableFormComponent>(
   component: IToolboxComponent<TModel>,
   model: TModel,
   metadata: IPropertyMetadata
@@ -1149,6 +1159,9 @@ export function listComponentToModelMetadata<TModel extends IConfigurableFormCom
   // map configurable properties
   if (metadata.readonly === true) mappedModel.readOnly = true;
   if (metadata.isVisible === false) mappedModel.hidden = true;
+  if (!mappedModel.validate)
+    mappedModel.validate = {};
+  
   if (metadata.max) mappedModel.validate.maxValue = metadata.max;
   if (metadata.min) mappedModel.validate.minValue = metadata.min;
   if (metadata.maxLength) mappedModel.validate.maxLength = metadata.maxLength;
@@ -1286,7 +1299,6 @@ export const createComponentModelForDataProperty = (
     labelAlign: 'right',
     //parentId: containerId,
     hidden: false,
-    visibilityFunc: (_data) => true,
     isDynamic: false,
     validate: {},
   };
@@ -1294,7 +1306,7 @@ export const createComponentModelForDataProperty = (
 
   if (toolboxComponent.migrator && migrator) componentModel = migrator(componentModel, toolboxComponent);
 
-  componentModel = listComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
+  componentModel = linkComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 
   return componentModel;
 };
@@ -1414,11 +1426,12 @@ export const pickStyleFromModel = (model: IConfigurableFormComponent, ...args: a
   return style;
 };
 
+const emptyStyle = {};
 export const getStyle = (
   style: string,
   formData: any = {},
   globalState: any = {},
-  defaultStyle: object = {}
+  defaultStyle: object = emptyStyle
 ): CSSProperties => {
   if (!style) return defaultStyle;
   // tslint:disable-next-line:function-constructor
@@ -1511,12 +1524,17 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[]): str
   return getNodes(tree);
 };
 
-export const asFormRawId = (formId: FormIdentifier): FormUid | undefined => {
-  return formId && typeof formId === 'string' ? (formId as FormUid) : undefined;
+export const isFormRawId = (formId: FormIdentifier): formId is FormUid => {
+  return formId && typeof formId === 'string';
 };
 
-export const asFormFullName = (formId: FormIdentifier): FormFullName | undefined => {
-  return formId && Boolean((formId as FormFullName)?.name) ? (formId as FormFullName) : undefined;
+export const isFormFullName = (formId: FormIdentifier): formId is FormFullName => {
+  return formId && Boolean((formId as FormFullName)?.name);
+};
+
+export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {
+  return isFormRawId(id1) && isFormRawId(id2) && id1 === id2 ||
+    isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase() && id1.version === id2.version;
 };
 
 export const hasFormIdGotValue = (formId: FormIdentifier) => (typeof formId === 'string' ? !!formId : !!formId?.name);
@@ -1619,7 +1637,7 @@ export const getFormActionArguments = (
       if (parameterIdx) {
         const parameter = dictionary[parameterIdx];
 
-        // todo: add promise support
+        // TODO: add promise support
         const value =
           typeof parameter?.value === 'string' ? evaluateString(parameter?.value, evaluationContext) : parameter?.value;
 
@@ -1684,4 +1702,25 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
   });
 
   return componentNames;
+};
+
+
+/**
+ * Converts the given form markup to a flat structure of configurable form components.
+ *
+ * @param {FormRawMarkup} markup - The form markup to convert.
+ * @param {IFormSettings} formSettings - The form settings.
+ * @param {IToolboxComponents} designerComponents - The designer components.
+ * @return {IFlatComponentsStructure} The flat structure of configurable form components.
+ */
+export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
+  let components = getComponentsFromMarkup(markup);
+  if (formSettings?.isSettingsForm)
+    components = updateSettingsComponents(designerComponents, components);
+  const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
+
+  // migrate components to last version
+  upgradeComponents(designerComponents, formSettings, newFlatComponents);
+
+  return newFlatComponents;
 };

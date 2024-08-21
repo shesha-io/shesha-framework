@@ -58,14 +58,19 @@ namespace Shesha.Configuration.Runtime
             return entityConfig?.TypeShortAlias;
         }
 
-        /// inheritedDoc
-        public EntityConfiguration GetOrNull(string nameOrAlias)
+        private Type GetTypeOrNull(string nameOrAlias) 
         {
-            var type = _entityByTypeShortAlias.ContainsKey(nameOrAlias)
+            return _entityByTypeShortAlias.ContainsKey(nameOrAlias)
                 ? _entityByTypeShortAlias[nameOrAlias] as Type
                 : _entityByClassName.ContainsKey(nameOrAlias)
                     ? _entityByClassName[nameOrAlias] as Type
                     : null;
+        }
+
+        /// inheritedDoc
+        public EntityConfiguration GetOrNull(string nameOrAlias)
+        {
+            var type = GetTypeOrNull(nameOrAlias);
 
             return type == null ? null : Get(type);
         }
@@ -73,11 +78,7 @@ namespace Shesha.Configuration.Runtime
         /// inheritedDoc
         public EntityConfiguration Get(string nameOrAlias)
         {
-            var type = _entityByTypeShortAlias.ContainsKey(nameOrAlias)
-                ? _entityByTypeShortAlias[nameOrAlias] as Type
-                : _entityByClassName.ContainsKey(nameOrAlias)
-                    ? _entityByClassName[nameOrAlias] as Type
-                    : null;
+            var type = GetTypeOrNull(nameOrAlias);
 
             if (type == null)
                 throw new EntityTypeNotFoundException (nameOrAlias);

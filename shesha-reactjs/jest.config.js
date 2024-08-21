@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 module.exports = {
     // The root of your source code, typically /src
     // `<rootDir>` is a token Jest substitutes
@@ -14,7 +15,8 @@ module.exports = {
     // when using React Testing Library and adds special
     // extended assertions to Jest
     setupFilesAfterEnv: [
-      "@testing-library/jest-dom/extend-expect"
+      //"@testing-library/jest-dom/extend-expect"
+      "@testing-library/jest-dom"
     ],
   
     // Test spec file resolution pattern

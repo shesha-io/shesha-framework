@@ -1,7 +1,7 @@
 import { FormInstance } from 'antd';
-import { createContext } from 'react';
 import { ModelConfigurationDto } from '@/apis/modelConfigurations';
 import { IModelItem } from '@/interfaces/modelConfigurator';
+import { createNamedContext } from '@/utils/react';
 
 export interface IUpdateItemSettingsPayload {
   id: string;
@@ -26,8 +26,9 @@ export interface IModelConfiguratorActionsContext {
 
 export const MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE: IModelConfiguratorStateContext = {};
 
-export const ModelConfiguratorStateContext = createContext<IModelConfiguratorStateContext>(
-  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE
+export const ModelConfiguratorStateContext = createNamedContext<IModelConfiguratorStateContext>(
+  MODEL_CONFIGURATOR_CONTEXT_INITIAL_STATE,
+  "ModelConfiguratorStateContext"
 );
 
-export const ModelConfiguratorActionsContext = createContext<IModelConfiguratorActionsContext>(undefined);
+export const ModelConfiguratorActionsContext = createNamedContext<IModelConfiguratorActionsContext>(undefined, "ModelConfiguratorActionsContext");

@@ -27,8 +27,9 @@ import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfigurat
 import { ApplicationMode, ConfigurationItemsViewMode } from './models';
 import appConfiguratorReducer from './reducer';
 import { useStyles } from '@/components/appConfigurator/styles/styles';
+import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
 
-export interface IAppConfiguratorProviderProps {}
+export interface IAppConfiguratorProviderProps { }
 
 interface IAppConfiguratorModesState {
   mode: ConfigurationItemsViewMode;
@@ -41,8 +42,6 @@ interface IUseAppConfiguratorSettingsResponse extends IAppConfiguratorModesState
   setMode: (mode: ConfigurationItemsViewMode) => void;
   setIsInformerVisible: (isInformerVisible: boolean) => void;
 }
-
-const ITEM_MODE_HEADER = 'sha-config-item-mode';
 
 const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
   const [itemMode, setItemMode] = useLocalStorage<ConfigurationItemsViewMode>(
@@ -57,8 +56,8 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
   const { httpHeaders, setRequestHeaders } = useSheshaApplication();
 
   const setHeaderValue = (mode: ConfigurationItemsViewMode) => {
-    const currentHeaderValue = httpHeaders[ITEM_MODE_HEADER];
-    if (currentHeaderValue !== mode) setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
+    const currentHeaderValue = httpHeaders[SheshaHttpHeaders.ConfigItemsMode];
+    if (currentHeaderValue !== mode) setRequestHeaders({ [SheshaHttpHeaders.ConfigItemsMode]: mode });
   };
 
   const hasRights = useMemo(() => {
@@ -74,23 +73,23 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
 
   const result: IUseAppConfiguratorSettingsResponse = hasRights
     ? {
-        mode: itemMode,
-        isInformerVisible: isFormInfoVisible,
-        setMode: (mode) => {
-          setRequestHeaders({ [ITEM_MODE_HEADER]: mode });
-          setItemMode(mode);
-        },
-        setIsInformerVisible: setIsFormInfoVisible,
-      }
+      mode: itemMode,
+      isInformerVisible: isFormInfoVisible,
+      setMode: (mode) => {
+        setRequestHeaders({ [SheshaHttpHeaders.ConfigItemsMode]: mode });
+        setItemMode(mode);
+      },
+      setIsInformerVisible: setIsFormInfoVisible,
+    }
     : {
-        ...AppConfiguratorModeDefaults,
-        setMode: () => {
-          /*nop*/
-        },
-        setIsInformerVisible: () => {
-          /*nop*/
-        },
-      };
+      ...AppConfiguratorModeDefaults,
+      setMode: () => {
+        /*nop*/
+      },
+      setIsInformerVisible: () => {
+        /*nop*/
+      },
+    };
   return result;
 };
 
@@ -106,9 +105,10 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  //#region Configuration Framework
 
-  const actionsOwner = 'Configuration Framework';
+  //#region Configuration Framework renamed to Configuration Items
+
+  const actionsOwner = 'Configuration Items';
 
   const cfArgs: IConfigurationFrameworkHookArguments = { backendUrl: backendUrl, httpHeaders: httpHeaders };
 
@@ -120,7 +120,15 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return createNewVersion({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, reject) => {
+          createNewVersion({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -134,7 +142,15 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return setItemReady({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, reject) => {
+          setItemReady({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -148,7 +164,15 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return deleteItem({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, reject) => {
+          deleteItem({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -162,7 +186,15 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return publishItem({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, reject) => {
+          publishItem({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -176,7 +208,15 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return itemCancelVersion({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, reject) => {
+          itemCancelVersion({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
@@ -190,13 +230,20 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
       ownerUid: SheshaActionOwners.ConfigurationFramework,
       hasArguments: true,
       executer: (actionArgs) => {
-        return downloadAsJson({ id: actionArgs.itemId, ...cfArgs });
+        return new Promise((resolve, reject) => {
+          downloadAsJson({ id: actionArgs.itemId, ...cfArgs })
+            .then(() => {
+              resolve(true);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
       },
       argumentsFormMarkup: genericItemActionArgumentsForm,
     },
     actionDependencies
   );
-
   //#endregion
 
   useEffect(() => {

@@ -39,6 +39,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = props => {
     ...InitialConfig.settings,
     removeIncompleteRulesOnLoad: false,
     removeEmptyGroupsOnLoad: false,
+    removeEmptyRulesOnLoad: false,
     removeInvalidMultiSelectValuesOnLoad: false,
     fieldSources: ["field", "func"],
     renderFunc: (props) => (<FuncSelect {...props} />),

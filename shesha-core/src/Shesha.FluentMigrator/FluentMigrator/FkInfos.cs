@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Shesha.FluentMigrator
+﻿namespace Shesha.FluentMigrator
 {
     /// <summary>
     /// List of foreign keys
@@ -15,12 +13,7 @@ namespace Shesha.FluentMigrator
         /// <param name="masterTable"></param>
         public void Add(string foreignTable, string foreignColumn, string masterTable)
         {
-            Add(new FkInfo()
-            {
-                ForeignTable = foreignTable,
-                ForeignColumn = foreignColumn,
-                MasterTable = masterTable
-            });
+            Add(new FkInfo(foreignTable, foreignColumn, masterTable));
         }
     }
 }

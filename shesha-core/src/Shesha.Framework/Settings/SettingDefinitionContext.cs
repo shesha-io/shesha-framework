@@ -25,9 +25,9 @@ namespace Shesha.Settings
             return Settings.GetOrDefault(new SettingIdentifier(module, name));
         }
 
-        public virtual IReadOnlyList<SettingDefinition> GetAll()
+        public virtual Dictionary<SettingIdentifier, SettingDefinition> GetAll()
         {
-            return Settings.Values.ToImmutableList();
+            return Settings;
         }
 
         public virtual void Add(params SettingDefinition[] definitions)

@@ -4,7 +4,9 @@ import { CSSProperties, ReactNode } from 'react';
 import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier } from '@/providers/form/models';
-import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
+import { ITableViewProps } from '@/providers/dataTable/filters/models';
+import { ModalFooterButtons } from '@/providers/dynamicModal/models';
+import { ButtonGroupItemProps } from '@/index';
 
 interface IWrappedEntityPickerProps {
   entityType?: string;
@@ -18,13 +20,13 @@ export interface ISelectedProps {
   displayName?: string;
 }
 
-interface IAddNewRecordProps {
+export interface IAddNewRecordProps {
   modalFormId?: FormIdentifier;
   modalTitle?: string;
   showModalFooter?: boolean;
-  submitHttpVerb?: 'POST' | 'PUT';
-  onSuccessRedirectUrl?: string;
+  footerButtons?: ModalFooterButtons;
   modalWidth?: number | string;
+  buttons?: ButtonGroupItemProps[];
 }
 
 export type IncomeValueFunc = (value: any, args: any) => string;
@@ -60,7 +62,7 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
   addNewRecordsProps?: IAddNewRecordProps;
   style?: CSSProperties;
   readOnly?: boolean;
-
+  placeholder: string;
   incomeValueFunc: IncomeValueFunc;
   outcomeValueFunc: OutcomeValueFunc;
 }

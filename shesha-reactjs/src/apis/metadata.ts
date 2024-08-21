@@ -1,6 +1,7 @@
 import { useGet, UseGetProps } from '@/hooks/useGet';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
+import { IDictionary } from '..';
 
 /**
  * Indicate the source of the entity/property metadata
@@ -45,6 +46,10 @@ export interface PropertyMetadataDto {
    */
   isFrameworkRelated?: boolean;
   /**
+   * If true, indicates that current property is nullable
+   */
+  isNullable?: boolean;
+  /**
    * Child properties (applicable for complex objects)
    */
   properties?: PropertyMetadataDto[] | null;
@@ -59,11 +64,11 @@ export interface ApiEndpointDto {
   /**
    * Http verb (get/post/put etc)
    */
-  httpVerb?: string | null;
+  httpVerb: string;
   /**
    * Url
    */
-  url?: string | null;
+  url: string;
 }
 
 /**
@@ -93,6 +98,19 @@ export interface MetadataDto {
    */
   dataType?: string | null;
   /**
+   * Module
+   */
+  module?: string | null;
+
+  /**
+   * Type accessor
+   */
+  typeAccessor?: string | null;
+  /**
+   * Module accessor
+   */
+  moduleAccessor?: string | null;
+  /**
    * Propeties
    */
   properties?: PropertyMetadataDto[] | null;
@@ -105,9 +123,10 @@ export interface MetadataDto {
    * key - operation name (create/read/update/delete etc.)
    * value - endpoint DTO (url and http verb)
    */
-  apiEndpoints?: {
-    [key: string]: ApiEndpointDto;
-  } | null;
+  apiEndpoints?: IDictionary<ApiEndpointDto> | null;
+
+  className: string;
+  aliases?: string[];
 }
 
 export type MetadataDtoAjaxResponse = IAjaxResponse<MetadataDto>;
