@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal } from 'antd';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
 export interface IProps<TModel = any> {
   title?: string;

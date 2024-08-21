@@ -11,7 +11,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { nanoid } from '@/utils/uuid';
 import { useDebouncedCallback } from 'use-debounce';
 import { usePropertiesEditor } from '../provider';
-import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
 export interface IProps { }
 

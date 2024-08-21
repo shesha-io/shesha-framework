@@ -22,7 +22,7 @@ import {
   usePermissionDelete,
 } from '@/apis/permission';
 import { GuidEntityReferenceDto } from '@/apis/common';
-import { useShaFormInstance } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useConfigurableFormActions } from '@/providers/form/actions';
 
 interface IDataNode {

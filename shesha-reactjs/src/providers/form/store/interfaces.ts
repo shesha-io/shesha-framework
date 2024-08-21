@@ -7,6 +7,7 @@ import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { FormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
+import { SubmitCaller } from "../submitters/interfaces";
 
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
@@ -15,6 +16,7 @@ export interface InitByFormIdPayload {
     formId: FormIdentifier;
     configurationItemMode: ConfigurationItemsViewMode;
     formArguments?: any;
+    initialValues?: any;
 }
 
 export interface InitByRawMarkupPayload {
@@ -31,6 +33,11 @@ export interface InitByMarkupPayload {
     formArguments?: any;
 }
 
+export interface LoadFormByIdPayload {
+    skipCache?: boolean;
+    initialValues?: any;
+}
+
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {
     status: LoadingStatus;
@@ -41,19 +48,24 @@ export interface ProcessingState {
 export type SubmitHandler<Values = any> = (values: Values) => void;
 export type AfterSubmitHandler<Values = any> = (values: Values, response?: any, options?: object) => void;
 
-export type SubmitDataPayload<Values = any> = {
-    data: Values;
-    antdForm: FormInstance<Values>;
-    getDelayedUpdates: () => IDelayedUpdateGroup[];
+export type SubmitDataPayload = {
+    customSubmitCaller?: SubmitCaller;
 };
 
 export type OnValuesChangeHandler<Values = any> = (changedValues: any, values: Values) => void;
+export type OnMarkupLoadedHandler<Values = any> = (shaForm: IShaFormInstance<Values>) => Promise<void>;
+
+export interface IDataSubmitContext {
+    getDelayedUpdates: () => IDelayedUpdateGroup[];
+}
 
 export interface IShaFormInstance<Values = any> {
+    setDataSubmitContext: (context: IDataSubmitContext) => void;
     setInitialValues: (values: Values) => void;
     setSubmitHandler: (handler: SubmitHandler<Values>) => void;
     setAfterSubmitHandler: (handler: AfterSubmitHandler<Values>) => void;
     setOnValuesChange: (handler: OnValuesChangeHandler<Values>) => void;
+    setOnMarkupLoaded: (handler: OnMarkupLoadedHandler<Values>) => void;
 
     initByRawMarkup: (payload: InitByRawMarkupPayload) => Promise<void>;
     initByMarkup: (payload: InitByMarkupPayload) => Promise<void>;
@@ -61,7 +73,7 @@ export interface IShaFormInstance<Values = any> {
     reloadMarkup: () => Promise<void>;
 
     loadData: (formArguments: any) => Promise<Values>;
-    submitData: (payload: SubmitDataPayload<Values>) => Promise<Values>;
+    submitData: (payload?: SubmitDataPayload) => Promise<Values>;
     fetchData: () => Promise<Values>;
 
     readonly markupLoadingState: ProcessingState;

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { ConfigurableForm } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
 import { IProviderSettings } from './interfaces';
-import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
 export interface IProps<TModel extends IProviderSettings> {
   model: TModel;

@@ -19,6 +19,7 @@ export interface FormDataSubmitPayload extends Required<SubmitRelatedEvents> {
     expressionExecuter: ExpressionExecuter;
     antdForm: FormInstance;
     getDelayedUpdates: () => IDelayedUpdateGroup[];
+    customSubmitCaller?: SubmitCaller;
 }
 
 export interface IFormDataSubmitter {
@@ -37,3 +38,5 @@ export interface GqlSubmitterSettings {
 export const isGqlSubmitterSettings = (s: any): s is GqlSubmitterSettings => {
     return s && typeof s === 'object';
 };
+
+export type SubmitCaller = (data: any) => Promise<any>;

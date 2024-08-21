@@ -52,7 +52,7 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
 
 export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<ComponentFactoryArguments<TModel>>;
 
-export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent/*, TSettingsContext = any*/> {
+export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent /*, TSettingsContext = any*/> {
   /**
    * Type of the component. Must be unique in the project.
    */
@@ -152,7 +152,7 @@ export type SettingsMigrator<TSettings> = (
 export interface IToolboxComponentGroup {
   name: string;
   visible?: boolean;
-  components: IToolboxComponent[];
+  components: IToolboxComponent<any>[];
 }
 
 export interface IToolboxComponents {

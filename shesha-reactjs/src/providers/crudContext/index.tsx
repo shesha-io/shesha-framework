@@ -31,7 +31,7 @@ import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ConfigurableFormInstance } from '../form/contexts';
-import { ShaFormProvider } from '../form/newProvider/shaFormProvider';
+import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
 
 export type DataProcessor = (data: any) => Promise<any>;

@@ -7,7 +7,7 @@ import { getStyle, validateConfigurableComponentSettings } from '@/providers/for
 import { useFormData } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { useShaFormInstance } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent {
   className?: string;

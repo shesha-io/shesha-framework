@@ -6,7 +6,7 @@ import { FC } from 'react';
 import { ISettingIdentifier } from './provider/models';
 import { useSettingsEditor } from './provider';
 import { ISettingEditorWithValueProps } from './models';
-import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
 export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
     const { selection, value } = props;
