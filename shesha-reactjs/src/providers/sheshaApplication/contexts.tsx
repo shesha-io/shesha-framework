@@ -1,6 +1,7 @@
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import { IDictionary, IToolboxComponentGroup } from '@/interfaces';
+import { IDictionary, IPersistedFormProps, IToolboxComponentGroup } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
+import { HEADER_CONFIGURATION } from '@/components/mainLayout/constant';
 
 export interface ISheshaRutes {
   formsDesigner: string;
@@ -19,6 +20,7 @@ export interface ISheshaApplicationStateContext {
   routes: ISheshaRutes;
   globalVariables?: { [key in string]: any };
   formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
+  headerConfiguration?: IPersistedFormProps;
 }
 
 export const DEFAULT_SHESHA_ROUTES: ISheshaRutes = {
@@ -31,6 +33,7 @@ export const SHESHA_APPLICATION_CONTEXT_INITIAL_STATE: ISheshaApplicationStateCo
   formDesignerComponentGroups: [],
   routes: DEFAULT_SHESHA_ROUTES,
   formDesignerComponentRegistrations: {},
+  headerConfiguration: { name: HEADER_CONFIGURATION.name, module: HEADER_CONFIGURATION.module },
 };
 
 export interface ISheshaApplicationActionsContext {
@@ -47,7 +50,10 @@ export const DEFAULT_ACCESS_TOKEN_NAME = 'xDFcxiooPQxazdndDsdRSerWQPlincytLDCarc
 
 export const SheshaApplicationStateContext = createNamedContext<ISheshaApplicationStateContext>(
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
-  "SheshaApplicationStateContext"
+  'SheshaApplicationStateContext'
 );
 
-export const SheshaApplicationActionsContext = createNamedContext<ISheshaApplicationActionsContext | undefined>(undefined, "SheshaApplicationActionsContext");
+export const SheshaApplicationActionsContext = createNamedContext<ISheshaApplicationActionsContext | undefined>(
+  undefined,
+  'SheshaApplicationActionsContext'
+);

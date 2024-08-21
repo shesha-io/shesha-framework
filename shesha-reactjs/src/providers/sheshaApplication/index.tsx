@@ -25,6 +25,7 @@ import {
   AppConfiguratorProvider,
   DynamicModalProvider,
   CanvasProvider,
+  IPersistedFormProps,
 } from '@/providers';
 import {
   registerFormDesignerComponentsAction,
@@ -69,6 +70,7 @@ export interface IShaApplicationProviderProps {
    */
   applicationKey?: string;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
+  headerConfiguration?: IPersistedFormProps;
 }
 
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {
@@ -84,6 +86,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     themeProps,
     routes,
     getFormUrlFunc,
+    headerConfiguration,
   } = props;
   const initialHeaders = applicationKey ? { [FRONT_END_APP_HEADER_NAME]: applicationKey } : {};
   const [state, dispatch] = useReducer(appConfiguratorReducer, {
@@ -120,8 +123,9 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     dispatch(registerFormDesignerComponentsAction({ owner, components }));
   };
 
+  const localHeaderConfiguration = headerConfiguration ?? state.headerConfiguration;
   return (
-    <SheshaApplicationStateContext.Provider value={state}>
+    <SheshaApplicationStateContext.Provider value={{ ...state, headerConfiguration: localHeaderConfiguration }}>
       <SheshaApplicationActionsContext.Provider
         value={{
           changeBackendUrl,
@@ -152,7 +156,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                 >
                   <ConfigurationItemsLoaderProvider>
                     <FormManager>
-
                       <ThemeProvider {...(themeProps || {})}>
                         <GlobalSheshaStyles />
                         <ShaFormStyles />
@@ -176,9 +179,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                             <DataSourcesProvider>
                                               <DynamicModalProvider>
                                                 <DebugPanel>
-                                                  <ApplicationActionsProcessor>
-                                                    {children}
-                                                  </ApplicationActionsProcessor>
+                                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
                                                 </DebugPanel>
                                               </DynamicModalProvider>
                                             </DataSourcesProvider>
