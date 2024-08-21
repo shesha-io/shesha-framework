@@ -86,7 +86,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     themeProps,
     routes,
     getFormUrlFunc,
-    headerConfiguration,
   } = props;
   const initialHeaders = applicationKey ? { [FRONT_END_APP_HEADER_NAME]: applicationKey } : {};
   const [state, dispatch] = useReducer(appConfiguratorReducer, {
@@ -123,9 +122,8 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     dispatch(registerFormDesignerComponentsAction({ owner, components }));
   };
 
-  const localHeaderConfiguration = headerConfiguration ?? state.headerConfiguration;
   return (
-    <SheshaApplicationStateContext.Provider value={{ ...state, headerConfiguration: localHeaderConfiguration }}>
+    <SheshaApplicationStateContext.Provider value={state}>
       <SheshaApplicationActionsContext.Provider
         value={{
           changeBackendUrl,

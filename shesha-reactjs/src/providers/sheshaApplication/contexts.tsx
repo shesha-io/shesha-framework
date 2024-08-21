@@ -1,7 +1,6 @@
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import { IDictionary, IPersistedFormProps, IToolboxComponentGroup } from '@/interfaces';
+import { IDictionary, IToolboxComponentGroup } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
-import { HEADER_CONFIGURATION } from '@/components/mainLayout/constant';
 
 export interface ISheshaRutes {
   formsDesigner: string;
@@ -20,7 +19,6 @@ export interface ISheshaApplicationStateContext {
   routes: ISheshaRutes;
   globalVariables?: { [key in string]: any };
   formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
-  headerConfiguration?: IPersistedFormProps;
 }
 
 export const DEFAULT_SHESHA_ROUTES: ISheshaRutes = {
@@ -33,7 +31,6 @@ export const SHESHA_APPLICATION_CONTEXT_INITIAL_STATE: ISheshaApplicationStateCo
   formDesignerComponentGroups: [],
   routes: DEFAULT_SHESHA_ROUTES,
   formDesignerComponentRegistrations: {},
-  headerConfiguration: { name: HEADER_CONFIGURATION.name, module: HEADER_CONFIGURATION.module },
 };
 
 export interface ISheshaApplicationActionsContext {
