@@ -101,5 +101,15 @@ namespace ShaCompanyName.ShaProjectName.Common.Authorization
         {
             return await IsInAnyOfRoles(person, CommonRoles.GlobalAdmin);
         }
+
+        public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            return await Task.FromResult(false);
+        }
+
+        public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            return false;
+        }
     }
 }
