@@ -30,7 +30,7 @@ export const getSettings = (data: any) =>
             id: 'd498779d-012a-4c6a-82a9-77231245ae28',
             propertyName: 'label',
             parentId: 'root',
-            label: 'Caption',
+            label: 'Label',
           })
           .addTextArea({
             id: '9b671866-072e-4688-8b48-ddf5e12d70d4',
