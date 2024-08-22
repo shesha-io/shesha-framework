@@ -84,16 +84,18 @@ export interface IShaFormInstance<Values = any> {
     readonly settings?: IFormSettings;
     readonly flatStructure?: IFlatComponentsStructure;
     readonly initialValues?: Values;
+    readonly parentFormValues?: any;
     readonly formArguments?: any;
     readonly formData?: any;
     readonly formMode: FormMode;
     readonly antdForm: FormInstance;
     readonly defaultApiEndpoints: IEntityEndpoints;
     readonly modelMetadata?: IModelMetadata;
-    readonly validationErrors?: IFormValidationErrors;
+    readonly validationErrors?: IFormValidationErrors;    
 
     setFormMode: (formMode: FormMode) => void;
     setFormData: (payload: ISetFormDataPayload) => void;
+    setParentFormValues: (values: any) => void;
     setValidationErrors: (payload: IFormValidationErrors) => void;
 
     onFinish?: (values: Values) => void;

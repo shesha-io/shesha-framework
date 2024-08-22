@@ -19,6 +19,7 @@ import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
+import { getQueryParams } from "@/utils/url";
 
 type ForceUpdateTrigger = () => void;
 interface ShaFormInstanceArguments {
@@ -87,6 +88,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
     defaultValues: Values;
     initialValues: any;
+    parentFormValues: any;
     formArguments?: any;
 
     onFinish: SubmitHandler<Values>;
@@ -177,6 +179,10 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         }
 
         this.forceRootUpdate();
+    };
+
+    setParentFormValues = (values: any) => {
+        this.parentFormValues = values;
     };
 
     setValidationErrors = (payload: IFormValidationErrors) => {
@@ -589,7 +595,11 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 antdForm: antdFormInstance,
                 metadataDispatcher: metadataDispatcher,
             });
-            const accessors = wrapConstantsData({ fullContext, shaForm: instance });
+            const accessors = wrapConstantsData({ 
+                fullContext, 
+                shaForm: instance,
+                queryStringGetter: getQueryParams,                
+            });
             const allConstants = makeObservableProxy<IApplicationContext>(accessors);
 
             const expressionExecuter = (expression: string, data: any = null) => {

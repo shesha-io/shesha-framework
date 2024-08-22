@@ -60,6 +60,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     showModalFooter,
     formArguments,
     initialValues,
+    parentFormValues,
     width,
     onFailed,
     mode = 'edit',
@@ -119,6 +120,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     onFinishFailed: onFailed,
     onSubmittedFailed: () => setIsSubmitted(false),
     initialValues: initialValues,
+    parentFormValues: parentFormValues,
     //logEnabled: true,
   };
 

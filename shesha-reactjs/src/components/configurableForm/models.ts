@@ -95,6 +95,10 @@ export type IConfigurableFormRuntimeProps<Values = any> = {
    * Form initial values
    */
   initialValues?: Store;
+  /**
+   * Parent form values. Note: is used for backward compatibility only
+   */
+  parentFormValues?: Store;
   labelCol?: ColProps;
   wrapperCol?: ColProps;
   onValuesChange?: (changedValues: any, values: Values) => void;
