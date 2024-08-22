@@ -70,7 +70,7 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
         </Select>);
 
     return (
-        <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
+        <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
             <Col className="gutter-row" span={24}>
                 <Col className="gutter-row" span={24}>
                     {renderRadioGroup(radiusOptions, activeRadius, 'Radius')}
@@ -87,24 +87,26 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
                 <Col className="gutter-row" span={24}>
                     {renderRadioGroup(borderOptions, activeBorder, 'Border')}
                 </Col>
-                <Col className="gutter-row" span={24}>
-                    <SettingsFormItem name={`border.border.${activeBorder}.width`} label="Width" jsSetting>
-                        <Input
-                            addonAfter={
-                                addOnAfter
-                            }
-                            value={value?.border?.[activeBorder]?.width}
-                        />
-                    </SettingsFormItem>
-                </Col>
-                <Col className="gutter-row" span={24}>
-                    <SettingsFormItem name={`border.border.${activeBorder}.color`} label="Color" jsSetting>
-                        <ColorPicker
-                            allowClear
-                            value={value?.border?.[activeBorder]?.color || '#000000'}
-                        />
-                    </SettingsFormItem>
-                </Col>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
+                    <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                        <SettingsFormItem name={`border.border.${activeBorder}.width`} label="Width" jsSetting>
+                            <Input
+                                addonAfter={
+                                    addOnAfter
+                                }
+                                value={value?.border?.[activeBorder]?.width}
+                            />
+                        </SettingsFormItem>
+                    </div>
+                    <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                        <SettingsFormItem name={`border.border.${activeBorder}.color`} label="Color" jsSetting>
+                            <ColorPicker
+                                allowClear
+                                value={value?.border?.[activeBorder]?.color || '#000000'}
+                            />
+                        </SettingsFormItem>
+                    </div>
+                </div>
                 <Col className="gutter-row" span={24}>
                     {renderRadioGroup(styleOptions, activeBorder, 'border', 'style')}
                 </Col>

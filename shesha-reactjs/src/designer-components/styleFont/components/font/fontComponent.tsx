@@ -5,6 +5,7 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { ColorPicker } from '@/components';
 import { IValueWithUnit } from '@/designer-components/styleDimensions/components/size/sizeComponent';
 import { IFontValue } from './interfaces';
+import { useStyles } from '../../styles/styles';
 
 const { Option } = Select;
 
@@ -66,64 +67,46 @@ export interface IFontType {
 }
 
 const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
+    const { styles } = useStyles()
     const updateValue = (newValue: Partial<IFontValue>) => {
         const updatedValue = { ...model, font: { ...value, ...newValue } };
         onChange(updatedValue);
     };
 
-    const renderSizeInputWithUnits = (property, label, noUnits?: boolean) => {
+    const renderSizeInput = (property, label) => {
         const currentValue = value?.[property] || { value: '', unit: 'px' };
 
-        const selectAfter = (
-            <Select
-                value={currentValue.unit}
-                onChange={(unit) => updateValue({ [property]: { ...currentValue, unit } })}
-            >
-                {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
-            </Select>
-        );
-
         return (
-            <Col className="gutter-row" span={12}>
-                <SettingsFormItem name={`font.${property}.value`} label={label} jsSetting>
-                    <Input
-                        addonAfter={noUnits ? null : selectAfter}
-                        value={currentValue.value}
-                        readOnly={readOnly}
-                        onChange={(e) => updateValue({ [property]: { ...currentValue, value: e.target.value } })}
-                    />
-                </SettingsFormItem>
-            </Col>
+            <SettingsFormItem name={`font.${property}.value`} label={label} jsSetting>
+                <Input
+                    value={currentValue.value}
+                    readOnly={readOnly}
+                    onChange={(e) => updateValue({ [property]: { ...currentValue, value: e.target.value } })}
+                />
+            </SettingsFormItem>
         );
     };
 
+    const renderInputRow = (inputs: Array<{ label: string, property }>) => (
+        <div className={styles.flexWrapper}>
+            {inputs.map(({ label, property }) => (
+                <div key={property} className={styles.flexInput}>
+                    {renderSizeInput(label, property)}
+                </div>
+            ))}
+        </div>
+    );
+
     return (
-        <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
-            <Col className="gutter-row" span={24}>
-                <SettingsFormItem name="font.color" label="Font color" jsSetting>
-                    <ColorPicker value={value?.color} readOnly={readOnly} />
-                </SettingsFormItem>
-            </Col>
-            <Col className="gutter-row" span={24}>
-                <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
-                    {renderSizeInputWithUnits("size", "Font Size", true)}
-                    {renderSizeInputWithUnits("lineHeight", "Line Height", true)}
-                </Row>
-
-                <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
-                    <Col className="gutter-row" span={12}>
-                        <SettingsFormItem name="font.weight" label="Font Weight" jsSetting>
-                            <Dropdown updateValue={updateValue} value={value} options={fontWeights} field="weight" labelField={null} />
-                        </SettingsFormItem>
-                    </Col>
-                    <Col className="gutter-row" span={12}>
-                        <SettingsFormItem name="font.type" label="Font Family" jsSetting>
-                            <Dropdown updateValue={updateValue} value={value} options={fontTypes.map(type => ({ value: type }))} field="type" />
-                        </SettingsFormItem>
-                    </Col>
-                </Row>
-
-                <Col className="gutter-row" span={24}>
+        <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
+            {renderInputRow([{ label: 'Size', property: 'size' }, { label: 'Line Height', property: 'lineHeight' }])}
+            <div className={styles.flexWrapper}>
+                <div className={styles.flexInput}>
+                    <SettingsFormItem name="font.color" label="Color" jsSetting>
+                        <ColorPicker value={value?.color} readOnly={readOnly} />
+                    </SettingsFormItem>
+                </div>
+                <div className={styles.flexInput}>
                     <SettingsFormItem readOnly={readOnly} name="font.align" label="Align" jsSetting>
                         <Radio.Group value={value?.align} onChange={(e) => updateValue({ align: e.target.value })}>
                             {alignOptions.map(({ value, icon, title }) => (
@@ -131,7 +114,17 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
                             ))}
                         </Radio.Group>
                     </SettingsFormItem>
-                </Col>
+                </div>
+            </div>
+            <Col className="gutter-row" span={24}>
+                <SettingsFormItem name="font.weight" label="Weight" jsSetting>
+                    <Dropdown updateValue={updateValue} value={value} options={fontWeights} field="weight" labelField={null} />
+                </SettingsFormItem>
+            </Col>
+            <Col className="gutter-row" span={24}>
+                <SettingsFormItem name="font.type" label="Family" jsSetting>
+                    <Dropdown updateValue={updateValue} value={value} options={fontTypes.map(type => ({ value: type }))} field="type" />
+                </SettingsFormItem>
             </Col>
         </Row>
     );

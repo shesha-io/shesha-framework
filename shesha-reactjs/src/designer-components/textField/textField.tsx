@@ -2,13 +2,13 @@ import { CodeOutlined } from '@ant-design/icons';
 import { ConfigProvider, Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import moment from 'moment';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { evaluateString, getStyle } from '@/providers/form/utils';
+import { evaluateString, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -17,12 +17,14 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index'
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon, ValidationErrors } from '@/components';
-import { TextFieldSettingsForm } from './settings';
+import { removeUndefinedProps } from '@/utils/object';
 import { getSizeStyle } from '../styleDimensions/components/size/utils';
 import { getBorderStyle } from '../styleBorder/components/border/utils';
-import { getBackgroundStyle } from '../styleBackground/components/background/utils';
 import { getFontStyle } from '../styleFont/components/font/utils';
+import { getBackgroundStyle } from '../styleBackground/components/background/utils';
+import { TextFieldSettingsForm } from './settings';
 import { useStyles } from './styles/styles';
+
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -70,8 +72,23 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
+
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+    const additionalStyles: CSSProperties = removeUndefinedProps({
+      ...stylingBoxAsCSS,
+      ...sizeStyles,
+      ...borderStyles,
+      ...fontStyles,
+      ...backgroundStyles,
+    });
+    const jsStyle = getStyle(model.style, formData);
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+
     const InputComponentType = renderInput(model.textType);
 
+    console.log('model', model);
     const inputProps: InputProps = {
       className: `sha-input ${styles.textFieldInput}`,
       placeholder: model.placeholder,
@@ -82,7 +99,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: { ...getStyle(model?.style, formData), ...sizeStyles, ...borderStyles, ...backgroundStyles, ...fontStyles },
+      style: finalStyle,
+      autoComplete: model.textType === 'password' ? 'new-password' : undefined,
     };
 
     const eventProps = {
@@ -97,36 +115,38 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     };
 
     return (
-      <ConfigurableFormItem
-        model={model}
-        initialValue={
-          (model.passEmptyStringByDefault && '') ||
-          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
-        }
-      >
-        {(value, onChange) => {
-          const customEvent = customEventHandler(eventProps);
-          const onChangeInternal = (...args: any[]) => {
-            customEvent.onChange(args[0]);
-            if (typeof onChange === 'function')
-              onChange(...args);
-          };
-          return inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•') : value} disabled={model.readOnly} />
-            :
-            <ConfigProvider
-              theme={{
-                token: {
-                  fontFamily: model.font?.type || 'Arial',
-                  fontSize: Number(model.font?.size?.value) || 14,
-                  lineHeight: Number(model.font?.lineHeight?.value) || 1.5,
-                },
-              }}
-            >
-              <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
-            </ConfigProvider>;
+      <ConfigProvider
+        theme={{
+          components: {
+            Input: {
+              fontFamily: model.font?.type || 'Arial',
+              fontSize: Number(model.font?.size?.value) || 14,
+              lineHeight: Number(model.font?.lineHeight?.value) || 1.5,
+            },
+
+          },
         }}
-      </ConfigurableFormItem>
+      >
+        <ConfigurableFormItem
+          model={model} initialValue={
+            (model.passEmptyStringByDefault && '') ||
+            (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
+          }
+        >
+          {(value, onChange) => {
+            const customEvent = customEventHandler(eventProps);
+            const onChangeInternal = (...args: any[]) => {
+              customEvent.onChange(args[0]);
+              if (typeof onChange === 'function')
+                onChange(...args);
+            };
+            return inputProps.readOnly
+              ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•') : value} disabled={model.readOnly} />
+              :
+              <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
+          }}
+        </ConfigurableFormItem>
+      </ConfigProvider>
     );
   },
   settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),

@@ -6,6 +6,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         * {
           font-weight: inherit !important;
           text-align: inherit !important;
+          :hover {
+            border-color: ${token.colorPrimary} !important;
           }
         }
   `);

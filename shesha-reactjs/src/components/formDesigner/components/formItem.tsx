@@ -24,6 +24,7 @@ export interface IConfigurableFormItemProps {
   customVisibility?: string;
   wrapperCol?: ColProps;
   labelCol?: ColProps;
+  layout?: 'horizontal' | 'vertical' | 'inline';
 }
 
 export interface IConfigurableFormItem_FormProps {
@@ -94,7 +95,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   initialValue,
   className,
   labelCol,
-  wrapperCol,
+  wrapperCol
 }) => {
   const { formData } = useForm();
 

@@ -1,4 +1,4 @@
-import { ISizeValue } from "./sizeComponent";
+import { ISizeValue } from "./prefixSuffixComponent";
 
 export const getSizeStyle = (input?: ISizeValue): React.CSSProperties => {
     if (!input) return {};

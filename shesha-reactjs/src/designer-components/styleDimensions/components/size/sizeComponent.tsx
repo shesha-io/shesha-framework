@@ -1,5 +1,5 @@
 import { Col, Input, Radio, Row, Select } from 'antd';
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import { BorderlessTableOutlined, ColumnWidthOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 
@@ -32,56 +32,72 @@ export interface ISizeType {
 
 const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model, noOverflow }) => {
 
-    const updateValue = (key: keyof ISizeValue, newUnit: string) => {
+    const updateValue = useCallback((key: keyof ISizeValue, newUnit: string) => {
         const updatedValue = {
             dimensions: { ...model?.dimensions, [key]: { ...value?.[key] as IValueWithUnit, unit: newUnit } }
         };
         onChange(updatedValue);
-    };
+    }, [model, value, onChange]);
 
     const renderSizeInputWithUnits = (label: string, property: keyof ISizeValue) => {
-        const currentValue = value?.[property] && value?.[property] as IValueWithUnit || { value: '', unit: 'px' };
-
-        const selectAfter = (
-            <Select
-                value={currentValue.unit || 'px'}
-                onChange={(unit) => updateValue(property, unit)}
-            >
-                {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
-            </Select>
-        );
+        const currentValue = value?.[property] as IValueWithUnit || { value: '', unit: 'px' };
 
         return (
-            <Col className="gutter-row" span={12}>
-                <SettingsFormItem name={`dimensions.${property}.value`} label={label} jsSetting>
-                    <Input
-                        addonAfter={selectAfter}
-                        value={currentValue.value}
-                        readOnly={readOnly}
-                    />
-                </SettingsFormItem>
-            </Col>
+            <SettingsFormItem name={`dimensions.${property}.value`} label={label} jsSetting>
+                <Input
+                    addonAfter={
+                        <Select
+                            value={currentValue.unit || 'px'}
+                            onChange={(unit) => updateValue(property, unit)}
+                        >
+                            {units.map(unit => (
+                                <Option key={unit} value={unit}>{unit}</Option>
+                            ))}
+                        </Select>
+                    }
+                    value={currentValue.value}
+                    readOnly={readOnly}
+                />
+            </SettingsFormItem>
         );
     };
 
+    const renderInputRow = (inputs: Array<{ label: string, property: keyof ISizeValue }>) => (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
+            {inputs.map(({ label, property }) => (
+                <div key={property} style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                    {renderSizeInputWithUnits(label, property)}
+                </div>
+            ))}
+        </div>
+    );
+
     return (
-        <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
-            {renderSizeInputWithUnits('Width', 'width')}
-            {renderSizeInputWithUnits('Height', 'height')}
-            {renderSizeInputWithUnits('Min W', 'minWidth')}
-            {renderSizeInputWithUnits('Min H', 'minHeight')}
-            {renderSizeInputWithUnits('Max W', 'maxWidth')}
-            {renderSizeInputWithUnits('Max H', 'maxHeight')}
-            {!noOverflow && <Col className="gutter-row" span={24}>
-                <SettingsFormItem readOnly={readOnly} name="overflow" label="Overflow" jsSetting>
-                    <Radio.Group value={value?.overflow} >
-                        <Radio.Button value="visible" title="Visible"><EyeOutlined /></Radio.Button>
-                        <Radio.Button value="hidden" title="Hidden"><EyeInvisibleOutlined size={32} /></Radio.Button>
-                        <Radio.Button value="scroll" title="Scroll"><ColumnWidthOutlined /></Radio.Button>
-                        <Radio.Button value="auto" title="Auto"><BorderlessTableOutlined /></Radio.Button>
-                    </Radio.Group>
-                </SettingsFormItem>
-            </Col>}
+        <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
+            {renderInputRow([
+                { label: 'Width', property: 'width' },
+                { label: 'Height', property: 'height' }
+            ])}
+            {renderInputRow([
+                { label: 'Min W', property: 'minWidth' },
+                { label: 'Min H', property: 'minHeight' }
+            ])}
+            {renderInputRow([
+                { label: 'Max W', property: 'maxWidth' },
+                { label: 'Max H', property: 'maxHeight' }
+            ])}
+            {!noOverflow && (
+                <Col className="gutter-row" span={24}>
+                    <SettingsFormItem readOnly={readOnly} name="overflow" label="Overflow" jsSetting>
+                        <Radio.Group value={value?.overflow}>
+                            <Radio.Button value="visible" title="Visible"><EyeOutlined /></Radio.Button>
+                            <Radio.Button value="hidden" title="Hidden"><EyeInvisibleOutlined /></Radio.Button>
+                            <Radio.Button value="scroll" title="Scroll"><ColumnWidthOutlined /></Radio.Button>
+                            <Radio.Button value="auto" title="Auto"><BorderlessTableOutlined /></Radio.Button>
+                        </Radio.Group>
+                    </SettingsFormItem>
+                </Col>
+            )}
         </Row>
     );
 };

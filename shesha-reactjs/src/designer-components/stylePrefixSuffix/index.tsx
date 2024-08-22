@@ -5,10 +5,10 @@ import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import LabelConfigurator from './components/label/labelConfigurator';
-import { ILabelComponentProps } from './components/label/interfaces';
+import { ISizeComponentProps } from './components/prefixSuffix/interfaces';
+import PrefixSuffixComponent from './components/prefixSuffix/prefixSuffixComponent';
 
-const SizeConfigurator: IToolboxComponent<ILabelComponentProps> = {
+const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
     type: 'size',
     name: 'Size',
     isInput: false,
@@ -20,7 +20,7 @@ const SizeConfigurator: IToolboxComponent<ILabelComponentProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(onChange) => <LabelConfigurator model={passedModel} onChange={onChange} />}
+                {(onChange) => <PrefixSuffixComponent onChange={onChange} />}
             </ConfigurableFormItem>
         );
     },

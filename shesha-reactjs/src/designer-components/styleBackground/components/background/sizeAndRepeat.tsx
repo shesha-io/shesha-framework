@@ -67,26 +67,32 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
             <Divider style={{ margin: '8px 0' }} />
             <Space style={{ padding: '0 8px 4px' }} onClick={(e) => e.stopPropagation()}>
                 <Space.Compact size="large">
-                    {['width', 'height'].map((dim) => (
-                        <Input
-                            key={dim}
-                            addonAfter={
-                                <Select
-                                    value={value[dim].unit}
-                                    disabled={readOnly}
-                                    onChange={(unit) => setValue(prev => ({ ...prev, [dim]: { ...prev[dim], unit } }))}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
+                        {['width', 'height'].map((dim) => (
+                            <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                                <Input
+                                    key={dim}
+                                    addonAfter={
+                                        <Select
+                                            value={value[dim].unit}
+                                            disabled={readOnly}
+                                            onChange={(unit) => setValue(prev => ({ ...prev, [dim]: { ...prev[dim], unit } }))}
+                                            onClick={(e) => e.stopPropagation()}
+                                            onMouseDown={(e) => e.stopPropagation()}
+                                        >
+                                            {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
+                                        </Select>
+                                    }
+                                    readOnly={readOnly}
+                                    value={value[dim].value}
+                                    onChange={(e) => setValue(prev => ({ ...prev, [dim]: { ...prev[dim], value: e.target.value } }))}
+                                    size='small'
                                     onClick={(e) => e.stopPropagation()}
-                                    onMouseDown={(e) => e.stopPropagation()}
-                                >
-                                    {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
-                                </Select>
-                            }
-                            readOnly={readOnly}
-                            value={value[dim].value}
-                            onChange={(e) => setValue(prev => ({ ...prev, [dim]: { ...prev[dim], value: e.target.value } }))}
-                            onClick={(e) => e.stopPropagation()}
-                        />
-                    ))}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
                 </Space.Compact>
                 <Button
                     type="text"
