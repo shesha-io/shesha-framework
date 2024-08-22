@@ -69,7 +69,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...stylingBoxAsCSS,
     });
     const jsStyle = getStyle(model.style, formData);
-    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
     const InputComponentType = renderInput(model.textType);
 
@@ -113,7 +113,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               onChange(...args);
           };
           return inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•') : value} disabled={model.readOnly} />
+            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
             : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
