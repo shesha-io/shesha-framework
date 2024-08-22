@@ -76,6 +76,7 @@ import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './obs
 import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
 import { useShaFormInstance } from './providers/shaFormProvider';
+import { QueryStringParams } from '@/utils/url';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -103,11 +104,24 @@ export interface IApplicationContext<Value = any> {
 
   pageContext?: IDataContextFull;
   setGlobalState: (payload: ISetStatePayload) => void;
+  /**
+   * Query string values. Is used for backward compatibility only
+   */
+  query: QueryStringParams;
+  /**
+   * Initial form values. Is used for backward compatibility only
+   */
+  initialValues: any;
+  /**
+   * Parent form values. Is used for backward compatibility only
+   */
+  parentFormValues: any;
 }
 
 export type GetAvailableConstantsDataArgs = {
   topContextId?: string;
   shaForm?: IShaFormInstance;
+  queryStringGetter?: () => QueryStringParams;  
 };
 
 export type AvailableConstantsContext = {
@@ -150,7 +164,7 @@ export type WrapConstantsDataArgs = GetAvailableConstantsDataArgs & {
   fullContext: AvailableConstantsContext;
 };
 export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesAccessors<IApplicationContext> => {
-  const { topContextId, shaForm, fullContext } = args;
+  const { topContextId, shaForm, fullContext, queryStringGetter } = args;
   const { closestShaForm,
     selectedRow,
     dcm,
@@ -191,6 +205,15 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     },
     form: () => {
       return shaFormInstance?.getPublicFormApi();
+    },
+    query: () => {
+      return queryStringGetter?.() ?? {};
+    },
+    initialValues: () => {
+      return shaFormInstance?.initialValues;
+    },
+    parentFormValues: () => {
+      return shaFormInstance?.parentFormValues;
     },
   };
   return accessors;
