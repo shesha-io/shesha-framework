@@ -25,6 +25,7 @@ import {
   AppConfiguratorProvider,
   DynamicModalProvider,
   CanvasProvider,
+  IPersistedFormProps,
 } from '@/providers';
 import {
   registerFormDesignerComponentsAction,
@@ -152,7 +153,6 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                 >
                   <ConfigurationItemsLoaderProvider>
                     <FormManager>
-
                       <ThemeProvider {...(themeProps || {})}>
                         <GlobalSheshaStyles />
                         <ShaFormStyles />
@@ -176,9 +176,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                             <DataSourcesProvider>
                                               <DynamicModalProvider>
                                                 <DebugPanel>
-                                                  <ApplicationActionsProcessor>
-                                                    {children}
-                                                  </ApplicationActionsProcessor>
+                                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
                                                 </DebugPanel>
                                               </DynamicModalProvider>
                                             </DataSourcesProvider>
