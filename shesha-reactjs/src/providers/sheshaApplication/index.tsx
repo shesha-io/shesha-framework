@@ -25,7 +25,6 @@ import {
   AppConfiguratorProvider,
   DynamicModalProvider,
   CanvasProvider,
-  IPersistedFormProps,
 } from '@/providers';
 import {
   registerFormDesignerComponentsAction,
