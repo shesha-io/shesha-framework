@@ -410,6 +410,9 @@ export const ReactTable: FC<IReactTableProps> = ({
                   style={{ ...fixedHeadersStyle, display: 'flex' }} // Make the header row sticky
                 >
                   {headerGroup?.headers?.map((column, index) => {
+
+                    console.log("headerGroup ::", column);
+
                     const anchored = getColumnAnchored((column as any)?.anchored);
                     let leftColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
                     let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
@@ -474,6 +477,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                           [direction]: shiftedBy,
                           backgroundColor: 'white',
                           borderBottom: '1px solid #f0f0f0',
+                          fontWeight: 'bold',
                         }}
                       >
                         {column.render('Header')}
