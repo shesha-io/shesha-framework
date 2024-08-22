@@ -70,7 +70,6 @@ export interface IShaApplicationProviderProps {
    */
   applicationKey?: string;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
-  headerConfiguration?: IPersistedFormProps;
 }
 
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {
