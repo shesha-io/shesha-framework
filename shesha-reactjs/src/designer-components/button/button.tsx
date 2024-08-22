@@ -15,6 +15,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { useForm, useFormData, useSheshaApplication } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { addPx } from './util';
+import { removeNullUndefined } from '@/providers/utils';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -60,7 +61,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
           {...restProps}
           readOnly={model.readOnly}
           block={restProps?.block}
-          style={{ ...getStyle(style, data), ...newStyles }}
+          style={{ ...getStyle(style, data), ...removeNullUndefined(newStyles) }}
           form={form}
         />
       </ConfigurableFormItem>
