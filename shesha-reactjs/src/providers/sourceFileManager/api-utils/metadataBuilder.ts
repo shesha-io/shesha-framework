@@ -20,4 +20,3 @@ export interface IMetadataBuilder {
   build(): IObjectMetadata;
 }
 `;
-
