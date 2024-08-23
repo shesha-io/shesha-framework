@@ -22,6 +22,7 @@ interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model
     required?: boolean;
     tooltip?: string;
     hidden?: boolean;
+    type?: string;
 }
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
@@ -51,8 +52,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             </ConfigurableFormItem>;
         }
         return (
-            <Form.Item {...{ ...props, name: getFieldNameFromExpression(props.name) }} label={props.label} labelCol={{ span: 4 }}
-                wrapperCol={{ span: 20 }}>
+            <Form.Item {...{ ...props, name: getFieldNameFromExpression(props.name) }} label={props.label}>
                 <SettingsControl propertyName={props.name} mode={mode}>
                     {(value, onChange, propertyName) => children(value, onChange, propertyName)}
                 </SettingsControl>
@@ -73,7 +73,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             model={{
                 propertyName: props.name,
                 label: props.label,
-                type: '',
+                type: props.type || '',
                 id: '',
                 description: props.tooltip,
                 validate: { required: props.required },
@@ -89,6 +89,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         onChange={onChange}
                         value={value}
                         readOnly={readOnly}
+                        type={props.type}
                     >
                         {(value, onChange) => {
                             return cloneElement(

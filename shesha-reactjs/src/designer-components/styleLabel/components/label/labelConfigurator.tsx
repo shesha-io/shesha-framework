@@ -1,4 +1,4 @@
-import { Col, Input, Radio, Row } from 'antd';
+import { Button, Col, Input, Radio, Row } from 'antd';
 import React, { FC } from 'react';
 import { AlignLeftOutlined, AlignRightOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
@@ -28,24 +28,21 @@ const LabelConfigurator: FC<ILabelProps> = ({ model, readOnly, onChange }) => {
                 </SettingsFormItem>
                 <div className={styles.flexWrapper}>
                     <div className={styles.flexInput}>
-                        <SettingsFormItem readOnly={readOnly} name="labelAlign" label="Label Align" jsSetting>
-                            <Radio.Group value={model?.labelAlign}>
-                                {[{ value: 'left', icon: <AlignLeftOutlined /> }, { value: 'right', icon: <AlignRightOutlined /> }].map(({ value, icon }) => (
-                                    <Radio.Button key={value} value={value} title={value}>{icon}</Radio.Button>
-                                ))}
-                            </Radio.Group>
-                        </SettingsFormItem>
+                        <Radio.Group value={model?.labelAlign} onChange={(e) => updateValue({ labelAlign: e.target.value })}>
+                            {[{ value: 'left', icon: <AlignLeftOutlined /> }, { value: 'right', icon: <AlignRightOutlined /> }].map(({ value, icon }) => (
+                                <Radio.Button key={value} value={value} title={value}>{icon}</Radio.Button>
+                            ))}
+                        </Radio.Group>
                     </div>
                     <div className={styles.flexInput}>
-                        <SettingsFormItem name="hideLabel" label="Hide Label" valuePropName="checked" jsSetting>
-                            <div
-                                onClick={() => updateValue({ hideLabel: !model?.hideLabel })}
-                                className={styles.hidelLabelIcon}
-                            >
-                                {!model?.hideLabel ? <EyeOutlined size={24} /> : <EyeInvisibleOutlined />}
-                            </div>
-
-                        </SettingsFormItem>
+                        <Button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                updateValue({ hideLabel: !model?.hideLabel })
+                            }}
+                            className={styles.hidelLabelIcon}
+                            icon={model?.hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                        />
                     </div>
                 </div>
             </Col>

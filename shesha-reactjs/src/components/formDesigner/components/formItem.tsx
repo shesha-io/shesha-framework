@@ -112,7 +112,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  const { hideLabel } = model;
+  const { hideLabel, type } = model;
 
   const formItemProps: FormItemProps = {
     className: classNames(className),
@@ -128,6 +128,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
 
+  const formItmePropsAndLayout = type === 'horizontal' ? { ...{ ...formItemProps, layout: 'horizontal', labelCol: { flex: '110px'} } } : formItemProps;
   if (typeof children === 'function') {
     if (model.context) {
       return (
@@ -143,7 +144,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     } else {
       return (
         <ConfigurableFormItemForm
-          formItemProps={formItemProps}
+          formItemProps={formItmePropsAndLayout}
           valuePropName={valuePropName}
         >
           {children}
@@ -153,7 +154,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   } else {
     // Use standard Form.Item for components without binding support
     return (
-      <Form.Item {...formItemProps}>{children}</Form.Item>
+      <Form.Item {...formItemProps} >{children}</Form.Item>
     );
   }
 };

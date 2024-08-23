@@ -4,14 +4,12 @@ import { createStyles } from '@/styles';
 export const useStyles = createStyles(({ css, cx, token }) => {
 
   const flexInput = cx("", css`
-      flex: 1 1 100px;
-      min-width: 100px;
+      // flex: 1 1 100px;
     `);
   const flexWrapper = cx("", css`
-         display: flex;
+        display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        width: 100%;
     `);
 
   const hidelLabelIcon = cx("", css`

@@ -26,7 +26,10 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             .sidebar-container & {
                 right: 0;
                 left: auto;
+                &:not(.inlineJS){
                 top: -28px;
+                }
+                
             }
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;

@@ -18,50 +18,24 @@ import BackgroundConfigurator from '../styleBackground/components/background/bac
 import FontComponent from '../styleFont/components/font/fontComponent';
 import LabelConfigurator from '../styleLabel/components/label/labelConfigurator';
 import PrefixSuffixComponent from '../stylePrefixSuffix/components/prefixSuffix/prefixSuffixComponent';
-import { IconPicker } from '@/components';
+import { renderTabs } from '@/components/formDesigner/componentPropertiesPanel/useSearch/useSearch';
 
-const { TabPane } = Tabs;
 const { Panel } = Collapse;
+const { Option } = Select;
 
 const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) => {
     const { readOnly } = props;
-    const { Option } = Select;
     const { model, onValuesChange } = useSettingsForm<ITextFieldComponentProps>();
-
     const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
     const { formSettings } = useForm();
-
     const settingsPanelRef = useRef<HTMLDivElement>(null);
 
-    const search = useCallback((e: React.ChangeEvent<HTMLInputElement>, active) => {
-        const searchQuery = e.target.value;
-        const activePanel = settingsPanelRef.current.querySelector(`.${active}`);
-
-        if (activePanel) {
-            activePanel.querySelectorAll('.ant-form-item-label').forEach((label) => {
-                if (label.textContent?.toLowerCase().includes(searchQuery.toLowerCase())) {
-                    label.parentElement.style.display = 'block';
-                } else {
-                    label.parentElement.style.display = 'none';
-                }
-            });
-        }
-    }, [settingsPanelRef]);
-
-    const renderSearchInput = (group) => {
-        return (
-            <Input
-                placeholder="Search"
-                allowClear
-                style={{ marginBottom: 10 }}
-                onChange={(e) => search(e, group)}
-            />);
-    }
-    return (
-        <div ref={settingsPanelRef}>
-            <Tabs defaultActiveKey="display" type='card'>
-                <TabPane tab="Display" key="display" className='display'>
-                    {renderSearchInput('display')}
+    const tabs = [
+        {
+            key: "display",
+            tab: "Display",
+            content: (
+                <>
                     <ContextPropertyAutocomplete
                         id="415cc8ec-2fd1-4c5a-88e2-965153e16069"
                         readOnly={readOnly}
@@ -69,7 +43,6 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                         formData={model}
                         onValuesChange={onValuesChange}
                     />
-
                     <LabelConfigurator readOnly={readOnly} onChange={onValuesChange} model={model} />
                     <SettingsFormItem name="textType" label="Type" required>
                         <Select>
@@ -87,15 +60,15 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
 
                     <PrefixSuffixComponent readOnly={readOnly} model={model} onChange={onValuesChange} />
 
-                    <SettingsFormItem name="initialValue" label="Default Value" jsSetting tooltip='Enter default value of component. (formData, formMode, globalState) are exposed'>
+                    <SettingsFormItem name="initialValue" hidden label="Default Value" jsSetting tooltip='Enter default value of component. (formData, formMode, globalState) are exposed'>
                         <Input readOnly={readOnly} />
                     </SettingsFormItem>
 
-                    <SettingsFormItem name="passEmptyStringByDefault" label="Empty as default" valuePropName="checked" jsSetting tooltip='Whether the component should be initialized with an empty string'>
+                    <SettingsFormItem type='horizontal' name="passEmptyStringByDefault" label="Empty as default" valuePropName="checked" jsSetting tooltip='Whether the component should be initialized with an empty string'>
                         <Switch disabled={readOnly} />
                     </SettingsFormItem>
 
-                    <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
+                    <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting type='horizontal'>
                         <Switch disabled={readOnly} />
                     </SettingsFormItem>
 
@@ -103,14 +76,17 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                         <ReadOnlyModeSelector readOnly={readOnly} />
                     </SettingsFormItem>
 
-                    <SettingsFormItem name="hideBorder" label="Hide Border" valuePropName="checked" jsSetting>
+                    <SettingsFormItem name="hideBorder" label="Hide Border" valuePropName="checked" jsSetting type='horizontal'>
                         <Switch disabled={readOnly} />
                     </SettingsFormItem>
-                </TabPane>
-
-                <TabPane tab="Events" key="events" className='events'>
-                    {renderSearchInput('events')}
-
+                </>
+            )
+        },
+        {
+            key: "events",
+            tab: "Events",
+            content: (
+                <>
                     <SettingsFormItem name="onChangeCustom" label="On Change">
                         <CodeEditor
                             propertyName="onChangeCustom"
@@ -140,40 +116,41 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                             description="Enter custom eventhandler on focus of event. (form, event) are exposed"
                         />
                     </SettingsFormItem>
-                </TabPane>
-
-                <TabPane tab="Validation" key="validation" className='validation'>
-                    {renderSearchInput('validation')}
-
-                    <SettingsFormItem name="validate.required" label="Required" valuePropName="checked" jsSetting>
+                </>
+            )
+        },
+        {
+            key: "validation",
+            tab: "Validation",
+            content: (
+                <>
+                    <SettingsFormItem name="required" label="Required" valuePropName="checked" jsSetting type='horizontal'>
                         <Switch disabled={readOnly} />
                     </SettingsFormItem>
 
-                    <SettingsFormItem name="validate.minLength" label="Min Length" jsSetting>
+                    <SettingsFormItem name="minLength" label="Min Length" jsSetting>
+                        <Input type="number" readOnly={readOnly} />
+                    </SettingsFormItem>
+
+                    <SettingsFormItem name="maxLength" label="Max Length" jsSetting>
+                        <Input type="number" readOnly={readOnly} />
+                    </SettingsFormItem>
+
+                    <SettingsFormItem name="pattern" label="Pattern" jsSetting>
                         <Input readOnly={readOnly} />
                     </SettingsFormItem>
 
-                    <SettingsFormItem name="validate.maxLength" label="Max Length" jsSetting>
+                    <SettingsFormItem name="validationMessage" label="Validation Message" jsSetting>
                         <Input readOnly={readOnly} />
                     </SettingsFormItem>
-
-                    <SettingsFormItem name="validate.message" label="Message" jsSetting>
-                        <Input readOnly={readOnly} />
-                    </SettingsFormItem>
-
-                    <SettingsFormItem name="validate.validator" label="Validator" jsSetting tooltip='Enter custom validator logic for form.item rules. Returns a Promise'>
-                        <CodeEditor
-                            propertyName="validate.validator"
-                            readOnly={readOnly}
-                            mode="dialog"
-                            label="Validator"
-                        />
-                    </SettingsFormItem>
-                </TabPane>
-
-                <TabPane tab="Style" key="style" className='style'>
-                    {renderSearchInput('style')}
-
+                </>
+            )
+        },
+        {
+            key: "style",
+            tab: "Style",
+            content: (
+                <>
                     <SettingsFormItem name="style" label="Style">
                         <CodeEditor
                             propertyName="style"
@@ -213,22 +190,29 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                             </Panel>
                         </Collapse>
                     </ConfigProvider>
-                </TabPane>
+                </>
+            )
+        },
+        {
+            key: "security",
+            tab: "Security",
+            content: (
+                <SettingsFormItem
+                    jsSetting
+                    label="Permissions"
+                    name="permissions"
+                    initialValue={model.permissions}
+                    tooltip="Enter a list of permissions that should be associated with this component"
+                >
+                    <PermissionAutocomplete readOnly={readOnly} />
+                </SettingsFormItem>
+            )
+        }
+    ];
 
-                <TabPane tab="Security" key="security" className='security'>
-                    {renderSearchInput('security')}
-
-                    <SettingsFormItem
-                        jsSetting
-                        label="Permissions"
-                        name="permissions"
-                        initialValue={model.permissions}
-                        tooltip="Enter a list of permissions that should be associated with this component"
-                    >
-                        <PermissionAutocomplete readOnly={readOnly} />
-                    </SettingsFormItem>
-                </TabPane>
-            </Tabs>
+    return (
+        <div ref={settingsPanelRef}>
+            {renderTabs(tabs, settingsPanelRef)}
         </div>
     );
 };

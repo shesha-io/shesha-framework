@@ -18,6 +18,7 @@ export interface ISettingsControlProps {
   readOnly?: boolean;
   value?: IPropertySetting;
   mode: PropertySettingMode;
+  type?: string;
   onChange?: (value: IPropertySetting) => void;
   readonly children?: SettingsControlChildrenType;
   availableConstantsExpression?: string;
@@ -107,7 +108,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
         <Button
           hidden={props.readOnly}
-          className={styles.jsSwitch}
+          className={`${styles.jsSwitch} ${props.type === 'horizontal' ? 'inlineJS' : ''}`}
           type='primary'
           danger={mode === 'value' && !!code}
           ghost
