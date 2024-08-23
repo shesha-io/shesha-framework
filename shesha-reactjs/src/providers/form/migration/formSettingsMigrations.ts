@@ -12,6 +12,7 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings>
       onUpdate: migrateFormApi.withoutFormData(prev.onUpdate),
     }))
     .add(2, (prev) => migrateFormLifecycle(prev))
+    .add(3, (prev) => ({ ...prev, onValuesUpdate: prev.onValuesUpdate ?? prev['onValuesChanged'] }))
   ;
 
 export const migrateFormSettings = (form: IFormDto) => {

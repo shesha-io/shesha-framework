@@ -108,7 +108,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
         onBeforeDataLoad: getBeforeDataLoad(onInitialized),
         onAfterDataLoad: getAfterDataLoad(onDataLoaded),
 
-        onValuesChanged: onUpdate,
+        onValuesUpdate: onUpdate,
 
         onPrepareSubmitData: getPrepareSubmitData(preparedValues),
         onBeforeSubmit: null,

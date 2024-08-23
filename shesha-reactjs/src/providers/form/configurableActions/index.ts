@@ -34,6 +34,7 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
             ownerUid: actionsOwnerUid,
             hasArguments: false,
             executer: () => {
+                shaForm.resetFields();
                 shaForm.setFormMode('readonly');
                 return Promise.resolve();
             },
@@ -66,9 +67,8 @@ export const useShaFormActions = ({ name, isActionsOwner, shaForm }: UseShaFormA
             owner: name,
             ownerUid: actionsOwnerUid,
             hasArguments: false,
-            executer: (_, actionContext) => {
-                var formInstance = actionContext?.form?.formInstance ?? shaForm.antdForm;
-                formInstance.resetFields();
+            executer: () => {
+                shaForm.resetFields();
                 return Promise.resolve();
             },
         },

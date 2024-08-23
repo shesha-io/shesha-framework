@@ -122,9 +122,7 @@ export interface SubmitRelatedEvents<Values = any> {
 export interface LiveFormEvents<Values = any> {
     onBeforeDataLoad?: () => Promise<void>;
     onAfterDataLoad?: () => Promise<void>;
-    onValuesChanged?: (data: Values) => Promise<void>;
-    // TODO: handle for internal purposes (settings forms etc.)
-    //onValuesChange?: (changedValues: any, values: Values) => void;
+    onValuesUpdate?: (data: Values) => Promise<void>;
 }
 
 export interface FormEvents<Values = any> extends LiveFormEvents<Values>, SubmitRelatedEvents<Values> {
