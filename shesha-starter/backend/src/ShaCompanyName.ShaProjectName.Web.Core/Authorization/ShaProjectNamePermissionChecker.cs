@@ -103,14 +103,14 @@ namespace ShaCompanyName.ShaProjectName.Common.Authorization
             return await IsInAnyOfRoles(person, CommonRoles.GlobalAdmin);
         }
 
-        public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        Task<bool> ICustomPermissionChecker.IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
         {
-            return await Task.FromResult(false);
+            throw new NotImplementedException();
         }
 
-        public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        bool ICustomPermissionChecker.IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
         {
-            return false;
+            throw new NotImplementedException();
         }
     }
 }
