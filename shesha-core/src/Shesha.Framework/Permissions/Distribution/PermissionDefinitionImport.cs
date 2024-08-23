@@ -91,7 +91,7 @@ namespace Shesha.DynamicEntities.Distribution
                 // ToDo: Temporary update the current version.
                 // Need to update the rest of the other code to work with versioning first
 
-                await MapConfigAync(item, dbItem, context);
+                await MapConfigAsync(item, dbItem, context);
                 await _shaPermissionManager.EditPermissionAsync(dbItem.Name, dbItem);
                 await _permissionDefinitionRepo.UpdateAsync(dbItem);
 
@@ -100,7 +100,7 @@ namespace Shesha.DynamicEntities.Distribution
             else
             {
                 var newItem = new PermissionDefinition();
-                await MapConfigAync(item, newItem, context);
+                await MapConfigAsync(item, newItem, context);
 
                 // fill audit?
                 newItem.VersionNo = 1;
@@ -118,7 +118,7 @@ namespace Shesha.DynamicEntities.Distribution
             }
         }
 
-        protected async Task<PermissionDefinition> MapConfigAync(DistributedPermissionDefinition item, PermissionDefinition dbItem, IConfigurationItemsImportContext context)
+        protected async Task<PermissionDefinition> MapConfigAsync(DistributedPermissionDefinition item, PermissionDefinition dbItem, IConfigurationItemsImportContext context)
         {
             dbItem.Name = item.Name;
             dbItem.Module = await GetModuleAsync(item.ModuleName, context);
