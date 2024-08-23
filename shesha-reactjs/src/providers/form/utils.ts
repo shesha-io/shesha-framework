@@ -222,7 +222,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
 export const useAvailableConstantsData = (args: GetAvailableConstantsDataArgs = {}): IApplicationContext => {
   const fullContext = useAvailableConstantsContexts();
 
-  const accessors = wrapConstantsData({...args, fullContext});
+  const accessors = wrapConstantsData({ fullContext, ...args });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
   if (!contextProxyRef.current)

@@ -160,7 +160,7 @@ module.exports = {
       'error',
       {
         allow: [
-          'log',
+          //'log',
           'warn',
           'dir',
           'timeLog',
