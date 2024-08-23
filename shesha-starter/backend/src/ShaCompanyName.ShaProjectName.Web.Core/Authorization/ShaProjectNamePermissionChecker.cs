@@ -1,6 +1,7 @@
 using Abp.Domain.Repositories;
 using NHibernate.Linq;
 using Shesha.Authorization;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using System;
 using System.Linq;
