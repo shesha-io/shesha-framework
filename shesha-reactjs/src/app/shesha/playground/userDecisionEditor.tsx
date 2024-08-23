@@ -3,7 +3,6 @@ import React from 'react';
 import { FC } from 'react';
 import { Typography } from 'antd';
 import { ConfigurableForm } from '@/components';
-import { IShaFormInstance } from '@/providers/form/store/interfaces';
 
 export interface UserDecision {
     uid: string;
@@ -26,11 +25,6 @@ export const UserDecisionEditor: FC<IUserDecisionEditorProps> = (props) => {
             onChange(values);
     };
 
-    const onMarkupLoaded = (shaForm: IShaFormInstance) => {
-        console.log('LOG: markeup loaded event 🔥', shaForm);
-        return Promise.resolve();
-    };
-
     return (
         <>
             <ConfigurableForm
@@ -41,7 +35,6 @@ export const UserDecisionEditor: FC<IUserDecisionEditorProps> = (props) => {
                 wrapperCol={{ span: 19 }}
                 initialValues={value}
                 onValuesChange={onValuesChange}
-                onMarkupLoaded={onMarkupLoaded}
             />
             <Paragraph
                 copyable={{

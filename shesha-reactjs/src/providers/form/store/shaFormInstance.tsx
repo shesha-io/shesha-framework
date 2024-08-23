@@ -227,6 +227,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
     log = (...args) => {
         if (this.logEnabled)
+            // eslint-disable-next-line no-console
             console.log(...args);
     };
 
