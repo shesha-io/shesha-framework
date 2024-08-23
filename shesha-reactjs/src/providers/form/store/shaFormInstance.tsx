@@ -157,6 +157,13 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.forceRootUpdate();
     };
 
+    #setInternalFormData = (values: any) => {
+        this.formData = values;
+        if (this.onValuesChange)
+            this.onValuesChange(values, values);
+        this.events.onValuesUpdate?.(values);
+    };
+
     setFormData = (payload: ISetFormDataPayload) => {
         const { values, mergeValues } = payload;
         if (isEmpty(values) && mergeValues)
@@ -166,17 +173,14 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             ? { ...this.formData, ...values }
             : values;
 
-        this.formData = newData;
-
-        if (this.onValuesChange)
-            this.onValuesChange(values, newData);
-
         if (mergeValues) {
             this.antdForm.setFieldsValue(values);
         } else {
             this.antdForm.resetFields();
             this.antdForm.setFieldsValue(values);
         }
+
+        this.#setInternalFormData(newData);
 
         this.forceRootUpdate();
     };
@@ -206,6 +210,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     };
     resetFields = () => {
         this.antdForm.resetFields();
+        const values = this.antdForm.getFieldsValue();
+        this.#setInternalFormData(values);
     };
     getFieldsValue = (): Values => {
         return this.antdForm.getFieldsValue();
@@ -276,7 +282,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         this.events.onBeforeDataLoad = makeCaller<void, void>(settings.onBeforeDataLoad);
         this.events.onAfterDataLoad = makeCaller<void, void>(settings.onAfterDataLoad);
-        this.events.onValuesChanged = makeCaller<Values, void>(settings.onValuesChanged);
+        this.events.onValuesUpdate = makeCaller<Values, void>(settings.onValuesUpdate);
 
         this.modelMetadata = settings.modelType
             ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: 'entity' })
