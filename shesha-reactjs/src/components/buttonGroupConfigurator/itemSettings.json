@@ -163,11 +163,28 @@
           "jsSetting": false
         },
         {
+          "id": "oXQyiI2WU5P0E4lVO-uLW",
+          "type": "checkbox",
+          "propertyName": "danger",
+          "label": "Danger",
+          "labelAlign": "right",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "hidden": false,
+          "validate": {}
+        },
+        {
           "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
           "type": "editModeSelector",
           "propertyName": "editMode",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "label": "Edit mode"
+        },
+        {
+          "id": "oW5driq-fQt8oyUTeB8rX",
+          "type": "checkbox",
+          "propertyName": "hidden",
+          "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "label": "Hidden"
         },
         {
           "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
@@ -302,31 +319,6 @@
               "id": "71c04514-0473-4748-ae75-00ed3bd6cffd",
               "label": "Extra bold",
               "value": "900"
-            }
-          ]
-        },
-        {
-          "id": "d498779d-012a-4c6a-10ma9-77231245ae28",
-          "type": "dropdown",
-          "propertyName": "borderStyle",
-          "parentId": "root",
-          "label": "Border Style",
-          "dataSourceType": "values",
-          "values": [
-            {
-              "id": "c4a96833-8ed7-4085-8848-169d5607136d",
-              "label": "solid",
-              "value": "solid"
-            },
-            {
-              "id": "c6f974da-ad28-44e5-8e4d-50280cf24ae7",
-              "label": "dashed",
-              "value": "dashed"
-            },
-            {
-              "id": "71c0dc14-0473-4748-ae75-a4ed3bd6cffd",
-              "label": "dotted",
-              "value": "dotted"
             }
           ]
         },
