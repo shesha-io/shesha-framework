@@ -43,7 +43,7 @@ type MenuButton = ButtonGroupItemProps & {
 };
 
 const renderButton = (props: ButtonGroupItemProps, uuid: string, appContext: IApplicationContext, form?: FormInstance<any>) => {
-    if (props.danger) console.log('Button Group renderButton', props.buttonType);
+
     const { width, height, backgroundColor, fontSize, color, fontWeight, borderWidth, borderColor, borderStyle, borderRadius, size, buttonType } = props;
     const newStyles = {
         width: addPx(width),
