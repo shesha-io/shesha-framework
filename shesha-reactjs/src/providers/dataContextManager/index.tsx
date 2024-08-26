@@ -219,6 +219,10 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       return ctxs;
     };
 
+    const isRoot = () => {
+      return id === SHESHA_ROOT_DATA_CONTEXT_MANAGER;
+    };
+
     const getRoot = () => {
       if (parentManager?.id === SHESHA_ROOT_DATA_CONTEXT_MANAGER)
         return parentManager;
@@ -229,6 +233,8 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     const getDataContexts = (topId: string) => {
       const ctxs = getLocalDataContexts(topId);
+      if (isRoot)
+        return ctxs;
       return ctxs.concat(getRoot()?.getDataContexts('all') ?? []);
     };
 
@@ -238,7 +244,10 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
     };
 
     const getPageContext = (): IDataContextDescriptor => {
-      return getRoot()?.getNearestDataContext('all', 'page');
+      if (isRoot)
+        return getNearestDataContext('all', 'page');
+      else
+        return getRoot()?.getNearestDataContext('all', 'page');
     };
 
     const getDataContext = (contextId: string): IDataContextDescriptor => {
@@ -268,6 +277,8 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
 
     const getDataContextsData =(topId?: string, data?: any) => {
       const res = getLocalDataContextsData(topId, data);
+      if (isRoot)
+        return res;
       getRoot()?.getDataContextsData('all', res);
       return res;
     };
@@ -305,6 +316,12 @@ const DataContextManager: FC<PropsWithChildren<IDataContextManagerProps>> = ({ i
       getPageContext,
       getRoot,
     };
+
+    if (isRoot) {
+      dataContextsManagerActions.getRoot = () => {
+        return {...state, ...dataContextsManagerActions};
+      };
+    }
 
     return (
         <DataContextManagerStateContext.Provider value={state}>
