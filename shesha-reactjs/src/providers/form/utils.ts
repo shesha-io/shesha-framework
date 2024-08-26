@@ -121,7 +121,7 @@ export interface IApplicationContext<Value = any> {
 export type GetAvailableConstantsDataArgs = {
   topContextId?: string;
   shaForm?: IShaFormInstance;
-  queryStringGetter?: () => QueryStringParams;  
+  queryStringGetter?: () => QueryStringParams;
 };
 
 export type AvailableConstantsContext = {
@@ -376,6 +376,27 @@ export const updateModelToMoment = async (model: any, properties: NestedProperti
   });
 };
 
+const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
+  const containers = [...(toolboxComponent.customContainerNames ?? [])];
+  if (!containers.includes('components')) containers.push('components');
+  return containers;
+};
+
+const getSubContainers = (component: IConfigurableFormComponent, componentRegistration: IToolboxComponent): IComponentsContainer[] => {
+  const customContainerNames = componentRegistration?.customContainerNames || [];
+  let subContainers: IComponentsContainer[] = [];
+  customContainerNames.forEach((containerName) => {
+    const containers = component[containerName]
+      ? Array.isArray(component[containerName])
+        ? (component[containerName] as IComponentsContainer[])
+        : [component[containerName] as IComponentsContainer]
+      : undefined;
+    if (containers) subContainers = [...subContainers, ...containers];
+  });
+  if (component['components']) subContainers.push({ id: component.id, components: component['components'] });
+  return subContainers;
+};
+
 /**
  * Convert components tree to flat structure.
  * In flat structure we store components settings and their relations separately:
@@ -406,17 +427,7 @@ export const componentsTreeToFlatStructure = (
       const componentRegistration = toolboxComponents[component.type];
 
       // custom containers
-      const customContainerNames = componentRegistration?.customContainerNames || [];
-      let subContainers: IComponentsContainer[] = [];
-      customContainerNames.forEach((containerName) => {
-        const containers = component[containerName]
-          ? Array.isArray(component[containerName])
-            ? (component[containerName] as IComponentsContainer[])
-            : [component[containerName] as IComponentsContainer]
-          : undefined;
-        if (containers) subContainers = [...subContainers, ...containers];
-      });
-      if (component['components']) subContainers.push({ id: component.id, components: component['components'] });
+      const subContainers = getSubContainers(component, componentRegistration);
 
       subContainers.forEach((subContainer) => {
         if (subContainer && subContainer.components) {
@@ -507,16 +518,40 @@ export const componentsFlatStructureToTree = (
 
     if (!componentIds) return;
 
+    const ownerComponent = flat.allComponents[ownerId];
+    const ownerDefinition = ownerComponent && ownerComponent.type
+      ? toolboxComponents[ownerComponent.type]
+      : undefined;
+    const staticContainerIds = [];
+    if (ownerDefinition?.customContainerNames){
+      ownerDefinition.customContainerNames.forEach(sc => {
+        const subContainer = ownerComponent[sc];
+        if (subContainer){
+          // container with id
+          if (subContainer.id)
+            staticContainerIds.push(subContainer.id);
+          // container without id (array of components)
+          if (Array.isArray(subContainer))
+            subContainer.forEach(c => {
+              if (c.id)
+                staticContainerIds.push(c.id);
+          });
+        }
+      });
+    }    
+
     // iterate all component ids on the current level
     componentIds.forEach((id) => {
       // extract current component and add to hierarchy
       const component = { ...flat.allComponents[id] };
-      container.push(component);
+      if (!staticContainerIds.includes(id))
+        container.push(component);
 
       //  process all childs if any
       if (id in flat.componentRelations) {
         const childComponents: IConfigurableFormComponent[] = [];
         processComponent(childComponents, id);
+
         component['components'] = childComponents;
       }
 
@@ -1184,7 +1219,7 @@ export function linkComponentToModelMetadata<TModel extends IConfigurableFormCom
   if (metadata.isVisible === false) mappedModel.hidden = true;
   if (!mappedModel.validate)
     mappedModel.validate = {};
-  
+
   if (metadata.max) mappedModel.validate.maxValue = metadata.max;
   if (metadata.min) mappedModel.validate.minValue = metadata.min;
   if (metadata.maxLength) mappedModel.validate.maxLength = metadata.maxLength;
@@ -1197,12 +1232,6 @@ export function linkComponentToModelMetadata<TModel extends IConfigurableFormCom
 
   return mappedModel;
 }
-
-const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
-  const containers = [...(toolboxComponent.customContainerNames ?? [])];
-  if (!containers.includes('components')) containers.push('components');
-  return containers;
-};
 
 export type ProcessingFunc = (child: IConfigurableFormComponent, parentId: string) => void;
 
