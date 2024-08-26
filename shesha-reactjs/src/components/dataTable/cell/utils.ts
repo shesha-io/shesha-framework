@@ -1,55 +1,57 @@
 import { IComponentMetadata } from '@/providers';
 import { IComponentWrapperProps, ICrudOptions, ITableCrudOptions } from './interfaces';
- 
+
 export const adjustWidth = (currentWidth: { minWidth: number; maxWidth: number }, crudOptions: ICrudOptions) => {
-  const { canDoubleWidth, canDivideWidth, canTripleWidth, canDivideByThreeWidth } = crudOptions;
-  if (canDoubleWidth && canDivideByThreeWidth) {
-    if (currentWidth.minWidth % 3 === 0) {
-      currentWidth.minWidth = (currentWidth.minWidth / 3) * 2;
-      currentWidth.maxWidth = (currentWidth.maxWidth / 3) * 2;
+  const { canDoubleWidth, canDivideWidth, canTripleWidth, canDivideByThreeWidth, columnsChanged } = crudOptions;
+  if (!columnsChanged) {
+
+    if (canDoubleWidth && canDivideByThreeWidth) {
+      if (currentWidth.minWidth % 3 === 0) {
+        currentWidth.minWidth = (currentWidth.minWidth / 3) * 2;
+        currentWidth.maxWidth = (currentWidth.maxWidth / 3) * 2;
+      }
+    } else if (canDivideWidth && canTripleWidth) {
+      if (currentWidth.minWidth % 2 === 0) {
+        currentWidth.minWidth = (currentWidth.minWidth / 2) * 3;
+        currentWidth.maxWidth = (currentWidth.maxWidth / 2) * 3;
+      }
+    } else if (canDoubleWidth) {
+      currentWidth.minWidth *= 2;
+      currentWidth.maxWidth *= 2;
+    } else if (canDivideWidth) {
+      currentWidth.minWidth /= 2;
+      currentWidth.maxWidth /= 2;
+    } else if (canTripleWidth) {
+      currentWidth.minWidth *= 3;
+      currentWidth.maxWidth *= 3;
+    } else if (canDivideByThreeWidth) {
+      currentWidth.minWidth /= 3;
+      currentWidth.maxWidth /= 3;
     }
-  } else if (canDivideWidth && canTripleWidth) {
-    if (currentWidth.minWidth % 2 === 0) {
-      currentWidth.minWidth = (currentWidth.minWidth / 2) * 3;
-      currentWidth.maxWidth = (currentWidth.maxWidth / 2) * 3;
-    }
-  } else if (canDoubleWidth) {
-    currentWidth.minWidth *= 2;
-    currentWidth.maxWidth *= 2;
-  } else if (canDivideWidth) {
-    currentWidth.minWidth /= 2;
-    currentWidth.maxWidth /= 2;
-  } else if (canTripleWidth) {
-    currentWidth.minWidth *= 3;
-    currentWidth.maxWidth *= 3;
-  } else if (canDivideByThreeWidth) {
-    currentWidth.minWidth /= 3;
-    currentWidth.maxWidth /= 3;
   }
- 
   return currentWidth;
 };
- 
+
 export const asNumber = (value: any): number => {
   return typeof value === 'number' ? value : null;
 };
- 
+
 function change(changes: Object) {
   return Object.values(changes).some((value) => value === true);
 }
- 
+
 export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperProps) => {
   let result: IComponentMetadata = {};
- 
+
   /** Adds injectedTableRow to result if applicable **/
   if (defaultRow) result = { ...result, injectedTableRow: defaultRow };
- 
+
   /** Adds injectedDefaultValue to result if applicable **/
   if (defaultValue) result = { ...result, injectedDefaultValue: defaultValue };
- 
+
   return result;
 };
- 
+
 const getWidthMultiplier = ({ canEdit, canAdd, canDelete, inlineEditMode }: ITableCrudOptions) => {
   if (canEdit && canDelete && inlineEditMode === 'all-at-once') {
     return 3;
@@ -58,7 +60,7 @@ const getWidthMultiplier = ({ canEdit, canAdd, canDelete, inlineEditMode }: ITab
   }
   return 1;
 };
- 
+
 export const getCruadActionConditions = (
   currentOptions: ITableCrudOptions,
   prevCrudOptions: ITableCrudOptions
@@ -67,17 +69,18 @@ export const getCruadActionConditions = (
   let canDivideWidth = false;
   let canTripleWidth = false;
   let canDivideByThreeWidth = false;
- 
-  const { canAdd, canEdit, canDelete, inlineEditMode, formMode } = currentOptions;
- 
+
+  const { canAdd, canEdit, canDelete, inlineEditMode, formMode, totalVisibleColumns } = currentOptions;
+
   const {
     canAdd: prevAdd,
     canEdit: prevEdit,
     canDelete: prevDelete,
     inlineEditMode: prevInLineEdit,
     formMode: prevFormMode,
+    totalVisibleColumns: prevTotalVisibleColumns,
   } = prevCrudOptions || {};
- 
+
   const changes = {
     add: prevAdd !== canAdd,
     edit: prevEdit !== canEdit,
@@ -85,7 +88,7 @@ export const getCruadActionConditions = (
     inlineEditMode: prevInLineEdit !== inlineEditMode,
     formMode: prevFormMode !== formMode,
   };
- 
+
   const yesToNo = {
     add: prevAdd === true && canAdd === false,
     edit: prevEdit === true && canEdit === false,
@@ -93,29 +96,29 @@ export const getCruadActionConditions = (
     inlineEditMode: prevInLineEdit === 'all-at-once' && inlineEditMode !== 'all-at-once',
     formMode: prevFormMode === 'edit' && formMode !== 'edit',
   };
- 
+
   const isAllAtOnce = inlineEditMode === 'all-at-once';
- 
+
   const isMoreCrudChanges = Object.values(changes).filter((value) => value === true).length > 1;
- 
+
   // In readonly mode or form designer loading
   if (!change(changes) || isMoreCrudChanges) {
     if (changes.formMode) {
       const prevWidthMultiplier = prevCrudOptions && getWidthMultiplier(prevCrudOptions);
-      const currentWidthMultiplier =currentOptions && getWidthMultiplier(currentOptions);
- 
+      const currentWidthMultiplier = currentOptions && getWidthMultiplier(currentOptions);
+
       if (prevWidthMultiplier === 3) {
-        if  (currentWidthMultiplier === 2) {
+        if (currentWidthMultiplier === 2) {
           canDoubleWidth = true;
           canDivideByThreeWidth = true;
-        }else if(currentWidthMultiplier === 1){
+        } else if (currentWidthMultiplier === 1) {
           canDivideByThreeWidth = true;
         }
       } else if (prevWidthMultiplier === 2) {
-        if (currentWidthMultiplier=== 3) {
+        if (currentWidthMultiplier === 3) {
           canTripleWidth = true;
           canDivideWidth = true;
-        }else if(currentWidthMultiplier === 1){
+        } else if (currentWidthMultiplier === 1) {
           canDivideWidth = true;
         }
       } else {
@@ -157,19 +160,19 @@ export const getCruadActionConditions = (
             canDoubleWidth = true;
           } else if (!canAdd && canDelete) {
             canDivideByThreeWidth = true;
-          }else if(!canDelete && !canAdd){
+          } else if (!canDelete && !canAdd) {
             canDivideWidth = true;
           }
         } else {
           if (!canAdd) {
             canDivideWidth = true;
           }
+        }
+
       }
 
     }
- 
-    }
- 
+
     //Delete change
     if (changes?.delete) {
       if (!yesToNo?.delete) {
@@ -188,7 +191,7 @@ export const getCruadActionConditions = (
         }
       }
     }
- 
+
     //Add change
     if (changes?.add) {
       if (!canEdit) {
@@ -199,7 +202,7 @@ export const getCruadActionConditions = (
         }
       }
     }
- 
+
     //Edit mode change
     if (changes?.inlineEditMode && canEdit) {
       if (!yesToNo?.inlineEditMode) {
@@ -215,11 +218,12 @@ export const getCruadActionConditions = (
       }
     }
   }
- 
+
   return {
     canDoubleWidth,
     canDivideWidth,
     canTripleWidth,
     canDivideByThreeWidth,
+    columnsChanged: totalVisibleColumns !== prevTotalVisibleColumns
   };
 };
