@@ -64,8 +64,8 @@ namespace Shesha.Permission
                 {
                     var permission = await _permissionManager.CreatePermissionAsync(dbPermission);
                     await CreateChildPermissionsAsync(dbPermissions, permission);
-                    dbPermissions.Remove(dbPermission);
                 }
+                dbPermissions.Remove(dbPermission);
             }
 
 
