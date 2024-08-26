@@ -377,9 +377,9 @@ export const updateModelToMoment = async (model: any, properties: NestedProperti
 };
 
 const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
-  const containers = [...(toolboxComponent.customContainerNames ?? [])];
-  if (!containers.includes('components')) containers.push('components');
-  return containers;
+  return toolboxComponent.customContainerNames
+    ? [...(toolboxComponent.customContainerNames ?? [])]
+    : ['components'];
 };
 
 const getSubContainers = (component: IConfigurableFormComponent, componentRegistration: IToolboxComponent): IComponentsContainer[] => {
@@ -523,10 +523,10 @@ export const componentsFlatStructureToTree = (
       ? toolboxComponents[ownerComponent.type]
       : undefined;
     const staticContainerIds = [];
-    if (ownerDefinition?.customContainerNames){
+    if (ownerDefinition?.customContainerNames) {
       ownerDefinition.customContainerNames.forEach(sc => {
         const subContainer = ownerComponent[sc];
-        if (subContainer){
+        if (subContainer) {
           // container with id
           if (subContainer.id)
             staticContainerIds.push(subContainer.id);
@@ -535,10 +535,10 @@ export const componentsFlatStructureToTree = (
             subContainer.forEach(c => {
               if (c.id)
                 staticContainerIds.push(c.id);
-          });
+            });
         }
       });
-    }    
+    }
 
     // iterate all component ids on the current level
     componentIds.forEach((id) => {
