@@ -29,7 +29,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
     const isVisibleByCondition = executeCustomExpression(model?.customVisibility, true, formData, globalState);
 
-    const style = {...getStyle(model.style, data, globalState)};
+    const style = { ...getStyle(model.style, data, globalState) };
 
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
@@ -43,7 +43,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
         />
       );
     }
-    
+
     return (
       <ConfigurableFormItem model={{ ...model }}>
         {(value) => {
@@ -90,7 +90,9 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     })
     .add<IRefListStatusProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRefListStatusProps>(3, (prev) => migrateVisibility(prev))
-    .add<IRefListStatusProps>(4, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IRefListStatusProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<IRefListStatusProps>(5, (prev) => ({ ...prev, requiredConfigs: ['referenceListId'] }))
+
   ,
   settingsFormMarkup: RefListStatusSettingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(RefListStatusSettingsForm, model),

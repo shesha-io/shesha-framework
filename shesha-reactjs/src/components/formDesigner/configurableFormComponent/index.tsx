@@ -50,6 +50,9 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const componentEditModeFx = isPropertySettings(componentModel.editMode);
   const componentEditMode = getActualPropertyValue(componentModel, allData, 'editMode')?.editMode as EditMode;
 
+  const isFullyConfigured = getActualPropertyValue(componentModel, allData, 'requiredConfigs')?.requiredConfigs?.every(x => !!componentModel?.[x]);
+
+
   const actionText1 = (hiddenFx ? 'hidden' : '') + (hiddenFx && componentEditModeFx ? ' and ' : '') + (componentEditModeFx ? 'disabled' : '');
   const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
 
