@@ -88,7 +88,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const InputComponentType = renderInput(model.textType);
 
-    console.log('model', model);
     const inputProps: InputProps = {
       className: `sha-input`,
       placeholder: model.placeholder,
@@ -101,6 +100,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       readOnly: model.readOnly,
       style: finalStyle,
       autoComplete: model.textType === 'password' ? 'new-password' : undefined,
+      defaultValue: model.passEmptyStringByDefault ? '' : model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
     };
 
     const eventProps = {
@@ -117,10 +117,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     return (
       <ConfigurableFormItem
         model={model}
-        initialValue={
-          (model.passEmptyStringByDefault && '') ||
-          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
-        }
       >
         {(value, onChange) => {
           const customEvent = customEventHandler(eventProps);

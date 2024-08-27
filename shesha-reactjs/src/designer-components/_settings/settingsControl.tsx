@@ -107,7 +107,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
       <div className={styles.jsContent}>
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
-        {propertyName === 'label' && <LabelConfigurator model={props}/>}
+        {propertyName === 'label' && <LabelConfigurator />}
         <Button
           hidden={props.readOnly}
           className={`${styles.jsSwitch} ${props.type === 'horizontal' ? 'inlineJS' : ''}`}

@@ -10,6 +10,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        position: absolute;
+        right: 38px;
+        top: -28px;
     `);
 
   const hidelLabelIcon = cx("", css`

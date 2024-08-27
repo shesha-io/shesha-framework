@@ -42,7 +42,9 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                         formData={model}
                         onValuesChange={onValuesChange}
                     />
-                    <LabelConfigurator readOnly={readOnly} onChange={onValuesChange} model={model} />
+                    <SettingsFormItem name="label" label="Label" jsSetting>
+                        <Input readOnly={readOnly} />
+                    </SettingsFormItem>
                     <SettingsFormItem name="textType" label="Type" required>
                         <Select>
                             <Option value="text">Text</Option>
@@ -181,7 +183,9 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                                 <BackgroundConfigurator readOnly={readOnly} onValuesChange={onValuesChange} value={model.background} model={model} />
                             </Panel>
                             <Panel header="Styling" key="5">
-                                <StyleBox readOnly={readOnly} />
+                                <SettingsFormItem name="styling">
+                                    <StyleBox />
+                                </SettingsFormItem>
                             </Panel>
                         </Collapse>
                     </ConfigProvider>

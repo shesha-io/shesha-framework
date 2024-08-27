@@ -31,7 +31,6 @@ export const SettingsTabs = ({ tabs }: { tabs: any[] }) => {
     const collapseRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        console.log("SETTINGS REF::: ", settingsPanelRef);
         const elements = document.querySelectorAll('.ant-form-item');
         elements.forEach((element) => {
             const label = element.querySelector('.ant-form-item-label');

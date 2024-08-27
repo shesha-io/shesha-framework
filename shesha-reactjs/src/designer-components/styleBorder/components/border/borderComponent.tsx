@@ -70,7 +70,7 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
         </Select>);
 
     return (
-        <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
+        <Row gutter={[8, 2]}>
             <Col className="gutter-row" span={24}>
                 <SettingsFormItem name="hideBorder" label="Hide Border" valuePropName="checked" jsSetting type='horizontal'>
                     <Switch disabled={readOnly} />

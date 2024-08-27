@@ -9,7 +9,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             right: auto;
             top: 4px;
             font-size: 12px;
-            height: 20px;
+            height: 24px;
             width: max-content;
             margin-left: 5px;
             margin-right: 5px;
