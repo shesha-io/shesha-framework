@@ -23,9 +23,6 @@ const LabelConfigurator: FC<ILabelProps> = ({ model, readOnly, onChange }) => {
     return (
         <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
             <Col className="gutter-row" span={24}>
-                <SettingsFormItem name="label" label="Label" jsSetting>
-                    <Input readOnly={readOnly} />
-                </SettingsFormItem>
                 <div className={styles.flexWrapper}>
                     <div className={styles.flexInput}>
                         <Radio.Group value={model?.labelAlign} onChange={(e) => updateValue({ labelAlign: e.target.value })}>
@@ -45,6 +42,10 @@ const LabelConfigurator: FC<ILabelProps> = ({ model, readOnly, onChange }) => {
                         />
                     </div>
                 </div>
+                <SettingsFormItem name="label" label="Label" jsSetting>
+                    <Input readOnly={readOnly} />
+                </SettingsFormItem>
+
             </Col>
         </Row>
     );

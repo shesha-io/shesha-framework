@@ -1,39 +1,62 @@
-import { Input, Tabs } from 'antd';
-import React, { useCallback, useRef } from 'react';
+import { Input, Tabs, Collapse } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
 
-export const useSearch = (settingsPanelRef) => {
-    return useCallback((e: React.ChangeEvent<HTMLInputElement>, active: string) => {
-        if (settingsPanelRef?.current === undefined) return null;
-        const searchQuery = e.target.value.toLowerCase();
-        const activePanel = settingsPanelRef?.current?.querySelector(`.${active}`);
+const { TabPane } = Tabs;
+const { Panel } = Collapse;
 
-        if (activePanel) {
-            activePanel.querySelectorAll('.ant-form-item-label').forEach((label) => {
-                const labelText = label.textContent?.toLowerCase() || '';
-                label.parentElement.style.display = labelText.includes(searchQuery) ? 'block' : 'none';
-            });
-        }
-    }, [settingsPanelRef]);
+export const useSearch = () => {
+    const [searchQuery, setSearchQuery] = useState<string>('');
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value.toLowerCase());
+    };
+
+    return { searchQuery, handleSearch };
 };
 
-export const SearchInput = ({ group, ref }) => {
-    const search = useSearch(ref);
-    return <Input
+export const SearchInput = ({ onSearch }: { onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void }) => (
+    <Input
         placeholder="Search"
         allowClear
         style={{ marginBottom: 10 }}
-        onChange={(e) => search(e, group)}
+        onChange={onSearch}
     />
-};
+);
 
-const { TabPane } = Tabs;
+export const SettingsTabs = ({ tabs }: { tabs: any[] }) => {
+    const { searchQuery, handleSearch } = useSearch();
+    const collapseRef = useRef<HTMLDivElement>(null);
 
-export const renderTabs = (tabs, ref) => (
-        <Tabs defaultActiveKey="display" type='card'>
+    useEffect(() => {
+
+        const elements = document.querySelectorAll('.ant-form-item');
+        elements.forEach((element) => {
+            const label = element.querySelector('.ant-form-item-label');
+            const text = label?.textContent?.toLowerCase() || '';
+            if (text.includes(searchQuery)) {
+                element.classList.remove('sha-hidden');
+            } else {
+                element.classList.add('sha-hidden');
+            }
+        });
+
+        const panels = collapseRef.current?.querySelectorAll('.ant-collapse-item');
+
+        panels?.forEach(panel => {
+            const shouldShow = panel.querySelectorAll('.sha-hidden').length === 0;
+            shouldShow ? panel.classList.remove('sha-hidden') : panel.classList.add('sha-hidden');
+        });
+
+    }, [searchQuery]);
+
+    return (
+        <Tabs defaultActiveKey="display" type="card">
             {tabs.map(({ key, tab, content }) => (
                 <TabPane tab={tab} key={key} className={key}>
-                    <SearchInput group={tab.tab} ref={ref} />
-                    {content}
+                    <SearchInput onSearch={handleSearch} />
+                    <div ref={collapseRef}>{content}</div>
                 </TabPane>
             ))}
-        </Tabs>);
+        </Tabs>
+    );
+};

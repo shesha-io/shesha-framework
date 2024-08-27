@@ -103,7 +103,7 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
             <div className={styles.flexWrapper}>
                 <div className={styles.flexInput}>
                     <SettingsFormItem name="font.color" label="Color" jsSetting>
-                        <ColorPicker value={value?.color} readOnly={readOnly} />
+                        <ColorPicker value={value?.color} readOnly={readOnly} allowClear />
                     </SettingsFormItem>
                 </div>
                 <div className={styles.flexInput}>

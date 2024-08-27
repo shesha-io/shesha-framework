@@ -1,9 +1,9 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import React, { FC, useCallback, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import StyleBox from '../styleBox/components/box';
-import { Switch, Input, Select, Tabs, Collapse, ConfigProvider } from 'antd';
+import { Switch, Input, Select, Collapse, ConfigProvider } from 'antd';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITextFieldComponentProps } from './interfaces';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
@@ -18,7 +18,7 @@ import BackgroundConfigurator from '../styleBackground/components/background/bac
 import FontComponent from '../styleFont/components/font/fontComponent';
 import LabelConfigurator from '../styleLabel/components/label/labelConfigurator';
 import PrefixSuffixComponent from '../stylePrefixSuffix/components/prefixSuffix/prefixSuffixComponent';
-import { renderTabs } from '@/components/formDesigner/componentPropertiesPanel/useSearch/useSearch';
+import { SettingsTabs } from '@/components/formDesigner/componentPropertiesPanel/useSearch/useSearch';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -41,6 +41,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                         readOnly={readOnly}
                         defaultModelType={designerModelType ?? formSettings.modelType}
                         formData={model}
+                        hidden={model.hidden} //hide component when search query is not the same as model.label
                         onValuesChange={onValuesChange}
                     />
                     <LabelConfigurator readOnly={readOnly} onChange={onValuesChange} model={model} />
@@ -60,12 +61,12 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
 
                     <PrefixSuffixComponent readOnly={readOnly} model={model} onChange={onValuesChange} />
 
-                    <SettingsFormItem name="initialValue" hidden label="Default Value" jsSetting tooltip='Enter default value of component. (formData, formMode, globalState) are exposed'>
-                        <Input readOnly={readOnly} />
-                    </SettingsFormItem>
-
                     <SettingsFormItem type='horizontal' name="passEmptyStringByDefault" label="Empty as default" valuePropName="checked" jsSetting tooltip='Whether the component should be initialized with an empty string'>
                         <Switch disabled={readOnly} />
+                    </SettingsFormItem>
+
+                    <SettingsFormItem name="initialValue" label="Default Value" hidden={model.passEmptyStringByDefault} jsSetting tooltip='Enter default value of component. (formData, formMode, globalState) are exposed'>
+                        <Input readOnly={readOnly} />
                     </SettingsFormItem>
 
                     <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting type='horizontal'>
@@ -74,10 +75,6 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
 
                     <SettingsFormItem name="editMode" label="Edit mode" jsSetting>
                         <ReadOnlyModeSelector readOnly={readOnly} />
-                    </SettingsFormItem>
-
-                    <SettingsFormItem name="hideBorder" label="Hide Border" valuePropName="checked" jsSetting type='horizontal'>
-                        <Switch disabled={readOnly} />
                     </SettingsFormItem>
                 </>
             )
@@ -211,8 +208,8 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
     ];
 
     return (
-        <div ref={settingsPanelRef}>
-            {renderTabs(tabs, settingsPanelRef)}
+        <div>
+            <SettingsTabs tabs={tabs} />
         </div>
     );
 };

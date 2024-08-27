@@ -1,4 +1,4 @@
-import { Col, Input, InputNumber, Radio, Row, Select } from 'antd';
+import { Col, Input, InputNumber, Radio, Row, Select, Switch } from 'antd';
 import React, { FC } from 'react';
 import { BorderBottomOutlined, BorderLeftOutlined, BorderOutlined, BorderRightOutlined, BorderTopOutlined, DashOutlined, ExpandOutlined, MinusOutlined, RadiusBottomleftOutlined, RadiusBottomrightOutlined, RadiusUpleftOutlined, RadiusUprightOutlined, SmallDashOutlined } from '@ant-design/icons';
 import { ColorPicker } from '@/components';
@@ -72,6 +72,11 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
     return (
         <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
             <Col className="gutter-row" span={24}>
+                <SettingsFormItem name="hideBorder" label="Hide Border" valuePropName="checked" jsSetting type='horizontal'>
+                    <Switch disabled={readOnly} />
+                </SettingsFormItem>
+            </Col>
+            {!model.hideBorder && <Col className="gutter-row" span={24}>
                 <Col className="gutter-row" span={24}>
                     {renderRadioGroup(radiusOptions, activeRadius, 'Radius')}
                 </Col>
@@ -110,7 +115,7 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
                 <Col className="gutter-row" span={24}>
                     {renderRadioGroup(styleOptions, activeBorder, 'border', 'style')}
                 </Col>
-            </Col>
+            </Col>}
         </Row>
     );
 };

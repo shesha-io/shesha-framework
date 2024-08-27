@@ -105,6 +105,8 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
+    const isInline = model.type === 'horizontal';
+    const newLayout = { layout: 'horizontal', colon: false, labelCol: { span: 18 }, wrapperCol: { span: 6 } };
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
 
@@ -117,8 +119,9 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   const formItemProps: FormItemProps = {
     className: classNames(className),
     label: hideLabel ? null : model.label,
-    labelAlign: model.labelAlign,
+    labelAlign: type === 'horizontal' ? 'left' : model.labelAlign,
     hidden: model.hidden,
+    labelWrap: true,
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,
@@ -128,7 +131,8 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
 
-  const formItmePropsAndLayout = type === 'horizontal' ? { ...{ ...formItemProps, layout: 'horizontal', labelCol: { flex: '110px'} } } : formItemProps;
+  const formItemPropsAndLayout = type === 'horizontal' ? { ...{ ...formItemProps }, layout: type, labelWrap: true, colon: false, labelCol: { span: 18 }, wrapperCol: { span: 6 } } : formItemProps;
+
   if (typeof children === 'function') {
     if (model.context) {
       return (
@@ -144,7 +148,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     } else {
       return (
         <ConfigurableFormItemForm
-          formItemProps={formItmePropsAndLayout}
+          formItemProps={formItemPropsAndLayout}
           valuePropName={valuePropName}
         >
           {children}
@@ -154,7 +158,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   } else {
     // Use standard Form.Item for components without binding support
     return (
-      <Form.Item {...formItemProps} >{children}</Form.Item>
+      <Form.Item {...formItemPropsAndLayout} >{children}</Form.Item>
     );
   }
 };
