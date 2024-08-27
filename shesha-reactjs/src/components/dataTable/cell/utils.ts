@@ -70,7 +70,7 @@ export const getCruadActionConditions = (
   let canTripleWidth = false;
   let canDivideByThreeWidth = false;
 
-  const { canAdd, canEdit, canDelete, inlineEditMode, formMode, totalVisibleColumns } = currentOptions;
+  const { canAdd, canEdit, canDelete, inlineEditMode, formMode } = currentOptions;
 
   const {
     canAdd: prevAdd,
@@ -78,7 +78,6 @@ export const getCruadActionConditions = (
     canDelete: prevDelete,
     inlineEditMode: prevInLineEdit,
     formMode: prevFormMode,
-    totalVisibleColumns: prevTotalVisibleColumns,
   } = prevCrudOptions || {};
 
   const changes = {
@@ -219,11 +218,11 @@ export const getCruadActionConditions = (
     }
   }
 
+
   return {
     canDoubleWidth,
     canDivideWidth,
     canTripleWidth,
     canDivideByThreeWidth,
-    columnsChanged: totalVisibleColumns !== prevTotalVisibleColumns
   };
 };

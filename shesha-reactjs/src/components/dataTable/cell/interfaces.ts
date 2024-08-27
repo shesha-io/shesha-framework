@@ -38,7 +38,6 @@ export interface ITableCrudOptions {
   inlineEditMode?: InlineEditMode;
   canAdd?: boolean;
   formMode: FormMode;
-  totalVisibleColumns?: number;
 }
 export interface IChangeProps {
   add?: boolean;
