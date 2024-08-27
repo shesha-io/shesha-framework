@@ -28,7 +28,6 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
     const { model, onValuesChange } = useSettingsForm<ITextFieldComponentProps>();
     const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
     const { formSettings } = useForm();
-    const settingsPanelRef = useRef<HTMLDivElement>(null);
 
     const tabs = [
         {
@@ -41,7 +40,6 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                         readOnly={readOnly}
                         defaultModelType={designerModelType ?? formSettings.modelType}
                         formData={model}
-                        hidden={model.hidden} //hide component when search query is not the same as model.label
                         onValuesChange={onValuesChange}
                     />
                     <LabelConfigurator readOnly={readOnly} onChange={onValuesChange} model={model} />
@@ -208,9 +206,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
     ];
 
     return (
-        <div>
-            <SettingsTabs tabs={tabs} />
-        </div>
+        <SettingsTabs tabs={tabs} />
     );
 };
 

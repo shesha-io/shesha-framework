@@ -3,13 +3,12 @@ import React, { FC } from 'react';
 import { AlignLeftOutlined, AlignRightOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { useStyles } from '../../styles/styles';
-import { ITextFieldComponentProps } from '@/designer-components/textField/interfaces';
 
 
 interface ILabelProps {
     onChange?: (value) => void;
     readOnly?: boolean;
-    model?: ITextFieldComponentProps;
+    model?: any;
 }
 
 

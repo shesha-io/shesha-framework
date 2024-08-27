@@ -8,7 +8,7 @@ import React, {
     useEffect,
     useMemo,
 } from 'react';
-import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
 export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props) => {
     const { selection, value } = props;

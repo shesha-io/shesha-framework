@@ -90,7 +90,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     console.log('model', model);
     const inputProps: InputProps = {
-      className: `sha-input ${styles.textFieldInput}`,
+      className: `sha-input`,
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
@@ -115,38 +115,25 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     };
 
     return (
-      <ConfigProvider
-        theme={{
-          components: {
-            Input: {
-              fontFamily: model.font?.type || 'Arial',
-              fontSize: Number(model.font?.size?.value) || 14,
-              lineHeight: Number(model.font?.lineHeight?.value) || 1.5,
-            },
-
-          },
-        }}
+      <ConfigurableFormItem
+        model={model}
+        initialValue={
+          (model.passEmptyStringByDefault && '') ||
+          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
+        }
       >
-        <ConfigurableFormItem
-          model={model} initialValue={
-            (model.passEmptyStringByDefault && '') ||
-            (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
-          }
-        >
-          {(value, onChange) => {
-            const customEvent = customEventHandler(eventProps);
-            const onChangeInternal = (...args: any[]) => {
-              customEvent.onChange(args[0]);
-              if (typeof onChange === 'function')
-                onChange(...args);
-            };
-            return inputProps.readOnly
-              ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•') : value} disabled={model.readOnly} />
-              :
-              <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
-          }}
-        </ConfigurableFormItem>
-      </ConfigProvider>
+        {(value, onChange) => {
+          const customEvent = customEventHandler(eventProps);
+          const onChangeInternal = (...args: any[]) => {
+            customEvent.onChange(args[0]);
+            if (typeof onChange === 'function')
+              onChange(...args);
+          };
+          return inputProps.readOnly
+            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
+            : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+        }}
+      </ConfigurableFormItem>
     );
   },
   settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),

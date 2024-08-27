@@ -1,7 +1,7 @@
 import { HttpClientApi, useHttpClient } from "@/providers/sheshaApplication/publicApi";
-import { FormDataSubmitPayload, GqlSubmitterSettings, IFormDataSubmitter, isGqlSubmitterSettings } from "./interfaces";
+import { FormDataSubmitPayload, GqlSubmitterSettings, IFormDataSubmitter, isGqlSubmitterSettings, SubmitCaller } from "./interfaces";
 import { useState } from "react";
-import { IApiEndpoint, IFormSettings } from "@/interfaces";
+import { IApiEndpoint, IFormSettings, IToolboxComponents } from "@/interfaces";
 import { StandardEntityActions } from "@/interfaces/metadata";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
 import { getQueryParams, getUrlWithoutQueryParams } from "@/utils/url";
@@ -10,28 +10,25 @@ import { unwrapAxiosCall } from "@/providers/sheshaApplication/publicApi/http/ht
 import { unwrapAbpResponse } from "@/utils/fetchers";
 import { HttpResponse } from "@/providers/sheshaApplication/publicApi/http/api";
 import { addFormFieldsList, hasFiles, jsonToFormData, removeGhostKeys } from "@/utils/form";
+import { useFormDesignerComponents } from "../hooks";
 
 export interface GqlSubmitterArguments {
     httpClient: HttpClientApi;
     endpointsEvaluator: IEntityEndpointsEvaluator;
+    toolboxComponents: IToolboxComponents;
 }
 
 export class GqlSubmitter implements IFormDataSubmitter {
     #httpClient: HttpClientApi;
     #endpointsEvaluator: IEntityEndpointsEvaluator;
-    //private 
+    //#toolboxComponents: IToolboxComponents;
+    
 
     constructor(args: GqlSubmitterArguments) {
         this.#httpClient = args.httpClient;
         this.#endpointsEvaluator = args.endpointsEvaluator;
-        /*
-        this.#metadataDispatcher = args.metadataDispatcher;
-        this.#toolboxComponents = args.toolboxComponents;
+        //this.#toolboxComponents = args.toolboxComponents;
         
-
-        this.formSettings = args.formSettings;
-        this.formFlatStructure = args.formFlatStructure;
-        */
         if (!this.#httpClient)
             throw new Error("Http client is mandatory");
     }
@@ -42,50 +39,40 @@ export class GqlSubmitter implements IFormDataSubmitter {
         return isGqlSubmitterSettings(submitterSettings) ? submitterSettings : { endpointType: 'default' };
     };
 
-    /*
-    #getDynamicPreparedValues = async (payload: FormDataSubmitPayload): Promise<object> => {
-        if (!payload.formSettings.onBeforeSubmit)
-            return {};
-
-        const data = await payload.expressionExecuter(payload.formSettings.onBeforeSubmit, undefined);
-        return data;
-    };
-    */
-
     prepareDataForSubmit = async (payload: FormDataSubmitPayload): Promise<any> => {
         const { formSettings, data, antdForm, getDelayedUpdates } = payload;
         const settings = this.#getGqlSettings(formSettings);
 
-        const postData = {...data};
+        const postData = { ...data };
 
         const postDataAfterPreparation = payload.onPrepareSubmitData
             ? await payload.onPrepareSubmitData({ data: postData })
             : postData;
-        
+
         // handle formFields
         const postDataWithServiceFields = settings.excludeFormFields
             ? postDataAfterPreparation
             : addFormFieldsList({}, postDataAfterPreparation, antdForm);
 
         // handle delayed updates
-        if (Boolean(getDelayedUpdates)) 
+        if (Boolean(getDelayedUpdates))
             postDataWithServiceFields._delayedUpdate = getDelayedUpdates();
 
         const postDataWithoutGhosts = removeGhostKeys(postDataWithServiceFields);
 
-        const postDataFinal = data && hasFiles(postDataWithoutGhosts) 
-            ? jsonToFormData(postDataWithoutGhosts) 
+        const postDataFinal = data && hasFiles(postDataWithoutGhosts)
+            ? jsonToFormData(postDataWithoutGhosts)
             : postDataWithoutGhosts;
 
         return postDataFinal;
     };
 
-    #getHttpCaller = (endpoint: IApiEndpoint): (data: any) => Promise<any> => {
+    #getHttpCaller = (endpoint: IApiEndpoint): SubmitCaller => {
         const normalizedVerb = endpoint.httpVerb?.trim()?.toLowerCase();
 
         const unwrapHttpCall = <Response = any>(promise: Promise<HttpResponse<Response>>) => {
             return unwrapAxiosCall(promise).then(unwrapAbpResponse);
-        };        
+        };
 
         switch (normalizedVerb) {
             case "post":
@@ -132,34 +119,31 @@ export class GqlSubmitter implements IFormDataSubmitter {
     };
 
     submitAsync = async (payload: FormDataSubmitPayload): Promise<any> => {
-        /*
-         data preparation:
-         1. skip initial values, it should be part of data already
-         2. instead of Prepared Values call new Before Submit event
-         3. convert to FormData if required (part of caller)
-        */
         const data = await this.prepareDataForSubmit(payload);
 
-        const { onBeforeSubmit, onSubmitSuccess, onSubmitFailed } = payload;
-
-        const entityAction = data?.id
-            ? StandardEntityActions.update
-            : StandardEntityActions.create;
-        const endpoint = await this.getEndpointAsync(payload, entityAction);
+        const { onBeforeSubmit, onSubmitSuccess, onSubmitFailed, customSubmitCaller } = payload;
 
         if (onBeforeSubmit)
             await onBeforeSubmit(data);
 
-        const httpCaller = this.#getHttpCaller(endpoint);
+        const getDefaultSubmitCaller = async (): Promise<SubmitCaller> => {
+            const entityAction = data?.id
+                ? StandardEntityActions.update
+                : StandardEntityActions.create;
+            const endpoint = await this.getEndpointAsync(payload, entityAction);
+            return this.#getHttpCaller(endpoint);
+        };
+
+        const submitCaller = customSubmitCaller ?? await getDefaultSubmitCaller();
 
         try {
-            const response = await httpCaller(data);
-            
+            const response = await submitCaller(data);
+
             if (onSubmitSuccess)
                 await onSubmitSuccess();
 
             return response;
-        } catch(error){
+        } catch (error) {
             if (onSubmitFailed)
                 await onSubmitFailed();
             throw error;
@@ -170,15 +154,13 @@ export class GqlSubmitter implements IFormDataSubmitter {
 export const useGqlSubmitter = (): IFormDataSubmitter => {
     const httpClient = useHttpClient();
     const endpointsEvaluator = useModelApiHelper();
-    // const metadataDispatcher = useMetadataDispatcher();
-    // const toolboxComponents = useFormDesignerComponents();
+    const toolboxComponents = useFormDesignerComponents();
 
     const [loader] = useState<IFormDataSubmitter>(() => {
         return new GqlSubmitter({
             httpClient: httpClient,
             endpointsEvaluator: endpointsEvaluator,
-            // metadataDispatcher: metadataDispatcher,
-            // toolboxComponents: toolboxComponents,
+            toolboxComponents: toolboxComponents,
         });
     });
     return loader;

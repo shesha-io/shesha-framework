@@ -10,6 +10,7 @@ import { executeScript } from '@/providers/form/utils';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
+import LabelConfigurator from '../styleLabel/components/label/labelConfigurator';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -106,6 +107,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
       <div className={styles.jsContent}>
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
+        {propertyName === 'label' && <LabelConfigurator model={props}/>}
         <Button
           hidden={props.readOnly}
           className={`${styles.jsSwitch} ${props.type === 'horizontal' ? 'inlineJS' : ''}`}

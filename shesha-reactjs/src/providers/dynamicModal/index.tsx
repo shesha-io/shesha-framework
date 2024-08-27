@@ -65,7 +65,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   };
 
   const createModal = (modalProps: IModalProps) => {
-    dispatch(createModalAction({ modalProps }));
+    dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
   };
 
   useConfigurableAction<IShowModalActionArguments>(

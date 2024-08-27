@@ -11,7 +11,7 @@ import { useShaForm } from '@/providers/form/store/shaFormInstance';
 import { MarkupLoadingError } from './markupLoadingError';
 import { LoadingOutlined } from '@ant-design/icons';
 import { ConfigurableFormInstance } from '@/interfaces';
-import { ShaFormProvider } from '@/providers/form/newProvider/shaFormProvider';
+import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { IShaFormInstance } from '@/providers/form/store/interfaces';
 
 export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
@@ -30,8 +30,10 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     isSettingsForm = false,
     onFinish,
     initialValues,
+    parentFormValues,
     onSubmitted,
     onValuesChange,
+    onMarkupLoaded,
     formArguments,
     markupLoadingError,
     showFormInfoOverlay = true,
@@ -51,8 +53,11 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
     antdForm: form,
     init: (instance) => {
       instance.setFormMode(props.mode);
+      instance.setParentFormValues(parentFormValues);
     }
   });
+  shaForm.setOnMarkupLoaded(onMarkupLoaded);
+
   if (shaFormRef)
     shaFormRef.current = shaForm;
 
@@ -63,7 +68,12 @@ export const ConfigurableForm: FC<ConfigurableFormProps> = (props) => {
 
   useEffect(() => {
     if (formId) {
-      shaForm.initByFormId({ formId: formId, configurationItemMode: configurationItemMode, formArguments: formArguments });
+      shaForm.initByFormId({ 
+        formId: formId, 
+        configurationItemMode: configurationItemMode, 
+        formArguments: formArguments,
+        initialValues: initialValues,
+      });
     }
   }, [shaForm, formId, configurationItemMode, formArguments]);
   useEffect(() => {

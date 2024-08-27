@@ -5,6 +5,7 @@ import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
 import { metadataBuilderDefinition } from '@/providers/sourceFileManager/api-utils/metadataBuilder';
+import { queryStringValuesDefinition } from '@/providers/sourceFileManager/api-utils/queryString';
 
 export const SheshaConstants = {
   http: "shesha:http",
@@ -18,6 +19,7 @@ export const SheshaConstants = {
   form: "shesha:form",
   formData: "shesha:formData",
   application: "shesha:application",
+  query: "shesha:query",
 };
 
 export const registerHttpAction: MetadataBuilderAction = (builder, name = "http") => {
@@ -129,6 +131,16 @@ export const registerMetadataBuilderAction: MetadataBuilderAction = (builder, na
     const definition: TypeDefinition = {
       typeName: 'IMetadataBuilder',
       files: [{ content: metadataBuilderDefinition, fileName: 'apis/metadataBuilder.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerQueryAction: MetadataBuilderAction = (builder, name = "query") => {
+  builder.addCustom(name, "Query string values", () => {
+    const definition: TypeDefinition = {
+      typeName: 'ParsedQs',
+      files: [{ content: queryStringValuesDefinition, fileName: 'apis/queryString.ts' }],
     };
     return Promise.resolve(definition);
   });

@@ -69,6 +69,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       
         .${margin} {
           border-radius: 5px;
+          position: relative;
           background-color: ${background};
           height: 100%;
           width: 100%;

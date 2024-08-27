@@ -1,3 +1,4 @@
+import { useFormDesignerState } from '@/providers/formDesigner';
 import { Input, Tabs, Collapse } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 
@@ -24,11 +25,13 @@ export const SearchInput = ({ onSearch }: { onSearch: (e: React.ChangeEvent<HTML
 );
 
 export const SettingsTabs = ({ tabs }: { tabs: any[] }) => {
+    const { settingsPanelRef } = useFormDesignerState();
+
     const { searchQuery, handleSearch } = useSearch();
     const collapseRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-
+        console.log("SETTINGS REF::: ", settingsPanelRef);
         const elements = document.querySelectorAll('.ant-form-item');
         elements.forEach((element) => {
             const label = element.querySelector('.ant-form-item-label');

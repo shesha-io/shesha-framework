@@ -95,6 +95,10 @@ export type IConfigurableFormRuntimeProps<Values = any> = {
    * Form initial values
    */
   initialValues?: Store;
+  /**
+   * Parent form values. Note: is used for backward compatibility only
+   */
+  parentFormValues?: Store;
   labelCol?: ColProps;
   wrapperCol?: ColProps;
   onValuesChange?: (changedValues: any, values: Values) => void;
@@ -112,6 +116,12 @@ export type IConfigurableFormRuntimeProps<Values = any> = {
    * @param response response data
    */
   onSubmitted?: (values: Values, response?: any, options?: object) => void;
+
+  /**
+   * Fires after loading of the form markup. Can be used for additional initialization purposes.
+   * @returns Promise<void>
+   */
+  onMarkupLoaded?: (shaForm: IShaFormInstance<Values>) => Promise<void>;
 
   layout?: FormLayout;
   size?: SizeType;

@@ -87,7 +87,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
         );
       }
       case 'time': {
-        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }}/>;
+        return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }} />;
       }
       case 'datetime': {
         return getMoment(value, dateFormat)?.format(dateFormat) || '';
@@ -107,7 +107,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
 
 
   return (
-    <span className={styles.readOnlyDisplayFormItem} style={style}>
+    <span className={styles.readOnlyDisplayFormItem} >
       {renderValue()}
     </span>
   );
