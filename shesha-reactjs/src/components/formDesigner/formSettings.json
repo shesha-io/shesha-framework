@@ -214,20 +214,6 @@
                                         "flexWrap": "wrap",
                                         "components": [
                                             {
-                                                "id": "63f3360d-1e54-4a79-a888-8cd23b0bedd5",
-                                                "type": "propertyAutocomplete",
-                                                "propertyName": "fieldsToFetch",
-                                                "label": "Additional fields for fetch",
-                                                "mode": "multiple",
-                                                "labelAlign": "right",
-                                                "hidden": false,
-                                                "validate": {},
-                                                "settingsValidationErrors": [],
-                                                "description": "A list of fields you want to fetch",
-                                                "parentId": "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
-                                                "version": 2
-                                            },
-                                            {
                                                 "id": "KlJISScqsOA0iLqNx4P01TW_Y9Rye8",
                                                 "type": "radio",
                                                 "propertyName": "dataLoadersSettings.gql.endpointType",
@@ -309,6 +295,20 @@
                                                     "useAsyncDeclaration": true,
                                                     "functionName": "getLoaderEndpoint"
                                                 }
+                                            },
+                                            {
+                                                "id": "63f3360d-1e54-4a79-a888-8cd23b0bedd5",
+                                                "type": "propertyAutocomplete",
+                                                "propertyName": "fieldsToFetch",
+                                                "label": "Additional fields for fetch",
+                                                "mode": "multiple",
+                                                "labelAlign": "right",
+                                                "hidden": false,
+                                                "validate": {},
+                                                "settingsValidationErrors": [],
+                                                "description": "A list of fields you want to fetch",
+                                                "parentId": "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
+                                                "version": 2
                                             }
                                         ]
                                     },
@@ -357,6 +357,56 @@
                                                 "language": "typescript"
                                             }
                                         ]
+                                    },
+                                    {
+                                        "id": "NnUT13nyyq2TWKJIgUGPLt2MbTnHNR",
+                                        "type": "codeEditor",
+                                        "propertyName": "onBeforeDataLoad",
+                                        "label": "On Before Data Load",
+                                        "labelAlign": "right",
+                                        "parentId": "qzAhO4Zbgao4mbi7CPJsAbJ5Hw7brZ",
+                                        "hidden": false,
+                                        "autoSize": false,
+                                        "showCount": false,
+                                        "allowClear": false,
+                                        "validate": {},
+                                        "description": "",
+                                        "version": 3,
+                                        "settingsValidationErrors": [],
+                                        "placeholder": "",
+                                        "mode": "dialog",
+                                        "wrapInTemplate": true,
+                                        "templateSettings": {
+                                            "useAsyncDeclaration": true,
+                                            "functionName": "onBeforeDataLoad"
+                                        },
+                                        "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    const isEntity = modelType ? await mb.isEntityAsync(modelType) : false;\r\n    if (modelType && isEntity){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\",\r\n        \"shesha:pageContext\", \r\n        \"shesha:application\",\r\n        \"shesha:query\",\r\n    ]);\r\n    return mb.build();",
+                                        "language": "typescript"
+                                    },
+                                    {
+                                        "id": "lPFHZVyQTRzqqOWcmt8ENF14CCB4U0",
+                                        "type": "codeEditor",
+                                        "propertyName": "onAfterDataLoad",
+                                        "label": "On After Data Load",
+                                        "labelAlign": "right",
+                                        "parentId": "qzAhO4Zbgao4mbi7CPJsAbJ5Hw7brZ",
+                                        "hidden": false,
+                                        "autoSize": false,
+                                        "showCount": false,
+                                        "allowClear": false,
+                                        "validate": {},
+                                        "description": "",
+                                        "version": 3,
+                                        "settingsValidationErrors": [],
+                                        "placeholder": "",
+                                        "mode": "dialog",
+                                        "wrapInTemplate": true,
+                                        "templateSettings": {
+                                            "useAsyncDeclaration": true,
+                                            "functionName": "onAfterDataLoad"
+                                        },
+                                        "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    const isEntity = modelType ? await mb.isEntityAsync(modelType) : false;\r\n    if (modelType && isEntity){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\",\r\n        \"shesha:pageContext\", \r\n        \"shesha:application\",\r\n        \"shesha:query\",\r\n    ]);\r\n    return mb.build();",
+                                        "language": "typescript"
                                     }
                                 ]
                             },
@@ -677,56 +727,6 @@
                             "content": {
                                 "id": "W1OKUNrRHQxrE5buLdNzir02XwZsCJ",
                                 "components": [
-                                    {
-                                        "id": "NnUT13nyyq2TWKJIgUGPLt2MbTnHNR",
-                                        "type": "codeEditor",
-                                        "propertyName": "onBeforeDataLoad",
-                                        "label": "On Before Data Load",
-                                        "labelAlign": "right",
-                                        "parentId": "W1OKUNrRHQxrE5buLdNzir02XwZsCJ",
-                                        "hidden": false,
-                                        "autoSize": false,
-                                        "showCount": false,
-                                        "allowClear": false,
-                                        "validate": {},
-                                        "description": "",
-                                        "version": 3,
-                                        "settingsValidationErrors": [],
-                                        "placeholder": "",
-                                        "mode": "dialog",
-                                        "wrapInTemplate": true,
-                                        "templateSettings": {
-                                            "useAsyncDeclaration": true,
-                                            "functionName": "onBeforeDataLoad"
-                                        },
-                                        "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    const isEntity = modelType ? await mb.isEntityAsync(modelType) : false;\r\n    if (modelType && isEntity){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\",\r\n        \"shesha:pageContext\", \r\n        \"shesha:application\",\r\n        \"shesha:query\",\r\n    ]);\r\n    return mb.build();",
-                                        "language": "typescript"
-                                    },
-                                    {
-                                        "id": "lPFHZVyQTRzqqOWcmt8ENF14CCB4U0",
-                                        "type": "codeEditor",
-                                        "propertyName": "onAfterDataLoad",
-                                        "label": "On After Data Load",
-                                        "labelAlign": "right",
-                                        "parentId": "W1OKUNrRHQxrE5buLdNzir02XwZsCJ",
-                                        "hidden": false,
-                                        "autoSize": false,
-                                        "showCount": false,
-                                        "allowClear": false,
-                                        "validate": {},
-                                        "description": "",
-                                        "version": 3,
-                                        "settingsValidationErrors": [],
-                                        "placeholder": "",
-                                        "mode": "dialog",
-                                        "wrapInTemplate": true,
-                                        "templateSettings": {
-                                            "useAsyncDeclaration": true,
-                                            "functionName": "onAfterDataLoad"
-                                        },
-                                        "availableConstantsExpression": "    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    const isEntity = modelType ? await mb.isEntityAsync(modelType) : false;\r\n    if (modelType && isEntity){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n        await mb.addEntityAsync(\"initialValues\", \"Initial values\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n        mb.addObject(\"initialValues\", \"Initial values\");    \r\n    };\r\n    mb.addObject(\"parentFormValues\", \"Parent form values. The values of the form rendering the dialog.\");\r\n    \r\n    mb.addStandard([\r\n        \"shesha:form\",\r\n        \"shesha:globalState\", \r\n        \"shesha:setGlobalState\",\r\n        \"shesha:http\",\r\n        \"shesha:message\",\r\n        \"shesha:moment\",\r\n        \"shesha:pageContext\", \r\n        \"shesha:application\",\r\n        \"shesha:query\",\r\n    ]);\r\n    return mb.build();",
-                                        "language": "typescript"
-                                    },
                                     {
                                         "id": "5092dd2b-c514-4b06-bfb5-546ce94fab97",
                                         "type": "codeEditor",

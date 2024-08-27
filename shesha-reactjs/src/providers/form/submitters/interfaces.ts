@@ -5,7 +5,6 @@ import { SubmitRelatedEvents } from "../store/interfaces";
 
 export type SubmitOperation = 'create' | 'update'/* | 'delete'*/;
 
-//export type ExpressionExecuter<TResult = any> = (expression: string, exposedData: object) => Promise<TResult>;
 export type ExpressionExecuter<TArguments = any, TResult = any> = (expression: string, args: TArguments) => Promise<TResult>;
 
 export type ExpressionCaller<TArguments = any, TResult = any> = (args: TArguments) => TResult;
