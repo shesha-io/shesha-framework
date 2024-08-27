@@ -109,7 +109,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const formApi = getFormApi(form ?? { formMode: 'readonly', formData: {} } as ConfigurableFormInstance);
   const { formMode, data: formData } = formApi;
   const { globalState, setState: setGlobalState } = useGlobalState();
-  const [visibleColumns, setVisibleColumns] = useState<number>();
+  const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
 
   if (tableRef) tableRef.current = store;
@@ -330,7 +330,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
               canDoubleWidth: widthOptions.canDoubleWidth,
               canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
               canTripleWidth: widthOptions.canTripleWidth,
-              columnsChanged: visibleColumns != columns?.filter((c) => c.show).length && !!visibleColumns,
+              columnsChanged: visibleColumns !== columns?.filter((c) => c.show).length && !!visibleColumns
             }
           );
           column.minWidth = minWidth;
