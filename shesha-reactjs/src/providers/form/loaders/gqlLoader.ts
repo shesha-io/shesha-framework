@@ -119,7 +119,7 @@ export class GqlLoader implements IFormDataLoader {
 
                 // get data only for isInput components
                 // and for context = null or empty string (form context)
-                if (component?.isInput && !model.context) {
+                if (component && (component.isInput || component.isOutput) && !model.context) {
                     const propName = model.propertyName;
 
                     // TODO: AS - calc actual propName from JS setting
