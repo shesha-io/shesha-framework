@@ -77,6 +77,7 @@ import { ISetStatePayload } from '../globalState/contexts';
 import { IShaFormInstance } from './store/interfaces';
 import { useShaFormInstance } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
+import { removeGhostKeys } from '@/utils/form';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -201,7 +202,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     http: () => axiosHttp(backendUrl),
     message: () => message,
     data: () => {
-      return shaFormInstance?.formData;
+      return removeGhostKeys(shaFormInstance?.formData);
     },
     form: () => {
       return shaFormInstance?.getPublicFormApi();

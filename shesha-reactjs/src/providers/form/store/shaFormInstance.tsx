@@ -42,6 +42,9 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     setFieldsValue = (values: Values) => {
         this.#form.setFormData({ values, mergeValues: true });
     };
+    clearFieldsValue = () => {
+      this.#form?.setFormData({ values: {}, mergeValues: false });
+    };
     submit = () => {
         this.#form.antdForm.submit();
     };
