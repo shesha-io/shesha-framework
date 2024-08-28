@@ -13,7 +13,6 @@ export * from './form';
 export { useShaFormInstance } from './form/providers/shaFormProvider';
 export * from './formManager';
 export * from './form/models';
-export { useFormWithData } from './form/api';
 export { useFormDesignerComponents } from './form/hooks';
 export * from './formContext';
 export * from './formItem';

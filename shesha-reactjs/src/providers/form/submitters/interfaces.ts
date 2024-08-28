@@ -35,7 +35,7 @@ export interface GqlSubmitterSettings {
 }
 
 export const isGqlSubmitterSettings = (s: any): s is GqlSubmitterSettings => {
-    return s && typeof s === 'object';
+    return s && typeof s === 'object' && s.endpointType;
 };
 
 export type SubmitCaller = (data: any) => Promise<any>;
