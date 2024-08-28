@@ -478,8 +478,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             return this.initialValues;
         }
 
-        const dataId = formArguments?.id;
-        const canLoadData = dataId && this.dataLoader;
+        const canLoadData = this.dataLoader && this.dataLoader.canLoadData(formArguments);
 
         if (canLoadData) {
             this.dataLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
@@ -488,7 +487,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             const data = await this.dataLoader.loadAsync({
                 formSettings: this.settings,
                 formFlatStructure: this.flatStructure,
-                dataId: dataId,
+                formArguments: formArguments,
                 expressionExecuter: this.expressionExecuter,
             });
 
