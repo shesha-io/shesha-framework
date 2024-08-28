@@ -8,6 +8,7 @@ import { PermissionsTree, PermissionsTreeMode } from '@/components/permissionsTr
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { IConfigurableActionConfiguration } from '@/index';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -22,7 +23,9 @@ export interface IPermissionsTreeComponentProps extends IConfigurableFormCompone
    */
   readOnly?: boolean;
   height?: number;
-  mode: PermissionsTreeMode;  
+  mode: PermissionsTreeMode;
+
+  onSelectAction?: IConfigurableActionConfiguration;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -36,7 +39,8 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   Factory: ({ model }) => {
     if (model.mode === 'Edit') {
       return (
-        <PermissionsTree 
+        <PermissionsTree
+          onSelectAction={model.onSelectAction}
           formComponentId={model?.id}
           formComponentName={model.componentName}
           value={model?.value} 
@@ -52,6 +56,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
         <ConfigurableFormItem model={model}>
           {(value, onChange) =>
             <PermissionsTree 
+              onSelectAction={model.onSelectAction}
               formComponentId={model?.id}
               formComponentName={model.componentName}
               value={value} 
