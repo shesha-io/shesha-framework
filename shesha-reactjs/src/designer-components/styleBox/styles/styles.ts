@@ -25,6 +25,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const shaStyleBox = cx("sha-style-box", css`
         height: 200px;
         overflow: hidden;
+        width: 320px;
       
         .${prefixCls}-input {
           border: none;
@@ -68,7 +69,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       
         .${margin} {
           border-radius: 5px;
-          position: relative;
           background-color: ${background};
           height: 100%;
           width: 100%;

@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import React, { FC, useCallback, useEffect, useRef } from 'react';
+import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import StyleBox from '../styleBox/components/box';
@@ -16,9 +16,8 @@ import SizeComponent from '../styleDimensions/components/size/sizeComponent';
 import BorderComponent from '../styleBorder/components/border/borderComponent';
 import BackgroundConfigurator from '../styleBackground/components/background/background';
 import FontComponent from '../styleFont/components/font/fontComponent';
-import LabelConfigurator from '../styleLabel/components/label/labelConfigurator';
 import PrefixSuffixComponent from '../stylePrefixSuffix/components/prefixSuffix/prefixSuffixComponent';
-import { SettingsTabs } from '@/components/formDesigner/componentPropertiesPanel/useSearch/useSearch';
+import { SettingsTabs } from '@/components/formDesigner/componentPropertiesPanel/settingsTabs/settingsTabs';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -43,7 +42,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                         onValuesChange={onValuesChange}
                     />
                     <SettingsFormItem name="label" label="Label" jsSetting>
-                        <Input readOnly={readOnly} />
+                        <Input readOnly={readOnly || model.hideLabel} />
                     </SettingsFormItem>
                     <SettingsFormItem name="textType" label="Type" required>
                         <Select>
@@ -121,19 +120,19 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             tab: "Validation",
             content: (
                 <>
-                    <SettingsFormItem name="required" label="Required" valuePropName="checked" jsSetting type='horizontal'>
+                    <SettingsFormItem name="validate.required" label="Required" valuePropName="checked" jsSetting type='horizontal'>
                         <Switch disabled={readOnly} />
                     </SettingsFormItem>
 
-                    <SettingsFormItem name="minLength" label="Min Length" jsSetting>
+                    <SettingsFormItem name="validate.minLength" label="Min Length" jsSetting>
                         <Input type="number" readOnly={readOnly} />
                     </SettingsFormItem>
 
-                    <SettingsFormItem name="maxLength" label="Max Length" jsSetting>
+                    <SettingsFormItem name="validate.maxLength" label="Max Length" jsSetting>
                         <Input type="number" readOnly={readOnly} />
                     </SettingsFormItem>
 
-                    <SettingsFormItem name="pattern" label="Pattern" jsSetting>
+                    <SettingsFormItem name="validate.pattern" label="Pattern" jsSetting>
                         <Input readOnly={readOnly} />
                     </SettingsFormItem>
 
@@ -169,7 +168,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                             },
                         }}
                     >
-                        <Collapse defaultActiveKey={['1']} style={{ paddingLeft: 0 }}>
+                        <Collapse defaultActiveKey={[]} style={{ paddingLeft: 0 }}>
                             <Panel header="Font" key="1">
                                 <FontComponent readOnly={readOnly} onChange={onValuesChange} value={model.font} />
                             </Panel>
@@ -183,7 +182,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                                 <BackgroundConfigurator readOnly={readOnly} onValuesChange={onValuesChange} value={model.background} model={model} />
                             </Panel>
                             <Panel header="Styling" key="5">
-                                <SettingsFormItem name="styling">
+                                <SettingsFormItem name="stylingBox">
                                     <StyleBox />
                                 </SettingsFormItem>
                             </Panel>

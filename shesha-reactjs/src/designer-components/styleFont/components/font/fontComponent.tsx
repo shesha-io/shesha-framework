@@ -1,9 +1,8 @@
-import { Col, Input, Radio, Row, Select } from 'antd';
+import { Col, InputNumber, Radio, Row, Select } from 'antd';
 import React, { FC } from 'react';
-import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined, PicCenterOutlined } from '@ant-design/icons';
+import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from '@ant-design/icons';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { ColorPicker } from '@/components';
-import { IValueWithUnit } from '@/designer-components/styleDimensions/components/size/sizeComponent';
 import { IFontValue } from './interfaces';
 import { useStyles } from '../../styles/styles';
 
@@ -27,13 +26,11 @@ const fontWeights = [
     { value: 900, title: 'black' },
 ];
 
-const units = ['px', 'em', 'rem', '%'];
 
 const alignOptions = [
     { value: 'left', icon: <AlignLeftOutlined />, title: 'Left' },
     { value: 'center', icon: <AlignCenterOutlined />, title: 'Center' },
     { value: 'right', icon: <AlignRightOutlined />, title: 'Right' },
-    { value: 'justify', icon: <PicCenterOutlined />, title: 'Justify' },
 ];
 
 interface IDropdownProps {
@@ -74,14 +71,13 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
     };
 
     const renderSizeInput = (property, label) => {
-        const currentValue = value?.[property] || { value: '', unit: 'px' };
+        const currentValue = value?.[property];
 
         return (
-            <SettingsFormItem name={`font.${property}.value`} label={label} jsSetting>
-                <Input
-                    value={currentValue.value}
+            <SettingsFormItem name={`font.${property}`} label={label} jsSetting>
+                <InputNumber
+                    value={currentValue}
                     readOnly={readOnly}
-                    onChange={(e) => updateValue({ [property]: { ...currentValue, value: e.target.value } })}
                 />
             </SettingsFormItem>
         );
@@ -91,7 +87,7 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
         <div className={styles.flexWrapper}>
             {inputs.map(({ label, property }) => (
                 <div key={property} className={styles.flexInput}>
-                    {renderSizeInput(label, property)}
+                    {renderSizeInput(property, label)}
                 </div>
             ))}
         </div>

@@ -6,14 +6,10 @@ export const getFontStyle = (input?: IFontValue): React.CSSProperties => {
     const style: React.CSSProperties = {};
 
     if (input.size) {
-        const { value, unit } = input.size;
-        if (value) {
-            style.fontSize = /^\d+(\.\d+)?$/.test(value as string) ? `${value}${unit}` : value;
+        const size = input.size;
+        if (size) {
+            style.fontSize = size + 'px';
         }
-    }
-
-    if (input.lineHeight) {
-        style.lineHeight = `${input.lineHeight.value}${input.lineHeight.unit}`;
     }
 
     if (input.type) {

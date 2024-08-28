@@ -15,19 +15,19 @@ interface ILabelProps {
 const LabelConfigurator: FC<ILabelProps> = ({ props, readOnly }) => {
 
     const { model, onValuesChange } = useSettingsForm<any>();
-    const { hideLabel } = model;
+    const { hideLabel, labelAlign } = model;
     const { styles } = useStyles();
 
     return (
         <div className={styles.flexWrapper} >
             <div className={styles.flexInput}>
-                <SettingsFormItem name="labelAlign">
-                    <Radio.Group disabled={readOnly} value={props?.labelAlign}>
-                        {[{ value: 'left', icon: <AlignLeftOutlined /> }, { value: 'right', icon: <AlignRightOutlined /> }].map(({ value, icon }) => (
-                            <Radio.Button key={value} value={value} title={value}>{icon}</Radio.Button>
-                        ))}
-                    </Radio.Group>
-                </SettingsFormItem>
+                <Radio.Group disabled={readOnly || hideLabel} value={labelAlign} onChange={(e) => {
+                    onValuesChange({ labelAlign: e.target.value });
+                }}>
+                    {[{ value: 'left', icon: <AlignLeftOutlined /> }, { value: 'right', icon: <AlignRightOutlined /> }].map(({ value, icon }) => (
+                        <Radio.Button key={value} value={value} title={value}>{icon}</Radio.Button>
+                    ))}
+                </Radio.Group>
             </div>
             <div className={styles.flexInput}>
                 <Button

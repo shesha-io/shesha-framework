@@ -16,7 +16,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IconType, ShaIcon, ValidationErrors } from '@/components';
+import { ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
 import { getSizeStyle } from '../styleDimensions/components/size/utils';
 import { getBorderStyle } from '../styleBorder/components/border/utils';
@@ -51,6 +51,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   Factory: ({ model }) => {
     const form = useForm();
     const { styles } = useStyles();
+
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -89,16 +90,17 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
-      className: `sha-input`,
+      className: `sha-input ${styles.textFieldInput}`,
       placeholder: model.placeholder,
-      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       variant: model.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
       style: finalStyle,
+      count: { max: model.validate?.maxLength, },
       autoComplete: model.textType === 'password' ? 'new-password' : undefined,
       defaultValue: model.passEmptyStringByDefault ? '' : model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
     };
@@ -125,9 +127,21 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
             if (typeof onChange === 'function')
               onChange(...args);
           };
-          return inputProps.readOnly
+
+          return <ConfigProvider
+            theme={{
+              components: {
+                Input: {
+                  fontFamily: model.font?.type,
+                  fontSize: model.font?.size || 14,
+                  lineHeight: model.font?.lineHeight || 1.5,
+                },
+              },
+            }}
+          >{inputProps.readOnly
             ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
-            : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+            : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />}
+          </ConfigProvider>
         }}
       </ConfigurableFormItem>
     );

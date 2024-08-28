@@ -12,23 +12,21 @@ interface IPrefixSuffixProps {
 const PrefixSuffixComponent: FC<IPrefixSuffixProps> = ({ readOnly, model, onChange }) => {
 
     const updateValue = (newValue) => {
-        const updatedValue = { ...model, ...newValue };
-        onChange(updatedValue);
+        onChange(newValue);
     };
 
     const { styles } = useStyles();
     return (
-        <Col className="gutter-row" span={24}>
+        <Col className="gutter-row" span={24} >
             <div className={styles.flexWrapper}>
                 <div className={styles.flexInput}>
                     <SettingsFormItem readOnly={readOnly} name="prefix" label="Prefix" jsSetting>
                         <Input value={model?.prefix} readOnly={readOnly} />
                     </SettingsFormItem>
                 </div>
-
                 <div className={styles.flexIconPicker}>
-                    <SettingsFormItem readOnly={readOnly} name="prefixIcon" label="Prefix Icon" jsSetting>
-                        <IconPicker value={model?.prefixIcon} readOnly={readOnly} onChange={(e) => updateValue({ prefixIcon: e })} />
+                    <SettingsFormItem readOnly={readOnly} name="prefixIcon" label="Prefix Icon">
+                        <IconPicker readOnly={readOnly} onIconChange={(_, iconName) => updateValue({ prefixIcon: iconName })} value={model?.prefixIcon} />
                     </SettingsFormItem>
                 </div>
             </div>
@@ -39,8 +37,8 @@ const PrefixSuffixComponent: FC<IPrefixSuffixProps> = ({ readOnly, model, onChan
                     </SettingsFormItem>
                 </div>
                 <div className={styles.flexIconPicker}>
-                    <SettingsFormItem name="suffixIcon" label="Suffix Icon" jsSetting>
-                        <IconPicker value={model?.prefixIcon} readOnly={readOnly} onIconChange={(e) => updateValue({ suffixIcon: e })} />
+                    <SettingsFormItem name="suffixIcon" label="Suffix Icon">
+                        <IconPicker readOnly={readOnly} onIconChange={(_, iconName) => updateValue({ suffixIcon: iconName })} value={model?.suffixIcon} />
                     </SettingsFormItem>
                 </div>
             </div>
