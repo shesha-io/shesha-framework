@@ -5,26 +5,25 @@ import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import SizeComponent from './components/size/sizeComponent';
-import { ISizeComponentProps } from './components/size/interfaces';
+import { IShadowComponentProps } from './components/shadow/interfaces';
+import ShadowComponent from './components/shadow/shadowComponent';
 
-const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
+const ShadowConfigurator: IToolboxComponent<IShadowComponentProps> = {
     type: 'size',
     name: 'Size',
     isInput: false,
     icon: <ColumnWidthOutlined />,
     canBeJsSetting: true,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-    Factory: ({ model: passedModel }) => {
-        const { size, ...model } = passedModel;
+    Factory: ({ model }) => {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <SizeComponent value={value} onChange={onChange} />}
+                {(value) => <ShadowComponent value={value} readOnly={model.readOnly} />}
             </ConfigurableFormItem>
         );
     },
     settingsFormMarkup: getSettings(),
 };
 
-export default SizeConfigurator;
+export default ShadowConfigurator;

@@ -20,49 +20,29 @@ export const SettingsTabs = ({ tabs }: { tabs: any[] }) => {
     const collapseRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const panels = collapseRef.current?.querySelectorAll('.ant-collapse-item');
-        panels?.forEach(panel => {
-            const panelHeader = panel.querySelector('.ant-collapse-header') as HTMLElement;
-            const panelContent = panel.querySelector('.ant-collapse-content') as HTMLElement;
-            console.log(panelContent);
-            const elements = panelContent.querySelectorAll('.ant-form-item');
-            elements.forEach((element) => {
-                const label = element.querySelector('.ant-form-item-label');
-                const text = label?.textContent?.toLowerCase() || '';
-                if (text.includes(searchQuery)) {
-                    element.classList.remove('sha-hidden');
+        if (settingsPanelRef.current) {
+            const formItems = settingsPanelRef.current.querySelectorAll('.ant-form-item');
+            const panels = collapseRef.current?.querySelectorAll('.ant-collapse-item');
+
+            formItems.forEach((item) => {
+                const label = item.querySelector('.ant-form-item-label')?.textContent?.toLowerCase() || '';
+                const isVisible = searchQuery === '' || label.includes(searchQuery);
+                item.classList.toggle('sha-hidden', !isVisible);
+            });
+
+            panels?.forEach(panel => {
+                const visibleItems = panel.querySelectorAll('.ant-form-item:not(.sha-hidden)');
+                const isVisible = searchQuery === '' || visibleItems.length > 0;
+                panel.classList.toggle('sha-hidden', !isVisible);
+
+                if (isVisible && visibleItems.length > 0) {
+                    panel.classList.add('ant-collapse-item-active');
                 } else {
-                    element.classList.add('sha-hidden');
+                    panel.classList.remove('ant-collapse-item-active');
                 }
             });
-            if (panelContent) {
-                panelContent.style.display = 'block';
-            }
-
-            if (panelHeader) {
-                panelHeader.setAttribute('aria-expanded', 'true');
-            }
-
-            panel.classList.add('ant-collapse-item-active');
-        });
-
-        const elements = settingsPanelRef.current.querySelectorAll('.ant-form-item');
-        elements.forEach((element) => {
-            const label = element.querySelector('.ant-form-item-label');
-            const text = label?.textContent?.toLowerCase() || '';
-            if (text.includes(searchQuery)) {
-                element.classList.remove('sha-hidden');
-            } else {
-                element.classList.add('sha-hidden');
-            }
-        });
-
-        panels?.forEach(panel => {
-            const shouldShow = panel.querySelectorAll('.sha-hidden').length === 0;
-            shouldShow ? panel.classList.remove('sha-hidden') : panel.classList.add('sha-hidden');
-        });
-
-    }, [searchQuery]);
+        }
+    }, [searchQuery, settingsPanelRef]);
 
     return (
         <Tabs defaultActiveKey="display" type="card">

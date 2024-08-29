@@ -67,11 +67,12 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
             <Divider style={{ margin: '8px 0' }} />
             <Space style={{ padding: '0 8px 4px' }} onClick={(e) => e.stopPropagation()}>
                 <Space.Compact size="large">
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px', width: '100%' }}>
                         {['width', 'height'].map((dim) => (
-                            <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                            <div key={dim[0] + dim[1]} style={{ flex: '1 1 100px', minWidth: '100px' }}>
                                 <Input
                                     key={dim}
+                                    prefix={dim === 'width' ? 'x : ' : 'y : '}
                                     addonAfter={
                                         <Select
                                             value={value[dim].unit}
@@ -79,6 +80,7 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
                                             onChange={(unit) => setValue(prev => ({ ...prev, [dim]: { ...prev[dim], unit } }))}
                                             onClick={(e) => e.stopPropagation()}
                                             onMouseDown={(e) => e.stopPropagation()}
+                                            dropdownStyle={{ width: '70px' }}
                                         >
                                             {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
                                         </Select>

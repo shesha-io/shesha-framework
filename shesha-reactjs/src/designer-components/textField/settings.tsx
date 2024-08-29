@@ -1,5 +1,5 @@
 import { CodeEditor } from '../codeEditor/codeEditor';
-import React, { FC } from 'react';
+import React, { Children, FC } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import StyleBox from '../styleBox/components/box';
@@ -18,6 +18,7 @@ import BackgroundConfigurator from '../styleBackground/components/background/bac
 import FontComponent from '../styleFont/components/font/fontComponent';
 import PrefixSuffixComponent from '../stylePrefixSuffix/components/prefixSuffix/prefixSuffixComponent';
 import { SettingsTabs } from '@/components/formDesigner/componentPropertiesPanel/settingsTabs/settingsTabs';
+import ShadowComponent from '../styleShadow/components/shadow/shadowComponent';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -27,6 +28,46 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
     const { model, onValuesChange } = useSettingsForm<ITextFieldComponentProps>();
     const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
     const { formSettings } = useForm();
+
+    const stylePanels = [
+        {
+            key: '1',
+            label: 'Font',
+            children: <FontComponent readOnly={readOnly} onChange={onValuesChange} value={model.font} />
+        },
+        {
+            key: '2',
+            label: 'Size',
+            children: <SizeComponent readOnly={readOnly} onChange={onValuesChange} value={model.dimensions} noOverflow />
+        },
+        {
+            key: '3',
+            label: 'Border',
+            children: <BorderComponent readOnly={readOnly} onChange={onValuesChange} value={model.border} model={model} />
+        },
+        {
+            key: '4',
+            label: 'Background',
+            children: <BackgroundConfigurator readOnly={readOnly} onValuesChange={onValuesChange} value={model.background} model={model} />
+        },
+        {
+            key: '5',
+            label: 'Shadow',
+            children: <ShadowComponent readOnly={readOnly} value={model.shadow} />
+        },
+        {
+            key: '6',
+            label: 'Styling',
+            children: (
+                <SettingsFormItem name="stylingBox">
+                    <StyleBox />
+                </SettingsFormItem>
+            )
+        }
+    ];
+
+    const activateAllStylePanels = () => stylePanels.map(panel => panel.key);
+    console.log("Active ", activateAllStylePanels());
 
     const tabs = [
         {
@@ -147,15 +188,6 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             tab: "Style",
             content: (
                 <>
-                    <SettingsFormItem name="style" label="Style">
-                        <CodeEditor
-                            propertyName="style"
-                            readOnly={readOnly}
-                            mode="dialog"
-                            label="Style"
-                            description="A script that returns the style of the element as an object. This should conform to CSSProperties"
-                        />
-                    </SettingsFormItem>
                     <ConfigProvider
                         theme={{
                             components: {
@@ -168,26 +200,22 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                             },
                         }}
                     >
-                        <Collapse defaultActiveKey={[]} style={{ paddingLeft: 0 }}>
-                            <Panel header="Font" key="1">
-                                <FontComponent readOnly={readOnly} onChange={onValuesChange} value={model.font} />
-                            </Panel>
-                            <Panel header="Size" key="2">
-                                <SizeComponent readOnly={readOnly} onChange={onValuesChange} value={model.dimensions} noOverflow />
-                            </Panel>
-                            <Panel header="Border" key="3">
-                                <BorderComponent readOnly={readOnly} onChange={onValuesChange} value={model.border} model={model} />
-                            </Panel>
-                            <Panel header="Background" key="4">
-                                <BackgroundConfigurator readOnly={readOnly} onValuesChange={onValuesChange} value={model.background} model={model} />
-                            </Panel>
-                            <Panel header="Styling" key="5">
-                                <SettingsFormItem name="stylingBox">
-                                    <StyleBox />
-                                </SettingsFormItem>
-                            </Panel>
+                        <Collapse defaultActiveKey={activateAllStylePanels()} style={{ paddingLeft: 0 }}>
+                            <Collapse
+                                items={stylePanels}
+                                defaultActiveKey={['1', '2', '3', '4', '5']}
+                            />
                         </Collapse>
                     </ConfigProvider>
+                    <SettingsFormItem name="style" label="Style">
+                        <CodeEditor
+                            propertyName="style"
+                            readOnly={readOnly}
+                            mode="dialog"
+                            label="Style"
+                            description="A script that returns the style of the element as an object. This should conform to CSSProperties"
+                        />
+                    </SettingsFormItem>
                 </>
             )
         },

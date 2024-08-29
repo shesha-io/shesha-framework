@@ -24,6 +24,7 @@ import { getFontStyle } from '../styleFont/components/font/utils';
 import { getBackgroundStyle } from '../styleBackground/components/background/utils';
 import { TextFieldSettingsForm } from './settings';
 import { useStyles } from './styles/styles';
+import { getShadowStyle } from '../styleShadow/components/shadow/utils';
 
 
 const renderInput = (type: TextType) => {
@@ -60,6 +61,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border]);
     const fontStyles = useMemo(() => getFontStyle(model.font), [model.font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
+    const shadowStyles = useMemo(() => getShadowStyle(model.shadow), [model.shadow]);
 
     useEffect(() => {
       const fetchStyles = async () => {
@@ -83,10 +85,13 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
+      ...shadowStyles,
     });
+
     const jsStyle = getStyle(model.style, formData);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
+    console.log("Shadow style::: ", shadowStyles);
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {

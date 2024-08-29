@@ -49,6 +49,7 @@ const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model, noOver
                         <Select
                             value={currentValue.unit || 'px'}
                             onChange={(unit) => updateValue(property, unit)}
+                            dropdownStyle={{ width: '70px' }}
                         >
                             {units.map(unit => (
                                 <Option key={unit} value={unit}>{unit}</Option>
@@ -63,7 +64,7 @@ const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model, noOver
     };
 
     const renderInputRow = (inputs: Array<{ label: string, property: keyof ISizeValue }>) => (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px', width: '100%' }}>
             {inputs.map(({ label, property }) => (
                 <div key={property} style={{ flex: '1 1 100px', minWidth: '100px' }}>
                     {renderSizeInputWithUnits(label, property)}

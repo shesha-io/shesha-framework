@@ -4,6 +4,7 @@ import { IBackgroundValue } from '../styleBackground/components/background/inter
 import { ISizeValue } from '../styleDimensions/components/size/sizeComponent';
 import { IFontValue } from '../styleFont/components/font/interfaces';
 import { IconType } from '@/components';
+import { IShadowValue } from '../styleShadow/components/shadow/interfaces';
 
 export type TextType = 'text' | 'password';
 
@@ -21,4 +22,5 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   background?: IBackgroundValue;
   dimensions?: ISizeValue;
   font?: IFontValue;
+  shadow?: IShadowValue;
 }

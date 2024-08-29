@@ -1,4 +1,4 @@
-import { Col, InputNumber, Radio, Row, Select } from 'antd';
+import { Col, Input, Radio, Row, Select } from 'antd';
 import React, { FC } from 'react';
 import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from '@ant-design/icons';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
@@ -70,12 +70,12 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
         onChange(updatedValue);
     };
 
-    const renderSizeInput = (property, label) => {
+    const renderSizeInput = (label, property) => {
         const currentValue = value?.[property];
 
         return (
             <SettingsFormItem name={`font.${property}`} label={label} jsSetting>
-                <InputNumber
+                <Input
                     value={currentValue}
                     readOnly={readOnly}
                 />
@@ -84,10 +84,10 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
     };
 
     const renderInputRow = (inputs: Array<{ label: string, property }>) => (
-        <div className={styles.flexWrapper}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px', width: '100%' }}>
             {inputs.map(({ label, property }) => (
-                <div key={property} className={styles.flexInput}>
-                    {renderSizeInput(property, label)}
+                <div key={property} style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                    {renderSizeInput(label, property)}
                 </div>
             ))}
         </div>
