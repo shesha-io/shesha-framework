@@ -1,4 +1,4 @@
-import EndpointsAutocomplete from '@/components/endpointsAutocomplete/endpointsAutocomplete';
+import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import React, { FC, useMemo } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';

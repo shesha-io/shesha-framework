@@ -95,12 +95,10 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
     dispatch(setLoadedMenuAction(model as IConfigurableMainMenu));
 
     const itemsToCheck = [];
-    const localItems = model.items.map((item) => requestItemVisible(getActualModel(item, allData), itemsToCheck));
+    const localItems = model.items?.map((item) => requestItemVisible(getActualModel(item, allData), itemsToCheck));
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
     }
-
-    console.log('main menu items refresh');
   };
 
   useEffect(() => {
@@ -108,10 +106,6 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
       updateMainMenu(fetchedMainMenu);
     }
   }, [loadingState]);
-
-  useEffect(() => {
-    console.log('main menu items refresh visible');
-  }, [allData?.contexts?.lastUpdate]);
 
   const changeMainMenu = (value: IConfigurableMainMenu) => {
     updateMainMenu(value);

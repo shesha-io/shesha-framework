@@ -93,5 +93,10 @@ namespace Shesha.Permissions
         /// <param name="actionDescriptor">Action descriptor</param>
         /// <returns></returns>
         Task<bool> IsActionDescriptorEnabled(ActionDescriptor actionDescriptor);
+        /// <summary>
+        /// Gets all permissioned shesha forms with anonymous access
+        /// </summary>
+        /// <returns></returns>
+        Task<List<PermissionedObjectDto>> GetObjectsByAccess(string type, RefListPermissionedAccess access);
     }
 }

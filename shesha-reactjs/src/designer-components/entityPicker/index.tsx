@@ -40,8 +40,6 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent 
   modalFormId?: FormIdentifier;
   modalTitle?: string;
   showModalFooter?: boolean;
-  onSuccessRedirectUrl?: string;
-  submitHttpVerb?: 'POST' | 'PUT';
   modalWidth?: number | string | 'custom';
   customWidth?: number;
   widthUnits?: string;
@@ -151,12 +149,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
                   modalFormId: model.modalFormId,
                   modalTitle: model.modalTitle,
                   showModalFooter: model.showModalFooter,
-                  submitHttpVerb: model.submitHttpVerb,
-                  onSuccessRedirectUrl: model.onSuccessRedirectUrl,
                   modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
                   buttons: model?.buttons,
-                  footerButtons: model?.footerButtons
-                  
+                  footerButtons: model?.footerButtons                  
                 }
                 : undefined
             }

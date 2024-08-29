@@ -6,6 +6,7 @@ import TypographyComponent from '@/designer-components/text/typography';
 
 const ParagraphComponent: IToolboxComponent<ITextTypographyProps> = {
   type: 'paragraph',
+  isInput: false,
   name: 'Paragraph',
   icon: <FileTextOutlined />,
   tooltip: "Deprecated! Please use 'Text (Full)'",

@@ -5,6 +5,7 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 import { useForm, useSheshaApplication } from '@/providers';
 import { CustomErrorBoundary } from '..';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -14,13 +15,13 @@ export interface IFormComponentProps {
 const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
   const formInstance = useForm();
   const allData = useAvailableConstantsData();
-  const { form, getToolboxComponent, isComponentFiltered } = formInstance;
+  const { form, isComponentFiltered } = formInstance;
+  const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const parent = useParent(false);
 
   const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
-
     const result = getActualModelWithParent(
       { ...componentModel, editMode: typeof componentModel.editMode === 'undefined' ? undefined : componentModel.editMode }, // add editMode property if not exists
       allData, parent
@@ -38,6 +39,10 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
         || !anyOfPermissionsGranted(actualModel?.permissions || [])
         || !isComponentFiltered(componentModel)); // check `model` without modification
   actualModel.readOnly = actualModel.readOnly;
+
+  // binding only input and output components
+  if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
+    actualModel.propertyName = undefined;
 
   return (
     <CustomErrorBoundary>

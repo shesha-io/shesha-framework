@@ -25,7 +25,7 @@ const useRenderTimes = <T extends object>(props?: T, debug?: string): number => 
   React.useDebugValue(keysRef.current.join(', '));
 
   if (debug) {
-    console.log(`${debug}:`, timesRef.current, keysRef.current);
+    console.warn(`${debug}:`, timesRef.current, keysRef.current);
   }
 
   return timesRef.current;

@@ -95,7 +95,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
                 FieldAsync(GraphTypeMapper.GetGraphType(typeof(string), isInput: false), EntityConstants.ClassNameField, "Entity class name",
                     resolve: context => {
                         var type = context.Source != null
-                            ? context.Source.GetType()
+                            ? context.Source.GetType().StripCastleProxyType()
                             : typeof(TModel);
 
                         return Task.FromResult(type.FullName as object);

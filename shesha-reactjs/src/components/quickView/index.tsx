@@ -8,7 +8,6 @@ import React, {
 import ValidationErrors from '@/components/validationErrors';
 import {
   Button,
-  Form,
   notification,
   Popover,
   PopoverProps,
@@ -85,7 +84,6 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const [formTitle, setFormTitle] = useState(displayName);
   const [formMarkup, setFormMarkup] = useState<FormMarkupWithSettings>(null);
   const { backendUrl, httpHeaders } = useSheshaApplication();
-  const [form] = Form.useForm();
   const { refetch: fetchForm } = useFormConfiguration({ formId: formIdentifier, lazy: true });
   const { styles } = useStyles();
 
@@ -124,9 +122,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
             mode="readonly"
             {...formItemLayout}
             markup={formMarkup}
-            form={form}
             initialValues={getQuickViewInitialValues(formData, dataProperties)}
-            skipFetchData={true}
           />
         </MetadataProvider>
       </FormItemProvider>

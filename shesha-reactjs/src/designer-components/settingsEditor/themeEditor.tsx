@@ -21,25 +21,23 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
     const {selectedApplication = null, editorMode} = useSettingsEditor(false) ?? {};
     const { theme, changeTheme } = useTheme();
     const form = useForm();
-    const initialValues = useRef();
+    const initialValues = useRef(theme);
     const localTheme = useRef<IConfigurableTheme>();
-  
-    initialValues.current = form.initialValues;
-  
+
     useEffect(() => {
       localTheme.current = theme;
       // when form is closing restore the latest form initial values
       return () => {
-        if (applicationKey === (selectedApplication?.appKey ?? FRONTEND_DEFAULT_APP_KEY))
-          changeTheme(initialValues.current);
-        else
-          changeTheme(localTheme.current);
+        changeTheme(initialValues.current);
       };
     }, []);
   
     useEffect(() => {
-      if (form.formData)
+      if (form.formData) {
         changeTheme(form.formData);
+        if (applicationKey === (selectedApplication?.appKey ?? FRONTEND_DEFAULT_APP_KEY))
+          initialValues.current = form.formData;
+      }
     }, [form.formData]);
   
     const onChangeInternal = (changedValue: IConfigurableTheme) => {

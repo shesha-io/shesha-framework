@@ -5,7 +5,7 @@ import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { FormProvider, ShaForm, useForm } from '@/providers';
-import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
+import { DEFAULT_FORM_SETTINGS, IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,
   deleteStartedAction,
@@ -31,6 +31,8 @@ import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ConfigurableFormInstance } from '../form/contexts';
+import { ShaFormProvider } from '../form/providers/shaFormProvider';
+import { useShaForm } from '../form/store/shaFormInstance';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -78,16 +80,15 @@ const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = 
       });
     } else {
       props.setInitialValues(data);
-      form.form.setFieldsValue(data);
-      // initial data
-      form.updateStateFormData({ values: data, mergeValues: true });
+
+      form.setFormData({ values: data, mergeValues: true });
     }
   }, [data]);
 
   return (
     <CrudContext.Provider value={props.context}>
       <ParentProvider model={{ readOnly: props.context.mode === 'read' }} formMode={props.context.mode === 'read' ? 'readonly' : 'edit'}>
-        {children}
+          {children}
       </ParentProvider>
     </CrudContext.Provider>
   );
@@ -107,7 +108,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     onSave,
     allowChangeMode,
     autoSave = false,
-    formSettings
+    formSettings = DEFAULT_FORM_SETTINGS
   } = props;
   const [state, dispatch] = useThunkReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
@@ -307,29 +308,45 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   const flatMarkup = state.mode === 'read' ? props.displayComponents : props.editorComponents;
 
+  const [shaForm] = useShaForm({
+    antdForm: form,
+    form: undefined,
+    init: (form) => {
+      form.initByMarkup({
+        formFlatMarkup: flatMarkup,
+        formSettings: formSettings,
+      });
+    }
+  });
   return (
-    <ShaForm.MarkupProvider markup={flatMarkup}>
-      <FormProvider
-        key={state.mode} /* important for re-rendering of the provider after mode change */
-        form={form}
-        name={''}
-        formSettings={formSettings}
-        mode={state.mode === 'read' ? 'readonly' : 'edit'}
-        isActionsOwner={false}
-        formRef={formRef}
-      >
+    <ShaFormProvider shaForm={shaForm}>
+      <ShaForm.MarkupProvider markup={flatMarkup}>
+        <FormProvider
+          key={state.mode} /* important for re-rendering of the provider after mode change */
+          form={form}
+          name={''}
+          formSettings={formSettings}
+          mode={state.mode === 'read' ? 'readonly' : 'edit'}
+          isActionsOwner={false}
+          formRef={formRef}
+          shaForm={shaForm}
+        >
         <FormWrapper
-          form={form} initialValues={contextValue.initialValues} onValuesChange={onValuesChange}
-          formSettings={formSettings} delayedUpdate={delayedUpdate}
+          form={form}
+          initialValues={contextValue.initialValues}
+          onValuesChange={onValuesChange}
+          formSettings={formSettings}
+          delayedUpdate={delayedUpdate}
         >
           <InternalCrudProvider {...props} context={contextValue} delayedUpdate={delayedUpdate}
-            onValuesChange={onValuesChange} 
+            onValuesChange={onValuesChange}
             setInitialValues={setInitialValues}
             setInitialValuesLoading={setInitialValuesLoading}
           />
         </FormWrapper>
-      </FormProvider>
-    </ShaForm.MarkupProvider>
+        </FormProvider>
+      </ShaForm.MarkupProvider>
+    </ShaFormProvider>
   );
 };
 

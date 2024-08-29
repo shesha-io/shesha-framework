@@ -97,7 +97,10 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
     const adapter = editorAdapters[customComponent.type];
 
     if (component.linkToModelMetadata && propertyMeta && adapter?.propertiesFilter) {
-      editorModel = updateModelExcludeFiltered(editorModel, component.linkToModelMetadata({}, propertyMeta), adapter.propertiesFilter);
+      editorModel = updateModelExcludeFiltered(editorModel, component.linkToModelMetadata({
+        type: editorModel.type,
+        id: editorModel.id,
+      }, propertyMeta), adapter.propertiesFilter);
     }
 
     return editorModel;

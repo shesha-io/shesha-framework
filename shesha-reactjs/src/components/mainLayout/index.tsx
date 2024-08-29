@@ -20,7 +20,7 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { SIDEBAR_COLLAPSE } from './constant';
 import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
 import { useLocalStorage } from '@/hooks';
-import { useSheshaApplication, useTheme } from '@/providers';
+import { IPersistedFormProps, useSheshaApplication, useTheme } from '@/providers';
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
@@ -67,6 +67,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
    * Used to display the statuses of the entity as well as the reference numbers
    */
   headerControls?: ReactNodeOrFunc;
+  headerFormId?: IPersistedFormProps;
 }
 
 const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
@@ -88,6 +89,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     reference,
     noPadding = false,
     headerControls,
+    headerFormId,
   } = props;
   const { theme: themeFromStorage } = useTheme();
   const { styles } = useStyles();
@@ -164,10 +166,10 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
       </Sider>
 
       <Layout className={styles.layout}>
-        <Header className={styles.antLayoutHeader} style={{height: formInfoBlockVisible ? "85px" : "auto"}}>
-          <LayoutHeader collapsed={collapsed} />
+        <Header className={styles.antLayoutHeader} style={{ height: formInfoBlockVisible ? '85px' : 'auto' }}>
+          <LayoutHeader collapsed={collapsed} headerFormId={headerFormId} />
         </Header>
-        {formInfoBlockVisible && <div style={{height: "30px"}}></div>}
+        {formInfoBlockVisible && <div style={{ height: '30px' }}></div>}
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <>
             {breadcrumb}
@@ -204,7 +206,11 @@ const MainLayout = withAuth(DefaultLayout);
  * @returns the component wrapped up in a layout
  */
 export const getLayout = (page: ReactElement): JSX.Element => {
-  return <MainLayout noPadding><>{page}</></MainLayout>;
+  return (
+    <MainLayout noPadding>
+      <>{page}</>
+    </MainLayout>
+  );
 };
 
 export default MainLayout;

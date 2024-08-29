@@ -11,9 +11,11 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import ParentProvider from '@/providers/parentProvider/index';
 import { SizableColumns } from '@/components/sizableColumns';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
+  isInput: false,
   name: 'SizableColumns',
   icon: <BorderHorizontalOutlined />,
   Factory: ({ model }) => {
@@ -58,6 +60,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
   migrator: (m) =>m
     .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
     .add<ISizableColumnComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ISizableColumnComponentProps>(2, (prev) => removeComponents(prev))
   ,
   customContainerNames: ['columns'],
 };

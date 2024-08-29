@@ -1,7 +1,7 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
 export { default as ConfigurableLogo } from './configurableLogo';
 export { default as FileUpload, type IFileUploadProps } from './fileUpload';
-export { default as ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
+export { ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
 export { default as MultiCheckBoxRefList, type IMultiCheckBoxRefListProps } from './multiCheckBoxRefList';
 export {
   default as MultiReadCheckBoxRefList,
@@ -18,7 +18,7 @@ export { default as ConfigurableFormItem, type IConfigurableFormItemProps } from
 export { default as BooleanDropDown } from './booleanDropDown';
 export { SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
-export { default as EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
+export { EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
 export { default as FormAutocomplete } from './formAutocomplete';
 export { default as CustomFile } from './customFile';
 export { default as ErrorBoundary } from './errorBoundary/errorBoundary';
@@ -83,7 +83,7 @@ export { FormDesigner, type IFormDesignerProps } from './formDesigner/index';
 export { QueryBuilder, type IQueryBuilderProps } from './queryBuilder';
 export { type JsonLogicResult } from '@react-awesome-query-builder/antd';
 
-export { default as ConfigurableForm } from './configurableForm';
+export { ConfigurableForm } from './configurableForm';
 export { FormWithFlatMarkup, type IFormWithFlatMarkupProps } from './configurableForm/formWithFlatMarkup';
 
 export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from './configurableForm/models';

@@ -7,6 +7,6 @@ export const mainMenuMigration: ComponentSettingsMigrator<IConfigurableMainMenu>
   .add(1, prev => migrateToConfigActions(prev))
   .add(2, prev => {
     const { items } = prev;
-    const newItems = items.map(item => migrateFunctionToProp(item as any, 'hidden', 'visibility', null, true));
+    const newItems = items?.map(item => migrateFunctionToProp(item as any, 'hidden', 'visibility', null, true));
     return { ...prev, items: newItems };
   });

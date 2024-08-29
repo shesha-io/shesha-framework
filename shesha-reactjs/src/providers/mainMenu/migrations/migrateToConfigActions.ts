@@ -63,6 +63,6 @@ const migrateItem = (item: ISidebarMenuItem): ISidebarMenuItem => {
 
 export const migrateToConfigActions = (prev: ISideBarMenuProps): ISideBarMenuProps => {
     const { items } = prev;
-    const newItems = items.map(item => migrateItem(item)).filter(item => Boolean(item));
+    const newItems = items?.map(item => migrateItem(item)).filter(item => Boolean(item));
     return { ...prev, items: newItems };
 };

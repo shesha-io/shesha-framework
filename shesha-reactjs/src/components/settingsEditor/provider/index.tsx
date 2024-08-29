@@ -135,6 +135,7 @@ const SettingsEditorProvider: FC<PropsWithChildren<ISettingsEditorProviderProps>
   }, []);
 
   const selectSetting = (setting: ISettingConfiguration, app: IFrontEndApplication) => {
+    state.editorBridge?.cancel();
     dispatch(selectSettingAction({ setting, app }));
     dispatch(setEditorModeAction('edit'));
   };

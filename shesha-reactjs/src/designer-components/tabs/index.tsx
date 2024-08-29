@@ -14,11 +14,13 @@ import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 type TabItem = TabsProps['items'][number];
 
 const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   type: 'tabs',
+  isInput: false,
   name: 'Tabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
@@ -112,12 +114,12 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       return newModel;
     })
     .add<ITabsComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ITabsComponentProps>(3, (prev) => removeComponents(prev))
   ,
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
-    const { tabs } = model as ITabsComponentProps;
-    return tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));
   },
 };
 

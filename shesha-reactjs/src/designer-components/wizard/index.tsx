@@ -15,9 +15,11 @@ import {
   migrateFunctionToProp,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
+  isInput: false,
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   Factory: ({ model,form }) => {
@@ -87,14 +89,13 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       )
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
       .add<IWizardComponentProps>(5, (prev) => ({...migrateFormApi.properties(prev)}))
+      .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
   ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
   // validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
   customContainerNames: ['steps'],
   getContainers: (model) => {
-    const { steps } = model as IWizardComponentProps;
-
-    return steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    return model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
   },
 };
 

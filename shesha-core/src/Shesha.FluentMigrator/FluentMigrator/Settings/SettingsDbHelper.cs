@@ -225,6 +225,7 @@ where
             {
                 command.AddParameter("@settingId", settingId);
                 command.AddParameter("@appId", appId);
+                command.AddParameter("@userId", userId);
             });
         }
 

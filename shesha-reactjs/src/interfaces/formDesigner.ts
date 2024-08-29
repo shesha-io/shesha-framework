@@ -43,16 +43,16 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
 
 export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
 
-export interface ComponentFactoryArguements<TModel extends IConfigurableFormComponent = any> {
+export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> {
   model: TModel;
   componentRef: MutableRefObject<any>;
   form: FormInstance<any>;
   children?: JSX.Element;
 }
 
-export type FormFactory<TModel extends IConfigurableFormComponent = any> = FC<ComponentFactoryArguements<TModel>>;
+export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<ComponentFactoryArguments<TModel>>;
 
-export interface IToolboxComponent<TModel extends IConfigurableFormComponent = any/*, TSettingsContext = any*/> {
+export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent /*, TSettingsContext = any*/> {
   /**
    * Type of the component. Must be unique in the project.
    */
@@ -60,7 +60,7 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = a
   /**
    * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
    */
-  isInput?: boolean;
+  isInput: boolean;
   /**
    * If true, indicates that the component has data bindings and can be used as an output.
    */
@@ -152,7 +152,7 @@ export type SettingsMigrator<TSettings> = (
 export interface IToolboxComponentGroup {
   name: string;
   visible?: boolean;
-  components: IToolboxComponent[];
+  components: IToolboxComponent<any>[];
 }
 
 export interface IToolboxComponents {

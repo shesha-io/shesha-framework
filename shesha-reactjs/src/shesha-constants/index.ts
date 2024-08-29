@@ -28,5 +28,3 @@ export const LEGACY_FORMS_MODULE_NAME = '(legacy forms)';
 export const LEGACY_REFERENCE_LISTS_MODULE_NAME = '(legacy lists)';
 
 export const HOME_CACHE_URL = 'HXUL_SRFT';
-
-export const MODAL_DATA = 'Modal_Data';

@@ -8,10 +8,12 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ParentProvider from '@/providers/parentProvider/index';
 import { IKeyInformationBarProps } from './interfaces';
 import KeyInformationBar from '@/components/keyInformationBar';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 
 const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
   type: 'KeyInformationBar',
+  isInput: false,
   name: 'Key Information Bar',
   icon: <BorderLeftOutlined />,
   Factory: ({ model }) => {
@@ -28,7 +30,8 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
         0,
         (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IKeyInformationBarProps
       )
-      .add<IKeyInformationBarProps>(1, (prev) => migrateVisibility(prev)),
+      .add<IKeyInformationBarProps>(1, (prev) => migrateVisibility(prev))
+      .add<IKeyInformationBarProps>(2, (prev) => removeComponents(prev)),
   initModel: (model) => {
     const tabsModel: IKeyInformationBarProps = {
       ...model,

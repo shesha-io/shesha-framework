@@ -244,7 +244,9 @@ export const removeEmptyArrayValues = (list: any[]) =>
 
 export const executeFunction = (expression: string, args: { [key: string]: any }) => {
   try {
-    return executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args);
+    return expression
+      ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
+      : null;
   } catch (_e) {
     return null;
   }
