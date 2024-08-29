@@ -2,7 +2,7 @@ import { Modal, Spin } from 'antd';
 import { ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import React, { useRef } from 'react';
 import { useMedia } from 'react-use';
-import { FormMarkupWithSettings, IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ComponentPropertiesEditor } from '@/components/formDesigner/componentPropertiesPanel/componentPropertiesEditor';
 
 export interface IProps<T extends IConfigurableFormComponent> {
@@ -43,22 +43,6 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
       formRef.current.submit();
   };
 
-  function removeByProperty<T>(list: T[], property: keyof T, undesiredValue: any): T[] {
-    return list.filter(item => item[property] !== undesiredValue);
-  };
-
-  const settingsFormMarkup = formComponent?.settingsFormMarkup as FormMarkupWithSettings;
-
-  const updatedComponents = removeByProperty(settingsFormMarkup.components, 'propertyName', 'pnlStyle');
-
-  const excludedStyleFormComponent = {
-    ...formComponent,
-    settingsFormMarkup: {
-      ...formComponent.settingsFormMarkup,
-      components: updatedComponents
-    }
-  } as IToolboxComponent<IConfigurableFormComponent>;
-
   return (
     <Modal
       width={isSmall ? '90%' : '60%'}
@@ -77,7 +61,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
           readOnly={readOnly}
           onSave={onSave}
           autoSave={false}
-          toolboxComponent={excludedStyleFormComponent}
+          toolboxComponent={formComponent}
           formRef={formRef}
           propertyFilter={propertyFilter}
           layoutSettings={{

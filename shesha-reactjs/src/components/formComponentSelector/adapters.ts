@@ -26,7 +26,7 @@ export interface IEditorAdapter {
   propertiesFilter: PropertyInclusionPredicate;
 }
 
-const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
+export const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
   return (name: string) => {
     return names.indexOf(name) === -1;
   };
@@ -64,6 +64,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'dataSourceType',
       'dataSourceUrl',
       'entityTypeShortAlias',
+      'pnlStyle'
     ]),
   },
   [CheckboxComponent.type]: {
@@ -87,6 +88,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'initialValue',
       'passEmptyStringByDefault',
       'textType',
+      'pnlStyle'
     ]),
   },
   [EntityReferenceComponent.type]: {
