@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using Abp.Domain.Entities.Auditing;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
@@ -7,7 +8,7 @@ using Shesha.Domain.Enums;
 namespace Shesha.Domain
 {
     [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
-    public class OtpAuditItem: FullAuditedEntity<Guid>
+    public class OtpAuditItem : FullAuditedEntity<Guid>
     {
         /// <summary>
         /// Mobile number/email address (depending on the `send type`) to which the OTP should be sent
@@ -22,7 +23,7 @@ namespace Shesha.Domain
 
         [StringLength(100)]
         public virtual string RecipientType { get; set; }
-        
+
         [StringLength(40)]
         public virtual string RecipientId { get; set; }
 
@@ -38,13 +39,15 @@ namespace Shesha.Domain
 
         [StringLength(100)]
         public virtual string Otp { get; set; }
-        
+
         [StringLength(100)]
         public virtual string ActionType { get; set; }
 
         public virtual OtpSendStatus SendStatus { get; set; }
-        
+
         [StringLength(int.MaxValue)]
         public virtual string ErrorMessage { get; set; }
+        public virtual string ModuleName {get; set;}
+        public virtual Guid? SourceEntityId { get; set;}
     }
 }
