@@ -16,14 +16,14 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   // Check if all data for displaying is loaded
   const isLoaded = value
     ? Array.isArray(value)
-      ? !value.find(x => typeof(x[displayEntityKey]) === 'undefined')
-      : typeof(value[displayEntityKey]) !== 'undefined'
+      ? !value.find(x => typeof (x[displayEntityKey]) === 'undefined')
+      : typeof (value[displayEntityKey]) !== 'undefined'
     : false;
 
   const selection = useEntitySelectionData({
     entityType: entityType,
     propertyName: displayEntityKey,
-    selection: !isLoaded 
+    selection: !isLoaded
       ? Array.isArray(value)
         ? value.map(x => props.incomeValueFunc(x, {}))
         : props.incomeValueFunc(value, {})
@@ -64,13 +64,14 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   const { styles } = useStyles();
   const selectRef = useRef(undefined);
 
+
   const [showModal, setShowModal] = useState(false);
 
   // Check if all data for displaying is loaded
-  const isLoaded = value 
+  const isLoaded = value
     ? Array.isArray(value)
-      ? !value.find(x => typeof(x[displayEntityKey]) === 'undefined')
-      : typeof(value[displayEntityKey]) !== 'undefined'
+      ? !value.find(x => typeof (x[displayEntityKey]) === 'undefined')
+      : typeof (value[displayEntityKey]) !== 'undefined'
     : false;
 
   const valueId = Array.isArray(value)
@@ -89,9 +90,6 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
   const selectedMode = mode === 'single' ? undefined : mode;
 
-  if (!entityType) {
-    throw new Error('Please make sure that either entityType is configured for the entity picker to work properly');
-  }
 
   const handleMultiChange = (selectedValues: string[]) => {
     const newValues = value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {})));
@@ -138,7 +136,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           <Space.Compact style={{ width: '100%' }}>
             <Select
               size={size}
-              onDropdownVisibleChange={(_e) =>{
+              onDropdownVisibleChange={(_e) => {
                 selectRef.current.blur();
                 showPickerDialog();
               }}
@@ -147,14 +145,19 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
               placeholder={selection.loading ? 'Loading...' : placeholder}
               notFoundContent={''}
               defaultValue={defaultValue}
+
               disabled={disabled || selection.loading}
               ref={selectRef}
               allowClear
+
               mode={selectedMode}
               options={options}
               suffixIcon={null} // hide arrow              
               onChange={handleMultiChange}
-              style={{ ...style, width: `calc(100% - ${size === 'large'? '40px' : '32px'})` }}
+              style={{
+                ...style, width: `calc(100% - ${size === 'large' ? '40px' : '32px'})`,
+                pointerEvents: 'none',
+              }}
               loading={selection.loading}
             >
               {''}
@@ -170,7 +173,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
           </Space.Compact>
         )}
       </div>
-      
+
       {showModal && <EntityPickerModal {...props} onCloseModal={() => setShowModal(false)} />}
     </div>
   );

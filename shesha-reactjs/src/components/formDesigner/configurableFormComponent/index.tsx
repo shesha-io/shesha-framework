@@ -160,10 +160,6 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
           }}>
             <FormComponent componentModel={componentModel} componentRef={componentRef} />
             {isPartiallyConfigured.isPartiallyConfigured && (<>
-              <Alert
-                message={`${componentModel.type} configuration is incomplete`}
-                type="warning"
-              />
               <div style={{
                 display: 'flex',
                 height: '60px',

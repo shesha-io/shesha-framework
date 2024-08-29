@@ -106,9 +106,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       return !!value ? value.id : null;
     }, [model.valueFormat, model.outcomeCustomJs, model.displayEntityKey, model.entityType]);
 
-    if (form.formMode === 'designer' && !model.entityType) {
-      return null;
-    }
+    // if (form.formMode === 'designer' && !model.entityType) {
+    //   return null;
+    // }
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
     const computedStyle = getStyle(style, formData) ?? {};
@@ -127,7 +127,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
             <EntityPicker
               incomeValueFunc={incomeValueFunc}
               outcomeValueFunc={outcomeValueFunc}
-
               placeholder={model.placeholder}
               style={computedStyle}
               formId={model.id}
