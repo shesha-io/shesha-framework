@@ -31,6 +31,7 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
       .add<ITableContextComponentProps>(5, (prev) => ({ ...prev, sortMode: 'standard', strictSortOrder: 'asc', allowReordering: 'no' }))
       .add<ITableContextComponentProps>(6, (prev) => migrateVisibility(prev))
       .add<ITableContextComponentProps>(7, (prev) => ({...migrateFormApi.properties(prev)}))
+      .add<ITableContextComponentProps>(8, (prev) => ({...prev,requiredConfigs: ['entityType']}))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

@@ -15,12 +15,13 @@ import {
   EditOutlined,
   EyeInvisibleOutlined,
   FunctionOutlined,
-  StopOutlined
+  StopOutlined,
+  WarningOutlined
 } from '@ant-design/icons';
 import { getActualPropertyValue, useAvailableConstantsData } from '@/providers/form/utils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
-import { Tooltip } from 'antd';
+import { Alert, Button, Tooltip } from 'antd';
 import { ShaForm, useIsDrawingForm } from '@/providers/form';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
@@ -50,11 +51,29 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const componentEditModeFx = isPropertySettings(componentModel.editMode);
   const componentEditMode = getActualPropertyValue(componentModel, allData, 'editMode')?.editMode as EditMode;
 
-  const isFullyConfigured = getActualPropertyValue(componentModel, allData, 'requiredConfigs')?.requiredConfigs?.every(x => !!componentModel?.[x]);
-
 
   const actionText1 = (hiddenFx ? 'hidden' : '') + (hiddenFx && componentEditModeFx ? ' and ' : '') + (componentEditModeFx ? 'disabled' : '');
   const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
+
+
+  const isPartiallyConfigured = useMemo(() => {
+
+    if (!getActualPropertyValue(componentModel, allData, 'requiredConfigs')?.requiredConfigs) {
+      return {
+        isPartiallyConfigured: false,
+        missingConfigs: []
+      };
+    } else {
+      const missingConfigs = getActualPropertyValue(componentModel, allData, 'requiredConfigs')?.requiredConfigs?.filter(x => !componentModel?.[x]);
+      return {
+        isPartiallyConfigured: missingConfigs?.length > 0,
+        missingConfigs
+      }
+
+    }
+
+
+  }, [componentModel, allData]);
 
   const settingsEditor = useMemo(() => {
     const renderRerquired = isSelected && settingsPanelRef.current;
@@ -81,6 +100,24 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
 
     return result;
   }, [isSelected]);
+
+
+  const errortip = (missingConfigs) => (
+    <div>
+      <div>
+        <strong>Type:</strong> {componentModel.type}
+      </div>
+      {Boolean(componentModel.propertyName) && (
+        <div>
+          <p>
+            {`The following configurations are not set correctly: ${missingConfigs.join(', ')}`}
+          </p>
+        </div>
+      )}
+
+    </div>
+  );
+  const errorStyle = !isPartiallyConfigured ? { padding: '5px 3px' } : { padding: 'unset' };
 
   return (
     <div
@@ -116,10 +153,38 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
       <div>
-        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
-          <div style={{ padding: '5px 3px' }}>
+        <DragWrapper componentId={componentModel.id} inCompleteConfiguration={isPartiallyConfigured?.isPartiallyConfigured} componentRef={componentRef} readOnly={readOnly} >
+          <div style={{
+            ...errorStyle,
+
+          }}>
             <FormComponent componentModel={componentModel} componentRef={componentRef} />
+            {isPartiallyConfigured.isPartiallyConfigured && (<>
+              <Alert
+                message={`${componentModel.type} configuration is incomplete`}
+                type="warning"
+              />
+              <div style={{
+                display: 'flex',
+                height: '60px',
+                width: '70px',
+                zIndex: 1000,
+                position: 'absolute',
+                top: '0',
+                right: '0',
+                justifyContent: 'flex-end',
+                alignItems: 'flex-start'
+              }}>
+                <Tooltip title={errortip(isPartiallyConfigured?.missingConfigs)} placement="right">
+                  <Button icon={<WarningOutlined />} size="middle" danger>
+                  </Button>
+                </Tooltip>
+              </div>
+            </>
+
+            )}
           </div>
+
         </DragWrapper>
       </div>
       {settingsEditor}
@@ -145,5 +210,5 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     <CustomErrorBoundary>
       <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
     </CustomErrorBoundary>
-  ); 
+  );
 };

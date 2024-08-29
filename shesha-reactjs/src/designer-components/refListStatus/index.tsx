@@ -1,5 +1,4 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import { Alert } from 'antd';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
@@ -34,14 +33,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     if (formMode === 'designer' && !referenceListId) {
-      return (
-        <Alert
-          showIcon
-          message="ReflistStatus configuration is incomplete"
-          description="Please make sure that you've select a reference list."
-          type="warning"
-        />
-      );
+      return null;
     }
 
     return (
