@@ -11,7 +11,7 @@ import { Button, Form, Result, Spin } from 'antd';
 import { ValidateErrorEntity } from '@/interfaces';
 import { IConfigurableFormRendererProps } from './models';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { ShaForm, useForm } from '@/providers/form';
+import { ShaForm } from '@/providers/form';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useSheshaApplication } from '@/providers';
 import { useStyles } from './styles/styles';
@@ -19,7 +19,7 @@ import Link from 'next/link';
 import ParentProvider from '@/providers/parentProvider';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
-import { useShaFormInstance } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
   children,
@@ -33,14 +33,16 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   onSubmittedFailed,
   ...props
 }) => {
-  const formInstance = useForm();
+  const { getPayload: getDelayedUpdates } = useDelayedUpdate(false) ?? {};
+
   const shaForm = useShaFormInstance();
   const { formMode, settings: formSettings, setValidationErrors } = shaForm;
+  shaForm.setDataSubmitContext({ getDelayedUpdates });
 
   const { styles } = useStyles();
   const formFlatMarkup = ShaForm.useMarkup();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const { getPayload: getDelayedUpdates } = useDelayedUpdate(false) ?? {};
+  
 
   const { isDragging = false } = useFormDesignerState(false) ?? {};
 
@@ -57,11 +59,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
       return;
 
     try {
-      await shaForm.submitData({
-        data: formInstance.formData,
-        antdForm: formInstance.form,
-        getDelayedUpdates: getDelayedUpdates,
-      });
+      await shaForm.submitData();
     } catch (error) {
       onSubmittedFailed?.();
       setValidationErrors(error?.data?.error || error);

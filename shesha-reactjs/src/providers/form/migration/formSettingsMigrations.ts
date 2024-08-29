@@ -2,6 +2,8 @@ import { Migrator } from "@/utils/fluentMigrator/migrator";
 import { IFormDto, IFormSettings } from "../models";
 import { migrateFormApi } from "@/designer-components/_common-migrations/migrateFormApi1";
 import { migrateFormLifecycle } from "@/designer-components/_common-migrations/migrateFormLifecycle";
+import { migrateDefaultApiEndpoints } from "@/designer-components/_common-migrations/migrateDefaultApiEndpoints";
+import { migrateFieldsToFetchAndOnDataLoad } from "@/designer-components/_common-migrations/migrateFieldsToFetchAndOnDataLoad";
 
 const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings>) =>
   migrator
@@ -12,6 +14,9 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings>
       onUpdate: migrateFormApi.withoutFormData(prev.onUpdate),
     }))
     .add(2, (prev) => migrateFormLifecycle(prev))
+    .add(3, (prev) => ({ ...prev, onValuesUpdate: prev.onValuesUpdate ?? prev['onValuesChanged'] }))
+    .add(4, (prev) => migrateDefaultApiEndpoints(prev))
+    .add(5, (prev) => migrateFieldsToFetchAndOnDataLoad(prev))
   ;
 
 export const migrateFormSettings = (form: IFormDto) => {
@@ -27,8 +32,8 @@ export const migrateFormSettings = (form: IFormDto) => {
 };
 
 export const migrateFormSettings2 = (formSettings: IFormSettings) => {
-  if (!formSettings) 
-      return formSettings;
+  if (!formSettings)
+    return formSettings;
 
   const migrator = new Migrator<IFormSettings, IFormSettings>();
   const fluent = formSettingsMigrations(migrator);

@@ -111,7 +111,7 @@ namespace Shesha.Authorization
             if (dbPermission == null)
             {
                 DeleteMissedDbPermissionAsync(oldName);
-                throw new EntityNotFoundException("Permission 'name' not found");
+                throw new EntityNotFoundException($"Permission '{oldName}' not found");
             }
 
             if (dbPermission.Name != permission.Name

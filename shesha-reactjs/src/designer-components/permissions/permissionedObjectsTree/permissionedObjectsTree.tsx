@@ -6,6 +6,7 @@ import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import PermissionedObjectsTree from '@/components/permissionedObjectsTree';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { IConfigurableActionConfiguration } from '@/index';
 
 export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent { 
   objectsType?: string;
@@ -15,6 +16,8 @@ export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFor
    * A callback for when the value of this component changes
    */
    onChange?: any;
+
+   onSelectAction?: IConfigurableActionConfiguration;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;

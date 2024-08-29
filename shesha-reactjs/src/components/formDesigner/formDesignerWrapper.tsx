@@ -14,7 +14,7 @@ import { FormProvider, ShaForm } from '@/providers/form';
 import { MetadataProvider } from '@/providers';
 import { ResultStatusType } from 'antd/lib/result';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
-import { ShaFormProvider } from '@/providers/form/newProvider/shaFormProvider';
+import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 
 export interface IFormProviderWrapperProps extends PropsWithChildren {
   formId: FormIdentifier;

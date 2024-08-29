@@ -7,7 +7,7 @@ import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDe
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { useTheme } from '@/index';
-import { useShaFormRef } from '@/providers/form/newProvider/shaFormProvider';
+import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
 const formSettingsMarkup = formSettingsJson as FormMarkup;
 
