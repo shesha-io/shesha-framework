@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions';
 import { SidebarMenuActionEnums } from './actions';
 import { ISidebarMenuStateContext, SIDEBAR_MENU_CONTEXT_INITIAL_STATE } from './contexts';
-import { ISidebarMenuItem } from '.';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
 export default handleActions<ISidebarMenuStateContext, any>(
   {

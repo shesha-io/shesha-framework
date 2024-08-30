@@ -2,11 +2,11 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 
 import { setItemsAction, setLoadedMenuAction } from './actions';
 import { IConfigurableMainMenu, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
 import { uiReducer } from './reducer';
-import { FormFullName, ISidebarMenuItem, isNavigationActionConfiguration, useSettingValue, useSheshaApplication } from '..';
+import { FormFullName, isNavigationActionConfiguration, useSettingValue, useSheshaApplication } from '..';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { mainMenuMigration } from './migrations/migration';
 import { getActualModel, useAvailableConstantsData } from '../form/utils';
-import { isSidebarGroup } from '@/interfaces/sidebar';
+import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
 import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { settingsUpdateValue } from '@/apis/settings';

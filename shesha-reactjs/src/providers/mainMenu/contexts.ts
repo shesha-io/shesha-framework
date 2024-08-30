@@ -1,5 +1,5 @@
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import { createNamedContext } from '@/utils/react';
-import { ISidebarMenuItem } from '..';
 
 export interface IConfigurableMainMenu {
   items: ISidebarMenuItem[];

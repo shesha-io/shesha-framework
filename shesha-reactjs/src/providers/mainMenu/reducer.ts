@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions';
 import { MainMenuActionEnums } from './actions';
 import { IConfigurableMainMenu, IMainMenuStateContext, MAIN_MENU_CONTEXT_INITIAL_STATE } from './contexts';
-import { ISidebarMenuItem } from '..';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
 export const uiReducer = handleActions<IMainMenuStateContext, any>(
   {

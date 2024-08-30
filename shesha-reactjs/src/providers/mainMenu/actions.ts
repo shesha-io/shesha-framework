@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
 import { IConfigurableMainMenu } from './contexts';
-import { ISidebarMenuItem } from '..';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
 export enum MainMenuActionEnums {
   SetLoadedMenu = 'SET_LOADED_MENU',
