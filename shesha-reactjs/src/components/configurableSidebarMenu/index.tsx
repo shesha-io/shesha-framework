@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { ISettingsEditorProps } from '@/components/configurableComponent';
 import { SidebarMenu } from '@/components/sidebarMenu';
-import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import { ComponentSettingsModal } from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
@@ -9,6 +8,7 @@ import { Button } from 'antd';
 import ConfigurableComponentRenderer from '../configurableComponentRenderer';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { useMainMenu } from '@/providers/mainMenu';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
 export interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
