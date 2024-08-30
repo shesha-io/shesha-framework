@@ -98,6 +98,8 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
     const localItems = model.items?.map((item) => requestItemVisible(getActualModel(item, allData), itemsToCheck));
     if (itemsToCheck.length > 0) {
       getFormPermissions(localItems, itemsToCheck);
+    } else {
+      dispatch(setItemsAction([...localItems]));
     }
   };
 
