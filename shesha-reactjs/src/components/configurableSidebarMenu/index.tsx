@@ -1,10 +1,9 @@
-import React, { FC, useMemo } from 'react';
-import { ConfigurableApplicationComponent, ISettingsEditorProps } from '@/components/configurableComponent';
+import React, { FC } from 'react';
+import { ISettingsEditorProps } from '@/components/configurableComponent';
 import { SidebarMenu } from '@/components/sidebarMenu';
 import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import { ComponentSettingsModal } from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
-import CustomErrorBoundary from '@/components/customErrorBoundary';
 import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
 import { Button } from 'antd';
 import ConfigurableComponentRenderer from '../configurableComponentRenderer';
@@ -41,7 +40,6 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
       />
     );
   };
-  const memoizedDefaults = useMemo(() => props.defaultSettings ?? { items: [] }, [props.defaultSettings]);
 
   const context: IConfigurableComponentContext<ISideBarMenuProps> = {
     settings: loadedMenu,
@@ -82,32 +80,6 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
           );
         }}
     </ConfigurableComponentRenderer>
-  );
-
-  return (
-    <CustomErrorBoundary>
-      <ConfigurableApplicationComponent<ISideBarMenuProps>
-        defaultSettings={memoizedDefaults}
-        settingsEditor={{
-          render: editor,
-        }}
-        name={props.name}
-        isApplicationSpecific={props.isApplicationSpecific}
-      >
-        {(componentState, BlockOverlay) => {
-          return (
-            <div className={`sidebar ${componentState.wrapperClassName}`}>
-              <BlockOverlay>
-                <div className='sha-configurable-sidemenu-button-wrapper'>
-                  <Button title='Edit sidebar menu' shape='default' icon={<RebaseEditOutlined />} />
-                </div>
-              </BlockOverlay>
-              <SidebarMenu theme={props.theme} />
-            </div>
-          );
-        }}
-      </ConfigurableApplicationComponent>
-    </CustomErrorBoundary>
   );
 };
 

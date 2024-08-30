@@ -54,6 +54,7 @@ import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/pr
 import { FormDataLoadersProvider } from '../form/loaders/formDataLoadersProvider';
 import { FormDataSubmittersProvider } from '../form/submitters/formDataSubmittersProvider';
 import { MainMenuProvider } from '../mainMenu';
+import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/models';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -77,7 +78,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     children,
     backendUrl,
     applicationName,
-    applicationKey = 'default-app',
+    applicationKey = FRONTEND_DEFAULT_APP_KEY,
     accessTokenName,
     homePageUrl,
     router,

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Shesha.Configuration
 {
@@ -17,26 +13,12 @@ namespace Shesha.Configuration
                     new MainMenuSettings()
                     {
                        Version = 2,
-                       Items = new List<MainMenuItem>(),
+                       Items = new List<object>(),
                     };
             }
         }
 
         public int Version { get; set; }
-        public List<MainMenuItem> Items { get; set; }
-    }
-
-    public class MainMenuItem
-    {
-        public string Id { get; set; }
-        public object ActionConfiguration { get; set; }
-        public string Title { get; set; }
-        public string Tooltip { get; set; }
-        public string ItemType { get; set; }
-
-        public string Icon { get; set; }
-        public bool Hidden { get; set; }
-        public string Visibility { get; set; }
-        public List<string> RequiredPermission { get; set; }
+        public List<object> Items { get; set; }
     }
 }
