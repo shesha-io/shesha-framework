@@ -413,7 +413,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         this.initialValues = initialValues;
         this.#setInternalFormData(initialValues);
-        //this.formData = initialValues;
+
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
         //await this.loadData(formArguments);
