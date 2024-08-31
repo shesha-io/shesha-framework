@@ -15,7 +15,7 @@ export * from './components/mainLayout/constant';
 export { removeZeroWidthCharsFromString } from './providers/form/utils';
 export { requestHeaders } from './utils/requestHeaders';
 
-export { useMainMenu } from './providers/mainMenu';
+
 export { ConfigurableComponentRenderer } from "./components/configurableComponentRenderer";
 
 export { DynamicPage } from './generic-pages/dynamic';
