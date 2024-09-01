@@ -1,28 +1,26 @@
 import { Button, Radio } from 'antd';
 import React, { FC } from 'react';
 import { AlignLeftOutlined, AlignRightOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { useStyles } from '../../styles/styles';
-import { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 
 
 interface ILabelProps {
     readOnly?: boolean;
-    props?: any;
+    value?: any;
+    onChange?: (value) => void;
 }
 
 
-const LabelConfigurator: FC<ILabelProps> = ({ props, readOnly }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ readOnly, value, onChange }) => {
 
-    const { model, onValuesChange } = useSettingsForm<any>();
-    const { hideLabel, labelAlign } = model;
+    const { hideLabel, labelAlign } = value;
     const { styles } = useStyles();
 
     return (
         <div className={styles.flexWrapper} >
             <div className={styles.flexInput}>
-                <Radio.Group disabled={readOnly || hideLabel} value={labelAlign} onChange={(e) => {
-                    onValuesChange({ labelAlign: e.target.value });
+                <Radio.Group size='small' disabled={readOnly || hideLabel} value={labelAlign} onChange={(e) => {
+                    onChange({ labelAlign: e.target.value });
                 }}>
                     {[{ value: 'left', icon: <AlignLeftOutlined /> }, { value: 'right', icon: <AlignRightOutlined /> }].map(({ value, icon }) => (
                         <Radio.Button key={value} value={value} title={value}>{icon}</Radio.Button>
@@ -32,7 +30,7 @@ const LabelConfigurator: FC<ILabelProps> = ({ props, readOnly }) => {
             <div className={styles.flexInput}>
                 <Button
                     onClick={() => {
-                        onValuesChange({ hideLabel: !hideLabel });
+                        onChange({ hideLabel: !hideLabel });
                     }}
                     value={hideLabel}
                     disabled={readOnly}
@@ -44,4 +42,4 @@ const LabelConfigurator: FC<ILabelProps> = ({ props, readOnly }) => {
     );
 };
 
-export default LabelConfigurator;
+export default LabelConfiguratorComponent;

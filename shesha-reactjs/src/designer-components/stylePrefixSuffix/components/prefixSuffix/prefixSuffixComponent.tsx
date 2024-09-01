@@ -25,8 +25,8 @@ const PrefixSuffixComponent: FC<IPrefixSuffixProps> = ({ readOnly, model, onChan
                     </SettingsFormItem>
                 </div>
                 <div className={styles.flexIconPicker}>
-                    <SettingsFormItem readOnly={readOnly} name="prefixIcon" label="Prefix Icon">
-                        <IconPicker readOnly={readOnly} onIconChange={(_, iconName) => updateValue({ prefixIcon: iconName })} value={model?.prefixIcon} />
+                    <SettingsFormItem readOnly={readOnly} name="prefixIcon" label="Prefix Icon" jsSetting>
+                        <IconPicker selectBtnSize='small' readOnly={readOnly} onIconChange={(_, iconName) => updateValue({ prefixIcon: iconName })} value={model?.prefixIcon} />
                     </SettingsFormItem>
                 </div>
             </div>
@@ -37,8 +37,8 @@ const PrefixSuffixComponent: FC<IPrefixSuffixProps> = ({ readOnly, model, onChan
                     </SettingsFormItem>
                 </div>
                 <div className={styles.flexIconPicker}>
-                    <SettingsFormItem name="suffixIcon" label="Suffix Icon">
-                        <IconPicker readOnly={readOnly} onIconChange={(_, iconName) => updateValue({ suffixIcon: iconName })} value={model?.suffixIcon} />
+                    <SettingsFormItem name="suffixIcon" label="Suffix Icon" jsSetting>
+                        <IconPicker selectBtnSize='small' readOnly={readOnly} onIconChange={(_, iconName) => updateValue({ suffixIcon: iconName })} value={model?.suffixIcon} />
                     </SettingsFormItem>
                 </div>
             </div>

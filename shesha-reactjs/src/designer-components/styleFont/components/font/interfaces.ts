@@ -1,4 +1,3 @@
-import { IValueWithUnit } from "@/designer-components/styleDimensions/components/size/sizeComponent";
 import { IConfigurableFormComponent } from "@/providers";
 
 export interface IFontComponentProps extends IConfigurableFormComponent {
@@ -12,5 +11,5 @@ export interface IFontValue {
     weight?: number;
     color?: string;
     align?: AlignSetting;
-    lineHeight?: number;
+    transform?: string;
 }

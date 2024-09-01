@@ -5,26 +5,25 @@ import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import LabelConfigurator from './components/label/labelConfigurator';
+import LabelConfiguratorComponent from './components/label/labelConfigurator';
 import { ILabelComponentProps } from './components/label/interfaces';
 
-const SizeConfigurator: IToolboxComponent<ILabelComponentProps> = {
-    type: 'size',
+const LabelConfigurator: IToolboxComponent<ILabelComponentProps> = {
+    type: 'labelConfigurator',
     name: 'Size',
     isInput: false,
     icon: <ColumnWidthOutlined />,
     canBeJsSetting: true,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-    Factory: ({ model: passedModel }) => {
-        const { size, ...model } = passedModel;
+    Factory: ({ model }) => {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(onChange) => <LabelConfigurator model={passedModel} onChange={onChange} />}
+                {(value, onChange) => <LabelConfiguratorComponent value={value} onChange={onChange} />}
             </ConfigurableFormItem>
         );
     },
     settingsFormMarkup: getSettings(),
 };
 
-export default SizeConfigurator;
+export default LabelConfigurator;

@@ -38,7 +38,7 @@ const ShadowComponent: FC<IShadowType> = ({ readOnly, value }) => {
     );
 
     return (
-        <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
+        <Row >
             {renderInputRow([{ label: 'Offset X', property: 'offsetX' }, { label: 'Offset Y', property: 'offsetY' }])}
             {renderInputRow([{ label: 'Blur', property: 'blurRadius' }, { label: 'Spread', property: 'spreadRadius' }])}
             <Col span={24}>
@@ -46,7 +46,6 @@ const ShadowComponent: FC<IShadowType> = ({ readOnly, value }) => {
                     <ColorPicker readOnly={readOnly} />
                 </SettingsFormItem>
             </Col>
-
         </Row>
     );
 };

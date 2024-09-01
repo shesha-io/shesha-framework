@@ -20,6 +20,7 @@ export interface ISettingsControlProps {
   value?: IPropertySetting;
   mode: PropertySettingMode;
   type?: string;
+  labelProps?: { hideLabel: boolean; labelAlign: string, onValuesChange?: (newValues) => void };
   onChange?: (value: IPropertySetting) => void;
   readonly children?: SettingsControlChildrenType;
   availableConstantsExpression?: string;
@@ -79,14 +80,17 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   const onSwitchMode = () => {
     const newMode = mode === 'code' ? 'value' : 'code';
+    console.log("is label?: ", props.labelProps);
     onInternalChange(setting, newMode);
   };
+
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
   const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: props.readOnly,
+    size: 'small',
     value: setting._code,
     onChange: codeOnChange,
     mode: 'dialog',
@@ -95,7 +99,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
     fileName: props.propertyName,
     wrapInTemplate: true,
     templateSettings: { functionName: functionName },
-    exposedVariables: defaultExposedVariables
+    exposedVariables: defaultExposedVariables,
   };
 
   const editor = usePassedConstants
@@ -105,9 +109,6 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
       <div className={styles.jsContent}>
-        {mode === 'code' && editor}
-        {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
-        {propertyName === 'label' && <LabelConfigurator />}
         <Button
           hidden={props.readOnly}
           className={`${styles.jsSwitch} ${props.type === 'horizontal' ? 'inlineJS' : ''}`}
@@ -119,6 +120,9 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
         >
           {mode === 'code' ? 'Value' : 'JS'}
         </Button>
+        {mode === 'code' && editor}
+        {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
+        {props.labelProps && <LabelConfigurator value={{ labelAlign: props.labelProps.labelAlign, hideLabel: props.labelProps.hideLabel }} onChange={props.labelProps.onValuesChange} />}
       </div>
     </div>
   );

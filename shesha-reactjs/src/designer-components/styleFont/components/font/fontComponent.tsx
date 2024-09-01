@@ -1,4 +1,4 @@
-import { Col, Input, Radio, Row, Select } from 'antd';
+import { Input, Radio, Row, Select } from 'antd';
 import React, { FC } from 'react';
 import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from '@ant-design/icons';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
@@ -9,9 +9,18 @@ import { useStyles } from '../../styles/styles';
 const { Option } = Select;
 
 const fontTypes = [
-    'Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Verdana',
-    'Georgia', 'Palatino', 'Garamond', 'Comic Sans MS', 'Trebuchet MS',
-    'Arial Black', 'Impact',
+    { value: 'Arial', title: 'Arial' },
+    { value: 'Helvetica', title: 'Helvetica' },
+    { value: 'Times New Roman', title: 'Times New Roman' },
+    { value: 'Courier New', title: 'Courier New' },
+    { value: 'Verdana', title: 'Verdana' },
+    { value: 'Georgia', title: 'Georgia' },
+    { value: 'Palatino', title: 'Palatino' },
+    { value: 'Garamond', title: 'Garamond' },
+    { value: 'Comic Sans MS', title: 'Comic Sans MS' },
+    { value: 'Trebuchet MS', title: 'Trebuchet MS' },
+    { value: 'Arial Black', title: 'Arial Black' },
+    { value: 'impact', title: 'Impact' },
 ];
 
 const fontWeights = [
@@ -42,14 +51,16 @@ interface IDropdownProps {
     valueField?: string;
 }
 
-const Dropdown: FC<IDropdownProps> = ({ updateValue, value, options, field, labelField = 'title', valueField = 'value' }) => (
+const Dropdown: FC<IDropdownProps> = ({ updateValue, value, options, field: property, valueField = 'value' }) => (
     <Select
-        value={value?.[field]}
-        onChange={(newValue) => updateValue({ [field]: newValue })}
+        value={value?.[property]}
+        onChange={(newValue) => {
+            updateValue({ [property]: newValue })
+        }}
     >
         {options.map(option => (
             <Option key={option[valueField]} value={option[valueField]}>
-                {field === 'weight' ? option.value + ' ' + option.title : option[labelField]}
+                {property === 'weight' ? option.value + ' ' + option.title : option.value}
             </Option>
         ))}
     </Select>
@@ -70,58 +81,53 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
         onChange(updatedValue);
     };
 
-    const renderSizeInput = (label, property) => {
+    const renderInput = (props) => {
+        const { label, property, type, options } = props;
         const currentValue = value?.[property];
+
+        const input = () => {
+            switch (type) {
+                case 'color':
+                    return <ColorPicker value={value?.color} readOnly={readOnly} allowClear />;
+                case 'dropdown':
+                    return <Dropdown updateValue={updateValue} value={value} options={options} field={property} />;
+                case 'buttons':
+                    return <Radio.Group value={value?.align} onChange={(e) => updateValue({ align: e.target.value })}>
+                        {alignOptions.map(({ value, icon, title }) => (
+                            <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                        ))}
+                    </Radio.Group>
+                default:
+                    return <Input
+                        value={currentValue}
+                        readOnly={readOnly}
+                    />;
+            }
+        }
 
         return (
             <SettingsFormItem name={`font.${property}`} label={label} jsSetting>
-                <Input
-                    value={currentValue}
-                    readOnly={readOnly}
-                />
+                {input()}
             </SettingsFormItem>
         );
     };
 
-    const renderInputRow = (inputs: Array<{ label: string, property }>) => (
+    const renderInputRow = (inputs: Array<{ label: string, property, type?: 'color' | 'dropdown' | 'buttons', options?, field?}>) => (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px', width: '100%' }}>
-            {inputs.map(({ label, property }) => (
-                <div key={property} style={{ flex: '1 1 100px', minWidth: '100px' }}>
-                    {renderSizeInput(label, property)}
+            {inputs.map((props) => (
+                <div key={props.property} style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                    {renderInput(props)}
                 </div>
             ))}
         </div>
     );
 
     return (
-        <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
-            {renderInputRow([{ label: 'Size', property: 'size' }, { label: 'Line Height', property: 'lineHeight' }])}
-            <div className={styles.flexWrapper}>
-                <div className={styles.flexInput}>
-                    <SettingsFormItem name="font.color" label="Color" jsSetting>
-                        <ColorPicker value={value?.color} readOnly={readOnly} allowClear />
-                    </SettingsFormItem>
-                </div>
-                <div className={styles.flexInput}>
-                    <SettingsFormItem readOnly={readOnly} name="font.align" label="Align" jsSetting>
-                        <Radio.Group value={value?.align} onChange={(e) => updateValue({ align: e.target.value })}>
-                            {alignOptions.map(({ value, icon, title }) => (
-                                <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
-                            ))}
-                        </Radio.Group>
-                    </SettingsFormItem>
-                </div>
-            </div>
-            <Col className="gutter-row" span={24}>
-                <SettingsFormItem name="font.weight" label="Weight" jsSetting>
-                    <Dropdown updateValue={updateValue} value={value} options={fontWeights} field="weight" labelField={null} />
-                </SettingsFormItem>
-            </Col>
-            <Col className="gutter-row" span={24}>
-                <SettingsFormItem name="font.type" label="Family" jsSetting>
-                    <Dropdown updateValue={updateValue} value={value} options={fontTypes.map(type => ({ value: type }))} field="type" />
-                </SettingsFormItem>
-            </Col>
+        <Row gutter={[8, 2]}>
+            {renderInputRow([{ label: 'Size', property: 'size' }, { label: 'Font Weight', property: 'weight', type: 'dropdown', options: fontWeights }])}
+            {renderInputRow([{ label: 'Color', property: 'color', type: 'color' }, { label: 'Family', property: 'type', type: 'dropdown', options: fontTypes }])}
+            {renderInputRow([{ label: 'Align', property: 'align', type: 'buttons', options: alignOptions }])}
+
         </Row>
     );
 };

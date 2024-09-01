@@ -46,6 +46,9 @@ import Space from '@/designer-components/space';
 import Statistic from '@/designer-components/statistic';
 import StatusTag from '@/designer-components/statusTag';
 import StyleBox from '@/designer-components/styleBox';
+import BorderConfigurator from '@/designer-components/styleBorder';
+import StyleLabel from '@/designer-components/styleLabel';
+import SizeConfigurator from '@/designer-components/styleDimensions';
 import SubForm from '@/designer-components/subForm';
 import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
@@ -99,6 +102,7 @@ import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/co
 import { HEADER_CONFIGURATION, HEADER_PUB_PORTAL_CONFIGURATION } from '@/components/mainLayout/constant';
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import { getToolboxComponentsVisibility } from '@/utils';
+import FontConfigurator from '@/designer-components/styleFont';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -231,6 +235,7 @@ export const getToolboxComponents = (
         Buttons,
         Section,
         StyleBox,
+        FontConfigurator,
         CodeEditor,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,

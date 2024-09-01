@@ -705,7 +705,14 @@
             "validate": {},
             "settingsValidationErrors": [],
             "jsSetting": false
-            }
+          },
+          {
+            "id": "f1b1b1b1-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
+            "type": "fontConfigurator",
+            "propertyName": "font",
+            "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+            "label": "Font"
+          }
         ]
       }
     },

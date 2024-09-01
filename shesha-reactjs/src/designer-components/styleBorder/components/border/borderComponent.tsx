@@ -1,6 +1,6 @@
 import { Col, Input, InputNumber, Radio, Row, Select, Switch } from 'antd';
 import React, { FC } from 'react';
-import { BorderBottomOutlined, BorderLeftOutlined, BorderOutlined, BorderRightOutlined, BorderTopOutlined, DashOutlined, ExpandOutlined, MinusOutlined, RadiusBottomleftOutlined, RadiusBottomrightOutlined, RadiusUpleftOutlined, RadiusUprightOutlined, SmallDashOutlined } from '@ant-design/icons';
+import { BorderBottomOutlined, BorderLeftOutlined, BorderOutlined, BorderRightOutlined, BorderTopOutlined, CloseOutlined, DashOutlined, ExpandOutlined, MinusOutlined, RadiusBottomleftOutlined, RadiusBottomrightOutlined, RadiusUpleftOutlined, RadiusUprightOutlined, SmallDashOutlined } from '@ant-design/icons';
 import { ColorPicker } from '@/components';
 import { IBorderValue } from './interfaces';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
@@ -58,6 +58,7 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
         { value: 'solid', icon: <MinusOutlined /> },
         { value: 'dashed', icon: <DashOutlined /> },
         { value: 'dotted', icon: <SmallDashOutlined /> },
+        { value: 'none', icon: <CloseOutlined /> },
     ];
 
     const addOnAfter = (
@@ -76,7 +77,7 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
                     <Switch disabled={readOnly} />
                 </SettingsFormItem>
             </Col>
-            {!model.hideBorder && <Col className="gutter-row" span={24}>
+            {!model.hideBorder && <>
                 <Col className="gutter-row" span={24}>
                     {renderRadioGroup(radiusOptions, activeRadius, 'Radius')}
                 </Col>
@@ -84,7 +85,7 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
                     <SettingsFormItem readOnly={readOnly} name={`border.radius.${activeRadius}`} label='Degrees' jsSetting>
                         <InputNumber
                             min={0}
-                            max={20}
+                            max={100}
                             value={value?.radius?.[activeRadius]}
                         />
                     </SettingsFormItem>
@@ -92,30 +93,32 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
                 <Col className="gutter-row" span={24}>
                     {renderRadioGroup(borderOptions, activeBorder, 'Border')}
                 </Col>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
-                    <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
-                        <SettingsFormItem name={`border.border.${activeBorder}.width`} label="Width" jsSetting>
-                            <Input
-                                addonAfter={
-                                    addOnAfter
-                                }
-                                value={value?.border?.[activeBorder]?.width}
-                            />
-                        </SettingsFormItem>
+                <Col className="gutter-row" span={24}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                            <SettingsFormItem name={`border.border.${activeBorder}.width`} label="Width" jsSetting>
+                                <Input
+                                    addonAfter={
+                                        addOnAfter
+                                    }
+                                    value={value?.border?.[activeBorder]?.width}
+                                />
+                            </SettingsFormItem>
+                        </div>
+                        <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
+                            <SettingsFormItem name={`border.border.${activeBorder}.color`} label="Color" jsSetting>
+                                <ColorPicker
+                                    allowClear
+                                    value={value?.border?.[activeBorder]?.color || '#000000'}
+                                />
+                            </SettingsFormItem>
+                        </div>
                     </div>
-                    <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
-                        <SettingsFormItem name={`border.border.${activeBorder}.color`} label="Color" jsSetting>
-                            <ColorPicker
-                                allowClear
-                                value={value?.border?.[activeBorder]?.color || '#000000'}
-                            />
-                        </SettingsFormItem>
-                    </div>
-                </div>
+                </Col>
                 <Col className="gutter-row" span={24}>
                     {renderRadioGroup(styleOptions, activeBorder, 'border', 'style')}
                 </Col>
-            </Col>}
+            </>}
         </Row>
     );
 };

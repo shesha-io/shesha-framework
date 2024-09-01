@@ -91,7 +91,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const jsStyle = getStyle(model.style, formData);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
-    console.log("Shadow style::: ", shadowStyles);
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
@@ -99,12 +98,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model.hideBorder ? 'borderless' : undefined,
+      variant: model?.border?.border?.all?.style ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: finalStyle,
+      style: { ...finalStyle },
       count: { max: model.validate?.maxLength, },
       autoComplete: model.textType === 'password' ? 'new-password' : undefined,
       defaultValue: model.passEmptyStringByDefault ? '' : model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
@@ -138,8 +137,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
               components: {
                 Input: {
                   fontFamily: model.font?.type,
-                  fontSize: model.font?.size || 14,
-                  lineHeight: model.font?.lineHeight || 1.5,
+                  fontSize: model.font?.size || 14
                 },
               },
             }}

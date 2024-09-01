@@ -11,8 +11,7 @@ export const useStyles = createStyles(({ css, cx }) => {
   const flexWrapper = cx("", css`
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        width: 100%;
+        gap: 0px 8px;
     `);
   return {
     flexWrapper,

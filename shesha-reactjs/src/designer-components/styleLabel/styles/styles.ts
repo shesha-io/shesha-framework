@@ -11,14 +11,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         flex-wrap: wrap;
         gap: 8px;
         position: absolute;
-        right: 38px;
+        right: 0px;
         top: -28px;
     `);
 
   const hidelLabelIcon = cx("", css`
     cursor: pointer;
-    width: 24px;
-    height: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,6 +24,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     color: ${token.colorPrimary};
     border: 1px solid ${token.colorPrimary};
     `);
+
   return {
     flexWrapper,
     flexInput,

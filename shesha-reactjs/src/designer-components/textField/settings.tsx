@@ -29,7 +29,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
     const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
     const { formSettings } = useForm();
 
-    const stylePanels = [
+    const stylePanels = (omitted) => [
         {
             key: '1',
             label: 'Font',
@@ -59,15 +59,27 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             key: '6',
             label: 'Styling',
             children: (
-                <SettingsFormItem name="stylingBox">
-                    <StyleBox />
-                </SettingsFormItem>
+                <>
+                    <SettingsFormItem name="style" label="Style">
+                        <CodeEditor
+                            propertyName="style"
+                            readOnly={readOnly}
+                            mode="dialog"
+                            label="Style"
+                            description="A script that returns the style of the element as an object. This should conform to CSSProperties"
+                        />
+
+                    </SettingsFormItem>
+                    <SettingsFormItem name="stylingBox">
+                        <StyleBox />
+                    </SettingsFormItem>
+                </>
+
             )
         }
-    ];
+    ].filter(panel => !omitted.includes(panel.label)).map((panel, i) => ({ ...panel, key: `${i + 1}` }));
 
-    const activateAllStylePanels = () => stylePanels.map(panel => panel.key);
-    console.log("Active ", activateAllStylePanels());
+    const activateAllStylePanels = () => stylePanels([]).map(panel => panel.key);
 
     const tabs = [
         {
@@ -82,7 +94,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                         formData={model}
                         onValuesChange={onValuesChange}
                     />
-                    <SettingsFormItem name="label" label="Label" jsSetting>
+                    <SettingsFormItem name="label" label="Label" jsSetting labelProps={{ hideLabel: model.hideLabel, labelAlign: model.labelAlign, onValuesChange }}>
                         <Input readOnly={readOnly || model.hideLabel} />
                     </SettingsFormItem>
                     <SettingsFormItem name="textType" label="Type" required>
@@ -187,36 +199,25 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             key: "style",
             tab: "Style",
             content: (
-                <>
-                    <ConfigProvider
-                        theme={{
-                            components: {
-                                Collapse: {
-                                    contentBg: 'white',
-                                    contentPadding: 0,
-                                    colorBgBase: 'white',
-                                    colorBorder: 'white',
-                                },
+                <ConfigProvider
+                    theme={{
+                        components: {
+                            Collapse: {
+                                contentBg: 'white',
+                                contentPadding: 0,
+                                colorBgBase: 'white',
+                                colorBorder: 'white',
+                                headerPadding: '0px 16px',
                             },
-                        }}
-                    >
-                        <Collapse defaultActiveKey={activateAllStylePanels()} style={{ paddingLeft: 0 }}>
-                            <Collapse
-                                items={stylePanels}
-                                defaultActiveKey={['1', '2', '3', '4', '5']}
-                            />
-                        </Collapse>
-                    </ConfigProvider>
-                    <SettingsFormItem name="style" label="Style">
-                        <CodeEditor
-                            propertyName="style"
-                            readOnly={readOnly}
-                            mode="dialog"
-                            label="Style"
-                            description="A script that returns the style of the element as an object. This should conform to CSSProperties"
+                        },
+                    }}
+                >
+                    <Collapse defaultActiveKey={activateAllStylePanels()} style={{ paddingLeft: 0 }}>
+                        <Collapse
+                            items={stylePanels([])}
                         />
-                    </SettingsFormItem>
-                </>
+                    </Collapse>
+                </ConfigProvider>
             )
         },
         {

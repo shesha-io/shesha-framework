@@ -74,7 +74,7 @@ const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model, noOver
     );
 
     return (
-        <Row gutter={[8, 2]} style={{ fontSize: '11px' }}>
+        <Row gutter={[8, 2]}>
             {renderInputRow([
                 { label: 'Width', property: 'width' },
                 { label: 'Height', property: 'height' }
