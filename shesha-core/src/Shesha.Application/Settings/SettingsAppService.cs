@@ -1,4 +1,5 @@
 ﻿using Abp.Runtime.Session;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.Settings.Dto;
@@ -45,6 +46,7 @@ namespace Shesha.Settings
         /// Get setting value
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<object> GetValue(GetSettingValueInput input)
         {
             var value = await _settingProvider.GetOrNullAsync(input.Module, input.Name, !string.IsNullOrWhiteSpace(input.AppKey) ?
