@@ -15,6 +15,9 @@ export * from './components/mainLayout/constant';
 export { removeZeroWidthCharsFromString } from './providers/form/utils';
 export { requestHeaders } from './utils/requestHeaders';
 
+
+export { ConfigurableComponentRenderer } from "./components/configurableComponentRenderer";
+
 export { DynamicPage } from './generic-pages/dynamic';
 export { EntityConfiguratorPage } from './generic-pages/entity-config/configurator';
 export { FormsDesignerPage } from './generic-pages/forms-designer';

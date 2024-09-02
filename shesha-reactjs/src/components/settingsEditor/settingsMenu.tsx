@@ -18,6 +18,12 @@ interface ISettingItem {
   app?: IFrontEndApplication;
 }
 
+export interface ISettingApplication {
+  name: string;
+  visible?: boolean;
+  settings: ISettingGroup[];
+}
+
 export interface ISettingGroup {
   name: string;
   visible?: boolean;
@@ -37,11 +43,18 @@ const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication
 export const SettingsMenu: FC<ISettingsMenuProps> = () => {
   const [isDevmode, setDevMode] = useLocalStorage('application.isDevMode', false);
 
-  const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', ['']);
+  const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', {});//['']);
   const [searchText, setSearchText] = useLocalStorage('settings-editor.search', '');
   const [menuState, setMenuState] = useState<SettingMenuState>({ groups: [], allSettings: {} });
 
-  const { settingConfigurations, applications, applicationsLoadingState, selectSetting, settingSelection, configsLoadingState } = useSettingsEditor();
+  const { 
+    selectedApplication,
+    settingConfigurations,
+    applicationsLoadingState,
+    selectSetting,
+    settingSelection,
+    configsLoadingState
+  } = useSettingsEditor();
 
   useEffect(() => {
     if (applicationsLoadingState === 'success' && configsLoadingState === 'success') {
@@ -65,13 +78,10 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
         //const moduleName = s.configuration.module?.name ?? 'no module';
         const category = s.category ?? '';
 
-        if (s.isClientSpecific) {
-          applications.forEach(app => {
-            const groupName = `${category}: ${app.name}`;
-
-            addSetting(groupName, s, app);
-          });
-        } else {
+        if (s.isClientSpecific && selectedApplication) {
+          addSetting(category, s, selectedApplication);
+        };
+        if (!s.isClientSpecific && !selectedApplication) {
           addSetting(category, s, null);
         }
       });
@@ -80,10 +90,10 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
 
       setMenuState({ groups: sortedGroups, allSettings: allSettings });
     }
-  }, [applicationsLoadingState, configsLoadingState]);
+  }, [applicationsLoadingState, configsLoadingState, selectedApplication]);
 
   const onCollapseChange = (key: string | string[]) => {
-    setOpenedKeys(Array.isArray(key) ? key : [key]);
+    setOpenedKeys({...openedKeys, [selectedApplication?.appKey ?? 'general']: Array.isArray(key) ? key : [key]});
   };
 
   const filteredGroups = useMemo<ISettingGroup[]>(() => {
@@ -116,7 +126,7 @@ export const SettingsMenu: FC<ISettingsMenuProps> = () => {
       <Spin spinning={configsLoadingState === 'loading'}>
         <SearchBox value={searchText} onChange={setSearchText} placeholder="Search setting" />
         {filteredGroups.length > 0 && (
-          <Collapse activeKey={openedKeys} onChange={onCollapseChange} accordion>
+          <Collapse activeKey={openedKeys[selectedApplication?.appKey ?? 'general']} onChange={onCollapseChange} accordion>
             {filteredGroups
               //.filter(({ visible }) => visible)
               .map((group, groupIndex) => {

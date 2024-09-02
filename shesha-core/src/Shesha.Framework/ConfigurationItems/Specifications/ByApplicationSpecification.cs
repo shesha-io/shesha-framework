@@ -28,7 +28,7 @@ namespace Shesha.ConfigurationItems.Specifications
         {
             return string.IsNullOrWhiteSpace(AppKey)
                 ? item => item.Application == null
-                : item => item.Application != null && item.Application.Name == AppKey;
+                : item => item.Application != null && item.Application.AppKey == AppKey;
         }
     }
 }
