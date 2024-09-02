@@ -1,4 +1,4 @@
-import { IAjaxResponse, useHttpClient } from "@shesha-io/reactjs";
+import { useHttpClient } from "@shesha-io/reactjs";
 import useSWR from 'swr';
 import { URLS } from "./fetchers";
 import { Organisations } from "./models";
