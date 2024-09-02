@@ -35,6 +35,10 @@ export interface FormApi<Values = any> {
    */
   setFieldsValue: (values: Values) => void;
   /**
+   * Clear fields value
+   */
+  clearFieldsValue: () => void;
+  /**
    * Submit form
    */
   submit: () => void;

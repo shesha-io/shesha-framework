@@ -10,6 +10,7 @@ namespace Shesha.Elmah
     {
         private Action<Exception> _onError;
         public Action CleanupAction { get; set; }
+        private bool _disposed = false;
 
         public ExceptionWatchDog(Action<Exception> onError)
         {
@@ -20,11 +21,16 @@ namespace Shesha.Elmah
 
         private void OnException(object sender, FirstChanceExceptionEventArgs e)
         {
+            if (_disposed)
+                return;
+            
             _onError.Invoke(e.Exception);
         }
 
         public void Dispose()
         {
+            _disposed = true;
+
             AppDomain.CurrentDomain.FirstChanceException -= OnException;
             CleanupAction?.Invoke();
         }

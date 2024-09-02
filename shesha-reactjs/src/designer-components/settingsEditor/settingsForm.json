@@ -1,0 +1,118 @@
+{
+  "components": [
+    {
+      "id": "W_m7doMyCpCYwAYDfRh6I",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlDisplay",
+      "label": "Display",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "xUukOtoy4VF55EFvhr3t1",
+        "components": []
+      },
+      "content": {
+        "id": "s4gmBg31azZC0UjZjpfTm",
+        "components": [
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "contextPropertyAutocomplete",
+            "propertyName": "propertyName",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Property name",
+            "validate": {
+              "required": true
+            }
+          },
+          {
+            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "label",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Label",
+            "version": 3,
+            "textType": "text"
+          },
+          {
+            "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
+            "type": "dropdown",
+            "propertyName": "labelAlign",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Label align",
+            "values": [
+              {
+                "label": "left",
+                "value": "left",
+                "id": "2d6411ae-0b56-4b4c-ad7c-fb15aa7fa1f5"
+              },
+              {
+                "label": "right",
+                "value": "right",
+                "id": "9e89461b-f916-4689-8789-1854ccedc666"
+              }
+            ],
+            "dataSourceType": "values",
+            "version": 5,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+            "type": "textArea",
+            "propertyName": "description",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Description",
+            "version": 2
+          },
+          {
+            "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+            "type": "checkbox",
+            "propertyName": "hidden",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Hidden",
+            "version": 2
+          },
+          {
+            "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
+            "type": "checkbox",
+            "propertyName": "hideLabel",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Hide Label",
+            "version": 2
+          },
+          {
+            "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
+            "type": "editModeSelector",
+            "propertyName": "editMode",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Edit mode"
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    }
+  ],
+  "formSettings": {
+    "layout": "horizontal",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

@@ -42,6 +42,9 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     setFieldsValue = (values: Values) => {
         this.#form.setFormData({ values, mergeValues: true });
     };
+    clearFieldsValue = () => {
+      this.#form?.setFormData({ values: {}, mergeValues: false });
+    };
     submit = () => {
         this.#form.antdForm.submit();
     };
@@ -409,7 +412,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         await this.loadFormByRawMarkupAsync();
 
         this.initialValues = initialValues;
-        this.formData = initialValues;
+        this.#setInternalFormData(initialValues);
+
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
         //await this.loadData(formArguments);
@@ -478,8 +482,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             return this.initialValues;
         }
 
-        const dataId = formArguments?.id;
-        const canLoadData = dataId && this.dataLoader;
+        const canLoadData = this.dataLoader && this.dataLoader.canLoadData(formArguments);
 
         if (canLoadData) {
             this.dataLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
@@ -488,7 +491,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             const data = await this.dataLoader.loadAsync({
                 formSettings: this.settings,
                 formFlatStructure: this.flatStructure,
-                dataId: dataId,
+                formArguments: formArguments,
                 expressionExecuter: this.expressionExecuter,
             });
 

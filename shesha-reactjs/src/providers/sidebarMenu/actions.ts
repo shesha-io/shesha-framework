@@ -1,5 +1,5 @@
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 import { createAction } from 'redux-actions';
-import { ISidebarMenuItem } from '.';
 
 export enum SidebarMenuActionEnums {
   ToggleSidebar = 'TOGGLE_SIDEBAR',
