@@ -2,6 +2,8 @@ import { FormFullName } from '@/interfaces';
 
 export type LoadingState = 'waiting' | 'loading' | 'success' | 'failed';
 
+export const FRONTEND_DEFAULT_APP_KEY = 'default-app';
+
 export interface ISettingConfiguration {
     id: string;
     category?: string;

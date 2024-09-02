@@ -108,7 +108,11 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     formMode: props.shaForm.formMode,
     form: props.shaForm.antdForm,
     formData: props.shaForm.formData,
+
+    // TODO: AS - review and remove
+    initialValues: undefined
   };
+  
   return (
     <FormStateContext.Provider value={realState}>
       <FormActionsContext.Provider value={configurableFormActions}>

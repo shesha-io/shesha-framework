@@ -53,6 +53,8 @@ import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
 import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/provider';
 import { FormDataLoadersProvider } from '../form/loaders/formDataLoadersProvider';
 import { FormDataSubmittersProvider } from '../form/submitters/formDataSubmittersProvider';
+import { MainMenuProvider } from '../mainMenu';
+import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/models';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -76,7 +78,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     children,
     backendUrl,
     applicationName,
-    applicationKey,
+    applicationKey = FRONTEND_DEFAULT_APP_KEY,
     accessTokenName,
     homePageUrl,
     router,
@@ -175,7 +177,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                             <DataSourcesProvider>
                                               <DynamicModalProvider>
                                                 <DebugPanel>
-                                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                                  <ApplicationActionsProcessor>
+                                                    <MainMenuProvider>
+                                                      {children}
+                                                    </MainMenuProvider>
+                                                  </ApplicationActionsProcessor>
                                                 </DebugPanel>
                                               </DynamicModalProvider>
                                             </DataSourcesProvider>
