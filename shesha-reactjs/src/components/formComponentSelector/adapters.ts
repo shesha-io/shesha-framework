@@ -64,7 +64,14 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'dataSourceType',
       'dataSourceUrl',
       'entityTypeShortAlias',
-      'pnlStyle'
+      'height',
+      'width',
+      'borderSize',
+      'borderRadius',
+      'borderColor',
+      'borderType',
+      'backgroundColor',
+      'stylingBox'
     ]),
   },
   [CheckboxComponent.type]: {
@@ -88,7 +95,16 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'initialValue',
       'passEmptyStringByDefault',
       'textType',
-      'pnlStyle'
+      'height',
+      'width',
+      'borderSize',
+      'borderRadius',
+      'borderColor',
+      'backgroundColor',
+      'fontSize',
+      'fontColor',
+      'borderType',
+      'stylingBox'
     ]),
   },
   [EntityReferenceComponent.type]: {
