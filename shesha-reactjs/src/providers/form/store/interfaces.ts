@@ -76,6 +76,8 @@ export interface IShaFormInstance<Values = any> {
     submitData: (payload?: SubmitDataPayload) => Promise<Values>;
     fetchData: () => Promise<Values>;
 
+    getDelayedUpdates: () => IDelayedUpdateGroup[];
+
     readonly markupLoadingState: ProcessingState;
     readonly dataLoadingState: ProcessingState;
     readonly dataSubmitState: ProcessingState;
