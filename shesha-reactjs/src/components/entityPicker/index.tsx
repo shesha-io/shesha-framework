@@ -90,6 +90,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
   const selectedMode = mode === 'single' ? undefined : mode;
 
+  const hasEntityType = !!entityType;
+
 
   const handleMultiChange = (selectedValues: string[]) => {
     const newValues = value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {})));
@@ -156,7 +158,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
               onChange={handleMultiChange}
               style={{
                 ...style, width: `calc(100% - ${size === 'large' ? '40px' : '32px'})`,
-                pointerEvents: 'none',
+                pointerEvents: hasEntityType ? 'auto' : 'none',
               }}
               loading={selection.loading}
             >
