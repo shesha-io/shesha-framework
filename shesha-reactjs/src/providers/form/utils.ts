@@ -203,7 +203,7 @@ export const wrapConstantsData = (args: WrapConstantsDataArgs): ProxyPropertiesA
     message: () => message,
     data: () => {
       const data = {...shaFormInstance?.formData};
-      const delayedUpdate = shaForm?.getDelayedUpdates();
+      const delayedUpdate = shaFormInstance?.getDelayedUpdates();
       // handle delayed updates
       if (delayedUpdate?.length > 0)
         data._delayedUpdate = delayedUpdate;
