@@ -25,7 +25,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
   propertyFilter,
 }: IProps<T>) {
   const isSmall = useMedia('(max-width: 480px)');
-  const formRef = useRef<ISettingsFormInstance>();  
+  const formRef = useRef<ISettingsFormInstance>();
 
   if (!formComponent)
     return null;
