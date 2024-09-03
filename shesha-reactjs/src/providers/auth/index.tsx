@@ -187,6 +187,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     if (Boolean(state.loginInfo)) return;
 
+    const currentUrl = router.fullPath;
+
     dispatch(fetchUserDataAction());
     sessionGetCurrentLoginInfo({ base: backendUrl, headers })
       .then((response) => {
@@ -215,7 +217,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           clearAccessToken();
 
           dispatch(fetchUserDataActionErrorAction({ message: 'Not authorized' }));
-          if (router.fullPath === '/')
+          if (currentUrl === '/')
             redirectToDefaultUrl();
           else
             redirectToUnauthorized();
