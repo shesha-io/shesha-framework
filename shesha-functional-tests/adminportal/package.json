@@ -50,6 +50,7 @@
     "react-use": "^17.4.0",
     "sortablejs": "^1.14.0",
     "styled-components": "^5.2.1",
+    "swr": "^2.2.5",
     "url-loader": "^4.1.1"
   },
   "devDependencies": {

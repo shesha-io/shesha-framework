@@ -20,6 +20,7 @@ export interface IFormStateInternalContext {
   form?: FormInstance<any>;
 
   // runtime props
+  initialValues?: any;
   formData?: any;
 
   // TODO: review and remove

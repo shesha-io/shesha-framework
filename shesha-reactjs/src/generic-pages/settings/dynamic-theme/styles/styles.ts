@@ -5,7 +5,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     const themeParameters = cx(
         'theme-parameters',
         css`
-      height: calc(100vh - 120px);
+      height: 100%;
       overflow-y: auto;
       scrollbar-width: none;
 

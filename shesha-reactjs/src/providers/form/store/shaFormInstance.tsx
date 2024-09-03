@@ -145,6 +145,10 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formData = {};
     }
     
+    getDelayedUpdates = () => {
+      return this.dataSubmitContext?.getDelayedUpdates() || [];
+    };
+
     setDataSubmitContext = (context: IDataSubmitContext) => {
         this.dataSubmitContext = context;
     };
@@ -412,7 +416,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         await this.loadFormByRawMarkupAsync();
 
         this.initialValues = initialValues;
-        this.formData = initialValues;
+        this.#setInternalFormData(initialValues);
+
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
         //await this.loadData(formArguments);

@@ -65,6 +65,7 @@ export { default as ShaDivider } from './shaDivider';
 export { default as ShaLink, type IShaLinkProps } from './shaLink';
 export { default as ShaSpin, type IShaSpin } from './shaSpin';
 export { SidebarMenu, type ISidebarMenuProps } from './sidebarMenu';
+export { sidebarMenuItemToMenuItem } from './sidebarMenu/utils';
 export { default as StoredFilesRenderer, type IStoredFilesRendererProps } from './storedFilesRenderer';
 export { default as StoredFilesRendererBase, type IStoredFilesRendererBaseProps } from './storedFilesRendererBase';
 export { default as TablePager, type ITablePagerProps } from './tablePager';
@@ -122,3 +123,5 @@ export { RefListStatus, type IRefListStatusProps } from './refListStatus';
 
 export { ListEditor } from './listEditor';
 export { ButtonGroupConfigurator } from './buttonGroupConfigurator';
+
+export { ConfigurableComponentRenderer } from "./configurableComponentRenderer";
