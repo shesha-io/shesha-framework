@@ -13,6 +13,7 @@ import {
 } from "@shesha-io/pd-publicportal";
 import { AppProgressBar } from "next-nprogress-bar";
 import { useTheme } from "antd-style";
+import { OrganisationsActionsProvider } from "@/components/dynamic-list/dynamic-actions";
 
 export interface IAppProviderProps {
   backendUrl: string;
@@ -32,12 +33,15 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({
         backendUrl={backendUrl}
         router={nextRouter}
         noAuth={nextRouter.path?.includes("/no-auth")}
+        applicationKey="public-portal"
       >
         <GlobalPublicPortalStyles />
         <PublicPortalApplicationPlugin>
-          <StoredFilesProvider baseUrl={backendUrl} ownerId={""} ownerType={""}>
-            {children}
-          </StoredFilesProvider>
+          <OrganisationsActionsProvider>
+            <StoredFilesProvider baseUrl={backendUrl} ownerId={""} ownerType={""}>
+              {children}
+            </StoredFilesProvider>
+          </OrganisationsActionsProvider>
         </PublicPortalApplicationPlugin>
       </ShaApplicationProvider>
     </GlobalStateProvider>
