@@ -151,11 +151,11 @@ namespace Shesha.DynamicEntities.Binder
                         ? context.ArrayItemIndex?.ToString() + "." + jName
                         : jName;
                     if (formFieldsInternal.Any()
-                        && !formFieldsInternal.Any(x => x.Equals(fName) || x.StartsWith(fName + ".")))
+                        && !formFieldsInternal.Any(x => x.Equals(fName) || x.StartsWith(fName + ".") || x.Equals(jName) || x.StartsWith(jName + ".")))
                         continue;
 
                     var childFormFields = formFieldsInternal
-                        .Where(x => x.Equals(fName) || x.StartsWith(fName + "."))
+                        .Where(x => x.Equals(fName) || x.StartsWith(fName + ".") || x.Equals(jName) || x.StartsWith(jName + "."))
                         .Select(x => x.RemovePrefix(fName).RemovePrefix("."))
                         .Where(x => !x.IsNullOrWhiteSpace())
                         .ToList();
