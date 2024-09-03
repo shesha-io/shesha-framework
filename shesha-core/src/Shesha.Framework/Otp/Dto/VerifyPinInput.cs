@@ -17,10 +17,15 @@ namespace Shesha.Otp.Dto
         /// </summary>
         public string Pin { get; set; }
 
+        /// <summary>
+        /// Another way of identifying Otp item
+        /// {Start}
+        /// </summary>
         public string ModuleName { get; set; }
 
         public string ActionType { get; set; }
 
         public Guid? SourceEntityType { get; set; }
+        //{end}
     }
 }
