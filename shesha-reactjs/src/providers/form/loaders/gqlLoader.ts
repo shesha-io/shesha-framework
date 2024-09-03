@@ -32,6 +32,9 @@ export class GqlLoader implements IFormDataLoader {
         this.#toolboxComponents = args.toolboxComponents;
         this.#endpointsEvaluator = args.endpointsEvaluator;
     }
+    canLoadData = (formArguments: any): boolean => {
+        return Boolean(formArguments?.id);
+    };
 
     #getGqlSettings = (formSettings: IFormSettings): GqlLoaderSettings => {
         const { dataLoadersSettings = {} } = formSettings;
@@ -61,7 +64,10 @@ export class GqlLoader implements IFormDataLoader {
     };
 
     loadAsync = async (payload: FormDataLoadingPayload): Promise<any> => {
-        const { dataId, loadingCallback, formSettings, formFlatStructure } = payload;
+        const { loadingCallback, formSettings, formArguments, formFlatStructure } = payload;
+        const dataId = formArguments?.id;
+        if (!dataId)
+            throw new Error('Data id is missing');
 
         const endpoint = await this.getEndpointAsync(payload);
 
@@ -119,7 +125,7 @@ export class GqlLoader implements IFormDataLoader {
 
                 // get data only for isInput components
                 // and for context = null or empty string (form context)
-                if (component?.isInput && !model.context) {
+                if (component && (component.isInput || component.isOutput) && !model.context) {
                     const propName = model.propertyName;
 
                     // TODO: AS - calc actual propName from JS setting

@@ -38,6 +38,10 @@ export interface FormApi<Values = any> {
    */
   setFieldsValue: (values: Values) => void;
   /**
+   * Clear fields value
+   */
+  clearFieldsValue: () => void;
+  /**
    * Submit form
    */
   submit: () => void;
@@ -79,6 +83,9 @@ class PublicFormApiWrapper implements FormApi {
   };
   setFieldsValue = (values: any) => {
     this.#form?.setFormData({ values, mergeValues: true });
+  };
+  clearFieldsValue = () => {
+    this.#form?.setFormData({ values: {}, mergeValues: false });
   };
   submit = () => {
     this.#form?.form?.submit();
