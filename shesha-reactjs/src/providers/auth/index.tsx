@@ -1,6 +1,6 @@
 import { useMutate } from '@/hooks';
 import useThunkReducer, { ThunkDispatch } from '@/hooks/thunkReducer';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { GetCurrentLoginInfoOutputAjaxResponse, sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
@@ -121,6 +121,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     headers: initialHeaders,
   });
 
+  const currentUrl = useRef<string>();
+
   const setters = getFlagSetters(dispatch);
 
   const redirect = (url: string) => {
@@ -215,7 +217,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           clearAccessToken();
 
           dispatch(fetchUserDataActionErrorAction({ message: 'Not authorized' }));
-          if (router.fullPath === '/')
+          if (currentUrl.current === '/' || currentUrl.current === '')
             redirectToDefaultUrl();
           else
             redirectToUnauthorized();
@@ -300,10 +302,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     const httpHeaders = getCleanedInitHeaders(getHttpHeaders());
 
-    const currentUrl = router.fullPath;
+    currentUrl.current = router.fullPath;
 
     if (!httpHeaders) {
-      if (currentUrl !== unauthorizedRedirectUrl) {
+      if (currentUrl.current !== unauthorizedRedirectUrl) {
         redirectToUnauthorized();
       }
     } else {

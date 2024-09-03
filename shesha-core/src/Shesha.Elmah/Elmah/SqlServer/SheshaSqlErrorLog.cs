@@ -1,4 +1,5 @@
 ﻿using ElmahCore;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using Shesha.Services;
 using System;
@@ -76,10 +77,13 @@ namespace Shesha.Elmah.SqlServer
                 {
                     connection.Open();
 
-                    ExecuteCommand(connection, Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml));
+                    var provider = StaticContext.IocManager.Resolve<ILoggingContextCollector>();
+                    var exceptionDetails = provider.CurrentState?.AllExceptions?.FirstOrDefault(e => e.Exception == error.Exception);
+                    var location = exceptionDetails?.Location;
+
+                    ExecuteCommand(connection, Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml, location));
 
                     // gather refs and log them
-                    var provider = StaticContext.IocManager.Resolve<ILoggingContextCollector>();
                     if (error.Exception != null && provider.CurrentState != null)
                     {
                         var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
@@ -336,14 +340,15 @@ ON [PRIMARY]");
                 string user,
                 int statusCode,
                 DateTime time,
-                string xml)
+                string xml,
+                string location)
             {
                 var command = new SqlCommand
                 {
                     CommandText = $@"
 /* elmah */
-INSERT INTO [{DBConstants.Schema}].[{DBConstants.ErrorsTable}] (error_id, application, host, type, source, message, ""user"", status_code, time_utc, all_xml)
-VALUES (@error_id, @application, @host, @type, @source, @message, @user, @status_code, @time_utc, @all_xml)
+INSERT INTO [{DBConstants.Schema}].[{DBConstants.ErrorsTable}] (error_id, application, host, type, source, message, ""user"", status_code, time_utc, all_xml, location)
+VALUES (@error_id, @application, @host, @type, @source, @message, @user, @status_code, @time_utc, @all_xml, @location)
 "
                 };
                 command.Parameters.Add(new SqlParameter("error_id", id));
@@ -356,6 +361,7 @@ VALUES (@error_id, @application, @host, @type, @source, @message, @user, @status
                 command.Parameters.Add(new SqlParameter("status_code", statusCode));
                 command.Parameters.Add(new SqlParameter("time_utc", time.ToUniversalTime()));
                 command.Parameters.Add(new SqlParameter("all_xml", xml));
+                command.Parameters.Add(new SqlParameter("location", location));
 
                 return command;
             }

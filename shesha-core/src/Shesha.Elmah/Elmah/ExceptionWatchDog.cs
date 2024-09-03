@@ -12,6 +12,8 @@ namespace Shesha.Elmah
         public Action CleanupAction { get; set; }
         private bool _disposed = false;
 
+        public string Location { get; set; }
+
         public ExceptionWatchDog(Action<Exception> onError)
         {
             _onError = onError;
