@@ -35,5 +35,7 @@ namespace Shesha.Otp.Dto
         OtpSendStatus SendStatus { get; }
 
         string ErrorMessage { get; }
+        public string ModuleName { get; }
+        public Guid? SourceEntityId { get; }
     }
 }

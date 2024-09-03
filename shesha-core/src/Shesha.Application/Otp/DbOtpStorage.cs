@@ -50,7 +50,9 @@ namespace Shesha.Otp
                     RecipientType = input.RecipientType,
                     SentOn = input.SentOn,
                     SendStatus = input.SendStatus,
-                    ErrorMessage = input.ErrorMessage
+                    ErrorMessage = input.ErrorMessage,
+                    ModuleName = input.ModuleName,
+                    SourceEntityId = input.SourceEntityId
                 };
                 if (isNew) // note we generate Id manually
                     await _otpAuditRepository.InsertAsync(item);
@@ -94,7 +96,9 @@ namespace Shesha.Otp
                     RecipientType = item.RecipientType,
                     SentOn = item.SentOn,
                     SendStatus = item.SendStatus,
-                    ErrorMessage = item.ErrorMessage
+                    ErrorMessage = item.ErrorMessage,
+                    ModuleName = item.ModuleName,
+                    SourceEntityId = item.SourceEntityId,
                 };
             }
         }
