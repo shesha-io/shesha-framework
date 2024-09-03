@@ -16,5 +16,11 @@ namespace Shesha.Otp.Dto
         /// Value of the One Time Pin
         /// </summary>
         string Pin { get; }
+        /// <summary>
+        /// Alternative way of identifying OTPAuditItem
+        /// </summary>
+        string ModuleName { get; }
+        string ActionType { get; }
+        Guid? SourceEntityType { get; }
     }
 }

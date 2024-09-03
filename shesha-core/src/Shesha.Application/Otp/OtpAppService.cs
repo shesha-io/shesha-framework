@@ -22,8 +22,9 @@ namespace Shesha.Otp
         private readonly IOtpGenerator _otpGenerator;
         private readonly IOtpSettings _otpSettings;
         private readonly IRepository<OtpConfig, Guid> _otpConfigRepository;
+        private readonly IRepository<Person, Guid> _personRepository;
 
-        public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings, IRepository<OtpConfig, Guid> otpConfigRepository)
+        public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings, IRepository<OtpConfig, Guid> otpConfigRepository, IRepository<Person, Guid> personRepository)
         {
             _smsGateway = smsGateway;
             _emailSender = emailSender;
@@ -31,6 +32,7 @@ namespace Shesha.Otp
             _otpGenerator = passwordGenerator;
             _otpSettings = otpSettings;
             _otpConfigRepository = otpConfigRepository;
+            _personRepository = personRepository;
         }
 
         /// <summary>
@@ -187,6 +189,109 @@ namespace Shesha.Otp
             };
         }
 
+        public async Task<SendPinResponse> SendPinToPersonWithConfig(Guid otpConfigId, string sourceEntityId, Guid personId)
+        {
+            // Retrieve OtpConfig using provided ID
+            var config = await _otpConfigRepository.GetAsync(otpConfigId);
+            if (config == null)
+            {
+                throw new UserFriendlyException("Invalid OTP Config");
+            }
+
+            // Retrieve Person using provided personId
+            var person = await _personRepository.GetAsync(personId);
+            if (person == null)
+            {
+                throw new UserFriendlyException("Person not found");
+            }
+
+            // Validate and select contact method based on available details
+            string sendTo = null;
+            if (config.SendType == OtpSendType.Sms)
+            {
+                sendTo = !string.IsNullOrEmpty(person.MobileNumber1) ? person.MobileNumber1 : person.MobileNumber2;
+                if (string.IsNullOrEmpty(sendTo))
+                {
+                    throw new UserFriendlyException("No valid mobile number found for the specified person");
+                }
+            }
+            else if (config.SendType == OtpSendType.Email || config.SendType == OtpSendType.EmailLink)
+            {
+                sendTo = !string.IsNullOrEmpty(person.EmailAddress1) ? person.EmailAddress1 : person.EmailAddress2;
+                if (string.IsNullOrEmpty(sendTo))
+                {
+                    throw new UserFriendlyException("No valid email address found for the specified person");
+                }
+            }
+            else
+            {
+                throw new UserFriendlyException("Unsupported SendType in config");
+            }
+
+            // Extract settings from OtpConfig
+            var moduleName = config.Module.Name;
+            var sendType = config.SendType ?? throw new UserFriendlyException("SendType must be specified within config");
+            var recipientType = config.RecipientType;
+            var lifetime = config.Lifetime ?? 300; // Default to 5 minutes when no lifetime is provided in config
+            var actionType = config.ActionType;
+
+            // Generate OTP based on sendType
+            string otpCode = sendType == OtpSendType.EmailLink ? Guid.NewGuid().ToString("N") : _otpGenerator.GeneratePin();
+
+            // Create OtpAuditItem and save initial details
+            var otpAuditItem = new OtpDto
+            {
+                OperationId = Guid.NewGuid(),
+                SendTo = sendTo,
+                SendType = sendType,
+                RecipientId = personId.ToString(),
+                RecipientType = recipientType ?? null,
+                ActionType = actionType,
+                ModuleName = moduleName,
+                Pin = otpCode,
+                ExpiresOn = DateTime.Now.AddSeconds(lifetime),
+                SentOn = DateTime.Now,
+                SourceEntityId = Guid.Parse(sourceEntityId) // Ensures valid GUID for sourceEntityId
+            };
+
+            try
+            {
+                // Prepare and send the OTP using the NotificationTemplate
+                if (config.NotificationTemplate == null || !config.NotificationTemplate.IsEnabled)
+                {
+                    throw new UserFriendlyException("Invalid or disabled NotificationTemplate in config");
+                }
+
+                var messageBody = config.NotificationTemplate.Body;
+                // Replace message placeholders with data (if applicable)
+                // Implement placeholder replacement logic if needed
+
+                // Perform the actual send operation (implement SendInternal to handle different send types)
+                await SendInternalWithConfig(otpAuditItem, config);
+
+                otpAuditItem.SendStatus = OtpSendStatus.Sent;
+            }
+            catch (Exception ex)
+            {
+                otpAuditItem.SendStatus = OtpSendStatus.Failed;
+                otpAuditItem.ErrorMessage = ex.Message;
+            }
+
+            // Save audit item
+            await _otpStorage.SaveAsync(otpAuditItem);
+
+            // Return response
+            return new SendPinResponse
+            {
+                OperationId = otpAuditItem.OperationId,
+                SentTo = otpAuditItem.SendTo,
+                ModuleName = moduleName,
+                ActionType = actionType,
+                SourceEntityId = Guid.Parse(sourceEntityId)
+            };
+        }
+
+
         /// <summary>
         /// Resend one-time-pin
         /// </summary>
@@ -194,6 +299,8 @@ namespace Shesha.Otp
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
             var otp = await _otpStorage.GetAsync(input.OperationId);
+            if (otp == null)
+                otp = await _otpStorage.GetAsync(input.ModuleName, input.ActionType, input.SourceEntityType.ToString());
             if (otp == null)
                 throw new UserFriendlyException("OTP not found, try to request a new one");
 
@@ -247,7 +354,9 @@ namespace Shesha.Otp
             // Retrieve OTP details
             var otp = await _otpStorage.GetAsync(input.OperationId);
             if (otp == null)
-                throw new UserFriendlyException("OTP not found, try to request a new one");
+                otp = await _otpStorage.GetAsync(input.ModuleName, input.ActionType, input.SourceEntityType.ToString());
+            if (otp == null)
+            throw new UserFriendlyException("OTP not found, try to request a new one");
 
             // Check OTP expiration
             if (otp.ExpiresOn < DateTime.Now)
@@ -399,6 +508,8 @@ namespace Shesha.Otp
             if (!settings.IgnoreOtpValidation)
             {
                 var pinDto = await _otpStorage.GetAsync(input.OperationId);
+                if (pinDto == null)
+                    pinDto = await _otpStorage.GetAsync(input.ModuleName, input.ActionType, input.SourceEntityType.ToString());
                 if (pinDto == null || pinDto.Pin != input.Pin)
                 {
                     var message = pinDto.SendType == OtpSendType.EmailLink ? "Invalid email link" : "Wrong one time pin";
@@ -415,13 +526,15 @@ namespace Shesha.Otp
             return VerifyPinResponse.Success();
         }
 
-        public async Task<IVerifyPinResponse> VerifyPinWithConfigAsync(IVerifyPinInput input, Guid otpConfigId)
+        public async Task<IVerifyPinResponse> VerifyPinWithConfig(IVerifyPinInput input, Guid otpConfigId)
         {
             // Retrieve OTP settings
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
 
             // Retrieve OTP details based on the operation ID
             var pinDto = await _otpStorage.GetAsync(input.OperationId);
+            if (pinDto == null)
+                pinDto = await _otpStorage.GetAsync(input.ModuleName, input.ActionType, input.SourceEntityType.ToString());
             if (pinDto == null)
             {
                 return VerifyPinResponse.Failed("OTP not found, please request a new one.");
@@ -470,11 +583,23 @@ namespace Shesha.Otp
             return VerifyPinResponse.Success();
         }
 
-
         /// inheritedDoc
         public async Task<IOtpDto> GetAsync(Guid operationId)
         {
             return await _otpStorage.GetAsync(operationId);
+        }
+
+        public async Task<IOtpDto> GetAsync(string moduleName, string actionType, Guid sourceEntityId)
+        {
+            if (string.IsNullOrEmpty(moduleName))
+            {
+                throw new UserFriendlyException("ModuleName is required to get Otp item");
+            }
+            if (string.IsNullOrEmpty(actionType))
+            {
+                throw new UserFriendlyException("ActionType is required to get Otp item");
+            }
+            return await _otpStorage.GetAsync(moduleName, actionType, sourceEntityId.ToString());
         }
 
         /// inheritDoc
