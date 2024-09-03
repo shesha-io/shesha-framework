@@ -258,7 +258,7 @@ export interface IFormLifecycleSettings {
   onBeforeDataLoad?: string;
   onAfterDataLoad?: string;
 
-  onValuesChanged?: string;
+  onValuesUpdate?: string;
 
   onPrepareSubmitData?: string;
   onBeforeSubmit?: string;

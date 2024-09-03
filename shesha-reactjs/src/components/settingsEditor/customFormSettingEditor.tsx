@@ -1,6 +1,6 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { ISettingEditorWithValueProps } from './models';
 import { ISettingIdentifier } from './provider/models';
 import { useSettingsEditor } from './provider';
@@ -17,34 +17,55 @@ export const CustomFormSettingEditor: FC<ISettingEditorWithValueProps> = (props)
 
     const formRef = useShaFormRef();
 
+    const [initialValue, setInitialValue] = useState(value);
+
     const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
 
     const startSave = () => {
-        return formRef.current.validateFields().then(values => {
+        return formRef.current.validateFields().then(() => {
             const settingId: ISettingIdentifier = {
                 name: selection.setting.name,
                 module: selection.setting.module,
                 appKey: selection.app?.appKey,
             };
+
+            const values = formRef.current.formData;
+
             const data = selection.setting.dataType === DataTypes.object
                 ? { ...values ?? {} }
                 : values?.value; // extract scalar value
             delete data._formFields;
 
-            return saveSettingValue(settingId, data);
+            return saveSettingValue(settingId, data)
+              .then(() => {
+                setInitialValue(data);
+              })
+              .catch((error) => {
+                throw error;
+              });
         });
     };
 
+    const cancel = () => {
+      formRef?.current.setFormData({values: initialValue, mergeValues: false});
+    };
+
     useEffect(() => {
-        setEditor({ save: startSave });
-    }, [selection]);
+        setEditor({ save: startSave, cancel });
+    }, [selection, initialValue]);
+
+    useEffect(() => {
+      setInitialValue(value);
+      formRef.current.setInitialValues(value);
+      formRef.current.setFormData({values: value, mergeValues: false});
+    }, [value]);
 
     const initialValues = useMemo(() => {
         const result = selection.setting.dataType === DataTypes.object
-            ? value
-            : { value }; // for scalar types add `value` property
+            ? initialValue
+            : { value: initialValue }; // for scalar types add `value` property
         return result;
-    }, [value]);
+    }, [initialValue]);
 
     return (
         <ConfigurableForm

@@ -27,8 +27,12 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
         });
     };
 
+    const cancel = () => {
+      formRef.current?.resetFields();
+    };
+
     useEffect(() => {
-        setEditor({ save: startSave });
+        setEditor({ save: startSave, cancel });
     }, [selection]);
 
     const model = useMemo(() => {

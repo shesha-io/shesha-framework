@@ -143,6 +143,10 @@ namespace Shesha
             IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
                 s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
             });
+            IocManager.RegisterSettingAccessor<IFrontendSettings>(s => {
+                s.Theme.WithDefaultValue(ThemeSettings.Default);
+                s.MainMenu.WithDefaultValue(MainMenuSettings.Default);
+            });
 
             IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
                 s.SmtpSettings.WithDefaultValue(new SmtpSettings

@@ -42,6 +42,9 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     setFieldsValue = (values: Values) => {
         this.#form.setFormData({ values, mergeValues: true });
     };
+    clearFieldsValue = () => {
+      this.#form?.setFormData({ values: {}, mergeValues: false });
+    };
     submit = () => {
         this.#form.antdForm.submit();
     };
@@ -142,6 +145,10 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formData = {};
     }
     
+    getDelayedUpdates = () => {
+      return this.dataSubmitContext?.getDelayedUpdates() || [];
+    };
+
     setDataSubmitContext = (context: IDataSubmitContext) => {
         this.dataSubmitContext = context;
     };
@@ -157,6 +164,13 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.forceRootUpdate();
     };
 
+    #setInternalFormData = (values: any) => {
+        this.formData = values;
+        if (this.onValuesChange)
+            this.onValuesChange(values, values);
+        this.events.onValuesUpdate?.(values);
+    };
+
     setFormData = (payload: ISetFormDataPayload) => {
         const { values, mergeValues } = payload;
         if (isEmpty(values) && mergeValues)
@@ -166,17 +180,14 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             ? { ...this.formData, ...values }
             : values;
 
-        this.formData = newData;
-
-        if (this.onValuesChange)
-            this.onValuesChange(values, newData);
-
         if (mergeValues) {
             this.antdForm.setFieldsValue(values);
         } else {
             this.antdForm.resetFields();
             this.antdForm.setFieldsValue(values);
         }
+
+        this.#setInternalFormData(newData);
 
         this.forceRootUpdate();
     };
@@ -206,6 +217,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
     };
     resetFields = () => {
         this.antdForm.resetFields();
+        const values = this.antdForm.getFieldsValue();
+        this.#setInternalFormData(values);
     };
     getFieldsValue = (): Values => {
         return this.antdForm.getFieldsValue();
@@ -276,7 +289,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
 
         this.events.onBeforeDataLoad = makeCaller<void, void>(settings.onBeforeDataLoad);
         this.events.onAfterDataLoad = makeCaller<void, void>(settings.onAfterDataLoad);
-        this.events.onValuesChanged = makeCaller<Values, void>(settings.onValuesChanged);
+        this.events.onValuesUpdate = makeCaller<Values, void>(settings.onValuesUpdate);
 
         this.modelMetadata = settings.modelType
             ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: 'entity' })
@@ -403,7 +416,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         await this.loadFormByRawMarkupAsync();
 
         this.initialValues = initialValues;
-        this.formData = initialValues;
+        this.#setInternalFormData(initialValues);
+
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
         //await this.loadData(formArguments);
@@ -472,8 +486,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             return this.initialValues;
         }
 
-        const dataId = formArguments?.id;
-        const canLoadData = dataId && this.dataLoader;
+        const canLoadData = this.dataLoader && this.dataLoader.canLoadData(formArguments);
 
         if (canLoadData) {
             this.dataLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
@@ -482,7 +495,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             const data = await this.dataLoader.loadAsync({
                 formSettings: this.settings,
                 formFlatStructure: this.flatStructure,
-                dataId: dataId,
+                formArguments: formArguments,
                 expressionExecuter: this.expressionExecuter,
             });
 

@@ -474,7 +474,7 @@ export const ReactTable: FC<IReactTableProps> = ({
                           [direction]: shiftedBy,
                           backgroundColor: 'white',
                           borderBottom: '1px solid #f0f0f0',
-                          fontWeight: 'bold',
+                          fontWeight: '600',
                         }}
                       >
                         {column.render('Header')}

@@ -49,6 +49,7 @@ import { authReducer } from './reducer';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import { Action } from 'redux-actions';
 import SheshaLoader from '@/components/sheshaLoader';
+import { useSettingValue } from '..';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -104,6 +105,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 }) => {
   const { router } = useShaRouting();
   const { backendUrl, httpHeaders } = useSheshaApplication();
+
+  const { value: defaultUrl, loadingState} = useSettingValue({module: 'Shesha', name:'Shesha.DefaultUrl'});
 
   const storedToken = getAccessTokenFromStorage(tokenName);
 
@@ -175,11 +178,16 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const redirectToUnauthorized = () => {
     redirect(loginUrl);
   };
+  const redirectToDefaultUrl = () => {
+    redirect(defaultUrl || loginUrl);
+  };
 
   const fetchUserInfo = (headers: IHttpHeaders) => {
     if (state.isFetchingUserInfo || Boolean(state.loginInfo)) return;
 
     if (Boolean(state.loginInfo)) return;
+
+    const currentUrl = router.fullPath;
 
     dispatch(fetchUserDataAction());
     sessionGetCurrentLoginInfo({ base: backendUrl, headers })
@@ -209,7 +217,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           clearAccessToken();
 
           dispatch(fetchUserDataActionErrorAction({ message: 'Not authorized' }));
-          redirectToUnauthorized();
+          if (currentUrl === '/')
+            redirectToDefaultUrl();
+          else
+            redirectToUnauthorized();
         }
       })
       .catch((e) => {
@@ -286,6 +297,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   };
 
   useEffect(() => {
+    if (loadingState === 'loading' || loadingState === 'waiting') 
+      return;
+
     const httpHeaders = getCleanedInitHeaders(getHttpHeaders());
 
     const currentUrl = router.fullPath;
@@ -300,7 +314,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         fetchUserInfo(httpHeaders);
       }
     }
-  }, []);
+  }, [loadingState]);
 
   //#region  Login
   const { mutate: loginUserHttp } = useMutate<AuthenticateModel, AuthenticateResultModelAjaxResponse>();
