@@ -11,6 +11,7 @@ import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 import LabelConfigurator from '../styleLabel/components/label/labelConfigurator';
+import { CodeFilled, CodeOutlined, FormOutlined } from '@ant-design/icons';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -19,7 +20,7 @@ export interface ISettingsControlProps {
   readOnly?: boolean;
   value?: IPropertySetting;
   mode: PropertySettingMode;
-  type?: string;
+  orientation?: 'horizontal' | 'vertical';
   labelProps?: { hideLabel: boolean; labelAlign: string, onValuesChange?: (newValues) => void };
   onChange?: (value: IPropertySetting) => void;
   readonly children?: SettingsControlChildrenType;
@@ -80,7 +81,6 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   const onSwitchMode = () => {
     const newMode = mode === 'code' ? 'value' : 'code';
-    console.log("is label?: ", props.labelProps);
     onInternalChange(setting, newMode);
   };
 
@@ -103,23 +103,22 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const editor = usePassedConstants
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
-    : <CodeEditorWithStandardConstants {...codeEditorProps} />;
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} size='small' />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} size='small' />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
       <div className={styles.jsContent}>
         <Button
           hidden={props.readOnly}
-          className={`${styles.jsSwitch} ${props.type === 'horizontal' ? 'inlineJS' : ''}`}
-          type='primary'
-          danger={mode === 'value' && !!code}
-          ghost
+          className={`${styles.jsSwitch} ${props.orientation === 'horizontal' ? 'inlineJS' : ''}`}
+          type='link'
+          icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
           size='small'
+          color='lightslategrey'
           onClick={onSwitchMode}
-        >
-          {mode === 'code' ? 'Value' : 'JS'}
-        </Button>
+
+        />
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
         {props.labelProps && <LabelConfigurator value={{ labelAlign: props.labelProps.labelAlign, hideLabel: props.labelProps.hideLabel }} onChange={props.labelProps.onValuesChange} />}

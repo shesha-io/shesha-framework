@@ -17,10 +17,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             display: flex;
             justify-content: center;
             align-items: center;
+            color: lightslategrey;
+            max-width: 100%;
             ${responsive.mobile} {
                 right: 0;
                 left: auto;
-                // top: -28px;
+                top: -28px;
             }
 
             // special style when inside the sidebar
@@ -30,6 +32,11 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
                 &.inlineJS {
                 // top: -28px;
                 height: 20px;
+                
+                }
+
+                &.inlineJS {
+                    margin-left: 5px;
                 }
                 // &:not(.inlineJS){
                 // top: -28px;
@@ -48,16 +55,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
     const contentJs = cx(css`
         position: relative;
         top: 0px;
+        width: 100%;
     `);
     const contentCode = cx(css`
         position: relative;
         top: 0px;
         ${responsive.mobile} {
-            padding-top: 4px;
-        }
-
-        // special style when inside the sidebar
-        .sidebar-container & {
             padding-top: 4px;
         }
         .${sheshaStyles.verticalSettingsClass} & {

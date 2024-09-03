@@ -3,6 +3,7 @@ import { ColorPicker as AntdColorPicker } from 'antd';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 import { Color } from 'antd/es/color-picker/color';
 import type { ColorPickerProps } from 'antd';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 type Preset = Required<ColorPickerProps>['presets'][number];
 type ColorFormat = ColorPickerProps['format'];
@@ -16,6 +17,7 @@ export interface IColorPickerProps {
   allowClear?: boolean;
   disabledAlpha?: boolean;
   readOnly?: boolean;
+  size?: SizeType;
 }
 
 const formatColor = (color: Color, format: ColorFormat) => {
@@ -29,7 +31,7 @@ const formatColor = (color: Color, format: ColorFormat) => {
   }
 };
 
-export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly }) => {
+export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, presets, showText, allowClear, disabledAlpha, readOnly, size }) => {
   const [format, setFormat] = useState<ColorFormat>('hex');
 
   const handleChange = (value: Color) => {
@@ -57,6 +59,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({ value, onChange, title, pre
       value={value ?? ""}
       onChange={handleChange}
       presets={presets}
+      size={size}
       panelRender={(panel) => (
         <div onClick={onPanelClick}>
           {title && (

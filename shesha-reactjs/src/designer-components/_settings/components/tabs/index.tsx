@@ -1,25 +1,23 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useMemo } from 'react';
 import ShaIcon from '@/components/shaIcon';
 import { FolderOutlined } from '@ant-design/icons';
 import { getActualModelWithParent, getLayoutStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { nanoid } from '@/utils/uuid';
 import { Tabs, TabsProps } from 'antd';
 import { TabSettingsForm } from './settings';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { removeComponents } from '../_common-migrations/removeComponents';
+import { Input } from 'antd';
 
 type TabItem = TabsProps['items'][number];
 
-const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
-  type: 'tabs',
+const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
+  type: 'settingsTabs',
   isInput: false,
   name: 'Tabs',
   icon: <FolderOutlined />,
@@ -33,7 +31,21 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
 
     const actionKey = defaultActiveKey || (tabs?.length && tabs[0]?.key);
 
-    const items = useDeepCompareMemo(() => {
+    const [searchQueries, setSearchQueries] = useState<Record<string, string>>({});
+
+    const filterComponents = (components: any[], query: string) => {
+      return components.filter(component => {
+        if (component.label?.toLowerCase().includes(query.toLowerCase())) {
+          return {
+            ...component,
+            components: component.components ? filterComponents(component.components, query) : undefined,
+          };
+        }
+        return null;
+      }).filter(Boolean);
+    };
+
+    const items = useMemo(() => {
       const tabItems: TabItem[] = [];
 
       (tabs ?? [])?.forEach((item) => {
@@ -59,6 +71,9 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
         const granted = anyOfPermissionsGranted(permissions || []);
         if ((!granted || hidden) && allData.form?.formMode !== 'designer') return;
 
+        const searchQuery = searchQueries[key] || '';
+        const filteredComponents = filterComponents(components || [], searchQuery);
+
         const tab: TabItem = {
           key: key,
           label: icon ? (
@@ -80,7 +95,16 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
           style: getLayoutStyle(model, { data, globalState }),
           children: (
             <ParentProvider model={tabModel}>
-              <ComponentsContainer containerId={id} dynamicComponents={model?.isDynamic ? components : []} />
+              <Input
+                placeholder="Search components"
+                value={searchQuery}
+                onChange={(e) => setSearchQueries(prev => ({ ...prev, [key]: e.target.value }))}
+                style={{ marginBottom: 16 }}
+              />
+              <ComponentsContainer
+                containerId={id}
+                dynamicComponents={model?.isDynamic ? filteredComponents : []}
+              />
             </ParentProvider>
           ),
         };
@@ -88,7 +112,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       });
 
       return tabItems;
-    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
+    }, [tabs, model.readOnly, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow, searchQueries, model.isDynamic]);
 
     return model.hidden ? null : (
       <Tabs defaultActiveKey={actionKey} size={size} type={tabType} tabPosition={position} items={items} />
@@ -102,20 +126,6 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     };
     return tabsModel;
   },
-  migrator: (m) => m
-    .add<ITabsComponentProps>(0, (prev) => {
-      const newModel = { ...prev };
-      newModel['tabs'] = prev['tabs']?.map((item) => migrateCustomFunctions(item as any));
-      return migratePropertyName(migrateCustomFunctions(newModel)) as ITabsComponentProps;
-    })
-    .add<ITabsComponentProps>(1, (prev) => {
-      const newModel = { ...prev };
-      newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
-      return newModel;
-    })
-    .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-    .add<ITabsComponentProps>(3, (prev) => removeComponents(prev))
-  ,
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
@@ -123,4 +133,4 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
   },
 };
 
-export default TabsComponent;
+export default SettingsTabs;

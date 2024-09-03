@@ -7,8 +7,8 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
-import { evaluateString, getStyle, pickStyleFromModel } from '@/providers/form/utils';
+import { FormMarkup, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import { ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -22,10 +22,11 @@ import { getSizeStyle } from '../styleDimensions/components/size/utils';
 import { getBorderStyle } from '../styleBorder/components/border/utils';
 import { getFontStyle } from '../styleFont/components/font/utils';
 import { getBackgroundStyle } from '../styleBackground/components/background/utils';
-import { TextFieldSettingsForm } from './settings';
+import settingsFormJson from './settingsForm.json';
 import { useStyles } from './styles/styles';
 import { getShadowStyle } from '../styleShadow/components/shadow/utils';
 
+const settingsForm = settingsFormJson as FormMarkup;
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -88,6 +89,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...shadowStyles,
     });
 
+    console.log("Border:::", model?.border)
+
     const jsStyle = getStyle(model.style, formData);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
@@ -149,7 +152,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
+  settingsFormMarkup: settingsForm,
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     textType: 'text',
     ...model,

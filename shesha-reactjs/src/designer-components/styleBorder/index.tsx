@@ -9,14 +9,13 @@ import { IBorderProps } from './components/border/interfaces';
 import BorderComponent from './components/border/borderComponent';
 
 const BorderConfigurator: IToolboxComponent<IBorderProps> = {
-    type: 'border',
+    type: 'borderStyle',
     name: 'Border Configurator',
     isInput: false,
     icon: <StrikethroughOutlined />,
     canBeJsSetting: true,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-    Factory: ({ model: passedModel }) => {
-        const { size, ...model } = passedModel;
+    Factory: ({ model }) => {
 
         return (
             <ConfigurableFormItem model={model}>

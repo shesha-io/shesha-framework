@@ -6,17 +6,16 @@ import { ColorPicker } from '@/components';
 import SizeAndRepeat from './sizeAndRepeat';
 import ImageUploader from '../imageUploader';
 import { IBackgroundValue } from './interfaces';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
-import { IContainerComponentProps } from '@/interfaces';
+import FormItem from '@/designer-components/_settings/components/formItem';
 
 interface IBackgroundProps {
-    onValuesChange?: (value: IContainerComponentProps) => void;
+    onValuesChange?: (value) => void;
     value?: IBackgroundValue;
     model?: any;
     readOnly?: boolean;
 }
 
-const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, model, readOnly }) => {
+const BackgroundComponent: FC<IBackgroundProps> = ({ onValuesChange, value, model, readOnly }) => {
     const [colors, setColors] = useState<string[]>(value?.gradient?.colors || []);
 
     const updateValue = (newValue: Partial<IBackgroundValue>) => {
@@ -54,7 +53,7 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
                 return (
                     <>
                         <Col className="gutter-row" span={24}>
-                            <SettingsFormItem name="background.gradient.direction" label="Direction" jsSetting>
+                            <FormItem  name="background.gradient.direction" label="Direction" jsSetting>
                                 <Input
 
                                     style={{ width: '100%' }}
@@ -62,10 +61,10 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
                                     readOnly={readOnly}
                                     onChange={(e) => updateValue({ gradient: { ...value?.gradient, direction: e.target.value } })}
                                 />
-                            </SettingsFormItem>
+                            </FormItem>
                         </Col>
                         <Col className="gutter-row" span={24}>
-                            <SettingsFormItem name="background.gradient.colors" label="Colors" jsSetting>
+                            <FormItem name='colors' label="Colors" jsSetting>
                                 <div>
                                     {colors.map((color, i) => (
                                         <Tag
@@ -86,7 +85,7 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
                                         </Tag>
                                     ))}
                                 </div>
-                            </SettingsFormItem>
+                            </FormItem>
                         </Col>
                         <Button onClick={addColor}>Add color</Button>
                     </>
@@ -94,27 +93,26 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
             case 'url':
                 return (
                     <Col className="gutter-row" span={24}>
-                        <SettingsFormItem name="background.url" label="URL" jsSetting>
+                        <FormItem name="background.url" label="URL" jsSetting>
                             <Input
-
                                 style={{ width: '100%' }}
                                 value={value?.url}
                                 readOnly={readOnly}
                                 onChange={(e) => updateValue({ url: e.target.value })}
                             />
-                        </SettingsFormItem>
+                        </FormItem>
                     </Col>
                 );
             case 'upload':
                 return (
                     <Col className="gutter-row" span={24}>
-                        <SettingsFormItem name="background.file" label="File" jsSetting>
+                        <FormItem name="background.file" label="File" jsSetting>
                             <ImageUploader
                                 updateValue={updateValue}
                                 backgroundImage={value?.file}
                                 readOnly={readOnly}
                             />
-                        </SettingsFormItem>
+                        </FormItem>
                     </Col>
 
                 );
@@ -122,17 +120,17 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
                 return (
                     <>
                         <Col className="gutter-row" span={24}>
-                            <SettingsFormItem name="background.storedFile.id" label="File Id" jsSetting>
+                            <FormItem name="background.storedFile.id" label="File Id" jsSetting>
                                 <Input
 
                                     style={{ width: '100%' }}
                                     readOnly={readOnly}
                                     value={value?.storedFile?.id}
                                     onChange={(e) => updateValue({ storedFile: { ...value?.storedFile, id: e.target.value } })} />
-                            </SettingsFormItem>
+                            </FormItem>
                         </Col>
                         <Col className="gutter-row" span={24}>
-                            <SettingsFormItem name="background.storedFile.ownerType" label="Owner Type" jsSetting>
+                            <FormItem name="background.storedFile.ownerType" label="Owner Type" jsSetting>
                                 <Autocomplete.Raw
                                     dataSourceType="url"
                                     dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
@@ -141,27 +139,27 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
                                     style={{ width: '100%' }}
                                     value={value?.storedFile?.ownerType}
                                     onChange={(e) => updateValue({ storedFile: { ...value?.storedFile, ownerType: e } })} />
-                            </SettingsFormItem>
+                            </FormItem>
                         </Col>
                         <Col className="gutter-row" span={24}>
-                            <SettingsFormItem name="background.storedFile.ownerId" label="Owner Id" jsSetting>
+                            <FormItem name="background.storedFile.ownerId" label="Owner Id" jsSetting>
                                 <Input
 
                                     style={{ width: '100%' }}
                                     readOnly={readOnly}
                                     value={value?.storedFile?.ownerId}
                                     onChange={(e) => updateValue({ storedFile: { ...value?.storedFile, ownerId: e.target.value } })} />
-                            </SettingsFormItem>
+                            </FormItem>
                         </Col>
                         <Col className="gutter-row" span={24}>
-                            <SettingsFormItem name="background.storedFile.fileCatergory" label="File Catergory" jsSetting>
+                            <FormItem name="background.storedFile.fileCatergory" label="File Catergory" jsSetting>
                                 <Input
 
                                     style={{ width: '100%' }}
                                     readOnly={readOnly}
                                     value={value?.storedFile?.fileCatergory}
                                     onChange={(e) => updateValue({ storedFile: { ...value?.storedFile, fileCatergory: e.target.value } })} />
-                            </SettingsFormItem>
+                            </FormItem>
                         </Col>
                     </>
                 );
@@ -169,14 +167,14 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
                 return (
                     <Col className="gutter-row" span={24}>
                         <Col className="gutter-row" span={24}>
-                            <SettingsFormItem name="background.color" label="Color" jsSetting>
+                            <FormItem name="background.color" label="Color" jsSetting>
                                 <ColorPicker
                                     allowClear
                                     readOnly={readOnly}
                                     value={value?.color}
                                     onChange={(color) => updateValue({ color: color.toString() })}
                                 />
-                            </SettingsFormItem>
+                            </FormItem>
                         </Col>
                     </Col>
                 );
@@ -186,7 +184,7 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
     return (
         <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
             <Col className="gutter-row" span={24}>
-                <SettingsFormItem readOnly={readOnly} name="background.type" label="Type" jsSetting>
+                <FormItem readOnly={readOnly} name="background.type" label="Type" jsSetting>
                     <Radio.Group onChange={onTypeChange} disabled={readOnly} value={value?.type}>
                         <Radio.Button value="color" title='Background color'><FormatPainterOutlined /></Radio.Button>
                         <Radio.Button value="gradient" title='Gradient background'><BgColorsOutlined /></Radio.Button>
@@ -194,7 +192,7 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
                         <Radio.Button value="upload" title='Image upload'><UploadOutlined /></Radio.Button>
                         <Radio.Button value="storedFile" title='Stored File'><DatabaseOutlined /></Radio.Button>
                     </Radio.Group>
-                </SettingsFormItem>
+                </FormItem>
             </Col>
             {renderBackgroundInput()}
             <SizeAndRepeat readOnly={readOnly} updateValue={updateValue} backgroundSize={value?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
@@ -202,4 +200,4 @@ const BackgroundConfigurator: FC<IBackgroundProps> = ({ onValuesChange, value, m
     );
 };
 
-export default BackgroundConfigurator;
+export default BackgroundComponent;

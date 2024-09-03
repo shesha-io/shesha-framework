@@ -1,42 +1,30 @@
-import { Col, Input, InputNumber, Radio, Row, Select, Switch } from 'antd';
+import { Col, Input, InputNumber, Row, Select, Switch } from 'antd';
 import React, { FC } from 'react';
 import { BorderBottomOutlined, BorderLeftOutlined, BorderOutlined, BorderRightOutlined, BorderTopOutlined, CloseOutlined, DashOutlined, ExpandOutlined, MinusOutlined, RadiusBottomleftOutlined, RadiusBottomrightOutlined, RadiusUpleftOutlined, RadiusUprightOutlined, SmallDashOutlined } from '@ant-design/icons';
 import { ColorPicker } from '@/components';
 import { IBorderValue } from './interfaces';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import FormItem from '@/designer-components/_settings/components/formItem';
+import { SettingsRadioGroup } from '@/designer-components/_settings/components/utils';
 
 const { Option } = Select;
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 
 interface IBorderProps {
-    onChange?: (value) => void;
     value?: IBorderValue;
     readOnly?: boolean;
     model?: any;
+    onChange?: (value: IBorderValue) => void;
 }
 
-const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value }) => {
+const BorderComponent: FC<IBorderProps> = ({ model, readOnly, value: valued, onChange }) => {
+
+    console.log("Border:::", model, readOnly, valued, onChange);
+    const value = model?.border || {};
 
     const activeBorder = value?.activeBorder || 'all';
     const activeRadius = value?.activeRadius || 'all';
-
-    const renderRadioGroup = (
-        options: { value: string; icon: React.ReactNode; title?: string }[],
-        value: string,
-        type: string,
-        property?: string
-    ) => (
-        <SettingsFormItem name={property ? `border.border.${value}.${property}` : `border.active${type}`} label={`${type || ''} ${value} ${property || ''}`} jsSetting>
-            <Radio.Group>
-                {options.map(option => (
-                    <Radio.Button key={option.value} value={option.value} title={option.title}>
-                        {option.icon}
-                    </Radio.Button>
-                ))}
-            </Radio.Group>
-        </SettingsFormItem>
-    );
+    const hideBorder = model?.hideBorder || false;
 
     const radiusOptions = [
         { value: 'all', icon: <ExpandOutlined />, title: 'all' },
@@ -66,57 +54,56 @@ const BorderComponent: FC<IBorderProps> = ({ onChange, model, readOnly, value })
             value={value?.border?.[activeBorder]?.unit || 'px'}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            onChange={(unit) => onChange({ ...model, border: { ...value, border: { ...value.border, [activeBorder]: { ...value.border?.[activeBorder], unit } } } })}>
+        >
             {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
-        </Select>);
+        </Select>
+    );
 
     return (
         <Row gutter={[8, 2]}>
             <Col className="gutter-row" span={24}>
-                <SettingsFormItem name="hideBorder" label="Hide Border" valuePropName="checked" jsSetting type='horizontal'>
-                    <Switch disabled={readOnly} />
-                </SettingsFormItem>
+                <FormItem name="hideBorder" label="Hide Border" valuePropName="checked" jsSetting orientation='horizontal'>
+                    <Switch disabled={readOnly} onChange={() => { console.log("Border:::", value) }} />
+                </FormItem>
             </Col>
-            {!model.hideBorder && <>
+            {!hideBorder && <>
                 <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(radiusOptions, activeRadius, 'Radius')}
+                    {SettingsRadioGroup({ options: radiusOptions, value: activeRadius, type: 'Radius', name: `border.activeRadius` })}
                 </Col>
                 <Col className="gutter-row" span={24}>
-                    <SettingsFormItem readOnly={readOnly} name={`border.radius.${activeRadius}`} label='Degrees' jsSetting>
+                    <FormItem name={`border.radius.${activeRadius}`} label='Degrees' jsSetting>
                         <InputNumber
                             min={0}
                             max={100}
                             value={value?.radius?.[activeRadius]}
                         />
-                    </SettingsFormItem>
+                    </FormItem>
                 </Col>
                 <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(borderOptions, activeBorder, 'Border')}
+                    {SettingsRadioGroup({ options: borderOptions, value: activeBorder, type: 'Border', name: `border.active.${value?.activeBorder}` })}
                 </Col>
                 <Col className="gutter-row" span={24}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                         <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
-                            <SettingsFormItem name={`border.border.${activeBorder}.width`} label="Width" jsSetting>
+                            <FormItem name={`border.border.${activeBorder}.width`} label="Width" jsSetting>
                                 <Input
-                                    addonAfter={
-                                        addOnAfter
-                                    }
+                                    addonAfter={addOnAfter}
                                     value={value?.border?.[activeBorder]?.width}
                                 />
-                            </SettingsFormItem>
+                            </FormItem>
                         </div>
                         <div style={{ flex: '1 1 100px', minWidth: '100px' }}>
-                            <SettingsFormItem name={`border.border.${activeBorder}.color`} label="Color" jsSetting>
+                            <FormItem name={`border.border.${activeBorder}.color`} label="Color" jsSetting>
                                 <ColorPicker
                                     allowClear
                                     value={value?.border?.[activeBorder]?.color || '#000000'}
                                 />
-                            </SettingsFormItem>
+                            </FormItem>
                         </div>
                     </div>
                 </Col>
                 <Col className="gutter-row" span={24}>
-                    {renderRadioGroup(styleOptions, activeBorder, 'border', 'style')}
+                    {SettingsRadioGroup({ options: styleOptions, value: activeBorder, type: 'Border', name: `border.active.${value?.activeBorder}` })}
                 </Col>
             </>}
         </Row>

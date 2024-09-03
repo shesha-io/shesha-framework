@@ -5,6 +5,8 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { ColorPicker } from '@/components';
 import { IFontValue } from './interfaces';
 import { useStyles } from '../../styles/styles';
+import FormItem from '@/designer-components/_settings/components/formItem';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 const { Option } = Select;
 
@@ -49,14 +51,16 @@ interface IDropdownProps {
     field: string;
     labelField?: string;
     valueField?: string;
+    size?: SizeType;
 }
 
-const Dropdown: FC<IDropdownProps> = ({ updateValue, value, options, field: property, valueField = 'value' }) => (
+const Dropdown: FC<IDropdownProps> = ({ updateValue, value, options, field: property, valueField = 'value', size }) => (
     <Select
         value={value?.[property]}
         onChange={(newValue) => {
             updateValue({ [property]: newValue })
         }}
+        size={size}
     >
         {options.map(option => (
             <Option key={option[valueField]} value={option[valueField]}>
@@ -75,7 +79,6 @@ export interface IFontType {
 }
 
 const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
-    const { styles } = useStyles()
     const updateValue = (newValue: Partial<IFontValue>) => {
         const updatedValue = { ...model, font: { ...value, ...newValue } };
         onChange(updatedValue);
@@ -106,9 +109,9 @@ const FontComponent: FC<IFontType> = ({ onChange, readOnly, value, model }) => {
         }
 
         return (
-            <SettingsFormItem name={`font.${property}`} label={label} jsSetting>
+            <FormItem name={`font.${property}`} label={label} orientation='vertical' jsSetting>
                 {input()}
-            </SettingsFormItem>
+            </FormItem>
         );
     };
 

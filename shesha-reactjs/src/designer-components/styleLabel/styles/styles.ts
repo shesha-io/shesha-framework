@@ -11,7 +11,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         flex-wrap: wrap;
         gap: 8px;
         position: absolute;
-        right: 0px;
+        right: 30px;
         top: -28px;
     `);
 

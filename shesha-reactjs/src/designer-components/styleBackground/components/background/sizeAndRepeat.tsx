@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Divider, Input, Select, Space } from 'antd';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import FormItem from '@/designer-components/_settings/components/formItem';
 import { IBackgroundValue } from './interfaces';
 
 type SizeAndRepeatProps = {
@@ -125,7 +125,7 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
                 }
             ].map(({ name, label, value, options, state, setState }) => (
                 <Col key={name} span={24} style={{ fontSize: '11px' }}>
-                    <SettingsFormItem name={`background.${name}`} readOnly={readOnly} label={label} jsSetting>
+                    <FormItem name={`background.${name}`} label={label} jsSetting>
                         <Select
                             value={value || (name === 'repeat' ? 'no-repeat' : 'auto')}
                             disabled={readOnly}
@@ -136,7 +136,7 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
                             dropdownRender={name !== 'repeat' ? (menu) => renderOptions(menu, state, setState, name as 'size' | 'position') : undefined}
                             options={options.map((item) => typeof item === 'string' ? { label: item, value: item } : item)}
                         />
-                    </SettingsFormItem>
+                    </FormItem>
                 </Col>
             ))}
         </>

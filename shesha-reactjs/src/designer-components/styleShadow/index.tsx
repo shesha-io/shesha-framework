@@ -9,8 +9,8 @@ import { IShadowComponentProps } from './components/shadow/interfaces';
 import ShadowComponent from './components/shadow/shadowComponent';
 
 const ShadowConfigurator: IToolboxComponent<IShadowComponentProps> = {
-    type: 'size',
-    name: 'Size',
+    type: 'shadowStyle',
+    name: 'Shadow Styles',
     isInput: false,
     icon: <ColumnWidthOutlined />,
     canBeJsSetting: true,

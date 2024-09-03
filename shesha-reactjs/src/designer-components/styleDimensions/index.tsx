@@ -9,7 +9,7 @@ import SizeComponent from './components/size/sizeComponent';
 import { ISizeComponentProps } from './components/size/interfaces';
 
 const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
-    type: 'size',
+    type: 'sizeStyle',
     name: 'Size',
     isInput: false,
     icon: <ColumnWidthOutlined />,

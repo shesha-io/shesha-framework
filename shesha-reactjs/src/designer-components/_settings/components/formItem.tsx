@@ -1,16 +1,11 @@
 import React, {
     cloneElement,
     FC,
-    ReactElement,
-    useEffect
+    ReactElement
 } from 'react';
-import SettingsControl, { SettingsControlChildrenType } from './settingsControl';
 import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
-import { Form, FormItemProps } from 'antd';
-import { getPropertySettingsFromData } from './utils';
-import { useSettingsForm } from './settingsForm';
-import { useSettingsPanel } from './settingsCollapsiblePanel';
-import { getFieldNameFromExpression } from '@/index';
+import SettingsControl from '../settingsControl';
+
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
@@ -22,50 +17,12 @@ interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model
     required?: boolean;
     tooltip?: string;
     hidden?: boolean;
-    orientation?: 'horizontal' | 'vertical';
     labelProps?: { hideLabel: boolean; labelAlign: string, onValuesChange?: (newValues) => void };
     model?: any;
 }
 
-const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
-    const { model } = useSettingsForm<any>();
 
-    if (!props.name)
-        return null;
-
-    const { _mode: mode } = getPropertySettingsFromData(model, props.name?.toString());
-
-    if (typeof props.children === 'function') {
-        const children = props.children as SettingsControlChildrenType;
-        if (!props.jsSetting) {
-            return <ConfigurableFormItem
-                model={{
-                    propertyName: props.name,
-                    label: props.label,
-                    type: '',
-                    id: '',
-                    description: props.tooltip,
-                    validate: { required: props.required },
-                    hidden: props.hidden,
-                    size: 'small'
-                }}
-                className='sha-js-label'
-            >
-                {children}
-            </ConfigurableFormItem>;
-        }
-        return (
-            <Form.Item {...{ ...props, name: getFieldNameFromExpression(props.name) }} label={props.label}>
-                <SettingsControl propertyName={props.name} mode={mode} labelProps={props.labelProps}>
-                    {(value, onChange, propertyName) => children(value, onChange, propertyName)}
-                </SettingsControl>
-            </Form.Item>
-        );
-    }
-
-    if (!props.jsSetting) {
-        return <Form.Item {...props as FormItemProps<any>}>{props.children}</Form.Item>;
-    }
+const FormItem: FC<ISettingsFormItemProps> = (props) => {
 
     const valuePropName = props.valuePropName ?? 'value';
     const children = props.children as ReactElement;
@@ -80,8 +37,10 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                 id: '',
                 description: props.tooltip,
                 validate: { required: props.required },
-                hidden: props.hidden
+                hidden: props.hidden,
+                size: 'small'
             }}
+            orientation={props.orientation}
             className='sha-js-label'
         >
             {(value, onChange) => {
@@ -120,19 +79,4 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     );
 };
 
-const SettingsFormItem: FC<ISettingsFormItemProps> = (props) => {
-    const settingsPanel = useSettingsPanel(false);
-
-    useEffect(() => {
-        if (settingsPanel && props.name) {
-            settingsPanel.registerField(props.name.toString());
-        }
-    }, [settingsPanel, props.name]);
-
-    const { propertyFilter } = useSettingsForm<any>();
-    return !Boolean(propertyFilter) || typeof propertyFilter === 'function' && propertyFilter(props.name?.toString())
-        ? <SettingsFormComponent {...props} />
-        : null;
-};
-
-export default SettingsFormItem;
+export default FormItem;

@@ -1,15 +1,16 @@
 import { Col, Input } from 'antd';
 import React, { FC } from 'react';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import FormItem from '@/designer-components/_settings/components/formItem';
 import { IconPicker } from '@/components';
 import { useStyles } from '../../styles/styles';
 
-interface IPrefixSuffixProps {
+export interface IPrefixSuffixType {
     onChange?: (value) => void;
     readOnly?: boolean;
     model?: any;
 }
-const PrefixSuffixComponent: FC<IPrefixSuffixProps> = ({ readOnly, model, onChange }) => {
+
+const PrefixSuffixComponent: FC<IPrefixSuffixType> = ({ readOnly, model, onChange }) => {
 
     const updateValue = (newValue) => {
         onChange(newValue);
@@ -20,26 +21,26 @@ const PrefixSuffixComponent: FC<IPrefixSuffixProps> = ({ readOnly, model, onChan
         <Col className="gutter-row" span={24} >
             <div className={styles.flexWrapper}>
                 <div className={styles.flexInput}>
-                    <SettingsFormItem readOnly={readOnly} name="prefix" label="Prefix" jsSetting>
+                    <FormItem name="prefix" label="Prefix" jsSetting>
                         <Input value={model?.prefix} readOnly={readOnly} />
-                    </SettingsFormItem>
+                    </FormItem>
                 </div>
                 <div className={styles.flexIconPicker}>
-                    <SettingsFormItem readOnly={readOnly} name="prefixIcon" label="Prefix Icon" jsSetting>
+                    <FormItem name="prefixIcon" label="Prefix Icon" jsSetting>
                         <IconPicker selectBtnSize='small' readOnly={readOnly} onIconChange={(_, iconName) => updateValue({ prefixIcon: iconName })} value={model?.prefixIcon} />
-                    </SettingsFormItem>
+                    </FormItem>
                 </div>
             </div>
             <div className={styles.flexWrapper}>
                 <div className={styles.flexInput}>
-                    <SettingsFormItem readOnly={readOnly} name="suffix" label="Suffix" jsSetting>
+                    <FormItem name="suffix" label="Suffix" jsSetting>
                         <Input value={model?.prefix} readOnly={readOnly} />
-                    </SettingsFormItem>
+                    </FormItem>
                 </div>
                 <div className={styles.flexIconPicker}>
-                    <SettingsFormItem name="suffixIcon" label="Suffix Icon" jsSetting>
+                    <FormItem name="suffixIcon" label="Suffix Icon" jsSetting>
                         <IconPicker selectBtnSize='small' readOnly={readOnly} onIconChange={(_, iconName) => updateValue({ suffixIcon: iconName })} value={model?.suffixIcon} />
-                    </SettingsFormItem>
+                    </FormItem>
                 </div>
             </div>
         </Col>

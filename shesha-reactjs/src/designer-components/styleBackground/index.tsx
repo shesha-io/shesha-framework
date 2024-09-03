@@ -5,11 +5,11 @@ import { StrikethroughOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import BackgroundConfigurator from './components/background/background';
+import BackgroundComponent from './components/background/background';
 import { IBackgroundProps } from './components/background/interfaces';
 
-const Background: IToolboxComponent<IBackgroundProps> = {
-    type: 'background',
+const BackgroundConfigurator: IToolboxComponent<IBackgroundProps> = {
+    type: 'backgroundStyle',
     name: 'Background Configurator',
     isInput: false,
     icon: <StrikethroughOutlined />,
@@ -20,11 +20,11 @@ const Background: IToolboxComponent<IBackgroundProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <BackgroundConfigurator value={value} onValuesChange={onChange} />}
+                {(value, onChange) => <BackgroundComponent value={value} onValuesChange={onChange} />}
             </ConfigurableFormItem>
         );
     },
     settingsFormMarkup: getSettings(),
 };
 
-export default Background;
+export default BackgroundConfigurator;

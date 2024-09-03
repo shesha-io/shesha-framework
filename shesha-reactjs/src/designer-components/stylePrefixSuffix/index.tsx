@@ -1,22 +1,24 @@
 
-import { IToolboxComponent } from '@/interfaces';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import { ISizeComponentProps } from './components/prefixSuffix/interfaces';
-import PrefixSuffixComponent from './components/prefixSuffix/prefixSuffixComponent';
+import PrefixSuffixComponent, { IPrefixSuffixType } from './components/prefixSuffix/prefixSuffixComponent';
 
-const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
-    type: 'size',
+export interface IPrefixSuffixProps extends IConfigurableFormComponent {
+    onChange?: (value: IPrefixSuffixType) => void;
+    value?: IPrefixSuffixType;
+}
+const PrefixSuffixConfigurator: IToolboxComponent<IPrefixSuffixProps> = {
+    type: 'prefixSuffixStyle',
     name: 'Size',
     isInput: false,
     icon: <ColumnWidthOutlined />,
     canBeJsSetting: true,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-    Factory: ({ model: passedModel }) => {
-        const { size, ...model } = passedModel;
+    Factory: ({ model }) => {
 
         return (
             <ConfigurableFormItem model={model}>
@@ -27,4 +29,4 @@ const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
     settingsFormMarkup: getSettings(),
 };
 
-export default SizeConfigurator;
+export default PrefixSuffixConfigurator;

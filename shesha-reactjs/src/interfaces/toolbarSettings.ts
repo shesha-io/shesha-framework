@@ -30,6 +30,14 @@ import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfac
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
+import { IFontType } from '@/designer-components/styleFont/components/font/fontComponent';
+import { IBackgroundProps } from '@/designer-components/styleBackground/components/background/interfaces';
+import { IBorderProps } from '@/designer-components/styleBorder/components/border/interfaces';
+import { ISizeType } from '@/designer-components/styleDimensions/components/size/sizeComponent';
+import { ILabelComponentProps } from '@/designer-components/styleLabel/components/label/interfaces';
+import { IPrefixSuffixType } from '@/designer-components/stylePrefixSuffix/components/prefixSuffix/prefixSuffixComponent';
+import { IShadowType } from '@/designer-components/styleShadow/components/shadow/shadowComponent';
+import { ITabsComponentProps } from '@/designer-components/tabs/models';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -88,6 +96,7 @@ type ColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps
 
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
+type ITabsComponentPropsType = ToolbarSettingsProp & Omit<ITabsComponentProps, 'hidden' | 'type'>;
 type AlertType = ToolbarSettingsProp & Omit<IAlertComponentProps, 'hidden' | 'type'>;
 
 type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
@@ -95,6 +104,21 @@ type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
 type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, 'hidden' | 'type'>;
 
 type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
+
+type FontStyleType = ToolbarSettingsProp & Omit<IFontType, 'hidden' | 'type'>;
+
+type BackgroundStyleType = ToolbarSettingsProp & Omit<IBackgroundProps, 'hidden' | 'type'>;
+
+type BorderStyleType = ToolbarSettingsProp & Omit<IBorderProps, 'hidden' | 'type'>;
+
+type DimensionStyleType = ToolbarSettingsProp & Omit<ISizeType, 'hidden' | 'type'>;
+
+type LabelStyleType = ToolbarSettingsProp & Omit<ILabelComponentProps, 'hidden' | 'type'>;
+
+type PrefixSuffixStyleType = ToolbarSettingsProp & Omit<IPrefixSuffixType, 'hidden' | 'type'>;
+
+type ShadowStyleType = ToolbarSettingsProp & Omit<IShadowType, 'hidden' | 'type'>;
+
 
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
@@ -121,6 +145,10 @@ export class DesignerToolbarSettings<T> {
     props: ICollapsiblePanelPropsEditorType | ((data: T) => ICollapsiblePanelPropsEditorType)
   ) {
     return this.addProperty(props, 'collapsiblePanel');
+  }
+
+  public addTabs(props: ITabsComponentPropsType | ((data: T) => ITabsComponentPropsType)) {
+    return this.addProperty(props, 'tabs');
   }
 
   public addDropdown(props: DropdownType | ((data: T) => DropdownType)) {
@@ -229,6 +257,34 @@ export class DesignerToolbarSettings<T> {
 
   public addStyleBox(props: StyleBoxType | ((data: T) => StyleBoxType)) {
     return this.addProperty(props, 'styleBox');
+  }
+
+  public addFontStyle(props: FontStyleType | ((data: T) => FontStyleType)) {
+    return this.addProperty(props, 'fontStyle');
+  }
+
+  public addBackgroundStyle(props: BackgroundStyleType | ((data: T) => BackgroundStyleType)) {
+    return this.addProperty(props, 'backgroundStyle');
+  }
+
+  public addBorderStyle(props: BorderStyleType | ((data: T) => BorderStyleType)) {
+    return this.addProperty(props, 'borderStyle');
+  }
+
+  public addSizeStyle(props: DimensionStyleType | ((data: T) => DimensionStyleType)) {
+    return this.addProperty(props, 'sizeStyle');
+  }
+
+  public addLabelStyle(props: LabelStyleType | ((data: T) => LabelStyleType)) {
+    return this.addProperty(props, 'labelStyle');
+  }
+
+  public addPrefixSuffixStyle(props: PrefixSuffixStyleType | ((data: T) => PrefixSuffixStyleType)) {
+    return this.addProperty(props, 'prefixSuffix');
+  }
+
+  public addShadowStyle(props: ShadowStyleType | ((data: T) => ShadowStyleType)) {
+    return this.addProperty(props, 'shadowStyle');
   }
 
   public addSlider(props: SliderType | ((data: T) => SliderType)) {

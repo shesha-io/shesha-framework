@@ -103,6 +103,9 @@ import { HEADER_CONFIGURATION, HEADER_PUB_PORTAL_CONFIGURATION } from '@/compone
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import { getToolboxComponentsVisibility } from '@/utils';
 import FontConfigurator from '@/designer-components/styleFont';
+import BackgroundConfigurator from '@/designer-components/styleBackground';
+import ShadowConfigurator from '@/designer-components/styleShadow';
+import SettingsTabs from '@/designer-components/_settings/components/tabs';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -236,6 +239,11 @@ export const getToolboxComponents = (
         Section,
         StyleBox,
         FontConfigurator,
+        BorderConfigurator,
+        BackgroundConfigurator,
+        SizeConfigurator,
+        ShadowConfigurator,
+        SettingsTabs,
         CodeEditor,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,

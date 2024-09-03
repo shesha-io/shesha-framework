@@ -1,6 +1,6 @@
 import { Col, Input, Row } from 'antd';
 import React, { FC } from 'react';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import FormItem from '@/designer-components/_settings/components/formItem';
 import { IShadowValue } from './interfaces';
 import { ColorPicker } from '@/components';
 
@@ -16,14 +16,14 @@ const ShadowComponent: FC<IShadowType> = ({ readOnly, value }) => {
         const currentValue = value?.[property];
 
         return (
-            <SettingsFormItem name={`shadow.${property}`} label={label} jsSetting>
+            <FormItem name={`shadow.${property}`} label={label} jsSetting>
                 <Input
                     type='number'
                     value={currentValue}
                     readOnly={readOnly}
                     max={100}
                 />
-            </SettingsFormItem>
+            </FormItem>
         );
     };
 
@@ -42,9 +42,9 @@ const ShadowComponent: FC<IShadowType> = ({ readOnly, value }) => {
             {renderInputRow([{ label: 'Offset X', property: 'offsetX' }, { label: 'Offset Y', property: 'offsetY' }])}
             {renderInputRow([{ label: 'Blur', property: 'blurRadius' }, { label: 'Spread', property: 'spreadRadius' }])}
             <Col span={24}>
-                <SettingsFormItem readOnly={readOnly} name="shadow.color" label="Color" jsSetting>
-                    <ColorPicker readOnly={readOnly} />
-                </SettingsFormItem>
+                <FormItem name="shadow.color" label="Color" jsSetting>
+                    <ColorPicker />
+                </FormItem>
             </Col>
         </Row>
     );

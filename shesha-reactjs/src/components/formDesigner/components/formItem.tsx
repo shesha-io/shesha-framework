@@ -24,7 +24,7 @@ export interface IConfigurableFormItemProps {
   customVisibility?: string;
   wrapperCol?: ColProps;
   labelCol?: ColProps;
-  layout?: 'horizontal' | 'vertical' | 'inline';
+  orientation?: 'horizontal' | 'vertical';
 }
 
 export interface IConfigurableFormItem_FormProps {
@@ -95,7 +95,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   initialValue,
   className,
   labelCol,
-  wrapperCol
+  wrapperCol, orientation
 }) => {
   const { formData } = useForm();
 
@@ -129,7 +129,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
 
-  const formItemPropsAndLayout = type === 'horizontal' ? { ...{ ...formItemProps }, layout: type, labelWrap: true, colon: false, labelCol: { span: 12 }, wrapperCol: { span: 24 }, style: { } } : formItemProps;
+  const formItemPropsAndLayout = orientation === 'horizontal' ? { ...{ ...formItemProps }, layout: orientation, labelWrap: true, colon: false, labelCol: { span: 12 }, wrapperCol: { span: 24 } } : formItemProps;
 
   if (typeof children === 'function') {
     if (model.context) {

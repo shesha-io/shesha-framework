@@ -9,7 +9,7 @@ import { IFontComponentProps } from './components/font/interfaces';
 import FontComponent from './components/font/fontComponent';
 
 const FontConfigurator: IToolboxComponent<IFontComponentProps> = {
-    type: 'fontConfigurator',
+    type: 'fontStyle',
     name: 'Font',
     isInput: false,
     icon: <FileTextOutlined />,

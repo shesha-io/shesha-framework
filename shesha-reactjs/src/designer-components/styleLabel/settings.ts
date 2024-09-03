@@ -30,6 +30,7 @@ export const getSettings = () =>
                             propertyName: 'label',
                             parentId: '7d8493e3-141f-4507-a983-7f3ff7f2cf86',
                             label: 'Label',
+                            
                         })
                         .addCheckbox({
                             id: nanoid(),

@@ -1,7 +1,7 @@
 import { Col, Input, Radio, Row, Select } from 'antd';
 import React, { FC, useCallback } from 'react';
 import { BorderlessTableOutlined, ColumnWidthOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
+import FormItem from '@/designer-components/_settings/components/formItem';
 
 const { Option } = Select;
 
@@ -43,7 +43,7 @@ const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model, noOver
         const currentValue = value?.[property] as IValueWithUnit || { value: '', unit: 'px' };
 
         return (
-            <SettingsFormItem name={`dimensions.${property}.value`} label={label} jsSetting>
+            <FormItem name={`dimensions.${property}.value`} label={label} jsSetting>
                 <Input
                     addonAfter={
                         <Select
@@ -57,9 +57,8 @@ const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model, noOver
                         </Select>
                     }
                     value={currentValue.value}
-                    readOnly={readOnly}
                 />
-            </SettingsFormItem>
+            </FormItem>
         );
     };
 
@@ -89,14 +88,14 @@ const SizeComponent: FC<ISizeType> = ({ onChange, readOnly, value, model, noOver
             ])}
             {!noOverflow && (
                 <Col className="gutter-row" span={24}>
-                    <SettingsFormItem readOnly={readOnly} name="overflow" label="Overflow" jsSetting>
+                    <FormItem name="overflow" label="Overflow" jsSetting>
                         <Radio.Group value={value?.overflow}>
                             <Radio.Button value="visible" title="Visible"><EyeOutlined /></Radio.Button>
                             <Radio.Button value="hidden" title="Hidden"><EyeInvisibleOutlined /></Radio.Button>
                             <Radio.Button value="scroll" title="Scroll"><ColumnWidthOutlined /></Radio.Button>
                             <Radio.Button value="auto" title="Auto"><BorderlessTableOutlined /></Radio.Button>
                         </Radio.Group>
-                    </SettingsFormItem>
+                    </FormItem>
                 </Col>
             )}
         </Row>

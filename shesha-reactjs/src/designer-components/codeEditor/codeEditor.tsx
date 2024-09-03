@@ -11,7 +11,7 @@ import {
   Tabs
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
-import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { CloseOutlined, CloseSquareFilled, CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
 import { Show } from '@/components';
@@ -82,21 +82,21 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
   const renderCodeEditor = () => (
-      <BaseCodeEditor
-        value={effectiveValue}
-        onChange={onChange}
-        readOnly={readOnly}
-        placeholder={props.placeholder}
-        language={language}
-  
-        path={src?.path}
-        wrapInTemplate={props.wrapInTemplate}
-        templateSettings={props.templateSettings}
-        fileName={props.fileName ?? props.propertyName}
-        availableConstants={props.availableConstants}
-        style={mode === 'dialog' ? { height: "100%" } : undefined}
-      />
-    );
+    <BaseCodeEditor
+      value={effectiveValue}
+      onChange={onChange}
+      readOnly={readOnly}
+      placeholder={props.placeholder}
+      language={language}
+
+      path={src?.path}
+      wrapInTemplate={props.wrapInTemplate}
+      templateSettings={props.templateSettings}
+      fileName={props.fileName ?? props.propertyName}
+      availableConstants={props.availableConstants}
+      style={mode === 'dialog' ? { height: "100%" } : undefined}
+    />
+  );
 
   const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 
@@ -125,13 +125,11 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   return (
     <>
       <Space>
-        <Button icon={<CodeOutlined />} onClick={openEditorDialog} size="small">
-          {readOnly ? 'View Code' : hasValue ? 'Edit in Code Editor' : 'Create in Code Editor'}
+        <Button icon={<CodeOutlined />} onClick={openEditorDialog} size="small" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {readOnly ? 'View Code' : hasValue ? 'Edit Code' : 'Create Code'}
         </Button>
         <Show when={hasValue && !readOnly}>
-          <Button type="primary" size="small" danger onClick={onClear}>
-            Clear
-          </Button>
+          <Button type="primary" ghost size="small" danger onClick={onClear} icon={<CloseOutlined />} />
         </Show>
       </Space>
       {showDialog && (
