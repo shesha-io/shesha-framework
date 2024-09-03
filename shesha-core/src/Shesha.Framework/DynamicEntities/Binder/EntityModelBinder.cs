@@ -147,13 +147,16 @@ namespace Shesha.DynamicEntities.Binder
                 try
                 {
                     // Skip property if _formFields is specified and doesn't contain propertyName
+                    var fName = context.ArrayItemIndex != null
+                        ? context.ArrayItemIndex?.ToString() + "." + jName
+                        : jName;
                     if (formFieldsInternal.Any()
-                        && !formFieldsInternal.Any(x => x.Equals(jName) || x.StartsWith(jName + ".")))
+                        && !formFieldsInternal.Any(x => x.Equals(fName) || x.StartsWith(fName + ".")))
                         continue;
 
                     var childFormFields = formFieldsInternal
-                        .Where(x => x.Equals(jName) || x.StartsWith(jName + "."))
-                        .Select(x => x.RemovePrefix(jName).RemovePrefix("."))
+                        .Where(x => x.Equals(fName) || x.StartsWith(fName + "."))
+                        .Select(x => x.RemovePrefix(fName).RemovePrefix("."))
                         .Where(x => !x.IsNullOrWhiteSpace())
                         .ToList();
                     childFormFields = childFormFields.Any() ? childFormFields : null;
@@ -241,8 +244,10 @@ namespace Shesha.DynamicEntities.Binder
 
                                                     var newArray = Activator.CreateInstance(listType);
                                                     // objects and entities
+                                                    int arrayItemIndex = 0;
                                                     foreach (var item in jList)
                                                     {
+                                                        context.ArrayItemIndex = arrayItemIndex++;
                                                         object newItem = null;
                                                         var r = true;
                                                         if (!item.IsNullOrEmpty())
@@ -258,6 +263,7 @@ namespace Shesha.DynamicEntities.Binder
                                                         }
                                                         else break;
                                                     }
+                                                    context.ArrayItemIndex = null;
                                                     property.SetValue(entity, newArray);
                                                 }
                                                 else
