@@ -1,10 +1,7 @@
 ﻿using Abp.Dependency;
-using Abp.Domain.Uow;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Validations
@@ -21,19 +18,19 @@ namespace Shesha.Validations
             _iocManager = iocManager;
         }
 
-        public async Task<bool> ValidateProperty(object obj, string propertyName, object value, List<ValidationResult> validationResult)
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object value, List<ValidationResult> validationResult)
         {
             validationResult ??= new List<ValidationResult>();
-            return await Validate((v) => v.ValidateProperty(obj, propertyName, value, validationResult));
+            return await ValidateAsync((v) => v.ValidatePropertyAsync(obj, propertyName, value, validationResult));
         }
 
-        public async Task<bool> ValidateObject(object obj, List<ValidationResult> validationResult = null, List<string> propertiesToValidate = null)
+        public async Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult = null, List<string> propertiesToValidate = null)
         {
             validationResult ??= new List<ValidationResult>();
-            return await Validate((v) => v.ValidateObject(obj, validationResult, propertiesToValidate));
+            return await ValidateAsync((v) => v.ValidateObjectAsync(obj, validationResult, propertiesToValidate));
         }
 
-        private async Task<bool> Validate(Func<IPropertyValidator, Task<bool>> action)
+        private async Task<bool> ValidateAsync(Func<IPropertyValidator, Task<bool>> action)
         {
             var result = true;
             foreach (var validator in Validators) 
