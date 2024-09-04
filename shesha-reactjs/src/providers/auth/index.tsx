@@ -217,6 +217,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           clearAccessToken();
 
           dispatch(fetchUserDataActionErrorAction({ message: 'Not authorized' }));
+
+          // eslint-disable-next-line no-console
+          console.log("Debug currentUrl:", currentUrl.current);
+          
           if (currentUrl.current === '/' || currentUrl.current === '')
             redirectToDefaultUrl();
           else
