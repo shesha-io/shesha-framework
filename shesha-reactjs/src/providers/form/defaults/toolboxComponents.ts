@@ -101,6 +101,7 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
+import KanbanComponent from '@/designer-components/kanban';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -151,6 +152,7 @@ export const getToolboxComponents = (
         Progress,
         RefListStatusComponent,
         StatusTag,
+        KanbanComponent
       ],
     },
     {
