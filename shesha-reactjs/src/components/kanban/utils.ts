@@ -6,11 +6,11 @@ export const addPx = (value: any) => {
     return !value ? null : /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 };
 
-export const getColumns = (endpoint: string, entityType: string) => {
+export const getColumns = (endpoint: string, refListName: string) => {
     let queryParams = {
         entityType: 'Shesha.Framework.ReferenceListItem',
         filter: '{"and":[{"==":[{"var":"referenceList.isLast"},true]}]}',
-        quickSearch: entityType
+        quickSearch: refListName
     };
     return {
       path: endpoint,
@@ -28,7 +28,7 @@ export const getMetaData = (endpoint: string, entityType: string) => {
   };
 };
 
-export const useUpdateKanban = () => {
+export const useKanbanActions = () => {
   const { mutate } = useMutate<any>();
 
   const updateKanban = (payload: any, url: string) => {
@@ -48,7 +48,44 @@ export const useUpdateKanban = () => {
         console.error(error);
       });
   };
-  return { updateKanban };
+
+  const createKanbanItem = (payload: any, url: string) => {
+    mutate(
+      {
+        url: url,
+        httpVerb: 'POST',
+      },
+      payload
+    )
+      .then((resp: any) => {
+        if (resp.success) {
+          return resp;
+        }
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+  };
+
+  const deleteKanban = (payload: any, url: string) => {
+    mutate(
+      {
+        url: `${url}?id=${payload}`,
+        httpVerb: 'DELETE',
+      }
+    )
+      .then((resp: any) => {
+        if (resp.success) {
+          return resp;
+        }
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+
+      return Promise;
+  };
+  return { updateKanban, deleteKanban, createKanbanItem };
 };
 
 export const getHeight = (height: string | number, minHeight: string | number, maxHeight: string | number) => {

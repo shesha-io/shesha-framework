@@ -1,12 +1,10 @@
-import { Button, Dropdown, Flex, MenuProps, Popconfirm } from 'antd';
+import { Button, Dropdown, Flex, Form, MenuProps, message, Modal, Popconfirm } from 'antd';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { IKanbanComponentProps } from './model';
-import { getColumns, getHeight, getMetaData, useUpdateKanban } from './utils';
+import { getColumns, getHeight, getMetaData, useKanbanActions } from './utils';
 import { KanbanPlaceholder } from './placeholder';
-import { ConfigurableForm, useFormState, useGet, useModal } from '@/index';
-import { IModalProps } from '@/providers/dynamicModal/models';
-import { nanoid } from '@/utils/uuid';
+import { ConfigurableForm, useFormState, useGet} from '@/index';
 import { MoreOutlined, PlusOutlined } from '@ant-design/icons';
 import { useStyles } from './styles';
 
@@ -29,38 +27,45 @@ const KanbanReactComponent: React.FC<IKanbanComponentProps> = (props) => {
     size,
   } = props;
   const [columns, setColumns] = useState([]);
-  const [updateUrl, setUpdateUrl] = useState();
+  const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState([]);
   const { refetch } = useGet({ path: '', lazy: true });
   const { formMode } = useFormState();
   const isInDesigner = formMode === 'designer';
-  const { updateKanban } = useUpdateKanban();
-  const [modalId] = useState(nanoid());
+  const { updateKanban , deleteKanban, createKanbanItem} = useKanbanActions();
   const { styles } = useStyles();
+  const [trigger, setTrigger] = useState(0);
+  const [form] = Form.useForm();
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedColumn, setSelectedColumn] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
 
   useEffect(() => {
     if (!isInDesigner && entityType && groupingProperty) {
+      var type: any;
       refetch(getMetaData('/api/services/app/Metadata/Get', entityType)).then((resp: any) => {
-        const type = resp.result.properties.find(
+        type = resp.result.properties.find(
           (x: any) => x.path.toLowerCase() === groupingProperty.toLowerCase()
-        )?.dataType;
-
-        if (type === 'reference-list-item') {
-          setUpdateUrl(resp.result.apiEndpoints.update.url);
-          refetch({ path: `${resp.result.apiEndpoints.list.url}` })
+        );
+        if (type?.dataType === 'reference-list-item') {
+          const endpoints = resp.result.apiEndpoints;
+          setUrls({updateUrl:endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url});
+          refetch({ path: `${resp.result.apiEndpoints.list.url}?maxResultCount=1000` })
             .then((resp) => {
-              setTasks(resp.result.items);
+              setTasks(resp.result.items.filter((x: any)=> x[`${groupingProperty}`] !== null));
+              refetch(getColumns('/api/services/app/Entities/GetAll', type?.referenceListName))
+              .then((resp: any) => {
+                setColumns(resp?.result?.items);
+              })
+              .catch((err) => console.error('Error fetching columns:', err));
             })
             .catch((err) => console.error('Error fetching tasks:', err));
         }
       });
-      refetch(getColumns('/api/services/app/Entities/GetAll', entityType))
-        .then((resp: any) => {
-          setColumns(resp?.result?.items);
-        })
-        .catch((err) => console.error('Error fetching columns:', err));
     }
-  }, [groupingProperty]);
+  }, [groupingProperty, trigger]);
+  
   const handleUpdate = async (newTasks: any[], columnValue: any) => {
     setTasks((prevTasks) => {
       const updatedTasks = prevTasks.map((task) => {
@@ -69,7 +74,7 @@ const KanbanReactComponent: React.FC<IKanbanComponentProps> = (props) => {
           // Task has moved to a new column
           const updatedTask = { ...task, [groupingProperty]: columnValue };
           const payload = { id: task.id, [groupingProperty]: columnValue };
-          updateKanban(payload, updateUrl);
+          updateKanban(payload, urls.updateUrl);
 
           return updatedTask;
         }
@@ -116,35 +121,44 @@ const KanbanReactComponent: React.FC<IKanbanComponentProps> = (props) => {
   const newHeaderStyle = { ...hStyle, ...headerStyle, fontSize, backgroundColor, color };
   const newStyle = { ...style, ...columnStyle, ...getHeight(height, minHeight, maxHeight) };
 
-  const modalProps: IModalProps = {
-    id: modalId,
-    isVisible: false,
-    formId: addNewRecordsProps?.modalFormId,
-    title: addNewRecordsProps?.modalTitle,
-    showModalFooter: false, //doing this allows the modal to depend solely on the footerButtons prop
-    width: addNewRecordsProps?.modalWidth,
-    buttons: addNewRecordsProps?.buttons,
-    footerButtons: addNewRecordsProps?.footerButtons,
+
+  const onAddNew = (item: any) => {
+    setSelectedColumn(item);
+   setIsModalVisible(true);
   };
 
-  const dynamicModal = useModal(modalProps);
-
-  const onAddNew = () => {
-    if (addNewRecordsProps.modalFormId) {
-      dynamicModal.open();
-    } else console.warn('Modal Form is not specified');
+  const handleEditClick = (item: string) => {
+    setSelectedItem(item);
+    setIsModalVisible(true);
   };
 
-  const handleEdit = (id: string) => {
-    console.log('Edit task with id:', id);
-    // Add your edit logic here
+  const handleEdit = () => {
+    const updatedItem = form.getFieldsValue();
+    updatedItem.id = selectedItem.id;
+    updateKanban(updatedItem, urls.updateUrl);
+    setIsModalVisible(false);
+    setSelectedItem(null);
   };
 
   const handleDelete = (id: string) => {
-    console.log('Delete task with id:', id);
-    // Add your delete logic here
+    const updatedTasks = tasks.filter((task) => task.id !== id);
+    setTasks(updatedTasks);
+    deleteKanban(id, urls.deleteUrl);
+    setTrigger((prev)=> prev+1);
   };
 
+  const handleCreate = () =>{
+    const newValues = form.getFieldsValue();
+    newValues[groupingProperty] = selectedColumn;
+    createKanbanItem(newValues, urls.postUrl);
+  };
+
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+    setSelectedItem(null);
+};
   return (
     <>
       {isInDesigner ? (
@@ -167,7 +181,7 @@ const KanbanReactComponent: React.FC<IKanbanComponentProps> = (props) => {
                         {c.item} ({taskCount})
                       </h3>
                       {addNewRecordsProps ? (
-                        <Button type="text" onClick={onAddNew} size={size} icon={<PlusOutlined />} />
+                        <Button type="text" onClick={()=>onAddNew(c.itemValue)} size={size} icon={<PlusOutlined />} />
                       ) : null}
                     </Flex>
                     <ReactSortable
@@ -202,7 +216,7 @@ const KanbanReactComponent: React.FC<IKanbanComponentProps> = (props) => {
                             {
                               key: '1',
                               label: 'Edit',
-                              onClick: () => handleEdit(t.id),
+                              onClick: () => handleEditClick(t),
                             },
                              {
                               key: '2',
@@ -219,12 +233,33 @@ const KanbanReactComponent: React.FC<IKanbanComponentProps> = (props) => {
                             },
                           ];
                           return (
-                            <div className={styles.container}>
-                              <ConfigurableForm initialValues={t} formId={modalFormId} mode={'readonly'} />
+                           <>
+                             <div className={styles.container}>
+                              <ConfigurableForm key={t.id} initialValues={{...t}} formId={modalFormId} mode={'readonly'} />
                               <Dropdown trigger={['click']} menu={{ items }} placement="bottomRight">
                                 <Button type="text" className={`${styles.threeDotsStyle} three-dots`} icon={<MoreOutlined />} />
                               </Dropdown>                             
                             </div>
+                            <Modal
+                                title={selectedItem ? 'Edit Item' : 'New Item'}
+                                open={isModalVisible}
+                                onOk={() => {
+                                    form.validateFields()
+                                        .then(() => {
+                                            if (selectedItem) handleEdit();
+                                            else handleCreate();
+                                        }).catch((error) => {
+                                            console.error('error', error);
+                                            message.error(error);
+                                            return;
+                                        });
+                                }}
+                                onCancel={closeModal}
+                                width={1000}
+                            >
+                                <ConfigurableForm initialValues={selectedItem ? selectedItem : {}} form={form} formId={addNewRecordsProps?.modalFormId} mode="edit" />
+                            </Modal>
+                           </>
                           );
                         })
                       )}
