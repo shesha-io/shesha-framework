@@ -74,7 +74,7 @@ namespace Shesha.Authorization
             if (registration != null && !registration.IsComplete)
             {
                 // Return a custom result indicating a client-side redirect
-                var redirectUrl = $"/no-auth/{registration.AdditionalRegistrationInfoFormModule}/{checkRegistration.AdditionalRegistrationInfoFormName}";
+                var redirectUrl = $"{registration.AdditionalRegistrationInfoForm.Module}/{registration.AdditionalRegistrationInfoForm.Name}";
                 return Ok(new { Redirect = true, Url = redirectUrl });
             }
 

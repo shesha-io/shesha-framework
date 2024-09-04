@@ -347,33 +347,41 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         } else reject({ message: GENERIC_ERR_MSG });
       });
 
-  const checkRegistrationCompletion = (response: AuthenticateResultModelAjaxResponse) => {
-    if (response?.result?.redirect) {
-      // Perform client-side redirect to the provided URL
-      redirect(response.result.url); 
-    }
-    return response;
-  };
-
-  const loginUserAsync = (loginFormData: ILoginForm) =>
-    new Promise((resolve, reject) => {
-      dispatch((dispatchThunk, getState) => {
-        dispatchThunk(loginUserAction()); // We just want to let the user know we're logging in
-
-        loginUserHttp(loginEndpoint, loginFormData)
-          .then((response) => checkRegistrationCompletion(response))
-          .then(loginSuccessHandler(dispatchThunk, getState))
-          .then((response: any) => {
-            dispatch(fetchUserDataActionSuccessAction(response?.payload?.result?.user));
-            dispatch(setIsLoggedInAction(true));
-            resolve(response);
-          })
-          .catch((err) => {
-            dispatchThunk(loginUserErrorAction(err?.data));
-            reject(err);
+      const checkRegistrationCompletion = (response: AuthenticateResultModelAjaxResponse): Promise<AuthenticateResultModelAjaxResponse> => {
+        return new Promise((resolve, reject) => {
+          if (response?.result?.redirect) {
+            // Perform client-side redirect to the provided URL
+            redirect(`/no-auth/${response.result.url}`);
+            // Reject the promise to prevent further handling in the chain
+            reject(new Error('Redirecting to another page.'));
+          } else {
+            resolve(response); // Continue the chain if no redirect is needed
+          }
+        });
+      };
+      
+      const loginUserAsync = (loginFormData: ILoginForm) =>
+        new Promise((resolve, reject) => {
+          dispatch((dispatchThunk, getState) => {
+            dispatchThunk(loginUserAction()); // We just want to let the user know we're logging in
+      
+            loginUserHttp(loginEndpoint, loginFormData)
+              .then((response) => checkRegistrationCompletion(response))
+              .then(loginSuccessHandler(dispatchThunk, getState))
+              .then((response: any) => {
+                dispatch(fetchUserDataActionSuccessAction(response?.payload?.result?.user));
+                dispatch(setIsLoggedInAction(true));
+                resolve(response);
+              })
+              .catch((err) => {
+                if (err.message !== 'Redirecting to another page.') {
+                  dispatchThunk(loginUserErrorAction(err?.data));
+                }
+                reject(err); // Ensure rejection is propagated
+              });
           });
-      });
-    });
+        });
+      
 
   const loginUser = (loginFormData: ILoginForm) => {
     dispatch(fetchUserDataAction());

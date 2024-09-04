@@ -28,12 +28,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Module name
         /// </summary>
-        public virtual string AdditionalRegistrationInfoFormModule { get; set; }
-
-        /// <summary>
-        /// Form name
-        /// </summary>
-        public virtual string AdditionalRegistrationInfoFormName { get; set; }
+        public virtual FormIdentifier AdditionalRegistrationInfoForm { get; set; }
 
         /// <summary>
         /// 

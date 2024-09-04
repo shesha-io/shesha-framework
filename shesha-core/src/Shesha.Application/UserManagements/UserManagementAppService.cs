@@ -134,8 +134,8 @@ namespace Shesha.UserManagements
                 UserId = user.Id,
                 UserNameOrEmailAddress = user.UserName,
                 GoToUrlAfterRegistration = registrationSettings.GoToUrlAfterRegistration,
-                AdditionalRegistrationInfoFormModule = registrationSettings.AdditionalRegistrationInfoFormModule,
-                AdditionalRegistrationInfoFormName = registrationSettings.AdditionalRegistrationInfoFormName,
+                AdditionalRegistrationInfoForm = !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormModule) && !string.IsNullOrWhiteSpace(registrationSettings.AdditionalRegistrationInfoFormName)
+                ? new FormIdentifier(registrationSettings.AdditionalRegistrationInfoFormModule,registrationSettings.AdditionalRegistrationInfoFormName) : null,
                 IsComplete = registrationSettings.AdditionalRegistrationInfo ? false : true
             };
           
