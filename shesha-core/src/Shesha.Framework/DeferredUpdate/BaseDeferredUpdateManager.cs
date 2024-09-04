@@ -5,27 +5,27 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace Shesha.DelayedUpdate
+namespace Shesha.DeferredUpdate
 {
-    public abstract class BaseDelayedUpdateManager<TDelayedUpdateData> : IDelayedUpdateManager
+    public abstract class BaseDeferredUpdateManager<TDeferredUpdateData> : IDeferredUpdateManager
     {
 
-        public TDelayedUpdateData GetData(object data)
+        public TDeferredUpdateData GetData(object data)
         {
             if (data is JObject jData)
-                return jData.ToObject<TDelayedUpdateData>();
-            if (data is TDelayedUpdateData typedItem)
+                return jData.ToObject<TDeferredUpdateData>();
+            if (data is TDeferredUpdateData typedItem)
                 return typedItem;
             return default;
         }
 
-        public virtual async Task ExecuteUpdateAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, List<DelayedUpdateItem> items, List<ValidationResult> validationResult)
+        public virtual async Task ExecuteUpdateAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, List<DeferredUpdateItem> items, List<ValidationResult> validationResult)
         {
             try
             {
                 foreach (var item in items)
                 {
-                    TDelayedUpdateData data = GetData(item.Data);
+                    TDeferredUpdateData data = GetData(item.Data);
                     await UpdateItemAsync(entity, item.Id, data, validationResult);
                 }
             }
@@ -35,7 +35,7 @@ namespace Shesha.DelayedUpdate
             }
         }
 
-        public abstract Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, TDelayedUpdateData data, List<ValidationResult> validationResult);
+        public abstract Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, TDeferredUpdateData data, List<ValidationResult> validationResult);
 
         public abstract bool IsApplicable(string type);
     }
