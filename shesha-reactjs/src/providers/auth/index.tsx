@@ -1,6 +1,6 @@
 import { useMutate } from '@/hooks';
 import useThunkReducer, { ThunkDispatch } from '@/hooks/thunkReducer';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { GetCurrentLoginInfoOutputAjaxResponse, sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
@@ -49,6 +49,7 @@ import { authReducer } from './reducer';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import { Action } from 'redux-actions';
 import SheshaLoader from '@/components/sheshaLoader';
+import { useSettingValue } from '..';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -105,6 +106,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const { router } = useShaRouting();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
+  const { value: defaultUrl, loadingState} = useSettingValue({module: 'Shesha', name:'Shesha.DefaultUrl'});
+
   const storedToken = getAccessTokenFromStorage(tokenName);
 
   const headersWithoutAuth = { ...(httpHeaders ?? {}) };
@@ -117,6 +120,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     token: storedToken?.accessToken,
     headers: initialHeaders,
   });
+
+  const currentUrl = useRef<string>();
 
   const setters = getFlagSetters(dispatch);
 
@@ -175,6 +180,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const redirectToUnauthorized = () => {
     redirect(loginUrl);
   };
+  const redirectToDefaultUrl = () => {
+    redirect(defaultUrl || loginUrl);
+  };
 
   const fetchUserInfo = (headers: IHttpHeaders) => {
     if (state.isFetchingUserInfo || Boolean(state.loginInfo)) return;
@@ -209,7 +217,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           clearAccessToken();
 
           dispatch(fetchUserDataActionErrorAction({ message: 'Not authorized' }));
-          redirectToUnauthorized();
+          if (currentUrl.current === '/' || currentUrl.current === '')
+            redirectToDefaultUrl();
+          else
+            redirectToUnauthorized();
         }
       })
       .catch((e) => {
@@ -286,12 +297,15 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   };
 
   useEffect(() => {
+    if (loadingState === 'loading' || loadingState === 'waiting') 
+      return;
+
     const httpHeaders = getCleanedInitHeaders(getHttpHeaders());
 
-    const currentUrl = router.fullPath;
+    currentUrl.current = router.fullPath;
 
     if (!httpHeaders) {
-      if (currentUrl !== unauthorizedRedirectUrl) {
+      if (currentUrl.current !== unauthorizedRedirectUrl) {
         redirectToUnauthorized();
       }
     } else {
@@ -300,7 +314,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         fetchUserInfo(httpHeaders);
       }
     }
-  }, []);
+  }, [loadingState]);
 
   //#region  Login
   const { mutate: loginUserHttp } = useMutate<AuthenticateModel, AuthenticateResultModelAjaxResponse>();

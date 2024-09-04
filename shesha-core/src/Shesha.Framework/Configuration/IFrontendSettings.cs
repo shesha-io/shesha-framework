@@ -24,5 +24,12 @@ namespace Shesha.Configuration
         [Display(Name = "Main menu settings", Description = "", GroupName = "Frontend")]
         [Setting(SheshaSettingNames.MainMenuSettings, isClientSpecific: true, editorFormName: "main-menu-settings")]
         ISettingAccessor<MainMenuSettings> MainMenu { get; }
+
+        /// <summary>
+        /// Default URL  
+        /// </summary>
+        [Display(Name = "Default URL", Description = "This is the url the user should be redirected to if the user is not authenticated and does not specify a specific page", GroupName = "Frontend")]
+        [Setting(SheshaSettingNames.DefaultUrl, isClientSpecific: true)]
+        ISettingAccessor<string> DefaultUrl { get; }
     }
 }

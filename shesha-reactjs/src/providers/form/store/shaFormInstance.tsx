@@ -144,6 +144,10 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.events = {};
         this.formData = {};
     }
+    
+    getDelayedUpdates = () => {
+      return this.dataSubmitContext?.getDelayedUpdates() || [];
+    };
 
     setDataSubmitContext = (context: IDataSubmitContext) => {
         this.dataSubmitContext = context;
