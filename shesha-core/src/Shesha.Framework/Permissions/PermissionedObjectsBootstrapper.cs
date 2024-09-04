@@ -21,32 +21,33 @@ namespace Shesha.Permission
         private readonly IObjectMapper _objectMapper;
         private readonly IVersionedFieldManager _versionedFieldManager;
         private readonly IRepository<Module, Guid> _moduleReporsitory;
+        private readonly IIocResolver _iocResolver;
 
         public PermissionedObjectsBootstrapper(
             IRepository<PermissionedObject, Guid> permissionedObjectRepository,
             IObjectMapper objectMapper,
             IVersionedFieldManager versionedFieldManager,
-            IRepository<Module, Guid> moduleReporsitory
+            IRepository<Module, Guid> moduleReporsitory,
+            IIocResolver iocResolver
         )
         {
             _permissionedObjectRepository = permissionedObjectRepository;
             _objectMapper = objectMapper;
             _versionedFieldManager = versionedFieldManager;
             _moduleReporsitory = moduleReporsitory;
+            _iocResolver = iocResolver;
         }
 
         public async Task ProcessAsync()
         {
-            // ToDo: use UOW!!!!!!!!!
-
-            var providers = IocManager.Instance.ResolveAll<IPermissionedObjectProvider>();
+            var providers = _iocResolver.ResolveAll<IPermissionedObjectProvider>();
             foreach (var permissionedObjectProvider in providers)
             {
                 var objectTypes = permissionedObjectProvider.GetObjectTypes();
 
                 foreach (var objectType in objectTypes)
                 {
-                    var items = permissionedObjectProvider.GetAll(objectType);
+                    var items = await permissionedObjectProvider.GetAllAsync(objectType);
 
                     var dbItems = await _permissionedObjectRepository.GetAll()
                         .Where(x => x.Type == objectType || x.Type.Contains($"{objectType}.")).ToListAsync();
