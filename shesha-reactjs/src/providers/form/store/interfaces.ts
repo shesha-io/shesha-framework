@@ -3,7 +3,7 @@ import { IErrorInfo } from "@/interfaces/errorInfo";
 import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { FormInfo } from "../api";
 import { FormInstance } from "antd";
-import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
+import { IDeferredUpdateGroup } from "@/providers/deferredUpdateProvider/models";
 import { FormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
@@ -56,7 +56,7 @@ export type OnValuesChangeHandler<Values = any> = (changedValues: any, values: V
 export type OnMarkupLoadedHandler<Values = any> = (shaForm: IShaFormInstance<Values>) => Promise<void>;
 
 export interface IDataSubmitContext {
-    getDelayedUpdates: () => IDelayedUpdateGroup[];
+    getDeferredUpdates: () => IDeferredUpdateGroup[];
 }
 
 export interface IShaFormInstance<Values = any> {
@@ -76,7 +76,7 @@ export interface IShaFormInstance<Values = any> {
     submitData: (payload?: SubmitDataPayload) => Promise<Values>;
     fetchData: () => Promise<Values>;
 
-    getDelayedUpdates: () => IDelayedUpdateGroup[];
+    getDeferredUpdates: () => IDeferredUpdateGroup[];
 
     readonly markupLoadingState: ProcessingState;
     readonly dataLoadingState: ProcessingState;

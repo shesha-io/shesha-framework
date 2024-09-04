@@ -63,6 +63,9 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
 
                 return undefined;
             },
+            has(target, prop) {
+              return target._propAccessors.has(prop.toString());
+            },
             ownKeys(target) {
                 return Array.from(target._propAccessors.keys());
             },

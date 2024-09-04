@@ -40,7 +40,7 @@ export class GqlSubmitter implements IFormDataSubmitter {
     };
 
     prepareDataForSubmit = async (payload: FormDataSubmitPayload): Promise<any> => {
-        const { formSettings, data, antdForm, getDelayedUpdates } = payload;
+        const { formSettings, data, antdForm, getDeferredUpdates } = payload;
         const settings = this.#getGqlSettings(formSettings);
 
         const postData = { ...data };
@@ -55,8 +55,8 @@ export class GqlSubmitter implements IFormDataSubmitter {
             : addFormFieldsList({}, postDataAfterPreparation, antdForm);
 
         // handle delayed updates
-        if (Boolean(getDelayedUpdates))
-            postDataWithServiceFields._delayedUpdate = getDelayedUpdates();
+        if (Boolean(getDeferredUpdates))
+            postDataWithServiceFields._deferredUpdate = getDeferredUpdates();
 
         const postDataWithoutGhosts = removeGhostKeys(postDataWithServiceFields);
 
