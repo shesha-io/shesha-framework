@@ -28,7 +28,7 @@ namespace Shesha.Controllers
         public IIocManager IocManager { get; set; }
 
         [HttpPost]
-        public async Task<string> BootstrapReferenceLists()
+        public async Task<string> BootstrapReferenceListsAsync()
         {
             var bootstrapper = StaticContext.IocManager.Resolve<ReferenceListBootstrapper>();
             await bootstrapper.ProcessAsync();
@@ -36,7 +36,7 @@ namespace Shesha.Controllers
         }
 
         [HttpPost]
-        public async Task<string> BootstrapSettings()
+        public async Task<string> BootstrapSettingsAsync()
         {
             var bootstrapper = StaticContext.IocManager.Resolve<SettingsBootstrapper>();
             await bootstrapper.ProcessAsync();

@@ -37,7 +37,7 @@ namespace Shesha.ConfigurationItems
         [UnitOfWork(IsDisabled = true)]
         public async Task ProcessAsync()
         {
-            await DoProcess();
+            await DoProcessAsync();
         }
 
         private async Task<List<ModuleItem>> GetCodeModulesAsync() 
@@ -97,7 +97,7 @@ namespace Shesha.ConfigurationItems
             return result;
         }
 
-        private async Task DoProcess()
+        private async Task DoProcessAsync()
         {
             var codeModules = await GetCodeModulesAsync();
             var allSubModules = _typeFinder.Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))

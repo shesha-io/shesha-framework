@@ -398,9 +398,9 @@ namespace Shesha.Permissions
                     Object = permissionedObject.Object,
                     Type = permissionedObject.Type,
                     Module = permissionedObject.Module != null
-                    ? _moduleReporsitory.FirstOrDefault(x => x.Id == permissionedObject.ModuleId)
+                    ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == permissionedObject.ModuleId)
                     : !permissionedObject.Module.IsNullOrEmpty()
-                        ? _moduleReporsitory.FirstOrDefault(x => x.Name == permissionedObject.Module)
+                        ? await _moduleReporsitory.FirstOrDefaultAsync(x => x.Name == permissionedObject.Module)
                         : null,
                     Parent = permissionedObject.Parent,
                     Name = permissionedObject.Name ?? permissionedObject.Object,
@@ -447,7 +447,7 @@ namespace Shesha.Permissions
             return null;
         }
 
-        public async Task<bool> IsActionDescriptorEnabled(ActionDescriptor actionDescriptor)
+        public async Task<bool> IsActionDescriptorEnabledAsync(ActionDescriptor actionDescriptor)
         {
             if (actionDescriptor is ControllerActionDescriptor descriptor)
             {
@@ -496,7 +496,7 @@ namespace Shesha.Permissions
         /// Gets all permissioned shesha forms with anonymous access
         /// </summary>
         /// <returns></returns>
-        public async Task<List<PermissionedObjectDto>> GetObjectsByAccess(string type, RefListPermissionedAccess access)
+        public async Task<List<PermissionedObjectDto>> GetObjectsByAccessAsync(string type, RefListPermissionedAccess access)
         {
             var forms = (await _permissionedObjectRepository.GetAll()
                 .ToListAsync())

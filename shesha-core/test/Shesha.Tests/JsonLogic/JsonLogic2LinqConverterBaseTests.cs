@@ -30,7 +30,7 @@ namespace Shesha.Tests.JsonLogic
             return expression;
         }
 
-        protected async Task<List<T>> TryFetchData<T, TId>(string jsonLogicExpression, Func<IQueryable<T>, IQueryable<T>> prepareQueryable = null, Action<List<T>> assertions = null) where T : class, IEntity<TId>
+        protected async Task<List<T>> TryFetchDataAsync<T, TId>(string jsonLogicExpression, Func<IQueryable<T>, IQueryable<T>> prepareQueryable = null, Action<List<T>> assertions = null) where T : class, IEntity<TId>
         {
             var expression = ConvertToExpression<T>(jsonLogicExpression);
 

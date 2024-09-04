@@ -1,26 +1,16 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Abp.Reflection;
-using Shesha.Bootstrappers;
-using Shesha.Configuration.Runtime;
-using Shesha.Domain;
-using Shesha.Metadata;
-using Shesha.Metadata.Dtos;
-using Shesha.Reflection;
-using Shesha.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Abp.Domain.Uow;
 using Abp.ObjectMapping;
+using Shesha.Bootstrappers;
+using Shesha.ConfigurationItems;
+using Shesha.Domain;
+using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
-using Shesha.ConfigurationItems;
-using Shesha.Domain.ConfigurationItems;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Permission
 {
@@ -68,7 +58,7 @@ namespace Shesha.Permission
                     foreach (var item in toAdd)
                     {
                         var dbItem = _objectMapper.Map<PermissionedObject>(item);
-                        dbItem.Module = _moduleReporsitory.FirstOrDefault(x => x.Id == item.ModuleId);
+                        dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         var obj = await _permissionedObjectRepository.InsertAsync(dbItem);
                         foreach (var parameter in item.AdditionalParameters)
                         {
@@ -83,7 +73,7 @@ namespace Shesha.Permission
                     {
                         var item = items.FirstOrDefault(x => x.Object == dbItem.Object);
                         if (item == null) continue;
-                        dbItem.Module = _moduleReporsitory.FirstOrDefault(x => x.Id == item.ModuleId);
+                        dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent;
                         dbItem.Name = item.Name;
                         await _permissionedObjectRepository.UpdateAsync(dbItem);

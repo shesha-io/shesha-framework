@@ -47,14 +47,14 @@ namespace Shesha.Metadata
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            AsyncHelper.RunSync(() => { return ClearCache(); });
+            AsyncHelper.RunSync(() => { return ClearCacheAsync(); });
         }
 
         public void HandleEvent(EntityChangingEventData<ConfigurationItem> eventData)
         {
             if (_entityConfigRepository.GetAll().Any(x => x.Id == eventData.Entity.Id))
             {
-                AsyncHelper.RunSync(() => { return ClearCache(); });
+                AsyncHelper.RunSync(() => { return ClearCacheAsync(); });
             };
         }
 

@@ -35,10 +35,9 @@ namespace Shesha.Tests
         typeof(AbpAspNetCoreModule),
 
         typeof(SheshaFormsDesignerModule),
-
         typeof(SheshaApplicationModule),
-        typeof(SheshaNHibernateModule),
-        typeof(SheshaFrameworkModule)        
+        typeof(SheshaFrameworkModule),
+        typeof(SheshaNHibernateModule)        
         )]
     public class SheshaTestModule : AbpModule
     {

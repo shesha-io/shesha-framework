@@ -140,7 +140,7 @@ namespace Shesha.Services.Settings
         public async Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             return await WithUnitOfWorkAsync(async () => {
-                var settingConfiguration = await GetSettingConfiguration(setting);
+                var settingConfiguration = await GetSettingConfigurationAsync(setting);
                 var query = _settingValueRepository.GetAll()
                     .Where(v => v.SettingConfiguration == settingConfiguration);
 
@@ -159,7 +159,7 @@ namespace Shesha.Services.Settings
             });
         }
 
-        private async Task<SettingConfiguration> GetSettingConfiguration(SettingDefinition setting) 
+        private async Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting) 
         {
             return await GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
         }
