@@ -48,10 +48,6 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
                 label: 'iPhone 14 Pro Max',
               },
               {
-                value: '412',
-                label: 'Pixel 7',
-              },
-              {
                 value: '360',
                 label: 'Samsung Galaxy S8+',
               },
@@ -86,14 +82,6 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
               {
                 value: '853',
                 label: 'Asus Zenbook Fold',
-              },
-              {
-                value: '412',
-                label: 'Samsung Galaxy A51/71',
-              },
-              {
-                value: '1024',
-                label: 'Nest Hub',
               },
               {
                 value: '1280',
