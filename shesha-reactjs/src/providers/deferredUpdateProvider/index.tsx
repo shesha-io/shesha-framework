@@ -1,15 +1,15 @@
 import React, { FC, PropsWithChildren, useContext, useState, useCallback } from 'react';
 import {
-  DelayedUpdateProviderActionsContext,
-  DelayedUpdateProviderStateContext,
+  DeferredUpdateProviderActionsContext,
+  DeferredUpdateProviderStateContext,
   DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE,
-  IDelayedUpdateStateContext,
+  IDeferredUpdateStateContext,
 } from './context';
 
-interface IDelayedUpdateProps {}
+interface IDeferredUpdateProps {}
 
-const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ children }) => {
-  const [state, setState] = useState<IDelayedUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
+const DeferredUpdateProvider: FC<PropsWithChildren<IDeferredUpdateProps>> = ({ children }) => {
+  const [state, setState] = useState<IDeferredUpdateStateContext>(DELAYED_UPDATE_PROVIDER_CONTEXT_INITIAL_STATE);
 
   const addItem = useCallback((groupName: string, id: any, data?: any) => {
     const group = state.groups?.find((x) => x.name === groupName);
@@ -70,8 +70,8 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
   }, [state]);
 
   return (
-    <DelayedUpdateProviderStateContext.Provider value={state}>
-      <DelayedUpdateProviderActionsContext.Provider
+    <DeferredUpdateProviderStateContext.Provider value={state}>
+      <DeferredUpdateProviderActionsContext.Provider
         value={{
           addItem,
           removeItem,
@@ -79,17 +79,17 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
         }}
       >
         {children}
-      </DelayedUpdateProviderActionsContext.Provider>
-    </DelayedUpdateProviderStateContext.Provider>
+      </DeferredUpdateProviderActionsContext.Provider>
+    </DeferredUpdateProviderStateContext.Provider>
   );
 };
 
-const useDelayedUpdate = (require: boolean = true) => {
-  const actionsContext = useContext(DelayedUpdateProviderActionsContext);
-  const stateContext = useContext(DelayedUpdateProviderStateContext);
+const useDeferredUpdate = (require: boolean = true) => {
+  const actionsContext = useContext(DeferredUpdateProviderActionsContext);
+  const stateContext = useContext(DeferredUpdateProviderStateContext);
 
   if ((actionsContext === undefined || actionsContext === undefined) && require) {
-    throw new Error('useDelayedUpdate must be used within a DelayedUpdateProvider');
+    throw new Error('useDeferredUpdate must be used within a DeferredUpdateProvider');
   }
   // useContext() returns initial state when provider is missing
   // initial context state is useless especially when require == true
@@ -99,4 +99,4 @@ const useDelayedUpdate = (require: boolean = true) => {
     : undefined;
 };
 
-export { DelayedUpdateProvider, useDelayedUpdate };
+export { DeferredUpdateProvider, useDeferredUpdate };

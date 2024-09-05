@@ -9,9 +9,9 @@ import React, {
   useReducer
   } from 'react';
 import { getFlagSetters } from '../utils/flagsSetters';
-import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
+import { STORED_FILES_DELAYED_UPDATE } from '@/providers/deferredUpdateProvider/models';
 import { storedFilesReducer as storedFileReducer } from './reducer';
-import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { useDeferredUpdate } from '@/providers/deferredUpdateProvider';
 import { useMutate } from '@/hooks';
 import { useSheshaApplication } from '@/providers';
 import {
@@ -110,7 +110,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     data: fetchingFileInfoResponse,
   } = newFileId ? fileFetcher : propertyFetcher;
 
-  const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
+  const { addItem: addDeferredUpdate, removeItem: removeDeferredUpdate } = useDeferredUpdate(false) ?? {};
 
   const doFetchFileInfo = () => {
     if (
@@ -247,7 +247,7 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
     if (
       !Boolean(fileId) &&
       !(Boolean(ownerId) && Boolean(propertyName)) &&
-      typeof addDelayedUpdate !== 'function'
+      typeof addDeferredUpdate !== 'function'
     ) {
       console.error('File component is not configured');
       dispatch(
@@ -270,8 +270,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
         dispatch(uploadFileSuccessAction({ ...responseFile }));
         if (typeof onChange === 'function') onChange(responseFile?.id);
         if (callback) callback(responseFile);
-        if (responseFile.temporary && typeof addDelayedUpdate === 'function')
-          addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, { propertyName });
+        if (responseFile.temporary && typeof addDeferredUpdate === 'function')
+          addDeferredUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, { propertyName });
       })
       .catch((e) => {
         message.error(`File upload failed. Probably file size is too big`);
@@ -318,8 +318,8 @@ const StoredFileProvider: FC<PropsWithChildren<IStoredFileProviderProps>> = (pro
       .then(() => {
         deleteFileSuccess();
         if (typeof onChange === 'function') onChange(null);
-        if (typeof removeDelayedUpdate === 'function')
-          removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, deleteFileInput.fileId);
+        if (typeof removeDeferredUpdate === 'function')
+          removeDeferredUpdate(STORED_FILES_DELAYED_UPDATE, deleteFileInput.fileId);
       })
       .catch(() => deleteFileError());
   };

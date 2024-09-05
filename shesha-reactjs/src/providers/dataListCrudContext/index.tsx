@@ -24,7 +24,7 @@ import {
 import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from '../crudContext/contexts';
 import { CrudMode } from '../crudContext/models';
 import reducer from '../crudContext/reducer';
-import { useDelayedUpdate } from '../delayedUpdateProvider/index';
+import { useDeferredUpdate } from '../deferredUpdateProvider/index';
 import ParentProvider from '../parentProvider/index';
 import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
@@ -83,7 +83,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   const { form, setFormData, setFormMode } = useForm();
 
-  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
+  const { getPayload: getDeferredUpdate } = useDeferredUpdate(false) ?? {};
   const toolboxComponents = useFormDesignerComponents();
 
   const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean) => {
@@ -182,8 +182,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           )
         );
         // send data of stored files
-        const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
-        if (Boolean(delayedUpdate)) postData['_delayedUpdate'] = delayedUpdate;
+        const deferredUpdate = typeof getDeferredUpdate === 'function' ? getDeferredUpdate() : null;
+        if (Boolean(deferredUpdate)) postData['_deferredUpdate'] = deferredUpdate;
 
         const finalDataPromise = onSave ? Promise.resolve(onSave(postData)) : Promise.resolve(postData);
 

@@ -1,11 +1,11 @@
 export const STORED_FILES_DELAYED_UPDATE: string = 'storedFiles';
 
-export interface IDelayedUpdateItem {
+export interface IDeferredUpdateItem {
   id: any;
   data?: any;
 }
 
-export interface IDelayedUpdateGroup {
+export interface IDeferredUpdateGroup {
   name: string;
-  items: IDelayedUpdateItem[];
+  items: IDeferredUpdateItem[];
 }

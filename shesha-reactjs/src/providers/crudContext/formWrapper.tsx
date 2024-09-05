@@ -2,23 +2,23 @@ import { Form, FormInstance, FormProps } from 'antd';
 import React, { FC, MutableRefObject, PropsWithChildren } from 'react';
 import { useForm } from '@/providers';
 import { IFormSettings } from '@/providers/form/models';
-import { useDelayedUpdate } from '../delayedUpdateProvider/index';
-import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
+import { useDeferredUpdate } from '../deferredUpdateProvider/index';
+import { IDeferredUpdateGroup } from '../deferredUpdateProvider/models';
 
 interface FormWrapperProps {
     initialValues: object;
     onValuesChange: FormProps['onValuesChange'];
     form: FormInstance;
     formSettings?: IFormSettings;
-    delayedUpdate?: MutableRefObject<IDelayedUpdateGroup[]>;
+    deferredUpdate?: MutableRefObject<IDeferredUpdateGroup[]>;
 }
 
-export const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, formSettings, delayedUpdate, children }) => {
+export const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, formSettings, deferredUpdate, children }) => {
     const { setFormData } = useForm();
-    const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
+    const { getPayload: getDeferredUpdate } = useDeferredUpdate(false) ?? {};
 
-    if (delayedUpdate)
-        delayedUpdate.current = getDelayedUpdate();
+    if (deferredUpdate)
+        deferredUpdate.current = getDeferredUpdate();
 
     const onValuesChangeInternal = (changedValues: any, values: any) => {
         // recalculate components visibility
