@@ -122,8 +122,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   });
 
   const currentUrl = useRef<string>(router.fullPath);
-  // eslint-disable-next-line no-console
-  console.log("Debug currentUrl:", currentUrl.current);
   
   const setters = getFlagSetters(dispatch);
 
@@ -307,8 +305,10 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     if (!httpHeaders) {
       if (currentUrl.current !== unauthorizedRedirectUrl) {
-        redirectToUnauthorized();
-      }
+        if (currentUrl.current === '/' || currentUrl.current === '')
+          redirectToDefaultUrl();
+        else
+          redirectToUnauthorized();      }
     } else {
       fireHttpHeadersChanged(state);
       if (!state.isCheckingAuth && !state.isFetchingUserInfo) {
