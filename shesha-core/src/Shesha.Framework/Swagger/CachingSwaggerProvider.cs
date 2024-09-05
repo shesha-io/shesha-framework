@@ -63,7 +63,9 @@ namespace Shesha.Swagger
         public void HandleEvent(EntityChangedEventData<PermissionedObject> eventData)
         {
             if (eventData.Entity.Type == ShaPermissionedObjectsTypes.EntityAction
-                || eventData.Entity.Type == ShaPermissionedObjectsTypes.Entity)
+                || eventData.Entity.Type == ShaPermissionedObjectsTypes.Entity
+                || eventData.Entity.Type == ShaPermissionedObjectsTypes.WebApiAction
+                || eventData.Entity.Type == ShaPermissionedObjectsTypes.WebApi)
                 ClearCache();
         }
     }
