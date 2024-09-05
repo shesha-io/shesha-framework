@@ -110,7 +110,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
                 await _formConfigRepo.UpdateAsync(newFormVersion);
 
-                await SetPermissions(item, newFormVersion);
+                await SetPermissionsAsync(item, newFormVersion);
 
                 return newFormVersion;
             } else 
@@ -130,13 +130,13 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
 
                 await _formConfigRepo.InsertAsync(newForm);
 
-                await SetPermissions(item, newForm);
+                await SetPermissionsAsync(item, newForm);
 
                 return newForm;
             }
         }
 
-        private async Task SetPermissions(DistributedFormConfiguration item, FormConfiguration form)
+        private async Task SetPermissionsAsync(DistributedFormConfiguration item, FormConfiguration form)
         {
             // add only if permissions is available and access is not Inherited
             if (item.Access != null && item.Access > Shesha.Domain.Enums.RefListPermissionedAccess.Inherited)

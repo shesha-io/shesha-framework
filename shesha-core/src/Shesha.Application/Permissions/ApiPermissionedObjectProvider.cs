@@ -5,11 +5,13 @@ using Abp.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Shesha.ConfigurationItems;
+using Shesha.Extensions;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Module = Shesha.Domain.ConfigurationItems.Module;
 
 namespace Shesha.Permissions
@@ -72,11 +74,11 @@ namespace Shesha.Permissions
         }
 
 
-        public List<PermissionedObjectDto> GetAll(string objectType = null)
+        public async Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null)
         {
             if (objectType != null && !GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
 
-            var api = _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectMany(g => g.Items.Select(async a =>
+            var api = (await _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectManyAsync(async g => await g.Items.SelectAsync(async a =>
             {
                 var descriptor = a.ActionDescriptor.AsControllerActionDescriptor();
                 var module = GetModuleOfType(descriptor.ControllerTypeInfo.AsType());
@@ -89,7 +91,7 @@ namespace Shesha.Permissions
                     Endpoint = a.RelativePath,
                     Action = descriptor.MethodInfo
                 };
-            }).Select(t => t.Result)).ToList();
+            }))).ToList();
 
             var allApiPermissions = new List<PermissionedObjectDto>();
 

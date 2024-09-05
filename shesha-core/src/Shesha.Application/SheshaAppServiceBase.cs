@@ -239,7 +239,7 @@ namespace Shesha
             await FluentValidationsOnEntityAsync(entity, validationResults);
             var result = !validationResults.Any();
             if (ValidatorManager != null)
-                result = result && await ValidatorManager.ValidateObject(entity, validationResults);
+                result = result && await ValidatorManager.ValidateObjectAsync(entity, validationResults);
             return result && Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
         }
 

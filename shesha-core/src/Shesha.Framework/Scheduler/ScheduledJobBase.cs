@@ -44,10 +44,10 @@ namespace Shesha.Scheduler
                     e.Status = ExecutionStatus.Completed;
 
                 if (_logMode == LogMode.StoredFile)
-                    e.LogFile = AsyncHelper.RunSync(() => { return CreateStoredFileLog(LogFilePath, LogFileName, LogFolderName); });
+                    e.LogFile = AsyncHelper.RunSync(() => { return CreateStoredFileLogAsync(LogFilePath, LogFileName, LogFolderName); });
 
                 if (JobStatistics != null)
-                    e.JobStatistics = JobStatistics;//JsonConvert.SerializeObject(JobStatistics, Formatting.Indented);
+                    e.JobStatistics = JobStatistics;
             });
         }
     }
@@ -217,7 +217,7 @@ namespace Shesha.Scheduler
                         }
                     }
 
-                    await OnSuccess();
+                    await OnSuccessAsync();
                 }
                 catch (Exception e)
                 {
@@ -228,7 +228,7 @@ namespace Shesha.Scheduler
                     else
                     {
                         Log.Error($"Error occured during {Name} run: {e.Message}", e);
-                        await OnFail(e);
+                        await OnFailAsync(e);
                     }
                 }
             }, CancellationToken);
@@ -257,7 +257,7 @@ namespace Shesha.Scheduler
         */
 
 
-        public virtual async Task OnSuccess()
+        public virtual async Task OnSuccessAsync()
         {
             try
             {
@@ -278,7 +278,7 @@ namespace Shesha.Scheduler
             }
         }
 
-        public virtual async Task OnFail(Exception ex)
+        public virtual async Task OnFailAsync(Exception ex)
         {
             try
             {
@@ -298,12 +298,6 @@ namespace Shesha.Scheduler
                 Logger.Error(e.Message, e);
             }
         }
-
-        /*public virtual void OnLog(object sender, ScheduledJobOnLogEventArgs e)
-        {
-
-        }*/
-
 
         protected ScheduledJobExecution GetExecutionRecord()
         {
@@ -336,7 +330,7 @@ namespace Shesha.Scheduler
                     e.Status = ExecutionStatus.Completed;
 
                 if (_logMode == LogMode.StoredFile)
-                    e.LogFile = AsyncHelper.RunSync(() => { return CreateStoredFileLog(LogFilePath, LogFileName, LogFolderName); });
+                    e.LogFile = AsyncHelper.RunSync(() => { return CreateStoredFileLogAsync(LogFilePath, LogFileName, LogFolderName); });
             });
         }
 
@@ -459,7 +453,7 @@ namespace Shesha.Scheduler
             throw new Exception($"Method '{nameof(DoExecuteAsync)}' must be overridden in the scheduled job");
         }
 
-        protected async Task<StoredFile> CreateStoredFileLog(string logPath, string filename, string folder = "")
+        protected async Task<StoredFile> CreateStoredFileLogAsync(string logPath, string filename, string folder = "")
         {
             using var stream = File.OpenRead(logPath);
             var storedFile = await _storedFileService.SaveFileAsync(stream, filename, file =>

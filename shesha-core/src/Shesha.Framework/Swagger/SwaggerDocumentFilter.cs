@@ -20,7 +20,7 @@ namespace Shesha.Swagger
 
             foreach (var apiDescription in context.ApiDescriptions)
             {
-                if (!AsyncHelper.RunSync(() => pmo.IsActionDescriptorEnabled(apiDescription.ActionDescriptor)))
+                if (!AsyncHelper.RunSync(() => pmo.IsActionDescriptorEnabledAsync(apiDescription.ActionDescriptor)))
                     swaggerDoc.Paths.Remove($"/{apiDescription.RelativePath}");
             }
         }

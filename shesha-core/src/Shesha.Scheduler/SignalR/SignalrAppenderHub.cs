@@ -13,7 +13,7 @@ namespace Shesha.Scheduler.SignalR
         /// </summary>
         /// <param name="groupName">Name of the group</param>
         /// <returns></returns>
-        public async Task JoinGroup(string groupName)
+        public async Task JoinGroupAsync(string groupName)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
@@ -23,7 +23,7 @@ namespace Shesha.Scheduler.SignalR
         /// </summary>
         /// <param name="groupName">Name of the group</param>
         /// <returns></returns>
-        public async Task LeaveGroup(string groupName)
+        public async Task LeaveGroupAsync(string groupName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }

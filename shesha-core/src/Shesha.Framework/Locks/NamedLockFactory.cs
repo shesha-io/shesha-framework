@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 
 namespace Shesha.Locks
 {
@@ -11,7 +10,7 @@ namespace Shesha.Locks
 
         private readonly ConcurrentDictionary<string, object> _lockDict = new ConcurrentDictionary<string, object>();
 
-        public Task<bool> DoExclusiveAsync(string resource, TimeSpan expiryTime, TimeSpan waitTime, TimeSpan retryTime, Func<Task> action)
+        public async Task<bool> DoExclusiveAsync(string resource, TimeSpan expiryTime, TimeSpan waitTime, TimeSpan retryTime, Func<Task> action)
         {
             var lockObj = _lockDict.GetOrAdd(resource, s => new object());
 
@@ -26,7 +25,7 @@ namespace Shesha.Locks
                     var task = action.Invoke();
                     try
                     {
-                        task.Wait();
+                        await task;
                         isAcquired = true;
                     }
                     finally
@@ -42,7 +41,7 @@ namespace Shesha.Locks
                     Monitor.Exit(lockObj);
             }
 
-            return Task.FromResult(isAcquired);
+            return isAcquired;
         }
 
         public bool DoExclusive(string resource, TimeSpan expiryTime, TimeSpan waitTime, TimeSpan retryTime, Action action)
