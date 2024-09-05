@@ -13,16 +13,16 @@ using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Shesha.DelayedUpdate
+namespace Shesha.DeferredUpdate
 {
     [ScheduledJob("B72BE830-7EA9-4124-85C7-165F7E35DA1D", StartUpMode.Manual, "0 0 * * *")]
-    public class CleanDelayedUpdateJob : ScheduledJobBase<ScheduledJobStatistic>, ITransientDependency
+    public class CleanDeferredUpdateJob : ScheduledJobBase<ScheduledJobStatistic>, ITransientDependency
     {
         private readonly IRepository<StoredFile, Guid> _fileRepository;
         private readonly IStoredFileService _storedFileService;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public CleanDelayedUpdateJob(IRepository<StoredFile, Guid> fileRepository, IStoredFileService storedFileService, IUnitOfWorkManager unitOfWorkManager)
+        public CleanDeferredUpdateJob(IRepository<StoredFile, Guid> fileRepository, IStoredFileService storedFileService, IUnitOfWorkManager unitOfWorkManager)
         {
             _fileRepository = fileRepository;
             _storedFileService = storedFileService;

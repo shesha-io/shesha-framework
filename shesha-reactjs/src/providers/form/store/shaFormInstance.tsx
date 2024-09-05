@@ -20,6 +20,7 @@ import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entiti
 import { useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
+import { IDeferredUpdateGroup } from "@/providers/deferredUpdateProvider/models";
 
 type ForceUpdateTrigger = () => void;
 interface ShaFormInstanceArguments {
@@ -36,6 +37,12 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     constructor(form: IShaFormInstance) {
         this.#form = form;
     }
+    addDeferredUpdateData = (data: Values): IDeferredUpdateGroup[]  => {
+      const deferredUpdateData = this.#form?.getDeferredUpdates();
+      if (deferredUpdateData?.length > 0)
+        data['_deferredUpdate'] = deferredUpdateData;
+      return deferredUpdateData;
+    };
     setFieldValue = (name: string, value: any) => {
         this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
     };
@@ -145,8 +152,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formData = {};
     }
     
-    getDelayedUpdates = () => {
-      return this.dataSubmitContext?.getDelayedUpdates() || [];
+    getDeferredUpdates = () => {
+      return this.dataSubmitContext?.getDeferredUpdates() || [];
     };
 
     setDataSubmitContext = (context: IDataSubmitContext) => {
@@ -527,7 +534,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         const { customSubmitCaller } = payload;
 
         const { formData: data, antdForm } = this;
-        const { getDelayedUpdates } = this.dataSubmitContext ?? {};
+        const { getDeferredUpdates } = this.dataSubmitContext ?? {};        
 
         if (this.useDataSubmitter) {
             this.dataSubmitState = { status: 'loading', hint: 'Saving data...', error: null };
@@ -539,7 +546,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
                     formFlatStructure: this.flatStructure,
                     data: data,
                     antdForm: antdForm,
-                    getDelayedUpdates: getDelayedUpdates,
+                    getDeferredUpdates: getDeferredUpdates,
                     expressionExecuter: this.expressionExecuter,
                     customSubmitCaller,
 
