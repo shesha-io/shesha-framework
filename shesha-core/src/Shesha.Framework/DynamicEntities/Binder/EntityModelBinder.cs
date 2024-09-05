@@ -550,13 +550,13 @@ namespace Shesha.DynamicEntities.Binder
         private async Task<object> GetEntityByIdAsync(Type entityType, string id, string displayName, string propertyPath, EntityModelBindingContext context)
         {
             if (context.GetEntityById != null)
-                return Task.FromResult(context.GetEntityById(entityType, id, displayName, propertyPath, context));
+                return context.GetEntityById(entityType, id, displayName, propertyPath, context);
 
             var newChildEntity = await _dynamicRepository.GetAsync(entityType, id);
             if (newChildEntity == null)
                 context.LocalValidationResult.Add(new ValidationResult($"Entity with Id='{id}' not found for `{propertyPath}`."));
             
-            return Task.FromResult(newChildEntity);
+            return newChildEntity;
         }
 
         private async Task<object> GetObjectOrObjectReferenceAsync(Type objectType, JObject jobject, EntityModelBindingContext context, List<string> formFields = null)
