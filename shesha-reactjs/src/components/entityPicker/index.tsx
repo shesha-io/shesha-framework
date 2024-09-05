@@ -169,6 +169,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
               className={styles.pickerInputGroupEllipsis}
               disabled={disabled}
               loading={loading ?? false}
+              style={{ pointerEvents: hasEntityType ? 'auto' : 'none' }}
               size={size}
               icon={<EllipsisOutlined />}
             />

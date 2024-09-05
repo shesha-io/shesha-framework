@@ -11,6 +11,7 @@ export interface IComponentsContainerProps extends IComponentsContainerBaseProps
   dynamicComponents?: IConfigurableFormComponent[];
   wrapperStyle?: CSSProperties;
   style?: CSSProperties;
+  debugMode?: boolean;
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {

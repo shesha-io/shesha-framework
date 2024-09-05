@@ -4,7 +4,6 @@ import React, {
     FC,
     useMemo
 } from 'react';
-import { Alert } from 'antd';
 import { ConfigurableFormItem } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
@@ -15,6 +14,7 @@ import {
 } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
+import { useStyles } from '@/components/formDesigner/styles/styles';
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
 }
@@ -23,6 +23,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
     const { formMode } = useForm();
     const { data } = useFormData();
+    const { styles } = useStyles();
+
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
     const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
@@ -43,13 +45,19 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     if (isDesignMode && configurationWarningMessage)
         return (
-            <Alert
-                className="sha-designer-warning"
-                message="Table is not configured"
-                description={configurationWarningMessage}
-                type="warning"
-                showIcon
-            />
+            <div
+                onDrop={(event) => {
+                    event.preventDefault();
+                    return;
+                }}
+                style={{ pointerEvents: 'none' }}
+            >
+                <ComponentsContainer containerId={id} render={() => {
+                    return <div className={styles.shaDropHint}>Drag and Drop form component disabled</div>
+                }
+                }
+                    debugMode={true} />
+            </div>
         );
 
     const provider = (getFieldValue = undefined, onChange = undefined) => (
