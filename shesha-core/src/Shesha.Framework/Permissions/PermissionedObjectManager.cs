@@ -117,11 +117,7 @@ namespace Shesha.Permissions
                 .WhereIf(!withHidden, x => !x.Hidden)
                 .ToListAsync();
             
-            var root = (await rootItems.SelectAsync(async x => {
-                    var dto = await GetDtoAsync(x);
-                    await SetCacheAsync(dto);
-                    return dto;
-                }))
+            var root = (await rootItems.SelectAsync(async x => await GetCacheOrDtoAsync(x)))
                 .OrderBy(x => x.Name)
                 .ToList();
 
@@ -131,11 +127,7 @@ namespace Shesha.Permissions
                     .Where(x => x.Type.StartsWith($"{type}."))
                     .WhereIf(!withHidden, x => !x.Hidden)
                     .ToListAsync();
-                var nested = (await nestedItems.SelectAsync(async x => {
-                        var dto = await GetDtoAsync(x);
-                        await SetCacheAsync(dto);
-                        return dto;
-                    }))
+                var nested = (await nestedItems.SelectAsync(async x => await GetCacheOrDtoAsync(x)))
                     .OrderBy(x => x.Name)
                     .ToList();
                 root.AddRange(nested);
@@ -181,7 +173,11 @@ namespace Shesha.Permissions
                 .ToList();
             foreach (var permissionedObject in child)
             {
-                dto.Children.Add(GetObjectWithChild(permissionedObject, list, withHidden));
+                var ch = dto.Children.FirstOrDefault(x => x.Object == permissionedObject.Object && x.Type == permissionedObject.Type);
+                if (ch != null)
+                    GetObjectWithChild(ch, list, withHidden);
+                else
+                    dto.Children.Add(GetObjectWithChild(permissionedObject, list, withHidden));
             }
             return dto;
         }
@@ -310,6 +306,19 @@ namespace Shesha.Permissions
             return null;
         }
 
+        private async Task<PermissionedObjectDto> GetCacheOrDtoAsync(PermissionedObject dbObj)
+        {
+            var key = GetCacheKey(dbObj.Object, dbObj.Type);
+            var cacheObj = await PermissionedObjectsCache.TryGetValueAsync(key);
+            if (cacheObj.HasValue)
+                return cacheObj.Value.DbValue ?? cacheObj.Value.DefaultValue;
+
+            var dto = await GetDtoAsync(dbObj);
+
+            await SetCacheAsync(dto);
+            return dto;
+        }
+
         [UnitOfWork]
         public virtual async Task<PermissionedObjectDto> CreateAsync(string objectName, string objectType, string inheritedFromName = null)
         {
@@ -339,11 +348,8 @@ namespace Shesha.Permissions
 
         public virtual async Task<PermissionedObjectDto> GetAsync(Guid id)
         {
-            var dbObj = _permissionedObjectRepository.GetAll().FirstOrDefault(x => x.Id == id);
-            var dto = await GetDtoAsync(dbObj);
-            await SetCacheAsync(dto);
-
-            return dto;
+            var dbObj = await _permissionedObjectRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+            return await GetCacheOrDtoAsync(dbObj);
         }
 
         public virtual async Task<CacheItemWrapper<PermissionedObjectDto>> GetInternalAsync(string objectName, string objectType)
@@ -501,12 +507,7 @@ namespace Shesha.Permissions
         {
             var permissionedObjects = await _permissionedObjectRepository.GetAll().Where(o => o.Type == type).ToListAsync();
 
-            var dtos = await permissionedObjects.SelectAsync(async x => {
-                var dto = await GetDtoAsync(x);
-                // TODO: Alex review caching, it should be hidden somewhere  in GetDtoAsync I guess
-                await SetCacheAsync(dto);
-                return dto;
-            });
+            var dtos = await permissionedObjects.SelectAsync(async x => await GetCacheOrDtoAsync(x));
 
             var forms = dtos
                 .Where(x => x.ActualAccess == access)
