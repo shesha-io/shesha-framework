@@ -2,7 +2,7 @@ import React from "react";
 import { AfterSubmitHandler, FormEvents, IDataSubmitContext, InitByFormIdPayload, InitByMarkupPayload, InitByRawMarkupPayload, IShaFormInstance, LoadFormByIdPayload, OnMarkupLoadedHandler, OnValuesChangeHandler, ProcessingState, SubmitDataPayload, SubmitHandler } from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
 import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
-import { ExpressionCaller, ExpressionExecuter, IFormDataSubmitter } from "../submitters/interfaces";
+import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
 import { IFormManagerActionsContext } from "@/providers/formManager/contexts";
 import { useFormManager } from "@/providers/formManager";
 import { IFormDataLoadersContext, useFormDataLoaders } from "../loaders/formDataLoadersProvider";
@@ -21,6 +21,7 @@ import { useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
 import { IDeferredUpdateGroup } from "@/providers/deferredUpdateProvider/models";
+import { removeGhostKeys } from "@/utils/form";
 
 type ForceUpdateTrigger = () => void;
 interface ShaFormInstanceArguments {
@@ -175,7 +176,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formData = values;
         if (this.onValuesChange)
             this.onValuesChange(values, values);
-        this.events.onValuesUpdate?.(values);
+        this.events.onValuesUpdate?.({data: removeGhostKeys({...values})});
     };
 
     setFormData = (payload: ISetFormDataPayload) => {
@@ -289,14 +290,14 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         };
 
         this.events = {};
-        this.events.onPrepareSubmitData = makeCaller<Values, Values>(settings.onPrepareSubmitData);
-        this.events.onBeforeSubmit = makeCaller<Values, void>(settings.onBeforeSubmit);
+        this.events.onPrepareSubmitData = makeCaller<IDataArguments<Values>, Values>(settings.onPrepareSubmitData);
+        this.events.onBeforeSubmit = makeCaller<IDataArguments<Values>, void>(settings.onBeforeSubmit);
         this.events.onSubmitSuccess = makeCaller<void, void>(settings.onSubmitSuccess);
         this.events.onSubmitFailed = makeCaller<void, void>(settings.onSubmitFailed);
 
         this.events.onBeforeDataLoad = makeCaller<void, void>(settings.onBeforeDataLoad);
         this.events.onAfterDataLoad = makeCaller<void, void>(settings.onAfterDataLoad);
-        this.events.onValuesUpdate = makeCaller<Values, void>(settings.onValuesUpdate);
+        this.events.onValuesUpdate = makeCaller<IDataArguments<Values>, void>(settings.onValuesUpdate);
 
         this.modelMetadata = settings.modelType
             ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: 'entity' })
