@@ -308,7 +308,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         if (currentUrl.current === '/' || currentUrl.current === '')
           redirectToDefaultUrl();
         else
-          redirectToUnauthorized();      }
+          redirectToUnauthorized();
+        }
     } else {
       fireHttpHeadersChanged(state);
       if (!state.isCheckingAuth && !state.isFetchingUserInfo) {
