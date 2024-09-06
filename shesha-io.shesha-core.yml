@@ -150,6 +150,15 @@ stages:
         includesource: true
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'versionNo'
+    - task: PowerShell@2
+      displayName: 'List Contents After Pack'
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Clear Artifacts Directory
+          ls
+        workingDirectory: $(build.artifactstagingdirectory)/temp
+      condition: eq(variables['currentBranch'], 'refs/heads/dsd-npo')
     - task: NuGetCommand@2
       displayName: dotnet push package
       inputs:
