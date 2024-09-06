@@ -1,5 +1,5 @@
 import { IApiEndpoint, IFlatComponentsStructure, IFormSettings } from "@/interfaces";
-import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
+import { IDeferredUpdateGroup } from "@/providers/deferredUpdateProvider/models";
 import { FormInstance } from "antd";
 import { SubmitRelatedEvents } from "../store/interfaces";
 
@@ -11,13 +11,17 @@ export type ExpressionCaller<TArguments = any, TResult = any> = (args: TArgument
 export type ExpressionFactory<TArguments = any, TResult = any> = (expression: string) => ExpressionCaller<TArguments, TResult>;
 export type AsyncExpressionFactory<TArguments = any, TResult = any> = ExpressionFactory<TArguments, Promise<TResult>>;
 
+export interface IDataArguments<Values> {
+    data: Values;
+}
+
 export interface FormDataSubmitPayload extends Required<SubmitRelatedEvents> {
     data: any;
     formSettings: IFormSettings;
     formFlatStructure: IFlatComponentsStructure;
     expressionExecuter: ExpressionExecuter;
     antdForm: FormInstance;
-    getDelayedUpdates: () => IDelayedUpdateGroup[];
+    getDeferredUpdates: () => IDeferredUpdateGroup[];
     customSubmitCaller?: SubmitCaller;
 }
 

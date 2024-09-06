@@ -40,10 +40,10 @@ export class GqlSubmitter implements IFormDataSubmitter {
     };
 
     prepareDataForSubmit = async (payload: FormDataSubmitPayload): Promise<any> => {
-        const { formSettings, data, antdForm, getDelayedUpdates } = payload;
+        const { formSettings, data, antdForm, getDeferredUpdates } = payload;
         const settings = this.#getGqlSettings(formSettings);
 
-        const postData = { ...data };
+        const postData = removeGhostKeys({ ...data });
 
         const postDataAfterPreparation = payload.onPrepareSubmitData
             ? await payload.onPrepareSubmitData({ data: postData })
@@ -55,14 +55,12 @@ export class GqlSubmitter implements IFormDataSubmitter {
             : addFormFieldsList({}, postDataAfterPreparation, antdForm);
 
         // handle delayed updates
-        if (Boolean(getDelayedUpdates))
-            postDataWithServiceFields._delayedUpdate = getDelayedUpdates();
+        if (Boolean(getDeferredUpdates))
+            postDataWithServiceFields._deferredUpdate = getDeferredUpdates();
 
-        const postDataWithoutGhosts = removeGhostKeys(postDataWithServiceFields);
-
-        const postDataFinal = data && hasFiles(postDataWithoutGhosts)
-            ? jsonToFormData(postDataWithoutGhosts)
-            : postDataWithoutGhosts;
+        const postDataFinal = data && hasFiles(postDataWithServiceFields)
+            ? jsonToFormData(postDataWithServiceFields)
+            : postDataWithServiceFields;
 
         return postDataFinal;
     };
@@ -124,7 +122,7 @@ export class GqlSubmitter implements IFormDataSubmitter {
         const { onBeforeSubmit, onSubmitSuccess, onSubmitFailed, customSubmitCaller } = payload;
 
         if (onBeforeSubmit)
-            await onBeforeSubmit(data);
+            await onBeforeSubmit({data: removeGhostKeys({...data})});
 
         const getDefaultSubmitCaller = async (): Promise<SubmitCaller> => {
             const entityAction = data?.id

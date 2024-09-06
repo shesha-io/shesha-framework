@@ -68,7 +68,7 @@ namespace Shesha.Metadata
                 DataType = isEntity ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
                 Properties = properties,
                 Specifications = await GetSpecificationsAsync(containerType),
-                ApiEndpoints = await GetApiEndpoints(containerType),
+                ApiEndpoints = await GetApiEndpointsAsync(containerType),
                 ClassName = containerType.FullName,
 
                 ChangeTime = changeTime,
@@ -93,7 +93,7 @@ namespace Shesha.Metadata
             return dto;
         }
 
-        public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpoints(Type containerType)
+        public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type containerType)
         {
             var result = new Dictionary<string, ApiEndpointDto>();
             if (_actionDescriptorCollectionProvider == null || containerType == null || !containerType.IsEntityType())

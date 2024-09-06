@@ -7,7 +7,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.MultiTenancy;
-using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Utilities;
@@ -110,7 +109,7 @@ namespace Shesha.Authorization
 
             if (dbPermission == null)
             {
-                DeleteMissedDbPermissionAsync(oldName);
+                DeleteMissedDbPermission(oldName);
                 throw new EntityNotFoundException($"Permission '{oldName}' not found");
             }
 
@@ -150,7 +149,7 @@ namespace Shesha.Authorization
 
             if (dbPermission == null)
             {
-                DeleteMissedDbPermissionAsync(name);
+                DeleteMissedDbPermission(name);
                 throw new EntityNotFoundException("Permission 'name' not found");
             }
 
@@ -183,7 +182,7 @@ namespace Shesha.Authorization
 
             if (dbPermission == null)
             {
-                DeleteMissedDbPermissionAsync(name);
+                DeleteMissedDbPermission(name);
                 throw new EntityNotFoundException("Permission 'name' not found");
             }
 
@@ -199,7 +198,7 @@ namespace Shesha.Authorization
                 await _permissionDefinitionRepository.DeleteAsync(dbPermission);
         }
 
-        private void DeleteMissedDbPermissionAsync(string name)
+        private void DeleteMissedDbPermission(string name)
         {
             var permission = GetPermissionOrNull(name);
             if (permission != null

@@ -1,6 +1,6 @@
-﻿namespace Shesha.DelayedUpdate
+﻿namespace Shesha.DeferredUpdate
 {
-    public class StoredFileDelayedUpdateData
+    public class StoredFileDeferredUpdateData
     {
         public string PropertyName { get; set; }
         public string OwnerName { get; set; }
