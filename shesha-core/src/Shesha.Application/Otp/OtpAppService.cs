@@ -59,7 +59,7 @@ namespace Shesha.Otp
             }
 
 
-            // generate new pin and save
+            // generate new OtpItem and save
             var otp = new OtpDto()
             {
                 OperationId = Guid.NewGuid(),
@@ -144,6 +144,12 @@ namespace Shesha.Otp
         /// <summary>
         /// Resend one-time-pin
         /// </summary>
+        /// <summary>
+        /// Resends the one-time pin (OTP) based on the provided input. Retrieves the OTP using the specified operation ID or composite key, 
+        /// sends the OTP, and updates its status and expiration time. Uses default settings for lifetime if not provided.
+        /// </summary>
+        /// <param name="input">The input containing OTP operation details and optional lifetime.</param>
+        /// <returns>A task that represents the asynchronous operation, with a response indicating the status of the resend operation.</returns>
         public async Task<ISendPinResponse> ResendPinAsync(IResendPinInput input)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
@@ -151,154 +157,71 @@ namespace Shesha.Otp
             if (otp == null)
                 otp = await _otpServiceHelper.GetOtpWithCompositeKey(input.ModuleName, input.ActionType, input.SourceEntityType.Value);
 
-            if (otp.ExpiresOn < DateTime.Now)
-                throw new UserFriendlyException("OTP has expired, try to request a new one");
-
-            // note: we ignore _otpSettings.IgnoreOtpValidation here, the user pressed `resend` manually
-
-            // send otp
-            var sendTime = DateTime.Now;
-            try
-            {
-                await _otpServiceHelper.SendInternal(otp);
-            }
-            catch (Exception e)
-            {
-                await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
+            return await _otpServiceHelper.ProcessOtpResendAsync(
+                otp,
+                input,
+                async (otp) => await _otpServiceHelper.SendInternal(otp),
+                async (otp) =>
                 {
-                    newOtp.SentOn = sendTime;
-                    newOtp.SendStatus = OtpSendStatus.Failed;
-                    newOtp.ErrorMessage = e.FullMessage();
-                    
-                    return Task.CompletedTask;
-                });
-            }
-            
-            // extend lifetime
-            var lifeTime = input.Lifetime ?? settings.DefaultLifetime;
-            var newExpiresOn = DateTime.Now.AddSeconds(lifeTime);
-
-            await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
-            {
-                newOtp.SentOn = sendTime;
-                newOtp.SendStatus = OtpSendStatus.Sent;
-                newOtp.ExpiresOn = newExpiresOn;
-
-                return Task.CompletedTask;
-            });
-
-            // return response
-            var response = new SendPinResponse
-            {
-                OperationId = otp.OperationId,
-                SentTo = otp.SendTo
-            };
-            return response;
+                    await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
+                    {
+                        newOtp.SentOn = DateTime.Now;
+                        newOtp.SendStatus = OtpSendStatus.Sent;
+                        newOtp.ExpiresOn = DateTime.Now.AddSeconds(input.Lifetime ?? settings.DefaultLifetime);
+                        return Task.CompletedTask;
+                    });
+                },
+                settings.DefaultLifetime
+            );
         }
 
+        /// <summary>
+        /// Resends the one-time pin (OTP) based on the provided input and specific OTP configuration. Retrieves the OTP using the specified operation ID or composite key,
+        /// validates the notification template from the provided OTP configuration, sends the OTP, and updates its status and expiration time based on the configuration.
+        /// </summary>
+        /// <param name="input">The input containing OTP operation details and optional lifetime.</param>
+        /// <param name="module">The module name associated with the OTP configuration.</param>
+        /// <param name="otpConfig">The OTP configuration identifier to use for sending the OTP.</param>
+        /// <returns>A task that represents the asynchronous operation, with a response indicating the status of the resend operation.</returns>
         public async Task<ISendPinResponse> ResendPinWithConfig(IResendPinInput input, string module, string otpConfig)
         {
-            // Retrieve OTP details
             var otp = await _otpServiceHelper.GetOtpWithOperationId(input.OperationId);
             if (otp == null)
                 otp = await _otpServiceHelper.GetOtpWithCompositeKey(input.ModuleName, input.ActionType, input.SourceEntityType.Value);
 
-            // Check OTP expiration
-            if (otp.ExpiresOn < DateTime.Now)
-                throw new UserFriendlyException("OTP has expired, try to request a new one");
-
-            // Fetch OtpConfig based on ModuleName and ActionType stored in OtpDto
-
             var config = await _otpServiceHelper.GetOtpConfigAsync(module, otpConfig);
-
-            // Validate NotificationTemplate
             if (config.NotificationTemplate == null || !config.NotificationTemplate.IsEnabled)
                 throw new UserFriendlyException("Invalid or disabled notification template in config");
 
-            // Prepare to resend the OTP
-            var sendTime = DateTime.Now;
-            try
-            {
-                // Send using the new method with config
-                await _otpServiceHelper.SendInternalWithConfig(otp, config);
-
-                // Update OTP status on successful send
-                otp.SendStatus = OtpSendStatus.Sent;
-                otp.SentOn = sendTime;
-            }
-            catch (Exception e)
-            {
-                // Handle send failure and update OTP status
-                await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
+            return await _otpServiceHelper.ProcessOtpResendAsync(
+                otp,
+                input,
+                async (otp) => await _otpServiceHelper.SendInternalWithConfig(otp, config),
+                async (otp) =>
                 {
-                    newOtp.SentOn = sendTime;
-                    newOtp.SendStatus = OtpSendStatus.Failed;
-                    newOtp.ErrorMessage = e.Message;
-                    return Task.CompletedTask;
-                });
-            }
-
-            // Extend OTP lifetime based on input or default settings
-            var lifeTime = input.Lifetime ?? config.Lifetime ?? 300; // Use config lifetime if available, otherwise default to 5 minutes
-            var newExpiresOn = DateTime.Now.AddSeconds(lifeTime);
-
-            // Update expiration and resend status
-            await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
-            {
-                newOtp.ExpiresOn = newExpiresOn;
-                newOtp.SentOn = sendTime;
-                newOtp.SendStatus = OtpSendStatus.Sent;
-                return Task.CompletedTask;
-            });
-
-            // Return the resend response
-            var response = new SendPinResponse
-            {
-                OperationId = otp.OperationId,
-                SentTo = otp.SendTo,
-                ModuleName = otp.ModuleName,
-                ActionType = otp.ActionType,
-                SourceEntityId = otp.SourceEntityId
-            };
-            return response;
+                    await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
+                    {
+                        newOtp.SentOn = DateTime.Now;
+                        newOtp.SendStatus = OtpSendStatus.Sent;
+                        newOtp.ExpiresOn = DateTime.Now.AddSeconds(input.Lifetime ?? config.Lifetime ?? 300);
+                        return Task.CompletedTask;
+                    });
+                },
+                config.Lifetime ?? 300
+            );
         }
+
 
         /// <summary>
         /// Verify one-time-pin
         /// </summary>
-        public async Task<IVerifyPinResponse> VerifyPinAsync(IVerifyPinInput input)
-        {
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            if (!settings.IgnoreOtpValidation)
-            {
-                var pinDto = await _otpServiceHelper.GetOtpWithOperationId(input.OperationId);
-                if (pinDto == null)
-                    pinDto = await _otpServiceHelper.GetOtpWithCompositeKey(input.ModuleName, input.ActionType, input.SourceEntityType.Value);
-                if (pinDto == null || pinDto.Pin != input.Pin)
-                {
-                    var message = pinDto.SendType == OtpSendType.EmailLink ? "Invalid email link" : "Wrong one time pin";
-                    return VerifyPinResponse.Failed(message);
-                }
-
-                if (pinDto.ExpiresOn < DateTime.Now)
-                {
-                    var message = pinDto.SendType == OtpSendType.EmailLink ? "The link you have supplied has expired" : "One-time pin has expired, try to send a new one";
-                    return VerifyPinResponse.Failed(message);
-                }
-            }
-
-            return VerifyPinResponse.Success();
-        }
-
         public async Task<IVerifyPinResponse> VerifyPinWithConfig(IVerifyPinInput input, string module, string otpConfig)
         {
             // Retrieve OTP settings
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
 
-            // Retrieve OTP details based on the operation ID && CompositeKey
-            var pinDto = await _otpServiceHelper.GetOtpWithOperationId(input.OperationId);
-            if (pinDto == null)
-                pinDto = await _otpServiceHelper.GetOtpWithCompositeKey(input.ModuleName, input.ActionType, input.SourceEntityType.Value);
+            // Retrieve OTP details
+            var pinDto = await _otpServiceHelper.RetrieveOtpAsync(input);
 
             // Retrieve OtpConfig using the provided config ID
             var config = await _otpServiceHelper.GetOtpConfigAsync(module, otpConfig);
@@ -309,35 +232,22 @@ namespace Shesha.Otp
                 throw new UserFriendlyException("The notification template in the configuration is either invalid or disabled.");
             }
 
-            // Validate OTP if global setting does not ignore OTP validation
-            if (!settings.IgnoreOtpValidation)
-            {
-                // Check if the pin matches
-                if (pinDto.Pin != input.Pin)
-                {
-                    // Use a custom message if the OtpConfig has special requirements
-                    var errorMessage = pinDto.SendType == OtpSendType.EmailLink
-                        ? "Invalid email link"
-                        : "Incorrect one-time pin";
-
-                    return VerifyPinResponse.Failed(errorMessage);
-                }
-
-                // Check if the OTP has expired
-                if (pinDto.ExpiresOn < DateTime.Now)
-                {
-                    // Customize the expiration message using config settings if available
-                    var expirationMessage = pinDto.SendType == OtpSendType.EmailLink
-                        ? "The link you have supplied has expired"
-                        :"One-time pin has expired, please request a new one";
-
-                    return VerifyPinResponse.Failed(expirationMessage);
-                }
-            }
-
-            // If all validations pass, return success
-            return VerifyPinResponse.Success();
+            // Validate OTP and return the response
+            return _otpServiceHelper.ValidateOtp(pinDto, input, settings.IgnoreOtpValidation);
         }
+
+        public async Task<IVerifyPinResponse> VerifyPinAsync(IVerifyPinInput input)
+        {
+            // Retrieve OTP settings
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+
+            // Retrieve OTP details
+            var pinDto = await _otpServiceHelper.RetrieveOtpAsync(input);
+
+            // Validate OTP and return the response
+            return _otpServiceHelper.ValidateOtp(pinDto, input, settings.IgnoreOtpValidation);
+        }
+
 
         /// inheritedDoc
         [ApiExplorerSettings(IgnoreApi = true)]
