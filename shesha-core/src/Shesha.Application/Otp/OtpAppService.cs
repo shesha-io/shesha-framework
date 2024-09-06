@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Net.Mail;
 using Abp.UI;
+using GraphQL;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -388,13 +389,9 @@ namespace Shesha.Otp
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
 
             // Retrieve OTP details based on the operation ID
-            var pinDto = await _otpStorage.GetAsync(input.OperationId);
+            var pinDto = await GetOtpWithOperationId(input.OperationId);
             if (pinDto == null)
-                pinDto = await _otpStorage.GetAsync(input.ModuleName, input.ActionType, input.SourceEntityType.ToString());
-            if (pinDto == null)
-            {
-                return VerifyPinResponse.Failed("OTP not found, please request a new one.");
-            }
+                pinDto = await GetOtpWithCompositeKey(input.ModuleName, input.ActionType, input.SourceEntityType.Value);
 
             // Retrieve OtpConfig using the provided config ID
             var config = await GetOtpConfigAsync(module, otpConfig);
@@ -493,6 +490,24 @@ namespace Shesha.Otp
         }
 
         // Helper methods
+        private async Task<OtpDto> GetOtpWithOperationId(Guid? operationId)
+        {
+            var otp = await _otpStorage.GetAsync(operationId.Value);
+            if (otp == null)
+                throw new UserFriendlyException("OperationId is invalid");
+
+            return otp;
+        }
+
+        private async Task<OtpDto> GetOtpWithCompositeKey(string moduleName, string actionType, Guid sourceEntityId)
+        {
+            var otp = await _otpStorage.GetAsync(moduleName, actionType, sourceEntityId.ToString());
+            if (otp == null)
+                throw new UserFriendlyException("Combination of keys ins\'t linked to an Otp Item");
+
+            return otp;
+        }
+
         private async Task<OtpConfig> GetOtpConfigAsync(string module, string otpConfig)
         {
             var config = await _otpConfigRepository.FirstOrDefaultAsync(x => x.Name == otpConfig && x.Module.Name == module);
