@@ -16,6 +16,12 @@ export interface IResolvedDynamicItem extends IDynamicItem {
   resolvedItems: ButtonGroupItemProps[];
 }
 
+export const isResolvedDynamicItem = (item: IButtonGroupItemBase): item is IResolvedDynamicItem => {
+  if (!isDynamicItem(item)) return false;
+  const typed = item as IResolvedDynamicItem;
+  return typeof typed.isResolved === 'boolean' && Array.isArray(typed.resolvedItems);
+};
+
 export const getDynamicActionsItemsLevel = (
   items: ButtonGroupItemProps[],
   onDynamicItem: (dynamicItem: IResolvedDynamicItem) => void
@@ -58,10 +64,4 @@ export const getItemsWithResolved = (items: ButtonGroupItemProps[]): ButtonGroup
   });
 
   return result;
-};
-
-export const isResolvedDynamicItem = (item: IButtonGroupItemBase): item is IResolvedDynamicItem => {
-  if (!isDynamicItem(item)) return false;
-  const typed = item as IResolvedDynamicItem;
-  return typeof typed.isResolved === 'boolean' && Array.isArray(typed.resolvedItems);
 };
