@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shesha.DeferredUpdate
+namespace Shesha.DelayedUpdate
 {
-    public class DeferredUpdateItem
+    public class DelayedUpdateItem
     {
         public object Id { get; set; }
         public object Data { get; set; }
     }
 
-    public class DeferredUpdateGroup
+    public class DelayedUpdateGroup
     {
         public string Name { get; set; }
-        public List<DeferredUpdateItem> Items { get; set; }
+        public List<DelayedUpdateItem> Items { get; set; }
     }
 }

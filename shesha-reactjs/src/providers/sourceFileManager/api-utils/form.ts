@@ -28,7 +28,7 @@ export interface FormApi<Values = any> {
    * @param data model data object for updating
    * @returns The deferred update data
    */
-  addDeferredUpdateData: (data: Values) => IDeferredUpdateGroup[];
+  addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
   /**
    * Set field value
    * @param name field name

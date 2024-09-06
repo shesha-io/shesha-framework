@@ -1,6 +1,6 @@
 import React, { FC, MutableRefObject, PropsWithChildren, useContext, useRef } from "react";
 import { IShaFormInstance } from '../store/interfaces';
-import { DeferredUpdateProvider } from "../../deferredUpdateProvider";
+import { DelayedUpdateProvider } from "../../delayedUpdateProvider";
 import { ShaFormInstanceContext } from "../providers/contexts";
 
 export interface IShaFormProviderProps {
@@ -15,13 +15,13 @@ const ShaFormProvider: FC<PropsWithChildren<IShaFormProviderProps>> = ({ childre
     );
 };
 
-const FormProviderWithDeferredUpdates: FC<PropsWithChildren<IShaFormProviderProps>> = ({ children, ...props }) => {
+const FormProviderWithDelayedUpdates: FC<PropsWithChildren<IShaFormProviderProps>> = ({ children, ...props }) => {
     return (
-        <DeferredUpdateProvider>
+        <DelayedUpdateProvider>
             <ShaFormProvider {...props}>
                 {children}
             </ShaFormProvider>
-        </DeferredUpdateProvider>
+        </DelayedUpdateProvider>
     );
 };
 
@@ -40,7 +40,7 @@ const useShaFormInstance = (required: boolean = true): IShaFormInstance => {
 };
 
 export {
-    FormProviderWithDeferredUpdates as ShaFormProvider,
+    FormProviderWithDelayedUpdates as ShaFormProvider,
     useShaFormInstance,
     useShaFormRef,
 };

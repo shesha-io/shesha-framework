@@ -29,7 +29,7 @@ import ParentProvider from '../parentProvider/index';
 import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
-import { IDeferredUpdateGroup } from '../deferredUpdateProvider/models';
+import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ConfigurableFormInstance } from '../form/contexts';
 import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
@@ -58,7 +58,7 @@ interface IInternalCrudProviderProps extends ICrudProviderProps {
   onValuesChange: () => void;
   setInitialValues: (values: object) => void;
   setInitialValuesLoading: (loading: boolean) => void;
-  deferredUpdate: React.MutableRefObject<IDeferredUpdateGroup[]>;
+  delayedUpdate: React.MutableRefObject<IDelayedUpdateGroup[]>;
 }
 
 const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = (props) => {
@@ -122,7 +122,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   });
 
   const toolboxComponents = useFormDesignerComponents();
-  const deferredUpdate = useRef<IDeferredUpdateGroup[]>();
+  const delayedUpdate = useRef<IDelayedUpdateGroup[]>();
 
   const formRef = useRef<ConfigurableFormInstance>(null);
 
@@ -204,7 +204,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           toolboxComponents
         );
         // send data of stored files
-        if (Boolean(deferredUpdate)) postData._deferredUpdate = deferredUpdate.current;
+        if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate.current;
 
         const finalDataPromise = onSave ? Promise.resolve(onSave(postData)) : Promise.resolve(postData);
 
@@ -336,9 +336,9 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
           initialValues={contextValue.initialValues}
           onValuesChange={onValuesChange}
           formSettings={formSettings}
-          deferredUpdate={deferredUpdate}
+          delayedUpdate={delayedUpdate}
         >
-          <InternalCrudProvider {...props} context={contextValue} deferredUpdate={deferredUpdate}
+          <InternalCrudProvider {...props} context={contextValue} delayedUpdate={delayedUpdate}
             onValuesChange={onValuesChange}
             setInitialValues={setInitialValues}
             setInitialValuesLoading={setInitialValuesLoading}
