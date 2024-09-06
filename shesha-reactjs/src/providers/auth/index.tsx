@@ -121,8 +121,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     headers: initialHeaders,
   });
 
-  const currentUrl = useRef<string>();
-
+  const currentUrl = useRef<string>(router.fullPath);
+  
   const setters = getFlagSetters(dispatch);
 
   const redirect = (url: string) => {
@@ -218,9 +218,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
           dispatch(fetchUserDataActionErrorAction({ message: 'Not authorized' }));
 
-          // eslint-disable-next-line no-console
-          console.log("Debug currentUrl:", currentUrl.current);
-          
           if (currentUrl.current === '/' || currentUrl.current === '')
             redirectToDefaultUrl();
           else
@@ -306,12 +303,12 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     const httpHeaders = getCleanedInitHeaders(getHttpHeaders());
 
-    currentUrl.current = router.fullPath;
-
     if (!httpHeaders) {
       if (currentUrl.current !== unauthorizedRedirectUrl) {
-        redirectToUnauthorized();
-      }
+        if (currentUrl.current === '/' || currentUrl.current === '')
+          redirectToDefaultUrl();
+        else
+          redirectToUnauthorized();      }
     } else {
       fireHttpHeadersChanged(state);
       if (!state.isCheckingAuth && !state.isFetchingUserInfo) {

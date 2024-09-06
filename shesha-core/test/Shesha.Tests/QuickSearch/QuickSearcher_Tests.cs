@@ -38,7 +38,7 @@ namespace Shesha.Tests.QuickSearch
         }
 
         [Fact]
-        public async Task SearchPerson_TextFields_Fetch_Test()
+        public async Task SearchPerson_TextFields_Fetch_TestAsync()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -48,7 +48,7 @@ namespace Shesha.Tests.QuickSearch
                 $"{nameof(Person.User)}.{nameof(Person.User.UserName)}"
             });
 
-            await TryFetchData<Person, Guid>(query => query.Where(expression), data => {
+            await TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data => {
                 // check data
             });
         }
@@ -110,7 +110,7 @@ namespace Shesha.Tests.QuickSearch
         }
 
         [Fact]
-        public async Task SearchTestPerson_RefList_Fetch_Test()
+        public async Task SearchTestPerson_RefList_Fetch_TestAsync()
         {
             var quickSearcher = Resolve<QuickSearcher>();
 
@@ -118,7 +118,7 @@ namespace Shesha.Tests.QuickSearch
                 nameof(TestPerson.Title)
             });
 
-            await TryFetchData<Person, Guid>(query => query.Where(expression), data => {
+            await TryFetchDataAsync<Person, Guid>(query => query.Where(expression), data => {
                 // check data
             });
         }
@@ -197,7 +197,7 @@ namespace Shesha.Tests.QuickSearch
 
         #region private methods
 
-        private async Task<List<T>> TryFetchData<T, TId>(Func<IQueryable<T>, IQueryable<T>> prepareQueryable = null, Action<List<T>> assertions = null) where T : class, IEntity<TId>
+        private async Task<List<T>> TryFetchDataAsync<T, TId>(Func<IQueryable<T>, IQueryable<T>> prepareQueryable = null, Action<List<T>> assertions = null) where T : class, IEntity<TId>
         {
             var repository = LocalIocManager.Resolve<IRepository<T, TId>>();
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();

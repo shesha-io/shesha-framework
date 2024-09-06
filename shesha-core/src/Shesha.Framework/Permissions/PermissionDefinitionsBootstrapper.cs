@@ -54,7 +54,7 @@ namespace Shesha.Permission
         [UnitOfWork]
         public async Task SetPermissionsAsync()
         {
-            var dbPermissions = _permissionDefinitionRepository.GetAllList();
+            var dbPermissions = await _permissionDefinitionRepository.GetAllListAsync();
 
             // Update DB-related items
             var dbRootPermissions = dbPermissions.Where(x => string.IsNullOrEmpty(x.Parent)).ToList();
@@ -89,7 +89,7 @@ namespace Shesha.Permission
                     else
                     {
                         // remove permission with missed parent
-                        _permissionDefinitionRepository.Delete(dbPermission);
+                        await _permissionDefinitionRepository.DeleteAsync(dbPermission);
                     }
                     dbPermissions.Remove(dbPermission);
                 }

@@ -32,7 +32,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         /// Get event log items for the specified job execution
         /// </summary>
         /// <returns></returns>
-        public async Task<List<EventLogItem>> GetEventLogItems(Guid id)
+        public async Task<List<EventLogItem>> GetEventLogItemsAsync(Guid id)
         {
             if (id == Guid.Empty)
                 return new List<EventLogItem>();
@@ -56,7 +56,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
                 var fileContentStream = await _storedFileService.GetStreamAsync(fileVersion);
 
                 using var storedFileContent = new StreamReader(fileContentStream);
-                logFileContent = storedFileContent.ReadToEnd();
+                logFileContent = await storedFileContent.ReadToEndAsync();
 
             } else
             {
@@ -78,7 +78,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ScheduledJobStatistic> GetExecutionStatistics(Guid id)
+        public async Task<ScheduledJobStatistic> GetExecutionStatisticsAsync(Guid id)
         {
             if (id == Guid.Empty)
                 return null;

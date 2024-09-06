@@ -10,7 +10,7 @@ namespace Shesha.Tests.DynamicRepository
     public class DynamicRepository_Tests: SheshaNhTestBase
     {
         [Fact]
-        public async Task GetEntity_Test()
+        public async Task GetEntity_TestAsync()
         {
             var uowManager = Resolve<IUnitOfWorkManager>();
 
