@@ -130,12 +130,11 @@ stages:
       displayName: dotnet pack
       inputs:
         command: 'pack'
-        packagesToPack: 'shesha-core/src/**/*.csproj'
-        configuration: 'debug'
+        packagesToPack: 'shesha-core/src/**/*.csproj'       
+        configuration: '$(BuildParameters.configuration)'
         nobuild: false
-        includesymbols: false  # Set to false as DebugType is embedded
+        includesymbols: true
         includesource: true
-        verbosityPack: Detailed  # Uncommented for detailed logs
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'versionNo'
         packDirectory: $(build.artifactstagingdirectory)/temp
