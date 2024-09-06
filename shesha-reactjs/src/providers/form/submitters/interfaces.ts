@@ -1,5 +1,5 @@
 import { IApiEndpoint, IFlatComponentsStructure, IFormSettings } from "@/interfaces";
-import { IDeferredUpdateGroup } from "@/providers/deferredUpdateProvider/models";
+import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { FormInstance } from "antd";
 import { SubmitRelatedEvents } from "../store/interfaces";
 
@@ -21,7 +21,7 @@ export interface FormDataSubmitPayload extends Required<SubmitRelatedEvents> {
     formFlatStructure: IFlatComponentsStructure;
     expressionExecuter: ExpressionExecuter;
     antdForm: FormInstance;
-    getDeferredUpdates: () => IDeferredUpdateGroup[];
+    getDelayedUpdates: () => IDelayedUpdateGroup[];
     customSubmitCaller?: SubmitCaller;
 }
 

@@ -6,8 +6,8 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 
 import { useDeleteFileById } from '@/apis/storedFile';
 import { useGet, useMutate } from '@/hooks';
 import { IApiEndpoint } from '@/interfaces/metadata';
-import { useDeferredUpdate } from '@/providers/deferredUpdateProvider';
-import { STORED_FILES_DELAYED_UPDATE } from '@/providers/deferredUpdateProvider/models';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { STORED_FILES_DELAYED_UPDATE } from '@/providers/delayedUpdateProvider/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { useSignalR } from '@/providers/signalR';
 import { getFlagSetters } from '../utils/flagsSetters';
@@ -78,7 +78,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
 
   const { connection } = useSignalR(false) ?? {};
   const { httpHeaders: headers, backendUrl } = useSheshaApplication();
-  const { addItem: addDeferredUpdate, removeItem: removeDeferredUpdate } = useDeferredUpdate(false) ?? {};
+  const { addItem: addDelayedUpdate, removeItem: removeDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
   const {
     loading: isFetchingFileList,
@@ -155,7 +155,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     // @ts-ignore
     const newFile: IStoredFile = { uid: '', ...file, status: 'uploading', name: file.name };
 
-    if (!Boolean(payload.ownerId || ownerId) && typeof addDeferredUpdate !== 'function') {
+    if (!Boolean(payload.ownerId || ownerId) && typeof addDelayedUpdate !== 'function') {
       console.error('File list component is not configured');
       dispatch(
         uploadFileErrorAction({
@@ -176,8 +176,8 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
         responseFile.uid = newFile.uid;
         dispatch(uploadFileSuccessAction({ ...responseFile }));
 
-        if (responseFile.temporary && typeof addDeferredUpdate === 'function')
-          addDeferredUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
+        if (responseFile.temporary && typeof addDelayedUpdate === 'function')
+          addDelayedUpdate(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
             ownerName: payload.ownerName || ownerName,
           });
       })
@@ -206,7 +206,7 @@ const StoredFilesProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
     deleteFileHttp({ id: fileIdToDelete })
       .then(() => {
         deleteFileSuccess(fileIdToDelete);
-        if (typeof addDeferredUpdate === 'function') removeDeferredUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
+        if (typeof addDelayedUpdate === 'function') removeDelayedUpdate(STORED_FILES_DELAYED_UPDATE, fileIdToDelete);
       })
       .catch(() => deleteFileError(fileIdToDelete));
   };

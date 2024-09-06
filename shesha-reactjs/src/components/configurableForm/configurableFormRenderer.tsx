@@ -18,7 +18,7 @@ import { useStyles } from './styles/styles';
 import Link from 'next/link';
 import ParentProvider from '@/providers/parentProvider';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useDeferredUpdate } from '@/providers/deferredUpdateProvider';
+import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
@@ -33,11 +33,11 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   onSubmittedFailed,
   ...props
 }) => {
-  const { getPayload: getDeferredUpdates } = useDeferredUpdate(false) ?? {};
+  const { getPayload: getDelayedUpdates } = useDelayedUpdate(false) ?? {};
 
   const shaForm = useShaFormInstance();
   const { formMode, settings: formSettings, setValidationErrors } = shaForm;
-  shaForm.setDataSubmitContext({ getDeferredUpdates });
+  shaForm.setDataSubmitContext({ getDelayedUpdates });
 
   const { styles } = useStyles();
   const formFlatMarkup = ShaForm.useMarkup();

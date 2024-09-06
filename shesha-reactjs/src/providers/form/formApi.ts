@@ -5,7 +5,7 @@ import { FormInstance } from "antd";
 import { isEntityMetadata } from "@/interfaces";
 import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { IShaFormInstance } from "./store/interfaces";
-import { IDeferredUpdateGroup } from "../deferredUpdateProvider/models";
+import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
 
 export interface IFormSettings {
   modelType?: string;
@@ -32,7 +32,7 @@ export interface FormApi<Values = any> {
    * @param data model data object for updating
    * @returns The deferred update data
    */
-  addDeferredUpdateData: (data: Values) => IDeferredUpdateGroup[];
+  addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
   /**
    * Set field value
    * @param name field name
@@ -85,11 +85,11 @@ class PublicFormApiWrapper implements FormApi {
     this.#form = form;
   }
 
-  addDeferredUpdateData = (data: any): IDeferredUpdateGroup[]  => {
-    const deferredUpdateData = this.#form?.shaForm?.getDeferredUpdates();
-    if (deferredUpdateData?.length > 0)
-      data['_deferredUpdate'] = deferredUpdateData;
-    return deferredUpdateData;
+  addDelayedUpdateData = (data: any): IDelayedUpdateGroup[]  => {
+    const delayedUpdateData = this.#form?.shaForm?.getDelayedUpdates();
+    if (delayedUpdateData?.length > 0)
+      data['_delayedUpdate'] = delayedUpdateData;
+    return delayedUpdateData;
   };
 
   setFieldValue = (name: string, value: any) => {

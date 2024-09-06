@@ -6,7 +6,7 @@ using Abp.Runtime.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
-using Shesha.DeferredUpdate;
+using Shesha.DelayedUpdate;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
@@ -99,7 +99,7 @@ namespace Shesha
         {
             var entity = await Repository.GetAsync(input.Id);
             var jObject = (input as IHasJObjectField)._jObject;
-            List<DeferredUpdateGroup> deferredUpdate = null;
+            List<DelayedUpdateGroup> delayedUpdate = null;
             var validationResults = new List<ValidationResult>();
 
             if (jObject != null)
@@ -111,7 +111,7 @@ namespace Shesha
                 if (!result)
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
-                deferredUpdate = jObject.Property(nameof(IHasDeferredUpdateField._deferredUpdate))?.Value?.ToObject<List<DeferredUpdateGroup>>();
+                delayedUpdate = jObject.Property(nameof(IHasDelayedUpdateField._delayedUpdate))?.Value?.ToObject<List<DelayedUpdateGroup>>();
             }
             else
             {
@@ -124,15 +124,15 @@ namespace Shesha
                 if (!Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults))
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
-                deferredUpdate = (input as IHasDeferredUpdateField)._deferredUpdate;
+                delayedUpdate = (input as IHasDelayedUpdateField)._delayedUpdate;
             }
 
             await Repository.UpdateAsync(entity);
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            if (deferredUpdate?.Any() ?? false)
+            if (delayedUpdate?.Any() ?? false)
             {
-                await DeferredUpdateAsync<TEntity, TPrimaryKey>(deferredUpdate, entity, validationResults);
+                await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdate, entity, validationResults);
                 if (validationResults.Any<ValidationResult>())
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
             }
@@ -174,7 +174,7 @@ namespace Shesha
 
                 await Repository.InsertAsync(entity);
 
-                await DeferredUpdateAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
+                await DelayedUpdateAsync<TEntity, TPrimaryKey>(jObject, entity, validationResults);
 
                 if (validationResults.Any<ValidationResult>())
                     throw new AbpValidationException("Please correct the errors and try again", validationResults);
@@ -195,10 +195,10 @@ namespace Shesha
 
                 await Repository.InsertAsync(entity);
 
-                var _deferredUpdate = (input as IHasDeferredUpdateField)?._deferredUpdate;
-                if (_deferredUpdate?.Any() ?? false)
+                var _delayedUpdate = (input as IHasDelayedUpdateField)?._delayedUpdate;
+                if (_delayedUpdate?.Any() ?? false)
                 {
-                    await DeferredUpdateAsync<TEntity, TPrimaryKey>(_deferredUpdate, entity, validationResults);
+                    await DelayedUpdateAsync<TEntity, TPrimaryKey>(_delayedUpdate, entity, validationResults);
 
                     if (validationResults.Any<ValidationResult>())
                         throw new AbpValidationException("Please correct the errors and try again", validationResults);

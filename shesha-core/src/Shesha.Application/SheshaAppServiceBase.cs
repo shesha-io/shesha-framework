@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Newtonsoft.Json.Linq;
 using Shesha.Authorization.Users;
-using Shesha.DeferredUpdate;
+using Shesha.DelayedUpdate;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.DynamicEntities.Dtos;
@@ -427,26 +427,26 @@ namespace Shesha
             return true;
         }
 
-        protected async Task DeferredUpdateAsync<TEntity, TPrimaryKey>(
+        protected async Task DelayedUpdateAsync<TEntity, TPrimaryKey>(
             JObject jObject,
             TEntity entity,
             List<ValidationResult> validationResult)
             where TEntity : class, IEntity<TPrimaryKey>
         {
-            var deferredUpdate = jObject.Property(nameof(IHasDeferredUpdateField._deferredUpdate))?.Value?.ToObject<List<DeferredUpdateGroup>>();
-            await DeferredUpdateAsync<TEntity, TPrimaryKey>(deferredUpdate, entity, validationResult);
+            var delayedUpdate = jObject.Property(nameof(IHasDelayedUpdateField._delayedUpdate))?.Value?.ToObject<List<DelayedUpdateGroup>>();
+            await DelayedUpdateAsync<TEntity, TPrimaryKey>(delayedUpdate, entity, validationResult);
         }
 
-        protected async Task DeferredUpdateAsync<TEntity, TPrimaryKey>(
-            List<DeferredUpdateGroup> deferredUpdateGroups,
+        protected async Task DelayedUpdateAsync<TEntity, TPrimaryKey>(
+            List<DelayedUpdateGroup> delayedUpdateGroups,
             TEntity entity,
             List<ValidationResult> validationResult)
             where TEntity : class, IEntity<TPrimaryKey>
         {
-            if (deferredUpdateGroups?.Any() ?? false)
+            if (delayedUpdateGroups?.Any() ?? false)
             {
-                var managers = StaticContext.IocManager.ResolveAll<IDeferredUpdateManager>();
-                foreach (var group in deferredUpdateGroups)
+                var managers = StaticContext.IocManager.ResolveAll<IDelayedUpdateManager>();
+                foreach (var group in delayedUpdateGroups)
                 {
                     foreach (var manager in managers)
                     {

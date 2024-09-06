@@ -10,9 +10,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace Shesha.DeferredUpdate
+namespace Shesha.DelayedUpdate
 {
-    public class StoredFileDeferredUpdateManager : BaseDeferredUpdateManager<StoredFileDeferredUpdateData>, ITransientDependency
+    public class StoredFileDelayedUpdateManager : BaseDelayedUpdateManager<StoredFileDelayedUpdateData>, ITransientDependency
     {
 
         public const string ItemType = "storedFiles";
@@ -20,7 +20,7 @@ namespace Shesha.DeferredUpdate
         private readonly IStoredFileService _fileService;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
 
-        public StoredFileDeferredUpdateManager(
+        public StoredFileDelayedUpdateManager(
             IStoredFileService fileService,
             IUnitOfWorkManager unitOfWorkManager)
         {
@@ -28,7 +28,7 @@ namespace Shesha.DeferredUpdate
             _unitOfWorkManager = unitOfWorkManager;
         }
 
-        public override async Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, StoredFileDeferredUpdateData data, List<ValidationResult> validationResult)
+        public override async Task UpdateItemAsync<TPrimaryKey>(IEntity<TPrimaryKey> entity, object id, StoredFileDelayedUpdateData data, List<ValidationResult> validationResult)
         {
             try
             {
