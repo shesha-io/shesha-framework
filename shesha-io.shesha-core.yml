@@ -131,13 +131,16 @@ stages:
       inputs:
         command: 'pack'
         packagesToPack: 'shesha-core/src/**/*.csproj'
-        # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
-        configuration: '$(BuildParameters.configuration)'
+        configuration: 'debug'
         nobuild: false
-        includesymbols: true
+        includesymbols: false  # Set to false as DebugType is embedded
         includesource: true
+        verbosityPack: Detailed  # Uncommented for detailed logs
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'versionNo'
+        packDirectory: $(build.artifactstagingdirectory)/temp
+        arguments: '-p:DebugType=embedded'
+      condition: eq(variables['currentBranch'], 'refs/heads/f/dsd-npo') 
     - task: PowerShell@2
       displayName: 'List Contents After Pack'
       inputs:
