@@ -61,7 +61,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     const evaluation = useMemo<IDynamicItemsEvaluationStore>(() => {
       const dynamicItems: IResolvedDynamicItem[] = [];
-      const preparedItems = getDynamicActionsItemsLevel(model.items, (dynamicItem) => {
+      const preparedItems = getDynamicActionsItemsLevel(model.items ?? [], (dynamicItem) => {
         dynamicItems.push(dynamicItem);
       });
       return {
