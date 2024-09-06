@@ -10,7 +10,7 @@ variables:
 - name: pack-version
   value: ""
 - name: isMain
-  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/dsd-npo')]
+  value: $[eq(variables['Build.SourceBranch'], 'f/dsd-npo')]
 
 pr:
   branches:
@@ -100,7 +100,7 @@ stages:
         FileVersionNumber: "$(versionNo)"
         InformationalVersion: "$(versionNo)"
         PackageVersion: "$(versionNo)"
-      # condition: ne(variables['currentBranch'], 'refs/heads/main')
+      # condition: ne(variables['currentBranch'], 'f/dsd-npo')
     - task: DotNetCoreCLI@2
       displayName: dotnet Restore
       inputs:
@@ -125,19 +125,7 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: shesha-core-api'
       inputs:
-        ArtifactName: functional-shesha-api
-    # - task: DotNetCoreCLI@2
-    #   displayName: dotnet pack
-    #   inputs:
-    #     command: 'pack'
-    #     packagesToPack: 'shesha-functional-tests/backend/src/**/*.csproj'
-    #     # packagesToPack: 'shesha-functional-tests/backend/src/Boxfusion.SheshaFunctionalTests.Web.Host.csproj'        
-    #     configuration: '$(BuildParameters.configuration)'
-    #     nobuild: false
-    #     includesymbols: true
-    #     includesource: true
-    #     versioningScheme: 'byEnvVar'
-    #     versionEnvVar: 'versionNo'
+        ArtifactName: shesha-core-api
     - task: DotNetCoreCLI@2
       displayName: dotnet pack
       inputs:
@@ -158,7 +146,7 @@ stages:
           # Clear Artifacts Directory
           ls
         workingDirectory: $(build.artifactstagingdirectory)/temp
-      condition: eq(variables['currentBranch'], 'refs/heads/dsd-npo')
+      condition: eq(variables['currentBranch'], 'f/dsd-npo')
     - task: NuGetCommand@2
       displayName: dotnet push package
       inputs:
@@ -170,7 +158,7 @@ stages:
         publishPackageMetadata: true
         includeSymbols: true
         allowPackageConflicts: true
-      condition: eq(variables['currentBranch'], 'refs/heads/dsd-npo')
+      condition: eq(variables['currentBranch'], 'f/dsd-npo')
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: Nuget packs'
       inputs:
