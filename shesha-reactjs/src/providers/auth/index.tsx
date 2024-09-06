@@ -106,7 +106,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const { router } = useShaRouting();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const { value: defaultUrl, loadingState} = useSettingValue({module: 'Shesha', name:'Shesha.DefaultUrl'});
+  const { value: defaultUrl, loadingState } = useSettingValue({ module: 'Shesha', name:'Shesha.DefaultUrl' });
 
   const storedToken = getAccessTokenFromStorage(tokenName);
 
@@ -308,7 +308,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         if (currentUrl.current === '/' || currentUrl.current === '')
           redirectToDefaultUrl();
         else
-          redirectToUnauthorized();      }
+          redirectToUnauthorized();
+        }
     } else {
       fireHttpHeadersChanged(state);
       if (!state.isCheckingAuth && !state.isFetchingUserInfo) {
@@ -377,9 +378,11 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         redirect(url);
       })
       .catch((e) => {
-        const message = e?.message;
+        const message = e?.message || e?.data?.error?.message || 'Not authorized';
         const url = e?.url;
-        if (message) dispatch(fetchUserDataActionErrorAction({ message }));
+
+        dispatch(fetchUserDataActionErrorAction({ message }));
+        
         if (url) redirect(url);
       });
   };
