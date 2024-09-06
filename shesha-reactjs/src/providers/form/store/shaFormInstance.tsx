@@ -20,7 +20,7 @@ import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entiti
 import { useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
-import { IDeferredUpdateGroup } from "@/providers/deferredUpdateProvider/models";
+import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
 
 type ForceUpdateTrigger = () => void;
@@ -38,11 +38,11 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     constructor(form: IShaFormInstance){
         this.#form = form;
     }
-    addDeferredUpdateData = (data: Values): IDeferredUpdateGroup[]  => {
-      const deferredUpdateData = this.#form?.getDeferredUpdates();
-      if (deferredUpdateData?.length > 0)
-        data['_deferredUpdate'] = deferredUpdateData;
-      return deferredUpdateData;
+    addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[]  => {
+      const delayedUpdateData = this.#form?.getDelayedUpdates();
+      if (delayedUpdateData?.length > 0)
+        data['_delayedUpdate'] = delayedUpdateData;
+      return delayedUpdateData;
     };
     setFieldValue = (name: string, value: any) => {
         this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });        
@@ -153,8 +153,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formData = {};
     }
     
-    getDeferredUpdates = () => {
-      return this.dataSubmitContext?.getDeferredUpdates() || [];
+    getDelayedUpdates = () => {
+      return this.dataSubmitContext?.getDelayedUpdates() || [];
     };
 
     setDataSubmitContext = (context: IDataSubmitContext) => {
@@ -535,7 +535,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         const { customSubmitCaller } = payload;
 
         const { formData: data, antdForm } = this;
-        const { getDeferredUpdates } = this.dataSubmitContext ?? {};        
+        const { getDelayedUpdates } = this.dataSubmitContext ?? {};        
 
         if (this.useDataSubmitter) {
             this.dataSubmitState = { status: 'loading', hint: 'Saving data...', error: null };
@@ -547,7 +547,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
                     formFlatStructure: this.flatStructure,
                     data: data,
                     antdForm: antdForm,
-                    getDeferredUpdates: getDeferredUpdates,
+                    getDelayedUpdates: getDelayedUpdates,
                     expressionExecuter: this.expressionExecuter,
                     customSubmitCaller,
 
