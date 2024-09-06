@@ -3,8 +3,9 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Image, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { toBase64 } from './background/utils';
+import FormItem from '@/designer-components/_settings/components/formItem';
 
-const ImageUploader = ({ updateValue, backgroundImage, readOnly }) => {
+const ImageUploader = ({ backgroundImage, readOnly }) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -31,16 +32,6 @@ const ImageUploader = ({ updateValue, backgroundImage, readOnly }) => {
         setPreviewOpen(true);
     };
 
-    const handleChange: UploadProps['onChange'] = async ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-        if (newFileList.length > 0 && newFileList[0].originFileObj) {
-            const base64Image = await toBase64(newFileList[0].originFileObj as File);
-            updateValue({ file: base64Image });
-        } else if (newFileList.length === 0) {
-            updateValue({ file: null });
-        }
-    };
-
     const uploadButton = (
         <button style={{ border: 0, background: 'none' }} type="button">
             <PlusOutlined />
@@ -50,16 +41,18 @@ const ImageUploader = ({ updateValue, backgroundImage, readOnly }) => {
 
     return (
         <div style={{ position: 'relative' }}>
-            <Upload
-                listType="text"
-                fileList={fileList}
-                onPreview={handlePreview}
-                onChange={handleChange}
-                beforeUpload={() => false}
-                disabled={readOnly}
-            >
-                {fileList.length >= 1 ? null : uploadButton}
-            </Upload>
+            <FormItem name="background.file" label="File" jsSetting>
+                <Upload
+                    listType="text"
+                    fileList={fileList}
+                    onPreview={handlePreview}
+                    beforeUpload={() => false}
+                    disabled={readOnly}
+                >
+                    {fileList.length >= 1 ? null : uploadButton}
+                </Upload>
+            </FormItem>
+
             <Image
                 style={{ display: 'none' }}
                 preview={{

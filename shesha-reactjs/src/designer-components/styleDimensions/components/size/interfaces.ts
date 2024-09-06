@@ -1,19 +1,30 @@
 import { IConfigurableFormComponent } from "@/providers";
 
 export interface ISizeComponentProps extends IConfigurableFormComponent {
-    value?: IValue;
+    value?: IDimensionsValue;
     onChange?: Function;
 }
 
 export interface IInputUnits {
-    unit?: string;
+    value: number | string;
+    unit: string;
 }
 
-export interface IValue {
-    width?: number;
-    height?: number;
-    minWidth?: number;
-    minHeight?: number;
-    maxWidth?: number;
-    maxHeight?: number;
+export interface IDimensionsValue {
+    width?: IInputUnits;
+    height?: IInputUnits;
+    minWidth?: IInputUnits;
+    minHeight?: IInputUnits;
+    maxWidth?: IInputUnits;
+    maxHeight?: IInputUnits;
+    overflow?: string;
+}
+
+export interface ISizeType {
+    onChange?: (value) => void;
+    value?: IDimensionsValue;
+    readOnly?: boolean;
+    model?: any;
+    noOverflow?: boolean;
+    renderSettingsItem?: (name: string, label: string, component: React.ReactNode) => React.ReactNode;
 }

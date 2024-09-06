@@ -19,7 +19,7 @@ const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <SizeComponent value={value} onChange={onChange} />}
+                {() => <SizeComponent model={model} />}
             </ConfigurableFormItem>
         );
     },

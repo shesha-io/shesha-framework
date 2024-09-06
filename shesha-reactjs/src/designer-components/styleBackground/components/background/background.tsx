@@ -7,6 +7,8 @@ import SizeAndRepeat from './sizeAndRepeat';
 import ImageUploader from '../imageUploader';
 import { IBackgroundValue } from './interfaces';
 import FormItem from '@/designer-components/_settings/components/formItem';
+import { SettingInput } from '@/designer-components/_settings/components/utils';
+import { backgroundTypeOptions } from './utils';
 
 interface IBackgroundProps {
     onValuesChange?: (value) => void;
@@ -53,7 +55,7 @@ const BackgroundComponent: FC<IBackgroundProps> = ({ onValuesChange, value, mode
                 return (
                     <>
                         <Col className="gutter-row" span={24}>
-                            <FormItem  name="background.gradient.direction" label="Direction" jsSetting>
+                            <FormItem name="background.gradient.direction" label="Direction" jsSetting>
                                 <Input
 
                                     style={{ width: '100%' }}
@@ -108,7 +110,6 @@ const BackgroundComponent: FC<IBackgroundProps> = ({ onValuesChange, value, mode
                     <Col className="gutter-row" span={24}>
                         <FormItem name="background.file" label="File" jsSetting>
                             <ImageUploader
-                                updateValue={updateValue}
                                 backgroundImage={value?.file}
                                 readOnly={readOnly}
                             />
@@ -183,19 +184,9 @@ const BackgroundComponent: FC<IBackgroundProps> = ({ onValuesChange, value, mode
 
     return (
         <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
-            <Col className="gutter-row" span={24}>
-                <FormItem readOnly={readOnly} name="background.type" label="Type" jsSetting>
-                    <Radio.Group onChange={onTypeChange} disabled={readOnly} value={value?.type}>
-                        <Radio.Button value="color" title='Background color'><FormatPainterOutlined /></Radio.Button>
-                        <Radio.Button value="gradient" title='Gradient background'><BgColorsOutlined /></Radio.Button>
-                        <Radio.Button value="url" title='Image url'><LinkOutlined /></Radio.Button>
-                        <Radio.Button value="upload" title='Image upload'><UploadOutlined /></Radio.Button>
-                        <Radio.Button value="storedFile" title='Stored File'><DatabaseOutlined /></Radio.Button>
-                    </Radio.Group>
-                </FormItem>
-            </Col>
+            <SettingInput options={backgroundTypeOptions} value={value?.type} property='background.type' readOnly={readOnly} type='radio' label='Type' />
             {renderBackgroundInput()}
-            <SizeAndRepeat readOnly={readOnly} updateValue={updateValue} backgroundSize={value?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
+            <SizeAndRepeat readOnly={readOnly} backgroundSize={value?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
         </Row>
     );
 };

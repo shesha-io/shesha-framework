@@ -53,6 +53,7 @@ import SubForm from '@/designer-components/subForm';
 import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
 import Tabs from '@/designer-components/tabs';
+import SearchableTabs from '@/designer-components/_settings/components/tabs/searchableTabsComponent';
 import Text from '@/designer-components/text';
 import ValidationErrors from '@/designer-components/validationErrors';
 import Wizard from '@/designer-components/wizard';

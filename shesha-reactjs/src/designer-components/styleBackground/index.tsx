@@ -20,7 +20,7 @@ const BackgroundConfigurator: IToolboxComponent<IBackgroundProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <BackgroundComponent value={value} onValuesChange={onChange} />}
+                {() => <BackgroundComponent model={model} />}
             </ConfigurableFormItem>
         );
     },

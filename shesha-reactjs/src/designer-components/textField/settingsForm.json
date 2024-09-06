@@ -2,19 +2,18 @@
   "components": [
     {
       "id": "W_m7doMyCpCYwAYDfRh6I",
-      "type": "settingsTabs",
+      "type": "searchableTabs",
       "propertyName": "settingsTabs",
       "label": "Settings",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "size": "small",
       "tabs": [
         {
           "key": "1",
           "id": "s4gmBg31azZC0UjZjpfTm",
-          "title": "Display",
+          "label": "Display",
           "components": [
             {
               "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
@@ -32,6 +31,7 @@
               "propertyName": "label",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Label",
+              "jsSetting": true,
               "labelProps": {
                 "hideLabel": {
                   "_mode": "code",
@@ -200,7 +200,7 @@
         {
           "key": "2",
           "id": "Cc47W08MWrKdhoGqFKMI2",
-          "title": "Events",
+          "label": "Events",
           "components": [
             {
               "id": "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
@@ -208,7 +208,7 @@
               "propertyName": "onChangeCustom",
               "label": "On Change",
               "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "parentId": "Cc47W08MWrKdhoGqFKMI2",
               "hidden": false,
               "description": "Enter custom eventhandler on changing of event. (form, event) are exposed",
               "validate": {},
@@ -280,7 +280,7 @@
               "propertyName": "onFocusCustom",
               "label": "On Focus",
               "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "parentId": "Cc47W08MWrKdhoGqFKMI2",
               "hidden": false,
               "description": "Enter custom eventhandler on focus of event. (form, event) are exposed",
               "validate": {},
@@ -347,7 +347,7 @@
               "propertyName": "onBlurCustom",
               "label": "On Blur",
               "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "parentId": "Cc47W08MWrKdhoGqFKMI2",
               "hidden": false,
               "description": "Enter custom eventhandler on blur of event. (form, event) are exposed",
               "validate": {},
@@ -413,7 +413,7 @@
         {
           "key": "3",
           "id": "6eBJvoll3xtLJxdvOAlnB",
-          "title": "Validation",
+          "label": "Validation",
           "components": [
             {
               "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
@@ -497,12 +497,13 @@
         },
         {
           "key": "4",
-          "id": "rZf26voxhs-HxJ5k5ngYE",
-          "title": "Style",
+          "id": "rZf26voxhs_HxJ5k5ngYE",
+          "label": "Style",
           "components": [
             {
               "id": "trr26voxhs-HxJ5k5ngYE",
               "type": "fontStyle",
+              "propertyName": "font",
               "value": {
                 "_mode": "code",
                 "_code": "return getSettingValue(data.font);"
@@ -511,6 +512,7 @@
             {
               "id": "RvNp_osTwoxjfKmj1mO9p",
               "type": "sizeStyle",
+              "propertyName": "dimensions",
               "value": {
                 "_mode": "code",
                 "_code": "return getSettingValue(data.dimensions);"
@@ -519,6 +521,7 @@
             {
               "id": "cszx_osTwoxjfKmj1mO9p",
               "type": "borderStyle",
+              "propertyName": "border",
               "value": {
                 "_mode": "code",
                 "_code": "return getSettingValue(data);"
@@ -527,17 +530,27 @@
             {
               "id": "kflrk_gremfkmrrrfdseef",
               "type": "backgroundStyle",
+              "propertyName": "background",
               "value": {
                 "_mode": "code",
                 "_code": "return getSettingValue(data.background);"
               }
+            },
+            {
+              "id": "d9adcd79-771f-4585-a09d-9b769f594490",
+              "type": "styleBox",
+              "propertyName": "stylingBox",
+              "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
+              "validate": {},
+              "settingsValidationErrors": [],
+              "jsSetting": false
             }
           ]
         },
         {
           "key": "5",
           "id": "6Vw9iiDw9d0MD_Rh5cbIn",
-          "title": "Security",
+          "label": "Security",
           "components": [
             {
               "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
@@ -563,7 +576,6 @@
     "labelCol": {
       "span": 8
     },
-    "size": "small",
     "wrapperCol": {
       "span": 16
     },

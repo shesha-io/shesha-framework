@@ -3,19 +3,17 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Divider, Input, Select, Space } from 'antd';
 import FormItem from '@/designer-components/_settings/components/formItem';
 import { IBackgroundValue } from './interfaces';
+import { InputRow } from '@/designer-components/_settings/components/utils';
 
 type SizeAndRepeatProps = {
-    updateValue: (value: Partial<IBackgroundValue>) => void;
     backgroundSize: IBackgroundValue['size'];
     backgroundPosition: IBackgroundValue['position'];
     backgroundRepeat: IBackgroundValue['repeat'];
     readOnly?: boolean;
 };
 
-const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
-const { Option } = Select;
 
-const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, backgroundPosition, backgroundRepeat, readOnly }) => {
+const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ backgroundSize, backgroundPosition, backgroundRepeat, readOnly }) => {
     const defaultSizes = ['cover', 'contain', 'auto'];
     const defaultPositions = ['center', 'top', 'left', 'right', 'bottom', 'top left', 'top right', 'bottom left', 'bottom right'];
 
@@ -34,7 +32,6 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
     const [size, setSize] = useState({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
     const [position, setPosition] = useState({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
 
-
     const clearInputs = (type: 'size' | 'position') => {
         const emptyState = { width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } };
         if (type === 'size')
@@ -50,51 +47,26 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
             if (!sizes.includes(newValue)) {
                 setSizes(() => [...defaultSizes, newValue]);
             }
-            updateValue({ size: newValue });
         } else {
             if (!positions.includes(newValue)) {
                 setPositions(() => [...defaultPositions, newValue]);
             }
-            updateValue({ position: newValue });
         }
 
         clearInputs(type);
     };
 
-    const renderOptions = (menu, value, setValue, label: 'size' | 'position') => (
+
+    const renderOptions = (menu, value, label: 'size' | 'position') => (
         <>
             {menu}
             <Divider style={{ margin: '8px 0' }} />
             <Space style={{ padding: '0 8px 4px' }} onClick={(e) => e.stopPropagation()}>
                 <Space.Compact size="large">
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px', width: '100%' }}>
-                        {['width', 'height'].map((dim) => (
-                            <div key={dim[0] + dim[1]} style={{ flex: '1 1 100px', minWidth: '100px' }}>
-                                <Input
-                                    key={dim}
-                                    prefix={dim === 'width' ? 'x : ' : 'y : '}
-                                    addonAfter={
-                                        <Select
-                                            value={value[dim].unit}
-                                            disabled={readOnly}
-                                            onChange={(unit) => setValue(prev => ({ ...prev, [dim]: { ...prev[dim], unit } }))}
-                                            onClick={(e) => e.stopPropagation()}
-                                            onMouseDown={(e) => e.stopPropagation()}
-                                            dropdownStyle={{ width: '70px' }}
-                                        >
-                                            {units.map(unit => <Option key={unit} value={unit}>{unit}</Option>)}
-                                        </Select>
-                                    }
-                                    readOnly={readOnly}
-                                    value={value[dim].value}
-                                    onChange={(e) => setValue(prev => ({ ...prev, [dim]: { ...prev[dim], value: e.target.value } }))}
-                                    size='small'
-                                    onClick={(e) => e.stopPropagation()}
-                                />
-                            </div>
-                        ))}
-                    </div>
-
+                    <InputRow inputs={[
+                        { label: 'Width', property: `background.${label}.width.value`, readOnly, value: value?.width?.value, hasUnits: true },
+                        { label: 'Height', property: `background.${label}.height.value`, readOnly, value: value?.height?.value, hasUnits: true }
+                    ]} />
                 </Space.Compact>
                 <Button
                     type="text"
@@ -123,21 +95,15 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ updateValue, backgroundSize, ba
                         { label: 'Repeat Y', value: 'repeat-y' },
                     ]
                 }
-            ].map(({ name, label, value, options, state, setState }) => (
-                <Col key={name} span={24} style={{ fontSize: '11px' }}>
-                    <FormItem name={`background.${name}`} label={label} jsSetting>
-                        <Select
-                            value={value || (name === 'repeat' ? 'no-repeat' : 'auto')}
-                            disabled={readOnly}
-                            onChange={(newValue) => {
-                                updateValue({ [name]: newValue });
-                                if (name !== 'repeat') clearInputs(name as 'size' | 'position');
-                            }}
-                            dropdownRender={name !== 'repeat' ? (menu) => renderOptions(menu, state, setState, name as 'size' | 'position') : undefined}
-                            options={options.map((item) => typeof item === 'string' ? { label: item, value: item } : item)}
-                        />
-                    </FormItem>
-                </Col>
+            ].map(({ name, label, value, options, state }) => (
+                <FormItem name={`background.${name}`} label={label} jsSetting>
+                    <Select
+                        value={value || (name === 'repeat' ? 'no-repeat' : 'auto')}
+                        disabled={readOnly}
+                        dropdownRender={name !== 'repeat' ? (menu) => renderOptions(menu, state, name as 'size' | 'position') : undefined}
+                        options={options.map((item) => typeof item === 'string' ? { label: item, value: item } : item)}
+                    />
+                </FormItem>
             ))}
         </>
     );

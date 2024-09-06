@@ -20,11 +20,12 @@ import { ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
 import { getSizeStyle } from '../styleDimensions/components/size/utils';
 import { getBorderStyle } from '../styleBorder/components/border/utils';
-import { getFontStyle } from '../styleFont/components/font/utils';
 import { getBackgroundStyle } from '../styleBackground/components/background/utils';
 import settingsFormJson from './settingsForm.json';
 import { useStyles } from './styles/styles';
 import { getShadowStyle } from '../styleShadow/components/shadow/utils';
+import { TextFieldSettingsForm } from './settings';
+import { getFontStyle } from '../styleFont/components/font/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -58,6 +59,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
+    console.log("TEXTFIELD - MODEL:: ", model)
     const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border]);
     const fontStyles = useMemo(() => getFontStyle(model.font), [model.font]);
@@ -89,8 +91,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       ...shadowStyles,
     });
 
-    console.log("Border:::", model?.border)
-
     const jsStyle = getStyle(model.style, formData);
     const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
@@ -101,7 +101,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model?.border?.border?.all?.style ? 'borderless' : undefined,
+      variant: model?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,
@@ -152,8 +152,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
+  // settingsFormMarkup: settingsForm,
+  // validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     textType: 'text',
     ...model,

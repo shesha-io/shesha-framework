@@ -1,11 +1,6 @@
-import React, {
-    cloneElement,
-    FC,
-    ReactElement
-} from 'react';
+import React, { cloneElement, FC, ReactElement } from 'react';
 import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
 import SettingsControl from '../settingsControl';
-
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
@@ -21,60 +16,63 @@ interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model
     model?: any;
 }
 
-
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
+    const { name, label, tooltip, required, hidden, orientation, jsSetting, children, valuePropName = 'value' } = props;
+    const childElement = children as ReactElement;
+    const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
 
-    const valuePropName = props.valuePropName ?? 'value';
-    const children = props.children as ReactElement;
-    const readOnly = props.readOnly || children.props.readOnly || children.props.disabled;
+    const handleChange = (onChange) => (...args: any[]) => {
+        const event = args[0];
+        const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
+            ? (event.target as HTMLInputElement)[valuePropName]
+            : event;
+        onChange(data);
+    };
+
+    const createClonedElement = (value, onChange) => cloneElement(
+        childElement,
+        {
+            ...childElement?.props,
+            readOnly,
+            disabled: readOnly,
+            size: 'small',
+            onChange: handleChange(onChange),
+            [valuePropName]: value
+        }
+    );
 
     return (
         <ConfigurableFormItem
             model={{
-                propertyName: props.name,
-                label: props.label,
+                propertyName: name,
+                label,
                 type: '',
                 id: '',
-                description: props.tooltip,
-                validate: { required: props.required },
-                hidden: props.hidden,
+                description: tooltip,
+                validate: { required },
+                hidden,
                 size: 'small'
             }}
-            orientation={props.orientation}
+            orientation={orientation}
             className='sha-js-label'
         >
-            {(value, onChange) => {
-                return (
+            {(value, onChange) =>
+                jsSetting === false ? (
+                    createClonedElement(value, onChange)
+                ) : (
                     <SettingsControl
-                        propertyName={props.name}
+                        propertyName={name}
                         mode={'value'}
                         onChange={onChange}
                         value={value}
                         readOnly={readOnly}
-                        orientation={props.orientation}
+                        orientation={orientation}
                         labelProps={props.labelProps}
                     >
-                        {(value, onChange) => {
-                            return cloneElement(
-                                children,
-                                {
-                                    ...children?.props,
-                                    readOnly: readOnly,
-                                    disabled: readOnly,
-                                    size: 'small',
-                                    onChange: (...args: any[]) => {
-                                        const event = args[0];
-                                        const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
-                                            ? (event.target as HTMLInputElement)[valuePropName]
-                                            : event;
-                                        onChange(data);
-                                    },
-                                    [valuePropName]: value
-                                });
-                        }}
+                        {(value, onChange) => createClonedElement(value, onChange)}
                     </SettingsControl>
-                );
-            }}
+                )
+            }
         </ConfigurableFormItem>
     );
 };

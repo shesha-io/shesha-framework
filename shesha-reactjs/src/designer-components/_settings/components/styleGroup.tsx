@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigProvider, Collapse } from 'antd';
+import { ConfigProvider, Collapse, CollapseProps } from 'antd';
 import FontComponent from '../../styleFont/components/font/fontComponent';
 import SizeComponent from '../../styleDimensions/components/size/sizeComponent';
 import BorderComponent from '../../styleBorder/components/border/borderComponent';
@@ -8,39 +8,43 @@ import ShadowComponent from '../../styleShadow/components/shadow/shadowComponent
 import SettingsFormItem from '../settingsFormItem';
 import { CodeEditor } from '@/components';
 import StyleBox from '../../styleBox/components/box';
+
+type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
+
 interface StyleGroupProps {
-    readOnly: boolean;
-    onValuesChange: (values: any) => void;
     model: any;
+    omitted?: omittedStyleType[];
 }
 
-const StyleGroup: React.FC<StyleGroupProps> = ({ readOnly, onValuesChange, model }) => {
+const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [] }) => {
 
-    const stylePanels = (omitted) => [
+    const readOnly = model?.readOnly;
+
+    const items: CollapseProps['items'] = [
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent readOnly={readOnly} onChange={onValuesChange} value={model.font} />
+            children: <FontComponent readOnly={readOnly} model={model} />
         },
         {
             key: '2',
             label: 'Size',
-            children: <SizeComponent readOnly={readOnly} onChange={onValuesChange} value={model.dimensions} noOverflow />
+            children: <SizeComponent model={model} noOverflow />
         },
         {
             key: '3',
             label: 'Border',
-            children: <BorderComponent readOnly={readOnly} onChange={onValuesChange} value={model.border} model={model} />
+            children: <BorderComponent model={model} />
         },
         {
             key: '4',
             label: 'Background',
-            children: <BackgroundComponent readOnly={readOnly} onValuesChange={onValuesChange} value={model.background} model={model} />
+            children: <BackgroundComponent model={model} />
         },
         {
             key: '5',
             label: 'Shadow',
-            children: <ShadowComponent readOnly={readOnly} value={model.shadow} />
+            children: <ShadowComponent model={model} />
         },
         {
             key: '6',
@@ -64,9 +68,9 @@ const StyleGroup: React.FC<StyleGroupProps> = ({ readOnly, onValuesChange, model
 
             )
         }
-    ].filter(panel => !omitted?.includes(panel.label)).map((panel, i) => ({ ...panel, key: `${i + 1}` }));
+    ].filter(item => !omitted.map(s => s.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase())).map((item, index) => ({ ...item, key: index.toString() }));
 
-    const activateAllStylePanels = () => stylePanels([]).map(panel => panel.key);
+    const activateAllStylePanels = items.map(panel => panel.key.toString());
 
     return (
         <ConfigProvider
@@ -82,11 +86,10 @@ const StyleGroup: React.FC<StyleGroupProps> = ({ readOnly, onValuesChange, model
                 },
             }}
         >
-            <Collapse activeKey={activateAllStylePanels()} style={{ paddingLeft: 0 }}>
-                <Collapse
-                    items={stylePanels([])}
-                />
-            </Collapse>
+            <Collapse
+                defaultActiveKey={activateAllStylePanels}
+                items={items}
+            />
         </ConfigProvider>
     );
 };

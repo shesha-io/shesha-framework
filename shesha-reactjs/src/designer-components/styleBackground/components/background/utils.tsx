@@ -1,3 +1,5 @@
+import React from "react";
+import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue } from "./interfaces";
 
 export const toBase64 = file => new Promise<string>((resolve, reject) => {
@@ -36,3 +38,22 @@ export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<Reac
 
     return style;
 };
+
+export const gradientDirectionOptions = [
+    { value: 'to right', title: 'To Right' },
+    { value: 'to left', title: 'To Left' },
+    { value: 'to top', title: 'To Top' },
+    { value: 'to bottom', title: 'To Bottom' },
+    { value: 'to top right', title: 'To Top Right' },
+    { value: 'to top left', title: 'To Top Left' },
+    { value: 'to bottom right', title: 'To Bottom Right' },
+    { value: 'to bottom left', title: 'To Bottom Left' },
+];
+
+export const backgroundTypeOptions = [
+    { value: 'color', title: 'Background color', icon: <FormatPainterOutlined /> },
+    { value: 'gradient', title: 'Gradient background', icon: <BgColorsOutlined /> },
+    { value: 'url', title: 'Image url', icon: <LinkOutlined /> },
+    { value: 'upload', title: 'Image upload', icon: <UploadOutlined /> },
+    { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
+];

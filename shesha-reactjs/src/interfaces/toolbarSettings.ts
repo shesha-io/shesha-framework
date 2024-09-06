@@ -148,7 +148,7 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addTabs(props: ITabsComponentPropsType | ((data: T) => ITabsComponentPropsType)) {
-    return this.addProperty(props, 'tabs');
+    return this.addProperty(props, 'searchableTabs');
   }
 
   public addDropdown(props: DropdownType | ((data: T) => DropdownType)) {

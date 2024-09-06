@@ -1,51 +1,28 @@
-import { Col, Input, Row } from 'antd';
+import { Row } from 'antd';
 import React, { FC } from 'react';
-import FormItem from '@/designer-components/_settings/components/formItem';
-import { IShadowValue } from './interfaces';
-import { ColorPicker } from '@/components';
+
+import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 
 
 export interface IShadowType {
-    value?: IShadowValue;
-    readOnly?: boolean;
+    model?: any;
 }
 
-const ShadowComponent: FC<IShadowType> = ({ readOnly, value }) => {
+const ShadowComponent: FC<IShadowType> = ({ model }) => {
 
-    const renderSizeInput = (label, property) => {
-        const currentValue = value?.[property];
+    console.log("Shadow model", model);
+    const { value, readOnly } = model;
 
-        return (
-            <FormItem name={`shadow.${property}`} label={label} jsSetting>
-                <Input
-                    type='number'
-                    value={currentValue}
-                    readOnly={readOnly}
-                    max={100}
-                />
-            </FormItem>
-        );
+    const commonProps = {
+        readOnly,
+        value,
     };
-
-    const renderInputRow = (inputs: Array<{ label: string, property }>) => (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px', width: '100%' }}>
-            {inputs.map(({ label, property }) => (
-                <div key={property} style={{ flex: '1 1 100px', minWidth: '100px' }}>
-                    {renderSizeInput(label, property)}
-                </div>
-            ))}
-        </div>
-    );
 
     return (
         <Row >
-            {renderInputRow([{ label: 'Offset X', property: 'offsetX' }, { label: 'Offset Y', property: 'offsetY' }])}
-            {renderInputRow([{ label: 'Blur', property: 'blurRadius' }, { label: 'Spread', property: 'spreadRadius' }])}
-            <Col span={24}>
-                <FormItem name="shadow.color" label="Color" jsSetting>
-                    <ColorPicker />
-                </FormItem>
-            </Col>
+            <InputRow inputs={[{ label: 'Offset X', property: 'offsetX', ...commonProps }, { label: 'Offset Y', property: 'offsetY', ...commonProps }]} />
+            <InputRow inputs={[{ label: 'Blur', property: 'blurRadius', ...commonProps }, { label: 'Spread', property: 'spreadRadius', ...commonProps }]} />
+            <SettingInput type='color' label='Color' property='color' readOnly={readOnly} value={value} />
         </Row>
     );
 };

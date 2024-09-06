@@ -19,7 +19,7 @@ const LabelConfigurator: IToolboxComponent<ILabelComponentProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <LabelConfiguratorComponent value={value} onChange={onChange} />}
+                {() => <LabelConfiguratorComponent model={model} />}
             </ConfigurableFormItem>
         );
     },
