@@ -33,7 +33,7 @@ if ("$PipeSourceBranch" -like "*/pull/*"){
     write-host "Source Branch should be pull here: $PipeSourceBranch"
     write-host "Target Branch of the PR should be: $PipeTargetBranch"              
  
-    if ("$PipeTargetBranch" -eq "dsd-npo"){
+    if ("$PipeTargetBranch" -eq "f/dsd-npo"){
         write-host "PR target is main branch. Setting currentBranch to refs/heads/main"  
         write-host "##vso[task.setvariable variable=currentBranch]refs/heads/main"
         
@@ -79,7 +79,7 @@ elseif ("$PipeSourceBranch" -like "*/tags/release-*"){
     write-host "##vso[task.setvariable variable=currentBranch]$releaseBranch"
     write-host "##vso[task.setvariable variable=versionNo]$releaseVersion"
 }
-elseif ("$PipeSourceBranch" -like "*/dsd-npo"){
+elseif ("$PipeSourceBranch" -like "*f/dsd-npo"){
    write-host "Source Branch should be main here: $PipeSourceBranch"
    write-host "##vso[task.setvariable variable=currentBranch]$PipeSourceBranch"
    write-host "##vso[task.setvariable variable=versionNo]$mainVersion"
