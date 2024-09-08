@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { sheshaStyles, getTextHoverEffects } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const textHoverEffect = getTextHoverEffects(token);
 
   const saveBtn = cx(css`
@@ -45,11 +45,23 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         display: inline;
       }
     }
+
+    .${prefixCls}-divider {
+      margin: 0;
+    }
   `;
 
   const commentItem = css`
-    margin: 15px;
-    height: 50px;
+    margin-inline: 15px;
+    min-height: 50px;
+
+    .${prefixCls}-comment-inner {
+      padding-block: unset;
+
+      .${prefixCls}-typography {
+        margin-bottom: 0;
+      }
+    }
   `;
 
   const notes = css`
