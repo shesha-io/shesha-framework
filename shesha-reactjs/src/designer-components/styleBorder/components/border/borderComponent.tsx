@@ -31,7 +31,7 @@ const BorderComponent: FC<IBorderProps> = ({ model, readOnly }) => {
             <SettingInput label='Hide Border' property='hideBorder' value={value} readOnly={readOnly} type='switch' />
             {!hideBorder && <>
                 <SettingInput
-                    options={radiusOptions}
+                    buttonGroupOptions={radiusOptions}
                     value={activeRadius}
                     type='radio'
                     property='border.activeRadius'
@@ -39,9 +39,9 @@ const BorderComponent: FC<IBorderProps> = ({ model, readOnly }) => {
                     readOnly={readOnly}
                 />
                 <SettingInput label='Radius' property={`border.radius.${activeRadius}`} readOnly={readOnly} value={value} type='number' />
-                <SettingInput label='Side' property={`border.activeBorder`} readOnly={readOnly} value={activeBorder} type='radio' options={borderOptions} />
+                <SettingInput label='Side' property={`border.activeBorder`} readOnly={readOnly} value={activeBorder} type='radio' buttonGroupOptions={borderOptions} />
                 <InputRow inputs={[{ label: 'Color', property: `border.border.${activeBorder}.color`, readOnly, value: value?.border?.[activeBorder]?.color, type: 'color' }, { label: 'Width', property: `border.border.${activeBorder}.width`, readOnly, value: value?.border?.[activeBorder]?.width }]} />
-                <SettingInput label='Style' property={`border.border.${activeBorder}.style`} readOnly={readOnly} value={value?.border?.[activeBorder]?.style} type='radio' options={styleOptions} />
+                <SettingInput label='Style' property={`border.border.${activeBorder}.style`} readOnly={readOnly} value={value?.border?.[activeBorder]?.style} type='radio' buttonGroupOptions={styleOptions} />
             </>}
         </>
     );

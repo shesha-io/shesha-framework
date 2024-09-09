@@ -3,30 +3,30 @@ import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from "@ant
 import { IFontValue } from './interfaces';
 
 export const fontTypes = [
-    { value: 'Arial', title: 'Arial' },
-    { value: 'Helvetica', title: 'Helvetica' },
-    { value: 'Times New Roman', title: 'Times New Roman' },
-    { value: 'Courier New', title: 'Courier New' },
-    { value: 'Verdana', title: 'Verdana' },
-    { value: 'Georgia', title: 'Georgia' },
-    { value: 'Palatino', title: 'Palatino' },
-    { value: 'Garamond', title: 'Garamond' },
-    { value: 'Comic Sans MS', title: 'Comic Sans MS' },
-    { value: 'Trebuchet MS', title: 'Trebuchet MS' },
-    { value: 'Arial Black', title: 'Arial Black' },
-    { value: 'impact', title: 'Impact' },
+    { value: 'Arial', label: 'Arial' },
+    { value: 'Helvetica', label: 'Helvetica' },
+    { value: 'Times New Roman', label: 'Times New Roman' },
+    { value: 'Courier New', label: 'Courier New' },
+    { value: 'Verdana', label: 'Verdana' },
+    { value: 'Georgia', label: 'Georgia' },
+    { value: 'Palatino', label: 'Palatino' },
+    { value: 'Garamond', label: 'Garamond' },
+    { value: 'Comic Sans MS', label: 'Comic Sans MS' },
+    { value: 'Trebuchet MS', label: 'Trebuchet MS' },
+    { value: 'Arial Black', label: 'Arial Black' },
+    { value: 'impact', label: 'Impact' },
 ];
 
 export const fontWeights = [
-    { value: 100, title: 'thin' },
-    { value: 200, title: 'extra-light' },
-    { value: 300, title: 'light' },
-    { value: 400, title: 'normal' },
-    { value: 500, title: 'medium' },
-    { value: 600, title: 'semi-bold' },
-    { value: 700, title: 'bold' },
-    { value: 800, title: 'extra-bold' },
-    { value: 900, title: 'black' },
+    { value: '100', label: '100 - thin' },
+    { value: '200', label: '200 - extra-light' },
+    { value: '300', label: '300 - light' },
+    { value: '400', label: '400 - normal' },
+    { value: '500', label: '500 - medium' },
+    { value: '600', label: '600 - semi-bold' },
+    { value: '700', label: '700 - bold' },
+    { value: '800', label: '800 - extra-bold' },
+    { value: '900', label: '900 - black' },
 ];
 
 

@@ -80,7 +80,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
         {
             key: "style",
             label: "Style",
-            children: <StyleGroup model={model}/>
+            children: <StyleGroup model={model} omitted={['shadow', 'stylingBox', 'style']} />
 
         },
         {

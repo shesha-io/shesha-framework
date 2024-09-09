@@ -32,7 +32,7 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ readOnly, model }) => {
                     label='Label Align'
                     readOnly={readOnly}
                     value={model?.labelAlign}
-                    options={[
+                    buttonGroupOptions={[
                         { value: 'left', title: 'Left' },
                         { value: 'right', title: 'Right' },
                     ]}

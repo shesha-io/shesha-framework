@@ -12,7 +12,7 @@ import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import { getFieldNameFromExpression } from '@/index';
 
-interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
+export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
     label?: string;
     jsSetting?: boolean;

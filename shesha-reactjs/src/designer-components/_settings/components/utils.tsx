@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import FormItem from "./formItem";
 import { ColorPicker } from '@/components';
 import { useSearchQuery } from './tabs/context';
+import CustomDropdown from './CustomDropdown';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
     value: string | number;
     icon?: React.ReactNode;
     title?: string;
+}
+
+export interface IDropdownOption {
+    label: string;
+    value: string;
 }
 
 interface SettingsRadioGroupProps {
@@ -22,8 +28,9 @@ interface SettingsRadioGroupProps {
 interface IInputProps {
     label: string;
     property: string;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'button' | 'number';
-    options?: IRadioOption[];
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'button' | 'number' | 'customDropdown';
+    buttonGroupOptions?: IRadioOption[];
+    dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
     value: any;
     hasUnits?: boolean;
@@ -62,12 +69,22 @@ export const SettingsRadioGroup: React.FC<SettingsRadioGroupProps> = ({
 
 const { Option } = Select;
 
-const updateValue = (value, newValue) => {
-    value.unit = newValue;
-    value.value = newValue || 0;
-};
+const UnitSelector: FC<{ property: string, value: any }> = ({ property, value }) => {
+    const currentValue = value?.[property];
+    return <FormItem name={property + '.unit'} jsSetting={false} >
+        <Select
+            value={currentValue?.unit || 'px'}
+            dropdownStyle={{ width: '70px' }}
+            style={{ margin: '0px', height: '24px', width: '70px', padding: 0 }}
+        >
+            {units.map(unit => (
+                <Option key={unit} value={unit} >{unit}</Option>
+            ))}
+        </Select>
+    </FormItem>
+}
 
-export const SettingInput: React.FC<IInputProps> = ({ label, property, type, options, readOnly, value, hasUnits }) => {
+export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, value, hasUnits }) => {
     const { searchQuery } = useSearchQuery();
     const currentValue = value?.[property];
 
@@ -80,15 +97,15 @@ export const SettingInput: React.FC<IInputProps> = ({ label, property, type, opt
                     value={currentValue}
                     size='small'
                 >
-                    {options.map(option => (
+                    {dropdownOptions.map(option => (
                         <Option key={option.value} value={option.value}>
-                            {option.title}
+                            {option.label}
                         </Option>
                     ))}
                 </Select>;
             case 'radio':
                 return <Radio.Group value={currentValue}>
-                    {options.map(({ value, icon, title }) => (
+                    {buttonGroupOptions.map(({ value, icon, title }) => (
                         <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
                     ))}
                 </Radio.Group>;
@@ -96,32 +113,13 @@ export const SettingInput: React.FC<IInputProps> = ({ label, property, type, opt
                 return <Switch disabled={readOnly} />;
             case 'number':
                 return <InputNumber min={0} max={100} readOnly={readOnly} />
+            case 'customDropdown':
+                return <CustomDropdown value={currentValue} options={dropdownOptions} />
             default:
                 return <Input
-                    addonAfter={
-                        hasUnits && (
-                            <FormItem name={property + '.unit'} jsSetting={false}>
-                                <Select
-                                    value={currentValue?.unit || 'px'}
-                                    onChange={(unit) => {
-                                        updateValue(currentValue, unit);
-                                    }}
-                                    dropdownStyle={{ width: '70px' }}
-                                    size='small'
-                                >
-                                    {units.map(unit => (
-                                        <Option key={unit} value={unit}>{unit}</Option>
-                                    ))}
-                                </Select>
-                            </FormItem>
-                        )
-                    }
-                    onChange={(e) => {
-                        const newValue = e.target.value;
-                        updateValue(currentValue, newValue);
-                    }}
                     value={currentValue?.value ?? currentValue}
                     readOnly={readOnly}
+                    addonAfter={hasUnits ? <UnitSelector property={property} value={value} /> : null}
                 />;
         }
     }
@@ -158,7 +156,6 @@ export const searchFormItems = (children: React.ReactNode, searchQuery: string):
 
         if (!React.isValidElement(child)) return null;
 
-        console.log("Child::", child);
         if (child.key === null && !child.props.children) return child;
 
         if (child.type === 'div' || child.type === React.Fragment) {

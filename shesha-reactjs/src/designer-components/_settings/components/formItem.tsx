@@ -1,20 +1,7 @@
 import React, { cloneElement, FC, ReactElement } from 'react';
-import { ConfigurableFormItem, IConfigurableFormItemProps } from '@/components';
+import { ConfigurableFormItem } from '@/components';
 import SettingsControl from '../settingsControl';
-
-interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
-    name?: string;
-    label?: string;
-    jsSetting?: boolean;
-    readOnly?: boolean;
-    disabled?: boolean;
-    style?: React.CSSProperties;
-    required?: boolean;
-    tooltip?: string;
-    hidden?: boolean;
-    labelProps?: { hideLabel: boolean; labelAlign: string, onValuesChange?: (newValues) => void };
-    model?: any;
-}
+import { ISettingsFormItemProps } from '../settingsFormItem';
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
     const { name, label, tooltip, required, hidden, orientation, jsSetting, children, valuePropName = 'value' } = props;

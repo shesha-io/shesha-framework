@@ -10,13 +10,14 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
 });
 
 export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<React.CSSProperties> => {
+
     if (!input) return {};
     const style: React.CSSProperties = {};
 
     if (input.type === 'color') {
         style.backgroundColor = input.color;
     } else if (input.type === 'gradient') {
-        const colors = input.gradient?.colors || [];
+        const colors = Object.values(input.gradient?.colors) || [];
         style.backgroundImage = `linear-gradient(${input.gradient?.direction || 'to right'}, ${colors.join(', ')})`;
     } else if (input.type === 'url') {
         style.backgroundImage = `url(${input.url})`;
@@ -40,20 +41,27 @@ export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<Reac
 };
 
 export const gradientDirectionOptions = [
-    { value: 'to right', title: 'To Right' },
-    { value: 'to left', title: 'To Left' },
-    { value: 'to top', title: 'To Top' },
-    { value: 'to bottom', title: 'To Bottom' },
-    { value: 'to top right', title: 'To Top Right' },
-    { value: 'to top left', title: 'To Top Left' },
-    { value: 'to bottom right', title: 'To Bottom Right' },
-    { value: 'to bottom left', title: 'To Bottom Left' },
+    { value: 'to right', label: 'To Right' },
+    { value: 'to left', label: 'To Left' },
+    { value: 'to top', label: 'To Top' },
+    { value: 'to bottom', label: 'To Bottom' },
+    { value: 'to top right', label: 'To Top Right' },
+    { value: 'to top left', label: 'To Top Left' },
+    { value: 'to bottom right', label: 'To Bottom Right' },
+    { value: 'to bottom left', label: 'To Bottom Left' },
 ];
 
 export const backgroundTypeOptions = [
-    { value: 'color', title: 'Background color', icon: <FormatPainterOutlined /> },
-    { value: 'gradient', title: 'Gradient background', icon: <BgColorsOutlined /> },
-    { value: 'url', title: 'Image url', icon: <LinkOutlined /> },
-    { value: 'upload', title: 'Image upload', icon: <UploadOutlined /> },
-    { value: 'storedFile', title: 'Stored File', icon: <DatabaseOutlined /> },
+    { value: 'color', label: 'Background color', icon: <FormatPainterOutlined /> },
+    { value: 'gradient', label: 'Gradient background', icon: <BgColorsOutlined /> },
+    { value: 'url', label: 'Image url', icon: <LinkOutlined /> },
+    { value: 'upload', label: 'Image upload', icon: <UploadOutlined /> },
+    { value: 'storedFile', label: 'Stored File', icon: <DatabaseOutlined /> },
+];
+
+export const repeatOptions = [
+    { value: 'no-repeat', label: 'No Repeat' },
+    { value: 'repeat', label: 'Repeat' },
+    { value: 'repeat-x', label: 'Repeat X' },
+    { value: 'repeat-y', label: 'Repeat Y' },
 ];

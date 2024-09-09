@@ -25,7 +25,7 @@ const SizeComponent: FC<ISizeType> = ({ model }) => {
                 { label: 'Max W', property: 'dimensions.maxWidth', ...commonProps },
                 { label: 'Max H', property: 'dimensions.maxHeight', ...commonProps }
             ]} />
-            {!noOverflow && <SettingInput label='Overflow' property='dimensions.overflow' type='radio' readOnly={readOnly} value={value} options={overflowOptions} />}
+            {!noOverflow && <SettingInput label='Overflow' property='dimensions.overflow' type='radio' readOnly={readOnly} value={value} buttonGroupOptions={overflowOptions} />}
         </>
     );
 };

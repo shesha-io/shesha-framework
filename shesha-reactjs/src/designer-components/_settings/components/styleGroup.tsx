@@ -13,10 +13,11 @@ type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shado
 
 interface StyleGroupProps {
     model: any;
+    onChange?: (value: any) => void;
     omitted?: omittedStyleType[];
 }
 
-const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [] }) => {
+const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange }) => {
 
     const readOnly = model?.readOnly;
 
@@ -39,7 +40,7 @@ const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [] }) => {
         {
             key: '4',
             label: 'Background',
-            children: <BackgroundComponent model={model} />
+            children: <BackgroundComponent model={model} onChange={onChange} />
         },
         {
             key: '5',

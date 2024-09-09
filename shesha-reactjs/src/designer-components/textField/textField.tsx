@@ -73,7 +73,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         });
       };
       fetchStyles();
-    }, [model.background]);
+    }, [model.background, model?.background?.gradient?.colors]);
 
     if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
