@@ -26,7 +26,11 @@ namespace Shesha.Otp
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IOtpAppServiceHelper _otpServiceHelper;
 
-        public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings, IRepository<OtpConfig, Guid> otpConfigRepository, IRepository<Person, Guid> personRepository, IOtpAppServiceHelper otpServiceHelper)
+        public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, 
+            IOtpGenerator passwordGenerator, IOtpSettings otpSettings, 
+            IRepository<OtpConfig, Guid> otpConfigRepository, 
+            IRepository<Person, Guid> personRepository, 
+            IOtpAppServiceHelper otpServiceHelper)
         {
             _smsGateway = smsGateway;
             _emailSender = emailSender;

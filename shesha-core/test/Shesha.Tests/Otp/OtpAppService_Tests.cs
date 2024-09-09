@@ -1,5 +1,7 @@
-﻿using Abp.Net.Mail;
+﻿using Abp.Domain.Repositories;
+using Abp.Net.Mail;
 using Moq;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Otp;
 using Shesha.Otp.Configuration;
@@ -13,7 +15,7 @@ using Xunit;
 
 namespace Shesha.Tests.Otp
 {
-    public class OtpAppService_Tests: SheshaNhTestBase
+    public class OtpAppService_Tests : SheshaNhTestBase
     {
         [Fact]
         public async Task SuccessOtp_Test()
@@ -45,12 +47,6 @@ namespace Shesha.Tests.Otp
 
         private async Task<IVerifyPinResponse> CheckOtpCommon(Action<VerifyPinInput> transformAction)
         {
-            // todo: implement settings and register using normal way
-            /*
-            var settings = new Mock<IOtpSettings>();
-            settings.SetupGet(s => s.PasswordLength).Returns(6);
-            settings.SetupGet(s => s.Alphabet).Returns("0123456789");
-            */
             var settings = LocalIocManager.Resolve<IOtpSettings>();
 
             var currentPin = string.Empty;
@@ -70,12 +66,21 @@ namespace Shesha.Tests.Otp
                 ExpiresOn = DateTime.MaxValue
             }));
 
+            // Mock the required repositories and helpers
+            var otpConfigRepository = new Mock<IRepository<OtpConfig, Guid>>();
+            var personRepository = new Mock<IRepository<Person, Guid>>();
+            var otpAppServiceHelper = new Mock<IOtpAppServiceHelper>();
+
+            // Instantiate OtpAppService with all required parameters
             var otp = new OtpAppService(
                 new NullSmsGateway(),
                 LocalIocManager.Resolve<IEmailSender>(),
                 otpStorage.Object,
                 new OtpGenerator(settings),
-                settings
+                settings,
+                otpConfigRepository.Object,
+                personRepository.Object,
+                otpAppServiceHelper.Object
             );
 
             var sendResponse = await otp.SendPinAsync(new SendPinInput()
@@ -94,7 +99,7 @@ namespace Shesha.Tests.Otp
 
             return await otp.VerifyPinAsync(verificationInput);
         }
-    
+
         private async Task<IVerifyPinResponse> CheckEmailLink(Action<VerifyPinInput> action)
         {
             var settings = LocalIocManager.Resolve<IOtpSettings>();
@@ -117,12 +122,21 @@ namespace Shesha.Tests.Otp
                 ExpiresOn = DateTime.MaxValue
             }));
 
+            // Mock the required repositories and helpers
+            var otpConfigRepository = new Mock<IRepository<OtpConfig, Guid>>();
+            var personRepository = new Mock<IRepository<Person, Guid>>();
+            var otpAppServiceHelper = new Mock<IOtpAppServiceHelper>();
+
+            // Instantiate OtpAppService with all required parameters
             var otp = new OtpAppService(
                 new NullSmsGateway(),
                 LocalIocManager.Resolve<IEmailSender>(),
                 otpStorage.Object,
                 new OtpGenerator(settings),
-                settings
+                settings,
+                otpConfigRepository.Object,
+                personRepository.Object,
+                otpAppServiceHelper.Object
             );
 
             var sendResponse = await otp.SendPinAsync(new SendPinInput()
