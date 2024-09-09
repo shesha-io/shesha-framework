@@ -5,14 +5,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
 
     const jsSwitch = cx(css`
         &.${prefixCls}-btn {
-        // position: absolute;
-        //     left: 0;
-        //     right: auto;
-        //     top: 4px;
-        //     font-size: 12px;
-        // height: 24px;
-        //     width: max-content;
-        //     margin-left: 5px;
             margin-right: 5px;
             display: flex;
             justify-content: center;
@@ -30,18 +22,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
                 right: 0;
                 left: auto;
                 &.inlineJS {
-                // top: -28px;
                 height: 20px;
-                
                 }
 
                 &.inlineJS {
                     margin-left: 5px;
                 }
-                // &:not(.inlineJS){
-                // top: -28px;
-                // }
-                
                 
             }
             .${sheshaStyles.verticalSettingsClass} & {

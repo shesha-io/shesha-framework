@@ -1,30 +1,31 @@
-import { Button, Col, Input, RadioChangeEvent, Row, Tag } from 'antd';
+import { Button, Input, Row, Tag } from 'antd';
 import { Autocomplete } from '@/components/autocomplete';
-import React, { FC, useState } from 'react';
-import { ColorPicker } from '@/components';
+import React, { FC, useEffect, useState } from 'react';
 import SizeAndRepeat from './sizeAndRepeat';
 import ImageUploader from '../imageUploader';
-import { IBackgroundValue } from './interfaces';
 import FormItem from '@/designer-components/_settings/components/formItem';
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
+import { nanoid } from '@/utils/uuid';
+import { useFormDesignerActions } from '@/providers/formDesigner';
 
 interface IBackgroundProps {
     model?: any;
     onChange: (value: any) => void;
 }
 
-const BackgroundComponent: FC<IBackgroundProps> = ({ model }) => {
+const BackgroundComponent: FC<IBackgroundProps> = ({ model, onChange }) => {
+    console.log("BackgroundComponent", onChange);
     const { background: value, readOnly } = model;
-    const initialColors = value?.gradient?.colors || {};
 
-    const [colors, setColors] = useState<Record<string, string>>(initialColors);
+    const { updateComponent } = useFormDesignerActions();
+    const [colors, setColors] = useState<Record<string, string>>(value?.gradient?.colors || {});
 
+    console.log(colors)
     const addColor = () => {
-        const newKey = Date.now().toString(); // Use timestamp for unique keys
-        const newColor = '#000000'; // Default to black, or any other default color
-        setColors({ ...colors, [newKey]: newColor });
-        model.background.gradient.colors[newKey] = newColor; // Update the model as well
+        const newKey = nanoid();
+        setColors({ ...colors, [newKey]: '' });
+        model.background.gradient.colors[newKey] = '';
     };
 
     const removeColor = (key: string) => {
@@ -32,11 +33,22 @@ const BackgroundComponent: FC<IBackgroundProps> = ({ model }) => {
         delete newColors[key];
         setColors(newColors);
 
-        // Update the model as well
         const newGradientColors = { ...model.background.gradient.colors };
         delete newGradientColors[key];
         model.background.gradient.colors = newGradientColors;
+        updateComponent({
+            componentId: model.id, settings: {
+                ...model,
+                type: model.type
+            }
+        });
+
     };
+
+    useEffect(() => {
+        const updatedColors = { '1': '', '2': '', ...value?.gradient?.colors };
+        setColors(updatedColors);
+    }, [model?.background?.gradient?.colors]);
 
     const renderBackgroundInput = () => {
         switch (value?.type) {
@@ -51,29 +63,26 @@ const BackgroundComponent: FC<IBackgroundProps> = ({ model }) => {
                             type='dropdown'
                             dropdownOptions={gradientDirectionOptions}
                         />
-                        <Row>
-                            //TODO: use InputRow
+                        <Row gutter={[2, 2]}>
                             {Object.entries(colors).map(([key, color]) => (
-                                <div>
-                                    <Tag
-                                        key={key}
-                                        bordered={false}
-                                        closable
-                                        onClose={(e) => {
-                                            e.preventDefault();
-                                            removeColor(key);
-                                        }}
-                                    >
-                                        <SettingInput
-                                            value={value}
-                                            property={`background.gradient.colors.${key}`}
-                                            readOnly={readOnly}
-                                            type='color'
-                                            label={color} />
-                                    </Tag>
-                                </div>
+                                <Tag
+                                    key={key}
+                                    bordered={false}
+                                    closable={key !== '1' && key !== '2'}
+                                    onClose={(e) => {
+                                        e.preventDefault();
+                                        removeColor(key);
+                                    }}
+                                    style={{ width: '75px' }}
+                                >
+                                    <SettingInput
+                                        value={value}
+                                        property={`background.gradient.colors.${key}`}
+                                        readOnly={readOnly}
+                                        type='color'
+                                        label={color} />
+                                </Tag>
                             ))}
-
                         </Row>
                         <Button onClick={addColor}>Add color</Button>
                     </>
@@ -144,11 +153,11 @@ const BackgroundComponent: FC<IBackgroundProps> = ({ model }) => {
     };
 
     return (
-        <Row gutter={[8, 8]} style={{ fontSize: '11px' }}>
+        <>
             <SettingInput buttonGroupOptions={backgroundTypeOptions} value={value?.type} property='background.type' readOnly={readOnly} type='radio' label='Type' />
             {renderBackgroundInput()}
             <SizeAndRepeat readOnly={readOnly} backgroundSize={value?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
-        </Row>
+        </>
     );
 };
 

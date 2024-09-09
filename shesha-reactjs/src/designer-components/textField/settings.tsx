@@ -9,12 +9,6 @@ import TextArea from 'antd/lib/input/TextArea';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
 import StyleGroup from '../_settings/components/styleGroup';
-import FontComponent from '../styleFont/components/font/fontComponent';
-import SizeComponent from '../styleDimensions/components/size/sizeComponent';
-import BorderComponent from '../styleBorder/components/border/borderComponent';
-import BackgroundComponent from '../styleBackground/components/background/background';
-import ShadowComponent from '../styleShadow/components/shadow/shadowComponent';
-import FormItem from '../_settings/components/formItem';
 import SearchableTabs from '../_settings/components/tabs/searchableTabsComponent';
 
 const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) => {

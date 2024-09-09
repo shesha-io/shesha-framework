@@ -33,11 +33,11 @@ import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
 import { IFontType } from '@/designer-components/styleFont/components/font/fontComponent';
 import { IBackgroundProps } from '@/designer-components/styleBackground/components/background/interfaces';
 import { IBorderProps } from '@/designer-components/styleBorder/components/border/interfaces';
-import { ISizeType } from '@/designer-components/styleDimensions/components/size/sizeComponent';
 import { ILabelComponentProps } from '@/designer-components/styleLabel/components/label/interfaces';
 import { IPrefixSuffixType } from '@/designer-components/stylePrefixSuffix/components/prefixSuffix/prefixSuffixComponent';
 import { IShadowType } from '@/designer-components/styleShadow/components/shadow/shadowComponent';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
+import { ISizeType } from '@/designer-components/styleDimensions/components/size/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -147,7 +147,7 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'collapsiblePanel');
   }
 
-  public addTabs(props: ITabsComponentPropsType | ((data: T) => ITabsComponentPropsType)) {
+  public addSearchableTabs(props: ITabsComponentPropsType | ((data: T) => ITabsComponentPropsType)) {
     return this.addProperty(props, 'searchableTabs');
   }
 

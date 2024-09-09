@@ -23,8 +23,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
   quickviewFormPath,
   quickviewDisplayPropertyName,
   quickviewGetEntityUrl,
-  quickviewWidth,
-  style,
+  quickviewWidth
 }) => {
   const { styles } = useStyles();
   const renderValue = () => {

@@ -22,7 +22,6 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             ...childElement?.props,
             readOnly,
             disabled: readOnly,
-            size: 'small',
             onChange: handleChange(onChange),
             [valuePropName]: value
         }
@@ -37,10 +36,8 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                 id: '',
                 description: tooltip,
                 validate: { required },
-                hidden,
-                size: 'small'
+                hidden
             }}
-            orientation={orientation}
             className='sha-js-label'
         >
             {(value, onChange) =>

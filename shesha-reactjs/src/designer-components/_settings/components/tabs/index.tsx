@@ -1,13 +1,11 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { FolderOutlined } from '@ant-design/icons';
-import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { IFormComponentContainer } from '@/providers/form/models';
 import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { TabSettingsForm } from './settings';
 import SearchableTabs from './searchableTabsComponent';
-import { useSheshaApplication } from '@/providers';
 
 
 const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
@@ -17,10 +15,25 @@ const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
 
-    console.log('model', model);
-    console.log('model.tabs', model.tabs);
+    const formSettings = {
+      layout: "vertical",
+      colon: false,
+      labelCol: {
+        span: 8
+      },
+      wrapperCol: {
+        span: 16
+      },
+      displayName: "DEFAULT_FORM_SETTINGS",
+      __docgenInfo: {
+        description: "Default form settings",
+        displayName: "DEFAULT_FORM_SETTINGS",
+        props: {}
+      }
+    }
+
     return model.hidden ? null : (
-      <SearchableTabs model={model} />
+      <SearchableTabs model={{ ...model, formSettings }} />
     );
   },
   initModel: (model) => {

@@ -19,6 +19,7 @@ interface StyleGroupProps {
 
 const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange }) => {
 
+    console.log("StyleGroup", onChange);
     const readOnly = model?.readOnly;
 
     const items: CollapseProps['items'] = [

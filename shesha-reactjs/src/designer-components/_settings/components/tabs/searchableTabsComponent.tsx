@@ -10,19 +10,20 @@ interface SearchableTabsProps {
 }
 
 const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
-    const { tabs, isDynamic } = model;
+    const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredTabs, setFilteredTabs] = useState(tabs);
 
     useEffect(() => {
 
-        setFilteredTabs(tabs.map(tab => ({
+        setFilteredTabs(tabs.map((tab: any) => ({
             ...tab,
+            label: tab.label || tab.title,
             children: tab.components
-                ? <ParentProvider model={[]}>
+                ? <ParentProvider model={model}>
                     <ComponentsContainer
                         containerId={tab.id + tab.key}
-                        dynamicComponents={!isDynamic ? filterDynamicComponents(tab.components, searchQuery) : []} />
+                        dynamicComponents={filterDynamicComponents(tab.components, searchQuery)} />
                 </ParentProvider>
                 : searchFormItems(tab.children, searchQuery)
         })));

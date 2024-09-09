@@ -24,7 +24,6 @@ export interface IConfigurableFormItemProps {
   customVisibility?: string;
   wrapperCol?: ColProps;
   labelCol?: ColProps;
-  orientation?: 'horizontal' | 'vertical';
 }
 
 export interface IConfigurableFormItem_FormProps {
@@ -95,7 +94,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   initialValue,
   className,
   labelCol,
-  wrapperCol, orientation
+  wrapperCol
 }) => {
   const { formData } = useForm();
 
@@ -112,12 +111,12 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  const { hideLabel, type } = model;
+  const { hideLabel } = model;
 
   const formItemProps: FormItemProps = {
     className: classNames(className),
     label: hideLabel ? null : model.label,
-    labelAlign: type === 'horizontal' ? 'left' : model.labelAlign,
+    labelAlign: model.labelAlign,
     hidden: model.hidden,
     labelWrap: true,
     valuePropName: valuePropName,
@@ -129,7 +128,6 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
 
-  const formItemPropsAndLayout = orientation === 'horizontal' ? { ...{ ...formItemProps }, layout: orientation, labelWrap: true, colon: false, labelCol: { span: 12 }, wrapperCol: { span: 24 } } : formItemProps;
 
   if (typeof children === 'function') {
     if (model.context) {
@@ -146,7 +144,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     } else {
       return (
         <ConfigurableFormItemForm
-          formItemProps={formItemPropsAndLayout}
+          formItemProps={formItemProps}
           valuePropName={valuePropName}
         >
           {children}
@@ -156,7 +154,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   } else {
     // Use standard Form.Item for components without binding support
     return (
-      <Form.Item {...formItemPropsAndLayout} >{children}</Form.Item>
+      <Form.Item {...formItemProps} >{children}</Form.Item>
     );
   }
 };

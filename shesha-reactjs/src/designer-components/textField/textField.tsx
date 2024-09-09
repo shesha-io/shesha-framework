@@ -26,6 +26,7 @@ import { useStyles } from './styles/styles';
 import { getShadowStyle } from '../styleShadow/components/shadow/utils';
 import { TextFieldSettingsForm } from './settings';
 import { getFontStyle } from '../styleFont/components/font/utils';
+import { settingFormMarkup } from './settingsForm';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -59,7 +60,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    console.log("TEXTFIELD - MODEL:: ", model)
     const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border]);
     const fontStyles = useMemo(() => getFontStyle(model.font), [model.font]);
@@ -155,6 +155,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
   // settingsFormMarkup: settingsForm,
   // validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  // settingsFormMarkup: settingFormMarkup,
+  // validateSettings: (model) => validateConfigurableComponentSettings(settingFormMarkup, model),
   initModel: (model) => ({
     textType: 'text',
     ...model,
