@@ -61,6 +61,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
       .${prefixCls}-typography {
         margin-bottom: 0;
       }
+
+      .${prefixCls}-comment-content-author {
+        margin-block: 10px;
+      }
     }
   `;
 
