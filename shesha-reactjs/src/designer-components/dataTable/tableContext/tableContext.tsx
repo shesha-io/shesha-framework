@@ -14,7 +14,7 @@ import {
 } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
-import { useStyles } from '@/components/formDesigner/styles/styles';
+import ConfigError from '@/components/configError';
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
 }
@@ -23,8 +23,6 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     const { sourceType, entityType, endpoint, id, propertyName, componentName, allowReordering } = props;
     const { formMode } = useForm();
     const { data } = useFormData();
-    const { styles } = useStyles();
-
 
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
     const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
@@ -45,19 +43,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     if (isDesignMode && configurationWarningMessage)
         return (
-            <div
-                onDrop={(event) => {
-                    event.preventDefault();
-                    return;
-                }}
-                style={{ pointerEvents: 'none' }}
-            >
-                <ComponentsContainer containerId={id} render={() => {
-                    return <div className={styles.shaDropHint}>Drag and Drop form component disabled</div>
-                }
-                }
-                    debugMode={true} />
-            </div>
+
+            <ConfigError type='datatable' errorMessage={configurationWarningMessage} comoponentId={id} />
         );
 
     const provider = (getFieldValue = undefined, onChange = undefined) => (

@@ -1,5 +1,4 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
-import { Alert } from 'antd';
 import React from 'react';
 import { useGlobalState, useFormData, useForm } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/formDesignerUtils';
@@ -10,6 +9,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { getSettings } from './settings';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import ConfigError from '@/components/configError';
 
 export interface IStatusTagProps extends Omit<ITagProps, 'mappings' | 'style'>, IConfigurableFormComponent {
   mappings?: string;
@@ -34,16 +34,16 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     // TODO: AS - review code from Luke and remove
     /** Used to inject table row in the status tag if rendered on databale. Uses data if not applicable **/
     //func(model?.injectedTableRow || data, formMode);
-    
+
     const getValueByExpression = (expression: string = '') => {
-      return typeof expression === 'string' 
+      return typeof expression === 'string'
         ? expression?.includes('{{') ? evaluateString(expression, data) : expression
         : '';
     };
 
     if (allEmpty && valueSource === 'manual') {
       return formMode === 'designer'
-        ? <Alert type="warning" message="Status tag not configured properly" />
+        ? <ConfigError type='statusTag' errorMessage="Status tag not configured properly" comoponentId={model?.id} />
         : null;
     }
 
@@ -76,7 +76,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     return (
       <ConfigurableFormItem model={model}>
         {(value) =>
-          <StatusTag {...props} style={getStyle(model?.style, data, globalState)} 
+          <StatusTag {...props} style={getStyle(model?.style, data, globalState)}
             value={model?.valueSource !== 'form' ? props.value : value}
           />
         }
@@ -92,16 +92,16 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
       value: prev['value'],
       color: prev['color'],
     }))
-    .add<IStatusTagProps>(1, (prev) => 
+    .add<IStatusTagProps>(1, (prev) =>
       migratePropertyName(
         migrateCustomFunctions(
           migrateFunctionToProp(
             migrateFunctionToProp(
               migrateFunctionToProp(prev, 'override', 'overrideCodeEvaluator')
-            , 'value', 'valueCodeEvaluator')
-          , 'color', 'colorCodeEvaluator')
+              , 'value', 'valueCodeEvaluator')
+            , 'color', 'colorCodeEvaluator')
         )))
-    .add<IStatusTagProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<IStatusTagProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
   ,
   initModel: (model) => ({
     mappings: JSON.stringify(DEFAULT_STATUS_TAG_MAPPINGS, null, 2) as any,

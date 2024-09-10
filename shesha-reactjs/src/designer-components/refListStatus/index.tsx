@@ -12,6 +12,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import ConfigError from '@/components/configError';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
@@ -33,7 +34,7 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     if (formMode === 'designer' && !referenceListId) {
-      return null;
+      return <ConfigError type='refListStatus' errorMessage="Please make sure that you've specified 'referenceListId' property." comoponentId={model.id} />
     }
 
     return (
@@ -83,7 +84,6 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     .add<IRefListStatusProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRefListStatusProps>(3, (prev) => migrateVisibility(prev))
     .add<IRefListStatusProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IRefListStatusProps>(5, (prev) => ({ ...prev, requiredConfigs: ['referenceListId'] }))
 
   ,
   settingsFormMarkup: RefListStatusSettingsForm,

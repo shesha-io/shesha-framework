@@ -51,7 +51,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header='Customization'>
-        <SettingsFormItem name="items">
+        <SettingsFormItem name="items" initialValue={undefined}>
           <ButtonGroupConfigurator readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>

@@ -1,10 +1,11 @@
-import { Alert, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import React, { FC, lazy } from 'react';
 import { useFormData, useGlobalState, useSubForm } from '@/providers';
 import { useForm } from '@/providers/form';
 import { evaluateString, getStyle } from '@/providers/form/utils';
 import { IMarkdownProps } from './interfaces';
 import './styles.module.scss'; // This manually loads github-markdown-css, as per https://raw.githubusercontent.com/sindresorhus/github-markdown-css/gh-pages/github-markdown.css
+import ConfigError from '@/components/configError';
 
 let SyntaxHighlighter;
 let dark;
@@ -38,7 +39,7 @@ const Markdown: FC<IMarkdownProps> = model => {
   const content = evaluateString(model?.content, { data, globalState });
 
   if (!content && formMode === 'designer') {
-    return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
+    return <ConfigError type='markdown' errorMessage="Please make sure you enter the content to be displayed here!" comoponentId={model?.id} />;
   }
 
   const isSSR = typeof window === 'undefined';

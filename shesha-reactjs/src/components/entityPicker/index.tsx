@@ -90,7 +90,6 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
   const selectedMode = mode === 'single' ? undefined : mode;
 
-  const hasEntityType = !!entityType;
 
 
   const handleMultiChange = (selectedValues: string[]) => {
@@ -158,7 +157,6 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
               onChange={handleMultiChange}
               style={{
                 ...style, width: `calc(100% - ${size === 'large' ? '40px' : '32px'})`,
-                pointerEvents: hasEntityType ? 'auto' : 'none',
               }}
               loading={selection.loading}
             >
@@ -169,7 +167,6 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
               className={styles.pickerInputGroupEllipsis}
               disabled={disabled}
               loading={loading ?? false}
-              style={{ pointerEvents: hasEntityType ? 'auto' : 'none' }}
               size={size}
               icon={<EllipsisOutlined />}
             />

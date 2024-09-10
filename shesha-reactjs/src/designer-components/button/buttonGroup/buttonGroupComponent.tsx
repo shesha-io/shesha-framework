@@ -17,7 +17,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
-  Factory: ({ model ,form}) => {
+  Factory: ({ model, form }) => {
     return model.hidden ? null : <ButtonGroup {...model} disabled={model.readOnly} form={form} />;
   },
   migrator: (m) => m
@@ -52,14 +52,14 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
 
         return { ...item };
       };
-      
+
       newModel.items = prev.items?.map(updateItemDefaults);
       return newModel;
     })
     .add<IButtonGroupComponentProps>(6, (prev) => migrateVisibility(prev))
     .add<IButtonGroupComponentProps>(7, (prev) => migrateButtonsNavigateAction(prev))
     .add<IButtonGroupComponentProps>(8, (prev) => {
-      const newModel = {...prev, editMode: 'editable'} as IButtonGroupComponentProps;
+      const newModel = { ...prev, editMode: 'editable' } as IButtonGroupComponentProps;
 
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         const newItem = migrateReadOnly(item, 'inherited');
@@ -69,9 +69,9 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       };
 
       newModel.items = newModel.items.map(updateItems);
-      return newModel ;
+      return newModel;
     })
-    .add<IButtonGroupComponentProps>(9, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IButtonGroupComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IButtonGroupComponentProps>(10, (prev) => {
       const setDownIcon = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         if (isGroup(item)) {

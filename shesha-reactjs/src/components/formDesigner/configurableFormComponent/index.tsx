@@ -15,13 +15,12 @@ import {
   EditOutlined,
   EyeInvisibleOutlined,
   FunctionOutlined,
-  StopOutlined,
-  WarningOutlined
+  StopOutlined
 } from '@ant-design/icons';
 import { getActualPropertyValue, useAvailableConstantsData } from '@/providers/form/utils';
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
-import { Alert, Button, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { ShaForm, useIsDrawingForm } from '@/providers/form';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
@@ -50,30 +49,11 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const hidden = getActualPropertyValue(componentModel, allData, 'hidden')?.hidden;
   const componentEditModeFx = isPropertySettings(componentModel.editMode);
   const componentEditMode = getActualPropertyValue(componentModel, allData, 'editMode')?.editMode as EditMode;
+  const toolboxComponent = getToolboxComponent(componentModel.type);
 
 
   const actionText1 = (hiddenFx ? 'hidden' : '') + (hiddenFx && componentEditModeFx ? ' and ' : '') + (componentEditModeFx ? 'disabled' : '');
   const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
-
-
-  const isPartiallyConfigured = useMemo(() => {
-
-    if (!getActualPropertyValue(componentModel, allData, 'requiredConfigs')?.requiredConfigs) {
-      return {
-        isPartiallyConfigured: false,
-        missingConfigs: []
-      };
-    } else {
-      const missingConfigs = getActualPropertyValue(componentModel, allData, 'requiredConfigs')?.requiredConfigs?.filter(x => !componentModel?.[x]);
-      return {
-        isPartiallyConfigured: missingConfigs?.length > 0,
-        missingConfigs
-      }
-
-    }
-
-
-  }, [componentModel, allData]);
 
   const settingsEditor = useMemo(() => {
     const renderRerquired = isSelected && settingsPanelRef.current;
@@ -93,7 +73,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
         <ComponentProperties
           componentModel={componentModel}
           readOnly={readOnly}
-          toolboxComponent={getToolboxComponent(componentModel.type)}
+          toolboxComponent={toolboxComponent}
         />
       </div>
     ), settingsPanelRef.current, "propertiesPanel");
@@ -101,23 +81,6 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
     return result;
   }, [isSelected]);
 
-
-  const errortip = (missingConfigs) => (
-    <div>
-      <div>
-        <strong>Type:</strong> {componentModel.type}
-      </div>
-      {Boolean(componentModel.propertyName) && (
-        <div>
-          <p>
-            {`The following configurations are not set correctly: ${missingConfigs.join(', ')}`}
-          </p>
-        </div>
-      )}
-
-    </div>
-  );
-  const errorStyle = !isPartiallyConfigured ? { padding: '5px 3px' } : { padding: 'unset' };
 
   return (
     <div
@@ -153,32 +116,12 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
 
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
       <div>
-        <DragWrapper componentId={componentModel.id} inCompleteConfiguration={isPartiallyConfigured?.isPartiallyConfigured} componentRef={componentRef} readOnly={readOnly} >
+        <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
           <div style={{
-            ...errorStyle,
-
-          }}>
+            minHeight: '40px',
+          }}
+            id={componentModel.id}>
             <FormComponent componentModel={componentModel} componentRef={componentRef} />
-            {isPartiallyConfigured.isPartiallyConfigured && (<>
-              <div style={{
-                display: 'flex',
-                height: '60px',
-                width: '70px',
-                zIndex: 1000,
-                position: 'absolute',
-                top: '0',
-                right: '0',
-                justifyContent: 'flex-end',
-                alignItems: 'flex-start'
-              }}>
-                <Tooltip title={errortip(isPartiallyConfigured?.missingConfigs)} placement="right">
-                  <Button icon={<WarningOutlined />} size="middle" danger>
-                  </Button>
-                </Tooltip>
-              </div>
-            </>
-
-            )}
           </div>
 
         </DragWrapper>

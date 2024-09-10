@@ -190,8 +190,6 @@ export interface IConfigurableFormComponent
 
   permissions?: string[];
 
-  requiredConfigs?: string[];
-
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

@@ -1,7 +1,6 @@
 import DataTableProvider from '@/providers/dataTable';
 import FormItem from 'antd/lib/form/FormItem';
 import React, { FC, useEffect, useMemo } from 'react';
-import { Alert } from 'antd';
 import { evaluateDynamicFilters } from '@/utils';
 import { IDataSourceComponentProps } from './models';
 import {
@@ -14,6 +13,7 @@ import {
 } from '@/providers';
 import { useDataSource } from '@/providers/dataSourcesProvider';
 import { useDeepCompareEffect } from 'react-use';
+import ConfigError from '@/components/configError';
 
 const getPageSize = (value?: number) => {
   return Boolean(value) ? value : 1147489646 /* get all data */;
@@ -47,7 +47,7 @@ const DataSourceAccessor: FC<IDataSourceComponentProps> = ({ id, propertyName: n
       [
         { match: 'data', data: formData },
         { match: 'globalState', data: globalState },
-        { match: 'pageContext', data: {...pageContext.getFull()} ?? {} },
+        { match: 'pageContext', data: { ...pageContext.getFull() } ?? {} },
       ],
       propertyMetadataAccessor
     ).then(evaluatedFilters => {
@@ -101,13 +101,7 @@ export const DataSourceInner: FC<IDataSourceComponentProps> = props => {
 
   if (isDesignMode && ((sourceType === 'Entity' && !entityType) || (sourceType === 'Url' && !endpoint)))
     return (
-      <Alert
-        className="sha-designer-warning"
-        message="DataSource is not configured"
-        description={sourceType === 'Entity' ? "Select entity type on the settings panel" : "Select endpoint on the settings panel"}
-        type="warning"
-        showIcon
-      />
+      <ConfigError type="DataSource" errorMessage="Entity type or endpoint is not configured" comoponentId={id} />
     );
 
   return providerWrapper;

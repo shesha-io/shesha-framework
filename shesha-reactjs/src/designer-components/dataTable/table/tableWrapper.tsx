@@ -20,14 +20,9 @@ import {
     useSheshaApplication,
 } from '@/providers';
 import { GlobalTableStyles } from './styles/styles';
-import { Alert } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { FilterList } from '../filterList/filterList';
-
-const NotConfiguredWarning: FC = () => {
-    return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
-};
-
+import ConfigError from '@/components/configError';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { id, items, useMultiselect, tableStyle, containerStyle } = props;
@@ -80,7 +75,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         return <Fragment />;
     };
 
-    if (isDesignMode && !repository) return <NotConfiguredWarning />;
+    if (isDesignMode && !repository) return <ConfigError type='table' errorMessage='Table is not configured properly' comoponentId={id} />;
 
     const toggleFieldPropertiesSidebar = () => {
         if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });

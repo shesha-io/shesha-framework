@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
-    Alert,
     Button,
     Divider,
     Dropdown,
@@ -33,6 +32,7 @@ import { useStyles } from './styles/styles';
 import classNames from 'classnames';
 import { addPx } from '../util';
 import { removeNullUndefined } from '@/providers/utils';
+import ConfigError from '@/components/configError';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -153,7 +153,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
 type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 
-export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, disabled, form }) => {
+export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, disabled, form, id }) => {
     const { styles } = useStyles();
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
@@ -208,11 +208,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 
     if (actualItems.length === 0 && isDesignMode)
         return (
-            <Alert
-                className="sha-designer-warning"
-                message="Button group is empty. Press 'Customize Button Group' button to add items"
-                type="warning"
-            />
+            <ConfigError type='buttonGroup' errorMessage="Button group is empty. Press 'Customize Button Group' button to add items" comoponentId={id} />
         );
 
     if (isInline) {

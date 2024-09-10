@@ -7,7 +7,7 @@ import {
   Drawer,
   DrawerProps,
   Space
-  } from 'antd';
+} from 'antd';
 import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDrawerProps } from './models';

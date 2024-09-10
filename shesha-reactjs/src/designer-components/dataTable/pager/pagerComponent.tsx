@@ -9,9 +9,9 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { useDataTableStore } from '@/index';
-import { Alert } from 'antd';
+import ConfigError from '@/components/configError';
 
-export interface IPagerComponentProps extends ITablePagerProps, IConfigurableFormComponent {}
+export interface IPagerComponentProps extends ITablePagerProps, IConfigurableFormComponent { }
 
 const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   type: 'datatable.pager',
@@ -21,14 +21,11 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     if (model.hidden) return null;
-    
-    return store 
+
+    return store
       ? <TablePager {...model} />
-      : <Alert
-        className="sha-designer-warning"
-        message="Table Pager must be used within a Data Table Context"
-        type="warning"
-      />;
+      : <ConfigError type='datatable.pager' errorMessage='Table Pager must be used within a Data Table Context' comoponentId={model.id} />
+
   },
   initModel: (model: IPagerComponentProps) => {
     return {
@@ -37,12 +34,12 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
       showTotalItems: true,
       items: [],
     };
-  },  
-  migrator:  m => m
-    .add<IPagerComponentProps>(0, prev => ({...prev} as IPagerComponentProps))
+  },
+  migrator: m => m
+    .add<IPagerComponentProps>(0, prev => ({ ...prev } as IPagerComponentProps))
     .add(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPagerComponentProps>(2, (prev) => migrateVisibility(prev))
-    .add<IPagerComponentProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<IPagerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
   ,
   settingsFormMarkup: context => getSettings(context),
   validateSettings: model => validateConfigurableComponentSettings(getSettings(model), model),

@@ -23,6 +23,7 @@ import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import ConfigError from '@/components/configError';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -106,9 +107,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       return !!value ? value.id : null;
     }, [model.valueFormat, model.outcomeCustomJs, model.displayEntityKey, model.entityType]);
 
-    // if (form.formMode === 'designer' && !model.entityType) {
-    //   return null;
-    // }
+    if (form.formMode === 'designer' && !model.entityType) {
+      return <ConfigError type='entityPicker' errorMessage="Please make sure you enter the entity type to be used here!" comoponentId={model?.id} />
+    }
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
     const computedStyle = getStyle(style, formData) ?? {};
@@ -203,7 +204,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
     }))
     .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IEntityPickerComponentProps>(10, (prev) => ({ ...prev, requiredConfigs: ['entityType'] }))
 
   ,
   settingsFormMarkup: entityPickerSettings,
