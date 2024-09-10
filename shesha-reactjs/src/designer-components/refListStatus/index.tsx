@@ -34,7 +34,11 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     if (formMode === 'designer' && !referenceListId) {
-      return <ConfigError type='refListStatus' errorMessage="Please make sure that you've specified 'referenceListId' property." comoponentId={model.id} />
+      return <ConfigError
+        type='refListStatus'
+        errorMessage="Please make sure that you've specified 'referenceListId' property."
+        comoponentId={model.id}
+      />;
     }
 
     return (

@@ -24,7 +24,11 @@ const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
 
     return store
       ? <TablePager {...model} />
-      : <ConfigError type='datatable.pager' errorMessage='Table Pager must be used within a Data Table Context' comoponentId={model.id} />
+      : <ConfigError
+        type='datatable.pager'
+        errorMessage='Table Pager must be used within a Data Table Context'
+        comoponentId={model.id}
+      />;
 
   },
   initModel: (model: IPagerComponentProps) => {

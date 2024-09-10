@@ -14,11 +14,11 @@ const ConfigError: FC<IConfigErrorProps> = ({ errorMessage, type, comoponentId }
         if (componentDoc) {
             componentDoc.style.border = '1px solid red';
             componentDoc.style.borderRadius = '5px';
-        }
+        };
         return () => {
             componentDoc.style.border = 'unset';
             componentDoc.style.borderRadius = 'unset';
-        }
+        };
     }, []);
 
 
@@ -54,7 +54,7 @@ const ConfigError: FC<IConfigErrorProps> = ({ errorMessage, type, comoponentId }
                 </Tooltip>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default ConfigError;

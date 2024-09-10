@@ -26,7 +26,11 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
       ? null
       : store
         ? <GlobalTableFilter block={block} />
-        : <ConfigError type='datatable.quickSearch' errorMessage='Quick Search must be used within a Data Table Context' comoponentId={id} />
+        : <ConfigError
+          type='datatable.quickSearch'
+          errorMessage='Quick Search must be used within a Data Table Context'
+          comoponentId={id}
+        />;
   },
   initModel: (model: IQuickSearchComponentProps) => {
     return {

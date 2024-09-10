@@ -108,7 +108,11 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     }, [model.valueFormat, model.outcomeCustomJs, model.displayEntityKey, model.entityType]);
 
     if (form.formMode === 'designer' && !model.entityType) {
-      return <ConfigError type='entityPicker' errorMessage="Please make sure you enter the entity type to be used here!" comoponentId={model?.id} />
+      return <ConfigError
+        type='entityPicker'
+        errorMessage="Please make sure you enter the entity type to be used here!"
+        comoponentId={model?.id}
+      />;
     }
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;

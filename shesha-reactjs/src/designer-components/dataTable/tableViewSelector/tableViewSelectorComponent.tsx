@@ -21,8 +21,12 @@ const TableViewSelectorComponent: IToolboxComponent<ITableViewSelectorComponentP
     return store
       ? <TableViewSelector {...model} componentRef={componentRef} />
       : (
-        <ConfigError type='tableViewSelector' errorMessage='Table view must be used within a Data Table Context' comoponentId={model.id} />
-      )
+        <ConfigError
+          type='tableViewSelector'
+          errorMessage='Table view must be used within a Data Table Context'
+          comoponentId={model.id}
+        />
+      );
   },
   migrator: m => m.add<ITableViewSelectorComponentProps>(0, prev => {
     return {
