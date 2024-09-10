@@ -18,8 +18,5 @@ namespace Shesha.Otp.Dto
         /// Lifetime of the one time password in seconds
         /// </summary>
         Int64? Lifetime { get; }
-        string ModuleName { get; }
-        string ActionType { get; }
-        Guid? SourceEntityType { get; }
     }
 }

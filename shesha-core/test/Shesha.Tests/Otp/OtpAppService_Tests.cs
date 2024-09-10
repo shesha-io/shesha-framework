@@ -97,7 +97,7 @@ namespace Shesha.Tests.Otp
             };
             transformAction?.Invoke(verificationInput);
 
-            return await otp.VerifyPinAsync(verificationInput);
+            return await otp.VerifyPinAsync(verificationInput.OperationId, verificationInput.Pin);
         }
 
         private async Task<IVerifyPinResponse> CheckEmailLink(Action<VerifyPinInput> action)
@@ -154,7 +154,7 @@ namespace Shesha.Tests.Otp
 
             action?.Invoke(verificationInput);
 
-            return await otp.VerifyPinAsync(verificationInput);
+            return await otp.VerifyPinAsync(verificationInput.OperationId, verificationInput.Pin);
         }
     }
 }

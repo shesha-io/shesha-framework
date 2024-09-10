@@ -61,7 +61,7 @@ namespace Shesha.Otp
         /// <param name="pinCode">The PIN code to send.</param>
         /// <param name="recipientId">Optional recipient ID.</param>
         /// <returns>The constructed OtpDto object.</returns>
-        OtpDto CreateOtp(string sendTo, OtpConfig config, string sourceEntityId, string pinCode, string recipientId = null);
+        OtpDto CreateOtp(string sendTo, OtpConfig config, Guid? sourceEntityId, string pinCode, string recipientId = null);
 
         /// <summary>
         /// Sends the OTP using the specified configuration settings.
@@ -81,18 +81,27 @@ namespace Shesha.Otp
         /// <summary>
         /// Retrieves an OTP based on the input, checking both operation ID and composite key.
         /// </summary>
-        /// <param name="input">The input containing operation ID, module name, action type, and source entity type.</param>
+        /// <param name="operationId">The input containing operation ID, module name, action type, and source entity type.</param>
         /// <returns>The OtpDto object if found, otherwise null.</returns>
-        Task<OtpDto> RetrieveOtpAsync(IVerifyPinInput input);
+        Task<OtpDto> RetrieveOtpAsync(Guid operationId);
 
         /// <summary>
-        /// Validates the OTP against the provided input, checking the pin and expiration status.
+        /// Overload for composite key
         /// </summary>
-        /// <param name="pinDto">The OTP DTO object.</param>
-        /// <param name="input">The input data for verification.</param>
-        /// <param name="ignoreOtpValidation">Flag indicating whether OTP validation should be ignored.</param>
-        /// <returns>A response indicating success or failure with an appropriate message.</returns>
-        VerifyPinResponse ValidateOtp(OtpDto pinDto, IVerifyPinInput input, bool ignoreOtpValidation);
+        /// <param name="moduleName"></param>
+        /// <param name="actionType"></param>
+        /// <param name="sourceEntityId"></param>
+        /// <returns></returns>
+        Task<OtpDto> RetrieveOtpAsync(string moduleName, string actionType, Guid sourceEntityId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pinDto"></param>
+        /// <param name="pin"></param>
+        /// <param name="ignoreOtpValidation"></param>
+        /// <returns></returns>
+        VerifyPinResponse ValidateOtp(OtpDto pinDto, string pin, bool ignoreOtpValidation);
 
         /// <summary>
         /// Generates an error message for an invalid pin based on the send type.
@@ -109,19 +118,19 @@ namespace Shesha.Otp
         string GetExpiredPinMessage(OtpSendType sendType);
 
         /// <summary>
-        /// Processes the resending of an OTP (One-Time Password) by updating the OTP status, sending the OTP, and handling any exceptions that occur during the sending process.
+        /// 
         /// </summary>
-        /// <param name="otp">The OTP data transfer object that contains details about the OTP to be resent.</param>
-        /// <param name="input">The input data transfer object containing details for resending the OTP, such as new lifetime settings.</param>
-        /// <param name="sendOtpAction">A function that defines the action to send the OTP. This function will perform the actual OTP delivery.</param>
-        /// <param name="updateOtpStatus">A function that updates the OTP status in the storage system after sending the OTP or if an error occurs.</param>
-        /// <param name="defaultLifetime">The default lifetime (in seconds) to apply to the OTP if no specific lifetime is provided in the input.</param>
-        /// <returns>A task representing the asynchronous operation, with a <see cref="SendPinResponse"/> containing the operation ID and the address to which the OTP was sent.</returns>
+        /// <param name="otp"></param>
+        /// <param name="inputLifetime"></param>
+        /// <param name="sendOtpAction"></param>
+        /// <param name="updateOtpStatus"></param>
+        /// <param name="defaultLifetime"></param>
+        /// <returns></returns>
         Task<SendPinResponse> ProcessOtpResendAsync(
             OtpDto otp,
-            IResendPinInput input,
+            int? inputLifetime,
             Func<OtpDto, Task> sendOtpAction,
             Func<OtpDto, Task> updateOtpStatus,
-            int defaultLifetime);
+            int? defaultLifetime);
     }
 }

@@ -178,7 +178,7 @@ namespace Shesha.Otp
         /// <param name="pinCode">The OTP code.</param>
         /// <param name="recipientId">The recipient ID (optional).</param>
         /// <returns>The created OTP data transfer object.</returns>
-        public OtpDto CreateOtp(string sendTo, OtpConfig config, string sourceEntityId, string pinCode, string recipientId = null)
+        public OtpDto CreateOtp(string sendTo, OtpConfig config, Guid? sourceEntityId, string pinCode, string recipientId = null)
         {
             return new OtpDto
             {
@@ -192,7 +192,7 @@ namespace Shesha.Otp
                 Pin = pinCode,
                 ExpiresOn = DateTime.Now.AddSeconds(config.Lifetime ?? 300), // Default to 5 minutes
                 SentOn = DateTime.Now,
-                SourceEntityId = !string.IsNullOrEmpty(sourceEntityId) ? Guid.Parse(sourceEntityId) : (Guid?)null
+                SourceEntityId = sourceEntityId ?? null
             };
         }
 
@@ -240,14 +240,29 @@ namespace Shesha.Otp
         /// <summary>
         /// Retrieves an OTP based on the provided input, either by operation ID or composite key.
         /// </summary>
-        /// <param name="input">The input containing the operation ID or composite key details.</param>
+        /// <param name="operationId">The input containing the operation ID or composite key details.</param>
         /// <returns>A task representing the asynchronous operation, with the OTP data transfer object if found.</returns>
-        public async Task<OtpDto> RetrieveOtpAsync(IVerifyPinInput input)
+        public async Task<OtpDto> RetrieveOtpAsync(Guid operationId)
         {
-            var pinDto = await GetOtpWithOperationId(input.OperationId);
+            var pinDto = await GetOtpWithOperationId(operationId);
             if (pinDto == null)
-                pinDto = await GetOtpWithCompositeKey(input.ModuleName, input.ActionType, input.SourceEntityType.Value);
+                throw new UserFriendlyException("Otp not found");
+            return pinDto;
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="moduleName"></param>
+        /// <param name="actionType"></param>
+        /// <param name="sourceEntityId"></param>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException"></exception>
+        public async Task<OtpDto> RetrieveOtpAsync(string moduleName, string actionType, Guid sourceEntityId)
+        {
+            var pinDto = await GetOtpWithCompositeKey(moduleName, actionType, sourceEntityId);
+            if (pinDto == null)
+                throw new UserFriendlyException("Otp not found");
             return pinDto;
         }
 
@@ -255,15 +270,15 @@ namespace Shesha.Otp
         /// Validates the OTP against the provided input, considering whether OTP validation should be ignored.
         /// </summary>
         /// <param name="pinDto">The OTP data transfer object to validate.</param>
-        /// <param name="input">The input containing the OTP to verify.</param>
+        /// <param name="pin">The input containing the OTP to verify.</param>
         /// <param name="ignoreOtpValidation">Whether to ignore OTP validation.</param>
         /// <returns>The result of the OTP validation.</returns>
-        public VerifyPinResponse ValidateOtp(OtpDto pinDto, IVerifyPinInput input, bool ignoreOtpValidation)
+        public VerifyPinResponse ValidateOtp(OtpDto pinDto, string pin, bool ignoreOtpValidation)
         {
             if (ignoreOtpValidation)
                 return VerifyPinResponse.Success();
 
-            if (pinDto == null || pinDto.Pin != input.Pin)
+            if (pinDto == null || pinDto.Pin != pin)
             {
                 var message = GetInvalidPinMessage(pinDto.SendType);
                 return VerifyPinResponse.Failed(message);
@@ -301,20 +316,21 @@ namespace Shesha.Otp
         }
 
         /// <summary>
-        /// Processes the resending of an OTP, including updating its status and handling exceptions.
+        /// 
         /// </summary>
-        /// <param name="otp">The OTP data transfer object to be resent.</param>
-        /// <param name="input">The input containing details for resending the OTP.</param>
-        /// <param name="sendOtpAction">The action to perform for sending the OTP.</param>
-        /// <param name="updateOtpStatus">The action to perform for updating the OTP status.</param>
-        /// <param name="defaultLifetime">The default lifetime for the OTP if not specified.</param>
-        /// <returns>A task representing the asynchronous operation, with the result of the OTP resend.</returns>
+        /// <param name="otp"></param>
+        /// <param name="inputLifetime"></param>
+        /// <param name="sendOtpAction"></param>
+        /// <param name="updateOtpStatus"></param>
+        /// <param name="defaultLifetime"></param>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException"></exception>
         public async Task<SendPinResponse> ProcessOtpResendAsync(
             OtpDto otp,
-            IResendPinInput input,
+            int? inputLifetime,
             Func<OtpDto, Task> sendOtpAction,
             Func<OtpDto, Task> updateOtpStatus,
-            int defaultLifetime)
+            int? defaultLifetime)
         {
             if (otp.ExpiresOn < DateTime.Now)
                 throw new UserFriendlyException("OTP has expired, try to request a new one");
@@ -326,7 +342,7 @@ namespace Shesha.Otp
             }
             catch (Exception e)
             {
-                await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
+                await _otpStorage.UpdateAsync(otp.OperationId, newOtp =>
                 {
                     newOtp.SentOn = sendTime;
                     newOtp.SendStatus = OtpSendStatus.Failed;
@@ -335,15 +351,18 @@ namespace Shesha.Otp
                 });
             }
 
-            var lifeTime = input.Lifetime ?? defaultLifetime;
-            var newExpiresOn = DateTime.Now.AddSeconds(lifeTime);
+            var lifeTime = inputLifetime ?? defaultLifetime ?? 300;
+            var newExpiresOn = DateTime.Now.AddSeconds((int)lifeTime);
 
             await updateOtpStatus(otp);
 
             return new SendPinResponse
             {
                 OperationId = otp.OperationId,
-                SentTo = otp.SendTo
+                SentTo = otp.SendTo,
+                ModuleName = otp.ModuleName,
+                ActionType = otp.ActionType,
+                SourceEntityId = otp.SourceEntityId
             };
         }
     }

@@ -422,11 +422,7 @@ namespace Shesha.Users
                 throw new UserFriendlyException("Failed to verify OTP provided");
             }
 
-            var otpResponse = await _otpService.VerifyPinAsync(new VerifyPinInput
-            {
-                OperationId = operationId.Value,
-                Pin = input.Code
-            });
+            var otpResponse = await _otpService.VerifyPinAsync(operationId.Value, input.Code);
 
             var response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(otpResponse);
 
@@ -537,7 +533,7 @@ namespace Shesha.Users
                 throw new Exception("User not found");
 
             var otpRequest = ObjectMapper.Map<VerifyPinInput>(input);
-            var otpResponse = await _otpService.VerifyPinAsync(otpRequest);
+            var otpResponse = await _otpService.VerifyPinAsync(otpRequest.OperationId, otpRequest.Pin);
 
             var response = ObjectMapper.Map<ResetPasswordVerifyOtpResponse>(otpResponse);
 
