@@ -93,7 +93,7 @@ namespace Shesha.Authorization
             ShaLoginResult<TUser> result = null;
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                result = await LoginAsyncInternal(login, tenancyName);
+                result = await LoginInternalAsync(login, tenancyName);
                 await uow.CompleteAsync();
             }
 
@@ -102,7 +102,7 @@ namespace Shesha.Authorization
             return result;
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> LoginAsyncInternal(UserLoginInfo login, string tenancyName)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(UserLoginInfo login, string tenancyName)
         {
             if (login == null || login.LoginProvider.IsNullOrEmpty() || login.ProviderKey.IsNullOrEmpty())
             {
@@ -225,7 +225,7 @@ namespace Shesha.Authorization
             ShaLoginResult<TUser> result = null;
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                result = await LoginAsyncInternal(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
+                result = await LoginInternalAsync(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
                 await uow.CompleteAsync();
             }
             
@@ -267,7 +267,7 @@ namespace Shesha.Authorization
             }
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> LoginAsyncInternal(string userNameOrEmailAddress, string plainPassword, string imei, string tenancyName, bool shouldLockout)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(string userNameOrEmailAddress, string plainPassword, string imei, string tenancyName, bool shouldLockout)
         {
             if (userNameOrEmailAddress.IsNullOrEmpty())
             {

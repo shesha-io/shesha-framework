@@ -1,22 +1,22 @@
-﻿using Shesha.DynamicEntities;
+﻿using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
+using Abp.Runtime.Caching;
+using Moq;
+using Shesha.Configuration.Runtime;
+using Shesha.Domain;
+using Shesha.Domain.Enums;
+using Shesha.DynamicEntities;
+using Shesha.DynamicEntities.Cache;
+using Shesha.DynamicEntities.Dtos;
+using Shesha.Metadata;
+using Shesha.NHibernate.UoW;
+using Shesha.Services;
 using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
-using Moq;
-using Shesha.Domain;
-using Shesha.Domain.Enums;
-using Shesha.DynamicEntities.Cache;
-using Shesha.DynamicEntities.Dtos;
-using Shesha.Metadata;
-using Shesha.NHibernate.UoW;
 using Xunit;
-using Shesha.Configuration.Runtime;
-using Abp.Runtime.Caching;
-using Shesha.Services;
 
 namespace Shesha.Tests.DynamicEntities
 {
@@ -31,7 +31,7 @@ namespace Shesha.Tests.DynamicEntities
         }
 
         [Fact]
-        public async Task SaveLoad_Test()
+        public async Task SaveLoad_TestAsync()
         {
             LoginAsHostAdmin();
 
@@ -128,7 +128,7 @@ namespace Shesha.Tests.DynamicEntities
                         DataType = prop.Key.DataType,
                         Source = MetadataSourceType.UserDefined
                     };
-                    prop.Key.Id = entityPropRepo.Insert(propConf).Id;
+                    prop.Key.Id = (await entityPropRepo.InsertAsync(propConf)).Id;
                     foreach (var childProp in prop.Key.Properties)
                     {
                         var childPropConf = new EntityProperty()
@@ -139,7 +139,7 @@ namespace Shesha.Tests.DynamicEntities
                             DataType = prop.Key.DataType,
                             Source = MetadataSourceType.UserDefined
                         };
-                        childProp.Id = entityPropRepo.Insert(childPropConf).Id;
+                        childProp.Id = (await entityPropRepo.InsertAsync(childPropConf)).Id;
                     }
                 }
 
@@ -158,7 +158,7 @@ namespace Shesha.Tests.DynamicEntities
 
                     // Create temporary entity
                     var entity = new Person();
-                    var id = personRepo.Insert(entity).Id;
+                    var id = (await personRepo.InsertAsync(entity)).Id;
                     try
                     {
                         // Save dynamic properties to DB
@@ -169,7 +169,7 @@ namespace Shesha.Tests.DynamicEntities
                         session?.Clear();
 
                         // Get entity from DB
-                        var newEntity = personRepo.Get(id);
+                        var newEntity = await personRepo.GetAsync(id);
 
                         // Create new DTO and map values from entity to DTO
                         var newDto = Activator.CreateInstance(dtoType) as DynamicDto<Person, Guid>;

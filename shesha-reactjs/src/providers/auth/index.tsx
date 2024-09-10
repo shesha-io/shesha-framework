@@ -106,7 +106,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const { router } = useShaRouting();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  const { value: defaultUrl, loadingState} = useSettingValue({module: 'Shesha', name:'Shesha.DefaultUrl'});
+  const { value: defaultUrl, loadingState } = useSettingValue({ module: 'Shesha', name:'Shesha.DefaultUrl' });
 
   const storedToken = getAccessTokenFromStorage(tokenName);
 
@@ -121,8 +121,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     headers: initialHeaders,
   });
 
-  const currentUrl = useRef<string>();
-
+  const currentUrl = useRef<string>(router.fullPath);
+  
   const setters = getFlagSetters(dispatch);
 
   const redirect = (url: string) => {
@@ -217,6 +217,7 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           clearAccessToken();
 
           dispatch(fetchUserDataActionErrorAction({ message: 'Not authorized' }));
+
           if (currentUrl.current === '/' || currentUrl.current === '')
             redirectToDefaultUrl();
           else
@@ -302,12 +303,13 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     const httpHeaders = getCleanedInitHeaders(getHttpHeaders());
 
-    currentUrl.current = router.fullPath;
-
     if (!httpHeaders) {
       if (currentUrl.current !== unauthorizedRedirectUrl) {
-        redirectToUnauthorized();
-      }
+        if (currentUrl.current === '/' || currentUrl.current === '')
+          redirectToDefaultUrl();
+        else
+          redirectToUnauthorized();
+        }
     } else {
       fireHttpHeadersChanged(state);
       if (!state.isCheckingAuth && !state.isFetchingUserInfo) {
@@ -376,9 +378,11 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         redirect(url);
       })
       .catch((e) => {
-        const message = e?.message;
+        const message = e?.message || e?.data?.error?.message || 'Not authorized';
         const url = e?.url;
-        if (message) dispatch(fetchUserDataActionErrorAction({ message }));
+
+        dispatch(fetchUserDataActionErrorAction({ message }));
+        
         if (url) redirect(url);
       });
   };

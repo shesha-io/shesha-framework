@@ -50,7 +50,11 @@ using NhEnvironment = global::NHibernate.Cfg.Environment;
 
 namespace Shesha.NHibernate
 {
-    [DependsOn(typeof(AbpKernelModule), typeof(AbpAspNetCoreModule))]
+    [DependsOn(
+        typeof(AbpKernelModule), 
+        typeof(AbpAspNetCoreModule),
+        typeof(SheshaFrameworkModule)
+        )]
     public class SheshaNHibernateModule : AbpModule
     {
         public const string SkipMigrationsSetting = "skipMigrations";

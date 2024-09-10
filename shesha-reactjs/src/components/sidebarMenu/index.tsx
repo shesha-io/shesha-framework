@@ -66,7 +66,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
         },
       })
     );
-  }, [items, executionContext]);
+  }, [items, {...executionContext}]);
 
   if (menuItems.length === 0) return null;
 

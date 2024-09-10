@@ -215,7 +215,7 @@ namespace Shesha.DynamicEntities
             foreach (var entity in toUpdate)
             {
                 entity.EntityType = destination.FullClassName;
-                _entityPropertyRepository.Update(entity);
+                await _entityPropertyRepository.UpdateAsync(entity);
             }
 
             // update JsonEntity and GenericEntityReference properties
@@ -229,14 +229,14 @@ namespace Shesha.DynamicEntities
                 if (jsonProps.Any())
                     try
                     {
-                        await _mappingMetadataProvider.UpdateClassNames(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
+                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
                     }
                     catch { /* hide exception for entities without tables */ }
 
                 if (genericProps.Any())
                     try
                     {
-                        await _mappingMetadataProvider.UpdateClassNames(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
+                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
                     }
                     catch { /* hide exception for entities without tables */ }
             }
@@ -307,7 +307,7 @@ namespace Shesha.DynamicEntities
                 { MetadataSourceType.UserDefined, GetPropertyMapper(MetadataSourceType.UserDefined) }
             };
 
-            await BindProperties(mappers, properties, input.Properties, modelConfig, null);
+            await BindPropertiesAsync(mappers, properties, input.Properties, modelConfig, null);
 
             // delete missing properties
             var allPropertiesId = new List<Guid>();
@@ -403,7 +403,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private async Task BindProperties(Dictionary<MetadataSourceType, IMapper> mappers, List<EntityProperty> allProperties, List<ModelPropertyDto> inputProperties, EntityConfig modelConfig, EntityProperty parentProperty)
+        private async Task BindPropertiesAsync(Dictionary<MetadataSourceType, IMapper> mappers, List<EntityProperty> allProperties, List<ModelPropertyDto> inputProperties, EntityConfig modelConfig, EntityProperty parentProperty)
         {
             if (inputProperties == null) return;
             var sortOrder = 0;
@@ -426,7 +426,7 @@ namespace Shesha.DynamicEntities
 
                 // bind child properties
                 if (inputProp.Properties != null && inputProp.Properties.Any())
-                    await BindProperties(mappers, allProperties, inputProp.Properties, modelConfig, dbProp);
+                    await BindPropertiesAsync(mappers, allProperties, inputProp.Properties, modelConfig, dbProp);
 
                 dbProp.SortOrder = sortOrder++;
 

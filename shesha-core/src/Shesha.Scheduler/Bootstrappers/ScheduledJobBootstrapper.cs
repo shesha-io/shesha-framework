@@ -39,12 +39,12 @@ namespace Shesha.Scheduler.Bootstrappers
         {
             using (var unitOfWork = _unitOfWorkManager.Begin())
             {
-                await DoProcess();
+                await DoProcessAsync();
                 await unitOfWork.CompleteAsync();
             }
         }
 
-        private async Task DoProcess()
+        private async Task DoProcessAsync()
         {
             var jobs = _typeFinder
                 .Find(type => type != null && type.IsPublic && type.HasAttribute<ScheduledJobAttribute>())

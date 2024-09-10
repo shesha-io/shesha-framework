@@ -4,6 +4,7 @@ import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
 import { Cell } from 'react-table';
 import { IPersistedFormProps } from '@/providers';
+import { CSSProperties } from 'react';
 
 export type NumberOrString = number | string;
 /**
@@ -254,6 +255,15 @@ export const executeFunction = (expression: string, args: { [key: string]: any }
 
 export const getToolboxComponentsVisibility = (props: IPersistedFormProps, configs: IPersistedFormProps[]) =>
   configs.some(({ name: n, module: m }) => props?.module === m && props?.name === n);
+
+export const convertJsonToCss = (style: CSSProperties) => {
+  const css = Object.entries(style || {})
+    .map(([k, v]) => [k.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`), v])
+    .map(([k, v]) => `${k}:${v}`)
+    .join(';');
+
+  return !!css ? `${css};` : null;
+};
 
 export { unwrapAbpResponse } from './fetchers';
 export * from './metadata/index';
