@@ -19,14 +19,14 @@ interface StyleGroupProps {
 
 const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange }) => {
 
-    console.log("StyleGroup", onChange);
+    console.log("StyleGroup onChange", onChange);
     const readOnly = model?.readOnly;
 
     const items: CollapseProps['items'] = [
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent readOnly={readOnly} model={model} />
+            children: <FontComponent readOnly={readOnly} model={model} onChange={onChange} />
         },
         {
             key: '2',

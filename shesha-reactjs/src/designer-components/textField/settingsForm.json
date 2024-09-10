@@ -8,12 +8,14 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+      "size": "small",
       "isDynamic": false,
       "tabs": [
         {
           "key": "1",
           "id": "s4gmBg31azZC0UjZjpfTm",
           "label": "Display",
+          "size": "small",
           "components": [
             {
               "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
@@ -573,6 +575,7 @@
   "formSettings": {
     "layout": "vertical",
     "colon": false,
+    "size": "small",
     "labelCol": {
       "span": 8
     },

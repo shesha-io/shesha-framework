@@ -121,7 +121,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
         />
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
-        {props.labelProps && <LabelConfigurator value={{ labelAlign: props.labelProps.labelAlign, hideLabel: props.labelProps.hideLabel }} onChange={props.labelProps.onValuesChange} />}
+        {props.labelProps && <LabelConfigurator />}
       </div>
     </div>
   );

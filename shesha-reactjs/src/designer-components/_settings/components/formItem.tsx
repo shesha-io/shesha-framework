@@ -36,7 +36,8 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                 id: '',
                 description: tooltip,
                 validate: { required },
-                hidden
+                hidden,
+                size: 'small'
             }}
             className='sha-js-label'
         >

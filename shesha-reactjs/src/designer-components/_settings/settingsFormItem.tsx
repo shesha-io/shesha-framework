@@ -40,22 +40,22 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             return <ConfigurableFormItem
                 model={{
                     propertyName: props.name,
+                    size: 'small',
                     label: props.label,
                     type: '',
                     id: '',
                     description: props.tooltip,
                     validate: { required: props.required },
-                    hidden: props.hidden,
-                    size: 'small'
+                    hidden: props.hidden
                 }}
                 className='sha-js-label'
             >
                 {children}
             </ConfigurableFormItem>;
         }
-        return props.hidden ? null : (
-            <Form.Item {...{ ...props, name: getFieldNameFromExpression(props.name) }} label={props.label}>
-                <SettingsControl propertyName={props.name} mode={mode} labelProps={props.labelProps}>
+        return (
+            <Form.Item {...{ ...props, name: getFieldNameFromExpression(props.name) }} label={props.label} >
+                <SettingsControl propertyName={props.name} mode={mode}>
                     {(value, onChange, propertyName) => children(value, onChange, propertyName)}
                 </SettingsControl>
             </Form.Item>

@@ -47,6 +47,7 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
                     onValuesChange={debouncedSave}
                     className={sheshaStyles.verticalSettingsClass}
                     isSettingsForm={true}
+                    layout='vertical'
                 />
             </SourceFilesFolderProvider>
         );

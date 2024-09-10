@@ -11,13 +11,13 @@ interface ILabelProps {
 }
 
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ readOnly, model }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ model }) => {
 
-    console.log("Label model", model);
-    const { value } = model;
+    const { value, readOnly } = model;
     const { hideLabel, labelAlign } = value;
     const { styles } = useStyles();
 
+    console.log("Label model", model);
     return (
         <div className={styles.flexWrapper} >
             <div className={styles.flexInput}>

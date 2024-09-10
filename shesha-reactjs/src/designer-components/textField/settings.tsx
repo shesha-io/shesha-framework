@@ -10,9 +10,9 @@ import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
 import StyleGroup from '../_settings/components/styleGroup';
 import SearchableTabs from '../_settings/components/tabs/searchableTabsComponent';
+import { SettingInput } from '../_settings/components/utils';
 
 const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) => {
-    const { Option } = Select;
 
     const { readOnly } = props;
     const { model } = useSettingsForm<ITextFieldComponentProps>();
@@ -31,19 +31,14 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Display",
             children: (
                 <>
-                    {renderSettingsItem("label", "Label", <Input readOnly={readOnly || model.hideLabel} />)}
-                    {renderSettingsItem("textType", "Text Type",
-                        <Select>
-                            <Option value="text">Text</Option>
-                            <Option value="password">Password</Option>
-                        </Select>
-                    )}
-                    {renderSettingsItem("placeholder", "Placeholder", <Input readOnly={readOnly} />)}
-                    {renderSettingsItem("description", "Description", <TextArea readOnly={readOnly} />)}
-                    {renderSettingsItem("passEmptyStringByDefault", "Pass Empty String By Default", <Switch disabled={readOnly} />)}
-                    {renderSettingsItem("initialValue", "Initial Value", <Input readOnly={readOnly} />)}
-                    {renderSettingsItem("hidden", "Hidden", <Switch disabled={readOnly} />)}
-                    {renderSettingsItem("editMode", "Edit Mode", <ReadOnlyModeSelector readOnly={readOnly} />)}
+                    {<SettingInput label="Label" value={model.label} property='label' readOnly={readOnly || model.hideLabel} {...props} />}
+                    {<SettingInput label="Text Type" value={model.textType} property='textType' readOnly={readOnly} type='dropdown' dropdownOptions={['text', 'password'].map(value => ({ label: value, value }))} />}
+                    <SettingInput label="Placeholder" value={model.placeholder} property='placeholder' readOnly={readOnly} />
+                    <SettingInput label="Description" value={model.description} property='description' readOnly={readOnly} type='textarea' />
+                    <SettingInput label="passEmptyStringByDefault" value={model.passEmptyStringByDefault} property='passEmptyStringByDefault' readOnly={readOnly} type='switch' />
+                    <SettingInput label="Initial Value" value={model.initialValue} property='initialValue' readOnly={readOnly} hidden={model.passEmptyStringByDefault} />
+                    <SettingInput label="Hidden" value={model.hidden} property='hidden' readOnly={readOnly} type='switch' />
+                    <SettingInput label="Edit Mode" value={model.editMode} property='editMode' readOnly={readOnly} type='dropdown' dropdownOptions={['inherited', 'readOnly', 'editable'].map(value => ({ label: value, value }))} />
                 </>
             )
         },
@@ -74,7 +69,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
         {
             key: "style",
             label: "Style",
-            children: <StyleGroup model={model} omitted={['shadow', 'stylingBox', 'style']} />
+            children: <StyleGroup model={model} omitted={['shadow', 'stylingBox', 'style']} {...props} />
 
         },
         {

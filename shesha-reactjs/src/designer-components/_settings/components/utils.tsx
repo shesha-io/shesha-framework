@@ -4,6 +4,7 @@ import FormItem from "./formItem";
 import { ColorPicker } from '@/components';
 import { useSearchQuery } from './tabs/context';
 import CustomDropdown from './CustomDropdown';
+import TextArea from 'antd/es/input/TextArea';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -28,12 +29,14 @@ interface SettingsRadioGroupProps {
 interface IInputProps {
     label: string;
     property: string;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'button' | 'number' | 'customDropdown';
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'button' | 'number' | 'customDropdown' | 'textarea';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
     value: any;
     hasUnits?: boolean;
+    hidden?: boolean;
+    onChange?: (value: any) => void;
 }
 
 export const SettingsRadioGroup: React.FC<SettingsRadioGroupProps> = ({
@@ -71,22 +74,22 @@ const { Option } = Select;
 
 const UnitSelector: FC<{ property: string, value: any }> = ({ property, value }) => {
     const currentValue = value?.[property];
-    return <FormItem name={property + '.unit'} jsSetting={false} >
+    return (
         <Select
             value={currentValue?.unit || 'px'}
-            dropdownStyle={{ width: '70px' }}
-            style={{ margin: '0px', height: '24px', width: '70px', padding: 0 }}
+            defaultValue={'px'}
         >
             {units.map(unit => (
                 <Option key={unit} value={unit} >{unit}</Option>
             ))}
         </Select>
-    </FormItem>
+    );
 }
 
-export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, value, hasUnits }) => {
+export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, value, hasUnits, onChange }) => {
     const { searchQuery } = useSearchQuery();
     const currentValue = value?.[property];
+    console.log("ON Change", onChange);
 
     const input = () => {
         switch (type) {
@@ -115,6 +118,8 @@ export const SettingInput: React.FC<IInputProps> = ({ label, property, type, but
                 return <InputNumber min={0} max={100} readOnly={readOnly} />
             case 'customDropdown':
                 return <CustomDropdown value={currentValue} options={dropdownOptions} />
+            case 'textarea':
+                return <TextArea readOnly={readOnly} />
             default:
                 return <Input
                     value={currentValue?.value ?? currentValue}
