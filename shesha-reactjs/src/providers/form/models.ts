@@ -70,6 +70,7 @@ export type ConfigurableFormComponentTypes =
   | 'textField'
   | 'textArea'
   | 'iconPicker'
+  | 'colorPicker'
   | 'container'
   | 'collapsiblePanel'
   | 'autocomplete'
@@ -189,6 +190,8 @@ export interface IConfigurableFormComponent
   noDataSecondaryText?: string;
 
   permissions?: string[];
+
+  allowClear?: boolean;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

@@ -1,6 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import { Empty } from 'antd';
 import itemSettingsJson from './itemSettings.json';
+import { getSettings } from '@/designer-components/button/settingsForm';
 import itemGroupSettingsJson from './itemGroupSettings.json';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
