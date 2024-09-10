@@ -36,6 +36,8 @@ export * from './storedFiles';
 export * from './subForm';
 export * from './theme';
 export * from './dynamicActions';
+export * from './dynamicActions/evaluator/singleDynamicItemEvaluator';
+export * from './dynamicActions/evaluator/utils';
 export * from './dynamicActionsDispatcher';
 export * from './dataContextManager';
 export * from './dataContextProvider';

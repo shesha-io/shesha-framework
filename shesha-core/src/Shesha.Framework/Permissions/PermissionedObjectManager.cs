@@ -494,9 +494,35 @@ namespace Shesha.Permissions
             };
         }
 
+        private void RemoveCache(string objectName, string objectType, string parentName)
+        {
+            var key = "";
+            var pkey = GetCacheKey(objectName, objectType);
+            var parent = PermissionedObjectsCache.GetOrDefault(pkey);
+            while (parent != null)
+            {
+                key = pkey;
+                if (parent != null)
+                {
+                    pkey = GetCacheKey(parent.DefaultValue.Parent, objectType);
+                    parent = PermissionedObjectsCache.GetOrDefault(pkey);
+                }
+            }
+
+            PermissionedObjectsCache.Remove(key);
+            PermissionedObjectRelations relation;
+            if (RelationsCache.TryGetValue(key, out relation))
+            {
+                foreach (var childKey in relation.Children)
+                {
+                    RemoveCache(childKey);
+                }
+            };
+        }
+
         public void HandleEvent(EntityChangedEventData<PermissionedObject> eventData)
         {
-            RemoveCache(GetCacheKey(eventData.Entity.Object, eventData.Entity.Type));
+            RemoveCache(eventData.Entity.Object, eventData.Entity.Type, eventData.Entity.Parent);
         }
 
         /// <summary>

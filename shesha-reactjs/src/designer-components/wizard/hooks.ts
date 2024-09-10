@@ -126,7 +126,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const successCallback = (type: 'back' | 'next') => {
+  const successCallback = (type: 'back' | 'next' | 'reset') => {
     setTimeout(() => {
       const step = getWizardStep(visibleSteps, current, type);
 
@@ -277,6 +277,20 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       hasArguments: false,
       executer: () => {
         done();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Reset Steps',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: () => {
+        successCallback('reset');
         return Promise.resolve();
       },
     },
