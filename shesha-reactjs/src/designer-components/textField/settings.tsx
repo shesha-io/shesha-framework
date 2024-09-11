@@ -1,23 +1,20 @@
-import { CodeEditor } from '../codeEditor/codeEditor';
-import React, { FC, useState, useCallback } from 'react';
+import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { Switch, Input, Select } from 'antd';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITextFieldComponentProps } from './interfaces';
-import TextArea from 'antd/lib/input/TextArea';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
 import StyleGroup from '../_settings/components/styleGroup';
 import SearchableTabs from '../_settings/components/tabs/searchableTabsComponent';
 import { SettingInput } from '../_settings/components/utils';
-import LabelConfigurator from '../styleLabel';
 import LabelConfiguratorComponent from '../styleLabel/components/label/labelConfigurator';
 
 const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) => {
 
     const { readOnly } = props;
-    const { model, onValuesChange } = useSettingsForm<ITextFieldComponentProps>();
+    const { model } = useSettingsForm<ITextFieldComponentProps>();
 
     const renderSettingsItem = (name: string, label: string, component: React.ReactNode) => {
         return (
@@ -61,11 +58,11 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Validation",
             children:
                 <>
-                    {renderSettingsItem("validate.required", "Required", <Switch disabled={readOnly} />)}
-                    {renderSettingsItem("validate.minLength", "Min Length", <Input type="number" readOnly={readOnly} />)}
-                    {renderSettingsItem("validate.maxLength", "Max Length", <Input type="number" readOnly={readOnly} />)}
-                    {renderSettingsItem("validate.pattern", "Pattern", <Input readOnly={readOnly} />)}
-                    {renderSettingsItem("validationMessage", "Validation Message", <Input readOnly={readOnly} />)}
+                    <SettingInput label="Required" value={model.validate?.required} property='validate.required' readOnly={readOnly} type='switch' />
+                    <SettingInput label="Min Length" value={model.validate?.minLength} property='validate.minLength' readOnly={readOnly} type='number' />
+                    <SettingInput label="Max Length" value={model.validate?.maxLength} property='validate.maxLength' readOnly={readOnly} type='number' />
+                    <SettingInput label="Validator" value={model.validate?.validator} property='validate.validator' readOnly={readOnly} />
+                    <SettingInput label="Validation Message" value={model.validate.message} property='validation.message' readOnly={readOnly} />
                 </>
 
         },

@@ -43,7 +43,7 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
     if (model.hidden) return null;
 
     return (
-      <ConfigurableFormItem model={model} className='sha-js-label' labelCol={{ span: 24 }} wrapperCol={{ span: 24 }} >
+      <ConfigurableFormItem model={model} className='sha-js-label' >
         {(value, onChange) => (
           <SettingsControl
             readOnly={model.readOnly}

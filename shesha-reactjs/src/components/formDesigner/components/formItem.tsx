@@ -94,7 +94,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   initialValue,
   className,
   labelCol,
-  wrapperCol
+  wrapperCol,
 }) => {
   const { formData } = useForm();
 
@@ -118,7 +118,6 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     label: hideLabel ? null : model.label,
     labelAlign: model.labelAlign,
     hidden: model.hidden,
-    labelWrap: true,
     valuePropName: valuePropName,
     initialValue: initialValue,
     tooltip: model.description,
@@ -127,7 +126,6 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     name: model.context ? undefined : getFieldNameFromExpression(propName),
   };
-
 
   if (typeof children === 'function') {
     if (model.context) {

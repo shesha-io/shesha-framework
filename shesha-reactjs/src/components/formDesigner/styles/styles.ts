@@ -293,12 +293,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
                 }
             }
-        }
-
-        .sha-hidden {
-            display: none;
-            }
-            
+        }  
         .${shaDesignerHeader} {
             display: flex;
             justify-content: space-between;

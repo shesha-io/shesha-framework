@@ -7,13 +7,16 @@ import { SearchQueryProvider } from './context';
 
 interface SearchableTabsProps {
     model: any;
+    onChange?: (value: any) => void;
 }
 
-const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
+const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredTabs, setFilteredTabs] = useState(tabs);
 
+    console.log("Tabs onChange", onChange)
+    
     useEffect(() => {
 
         setFilteredTabs(tabs.map((tab: any) => ({
