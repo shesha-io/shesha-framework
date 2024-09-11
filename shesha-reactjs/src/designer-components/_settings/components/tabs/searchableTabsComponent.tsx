@@ -39,7 +39,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
             />
             <Tabs
                 defaultActiveKey={'1'}
-                size={'small'}
+                size={model.size}
                 type={model.tabType || 'card'}
                 tabPosition={model.position || 'top'}
                 items={filteredTabs}

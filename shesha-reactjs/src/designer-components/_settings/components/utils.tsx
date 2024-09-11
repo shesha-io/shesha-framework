@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Button, Input, InputNumber, Radio, Select, Switch } from "antd";
 import FormItem from "./formItem";
-import { ColorPicker } from '@/components';
+import { CodeEditor, ColorPicker } from '@/components';
 import { useSearchQuery } from './tabs/context';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
@@ -21,41 +21,37 @@ export interface IDropdownOption {
 interface SettingsRadioGroupProps {
     options: IRadioOption[];
     value: string;
-    type: string;
     property?: string;
-    name: string;
+    label: string;
 }
 
 interface IInputProps {
     label: string;
     property: string;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'button' | 'number' | 'customDropdown' | 'textarea';
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'button' | 'number' | 'customDropdown' | 'textarea' | 'code'
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
     value: any;
     hasUnits?: boolean;
     hidden?: boolean;
-    onChange?: (value: any) => void;
+    component?: React.ReactNode;
 }
 
 export const SettingsRadioGroup: React.FC<SettingsRadioGroupProps> = ({
     options,
     value,
-    type,
+    label,
     property,
-    name
 }) => {
-
-    const label = `${type || ''} ${value} ${property || ''}`.trim();
 
     return (
         <FormItem
-            name={name}
+            name={property}
             label={label}
-            jsSetting
+            jsSetting={false}
         >
-            <Radio.Group>
+            <Radio.Group value={value}>
                 {options.map(option => (
                     <Radio.Button
                         key={option.value}
@@ -78,6 +74,7 @@ const UnitSelector: FC<{ property: string, value: any }> = ({ property, value })
         <Select
             value={currentValue?.unit || 'px'}
             defaultValue={'px'}
+            style={{ width: '70px' }}
         >
             {units.map(unit => (
                 <Option key={unit} value={unit} >{unit}</Option>
@@ -86,19 +83,18 @@ const UnitSelector: FC<{ property: string, value: any }> = ({ property, value })
     );
 }
 
-export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, value, hasUnits, onChange }) => {
+export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, value, hasUnits, component }) => {
     const { searchQuery } = useSearchQuery();
     const currentValue = value?.[property];
-    console.log("ON Change", onChange);
 
     const input = () => {
+        console.log("SettingInput ", currentValue);
         switch (type) {
             case 'color':
                 return <ColorPicker value={value?.color} readOnly={readOnly} allowClear />;
             case 'dropdown':
                 return <Select
                     value={currentValue}
-                    size='small'
                 >
                     {dropdownOptions.map(option => (
                         <Option key={option.value} value={option.value}>
@@ -120,6 +116,8 @@ export const SettingInput: React.FC<IInputProps> = ({ label, property, type, but
                 return <CustomDropdown value={currentValue} options={dropdownOptions} />
             case 'textarea':
                 return <TextArea readOnly={readOnly} />
+            case 'code':
+                return <CodeEditor mode="dialog" readOnly={readOnly} />;
             default:
                 return <Input
                     value={currentValue?.value ?? currentValue}
@@ -129,12 +127,17 @@ export const SettingInput: React.FC<IInputProps> = ({ label, property, type, but
         }
     }
 
-    return label.toLowerCase().includes(searchQuery.toLowerCase()) ? (
-        <div key={property} style={{ flex: '1 1 120px', minWidth: '100px' }}>
-            <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting >
-                {input()}
-            </FormItem>
-        </div>) : null
+    if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return component ? <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting >
+            {component}</FormItem> :
+            <div key={property} style={{ flex: '1 1 120px', minWidth: '100px' }}>
+                <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting >
+                    {input()}
+                </FormItem>
+            </div>
+    }
+
+    return null
 
 };
 
@@ -176,13 +179,3 @@ export const searchFormItems = (children: React.ReactNode, searchQuery: string):
         return null;
     });
 };
-
-
-
-interface SettingsRadioGroupProps {
-    options: IRadioOption[];
-    value: string;
-    type: string;
-    property?: string;
-    name: string;
-}

@@ -34,16 +34,6 @@
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Label",
               "jsSetting": true,
-              "labelProps": {
-                "hideLabel": {
-                  "_mode": "code",
-                  "_code": "return getSettingValue(data.hideLabel);"
-                },
-                "labelAlign": {
-                  "_mode": "code",
-                  "_code": "return getSettingValue(data.labelAlign);"
-                }
-              },
               "version": 3,
               "textType": "text"
             },
@@ -505,11 +495,7 @@
             {
               "id": "trr26voxhs-HxJ5k5ngYE",
               "type": "fontStyle",
-              "propertyName": "font",
-              "value": {
-                "_mode": "code",
-                "_code": "return getSettingValue(data.font);"
-              }
+              "propertyName": "font"
             },
             {
               "id": "RvNp_osTwoxjfKmj1mO9p",
@@ -575,7 +561,6 @@
   "formSettings": {
     "layout": "vertical",
     "colon": false,
-    "size": "small",
     "labelCol": {
       "span": 8
     },

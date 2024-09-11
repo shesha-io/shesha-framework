@@ -27,3 +27,13 @@ const FontConfigurator: IToolboxComponent<IFontComponentProps> = {
 };
 
 export default FontConfigurator;
+
+const Component = ({ children, ...rest }) => {
+
+    console.log('Component rest', rest);
+    return (
+        <div>
+            {children}
+        </div>
+    )
+}

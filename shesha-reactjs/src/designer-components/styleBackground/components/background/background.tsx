@@ -11,7 +11,7 @@ import { useFormDesignerActions } from '@/providers/formDesigner';
 
 interface IBackgroundProps {
     model?: any;
-    onChange: (value: any) => void;
+    onChange?: (value: any) => void;
 }
 
 const BackgroundComponent: FC<IBackgroundProps> = ({ model, onChange }) => {

@@ -9,7 +9,7 @@ import LabelConfiguratorComponent from './components/label/labelConfigurator';
 import { ILabelComponentProps } from './components/label/interfaces';
 
 const LabelConfigurator: IToolboxComponent<ILabelComponentProps> = {
-    type: 'labelStyle',
+    type: 'labelConfigurator',
     name: 'Size',
     isInput: false,
     icon: <ColumnWidthOutlined />,

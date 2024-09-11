@@ -40,7 +40,6 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             return <ConfigurableFormItem
                 model={{
                     propertyName: props.name,
-                    size: 'small',
                     label: props.label,
                     type: '',
                     id: '',
@@ -101,7 +100,6 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                                     ...children?.props,
                                     readOnly: readOnly,
                                     disabled: readOnly,
-                                    size: 'small',
                                     onChange: (...args: any[]) => {
                                         const event = args[0];
                                         const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target

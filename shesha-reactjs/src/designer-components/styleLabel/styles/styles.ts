@@ -3,16 +3,14 @@ import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
 
-  const flexInput = cx("", css`
-      // flex: 1 1 100px;
-    `);
   const flexWrapper = cx("", css`
         display: flex;
+        flex-direction: row;
         flex-wrap: wrap;
         gap: 8px;
         position: absolute;
-        right: 30px;
-        top: -28px;
+        right: 0px;
+        // top: -28px;
     `);
 
   const hidelLabelIcon = cx("", css`
@@ -27,7 +25,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
   return {
     flexWrapper,
-    flexInput,
     hidelLabelIcon
   };
 });

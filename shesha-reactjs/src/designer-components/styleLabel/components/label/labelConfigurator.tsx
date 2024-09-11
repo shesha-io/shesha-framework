@@ -2,51 +2,40 @@ import { Button, Radio } from 'antd';
 import React, { FC } from 'react';
 import { AlignLeftOutlined, AlignRightOutlined, EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStyles } from '../../styles/styles';
-import { SettingInput } from '@/designer-components/_settings/components/utils';
+import { InputRow, SettingInput, SettingsRadioGroup } from '@/designer-components/_settings/components/utils';
+import FormItem from '@/designer-components/_settings/components/formItem';
 
 
 interface ILabelProps {
     readOnly?: boolean;
     model?: any;
+    onChange?: (newValue: any) => void;
 }
 
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ model }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ model, onChange }) => {
 
-    const { value, readOnly } = model;
-    const { hideLabel, labelAlign } = value;
+    const { readOnly } = model;
     const { styles } = useStyles();
 
-    console.log("Label model", model);
+    console.log("Label mode:::", model)
     return (
-        <div className={styles.flexWrapper} >
-            <div className={styles.flexInput}>
-                <Radio.Group size='small' disabled={readOnly || hideLabel} value={labelAlign}>
-                    {[{ value: 'left', icon: <AlignLeftOutlined /> }, { value: 'right', icon: <AlignRightOutlined /> }].map(({ value, icon }) => (
-                        <Radio.Button key={value} value={value} title={value}>{icon}</Radio.Button>
-                    ))}
-                </Radio.Group>
-                <SettingInput
-                    type='radio'
-                    property='labelAlign'
-                    label='Label Align'
-                    readOnly={readOnly}
-                    value={model?.labelAlign}
-                    buttonGroupOptions={[
-                        { value: 'left', title: 'Left' },
-                        { value: 'right', title: 'Right' },
-                    ]}
-                />
+        <>
+            <div className={styles.flexWrapper} >
+                <SettingsRadioGroup label='' value={model.labelAlign} property='labelAlign' options={[{ value: 'left', icon: <AlignLeftOutlined />, title: 'Left' }, { value: 'right', icon: <AlignRightOutlined />, title: 'Right' }]} />
+                <FormItem name='hideLabel' label='' jsSetting={false}>
+                    <Button
+                        value={model.hideLabel}
+                        disabled={readOnly}
+                        onClick={() => onChange({ ...model, hideLabel: !model.hideLabel })}
+                        className={styles.hidelLabelIcon}
+                        icon={model.hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                    />
+                </FormItem>
             </div>
-            <div className={styles.flexInput}>
-                <Button
-                    value={hideLabel}
-                    disabled={readOnly}
-                    className={styles.hidelLabelIcon}
-                    icon={hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-                />
-            </div>
-        </div>
+            <SettingInput label="Label" value={model} property='label' readOnly={readOnly || model.hideLabel} />
+        </>
+
     );
 };
 

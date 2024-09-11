@@ -1,5 +1,5 @@
 import { CodeOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { FC } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import EditModeSelector from '@/components/editModeSelector/index';

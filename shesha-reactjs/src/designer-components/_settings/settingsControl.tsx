@@ -103,8 +103,8 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const editor = usePassedConstants
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} size='small' />
-    : <CodeEditorWithStandardConstants {...codeEditorProps} size='small' />;
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
@@ -117,7 +117,6 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
           size='small'
           color='lightslategrey'
           onClick={onSwitchMode}
-
         />
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}

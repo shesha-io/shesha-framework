@@ -15,23 +15,23 @@ interface StyleGroupProps {
     model: any;
     onChange?: (value: any) => void;
     omitted?: omittedStyleType[];
+    value?: any;
 }
 
-const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange }) => {
+const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange, value }) => {
 
-    console.log("StyleGroup onChange", onChange);
     const readOnly = model?.readOnly;
 
     const items: CollapseProps['items'] = [
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent readOnly={readOnly} model={model} onChange={onChange} />
+            children: <FontComponent readOnly={readOnly} model={model}  />
         },
         {
             key: '2',
             label: 'Size',
-            children: <SizeComponent model={model} noOverflow />
+            children: <SizeComponent model={model} noOverflow  />
         },
         {
             key: '3',
@@ -41,7 +41,7 @@ const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange }
         {
             key: '4',
             label: 'Background',
-            children: <BackgroundComponent model={model} onChange={onChange} />
+            children: <BackgroundComponent model={model}  />
         },
         {
             key: '5',
