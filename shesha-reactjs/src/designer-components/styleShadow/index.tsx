@@ -11,15 +11,16 @@ import ShadowComponent from './components/shadow/shadowComponent';
 const ShadowConfigurator: IToolboxComponent<IShadowComponentProps> = {
     type: 'shadowStyle',
     name: 'Shadow Styles',
-    isInput: false,
-    icon: <ColumnWidthOutlined />,
+    isInput: true,
+    isOutput: true,
     canBeJsSetting: true,
+    icon: <ColumnWidthOutlined />,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
     Factory: ({ model }) => {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value) => <ShadowComponent value={value} readOnly={model.readOnly} />}
+                <ShadowComponent />
             </ConfigurableFormItem>
         );
     },

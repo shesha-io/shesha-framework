@@ -11,9 +11,10 @@ import { ISizeComponentProps } from './components/size/interfaces';
 const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
     type: 'sizeStyle',
     name: 'Size',
-    isInput: false,
-    icon: <ColumnWidthOutlined />,
+    isInput: true,
+    isOutput: true,
     canBeJsSetting: true,
+    icon: <ColumnWidthOutlined />,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
     Factory: ({ model }) => {
 

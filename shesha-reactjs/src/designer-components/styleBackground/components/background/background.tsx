@@ -15,13 +15,11 @@ interface IBackgroundProps {
 }
 
 const BackgroundComponent: FC<IBackgroundProps> = ({ model, onChange }) => {
-    console.log("BackgroundComponent", onChange);
     const { background: value, readOnly } = model;
 
     const { updateComponent } = useFormDesignerActions();
     const [colors, setColors] = useState<Record<string, string>>(value?.gradient?.colors || {});
 
-    console.log(colors)
     const addColor = () => {
         const newKey = nanoid();
         setColors({ ...colors, [newKey]: '' });

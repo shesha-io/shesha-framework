@@ -6,13 +6,13 @@ import { IToolboxComponent } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { TabSettingsForm } from './settings';
 import SearchableTabs from './searchableTabsComponent';
-import { Config } from 'jodit/types/config';
 import { ConfigurableFormItem } from '@/components';
 
 
 const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
   type: 'searchableTabs',
-  isInput: false,
+  isInput: true,
+  isOutput: true,
   name: 'Tabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
@@ -37,7 +37,7 @@ const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
     return model.hidden ? null : (
       <ConfigurableFormItem model={model} className='sha-js-label'>
         {(onChange, value) => {
-          console.log('onChange', onChange, value)
+          console.log('onChange tabs factory', onChange, value)
           return <SearchableTabs model={{ ...model, formSettings }} />
         }}
       </ConfigurableFormItem>

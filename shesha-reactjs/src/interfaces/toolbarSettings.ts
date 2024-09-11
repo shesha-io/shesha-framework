@@ -36,6 +36,7 @@ import { IBorderProps } from '@/designer-components/styleBorder/components/borde
 import { ILabelComponentProps } from '@/designer-components/styleLabel/components/label/interfaces';
 import { IPrefixSuffixType } from '@/designer-components/stylePrefixSuffix/components/prefixSuffix/prefixSuffixComponent';
 import { IShadowType } from '@/designer-components/styleShadow/components/shadow/shadowComponent';
+import { ILabelProps } from '@/designer-components/styleLabel/components/label/labelConfigurator';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISizeType } from '@/designer-components/styleDimensions/components/size/interfaces';
 
@@ -119,6 +120,7 @@ type PrefixSuffixStyleType = ToolbarSettingsProp & Omit<IPrefixSuffixType, 'hidd
 
 type ShadowStyleType = ToolbarSettingsProp & Omit<IShadowType, 'hidden' | 'type'>;
 
+type LabelType = ToolbarSettingsProp & Omit<ILabelProps, 'hidden' | 'type'>;
 
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
@@ -285,6 +287,10 @@ export class DesignerToolbarSettings<T> {
 
   public addShadowStyle(props: ShadowStyleType | ((data: T) => ShadowStyleType)) {
     return this.addProperty(props, 'shadowStyle');
+  }
+
+  public addLabel(props: LabelType | ((data: T) => LabelType)) {
+    return this.addProperty(props, 'labelConfigurator');
   }
 
   public addSlider(props: SliderType | ((data: T) => SliderType)) {

@@ -5,8 +5,6 @@ import { ISizeType } from './interfaces';
 
 const SizeComponent: FC<ISizeType> = ({ model }) => {
 
-    console.log("SIZE - Model:", model)
-
     const { value, readOnly, noOverflow } = model;
 
     const commonProps = { hasUnits: true, readOnly, value };

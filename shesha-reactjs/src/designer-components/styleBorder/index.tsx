@@ -11,9 +11,10 @@ import BorderComponent from './components/border/borderComponent';
 const BorderConfigurator: IToolboxComponent<IBorderProps> = {
     type: 'borderStyle',
     name: 'Border Configurator',
-    isInput: false,
-    icon: <StrikethroughOutlined />,
+    isInput: true,
+    isOutput: true,
     canBeJsSetting: true,
+    icon: <StrikethroughOutlined />,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
     Factory: ({ model }) => {
 

@@ -13,16 +13,17 @@ export interface IPrefixSuffixProps extends IConfigurableFormComponent {
 }
 const PrefixSuffixConfigurator: IToolboxComponent<IPrefixSuffixProps> = {
     type: 'prefixSuffixStyle',
-    name: 'Size',
-    isInput: false,
-    icon: <ColumnWidthOutlined />,
+    name: 'Prefix Suffix',
+    isInput: true,
+    isOutput: true,
     canBeJsSetting: true,
+    icon: <ColumnWidthOutlined />,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
     Factory: ({ model }) => {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(onChange) => <PrefixSuffixComponent onChange={onChange} />}
+                <PrefixSuffixComponent />
             </ConfigurableFormItem>
         );
     },

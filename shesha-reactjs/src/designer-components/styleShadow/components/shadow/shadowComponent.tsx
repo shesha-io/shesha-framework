@@ -2,16 +2,16 @@ import { Row } from 'antd';
 import React, { FC } from 'react';
 
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
+import { IShadowValue } from './interfaces';
 
 
 export interface IShadowType {
-    model?: any;
+    value?: IShadowValue;
+    readOnly?: boolean;
+    onChange?: (newValue: IShadowValue) => void;
 }
 
-const ShadowComponent: FC<IShadowType> = ({ model }) => {
-
-    console.log("Shadow model", model);
-    const { value, readOnly } = model;
+const ShadowComponent: FC<IShadowType> = ({ onChange, value, readOnly }) => {
 
     const commonProps = {
         readOnly,

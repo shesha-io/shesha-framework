@@ -35,36 +35,9 @@ interface IInputProps {
     value: any;
     hasUnits?: boolean;
     hidden?: boolean;
+    jsSetting?: boolean;
     component?: React.ReactNode;
 }
-
-export const SettingsRadioGroup: React.FC<SettingsRadioGroupProps> = ({
-    options,
-    value,
-    label,
-    property,
-}) => {
-
-    return (
-        <FormItem
-            name={property}
-            label={label}
-            jsSetting={false}
-        >
-            <Radio.Group value={value}>
-                {options.map(option => (
-                    <Radio.Button
-                        key={option.value}
-                        value={option.value}
-                        title={option.title}
-                    >
-                        {option.icon}
-                    </Radio.Button>
-                ))}
-            </Radio.Group>
-        </FormItem>
-    );
-};
 
 const { Option } = Select;
 
@@ -74,7 +47,7 @@ const UnitSelector: FC<{ property: string, value: any }> = ({ property, value })
         <Select
             value={currentValue?.unit || 'px'}
             defaultValue={'px'}
-            style={{ width: '70px' }}
+            dropdownStyle={{ minWidth: '70px' }}
         >
             {units.map(unit => (
                 <Option key={unit} value={unit} >{unit}</Option>
@@ -83,12 +56,11 @@ const UnitSelector: FC<{ property: string, value: any }> = ({ property, value })
     );
 }
 
-export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, value, hasUnits, component }) => {
+export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, value, hasUnits, component, jsSetting }) => {
     const { searchQuery } = useSearchQuery();
     const currentValue = value?.[property];
 
     const input = () => {
-        console.log("SettingInput ", currentValue);
         switch (type) {
             case 'color':
                 return <ColorPicker value={value?.color} readOnly={readOnly} allowClear />;
@@ -128,7 +100,7 @@ export const SettingInput: React.FC<IInputProps> = ({ label, property, type, but
     }
 
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return component ? <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting >
+        return component ? <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting={jsSetting} >
             {component}</FormItem> :
             <div key={property} style={{ flex: '1 1 120px', minWidth: '100px' }}>
                 <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting >

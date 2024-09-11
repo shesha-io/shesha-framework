@@ -11,9 +11,10 @@ import { IBackgroundProps } from './components/background/interfaces';
 const BackgroundConfigurator: IToolboxComponent<IBackgroundProps> = {
     type: 'backgroundStyle',
     name: 'Background Configurator',
-    isInput: false,
-    icon: <StrikethroughOutlined />,
+    isInput: true,
+    isOutput: true,
     canBeJsSetting: true,
+    icon: <StrikethroughOutlined />,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
     Factory: ({ model: passedModel }) => {
         const { size, ...model } = passedModel;

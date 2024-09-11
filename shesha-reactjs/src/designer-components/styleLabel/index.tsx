@@ -10,16 +10,16 @@ import { ILabelComponentProps } from './components/label/interfaces';
 
 const LabelConfigurator: IToolboxComponent<ILabelComponentProps> = {
     type: 'labelConfigurator',
-    name: 'Size',
-    isInput: false,
-    icon: <ColumnWidthOutlined />,
+    name: 'Label Configurator',
+    isInput: true,
+    isOutput: true,
     canBeJsSetting: true,
-    dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
+    icon: <ColumnWidthOutlined />,
     Factory: ({ model }) => {
 
         return (
             <ConfigurableFormItem model={model}>
-                {() => <LabelConfiguratorComponent model={model} />}
+                <LabelConfiguratorComponent model={model} />
             </ConfigurableFormItem>
         );
     },

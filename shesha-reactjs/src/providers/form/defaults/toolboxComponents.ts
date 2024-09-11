@@ -106,6 +106,7 @@ import { getToolboxComponentsVisibility } from '@/utils';
 import FontConfigurator from '@/designer-components/styleFont';
 import BackgroundConfigurator from '@/designer-components/styleBackground';
 import ShadowConfigurator from '@/designer-components/styleShadow';
+import LabelConfigurator from '@/designer-components/styleLabel';
 import SettingsTabs from '@/designer-components/_settings/components/tabs';
 
 export const getToolboxComponents = (
@@ -244,6 +245,7 @@ export const getToolboxComponents = (
         BackgroundConfigurator,
         SizeConfigurator,
         ShadowConfigurator,
+        LabelConfigurator,
         SettingsTabs,
         CodeEditor,
         ComponentSelectorComponent,

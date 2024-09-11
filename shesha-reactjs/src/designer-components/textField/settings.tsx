@@ -16,14 +16,6 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
     const { readOnly } = props;
     const { model } = useSettingsForm<ITextFieldComponentProps>();
 
-    const renderSettingsItem = (name: string, label: string, component: React.ReactNode) => {
-        return (
-            <SettingsFormItem key={name} name={name} label={label} jsSetting>
-                {component}
-            </SettingsFormItem>
-        )
-    };
-
     const tabs = [
         {
             key: "display",
@@ -62,7 +54,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                     <SettingInput label="Min Length" value={model.validate?.minLength} property='validate.minLength' readOnly={readOnly} type='number' />
                     <SettingInput label="Max Length" value={model.validate?.maxLength} property='validate.maxLength' readOnly={readOnly} type='number' />
                     <SettingInput label="Validator" value={model.validate?.validator} property='validate.validator' readOnly={readOnly} />
-                    <SettingInput label="Validation Message" value={model.validate.message} property='validation.message' readOnly={readOnly} />
+                    <SettingInput label="Validation Message" value={model.validate?.message} property='validation.message' readOnly={readOnly} />
                 </>
 
         },
@@ -76,9 +68,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             key: "security",
             label: "Security",
             children: (
-                <>
-                    {renderSettingsItem("permissions", "Permissions", <PermissionAutocomplete readOnly={readOnly} />)}
-                </>
+                <SettingInput label='Permissions' value={model.permissions} property='permissions' readOnly={readOnly} component={<PermissionAutocomplete readOnly={readOnly} />} />
             )
         }
     ];

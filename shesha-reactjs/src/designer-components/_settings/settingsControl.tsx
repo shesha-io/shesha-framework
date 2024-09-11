@@ -16,6 +16,7 @@ import { CodeFilled, CodeOutlined, FormOutlined } from '@ant-design/icons';
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
 export interface ISettingsControlProps {
+  size?: 'small' | 'middle' | 'large';
   propertyName: string;
   readOnly?: boolean;
   value?: IPropertySetting;

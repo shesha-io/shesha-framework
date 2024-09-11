@@ -2,6 +2,7 @@ import React, { createContext, useContext } from 'react';
 
 interface SearchQueryContextType {
     searchQuery: string;
+    onChange: (value: string) => void;
 }
 
 const SearchQueryContext = createContext<SearchQueryContextType | undefined>(undefined);
@@ -14,9 +15,9 @@ export const useSearchQuery = () => {
     return context;
 };
 
-export const SearchQueryProvider: React.FC<SearchQueryContextType & { children: React.ReactNode }> = ({ searchQuery, children }) => {
+export const SearchQueryProvider: React.FC<SearchQueryContextType & { children: React.ReactNode }> = ({ searchQuery, children, onChange }) => {
     return (
-        <SearchQueryContext.Provider value={{ searchQuery }}>
+        <SearchQueryContext.Provider value={{ searchQuery, onChange }}>
             {children}
         </SearchQueryContext.Provider>
     );

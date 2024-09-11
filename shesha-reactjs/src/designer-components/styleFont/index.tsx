@@ -10,16 +10,17 @@ import FontComponent from './components/font/fontComponent';
 
 const FontConfigurator: IToolboxComponent<IFontComponentProps> = {
     type: 'fontStyle',
-    name: 'Font',
-    isInput: false,
+    name: 'Font Style',
     icon: <FileTextOutlined />,
+    isInput: true,
+    isOutput: true,
     canBeJsSetting: true,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
     Factory: ({ model }) => {
 
         return (
             <ConfigurableFormItem model={model}>
-                {() => <FontComponent model={model} />}
+                {(value, onChange) => <FontComponent model={model} onChange={onChange} value={value} />}
             </ConfigurableFormItem>
         );
     },
@@ -27,13 +28,3 @@ const FontConfigurator: IToolboxComponent<IFontComponentProps> = {
 };
 
 export default FontConfigurator;
-
-const Component = ({ children, ...rest }) => {
-
-    console.log('Component rest', rest);
-    return (
-        <div>
-            {children}
-        </div>
-    )
-}

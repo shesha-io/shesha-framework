@@ -26,27 +26,27 @@ const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange, 
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent readOnly={readOnly} model={model} />
+            children: <FontComponent />
         },
         {
             key: '2',
             label: 'Size',
-            children: <SizeComponent model={model} noOverflow />
+            children: <SizeComponent noOverflow />
         },
         {
             key: '3',
             label: 'Border',
-            children: <BorderComponent model={model} />
+            children: <BorderComponent />
         },
         {
             key: '4',
             label: 'Background',
-            children: <BackgroundComponent model={model} />
+            children: <BackgroundComponent />
         },
         {
             key: '5',
             label: 'Shadow',
-            children: <ShadowComponent model={model} />
+            children: <ShadowComponent />
         },
         {
             key: '6',

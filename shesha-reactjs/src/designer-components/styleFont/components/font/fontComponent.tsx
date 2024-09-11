@@ -7,14 +7,12 @@ export interface IFontType {
     value?: IFontValue;
     readOnly?: boolean;
     model?: any;
-    onChange?: (newValue: any) => void;
+    onChange?: (newValue: IFontValue) => void;
 }
 
 const FontComponent: FC<IFontType> = (props) => {
     const { model } = props;
     const { value, readOnly } = model;
-
-    console.log("Onchange", props);
 
     return (
         <>
