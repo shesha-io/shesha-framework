@@ -8,3 +8,4 @@ Testing Auto Release Pipeline
 Testing Auto Release Pipeline 2
 Testing Auto Release Pipeline 3
 Testing Auto Release Pipeline 4
+Testing Auto Release Pipeline 5
