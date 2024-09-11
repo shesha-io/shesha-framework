@@ -6,3 +6,4 @@ Checking merge works
 Testing New Pipeline
 Testing Auto Release Pipeline
 Testing Auto Release Pipeline 2
+Testing Auto Release Pipeline 3
