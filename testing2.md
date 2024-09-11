@@ -4,3 +4,4 @@ Create a new release branch, naming convention same as PD
 
 Checking merge works
 Testing New Pipeline
+Testing Auto Release Pipeline
