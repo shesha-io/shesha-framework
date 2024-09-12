@@ -147,13 +147,10 @@ namespace Shesha.Permissions
 
                         var child = new PermissionedObjectDto()
                         {
-                            Object = parent.Object + "@" + methodInfo.Action.Name,
+                            Object = parent.Object + "@" + methodName,
                             Module = parent.Module,
                             ModuleId = parent.ModuleId,
-                            Name = GetName(methodInfo.Action, 
-                                methodInfo.Action.Name.EndsWith("Async")
-                                    ? methodInfo.Action.Name.Replace("Async", "")
-                                    : methodInfo.Action.Name),
+                            Name = GetName(methodInfo.Action, methodName),
                             Type = GetMethodType(objType),
                             Parent = parent.Object,
                             Description = GetDescription(methodInfo.Action),

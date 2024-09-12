@@ -23,6 +23,7 @@ import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getValueByPropertyName } from '@/utils/object';
 
 export interface IEntityPickerComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
@@ -71,6 +72,8 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     };
     const { filters, modalWidth, customWidth, widthUnits, style } = model;
 
+    const displayEntityKey = model.displayEntityKey || '_displayName';
+
     const entityPickerFilter = useMemo<ITableViewProps[]>(() => {
       return [
         {
@@ -97,14 +100,14 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
       if (model.valueFormat === 'entityReference') {
         return !!value
-          ? {id: value.id, _displayName: value[model.displayEntityKey] ??  value._displayName, _className: model.entityType}
+          ? {id: value.id, _displayName: getValueByPropertyName(value, displayEntityKey) ??  value._displayName, _className: model.entityType}
           : null;
       }
       if (model.valueFormat === 'custom') {
         return executeExpression(model.outcomeCustomJs, {...args, value}, null, null );
       }
       return !!value ? value.id : null;
-    }, [model.valueFormat, model.outcomeCustomJs, model.displayEntityKey, model.entityType]);
+    }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, model.entityType]);
 
     if (form.formMode === 'designer' && !model.entityType) {
       return (
@@ -139,7 +142,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
             style={computedStyle}
             formId={model.id}
             readOnly={model.readOnly}
-            displayEntityKey={model.displayEntityKey}
+            displayEntityKey={displayEntityKey}
             entityType={model.entityType}
             filters={entityPickerFilter}
             mode={model.mode}
