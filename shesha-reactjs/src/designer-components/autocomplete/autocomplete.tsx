@@ -75,7 +75,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
           },
           {
             match: 'pageContext',
-            data: {...pageContext?.getFull()} ?? {},
+            data: {...pageContext?.getFull()},
           },
         ],
         propertyMetadataAccessor

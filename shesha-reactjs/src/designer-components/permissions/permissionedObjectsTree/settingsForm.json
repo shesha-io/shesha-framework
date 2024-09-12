@@ -15,7 +15,8 @@
     "type": "textField",
     "propertyName": "componentName",
     "parentId": "root",
-    "label": "Component name"
+    "label": "Component name",
+    "jsSetting": false
   },
   {
     "textType": "text",
