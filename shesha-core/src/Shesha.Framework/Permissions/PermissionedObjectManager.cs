@@ -458,9 +458,10 @@ namespace Shesha.Permissions
         {
             if (actionDescriptor is ControllerActionDescriptor descriptor)
             {
+                var methodName = descriptor.MethodInfo.Name.RemovePostfix("Async");
                 // remove disabled endpoints
-                var method = PermissionedObjectManager.CrudMethods.ContainsKey(descriptor.MethodInfo.Name.RemovePostfix("Async"))
-                    ? PermissionedObjectManager.CrudMethods[descriptor.MethodInfo.Name.RemovePostfix("Async")]
+                var method = PermissionedObjectManager.CrudMethods.ContainsKey(methodName)
+                    ? PermissionedObjectManager.CrudMethods[methodName]
                     : null;
 
                 var obj = "";
@@ -473,7 +474,7 @@ namespace Shesha.Permissions
                 }
                 else
                     // api service
-                    obj = $"{descriptor.ControllerTypeInfo.FullName}@{descriptor.MethodInfo.Name}";
+                    obj = $"{descriptor.ControllerTypeInfo.FullName}@{methodName}";
 
                 var permission = await GetOrDefaultAsync(obj, ShaPermissionedObjectsTypes.WebApiAction);
                 return permission == null || permission.ActualAccess != RefListPermissionedAccess.Disable;
