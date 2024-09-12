@@ -8,8 +8,8 @@ import { SearchOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { Alert } from 'antd';
 import { useDataTableStore } from '@/index';
+import ConfigError from '@/components/configError';
 
 export interface IQuickSearchComponentProps extends IConfigurableFormComponent {
   block?: boolean;
@@ -20,16 +20,16 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
   isInput: false,
   name: 'Quick Search',
   icon: <SearchOutlined />,
-  Factory: ({ model: { block, hidden } }) => {
+  Factory: ({ model: { block, hidden, id } }) => {
     const store = useDataTableStore(false);
-    return hidden 
-      ? null 
-      : store 
+    return hidden
+      ? null
+      : store
         ? <GlobalTableFilter block={block} />
-        : <Alert
-          className="sha-designer-warning"
-          message="Quick Search must be used within a Data Table Context"
-          type="warning"
+        : <ConfigError
+          type='datatable.quickSearch'
+          errorMessage='Quick Search must be used within a Data Table Context'
+          comoponentId={id}
         />;
   },
   initModel: (model: IQuickSearchComponentProps) => {
@@ -42,7 +42,7 @@ const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
     m
       .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IQuickSearchComponentProps>(1, (prev) => migrateVisibility(prev))
-      .add<IQuickSearchComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
+      .add<IQuickSearchComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
   ,
   settingsFormMarkup: (context) => getSettings(context),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
-import { Alert } from 'antd';
 import { DataList } from '@/components/dataList';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
@@ -13,10 +12,7 @@ import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
 import { EmptyState } from '@/components';
 import { FormApi } from '@/providers/form/formApi';
-
-export const NotConfiguredWarning: FC = () => {
-  return <Alert className="sha-designer-warning" message="Data list is not configured properly" type="warning" />;
-};
+import ConfigError from '@/components/configError';
 
 export type OnSaveHandler = (data: object, formData: object, contexts: object, globalState: object) => Promise<object>;
 export type OnSaveSuccessHandler = (
@@ -197,7 +193,7 @@ const DataListControl: FC<IDataListWithDataSourceProps> = (props) => {
       || !props.formId && props.formSelectionMode === "name"
       || !props.formType && props.formSelectionMode === "view"
       || !props.formIdExpression && props.formSelectionMode === "expression"
-    )) return <NotConfiguredWarning />;
+    )) return <ConfigError type='datalist' errorMessage='Data list is not configured properly' comoponentId={props.id} />;
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 

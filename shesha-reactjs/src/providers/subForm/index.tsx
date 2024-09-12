@@ -8,7 +8,7 @@ import React, {
   useReducer,
   useRef,
   useState
-  } from 'react';
+} from 'react';
 import { ColProps, message, notification } from 'antd';
 import {
   componentsFlatStructureToTree,
@@ -16,7 +16,7 @@ import {
   executeScript,
   upgradeComponents,
   useApplicationContextData
-  } from '@/providers/form/utils';
+} from '@/providers/form/utils';
 import { DEFAULT_FORM_SETTINGS } from '../form/models';
 import { EntitiesGetQueryParams } from '@/apis/entities';
 import { EntityAjaxResponse } from '@/generic-pages/dynamic/interfaces';
@@ -24,7 +24,7 @@ import {
   GetDataError,
   useDeepCompareMemoKeepReference,
   useMutate,
-  } from '@/hooks';
+} from '@/hooks';
 import { getQueryParams, QueryStringParams } from '@/utils/url';
 import { IAnyObject } from '@/interfaces';
 import { ISubFormProviderProps } from './interfaces';
@@ -96,12 +96,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const { globalState, setState: setGlobalState } = useGlobalState();
   const appContextData = useApplicationContextData();
   const [formConfig, setFormConfig] = useState<UseFormConfigurationArgs>({ formId, lazy: true });
-  
+
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   const onChangeInternal = (newValue: any) => {
-    if (onChange) 
-      onChange({...(typeof value === 'object' ? value : {} ), ...newValue });
+    if (onChange)
+      onChange({ ...(typeof value === 'object' ? value : {}), ...newValue });
   };
 
   /**
@@ -174,13 +174,13 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     return getUrl
       ? // if getUrl is specified - evaluate value using JS
-        evaluateUrl(getUrl)
+      evaluateUrl(getUrl)
       : internalEntityType
-      ? // if entityType is specified - get default url for the entity
+        ? // if entityType is specified - get default url for the entity
         urlHelper
           .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then((endpoint) => endpoint.url)
-      : // return empty string
+        : // return empty string
         Promise.resolve('');
   };
 
@@ -259,7 +259,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (queryParams) {
       params = { ...params, ...(typeof queryParamsFromJs === 'object' ? queryParamsFromJs : {}) };
     }
-    
+
     if (!params.id && !!value && !!value['id'])
       params.id = value['id'];
 
@@ -299,7 +299,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     dispatch(fetchDataRequestAction());
     getReadUrl().then((getUrl) => {
       if (!Boolean(getUrl)) {
-        dispatch(fetchDataSuccessAction({entityId: undefined}));
+        dispatch(fetchDataSuccessAction({ entityId: undefined }));
         return;
       }
 
@@ -316,7 +316,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
           if (dataResponse.success) {
             onChangeInternal(dataResponse?.result);
-            dispatch(fetchDataSuccessAction({entityId: dataResponse?.result?.id}));
+            dispatch(fetchDataSuccessAction({ entityId: dataResponse?.result?.id }));
           } else {
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
           }
@@ -445,7 +445,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   //#endregion
 
   const getChildComponents = (componentId: string) => {
-    
+
     const childIds = state.componentRelations[componentId];
 
     if (!childIds) return [];
@@ -547,7 +547,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           wrap={(children) => <MetadataProvider modelType={state.formSettings.modelType}>{children}</MetadataProvider>}
         >
           <ParentProvider model={props} context={context} isScope
-            formFlatMarkup={{allComponents: state.allComponents, componentRelations: state.componentRelations}}
+            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
           >
             {children}
           </ParentProvider>

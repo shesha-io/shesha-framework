@@ -35,7 +35,7 @@ interface ShaFormInstanceArguments {
 
 class PublicFormApi<Values = any> implements FormApi<Values> {
     #form: IShaFormInstance;
-    constructor(form: IShaFormInstance){
+    constructor(form: IShaFormInstance) {
         this.#form = form;
     }
     addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[]  => {
@@ -45,7 +45,7 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
       return delayedUpdateData;
     };
     setFieldValue = (name: string, value: any) => {
-        this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });        
+        this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
     };
     setFieldsValue = (values: Values) => {
         this.#form.setFormData({ values, mergeValues: true });
@@ -62,7 +62,7 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     get formInstance(): FormInstance<Values> {
         return this.#form.antdForm;
     };
-    get formSettings() { 
+    get formSettings() {
         return this.#form.settings;
     };
     get formMode() {
@@ -364,7 +364,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             this.log('LOG: initialValues', initialValues);
             this.initialValues = initialValues;
             this.formData = initialValues;
-            if (initialValues){
+            if (initialValues) {
                 this.antdForm.resetFields();
                 this.antdForm.setFieldsValue(initialValues);
             }
@@ -617,10 +617,10 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
                 antdForm: antdFormInstance,
                 metadataDispatcher: metadataDispatcher,
             });
-            const accessors = wrapConstantsData({ 
-                fullContext, 
+            const accessors = wrapConstantsData({
+                fullContext,
                 shaForm: instance,
-                queryStringGetter: getQueryParams,                
+                queryStringGetter: getQueryParams,
             });
             const allConstants = makeObservableProxy<IApplicationContext>(accessors);
 
@@ -631,7 +631,6 @@ const useShaForm = <Values = any>(args: UseShaFormArgs<Values>): IShaFormInstanc
             instance.setExpressionExecuter(expressionExecuter);
 
             init?.(instance);
-
             formRef.current = instance;
         }
     }

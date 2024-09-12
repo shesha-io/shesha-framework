@@ -23,6 +23,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         wrapperStyle,
         style: incomingStyle,
         noDefaultStyling,
+        debugMode,
     } = props;
 
     const { styles } = useStyles();
@@ -107,7 +108,9 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
 
         return typeof render === 'function' ? render(renderedComponents) : renderedComponents;
     };
-
+    if (debugMode) {
+        return renderComponents();
+    }
     const style = getAlignmentStyle(props);
 
     return (

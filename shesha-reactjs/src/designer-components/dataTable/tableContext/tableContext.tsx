@@ -4,7 +4,6 @@ import React, {
     FC,
     useMemo
 } from 'react';
-import { Alert } from 'antd';
 import { ConfigurableFormItem } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
@@ -15,6 +14,7 @@ import {
 } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
+import ConfigError from '@/components/configError';
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
 }
@@ -43,13 +43,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     if (isDesignMode && configurationWarningMessage)
         return (
-            <Alert
-                className="sha-designer-warning"
-                message="Table is not configured"
-                description={configurationWarningMessage}
-                type="warning"
-                showIcon
-            />
+
+            <ConfigError type='datatable' errorMessage={configurationWarningMessage} comoponentId={id} />
         );
 
     const provider = (getFieldValue = undefined, onChange = undefined) => (

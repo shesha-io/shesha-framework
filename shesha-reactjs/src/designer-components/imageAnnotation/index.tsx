@@ -7,10 +7,10 @@ import { AnnotationSettingsForm } from './settings';
 import { useForm } from '@/providers';
 import { IImageProps } from './model';
 import ImageAnnotationControl from './control';
-import { Alert } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import ConfigError from '@/components/configError';
 
 const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   type: 'imageAnnotation',
@@ -22,20 +22,15 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   Factory: ({ model }) => {
     const { formMode } = useForm();
 
-    if (formMode === 'designer' && !model?.url) {
+    if (formMode === 'designer' && (!model?.url || !model?.height || !model?.width)) {
       return (
-        <Alert
-          showIcon
-          message="ImageAnnotation not configured properly"
-          description="Please make sure that you've specified 'url' property."
-          type="warning"
-        />
+        <ConfigError type='imageAnnotation' errorMessage="Please make sure that you've specified 'url,height,width' property(s)." comoponentId={model?.id} />
       );
     }
 
     return (
       <ConfigurableFormItem model={model} >
-        {(value, onChange) => <ImageAnnotationControl model={model} value={value} onChange={onChange}/>}
+        {(value, onChange) => <ImageAnnotationControl model={model} value={value} onChange={onChange} />}
       </ConfigurableFormItem>
     );
   },
@@ -43,7 +38,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
     .add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IImageProps)
     .add<IImageProps>(1, (prev) => migrateVisibility(prev))
     .add<IImageProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IImageProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<IImageProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
   ,
   initModel: model => {
     const customModel: IImageProps = {

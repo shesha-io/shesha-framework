@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import { Alert } from 'antd';
 import { evaluateString, getStyle } from '@/providers/form/utils';
 import { GenericText } from './genericText';
 import { ITextTypographyProps } from './models';
@@ -8,6 +7,7 @@ import {
   getContent,
 } from './utils';
 import { isMoment } from 'moment';
+import ConfigError from '@/components/configError';
 
 const TypographyComponent: FC<ITextTypographyProps> = ({
   contentDisplay,
@@ -22,7 +22,7 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const { data: formData } = useFormData();
 
   const val = typeof value === 'string'
-    ? value 
+    ? value
     : isMoment(value)
       ? value.isValid() ? value.format(dateFormat) : ''
       : value?.toString();
@@ -31,13 +31,13 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
 
   if (!content && contentDisplay === 'content' && formMode === 'designer') {
-    return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
+    return <ConfigError type='text' errorMessage="Please make sure you enter the content to be displayed here!" comoponentId={model?.id} />;
   }
 
   const computedStyle = getStyle(style, formData) ?? {};
 
   return (
-    <GenericText style={{...computedStyle, display: 'grid', placeItems: model?.textAlign}} {...model}>
+    <GenericText style={{ ...computedStyle, display: 'grid', placeItems: model?.textAlign }} {...model}>
       {content}
     </GenericText>
   );

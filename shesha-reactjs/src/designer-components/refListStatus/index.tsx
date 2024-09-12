@@ -1,5 +1,4 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import { Alert } from 'antd';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
@@ -13,6 +12,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import ConfigError from '@/components/configError';
 
 const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   type: 'refListStatus',
@@ -29,21 +29,18 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
     const isVisibleByCondition = executeCustomExpression(model?.customVisibility, true, formData, globalState);
 
-    const style = {...getStyle(model.style, data, globalState)};
+    const style = { ...getStyle(model.style, data, globalState) };
 
     if (!isVisibleByCondition && formMode !== 'designer') return null;
 
     if (formMode === 'designer' && !referenceListId) {
-      return (
-        <Alert
-          showIcon
-          message="ReflistStatus configuration is incomplete"
-          description="Please make sure that you've select a reference list."
-          type="warning"
-        />
-      );
+      return <ConfigError
+        type='refListStatus'
+        errorMessage="Please make sure that you've specified 'referenceListId' property."
+        comoponentId={model.id}
+      />;
     }
-    
+
     return (
       <ConfigurableFormItem model={{ ...model }}>
         {(value) => {
@@ -90,7 +87,8 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
     })
     .add<IRefListStatusProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRefListStatusProps>(3, (prev) => migrateVisibility(prev))
-    .add<IRefListStatusProps>(4, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IRefListStatusProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+
   ,
   settingsFormMarkup: RefListStatusSettingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(RefListStatusSettingsForm, model),

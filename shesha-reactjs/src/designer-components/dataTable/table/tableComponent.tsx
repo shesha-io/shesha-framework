@@ -1,6 +1,5 @@
 import React from 'react';
 import TableSettings from './tableComponent-settings';
-import { Alert } from 'antd';
 import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
@@ -14,6 +13,7 @@ import { TableOutlined } from '@ant-design/icons';
 import { TableWrapper } from './tableWrapper';
 import { useDataTableStore } from '@/providers';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import ConfigError from '@/components/configError';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -27,11 +27,7 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
     return store ? (
       <TableWrapper {...model} />
     ) : (
-      <Alert
-        className="sha-designer-warning"
-        message="Data Table must be used within a Data Table Context"
-        type="warning"
-      />
+      <ConfigError type='datatable' errorMessage='Data Table must be used within a Data Table Context' comoponentId={model.id} />
     );
   },
   initModel: (model: ITableComponentProps) => {

@@ -61,6 +61,7 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
    * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
    */
   isInput: boolean;
+
   /**
    * If true, indicates that the component has data bindings and can be used as an output.
    */
@@ -173,7 +174,7 @@ export interface IAsyncValidationError {
   message: string;
 }
 
-export interface IFormValidationErrors {}
+export interface IFormValidationErrors { }
 
 export { type ConfigurableFormInstance };
 

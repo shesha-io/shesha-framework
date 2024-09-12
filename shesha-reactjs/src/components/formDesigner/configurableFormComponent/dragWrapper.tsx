@@ -1,21 +1,23 @@
 import React, { FC, MutableRefObject, PropsWithChildren, useState } from 'react';
 import { ShaForm } from '@/providers/form';
-import { Button, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { useFormDesignerState, useFormDesignerActions } from '@/providers/formDesigner';
-import { DeleteFilled, FunctionOutlined } from '@ant-design/icons';
+import { FunctionOutlined } from '@ant-design/icons';
 import { useStyles } from '../styles/styles';
 
 interface IDragWrapperProps {
   componentId: string;
   componentRef: MutableRefObject<any>;
   readOnly?: boolean;
+  inCompleteConfiguration?: boolean;
+  inConfigurationError?: string;
 }
 
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
   const { styles } = useStyles();
-  
+
   const { selectedComponentId, isDebug } = useFormDesignerState();
-  const { setSelectedComponent, deleteComponent } = useFormDesignerActions();
+  const { setSelectedComponent } = useFormDesignerActions();
   const [isOpen, setIsOpen] = useState(false);
 
   const componentModel = ShaForm.useComponentModel(props.componentId);
@@ -32,9 +34,9 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
       </div>
       {Boolean(componentModel.propertyName) && (
         <div>
-          <strong>Property name: </strong> 
-          {typeof(componentModel.propertyName) === 'string' ? componentModel.propertyName : ''}
-          {typeof(componentModel.propertyName) === 'object' && <FunctionOutlined />}
+          <strong>Property name: </strong>
+          {typeof (componentModel.propertyName) === 'string' ? componentModel.propertyName : ''}
+          {typeof (componentModel.propertyName) === 'object' && <FunctionOutlined />}
         </div>
       )}
       {Boolean(componentModel.componentName) && (
@@ -62,19 +64,12 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
     event.stopPropagation();
     setIsOpen(false);
   };
-  const onDeleteClick = () => {
-    deleteComponent({ componentId: componentModel.id });
-  };
+
+  const showComponentInfo = !props.inCompleteConfiguration && isOpen;
 
   return (
     <div className={styles.componentDragHandle} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
-      {!props?.readOnly && isOpen && (
-        <div className={styles.shaComponentControls}>
-          <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
-        </div>
-      )}
-
-      <Tooltip title={tooltip} placement="right" open={isOpen}>
+      <Tooltip title={tooltip} placement="right" open={showComponentInfo}>
         {props.children}
       </Tooltip>
     </div>

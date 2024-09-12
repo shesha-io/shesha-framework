@@ -49,6 +49,8 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
   const hidden = getActualPropertyValue(componentModel, allData, 'hidden')?.hidden;
   const componentEditModeFx = isPropertySettings(componentModel.editMode);
   const componentEditMode = getActualPropertyValue(componentModel, allData, 'editMode')?.editMode as EditMode;
+  const toolboxComponent = getToolboxComponent(componentModel.type);
+
 
   const actionText1 = (hiddenFx ? 'hidden' : '') + (hiddenFx && componentEditModeFx ? ' and ' : '') + (componentEditModeFx ? 'disabled' : '');
   const actionText2 = (hiddenFx ? 'showing' : '') + (hiddenFx && componentEditModeFx ? '/' : '') + (componentEditModeFx ? 'enabled' : '');
@@ -71,13 +73,14 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
         <ComponentProperties
           componentModel={componentModel}
           readOnly={readOnly}
-          toolboxComponent={getToolboxComponent(componentModel.type)}
+          toolboxComponent={toolboxComponent}
         />
       </div>
     ), settingsPanelRef.current, "propertiesPanel");
 
     return result;
   }, [isSelected]);
+
 
   return (
     <div
@@ -114,9 +117,13 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
       {invalidConfiguration && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
       <div>
         <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
-          <div style={{ padding: '5px 3px' }}>
+          <div style={{
+            minHeight: '40px',
+          }}
+            id={componentModel.id}>
             <FormComponent componentModel={componentModel} componentRef={componentRef} />
           </div>
+
         </DragWrapper>
       </div>
       {settingsEditor}
@@ -142,5 +149,5 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     <CustomErrorBoundary>
       <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
     </CustomErrorBoundary>
-  ); 
+  );
 };
