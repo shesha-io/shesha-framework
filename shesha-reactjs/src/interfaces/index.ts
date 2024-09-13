@@ -57,3 +57,4 @@ export * from './shesha';
 export * from '@/providers/form/models';
 export { type IStoredFile } from '@/providers/storedFile/contexts';
 export { type IShaFormInstance } from '@/providers/form/store/interfaces';
+export { type ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
