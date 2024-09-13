@@ -192,9 +192,9 @@ export interface IConfigurableFormComponent
 
   //remember to change to correct types before pushing
 
-  mobile?: any;
+  mobile?: IConfigurableFormComponent;
 
-  desktop?: any;
+  desktop?: IConfigurableFormComponent;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
