@@ -109,7 +109,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       style: { ...finalStyle },
       count: { max: model.validate?.maxLength, },
       autoComplete: model.textType === 'password' ? 'new-password' : undefined,
-      defaultValue: model.passEmptyStringByDefault ? '' : model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
+      defaultValue:  model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
     };
 
     const eventProps = {

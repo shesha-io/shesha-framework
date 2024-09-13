@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, Input, Affix } from 'antd';
-import { searchFormItems } from '../utils';
+import { Tabs, Input } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
 import { SearchQueryProvider } from './context';
+import { searchFormItems } from '../utils';
 
 interface SearchableTabsProps {
     model: any;
+    value?: any;
     onChange?: (value: any) => void;
 }
 
@@ -15,7 +16,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredTabs, setFilteredTabs] = useState(tabs);
 
-    console.log("TABSSS:::", onChange, model);
     useEffect(() => {
 
         setFilteredTabs(tabs.map((tab: any) => ({
@@ -33,21 +33,18 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
 
     return (
         <SearchQueryProvider searchQuery={searchQuery} onChange={onChange}>
-            <Affix offsetTop={120}>
-                <Input
-                    placeholder="Search properties..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ marginBottom: 16 }}
-                />
-            </Affix>
+            <Input
+                placeholder="Search properties..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ marginBottom: 16 }}
+            />
             <Tabs
                 defaultActiveKey={'1'}
                 size={model.size}
                 type={model.tabType || 'card'}
                 tabPosition={model.position || 'top'}
                 items={filteredTabs}
-                onChange={onChange}
             />
         </SearchQueryProvider>
     );

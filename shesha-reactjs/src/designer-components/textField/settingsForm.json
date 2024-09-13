@@ -4,7 +4,6 @@
       "id": "W_m7doMyCpCYwAYDfRh6I",
       "type": "searchableTabs",
       "propertyName": "settingsTabs",
-      "label": "Settings",
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
@@ -15,7 +14,6 @@
           "key": "1",
           "id": "s4gmBg31azZC0UjZjpfTm",
           "label": "Display",
-          "size": "small",
           "components": [
             {
               "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
@@ -489,45 +487,9 @@
           "components": [
             {
               "id": "trr26voxhs-HxJ5k5ngYE",
-              "type": "fontStyle",
-              "propertyName": "font",
-              "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801"
-            },
-            {
-              "id": "RvNp_osTwoxjfKmj1mO9p",
-              "type": "sizeStyle",
-              "propertyName": "dimensions",
-              "value": {
-                "_mode": "code",
-                "_code": "return getSettingValue(data.dimensions);"
-              }
-            },
-            {
-              "id": "cszx_osTwoxjfKmj1mO9p",
-              "type": "borderStyle",
-              "propertyName": "border",
-              "value": {
-                "_mode": "code",
-                "_code": "return getSettingValue(data);"
-              }
-            },
-            {
-              "id": "kflrk_gremfkmrrrfdseef",
-              "type": "backgroundStyle",
-              "propertyName": "background",
-              "value": {
-                "_mode": "code",
-                "_code": "return getSettingValue(data.background);"
-              }
-            },
-            {
-              "id": "d9adcd79-771f-4585-a09d-9b769f594490",
-              "type": "styleBox",
-              "propertyName": "stylingBox",
-              "parentId": "pnlfdd49-41aa-41d6-a29e-76fa00590b75",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "jsSetting": false
+              "type": "styleGroup",
+              "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
+              "propertyName": "styleGroups"
             }
           ]
         },
@@ -555,7 +517,6 @@
     }
   ],
   "formSettings": {
-    "size": "small",
     "layout": "vertical",
     "colon": false,
     "labelCol": {

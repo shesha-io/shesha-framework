@@ -48,7 +48,7 @@ const SizeAndRepeat: FC<SizeAndRepeatProps> = ({ backgroundSize, backgroundPosit
                 value: backgroundRepeat,
                 options: repeatOptions,
             }].map(({ name, label, value, options }) => (
-                <SettingInput dropdownOptions={options as IDropdownOption[]} value={value} label={label} property={`background.${name}`} readOnly={readOnly} type='customDropdown' />
+                <SettingInput key={name} dropdownOptions={options as IDropdownOption[]} value={value} label={label} property={`background.${name}`} readOnly={readOnly} type='customDropdown' />
             ))}
         </>
     );

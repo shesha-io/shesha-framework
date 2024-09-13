@@ -107,6 +107,7 @@ import FontConfigurator from '@/designer-components/styleFont';
 import BackgroundConfigurator from '@/designer-components/styleBackground';
 import ShadowConfigurator from '@/designer-components/styleShadow';
 import LabelConfigurator from '@/designer-components/styleLabel';
+import StyleGroup from '@/designer-components/_settings/components/styleGroup';
 import SettingsTabs from '@/designer-components/_settings/components/tabs';
 
 export const getToolboxComponents = (
@@ -246,6 +247,7 @@ export const getToolboxComponents = (
         SizeConfigurator,
         ShadowConfigurator,
         LabelConfigurator,
+        StyleGroup,
         SettingsTabs,
         CodeEditor,
         ComponentSelectorComponent,

@@ -1,47 +1,48 @@
 import React from 'react';
 import { ConfigProvider, Collapse, CollapseProps } from 'antd';
-import FontComponent from '../../styleFont/components/font/fontComponent';
-import SizeComponent from '../../styleDimensions/components/size/sizeComponent';
-import BorderComponent from '../../styleBorder/components/border/borderComponent';
-import BackgroundComponent from '../../styleBackground/components/background/background';
-import ShadowComponent from '../../styleShadow/components/shadow/shadowComponent';
-import SettingsFormItem from '../settingsFormItem';
-import { CodeEditor } from '@/components';
-import StyleBox from '../../styleBox/components/box';
+import FontComponent from '../../../styleFont/components/font/fontComponent';
+import SizeComponent from '../../../styleDimensions/components/size/sizeComponent';
+import BorderComponent from '../../../styleBorder/components/border/borderComponent';
+import BackgroundComponent from '../../../styleBackground/components/background/background';
+import ShadowComponent from '../../../styleShadow/components/shadow/shadowComponent';
+import StyleBox from '../../../styleBox/components/box';
+import { SettingInput } from '../utils';
+import FormItem from '../formItem';
 
-type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
+export type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
 
-interface StyleGroupProps {
+export interface IStyleGroupType {
     model: any;
     onChange?: (value: any) => void;
     omitted?: omittedStyleType[];
     value?: any;
+    readOnly?: boolean;
 }
 
-const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange, value }) => {
+const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], model }) => {
 
-    const readOnly = model?.readOnly;
+    const { readOnly } = model;
 
     const items: CollapseProps['items'] = [
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent />
+            children: <FontComponent readOnly={readOnly} />
         },
         {
             key: '2',
             label: 'Size',
-            children: <SizeComponent noOverflow />
+            children: <SizeComponent noOverflow readOnly={readOnly} />
         },
         {
             key: '3',
             label: 'Border',
-            children: <BorderComponent />
+            children: <BorderComponent readOnly={readOnly} />
         },
         {
             key: '4',
             label: 'Background',
-            children: <BackgroundComponent />
+            children: <BackgroundComponent readOnly={readOnly} />
         },
         {
             key: '5',
@@ -53,19 +54,10 @@ const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange, 
             label: 'Styling',
             children: (
                 <>
-                    <SettingsFormItem name="style" label="Style">
-                        <CodeEditor
-                            propertyName="style"
-                            readOnly={readOnly}
-                            mode="dialog"
-                            label="Style"
-                            description="A script that returns the style of the element as an object. This should conform to CSSProperties"
-                        />
-
-                    </SettingsFormItem>
-                    <SettingsFormItem name="stylingBox">
+                    <SettingInput label="Style" property='style' readOnly={readOnly} type='code' description="A script that returns the style of the element as an object. This should conform to CSSProperties" />
+                    <FormItem name="stylingBox">
                         <StyleBox />
-                    </SettingsFormItem>
+                    </FormItem>
                 </>
 
             )
@@ -96,4 +88,4 @@ const StyleGroup: React.FC<StyleGroupProps> = ({ model, omitted = [], onChange, 
     );
 };
 
-export default StyleGroup;
+export default StyleGroupComponent;

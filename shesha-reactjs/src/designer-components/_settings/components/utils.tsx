@@ -18,36 +18,37 @@ export interface IDropdownOption {
     value: string;
 }
 
-interface SettingsRadioGroupProps {
-    options: IRadioOption[];
-    value: string;
-    property?: string;
-    label: string;
-}
-
 interface IInputProps {
     label: string;
     property: string;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'button' | 'number' | 'customDropdown' | 'textarea' | 'code'
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code'
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
-    value: any;
+    onChange?: (value: any) => void;
+    value?: any;
     hasUnits?: boolean;
     hidden?: boolean;
     jsSetting?: boolean;
     component?: React.ReactNode;
+    description?: string;
+    icon?: React.ReactNode;
+    className?: string
 }
 
 const { Option } = Select;
 
-const UnitSelector: FC<{ property: string, value: any }> = ({ property, value }) => {
-    const currentValue = value?.[property];
+const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ property, value, onChange }) => {
+
     return (
         <Select
-            value={currentValue?.unit || 'px'}
+            value={value?.unit || 'px'}
             defaultValue={'px'}
             dropdownStyle={{ minWidth: '70px' }}
+            onChange={(unit) => {
+                console.log('UnitSelector', unit, property);
+                onChange({ unit })
+            }}
         >
             {units.map(unit => (
                 <Option key={unit} value={unit} >{unit}</Option>
@@ -56,57 +57,62 @@ const UnitSelector: FC<{ property: string, value: any }> = ({ property, value })
     );
 }
 
-export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, value, hasUnits, component, jsSetting }) => {
-    const { searchQuery } = useSearchQuery();
-    const currentValue = value?.[property];
+const InputComponent: FC<IInputProps> = ({ value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
 
-    const input = () => {
-        switch (type) {
-            case 'color':
-                return <ColorPicker value={value?.color} readOnly={readOnly} allowClear />;
-            case 'dropdown':
-                return <Select
-                    value={currentValue}
-                >
-                    {dropdownOptions.map(option => (
-                        <Option key={option.value} value={option.value}>
-                            {option.label}
-                        </Option>
-                    ))}
-                </Select>;
-            case 'radio':
-                return <Radio.Group value={currentValue}>
-                    {buttonGroupOptions.map(({ value, icon, title }) => (
-                        <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
-                    ))}
-                </Radio.Group>;
-            case 'switch':
-                return <Switch disabled={readOnly} />;
-            case 'number':
-                return <InputNumber min={0} max={100} readOnly={readOnly} />
-            case 'customDropdown':
-                return <CustomDropdown value={currentValue} options={dropdownOptions} />
-            case 'textarea':
-                return <TextArea readOnly={readOnly} />
-            case 'code':
-                return <CodeEditor mode="dialog" readOnly={readOnly} />;
-            default:
-                return <Input
-                    value={currentValue?.value ?? currentValue}
-                    readOnly={readOnly}
-                    addonAfter={hasUnits ? <UnitSelector property={property} value={value} /> : null}
-                />;
-        }
+    console.log(`Input component ${property} onChange`, onChange);
+
+    switch (type) {
+        case 'color':
+            return <ColorPicker value={value?.color} readOnly={readOnly} allowClear />;
+        case 'dropdown':
+            return <Select
+                value={value}
+            >
+                {dropdownOptions.map(option => (
+                    <Option key={option.value} value={option.value}>
+                        {option.label}
+                    </Option>
+                ))}
+            </Select>;
+        case 'radio':
+            return <Radio.Group value={value}>
+                {buttonGroupOptions.map(({ value, icon, title }) => (
+                    <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                ))}
+            </Radio.Group>;
+        case 'switch':
+            return <Switch disabled={readOnly} />;
+        case 'number':
+            return <InputNumber min={0} max={100} readOnly={readOnly} />
+        case 'customDropdown':
+            return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} />
+        case 'textarea':
+            return <TextArea readOnly={readOnly} />
+        case 'code':
+            return <CodeEditor mode="dialog" readOnly={readOnly} description={description} />;
+
+        default:
+            return <Input
+                value={value}
+                readOnly={readOnly}
+                addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={property} value={value} /> : null}
+            />;
     }
+}
+
+export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description, className, icon }) => {
+    const { searchQuery } = useSearchQuery();
+
 
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return component ? <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting={jsSetting} >
-            {component}</FormItem> :
+        console.log('SettingInput', property, label);
+        return (
             <div key={property} style={{ flex: '1 1 120px', minWidth: '100px' }}>
-                <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting >
-                    {input()}
+                <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting={jsSetting} readOnly={readOnly}>
+                    <InputComponent className={className} label={label} type={type} dropdownOptions={dropdownOptions} icon={icon} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />
                 </FormItem>
             </div>
+        );
     }
 
     return null
@@ -122,7 +128,7 @@ export const InputRow: React.FC<InputRowProps> = ({ inputs }) => {
     return (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px', width: '100%' }}>
             {inputs.map((props) => (
-                <SettingInput {...props} />
+                <SettingInput key={props.label} {...props} />
             ))}
         </div>
     )

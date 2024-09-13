@@ -7,7 +7,7 @@ import {
   Drawer,
   DrawerProps,
   Space
-  } from 'antd';
+} from 'antd';
 import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDrawerProps } from './models';
@@ -122,32 +122,36 @@ const ShaDrawer: FC<IShaDrawerProps> = props => {
   }
 
   return (
-    <Drawer
-      open={state?.open}
-      placement={placement}
-      width={width}
-      onClose={closeDrawer}
-      title={label}
-      size="large"
-      footer={
-        <Space>
-          <Button onClick={onCancelHandler} disabled={cancelButtonDisabled}>
-            {cancelText || 'Cancel'}
-          </Button>
+    <>
+      <Button onClick={openDrawer}>{label}</Button>
+      <Drawer
+        open={state?.open}
+        placement={placement}
+        width={width}
+        onClose={closeDrawer}
+        title={label}
+        size="large"
+        footer={
+          <Space>
+            <Button onClick={onCancelHandler} disabled={cancelButtonDisabled}>
+              {cancelText || 'Cancel'}
+            </Button>
 
-          <Button type="primary" onClick={onOkHandler} disabled={okButtonDisabled}>
-            {okText || 'Ok'}
-          </Button>
-        </Space>
-      }
-    >
-      <ParentProvider model={props}>
-        <ComponentsContainer
-          containerId={id}
-          dynamicComponents={isDynamic ? components?.map(c => ({ ...c, readOnly: readOnly })) : []}
-        />
-      </ParentProvider>
-    </Drawer>
+            <Button type="primary" onClick={onOkHandler} disabled={okButtonDisabled}>
+              {okText || 'Ok'}
+            </Button>
+          </Space>
+        }
+      >
+        <ParentProvider model={props}>
+          <ComponentsContainer
+            containerId={id}
+            dynamicComponents={isDynamic ? components?.map(c => ({ ...c, readOnly: readOnly })) : []}
+          />
+        </ParentProvider>
+      </Drawer>
+    </>
+
   );
 };
 

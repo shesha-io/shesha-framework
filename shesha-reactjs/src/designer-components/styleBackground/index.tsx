@@ -21,7 +21,7 @@ const BackgroundConfigurator: IToolboxComponent<IBackgroundProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {() => <BackgroundComponent model={model} />}
+                <BackgroundComponent model={model} />
             </ConfigurableFormItem>
         );
     },

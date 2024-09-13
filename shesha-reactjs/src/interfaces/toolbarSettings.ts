@@ -39,6 +39,7 @@ import { IShadowType } from '@/designer-components/styleShadow/components/shadow
 import { ILabelProps } from '@/designer-components/styleLabel/components/label/labelConfigurator';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { ISizeType } from '@/designer-components/styleDimensions/components/size/interfaces';
+import { IStyleGroupType } from '@/designer-components/_settings/components/styleGroup/styleGroup';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -121,6 +122,8 @@ type PrefixSuffixStyleType = ToolbarSettingsProp & Omit<IPrefixSuffixType, 'hidd
 type ShadowStyleType = ToolbarSettingsProp & Omit<IShadowType, 'hidden' | 'type'>;
 
 type LabelType = ToolbarSettingsProp & Omit<ILabelProps, 'hidden' | 'type'>;
+
+type StyleGroupType = ToolbarSettingsProp & Omit<IStyleGroupType, 'hidden' | 'type'>;
 
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
@@ -291,6 +294,10 @@ export class DesignerToolbarSettings<T> {
 
   public addLabel(props: LabelType | ((data: T) => LabelType)) {
     return this.addProperty(props, 'labelConfigurator');
+  }
+
+  public addStyleGroup(props: StyleGroupType | ((data: T) => StyleGroupType)) {
+    return this.addProperty(props, 'styleGroup');
   }
 
   public addSlider(props: SliderType | ((data: T) => SliderType)) {

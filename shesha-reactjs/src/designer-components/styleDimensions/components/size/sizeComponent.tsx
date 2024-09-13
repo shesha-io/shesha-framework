@@ -3,9 +3,9 @@ import { InputRow, SettingInput } from '@/designer-components/_settings/componen
 import { overflowOptions } from './utils';
 import { ISizeType } from './interfaces';
 
-const SizeComponent: FC<ISizeType> = ({ model }) => {
+const SizeComponent: FC<ISizeType> = (props) => {
 
-    const { value, readOnly, noOverflow } = model;
+    const { value, readOnly, noOverflow } = props;
 
     const commonProps = { hasUnits: true, readOnly, value };
 

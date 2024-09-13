@@ -6,7 +6,7 @@ import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITextFieldComponentProps } from './interfaces';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
-import StyleGroup from '../_settings/components/styleGroup';
+import StyleGroupComponent from '../_settings/components/styleGroup/styleGroup';
 import SearchableTabs from '../_settings/components/tabs/searchableTabsComponent';
 import { SettingInput } from '../_settings/components/utils';
 import LabelConfiguratorComponent from '../styleLabel/components/label/labelConfigurator';
@@ -22,13 +22,11 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Display",
             children: (
                 <>
-
                     <LabelConfiguratorComponent model={model} {...props} />
                     <SettingInput label="Text Type" value={model.textType} property='textType' readOnly={readOnly} type='dropdown' dropdownOptions={['text', 'password'].map(value => ({ label: value, value }))} />
                     <SettingInput label="Placeholder" value={model.placeholder} property='placeholder' readOnly={readOnly} />
                     <SettingInput label="Description" value={model.description} property='description' readOnly={readOnly} type='textarea' />
-                    <SettingInput label="passEmptyStringByDefault" value={model.passEmptyStringByDefault} property='passEmptyStringByDefault' readOnly={readOnly} type='switch' />
-                    <SettingInput label="Initial Value" value={model.initialValue} property='initialValue' readOnly={readOnly} hidden={model.passEmptyStringByDefault} />
+                    <SettingInput label="Initial Value" value={model.initialValue} property='initialValue' readOnly={readOnly} />
                     <SettingInput label="Hidden" value={model.hidden} property='hidden' readOnly={readOnly} type='switch' />
                     <ReadOnlyModeSelector readOnly={readOnly} />
                 </>
@@ -61,7 +59,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
         {
             key: "style",
             label: "Style",
-            children: <StyleGroup model={model} omitted={['shadow', 'stylingBox', 'style']} {...props} />
+            children: <StyleGroupComponent model={model} omitted={['shadow', 'stylingBox', 'style']} readOnly={readOnly} />
 
         },
         {

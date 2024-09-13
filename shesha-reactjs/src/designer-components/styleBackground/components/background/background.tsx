@@ -8,22 +8,26 @@ import { InputRow, SettingInput } from '@/designer-components/_settings/componen
 import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
 import { nanoid } from '@/utils/uuid';
 import { useFormDesignerActions } from '@/providers/formDesigner';
+import { IBackgroundValue } from './interfaces';
 
 interface IBackgroundProps {
     model?: any;
+    value?: IBackgroundValue;
+    readOnly?: boolean;
     onChange?: (value: any) => void;
 }
 
-const BackgroundComponent: FC<IBackgroundProps> = ({ model, onChange }) => {
-    const { background: value, readOnly } = model;
+const BackgroundComponent: FC<IBackgroundProps> = (props) => {
+    const { value, readOnly, model } = props;
 
+    console.log("Background Component", props);
     const { updateComponent } = useFormDesignerActions();
     const [colors, setColors] = useState<Record<string, string>>(value?.gradient?.colors || {});
 
     const addColor = () => {
         const newKey = nanoid();
         setColors({ ...colors, [newKey]: '' });
-        model.background.gradient.colors[newKey] = '';
+        value.gradient.colors[newKey] = '';
     };
 
     const removeColor = (key: string) => {
@@ -31,9 +35,9 @@ const BackgroundComponent: FC<IBackgroundProps> = ({ model, onChange }) => {
         delete newColors[key];
         setColors(newColors);
 
-        const newGradientColors = { ...model.background.gradient.colors };
+        const newGradientColors = { ...value.gradient.colors };
         delete newGradientColors[key];
-        model.background.gradient.colors = newGradientColors;
+        value.gradient.colors = newGradientColors;
         updateComponent({
             componentId: model.id, settings: {
                 ...model,

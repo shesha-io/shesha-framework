@@ -20,7 +20,7 @@ const SizeConfigurator: IToolboxComponent<ISizeComponentProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {() => <SizeComponent model={model} />}
+                {() => <SizeComponent model={model} readOnly={model.readOnly} />}
             </ConfigurableFormItem>
         );
     },

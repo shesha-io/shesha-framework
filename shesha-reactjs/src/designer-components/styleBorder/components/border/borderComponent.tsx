@@ -1,14 +1,9 @@
-import { Col, Input, InputNumber, Row, Select } from 'antd';
 import React, { FC } from 'react';
-import { ColorPicker } from '@/components';
 import { IBorderValue } from './interfaces';
-import FormItem from '@/designer-components/_settings/components/formItem';
-import { InputRow, SettingInput, SettingsRadioGroup } from '@/designer-components/_settings/components/utils';
+import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { borderOptions, radiusOptions, styleOptions } from './utils';
 
-const { Option } = Select;
 
-const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 
 interface IBorderProps {
     value?: IBorderValue;

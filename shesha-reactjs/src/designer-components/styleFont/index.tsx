@@ -20,7 +20,7 @@ const FontConfigurator: IToolboxComponent<IFontComponentProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <FontComponent model={model} onChange={onChange} value={value} />}
+                <FontComponent model={model} readOnly={model.readOnly}/>
             </ConfigurableFormItem>
         );
     },

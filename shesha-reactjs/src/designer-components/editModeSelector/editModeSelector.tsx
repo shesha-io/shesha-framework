@@ -16,7 +16,7 @@ const EditModeSelectorComponent: IToolboxComponent<IConfigurableFormComponent> =
   name: 'Edit mode Selector',
   icon: <CodeOutlined />,
   Factory: ({ model }) => {
-    return <ConfigurableFormItem model={model}><EditModeSelector readOnly={model.readOnly}/></ConfigurableFormItem>;
+    return <ConfigurableFormItem model={model}><EditModeSelector readOnly={model.readOnly} /></ConfigurableFormItem>;
   },
   settingsFormMarkup: settingsForm,
 };

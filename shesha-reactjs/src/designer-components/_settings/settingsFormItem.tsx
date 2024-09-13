@@ -89,6 +89,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         mode={'value'}
                         onChange={onChange}
                         value={value}
+                        size='small'
                         readOnly={readOnly}
                         orientation={props.orientation}
                         labelProps={props.labelProps}
@@ -100,6 +101,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                                     ...children?.props,
                                     readOnly: readOnly,
                                     disabled: readOnly,
+                                    size: 'small',
                                     onChange: (...args: any[]) => {
                                         const event = args[0];
                                         const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target

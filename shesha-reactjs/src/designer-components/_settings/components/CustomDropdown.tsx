@@ -84,6 +84,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
         <Select
             value={value}
             disabled={readOnly}
+            size='small'
             dropdownRender={(menu) => (
                 <>
                     {menu}

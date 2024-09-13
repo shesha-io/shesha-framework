@@ -13,32 +13,14 @@ const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
   type: 'searchableTabs',
   isInput: true,
   isOutput: true,
-  name: 'Tabs',
+  name: 'Searchable Tabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
-
-    const formSettings = {
-      layout: "vertical",
-      colon: false,
-      labelCol: {
-        span: 8
-      },
-      wrapperCol: {
-        span: 16
-      },
-      displayName: "DEFAULT_FORM_SETTINGS",
-      __docgenInfo: {
-        description: "Default form settings",
-        displayName: "DEFAULT_FORM_SETTINGS",
-        props: {}
-      }
-    }
 
     return model.hidden ? null : (
       <ConfigurableFormItem model={model} className='sha-js-label'>
         {(onChange, value) => {
-          console.log('onChange tabs factory', onChange, value)
-          return <SearchableTabs model={{ ...model, formSettings }} />
+          return <SearchableTabs model={model} onChange={onChange} value={value} />
         }}
       </ConfigurableFormItem>
     );

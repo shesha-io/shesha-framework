@@ -19,8 +19,8 @@ const ShadowConfigurator: IToolboxComponent<IShadowComponentProps> = {
     Factory: ({ model }) => {
 
         return (
-            <ConfigurableFormItem model={model}>
-                <ShadowComponent />
+            <ConfigurableFormItem model={model} >
+                <ShadowComponent readOnly={model.readOnly} />
             </ConfigurableFormItem>
         );
     },

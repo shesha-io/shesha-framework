@@ -16,6 +16,8 @@ const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
       ? 'inherited'
       : props.value;
 
+  console.log("EditModeSelector", props);
+
   return (
     <Select disabled={props.readOnly} value={val} onChange={props.onChange}>
       <Select.Option key='editable' value="editable">Editable</Select.Option>
