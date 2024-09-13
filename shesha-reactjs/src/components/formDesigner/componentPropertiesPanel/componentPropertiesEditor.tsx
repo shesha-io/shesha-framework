@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useEffect, useMemo, useState } from 'react';
+import React, { FC, MutableRefObject, useEffect, useState } from 'react';
 import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from '@/providers/form/models';
@@ -43,7 +43,7 @@ function camelToKebab(str: string): string {
   return str.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 }
 
-function isValidStyle(property: string, value: string): boolean {
+function isValidStyle(property: string): boolean {
   const kebabProperty = camelToKebab(property);
   return CSS.supports(kebabProperty, '');
 }
@@ -72,7 +72,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     const updatedMobileStyles = { ...mobileStyles };
 
     Object.entries(values).forEach(([key, value]) => {
-      if (isValidStyle(key, value as string)) {
+      if (isValidStyle(key)) {
         if (activeDevice === 'desktop') {
           updatedDesktopStyles[key] = value;
         } else if (activeDevice === 'mobile') {
@@ -93,6 +93,10 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     onSave(combinedStyles);
   }, 300);
 
+  const onCancel = () => {
+    //not implemented, but required
+  };
+
   const onValuesChange = (_changedValues, values) => {
     if (autoSave && !readOnly) {
       if (activeDevice === 'desktop') {
@@ -109,7 +113,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
 
   useEffect(() => {
     if (activeDevice === 'desktop') {
-      setActiveStyles({...componentModel, ...mobileStyles, ...desktopStyles, mobile: mobileStyles })
+      setActiveStyles({...componentModel, ...mobileStyles, ...desktopStyles, mobile: mobileStyles });
       //onSave({componentModel, ...desktopStyles, mobile: mobileStyles });
       //formRef?.current?.setFieldsValue({ ...desktopStyles, mobile: mobileStyles })
     } else if (activeDevice === 'mobile') {
@@ -125,7 +129,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
       readOnly={readOnly}
       model={activeStyles}
       onSave={onSave}
-      onCancel={() => {}}
+      onCancel={onCancel}
       onValuesChange={onValuesChange}
       toolboxComponent={toolboxComponent}
       propertyFilter={propertyFilter}

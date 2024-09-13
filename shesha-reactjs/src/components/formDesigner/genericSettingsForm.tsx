@@ -59,7 +59,9 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     formRef.current = {
       submit: () => form.submit(),
       reset: () => form.resetFields(),
-      setFieldsValue: (payload) => {console.log("START FORM VALUES"); form.setFieldsValue(payload); console.log("END FORM VALUES")},
+      setFieldsValue: (payload) => {
+form.setFieldsValue(payload);
+},
     };
 
   return (

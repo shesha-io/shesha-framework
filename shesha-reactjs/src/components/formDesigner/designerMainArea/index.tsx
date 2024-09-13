@@ -39,7 +39,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
 
       useEffect(()=>{
         mockWindowWidth(activeDevice === "mobile" ? 599 : 1200);
-      },[activeDevice])
+      },[activeDevice]);
 
     const magnifiedWidth = useMemo(() => width * (zoom / 100), [width, zoom]);
 
