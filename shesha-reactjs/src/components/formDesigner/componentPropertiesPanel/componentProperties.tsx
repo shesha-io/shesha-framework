@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useRef } from 'react';
 import { useFormDesignerActions } from '@/providers/formDesigner';
 import { ComponentPropertiesEditor } from './componentPropertiesEditor';
 import ParentProvider from '@/providers/parentProvider/index';
@@ -22,6 +22,7 @@ export interface IComponentPropertiesEditrorProps {
 export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = (props) => {
     const { componentModel, readOnly, toolboxComponent } = props;
     const { id } = componentModel;
+    const ref = useRef();
     const { updateComponent } = useFormDesignerActions();
     
     const { formProps } = useFormPersister();
@@ -44,6 +45,7 @@ export const ComponentProperties: FC<IComponentPropertiesEditrorProps> = (props)
                     onSave={onSave}
                     autoSave={true}
                     toolboxComponent={toolboxComponent}
+                    formRef={ref}
                 />
             </ParentProvider>
         </SourceFilesFolderProvider>

@@ -1,9 +1,9 @@
-import React, { FC, MutableRefObject } from 'react';
+import React, { FC, MutableRefObject, useEffect, useMemo, useState } from 'react';
 import { IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
-import { IConfigurableFormComponent } from '@/providers';
+import { IConfigurableFormComponent, useCanvasConfig } from '@/providers';
 import { useFormDesignerActions } from '@/providers/formDesigner';
 
 export interface IComponentPropertiesEditorProps {
@@ -39,11 +39,25 @@ const getDefaultFactory = (markup: FormMarkup): ISettingsFormFactory => {
   };
 };
 
+function camelToKebab(str: string): string {
+  return str.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+}
+
+function isValidStyle(property: string, value: string): boolean {
+  const kebabProperty = camelToKebab(property);
+  return CSS.supports(kebabProperty, '');
+}
+
 export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (props) => {
-  const { componentModel, readOnly, toolboxComponent } = props;
+  const { componentModel, readOnly, toolboxComponent, autoSave, onSave, propertyFilter, layoutSettings, formRef } = props;
 
   const { getCachedComponentEditor } = useFormDesignerActions();
-  
+  const { activeDevice } = useCanvasConfig();
+  const [activeStyles, setActiveStyles] = useState(componentModel);
+
+  const [desktopStyles, setDesktopStyles] = useState({...componentModel, ...componentModel.desktop} || {});
+  const [mobileStyles, setMobileStyles] = useState({...componentModel, ...componentModel.mobile} || {});
+
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
     return toolboxComponent.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
@@ -52,38 +66,70 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         : null;
   });
 
-  const { autoSave, onSave, formRef, propertyFilter, layoutSettings } = props;
 
-  const debouncedSave = useDebouncedCallback(
-    values => {
-      onSave(values);
-    },
-    // delay in ms
-    300
-  );
+  const debouncedSave = useDebouncedCallback((values) => {
+    const updatedDesktopStyles = { ...desktopStyles };
+    const updatedMobileStyles = { ...mobileStyles };
+
+    Object.entries(values).forEach(([key, value]) => {
+      if (isValidStyle(key, value as string)) {
+        if (activeDevice === 'desktop') {
+          updatedDesktopStyles[key] = value;
+        } else if (activeDevice === 'mobile') {
+          updatedMobileStyles[key] = value;
+        }
+      }
+    });
+
+    setDesktopStyles(updatedDesktopStyles);
+    setMobileStyles(updatedMobileStyles);
+
+    const combinedStyles = {
+      ...values,
+      desktop: updatedDesktopStyles,
+      mobile: updatedMobileStyles,
+    };
+
+    onSave(combinedStyles);
+  }, 300);
 
   const onValuesChange = (_changedValues, values) => {
-    if (autoSave && !readOnly)
-      debouncedSave(values);
+    if (autoSave && !readOnly) {
+      if (activeDevice === 'desktop') {
+        const updatedDesktopStyles = { ...desktopStyles, ...values };
+        setDesktopStyles(updatedDesktopStyles);
+        debouncedSave({ ...values, desktop: updatedDesktopStyles });
+      } else if (activeDevice === 'mobile') {
+        const updatedMobileStyles = { ...mobileStyles, ...values };
+        setMobileStyles(updatedMobileStyles);
+        debouncedSave({ ...values, mobile: updatedMobileStyles });
+      }
+    }
   };
 
-  const onCancel = () => {
-    // not used
-  };
+  useEffect(() => {
+    if (activeDevice === 'desktop') {
+      setActiveStyles({...componentModel, ...mobileStyles, ...desktopStyles, mobile: mobileStyles })
+      //onSave({componentModel, ...desktopStyles, mobile: mobileStyles });
+      //formRef?.current?.setFieldsValue({ ...desktopStyles, mobile: mobileStyles })
+    } else if (activeDevice === 'mobile') {
+      setActiveStyles({...componentModel, ...desktopStyles, ...mobileStyles, desktop: desktopStyles});
+      //onSave({componentModel, ...mobileStyles, desktop: desktopStyles });
+      //formRef?.current?.setFieldsValue({ ...mobileStyles, desktop: desktopStyles })
+    }
+  }, [activeDevice]);
 
-  return SettingsForm
-    ? (
-      <SettingsForm
-        readOnly={readOnly}
-        model={componentModel}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={onValuesChange}
-        toolboxComponent={toolboxComponent}
-        formRef={formRef}
-        propertyFilter={propertyFilter}
-        layoutSettings={layoutSettings}
-      />
-    )
-    : null;
+  return SettingsForm ? (
+    <SettingsForm
+      formRef={formRef}
+      readOnly={readOnly}
+      model={activeStyles}
+      onSave={onSave}
+      onCancel={() => {}}
+      onValuesChange={onValuesChange}
+      toolboxComponent={toolboxComponent}
+      propertyFilter={propertyFilter}
+      layoutSettings={layoutSettings}
+    />
+  ) : null;
 };

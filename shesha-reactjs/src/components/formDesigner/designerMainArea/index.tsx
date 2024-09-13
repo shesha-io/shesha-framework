@@ -1,6 +1,6 @@
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import ParentProvider from '@/providers/parentProvider';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import Toolbox from '../toolbox';
 import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import { DebugPanel } from '../debugPanel';
@@ -19,6 +19,27 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const { form, formMode, formSettings } = useForm();
     const { width, zoom, activeDevice } = useCanvasConfig();
     const { styles } = useStyles();
+
+    const mockWindowWidth = (width: number) => {
+        const originalInnerWidth = window.innerWidth;
+        const originalInnerHeight = window.innerHeight;
+      
+        Object.defineProperty(window, 'innerWidth', { value: width, configurable: true });
+        Object.defineProperty(window, 'innerHeight', { value: originalInnerHeight, configurable: true });
+      
+        window.dispatchEvent(new Event('resize'));
+      
+        return () => {
+          Object.defineProperty(window, 'innerWidth', { value: originalInnerWidth, configurable: true });
+          Object.defineProperty(window, 'innerHeight', { value: originalInnerHeight, configurable: true });
+          window.dispatchEvent(new Event('resize'));
+        };
+      };
+
+
+      useEffect(()=>{
+        mockWindowWidth(activeDevice === "mobile" ? 599 : 1200);
+      },[activeDevice])
 
     const magnifiedWidth = useMemo(() => width * (zoom / 100), [width, zoom]);
 

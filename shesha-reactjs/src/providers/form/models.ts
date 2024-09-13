@@ -189,6 +189,12 @@ export interface IConfigurableFormComponent
   noDataSecondaryText?: string;
 
   permissions?: string[];
+
+  //remember to change to correct types before pushing
+
+  mobile?: any;
+
+  desktop?: any;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
