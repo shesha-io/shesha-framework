@@ -9,26 +9,23 @@ import { on } from 'events';
 
 export interface ILabelProps {
     readOnly?: boolean;
-    model?: any;
     value?: any;
     onChange?: any;
 }
 
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ model, onChange, readOnly }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly }) => {
 
+    const {hideLabel, labelAlign, label} = value;
     const { styles } = useStyles();
 
     return (
         <>
             <div className={styles.flexWrapper} >
-                <SettingInput label="" property='labelAlign' readOnly={readOnly} type='radio' buttonGroupOptions={labelalignOptions} jsSetting={false} />
-                <Button onClick={() => {
-                    console.log(`Button ${onChange}`)
-                    onChange({ hideLabel: !model.hideLabel })
-                }} disabled={readOnly} property='hideLabel' className={styles.hidelLabelIcon} icon={model.hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />} />
+                <SettingInput label="" property='labelAlign' value={labelAlign} readOnly={readOnly} type='radio' buttonGroupOptions={labelalignOptions} jsSetting={false} />
+                <SettingInput label="" icon={hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />} value={hideLabel} property='hideLabel' readOnly={readOnly || hideLabel} type='button' className={styles.hidelLabelIcon} />
             </div>
-            <SettingInput label="Label" value={model} property='label' readOnly={readOnly || model.hideLabel} />
+            <SettingInput label="Label" value={label} property='label' readOnly={readOnly || hideLabel} />
         </>
 
     );

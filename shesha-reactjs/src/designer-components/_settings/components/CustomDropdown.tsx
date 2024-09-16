@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, Input, Select, Space } from 'antd';
-import { SettingInput } from './utils';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 const { Option } = Select;
 
@@ -12,14 +12,17 @@ interface CustomDropdownProps {
     options: Array<string | { label: string; value: string }>;
     readOnly?: boolean;
     label?: string;
+    size?: SizeType;
     onAddCustomOption?: (newOption: string) => void;
+    onChange?: (value: string) => void;
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({
     value,
     options,
     readOnly,
-    label
+    label,
+    size
 }) => {
     const [customOption, setCustomOption] = useState({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
     const [customOptions, setCustomOptions] = useState(options);
@@ -84,7 +87,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
         <Select
             value={value}
             disabled={readOnly}
-            size='small'
+            size={size}
             dropdownRender={(menu) => (
                 <>
                     {menu}

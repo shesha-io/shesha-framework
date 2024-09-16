@@ -486,10 +486,9 @@
           "label": "Style",
           "components": [
             {
-              "id": "trr26voxhs-HxJ5k5ngYE",
+              "id": "try26voxhs-HxJ5k5ngYE",
               "type": "styleGroup",
-              "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
-              "propertyName": "styleGroups"
+              "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801"
             }
           ]
         },

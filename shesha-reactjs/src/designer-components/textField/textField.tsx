@@ -56,6 +56,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const form = useForm();
     const { styles } = useStyles();
 
+    console.log("TextFieldComponent", model);
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -109,7 +110,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       style: { ...finalStyle },
       count: { max: model.validate?.maxLength, },
       autoComplete: model.textType === 'password' ? 'new-password' : undefined,
-      defaultValue:  model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
+      defaultValue: model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
     };
 
     const eventProps = {

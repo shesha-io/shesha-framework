@@ -19,30 +19,31 @@ export interface IStyleGroupType {
     readOnly?: boolean;
 }
 
-const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], model }) => {
+const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], model, onChange, value }) => {
 
     const { readOnly } = model;
+
 
     const items: CollapseProps['items'] = [
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent readOnly={readOnly} />
+            children: <FontComponent readOnly={readOnly} value={value} />
         },
         {
             key: '2',
             label: 'Size',
-            children: <SizeComponent noOverflow readOnly={readOnly} />
+            children: <SizeComponent noOverflow readOnly={readOnly} value={value} />
         },
         {
             key: '3',
             label: 'Border',
-            children: <BorderComponent readOnly={readOnly} />
+            children: <BorderComponent readOnly={readOnly} value={value} />
         },
         {
             key: '4',
             label: 'Background',
-            children: <BackgroundComponent readOnly={readOnly} />
+            children: <BackgroundComponent readOnly={readOnly} value={value} />
         },
         {
             key: '5',
@@ -83,6 +84,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], model })
             <Collapse
                 defaultActiveKey={activateAllStylePanels}
                 items={items}
+                onChange={onChange}
             />
         </ConfigProvider>
     );

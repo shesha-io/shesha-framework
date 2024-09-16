@@ -5,6 +5,7 @@ import { CodeEditor, ColorPicker } from '@/components';
 import { useSearchQuery } from './tabs/context';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -21,7 +22,7 @@ export interface IDropdownOption {
 interface IInputProps {
     label: string;
     property: string;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code'
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code' | 'button'
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -34,6 +35,7 @@ interface IInputProps {
     description?: string;
     icon?: React.ReactNode;
     className?: string
+    size?: SizeType;
 }
 
 const { Option } = Select;
@@ -47,7 +49,7 @@ const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ property
             dropdownStyle={{ minWidth: '70px' }}
             onChange={(unit) => {
                 console.log('UnitSelector', unit, property);
-                onChange({ unit })
+                onChange({ ...value, unit })
             }}
         >
             {units.map(unit => (
@@ -57,16 +59,16 @@ const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ property
     );
 }
 
-const InputComponent: FC<IInputProps> = ({ value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
-
-    console.log(`Input component ${property} onChange`, onChange);
+const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, className, buttonGroupOptions, hasUnits, property, description, onChange, readOnly, icon }) => {
 
     switch (type) {
         case 'color':
-            return <ColorPicker value={value?.color} readOnly={readOnly} allowClear />;
+            return <ColorPicker size={size} value={value?.color} readOnly={readOnly} allowClear onChange={onChange} />;
         case 'dropdown':
             return <Select
+                size={size}
                 value={value}
+                onChange={onChange}
             >
                 {dropdownOptions.map(option => (
                     <Option key={option.value} value={option.value}>
@@ -75,26 +77,29 @@ const InputComponent: FC<IInputProps> = ({ value, type, dropdownOptions, buttonG
                 ))}
             </Select>;
         case 'radio':
-            return <Radio.Group value={value}>
+            return <Radio.Group value={value} onChange={onChange} size={size}>
                 {buttonGroupOptions.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
                 ))}
             </Radio.Group>;
         case 'switch':
-            return <Switch disabled={readOnly} />;
+            return <Switch disabled={readOnly} size='small' />;
         case 'number':
-            return <InputNumber min={0} max={100} readOnly={readOnly} />
+            return <InputNumber min={0} max={100} readOnly={readOnly} size={size} />
         case 'customDropdown':
-            return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} />
+            return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />
         case 'textarea':
-            return <TextArea readOnly={readOnly} />
+            return <TextArea readOnly={readOnly} size={size} />
         case 'code':
-            return <CodeEditor mode="dialog" readOnly={readOnly} description={description} />;
-
+            return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} />;
+        case 'button':
+            <Button value={value} onClick={() => onChange(!value)} icon={icon} className={className} size={size}>Press</Button>
         default:
             return <Input
-                value={value}
+                size={size}
+                onChange={(e) => onChange(hasUnits ? { ...value, value: e.target.value } : e.target.value)}
                 readOnly={readOnly}
+                value={value?.value || value}
                 addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={property} value={value} /> : null}
             />;
     }
@@ -105,11 +110,11 @@ export const SettingInput: React.FC<IInputProps> = ({ label, property, type, but
 
 
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
-        console.log('SettingInput', property, label);
+        type === 'dropdown' && console.log('Property', label, property);
         return (
             <div key={property} style={{ flex: '1 1 120px', minWidth: '100px' }}>
-                <FormItem name={hasUnits ? property + '.value' : property} label={label} orientation='vertical' jsSetting={jsSetting} readOnly={readOnly}>
-                    <InputComponent className={className} label={label} type={type} dropdownOptions={dropdownOptions} icon={icon} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />
+                <FormItem name={property} label={label} orientation='vertical' jsSetting={jsSetting} readOnly={readOnly}>
+                    <InputComponent size='small' className={className} label={label} type={type} dropdownOptions={dropdownOptions} icon={icon} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />
                 </FormItem>
             </div>
         );
