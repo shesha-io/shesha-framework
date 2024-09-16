@@ -57,6 +57,7 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
 
   const [desktopStyles, setDesktopStyles] = useState({...componentModel, ...componentModel.desktop} || {});
   const [mobileStyles, setMobileStyles] = useState({...componentModel, ...componentModel.mobile} || {});
+  const [tabletStyles, setTabletStyles] = useState({...componentModel, ...componentModel.tablet} || {});
 
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
     return toolboxComponent.settingsFormFactory
@@ -66,10 +67,10 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         : null;
   });
 
-
   const debouncedSave = useDebouncedCallback((values) => {
     const updatedDesktopStyles = { ...desktopStyles };
     const updatedMobileStyles = { ...mobileStyles };
+    const updatedTabletStyles = { ...tabletStyles };
 
     Object.entries(values).forEach(([key, value]) => {
       if (isValidStyle(key)) {
@@ -77,24 +78,28 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
           updatedDesktopStyles[key] = value;
         } else if (activeDevice === 'mobile') {
           updatedMobileStyles[key] = value;
+        } else if (activeDevice === 'tablet') {
+          updatedTabletStyles[key] = value;
         }
       }
     });
 
     setDesktopStyles(updatedDesktopStyles);
     setMobileStyles(updatedMobileStyles);
+    setTabletStyles(updatedTabletStyles);
 
     const combinedStyles = {
       ...values,
       desktop: updatedDesktopStyles,
       mobile: updatedMobileStyles,
+      tablet: updatedTabletStyles,
     };
 
     onSave(combinedStyles);
   }, 300);
 
   const onCancel = () => {
-    //not implemented, but required
+    // not implemented, but required
   };
 
   const onValuesChange = (_changedValues, values) => {
@@ -107,19 +112,21 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
         const updatedMobileStyles = { ...mobileStyles, ...values };
         setMobileStyles(updatedMobileStyles);
         debouncedSave({ ...values, mobile: updatedMobileStyles });
+      } else if (activeDevice === 'tablet') {
+        const updatedTabletStyles = { ...tabletStyles, ...values };
+        setTabletStyles(updatedTabletStyles);
+        debouncedSave({ ...values, tablet: updatedTabletStyles });
       }
     }
   };
 
   useEffect(() => {
     if (activeDevice === 'desktop') {
-      setActiveStyles({...componentModel, ...mobileStyles, ...desktopStyles, mobile: mobileStyles });
-      //onSave({componentModel, ...desktopStyles, mobile: mobileStyles });
-      //formRef?.current?.setFieldsValue({ ...desktopStyles, mobile: mobileStyles })
+      setActiveStyles({ ...componentModel, ...tabletStyles, ...mobileStyles, ...desktopStyles, mobile: mobileStyles, tablet: tabletStyles });
     } else if (activeDevice === 'mobile') {
-      setActiveStyles({...componentModel, ...desktopStyles, ...mobileStyles, desktop: desktopStyles});
-      //onSave({componentModel, ...mobileStyles, desktop: desktopStyles });
-      //formRef?.current?.setFieldsValue({ ...mobileStyles, desktop: desktopStyles })
+      setActiveStyles({ ...componentModel, ...desktopStyles, ...tabletStyles, ...mobileStyles, desktop: desktopStyles, tablet: tabletStyles });
+    } else if (activeDevice === 'tablet') {
+      setActiveStyles({ ...componentModel, ...desktopStyles, ...mobileStyles, ...tabletStyles, desktop: desktopStyles, mobile: mobileStyles });
     }
   }, [activeDevice]);
 

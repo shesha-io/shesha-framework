@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { DialogButton } from './dialogButton';
 import { useStyles } from '../styles/styles';
 import { Radio } from 'antd';
-import { DesktopOutlined } from '@ant-design/icons';
+import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { useCanvasConfig } from '@/providers';
 import { MobileOptions } from './mobileDropdown';
 
@@ -14,18 +14,9 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
   const { styles } = useStyles();
   const { setCanvasWidth } = useCanvasConfig();
   const [radioValue, setRadioValue] = useState('desktop');
-  const dialogRef = useRef(null);
-  const mobileRef = useRef(null);
 
 
   useEffect(() => {
-    dialogRef.current.addEventListener('click', () => {
-      setRadioValue('dialog');
-    });
-    mobileRef.current.addEventListener('click', () => {
-      setRadioValue('mobile');
-      setCanvasWidth(430, 'mobile');
-    });
     setCanvasWidth(100, 'desktop');
     return () => {
       setRadioValue('desktop');
@@ -43,17 +34,23 @@ export const CanvasConfig: FC<ICanvasConfigProps> = () => {
         >
           <DesktopOutlined />
         </Radio.Button>
+
+        <Radio.Button
+          className="radio-button"
+          value="tablet"
+          onClick={() => { setRadioValue('tablet'); setCanvasWidth(924, 'tablet') }}
+          title="Tablet"
+        >
+          <TabletOutlined />
+        </Radio.Button>
+
         <Radio.Button
           className="radio-button"
           value="mobile"
-          onClick={() => mobileRef.current.click()}
+          onClick={() => { setRadioValue('mobile'); setCanvasWidth(428, 'mobile') }}
           title="Mobile"
         >
-          <MobileOptions refLink={mobileRef} customEditRef={dialogRef} />
-        </Radio.Button>
-        <Radio.Button className="radio-button" value="dialog" onClick={() => dialogRef.current.click()} title="Custom-Width"
-        >
-          <DialogButton refLink={dialogRef} />
+          <MobileOutlined />
         </Radio.Button>
       </Radio.Group>
     </div>

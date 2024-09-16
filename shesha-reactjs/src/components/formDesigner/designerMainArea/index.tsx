@@ -38,13 +38,19 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
 
 
       useEffect(()=>{
-        mockWindowWidth(activeDevice === "mobile" ? 599 : 1200);
+        if(activeDevice === 'mobile'){
+            mockWindowWidth(600);
+        }else if(activeDevice === 'tablet'){
+            mockWindowWidth(924);
+        }else{
+            mockWindowWidth(1200);
+        }
       },[activeDevice]);
 
     const magnifiedWidth = useMemo(() => width * (zoom / 100), [width, zoom]);
 
     const customWidth = useMemo(() => {
-        if (activeDevice === 'mobile' || activeDevice === 'custom') {
+        if (activeDevice === 'mobile' || activeDevice === 'custom' || activeDevice === 'tablet') {
             return `${width}px`;
         }
         return `${magnifiedWidth}%`;

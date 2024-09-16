@@ -51,12 +51,21 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
     actualModel.propertyName = undefined;
 
-  const usedModel = screenWidth > 599 ? actualModel?.desktop ? { ...actualModel, ...actualModel?.desktop } : actualModel : actualModel?.mobile
-  ? { actualModel, ...actualModel?.mobile } : actualModel;
+  const usedModel = screenWidth > 924
+  ? actualModel?.desktop
+    ? { ...actualModel, ...actualModel?.desktop }
+    : actualModel
+  : screenWidth > 599
+  ? actualModel?.tablet
+    ? { ...actualModel, ...actualModel?.tablet }
+    : actualModel
+  : actualModel?.mobile
+  ? { ...actualModel, ...actualModel?.mobile }
+  : actualModel;
 
   return (
     <CustomErrorBoundary>
-      <toolboxComponent.Factory model={usedModel} componentRef={componentRef} form={form} />
+      <toolboxComponent.Factory model={usedModel as IConfigurableFormComponent} componentRef={componentRef} form={form} />
     </CustomErrorBoundary>
   );
 };
