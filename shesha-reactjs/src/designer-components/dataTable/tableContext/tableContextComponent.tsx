@@ -37,6 +37,15 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];
   },
+  /*validateModel: (model) =>  {
+    const errors = { hasErrors: false, errors: [] };
+    if (!model.sourceType) errors.errors.push('Select `Source type` on the settings panel');
+    if (model.sourceType === 'Entity' && !model.entityType) errors.errors.push('Select `Entity Type` on the settings panel');
+    if (model.sourceType === 'Url' && !model.endpoint) errors.errors.push('Select `Custom Endpoint` on the settings panel');
+    if (model.sourceType === 'Form' && !model.propertyName) errors.errors.push('Select `propertyName` on the settings panel');
+    errors.hasErrors = errors.errors.length > 0;
+    return errors;
+  },*/
 };
 
 export default TableContextComponent;

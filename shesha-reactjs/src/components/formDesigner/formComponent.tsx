@@ -6,6 +6,7 @@ import { useParent } from '@/providers/parentProvider/index';
 import { useForm, useSheshaApplication } from '@/providers';
 import { CustomErrorBoundary } from '..';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import ConfigError from '../configErrors';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -43,6 +44,13 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   // binding only input and output components
   if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
     actualModel.propertyName = undefined;
+
+  const validationResult = toolboxComponent.validateModel?.(actualModel);
+
+  if (validationResult?.hasErrors) 
+    return (
+      <ConfigError errors={validationResult.errors} type={toolboxComponent.name} />
+    );
 
   return (
     <CustomErrorBoundary>

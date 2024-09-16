@@ -15,6 +15,7 @@ import {
 } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
+import ConfigError from '@/components/configErrors';
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
 }
@@ -31,7 +32,9 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
 
     const getDataPath = evaluateString(endpoint, { data });
 
-    const configurationWarningMessage = !sourceType
+    throw new Error('Child Table component was removed');
+
+    /*const configurationWarningMessage = !sourceType
         ? 'Select `Source type` on the settings panel'
         : sourceType === 'Entity' && !entityType
             ? 'Select `Entity Type` on the settings panel'
@@ -42,7 +45,8 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
                     : null;
 
     if (isDesignMode && configurationWarningMessage)
-        return (
+      return <ConfigError errors={[configurationWarningMessage]} type={'Data Table Context'} />;
+        /*return (
             <Alert
                 className="sha-designer-warning"
                 message="Table is not configured"
@@ -50,7 +54,7 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
                 type="warning"
                 showIcon
             />
-        );
+        );*/
 
     const provider = (getFieldValue = undefined, onChange = undefined) => (
         <DataTableProvider
