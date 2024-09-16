@@ -28,7 +28,6 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
 
     const title = model.hideHeading ? null : model.label;
 
-    console.log(model);
     const headerComponents = model?.header?.components ?? [];
 
     const extra =

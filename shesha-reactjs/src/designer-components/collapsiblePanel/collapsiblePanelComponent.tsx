@@ -44,7 +44,6 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
-    console.log(model);
     if (model.hidden) return null;
 
     const styling = JSON.parse(model.stylingBox || '{}');
