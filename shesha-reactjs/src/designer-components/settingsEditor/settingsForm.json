@@ -90,6 +90,15 @@
             "propertyName": "editMode",
             "parentId": "s4gmBg31azZC0UjZjpfTm",
             "label": "Edit mode"
+          },
+          {
+            "id": "12d07439-4c18-468c-89e1-60c002ce96c5",
+            "type": "textField",
+            "propertyName": "height",
+            "parentId": "s4gmBg31azZC0UjZjpfTm",
+            "label": "Height",
+            "version": 3,
+            "textType": "text"
           }
         ]
       },

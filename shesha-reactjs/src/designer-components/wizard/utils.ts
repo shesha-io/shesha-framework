@@ -82,12 +82,21 @@ export const getWizardButtonStyle =
   };
 
 
-export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next') => {
-
-  return type === 'next'
-    ? steps.findIndex((_, index) => index > current)
-    : findLastIndex(steps, (_, index) => index < current);
-};
+  export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 'back' | 'next' | 'reset') => {
+    switch (type) {
+      case 'reset':
+        return 0;
+  
+      case 'next':
+        return steps.findIndex((_, index) => index > current);
+  
+      case 'back':
+        return findLastIndex(steps, (_, index) => index < current);
+  
+      default:
+        return steps.findIndex((_, index) => index > current);
+    }
+  };
 
 export const isEmptyArgument = (args: IConfigurableActionConfiguration) => {
   if (!args)

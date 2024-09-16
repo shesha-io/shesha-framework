@@ -7,6 +7,7 @@ using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
+using Shesha.Extensions;
 using Shesha.Permissions.Dtos;
 using Shesha.Roles.Dto;
 using System;
@@ -53,41 +54,42 @@ namespace Shesha.Permissions
             return dto;
         }
 
-        public Task<List<PermissionDto>> GetAllAsync()
+        public async Task<List<PermissionDto>> GetAllAsync()
         {
             var permissions = PermissionManager.GetAllPermissions();
 
-            var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions)
-                .Select(async x => 
+            var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions);
+            var finalDtos = (await dtos.SelectAsync(async x => 
                 {
                     x.Child = null;
+                    // TODO: Alex why should we fetch module for each permission?
                     x.Module = x.ModuleId != null
                         ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(x.ModuleId.Value))
                         : null;
                     return x;
-                })
-                .Select(x => x.Result)
-                .OrderBy(p => p.DisplayName).ToList();
+                }))
+                .OrderBy(p => p.DisplayName)
+                .ToList();
 
-            return Task.FromResult(dtos);
+            return finalDtos;
         }
 
-        public Task<List<PermissionDto>> GetAllTreeAsync()
+        public async Task<List<PermissionDto>> GetAllTreeAsync()
         {
             var permissions = PermissionManager.GetAllPermissions();
 
-            var dtoList = ObjectMapper.Map<List<PermissionDto>>(permissions)
-                .Select(async x =>
+            var dtos = ObjectMapper.Map<List<PermissionDto>>(permissions);
+            var dtoList = (await dtos
+                .SelectAsync(async x =>
                 {
                     x.Module = x.ModuleId != null
                         ? new EntityReferenceDto<Guid>(await _moduleRepository.GetAsync(x.ModuleId.Value))
                         : null;
                     return x;
-                })
-                .Select(x => x.Result)
+                }))
                 .OrderBy(p => p.DisplayName).ToList();
 
-            var tree =new List<PermissionDto>();
+            var tree = new List<PermissionDto>();
             tree.AddRange(dtoList.Where(x => string.IsNullOrEmpty(x.ParentName)));
             tree.ForEach(x => dtoList.Remove(x));
 
@@ -98,7 +100,7 @@ namespace Shesha.Permissions
 
             tree.AddRange(dtoList);
 
-            return Task.FromResult(tree);
+            return tree;
         }
 
         private void AddChild(PermissionDto perm, List<PermissionDto> list)

@@ -3,6 +3,7 @@ import { useGet } from "@/hooks";
 import { EntityData, IAbpWrappedGetEntityListResponse, IGetAllPayload } from "@/interfaces/gql";
 import { camelcaseDotNotation } from "@/utils/string";
 import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
+import { getValueByPropertyName, setValueByPropertyName } from "./object";
 
 export interface IUseEntityDisplayTextProps {
   entityType?: string;
@@ -49,13 +50,16 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
     lastSelection.current.propertyName === propertyName &&
     !Boolean(selection.find((item) => !lastSelection.current.keys.includes(item)));
 
-  const displayProperty = normalizePropertyName(propertyName) ?? '_displayName';
+  const displayProperty = normalizePropertyName(propertyName) || '_displayName';
+
+  const fields = displayProperty.split('.');
+  const gqlFields = fields.join('{') + '}'.repeat(fields.length - 1);
 
   const getValuePayload = useMemo<IGetEntityPayload>(() => ({
     skipCount: 0,
     maxResultCount: 1000,
     entityType: entityType,
-    properties: `id ${displayProperty}`,
+    properties: `id ${gqlFields}`,
     filter: buildFilterById(selection),    
   }), [entityType, displayProperty, selection]);
 
@@ -82,10 +86,9 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
 
     const result = valueItems
       ?.filter((ent) => !itemsAlreadyLoaded || (Array.isArray(selection) && selection.includes(ent.id.toString())))
-      .map<EntityData>((ent) => ({
-        id: ent.id,
-        [propertyName]: ent[normalizePropertyName(propertyName)] ?? 'unknown',
-      }));
+      .map<EntityData>((ent) => {
+        return setValueByPropertyName({ id: ent.id }, displayProperty, getValueByPropertyName(ent, displayProperty));
+      });
 
     lastSelection.current =
       valueFetcher?.loading === false && selection && Array.isArray(selection)

@@ -68,7 +68,7 @@ export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs) => {
             },
             {
               match: 'pageContext',
-              data: {...pageContext?.getFull()} ?? {},
+              data: {...pageContext?.getFull()},
             },
           ]
     });

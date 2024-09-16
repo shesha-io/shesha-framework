@@ -59,7 +59,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
         const match = [
             { match: 'data', data: formData },
             { match: 'globalState', data: globalState },
-            { match: 'pageContext', data: {...pageContext?.getFull()} ?? {} },
+            { match: 'pageContext', data: {...pageContext?.getFull()} },
         ];
 
         if (dataContextManager)

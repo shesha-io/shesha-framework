@@ -28,7 +28,7 @@ namespace Shesha.Configuration
         /// <summary>
         /// Default URL  
         /// </summary>
-        [Display(Name = "Default URL", Description = "This is the url the user should be redirected to if the user is not authenticated and does not specific a specific page", GroupName = "Frontend")]
+        [Display(Name = "Default URL", Description = "This is the url the user should be redirected to if the user is not authenticated and does not specify a specific page", GroupName = "Frontend")]
         [Setting(SheshaSettingNames.DefaultUrl, isClientSpecific: true)]
         ISettingAccessor<string> DefaultUrl { get; }
     }
