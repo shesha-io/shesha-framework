@@ -58,3 +58,4 @@ export * from '@/providers/form/models';
 export { type IStoredFile } from '@/providers/storedFile/contexts';
 export { type IShaFormInstance } from '@/providers/form/store/interfaces';
 export { ConfigurationItemVersionStatus } from '@/utils/configurationFramework/models';
+export * from './errorInfo';
