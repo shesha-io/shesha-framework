@@ -33,11 +33,11 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             label: 'Size',
             children: <SizeComponent noOverflow value={value} onChange={onChange} />
         },
-        // {
-        //     key: '3',
-        //     label: 'Border',
-        //     children: <BorderComponent readOnly={readOnly} value={value} onChange={onChange} />
-        // },
+        {
+            key: '3',
+            label: 'Border',
+            children: <BorderComponent value={value} onChange={onChange} />
+        },
         // {
         //     key: '4',
         //     label: 'Background',

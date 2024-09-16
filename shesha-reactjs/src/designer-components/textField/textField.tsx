@@ -154,9 +154,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
-  // settingsFormMarkup: settingsForm,
-  // validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  // settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
+  settingsFormMarkup: settingsForm,
+  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   // settingsFormMarkup: settingFormMarkup,
   // validateSettings: (model) => validateConfigurableComponentSettings(settingFormMarkup, model),
   initModel: (model) => ({

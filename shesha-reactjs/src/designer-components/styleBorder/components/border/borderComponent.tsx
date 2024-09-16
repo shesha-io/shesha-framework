@@ -17,15 +17,18 @@ const BorderComponent: FC<IBorderProps> = (props) => {
 
     const { value, readOnly, onChange } = props;
     const hideBorder = value?.hideBorder || false;
-    const activeBorder = value?.activeBorder || 'all';
-    const activeRadius = value?.activeRadius || 'all';
-    console.log('BorderComponent', value, props);
+    const activeBorder = value?.activeBorder;
+    const activeRadius = value?.activeRadius;
+
     useEffect(() => {
-        if (onChange) {
-            onChange({ ...value, activeBorder, activeRadius });
+        if (!activeBorder) {
+            onChange({ ...value, activeBorder: 'all' });
+        }
+        if (!activeRadius) {
+            onChange({ ...value, activeRadius: 'all' });
         }
 
-    }, [props]);
+    }, [activeBorder, activeRadius]);
 
     return (
         <>
@@ -39,6 +42,7 @@ const BorderComponent: FC<IBorderProps> = (props) => {
                     label='Corner'
                     readOnly={readOnly}
                 />
+
                 <SettingInput label='Radius' property={`border.radius.${activeRadius}`} readOnly={readOnly} value={value} />
                 <SettingInput label='Side' property={`border.activeBorder`} readOnly={readOnly} value={activeBorder} type='radio' buttonGroupOptions={borderOptions} />
                 <InputRow inputs={[{ label: 'Color', property: `border.border.${activeBorder}.color`, readOnly, value: value, type: 'color' }, { label: 'Width', property: `border.border.${activeBorder}.width`, readOnly, value: value }]} />
