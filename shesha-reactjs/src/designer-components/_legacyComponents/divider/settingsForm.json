@@ -32,7 +32,8 @@
       "textType": "text",
       "validate": {
         "required": true
-      }
+      },
+      "jsSetting": false
     },
     {
       "id": "6d29cf2c-96fe-40ce-be97-32e9f5d0fe40",

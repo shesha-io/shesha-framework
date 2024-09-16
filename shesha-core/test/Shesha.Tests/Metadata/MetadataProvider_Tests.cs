@@ -9,7 +9,7 @@ namespace Shesha.Tests.Metadata
     public class MetadataProvider_Tests: AbpIntegratedTestBase<SheshaTestModule>
     {
         [Fact]
-        public async Task ShouldInclude_NotMappedProperties_Test() 
+        public async Task ShouldInclude_NotMappedProperties_TestAsync() 
         {
             var metadataProvider = Resolve<MetadataProvider>();
             

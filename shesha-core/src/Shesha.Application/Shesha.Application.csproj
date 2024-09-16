@@ -57,6 +57,9 @@
     <None Remove="ConfigMigrations\package20240828_1347.shaconfig" />
     <None Remove="ConfigMigrations\package20240828_1548.shaconfig" />
     <None Remove="ConfigMigrations\package20240830_1554.shaconfig" />
+    <None Remove="ConfigMigrations\package20240903_1611.shaconfig" />
+    <None Remove="ConfigMigrations\package20240910_0924.shaconfig" />
+    <None Remove="ConfigMigrations\package20240911_1505.shaconfig" />
     <None Remove="Excel\template.xlsx" />
     <None Remove="ConfigMigrations\package20230324_1835.shaconfig" />
     <None Remove="ConfigMigrations\package20230411_1238.shaconfig" />
@@ -81,6 +84,9 @@
     <EmbeddedResource Include="ConfigMigrations\package20240828_1347.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240828_1548.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20240830_1554.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20240903_1611.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20240910_0924.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20240911_1505.shaconfig" />
     <EmbeddedResource Include="Excel\template.xlsx" />
     <EmbeddedResource Include="ConfigMigrations\package20230324_1835.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20230411_1238.shaconfig" />
@@ -90,6 +96,10 @@
     <PackageReference Include="Hangfire.Core" Version="1.8.6" />
     <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="Stubble.Core" Version="1.10.8" />
   </ItemGroup>

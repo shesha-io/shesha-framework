@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
 import { setItemsAction, setLoadedMenuAction } from './actions';
 import { IConfigurableMainMenu, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
 import { uiReducer } from './reducer';
@@ -10,6 +10,7 @@ import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { FormPermissionsDto, formConfigurationCheckPermissions } from '@/apis/formConfiguration';
 import { FormIdFullNameDto } from '@/apis/entityConfig';
 import { settingsUpdateValue } from '@/apis/settings';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 export interface MainMenuProviderProps {
   mainMenuConfigKey?: string;
@@ -23,35 +24,26 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
   const { applicationKey, anyOfPermissionsGranted, backendUrl, httpHeaders } = useSheshaApplication();
   const allData = useAvailableConstantsData();
 
-  const requestItemVisible = (item: ISidebarMenuItem, itemsToCheck: ISidebarMenuItem[]): ISidebarMenuItem => {
-    if (item.hidden)
-      return item;
+  const formPermissionedItems = useRef<ISidebarMenuItem[]>([]);
 
-    if (item.requiredPermissions?.length > 0)
-      if (anyOfPermissionsGranted(item?.requiredPermissions))
-        return item;
-      else
-        return {...item, hidden: true};
+  const getActualItemsModel = (items: ISidebarMenuItem[]) => {
+    const actualItems = items.map((item) => {
+      var actualItem = getActualModel(item, allData);
+      if (isSidebarGroup(actualItem) && actualItem.childItems && actualItem.childItems.length > 0) {
+        actualItem.childItems = getActualItemsModel(actualItem.childItems);
+      }
+      if (actualItem.requiredPermissions?.length > 0)
+        if (anyOfPermissionsGranted(actualItem?.requiredPermissions))
+          return actualItem;
+        else
+          return {...actualItem, hidden: true};
+      return actualItem;
+    });
 
-    if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0)
-      return {...item, hidden: false, childItems: item.childItems.map((childItem) => requestItemVisible(childItem, itemsToCheck))} as ISidebarMenuItem;
-
-    if (
-      isNavigationActionConfiguration(item.actionConfiguration)
-      && item.actionConfiguration?.actionArguments?.navigationType === 'form'
-      && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
-      && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
-    ) {
-      // form navigation, check form permissions
-      const newItem = {...item, hidden: true};
-      itemsToCheck.push(newItem);
-      return newItem;
-    } 
-    
-    return item;
+    return actualItems;
   };
 
-  const updatetItemVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
+  const updatetFormNamigationVisible = (item: ISidebarMenuItem, formsPermission: FormPermissionsDto[]) => {
     if (
       item.actionConfiguration?.actionOwner === 'shesha.common'
       && item.actionConfiguration?.actionName === 'Navigate'
@@ -68,6 +60,27 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
     }
   };
 
+  const getItemsWithFormNavigation = (items: ISidebarMenuItem[]) => {
+    const itemsToCheck = [];
+    items?.forEach((item) => {
+      if (isSidebarGroup(item) && item.childItems && item.childItems.length > 0) {
+        itemsToCheck.concat(getItemsWithFormNavigation(item.childItems));
+        return;
+      }
+
+      if (
+        isNavigationActionConfiguration(item.actionConfiguration)
+        && item.actionConfiguration?.actionArguments?.navigationType === 'form'
+        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.name
+        && (item.actionConfiguration?.actionArguments?.formId as FormFullName)?.module
+      ) {
+        itemsToCheck.push(item);
+      } 
+    });
+
+    return itemsToCheck;
+  };
+
   const getFormPermissions = (items: ISidebarMenuItem[], itemsToCheck: ISidebarMenuItem[]) => {
     if (itemsToCheck.length > 0) {
       const request = itemsToCheck.map(x => x.actionConfiguration?.actionArguments?.formId as FormIdFullNameDto);
@@ -75,9 +88,10 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
         .then((result) => {
           if (result.success) {
             itemsToCheck.forEach((item) => {
-              return updatetItemVisible(item, result.result);
+              return updatetFormNamigationVisible(item, result.result);
             });
-            dispatch(setItemsAction([...items]));
+            formPermissionedItems.current = [...items];
+            dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
           } else {
             console.error(result.error);
           }
@@ -94,14 +108,19 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({childre
     const model = fluent.migrator.upgrade(versionedValue, {});
     dispatch(setLoadedMenuAction(model as IConfigurableMainMenu));
 
-    const itemsToCheck = [];
-    const localItems = model.items?.map((item) => requestItemVisible(getActualModel(item, allData), itemsToCheck));
+    const itemsToCheck = getItemsWithFormNavigation(model.items);
     if (itemsToCheck.length > 0) {
-      getFormPermissions(localItems, itemsToCheck);
+      getFormPermissions(model.items, itemsToCheck);
     } else {
-      dispatch(setItemsAction([...localItems]));
+      formPermissionedItems.current = [...model.items];
+      dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
     }
   };
+
+  useDeepCompareEffect(() => {
+    dispatch(setItemsAction(getActualItemsModel(formPermissionedItems.current)));
+  }, [{...allData}]);
+
 
   useEffect(() => {
     if (loadingState === 'ready') {

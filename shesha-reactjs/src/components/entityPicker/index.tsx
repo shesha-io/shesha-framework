@@ -9,6 +9,7 @@ import { IEntityPickerProps } from './models';
 import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
+import { getValueByPropertyName } from '@/utils/object';
 
 const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, value } = props;
@@ -69,8 +70,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   // Check if all data for displaying is loaded
   const isLoaded = value 
     ? Array.isArray(value)
-      ? !value.find(x => typeof(x[displayEntityKey]) === 'undefined')
-      : typeof(value[displayEntityKey]) !== 'undefined'
+      ? !value.find(x => typeof(getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      : typeof(getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
   const valueId = Array.isArray(value)
@@ -120,7 +121,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     } else {
       result = (selectedItems ?? []).map(ent => {
         const key = incomeValueFunc(outcomeValueFunc(ent, {}), {});
-        return { label: ent[displayEntityKey], value: key, key };
+        return { label: getValueByPropertyName(ent, displayEntityKey), value: key, key };
       });
     }
 

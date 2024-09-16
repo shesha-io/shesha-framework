@@ -4,12 +4,10 @@ using Abp.Domain.Uow;
 using Abp.Runtime.Session;
 using AutoMapper;
 using Shesha.ConfigurationItems;
-using Shesha.ConfigurationItems.Distribution;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
-using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using System;
@@ -170,7 +168,7 @@ namespace Shesha.Configuration.Runtime
                 dbItem.CascadeUpdate = src.CascadeUpdate;
                 dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
-                _propertyConfigRepo.InsertOrUpdate(dbItem);
+                await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
             }
         }
 

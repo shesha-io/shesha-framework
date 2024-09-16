@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
 import { EditOutlined } from '@ant-design/icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { FormMarkup, SidebarConfigurator, useForm, useSheshaApplication, validateConfigurableComponentSettings } from '@/index';
+import { FormMarkup, IConfigurableFormComponent, SidebarConfigurator, useForm, useSheshaApplication, validateConfigurableComponentSettings } from '@/index';
 import settingsFormJson from './settingsForm.json';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { mainMenuMigration } from '@/providers/mainMenu/migrations/migration';
@@ -12,13 +12,17 @@ import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/m
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const MainMenuEditorComponent: IToolboxComponent<any> = {
+export interface IMainMenuEditorComponentProps extends IConfigurableFormComponent {
+  height?: string;
+}
+
+const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> = {
   type: 'mainMenuEditor',
   name: 'Main menu editor',
   icon: <EditOutlined />,
   isInput: true,
   isOutput: true,
-  Factory: () => {
+  Factory: ({model}) => {
 
     const [menuProps, setMenuProps] = useState<IConfigurableMainMenu>(undefined);
 
@@ -60,7 +64,9 @@ const MainMenuEditorComponent: IToolboxComponent<any> = {
       form.setFormData({values: newData, mergeValues: false});
     };
 
-    return <SidebarConfigurator value={menuProps?.items} onChange={onChange} readOnly={editorMode === 'readonly'} />;
+    return <div style={{height: model.height}}>
+      <SidebarConfigurator value={menuProps?.items} onChange={onChange} readOnly={editorMode === 'readonly'} />
+    </div>;
   },
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
