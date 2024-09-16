@@ -28,6 +28,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
 
     const title = model.hideHeading ? null : model.label;
 
+    console.log(model);
     const headerComponents = model?.header?.components ?? [];
 
     const extra =
@@ -61,12 +62,13 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     ...model,
     header: { id: nanoid(), components: [] },
     content: { id: nanoid(), components: [] },
+    stylingBox: "{\"marginBottom\":\"5\"}"
   }),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   customContainerNames: ['header', 'content'],
   migrator: (m) => m
-    .add<ICardComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ICardComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ICardComponentProps>(2, (prev) => removeComponents(prev))
 };
 

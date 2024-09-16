@@ -44,6 +44,7 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
 
     const evaluatedLabel = typeof label === 'string' ? evaluateString(label, data) : label;
 
+    console.log(model);
     if (model.hidden) return null;
 
     const styling = JSON.parse(model.stylingBox || '{}');
@@ -89,6 +90,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       </ParentProvider>
     );
   },
+  initModel: (model) => ({
+    ...model,
+    stylingBox: "{\"marginBottom\":\"5\"}"
+  }),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) =>
@@ -131,10 +136,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
               : prev.expandIconPosition,
       }))
       .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev))
-      .add<ICollapsiblePanelComponentProps>(5, (prev) => ({...migrateFormApi.properties(prev)}))
+      .add<ICollapsiblePanelComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
   ,
-  customContainerNames: ['header', 'content'],  
+  customContainerNames: ['header', 'content'],
 };
 
 export default CollapsiblePanelComponent;

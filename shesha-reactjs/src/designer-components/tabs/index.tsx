@@ -98,6 +98,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const tabsModel: ITabsComponentProps = {
       ...model,
       propertyName: 'custom Name',
+      stylingBox: "{\"marginBottom\":\"5\"}",
       tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [] }],
     };
     return tabsModel;
@@ -109,11 +110,11 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
       return migratePropertyName(migrateCustomFunctions(newModel)) as ITabsComponentProps;
     })
     .add<ITabsComponentProps>(1, (prev) => {
-      const newModel = {...prev};
+      const newModel = { ...prev };
       newModel.tabs = newModel.tabs.map(x => migrateReadOnly(x, 'inherited'));
       return newModel;
     })
-    .add<ITabsComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ITabsComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ITabsComponentProps>(3, (prev) => removeComponents(prev))
   ,
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,
