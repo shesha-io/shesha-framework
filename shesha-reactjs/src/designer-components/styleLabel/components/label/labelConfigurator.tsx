@@ -1,33 +1,38 @@
-import { Button } from 'antd';
+import { Button, Radio } from 'antd';
 import React, { FC } from 'react';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStyles } from '../../styles/styles';
 import { SettingInput } from '@/designer-components/_settings/components/utils';
-import { labelalignOptions } from './utils';
-import { on } from 'events';
+import { labelAlignOptions } from './utils';
+import FormItem from '@/designer-components/_settings/components/formItem';
 
 
 export interface ILabelProps {
     readOnly?: boolean;
-    value?: any;
     onChange?: any;
+    model?: any;
 }
 
 
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly }) => {
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ model, readOnly, onChange }) => {
 
-    const {hideLabel, labelAlign, label} = value;
+    const { hideLabel, labelAlign, label } = model;
     const { styles } = useStyles();
 
     return (
         <>
             <div className={styles.flexWrapper} >
-                <SettingInput label="" property='labelAlign' value={labelAlign} readOnly={readOnly} type='radio' buttonGroupOptions={labelalignOptions} jsSetting={false} />
-                <SettingInput label="" icon={hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />} value={hideLabel} property='hideLabel' readOnly={readOnly || hideLabel} type='button' className={styles.hidelLabelIcon} />
+                <Radio.Group value={labelAlign} disabled={readOnly} onChange={(e) => onChange({ ...model, labelAlign: e.target.value })}>
+                    {labelAlignOptions.map(({ value, icon, title }) => (
+                        <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                    ))}
+                </Radio.Group>
+                <FormItem name='hideLabel' readOnly={readOnly} className={styles.hidelLabelIcon} jsSetting={false}>
+                    <Button icon={hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => onChange({ ...model, hideLabel: !hideLabel })} />
+                </FormItem>
             </div>
             <SettingInput label="Label" value={label} property='label' readOnly={readOnly || hideLabel} />
         </>
-
     );
 };
 

@@ -56,25 +56,26 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const form = useForm();
     const { styles } = useStyles();
 
-    console.log("TextFieldComponent", model);
+    model.componentName === 'textField1' && console.log("TextFieldComponent", model);
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const sizeStyles = useMemo(() => getSizeStyle(model?.dimensions), [model.dimensions]);
-    const borderStyles = useMemo(() => getBorderStyle(model?.border), [model.border]);
-    const fontStyles = useMemo(() => getFontStyle(model.font), [model.font]);
+    const { dimensions, border, font, shadow, background } = model?.styles || {};
+    const sizeStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const borderStyles = useMemo(() => getBorderStyle(border), [border]);
+    const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
-    const shadowStyles = useMemo(() => getShadowStyle(model.shadow), [model.shadow]);
+    const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
     useEffect(() => {
       const fetchStyles = async () => {
-        getBackgroundStyle(model?.background).then((style) => {
+        getBackgroundStyle(background).then((style) => {
           setBackgroundStyles(style);
         });
       };
       fetchStyles();
-    }, [model.background, model?.background?.gradient?.colors]);
+    }, [background, background?.gradient?.colors]);
 
     if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
@@ -153,9 +154,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       </ConfigurableFormItem>
     );
   },
-  // settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
-  settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
+  // settingsFormMarkup: settingsForm,
+  // validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   // settingsFormMarkup: settingFormMarkup,
   // validateSettings: (model) => validateConfigurableComponentSettings(settingFormMarkup, model),
   initModel: (model) => ({

@@ -488,7 +488,8 @@
             {
               "id": "try26voxhs-HxJ5k5ngYE",
               "type": "styleGroup",
-              "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801"
+              "parentId": "rZf26voxh4d6a1fbf801",
+              "propertyName": "styles"
             }
           ]
         },
@@ -521,6 +522,7 @@
     "labelCol": {
       "span": 8
     },
+    "size": "small",
     "wrapperCol": {
       "span": 16
     },

@@ -31,7 +31,7 @@ interface IInputProps {
     hasUnits?: boolean;
     hidden?: boolean;
     jsSetting?: boolean;
-    component?: React.ReactNode;
+    children?: React.ReactNode;
     description?: string;
     icon?: React.ReactNode;
     className?: string
@@ -48,8 +48,8 @@ const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ property
             defaultValue={'px'}
             dropdownStyle={{ minWidth: '70px' }}
             onChange={(unit) => {
-                console.log('UnitSelector', unit, property);
-                onChange({ ...value, unit })
+                console.log('UnitSelector', value);
+                onChange({ ...(value ? value : {}), unit })
             }}
         >
             {units.map(unit => (
@@ -60,6 +60,8 @@ const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ property
 }
 
 const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, className, buttonGroupOptions, hasUnits, property, description, onChange, readOnly, icon }) => {
+
+    console.log('InputComponent', value, onChange);
 
     switch (type) {
         case 'color':
@@ -105,16 +107,16 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, c
     }
 }
 
-export const SettingInput: React.FC<IInputProps> = ({ label, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description, className, icon }) => {
+export const SettingInput: React.FC<IInputProps> = ({ children, label, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description, className, icon }) => {
     const { searchQuery } = useSearchQuery();
 
 
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
         type === 'dropdown' && console.log('Property', label, property);
         return (
-            <div key={property} style={{ flex: '1 1 120px', minWidth: '100px' }}>
-                <FormItem name={property} label={label} orientation='vertical' jsSetting={jsSetting} readOnly={readOnly}>
-                    <InputComponent size='small' className={className} label={label} type={type} dropdownOptions={dropdownOptions} icon={icon} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />
+            <div key={label} style={{ flex: '1 1 120px', minWidth: '100px' }}>
+                <FormItem name={`styles.${property}`} label={label} orientation='vertical' jsSetting={jsSetting} readOnly={readOnly} valuePropName={type === 'switch' ? 'checked' : undefined}>
+                    {children ? children : <InputComponent size='small' className={className} label={label} type={type} dropdownOptions={dropdownOptions} icon={icon} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
                 </FormItem>
             </div>
         );

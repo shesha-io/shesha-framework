@@ -11,9 +11,7 @@ export interface IFontType {
 }
 
 const FontComponent: FC<IFontType> = (props) => {
-    const { value, readOnly, onChange } = props;
-
-    console.log("Font Component", props);
+    const { value, readOnly } = props;
 
     return (
         <>

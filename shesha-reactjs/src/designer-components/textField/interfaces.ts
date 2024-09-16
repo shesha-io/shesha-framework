@@ -8,6 +8,13 @@ import { IDimensionsValue } from '../styleDimensions/components/size/interfaces'
 
 export type TextType = 'text' | 'password';
 
+export interface IStyleType {
+  border?: IBorderValue;
+  background?: IBackgroundValue;
+  font?: IFontValue;
+  shadow?: IShadowValue;
+  dimensions?: IDimensionsValue;
+}
 export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
   prefix?: string;
@@ -17,9 +24,5 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   hideBorder?: boolean;
   initialValue?: string;
   textType?: TextType;
-  border?: IBorderValue;
-  background?: IBackgroundValue;
-  dimensions?: IDimensionsValue;
-  font?: IFontValue;
-  shadow?: IShadowValue;
+  styles?: IStyleType;
 }

@@ -39,7 +39,7 @@ const ConfigurableFormItemForm: FC<IConfigurableFormItem_FormProps> = (props) =>
   } = props;
 
   return (
-    <Form.Item {...formItemProps}>
+    <Form.Item {...formItemProps} layout='vertical'>
       <DataBinder valuePropName={valuePropName}>
         {children}
       </DataBinder>
@@ -126,6 +126,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     size: 'small',
+    layout: 'vertical',
   };
 
   if (typeof children === 'function') {
@@ -153,7 +154,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   } else {
     // Use standard Form.Item for components without binding support
     return (
-      <Form.Item {...{ ...formItemProps, size: 'small' }} >{children}</Form.Item>
+      <Form.Item {...formItemProps} layout='vertical'>{children}</Form.Item>
     );
   }
 };

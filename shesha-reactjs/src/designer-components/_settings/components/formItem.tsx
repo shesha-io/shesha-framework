@@ -23,6 +23,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             readOnly,
             disabled: readOnly,
             size: 'small',
+            layout: 'vertical',
             onChange: handleChange(onChange),
             [valuePropName]: value
         }
@@ -38,7 +39,8 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                 description: tooltip,
                 validate: { required },
                 hidden,
-                size: 'small'
+                size: 'small',
+                layout: 'vertical'
             }}
             className='sha-js-label'
         >

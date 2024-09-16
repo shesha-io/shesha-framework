@@ -5,9 +5,11 @@ import { ISizeType } from './interfaces';
 
 const SizeComponent: FC<ISizeType> = (props) => {
 
-    const { value, readOnly, noOverflow } = props;
+    const { value, readOnly, noOverflow, onChange } = props;
 
-    const commonProps = { hasUnits: true, readOnly, value };
+    console.log("SIZE Value ", value, onChange)
+
+    const commonProps = { hasUnits: true, readOnly, value, onChange };
 
     return (
         <>

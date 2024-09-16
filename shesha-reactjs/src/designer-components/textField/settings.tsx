@@ -10,10 +10,11 @@ import StyleGroupComponent from '../_settings/components/styleGroup/styleGroup';
 import SearchableTabs from '../_settings/components/tabs/searchableTabsComponent';
 import { SettingInput } from '../_settings/components/utils';
 import LabelConfiguratorComponent from '../styleLabel/components/label/labelConfigurator';
+import FormItem from '../_settings/components/formItem';
 
 const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) => {
 
-    const { readOnly } = props;
+    const readOnly = props.readOnly || false;
     const { model } = useSettingsForm<ITextFieldComponentProps>();
 
     const tabs = [
@@ -22,13 +23,13 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Display",
             children: (
                 <>
-                    <LabelConfiguratorComponent model={model} {...props} />
+                    <LabelConfiguratorComponent model={model} readOnly={readOnly} />
                     <SettingInput label="Text Type" value={model.textType} property='textType' readOnly={readOnly} type='dropdown' dropdownOptions={['text', 'password'].map(value => ({ label: value, value }))} />
                     <SettingInput label="Placeholder" value={model.placeholder} property='placeholder' readOnly={readOnly} />
                     <SettingInput label="Description" value={model.description} property='description' readOnly={readOnly} type='textarea' />
                     <SettingInput label="Initial Value" value={model.initialValue} property='initialValue' readOnly={readOnly} />
                     <SettingInput label="Hidden" value={model.hidden} property='hidden' readOnly={readOnly} type='switch' />
-                    <ReadOnlyModeSelector readOnly={readOnly} />
+                    <SettingInput label="Edit Mode" property='editMode' readOnly={readOnly}><ReadOnlyModeSelector readOnly={readOnly} value='editable' /></SettingInput>
                 </>
             )
         },
@@ -59,14 +60,15 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
         {
             key: "style",
             label: "Style",
-            children: <StyleGroupComponent model={model} omitted={['shadow', 'stylingBox', 'style']} readOnly={readOnly} />
-
+            children: <FormItem name='styles' label='' jsSetting={false}>
+                <StyleGroupComponent omitted={['shadow', 'stylingBox', 'style']} readOnly={readOnly} />
+            </FormItem>
         },
         {
             key: "security",
             label: "Security",
             children: (
-                <SettingInput label='Permissions' value={model.permissions} property='permissions' readOnly={readOnly} component={<PermissionAutocomplete readOnly={readOnly} />} />
+                <SettingInput label='Permissions' value={model.permissions} property='permissions' readOnly={readOnly}><PermissionAutocomplete readOnly={readOnly} /></SettingInput>
             )
         }
     ];

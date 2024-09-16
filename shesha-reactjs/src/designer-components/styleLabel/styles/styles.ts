@@ -5,16 +5,19 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
   const flexWrapper = cx("", css`
         display: flex;
+        width: 150px;
         flex-direction: row;
         gap: 8px;
         position: absolute;
-        right: 0px;
+        justify-content: flex-end;
         top: -2px;
+        z-index: 2;
     `);
 
   const hidelLabelIcon = cx("", css`
     cursor: pointer;
     display: flex;
+    gap: 4px;
     justify-content: center;
     align-items: center;
     border-radius: 6px;
