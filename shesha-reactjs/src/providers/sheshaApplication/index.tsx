@@ -136,7 +136,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
       >
         <SettingsProvider>
           <ConfigurableActionDispatcherProvider>
-            <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
+            <ShaRoutingProvider 
+              getFormUrlFunc={getFormUrlFunc} 
+              router={router}
+              getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
+            >
               <DynamicActionsDispatcherProvider>
                 <ConditionalWrap
                   condition={!props.noAuth}
