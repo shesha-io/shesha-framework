@@ -196,7 +196,10 @@ namespace Shesha.NHibernate
         {
             if (!SkipDbSeed)
             {
+                var prev = Configuration.EntityHistory.IsEnabledForAnonymousUsers;
+                Configuration.EntityHistory.IsEnabledForAnonymousUsers = false;
                 SeedDatabase();
+                Configuration.EntityHistory.IsEnabledForAnonymousUsers = prev;
             }
         }
 
