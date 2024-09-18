@@ -23,6 +23,13 @@ from Frwk_ConfigurableComponents cc
 inner join Frwk_ConfigurationItems ci on ci.id = cc.id
 where ci.name like '%sidebar-menu%' and ItemType = 'configurable-component' and ci.IsLast = 1
 ");
+            IfDatabase("PostgreSql").Execute.Sql(@"
+insert into ""Frwk_SettingValues"" (""Id"", ""SettingConfigurationId"", ""Value"", ""ApplicationId"")
+select gen_random_uuid(), (select cii.""Id"" from ""Frwk_ConfigurationItems"" cii where cii.""Name"" = 'Shesha.MainMenuSettings'), cc.""Settings"", ci.""ApplicationId""
+from ""Frwk_ConfigurableComponents"" cc
+inner join ""Frwk_ConfigurationItems"" ci on ci.""Id"" = cc.""Id""
+where ci.""Name"" like '%sidebar-menu%' and ci.""ItemType"" = 'configurable-component' and ci.""IsLast""
+");
         }
     }
 }
