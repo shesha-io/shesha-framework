@@ -1,4 +1,17 @@
 import cleanDeep from "clean-deep";
+import { mergeWith } from "lodash";
+
+export const deepMergeValues = (target: any, source: any) => {
+  return mergeWith(
+    { ...target },
+    source,
+    (objValue, srcValue, key, obj) => {
+        if (srcValue === undefined)
+            obj[key] = undefined;
+        return Array.isArray(objValue) ? srcValue : undefined;
+    },
+)
+}
 
 export const getValueByPropertyName = (data: any, propertyName: string): any => {
     if (!!data) {
