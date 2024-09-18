@@ -21,7 +21,7 @@ export const getSettings = (_data?: any) =>
   .addFormAutocomplete({
     id: nanoid(),
     propertyName: 'modalFormId',
-    label: 'Modal form',
+    label: 'Render form',
     labelAlign: 'right',
     parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
     hidden: false,
@@ -52,7 +52,7 @@ export const getSettings = (_data?: any) =>
     .addCheckbox({
       id:nanoid(),
       propertyName: 'collapsible',
-      label: 'Collapsible',
+      label: 'Collapsible ?',
       parentId: 'root',
     })
     .addCollapsiblePanel({
@@ -110,54 +110,6 @@ export const getSettings = (_data?: any) =>
                     required: true,
                   },
                   convertToFullId: false,
-                })
-                .addDropdown({
-                  id: nanoid(),
-                  propertyName: 'footerButtons',
-                  label: 'Buttons type',
-                  dataSourceType: 'values',
-                  values: [
-                    { id: nanoid(), label: 'Default', value: 'default' },
-                    { id: nanoid(), label: 'Custom', value: 'custom' },
-                    { id: nanoid(), label: 'None', value: 'none' },
-                  ],
-                  defaultValue: 'default',
-                })
-                .addButtons({
-                  id: nanoid(),
-                  propertyName: 'buttons',
-                  hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false },
-                  label: 'Configure Modal Buttons',
-                })
-                .addDropdown({
-                  id: 'ea60aee4-a7aa-4fd6-a641-638a5a609157',
-                  propertyName: 'submitHttpVerb',
-                  parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-                  label: 'Submit Http Verb',
-                  values: [
-                    {
-                      label: 'POST',
-                      value: 'POST',
-                      id: '8418606a-d85d-4795-a2ee-4a69fcc656f9',
-                    },
-                    {
-                      label: 'PUT',
-                      value: 'PUT',
-                      id: '64bbca8a-2fb1-4448-ab71-3db077233bd2',
-                    },
-                  ],
-                  dataSourceType: 'values',
-                  hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false },
-                  defaultValue: 'POST',
-                })
-                .addTextField({
-                  id: 'e669632e-55e0-46f4-9585-9e81ef0ae174',
-                  propertyName: 'onSuccessRedirectUrl',
-                  parentId: '2a5acbcf-cd52-487e-9cd7-09594a04793a',
-                  label: 'Success Redirect URL',
-                  hidden: { _code: 'return !getSettingValue(data?.showModalFooter);', _mode: 'code', _value: false } as any,
-                  version: 0,
-                  textType: 'text',
                 })
                 .addDropdown({
                   id: '264903ff-b525-4a6e-893f-d560b219df9d',
@@ -222,27 +174,7 @@ export const getSettings = (_data?: any) =>
         ]
       }
     })
-    .addCollapsiblePanel({
-      id: '2225bfe4-ee69-431e-931b-b0e0b9ceee6f',
-      propertyName: 'pnlValidation',
-      parentId: 'root',
-      label: 'Validation',
-      labelAlign: "left",
-      expandIconPosition: "start",
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
-        components: [...new DesignerToolbarSettings()
-          .addCheckbox({
-            id: '3be9da3f-f47e-48ae-b4c3-f5cc36e534d9',
-            propertyName: 'validate.required',
-            parentId: 'pnl34bf6-f76d-4139-a850-c99bf06c8b69',
-            label: 'Required',
-          }).toJson()
-        ]
-      }
-    })
+
     .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'pnlStyle',

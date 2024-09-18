@@ -95,6 +95,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
             };
             return (
               <KanbanReactComponent
+                onChange={onChange}
                 {...model}
                 filters={entityPickerFilter}
                 headerStyle={{
