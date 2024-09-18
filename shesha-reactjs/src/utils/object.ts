@@ -10,8 +10,8 @@ export const deepMergeValues = (target: any, source: any) => {
             obj[key] = undefined;
         return Array.isArray(objValue) ? srcValue : undefined;
     },
-)
-}
+  );
+};
 
 export const getValueByPropertyName = (data: any, propertyName: string): any => {
     if (!!data) {
