@@ -37,9 +37,9 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             children: <BorderComponent value={value?.border} onChange={onChange} />
         },
         {
-            key: '4',
+            key: '1',
             label: 'Background',
-            children: <BackgroundComponent value={value} onChange={onChange} />
+            children: <BackgroundComponent value={value?.background} onChange={onChange} />
         },
         {
             key: '5',
@@ -52,7 +52,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             children: (
                 <>
                     <SettingInput label="Style" property='style' readOnly={false} type='code' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
-                    <FormItem name="stylingBox" layout='horizontal' jsSetting={false}>
+                    <FormItem name="stylingBox" jsSetting={false}>
                         <StyleBox />
                     </FormItem>
                 </>

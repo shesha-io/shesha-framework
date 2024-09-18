@@ -10,19 +10,15 @@ import { executeScript } from '@/providers/form/utils';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
-import LabelConfigurator from '../styleLabel/components/label/labelConfigurator';
 import { CodeFilled, CodeOutlined, FormOutlined } from '@ant-design/icons';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
 export interface ISettingsControlProps {
-  size?: 'small' | 'middle' | 'large';
   propertyName: string;
   readOnly?: boolean;
   value?: IPropertySetting;
   mode: PropertySettingMode;
-  orientation?: 'horizontal' | 'vertical';
-  labelProps?: { hideLabel: boolean; labelAlign: string, onValuesChange?: (newValues) => void };
   onChange?: (value: IPropertySetting) => void;
   readonly children?: SettingsControlChildrenType;
   availableConstantsExpression?: string;
@@ -85,13 +81,11 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
     onInternalChange(setting, newMode);
   };
 
-
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
   const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: props.readOnly,
-    size: 'small',
     value: setting._code,
     onChange: codeOnChange,
     mode: 'dialog',
@@ -100,7 +94,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
     fileName: props.propertyName,
     wrapInTemplate: true,
     templateSettings: { functionName: functionName },
-    exposedVariables: defaultExposedVariables,
+    exposedVariables: defaultExposedVariables
   };
 
   const editor = usePassedConstants
@@ -112,16 +106,18 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
       <div className={styles.jsContent}>
         <Button
           hidden={props.readOnly}
-          className={`${styles.jsSwitch} ${props.orientation === 'horizontal' ? 'inlineJS' : ''}`}
+          className={`${styles.jsSwitch} inlineJS'`}
           type='link'
-          icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+          danger={mode === 'value' && !!code}
+          ghost
           size='small'
+          icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
           color='lightslategrey'
           onClick={onSwitchMode}
         />
+
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
-        {props.labelProps && <LabelConfigurator />}
       </div>
     </div>
   );

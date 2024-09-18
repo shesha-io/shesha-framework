@@ -22,8 +22,6 @@ export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps,
     required?: boolean;
     tooltip?: string;
     hidden?: boolean;
-    layout?: 'horizontal' | 'vertical';
-    labelProps?: { hideLabel: boolean; labelAlign: string, onValuesChange?: (newValues) => void };
 }
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
@@ -81,7 +79,6 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                 hidden: props.hidden
             }}
             className='sha-js-label'
-            layout={props.layout}
         >
             {(value, onChange) => {
                 return (
@@ -90,9 +87,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         mode={'value'}
                         onChange={onChange}
                         value={value}
-                        size='small'
                         readOnly={readOnly}
-                        labelProps={props.labelProps}
                     >
                         {(value, onChange) => {
                             return cloneElement(
@@ -101,7 +96,6 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                                     ...children?.props,
                                     readOnly: readOnly,
                                     disabled: readOnly,
-                                    size: 'small',
                                     onChange: (...args: any[]) => {
                                         const event = args[0];
                                         const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target

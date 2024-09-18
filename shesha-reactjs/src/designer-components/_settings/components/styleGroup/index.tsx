@@ -17,7 +17,7 @@ const StyleGroup: IToolboxComponent<IStyleGroupProps> = {
 
         return model.hidden ? null : (
             <ConfigurableFormItem model={model}>
-                <StyleGroupComponent model={model} />
+                <StyleGroupComponent />
             </ConfigurableFormItem>
         );
     },

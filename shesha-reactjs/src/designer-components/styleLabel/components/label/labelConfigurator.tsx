@@ -11,24 +11,28 @@ export interface ILabelProps {
     readOnly?: boolean;
     onChange?: any;
     model?: any;
+    value?: any;
 }
 
 
 const LabelConfiguratorComponent: FC<ILabelProps> = ({ model, readOnly, onChange }) => {
 
-    const { hideLabel, labelAlign, label } = model;
+    const { labelAlign, label, hideLabel } = model;
+
     const { styles } = useStyles();
 
     return (
         <>
             <div className={styles.flexWrapper} >
-                <Radio.Group value={labelAlign} disabled={readOnly} onChange={(e) => onChange({ ...model, labelAlign: e.target.value })}>
-                    {labelAlignOptions.map(({ value, icon, title }) => (
-                        <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
-                    ))}
-                </Radio.Group>
-                <FormItem name='hideLabel' readOnly={readOnly} className={styles.hidelLabelIcon} jsSetting={false}>
-                    <Button icon={hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => onChange({ ...model, hideLabel: !hideLabel })} />
+                <FormItem name='labelAlign' jsSetting={false}>
+                    <Radio.Group size='small' value={labelAlign} disabled={readOnly} >
+                        {labelAlignOptions.map(({ value, icon, title }) => (
+                            <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                        ))}
+                    </Radio.Group>
+                </FormItem>
+                <FormItem name='hideLabel' jsSetting={false}>
+                    <Button size='small' icon={hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => onChange({ hideLabel: !hideLabel })} />
                 </FormItem>
             </div>
             <SettingInput label="Label" value={label} property='label' readOnly={readOnly || hideLabel} />

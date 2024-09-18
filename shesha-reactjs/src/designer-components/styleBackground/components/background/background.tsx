@@ -1,4 +1,4 @@
-import { Button, Input, Row, Tag } from 'antd';
+import { Button, Card, Form, Input, Row, Tag } from 'antd';
 import { Autocomplete } from '@/components/autocomplete';
 import React, { FC, useEffect } from 'react';
 import SizeAndRepeat from './sizeAndRepeat';
@@ -8,6 +8,7 @@ import { InputRow, SettingInput } from '@/designer-components/_settings/componen
 import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
 import { nanoid } from '@/utils/uuid';
 import { IBackgroundValue } from './interfaces';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 
 interface IBackgroundProps {
     value?: any;
@@ -18,26 +19,20 @@ interface IBackgroundProps {
 const BackgroundComponent: FC<IBackgroundProps> = (props) => {
     const { value = {}, readOnly, onChange } = props;
 
-    const background = value.background || { gradient: {} };
-    const { gradient = { colors: { '1': '', '2': '' } } } = background;
+    const background = value || { gradient: { colors: { '1': '', '2': '' } } };
+    const { gradient } = background;
 
     useEffect(() => {
-        if (!gradient.colors['1'] && !gradient.colors['2']) {
+        if (!gradient?.colors['1'] && !gradient?.colors['2']) {
             onChange({ ...value, background: { ...background, type: 'color', gradient: { colors: { '1': '', '2': '' } } } });
         }
-    }, [background]);
+    }, []);
 
-    console.log("BACKGROUND VALUE:::", value);
-
-    const addColor = () => {
-        const newKey = nanoid();
-        onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: { ...gradient?.colors, [newKey]: '' } } } });
-    };
 
 
     const renderBackgroundInput = () => {
         switch (background?.type) {
-            case 'gradient':
+            case 'color':
                 return (
                     <>
                         <SettingInput
@@ -48,32 +43,41 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                             type='dropdown'
                             dropdownOptions={gradientDirectionOptions}
                         />
-                        <Row gutter={[2, 2]}>
-                            {Object.entries(gradient?.colors).map(([key, color]) => (
-                                <Tag
-                                    key={key}
-                                    bordered={false}
-                                    closable={key !== '1' && key !== '2'}
-                                    onClose={(e) => {
-                                        e.preventDefault();
-                                        const newColors = { ...gradient.colors };
-                                        delete newColors[key];
-                                        onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: newColors } } });
-                                        const cleanedData = { ...Object.fromEntries(Object.entries(gradient.colors).filter(([key, color]) => color !== undefined)) };
-                                        onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: cleanedData } } });
-                                    }}
-                                    style={{ display: 'inline-flex', width: 'max-content' }}
-                                >
-                                    <SettingInput
-                                        value={color}
-                                        property={`background.gradient.colors.${key}`}
-                                        readOnly={readOnly}
-                                        type='color'
-                                        label='' />
-                                </Tag>
-                            ))}
-                        </Row>
-                        <Button onClick={addColor}>Add color</Button>
+
+                        <Form.List name="items">
+                            {(fields, { add, remove }) => (
+                                <>
+                                    {fields.map((field) => (
+                                        <Tag
+                                            key={nanoid()}
+                                            closable
+                                            onClose={() => {
+                                                remove(field.name);
+                                            }}
+                                            style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', }}
+                                        >
+                                            <SettingInput
+                                                value={gradient?.colors[field.name]}
+                                                property={`background.gradient.colors.${field.name}`}
+                                                readOnly={readOnly}
+                                                type='color'
+                                                label='' />
+                                        </Tag>
+                                    ))
+                                    }
+                                    <Button
+                                        type="dashed"
+                                        onClick={() => add()}
+                                        style={{ width: '60%' }}
+                                        icon={<PlusOutlined />}
+                                    >
+                                        Add color
+                                    </Button>
+                                </>
+
+                            )}
+
+                        </Form.List >
                     </>
                 );
             case 'url':

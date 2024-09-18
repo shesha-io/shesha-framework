@@ -24,9 +24,7 @@ import { getBackgroundStyle } from '../styleBackground/components/background/uti
 import settingsFormJson from './settingsForm.json';
 import { useStyles } from './styles/styles';
 import { getShadowStyle } from '../styleShadow/components/shadow/utils';
-import { TextFieldSettingsForm } from './settings';
 import { getFontStyle } from '../styleFont/components/font/utils';
-import { settingFormMarkup } from './settingsForm';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

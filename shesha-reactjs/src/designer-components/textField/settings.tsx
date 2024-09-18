@@ -58,7 +58,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
         {
             key: "style",
             label: "Style",
-            children: <FormItem name='styles' label='' jsSetting={false} layout='vertical'>
+            children: <FormItem name='styles' label='' jsSetting={false}>
                 <StyleGroupComponent omitted={['shadow', 'stylingBox', 'style']} readOnly={readOnly} />
             </FormItem>
         },

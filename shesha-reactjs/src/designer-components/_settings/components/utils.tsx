@@ -111,7 +111,7 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, property,
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
         return (
             <div key={label} style={{ flex: '1 1 120px', minWidth: '100px' }}>
-                <FormItem name={`styles.${property}`} label={label} layout='vertical' jsSetting={jsSetting} readOnly={readOnly} >
+                <FormItem name={`styles.${property}`} label={label} jsSetting={jsSetting} readOnly={readOnly} >
                     {children ? children : <InputComponent size='small' className={className} label={label} type={type} dropdownOptions={dropdownOptions} icon={icon} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
                 </FormItem>
             </div>
