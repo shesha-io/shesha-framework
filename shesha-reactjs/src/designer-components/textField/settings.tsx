@@ -1,7 +1,5 @@
 import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
-import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
-import { Switch, Input, Select } from 'antd';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ITextFieldComponentProps } from './interfaces';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
@@ -60,7 +58,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
         {
             key: "style",
             label: "Style",
-            children: <FormItem name='styles' label='' jsSetting={false}>
+            children: <FormItem name='styles' label='' jsSetting={false} layout='vertical'>
                 <StyleGroupComponent omitted={['shadow', 'stylingBox', 'style']} readOnly={readOnly} />
             </FormItem>
         },

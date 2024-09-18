@@ -520,11 +520,11 @@
     "layout": "vertical",
     "colon": false,
     "labelCol": {
-      "span": 8
+      "span": 24
     },
     "size": "small",
     "wrapperCol": {
-      "span": 16
+      "span": 24
     },
     "displayName": "DEFAULT_FORM_SETTINGS",
     "__docgenInfo": {

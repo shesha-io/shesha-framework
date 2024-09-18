@@ -11,18 +11,20 @@ export interface IShadowType {
     onChange?: (newValue: IShadowValue) => void;
 }
 
-const ShadowComponent: FC<IShadowType> = ({ onChange, value, readOnly }) => {
+const ShadowComponent: FC<IShadowType> = ({ value, readOnly }) => {
 
     const commonProps = {
         readOnly,
         value,
     };
 
+    console.log("SHADOW VALUE:::", value);
+
     return (
         <Row >
-            <InputRow inputs={[{ label: 'Offset X', property: 'offsetX', ...commonProps }, { label: 'Offset Y', property: 'offsetY', ...commonProps }]} />
-            <InputRow inputs={[{ label: 'Blur', property: 'blurRadius', ...commonProps }, { label: 'Spread', property: 'spreadRadius', ...commonProps }]} />
-            <SettingInput type='color' label='Color' property='color' readOnly={readOnly} value={value} />
+            <InputRow inputs={[{ label: 'Offset X', property: 'shadow.offsetX', ...commonProps }, { label: 'Offset Y', property: 'shadow.offsetY', ...commonProps }]} />
+            <InputRow inputs={[{ label: 'Blur', property: 'shadow.blurRadius', ...commonProps }, { label: 'Spread', property: 'shadow.spreadRadius', ...commonProps }]} />
+            <SettingInput type='color' label='Color' property='shadow.color' readOnly={readOnly} value={value} />
         </Row>
     );
 };

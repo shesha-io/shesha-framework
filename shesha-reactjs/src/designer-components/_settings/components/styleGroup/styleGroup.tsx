@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigProvider, Collapse, CollapseProps, Form } from 'antd';
+import { ConfigProvider, Collapse, CollapseProps } from 'antd';
 import FontComponent from '../../../styleFont/components/font/fontComponent';
 import SizeComponent from '../../../styleDimensions/components/size/sizeComponent';
 import BorderComponent from '../../../styleBorder/components/border/borderComponent';
@@ -20,47 +20,44 @@ export interface IStyleGroupType {
 
 const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value }) => {
 
-    console.log('StyleGroupComponent', onChange, value);
-
     const items: CollapseProps['items'] = [
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent value={value} onChange={onChange} />
+            children: <FontComponent value={value?.font} onChange={onChange} />
         },
         {
             key: '2',
             label: 'Size',
-            children: <SizeComponent noOverflow value={value} onChange={onChange} />
+            children: <SizeComponent noOverflow value={value?.dimensions} onChange={onChange} />
         },
         {
             key: '3',
             label: 'Border',
-            children: <BorderComponent value={value} onChange={onChange} />
+            children: <BorderComponent value={value?.border} onChange={onChange} />
         },
-        // {
-        //     key: '4',
-        //     label: 'Background',
-        //     children: <BackgroundComponent readOnly={readOnly} value={value} onChange={onChange} />
-        // },
-        // {
-        //     key: '5',
-        //     label: 'Shadow',
-        //     children: <ShadowComponent value={value} onChange={onChange} />
-        // },
-        // {
-        //     key: '6',
-        //     label: 'Styling',
-        //     children: (
-        //         <>
-        //             <SettingInput label="Style" property='style' readOnly={readOnly} type='code' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
-        //             <FormItem name="stylingBox">
-        //                 <StyleBox />
-        //             </FormItem>
-        //         </>
-
-        //     )
-        // }
+        {
+            key: '4',
+            label: 'Background',
+            children: <BackgroundComponent value={value} onChange={onChange} />
+        },
+        {
+            key: '5',
+            label: 'Shadow',
+            children: <ShadowComponent value={value?.shadow} onChange={onChange} />
+        },
+        {
+            key: '6',
+            label: 'Styling',
+            children: (
+                <>
+                    <SettingInput label="Style" property='style' readOnly={false} type='code' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
+                    <FormItem name="stylingBox" layout='horizontal' jsSetting={false}>
+                        <StyleBox />
+                    </FormItem>
+                </>
+            )
+        }
     ].filter(item => !omitted.map(s => s.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase())).map((item, index) => ({ ...item, key: index.toString() }));
 
     const activateAllStylePanels = items.map(panel => panel.key.toString());

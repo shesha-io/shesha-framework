@@ -13,6 +13,8 @@ export interface IFontType {
 const FontComponent: FC<IFontType> = (props) => {
     const { value, readOnly } = props;
 
+    console.log("FONT VALUE:::", value);
+
     return (
         <>
             <InputRow inputs={[

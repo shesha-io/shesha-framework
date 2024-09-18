@@ -60,11 +60,9 @@ const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ value, o
 
 const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, className, buttonGroupOptions, hasUnits, property, description, onChange, readOnly, icon }) => {
 
-    console.log('InputComponent', value, onChange);
-
     switch (type) {
         case 'color':
-            return <ColorPicker size={size} value={value?.color} readOnly={readOnly} allowClear onChange={onChange} />;
+            return <ColorPicker size={size} value={value?.color ?? value} readOnly={readOnly} allowClear onChange={onChange} />;
         case 'dropdown':
             return <Select
                 size={size}
@@ -72,7 +70,7 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, c
                 onChange={onChange}
             >
                 {dropdownOptions.map(option => (
-                    <Option key={option.value} value={option.value}>
+                    <Option key={option.value} value={value}>
                         {option.label}
                     </Option>
                 ))}
@@ -84,23 +82,24 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, c
                 ))}
             </Radio.Group>;
         case 'switch':
-            return <Switch disabled={readOnly} size='small' onChange={onChange} />;
+            return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber min={0} max={100} readOnly={readOnly} size={size} />
+            return <InputNumber min={0} max={100} readOnly={readOnly} size={size} value={value} />
         case 'customDropdown':
             return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />
         case 'textarea':
-            return <TextArea readOnly={readOnly} size={size} />
+            return <TextArea readOnly={readOnly} size={size} value={value} />
         case 'code':
-            return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} />;
+            return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} />;
         case 'button':
-            <Button value={value} onClick={() => onChange(!value)} icon={icon} className={className} size={size}>Press</Button>
+            <Button onClick={() => onChange(!value)} icon={icon} className={className} size={size}>Press</Button>
         default:
             return <Input
                 size={size}
                 onChange={(e) => onChange(hasUnits ? { ...value, value: e.target.value } : e.target.value)}
                 readOnly={readOnly}
                 defaultValue={''}
+                value={hasUnits ? value?.value : value}
                 addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={property} value={value} /> : null}
             />;
     }
@@ -109,12 +108,10 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, c
 export const SettingInput: React.FC<IInputProps> = ({ children, label, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description, className, icon }) => {
     const { searchQuery } = useSearchQuery();
 
-
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
-        type === 'dropdown' && console.log('Property', label, property);
         return (
             <div key={label} style={{ flex: '1 1 120px', minWidth: '100px' }}>
-                <FormItem name={`styles.${property}`} label={label} orientation='vertical' jsSetting={jsSetting} readOnly={readOnly} >
+                <FormItem name={`styles.${property}`} label={label} layout='vertical' jsSetting={jsSetting} readOnly={readOnly} >
                     {children ? children : <InputComponent size='small' className={className} label={label} type={type} dropdownOptions={dropdownOptions} icon={icon} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
                 </FormItem>
             </div>

@@ -1,64 +1,47 @@
 import { Button, Input, Row, Tag } from 'antd';
 import { Autocomplete } from '@/components/autocomplete';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import SizeAndRepeat from './sizeAndRepeat';
 import ImageUploader from '../imageUploader';
 import FormItem from '@/designer-components/_settings/components/formItem';
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
 import { nanoid } from '@/utils/uuid';
-import { useFormDesignerActions } from '@/providers/formDesigner';
 import { IBackgroundValue } from './interfaces';
 
 interface IBackgroundProps {
-    model?: any;
-    value?: IBackgroundValue;
+    value?: any;
     readOnly?: boolean;
     onChange?: (value: any) => void;
 }
 
 const BackgroundComponent: FC<IBackgroundProps> = (props) => {
-    const { value, readOnly, model } = props;
+    const { value = {}, readOnly, onChange } = props;
 
-    console.log("Background Component", props);
-    const { updateComponent } = useFormDesignerActions();
-    const [colors, setColors] = useState<Record<string, string>>(value?.gradient?.colors || {});
+    const background = value.background || { gradient: {} };
+    const { gradient = { colors: { '1': '', '2': '' } } } = background;
+
+    useEffect(() => {
+        if (!gradient.colors['1'] && !gradient.colors['2']) {
+            onChange({ ...value, background: { ...background, type: 'color', gradient: { colors: { '1': '', '2': '' } } } });
+        }
+    }, [background]);
+
+    console.log("BACKGROUND VALUE:::", value);
 
     const addColor = () => {
         const newKey = nanoid();
-        setColors({ ...colors, [newKey]: '' });
-        value.gradient.colors[newKey] = '';
+        onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: { ...gradient?.colors, [newKey]: '' } } } });
     };
 
-    const removeColor = (key: string) => {
-        const newColors = { ...colors };
-        delete newColors[key];
-        setColors(newColors);
-
-        const newGradientColors = { ...value.gradient.colors };
-        delete newGradientColors[key];
-        value.gradient.colors = newGradientColors;
-        updateComponent({
-            componentId: model.id, settings: {
-                ...model,
-                type: model.type
-            }
-        });
-
-    };
-
-    useEffect(() => {
-        const updatedColors = { '1': '', '2': '', ...value?.gradient?.colors };
-        setColors(updatedColors);
-    }, [model?.background?.gradient?.colors]);
 
     const renderBackgroundInput = () => {
-        switch (value?.type) {
+        switch (background?.type) {
             case 'gradient':
                 return (
                     <>
                         <SettingInput
-                            value={value?.gradient?.direction}
+                            value={gradient?.direction}
                             property='background.gradient.direction'
                             readOnly={readOnly}
                             label="Direction"
@@ -66,23 +49,27 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                             dropdownOptions={gradientDirectionOptions}
                         />
                         <Row gutter={[2, 2]}>
-                            {Object.entries(colors).map(([key, color]) => (
+                            {Object.entries(gradient?.colors).map(([key, color]) => (
                                 <Tag
                                     key={key}
                                     bordered={false}
                                     closable={key !== '1' && key !== '2'}
                                     onClose={(e) => {
                                         e.preventDefault();
-                                        removeColor(key);
+                                        const newColors = { ...gradient.colors };
+                                        delete newColors[key];
+                                        onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: newColors } } });
+                                        const cleanedData = { ...Object.fromEntries(Object.entries(gradient.colors).filter(([key, color]) => color !== undefined)) };
+                                        onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: cleanedData } } });
                                     }}
-                                    style={{ width: '75px' }}
+                                    style={{ display: 'inline-flex', width: 'max-content' }}
                                 >
                                     <SettingInput
-                                        value={value}
+                                        value={color}
                                         property={`background.gradient.colors.${key}`}
                                         readOnly={readOnly}
                                         type='color'
-                                        label={color} />
+                                        label='' />
                                 </Tag>
                             ))}
                         </Row>
@@ -92,7 +79,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
             case 'url':
                 return (
                     <SettingInput
-                        value={value?.url}
+                        value={background?.url}
                         property='background.url'
                         readOnly={readOnly}
                         label="URL"
@@ -102,7 +89,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                 return (
                     <FormItem name="background.file" label="File" jsSetting>
                         <ImageUploader
-                            backgroundImage={value?.file}
+                            backgroundImage={background?.file}
                             readOnly={readOnly}
                         />
                     </FormItem>
@@ -114,7 +101,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                             label: 'File Id',
                             property: 'background.storedFile.id',
                             readOnly: readOnly,
-                            value: value?.storedFile?.id,
+                            value: background?.storedFile?.id,
                         }]} />
                         <FormItem name="background.storedFile.ownerType" label="Owner Type" jsSetting>
                             <Autocomplete.Raw
@@ -122,21 +109,21 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                 dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
                                 readOnly={readOnly}
                                 style={{ width: '100%' }}
-                                value={value?.storedFile?.ownerType}
+                                value={background?.storedFile?.ownerType}
                             />
                         </FormItem>
                         <FormItem name="background.storedFile.ownerId" label="Owner Id" jsSetting>
                             <Input
                                 style={{ width: '100%' }}
                                 readOnly={readOnly}
-                                value={value?.storedFile?.ownerId}
+                                value={background?.storedFile?.ownerId}
                             />
                         </FormItem>
                         <FormItem name="background.storedFile.fileCatergory" label="File Catergory" jsSetting>
                             <Input
                                 style={{ width: '100%' }}
                                 readOnly={readOnly}
-                                value={value?.storedFile?.fileCatergory}
+                                value={background?.storedFile?.fileCatergory}
                             />
                         </FormItem>
                     </>
@@ -144,7 +131,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
             default:
                 return (
                     <SettingInput
-                        value={value?.color}
+                        value={background?.color}
                         property='background.color'
                         readOnly={readOnly}
                         label="Color"
@@ -156,9 +143,9 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
 
     return (
         <>
-            <SettingInput buttonGroupOptions={backgroundTypeOptions} value={value?.type} property='background.type' readOnly={readOnly} type='radio' label='Type' />
+            <SettingInput buttonGroupOptions={backgroundTypeOptions} value={background?.type} property='background.type' readOnly={readOnly} type='radio' label='Type' />
             {renderBackgroundInput()}
-            <SizeAndRepeat readOnly={readOnly} backgroundSize={value?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
+            <SizeAndRepeat readOnly={readOnly} backgroundSize={background?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
         </>
     );
 };

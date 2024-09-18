@@ -22,6 +22,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     options,
     readOnly,
     label,
+    onChange,
     size
 }) => {
     const [customOption, setCustomOption] = useState({ width: { value: '', unit: 'px' }, height: { value: '', unit: 'px' } });
@@ -88,6 +89,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
             value={value}
             disabled={readOnly}
             size={size}
+            onChange={onChange}
             dropdownRender={(menu) => (
                 <>
                     {menu}

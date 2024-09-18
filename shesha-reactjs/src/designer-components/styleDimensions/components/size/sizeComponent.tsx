@@ -7,8 +7,7 @@ const SizeComponent: FC<ISizeType> = (props) => {
 
     const { value, readOnly, noOverflow, onChange } = props;
 
-    console.log("SIZE Value ", value, onChange)
-
+    console.log("SIZE VALUE:::", value);
     const commonProps = { hasUnits: true, readOnly, value, onChange };
 
     return (

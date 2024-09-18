@@ -22,7 +22,7 @@ export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps,
     required?: boolean;
     tooltip?: string;
     hidden?: boolean;
-    orientation?: 'horizontal' | 'vertical';
+    layout?: 'horizontal' | 'vertical';
     labelProps?: { hideLabel: boolean; labelAlign: string, onValuesChange?: (newValues) => void };
 }
 
@@ -81,6 +81,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                 hidden: props.hidden
             }}
             className='sha-js-label'
+            layout={props.layout}
         >
             {(value, onChange) => {
                 return (
@@ -91,7 +92,6 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                         value={value}
                         size='small'
                         readOnly={readOnly}
-                        orientation={props.orientation}
                         labelProps={props.labelProps}
                     >
                         {(value, onChange) => {

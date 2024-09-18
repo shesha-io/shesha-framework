@@ -5,7 +5,6 @@ import { ExpandOutlined, RadiusUpleftOutlined, RadiusUprightOutlined, RadiusBott
 export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
     if (!input) return {};
 
-    console.log("getBorderStyle", input);
     const style: React.CSSProperties = {};
 
     // Handle border radius

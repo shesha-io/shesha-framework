@@ -4,7 +4,7 @@ import SettingsControl from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
-    const { name, label, tooltip, required, hidden, orientation, jsSetting, children, valuePropName = 'value' } = props;
+    const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value' } = props;
     const childElement = children as ReactElement;
     const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
 
@@ -22,8 +22,6 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             ...childElement?.props,
             readOnly,
             disabled: readOnly,
-            size: 'small',
-            layout: 'vertical',
             onChange: handleChange(onChange),
             [valuePropName]: value
         }
@@ -38,11 +36,12 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                 id: '',
                 description: tooltip,
                 validate: { required },
-                hidden,
-                size: 'small',
-                layout: 'vertical'
+                hidden
             }}
+
             className='sha-js-label'
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
         >
             {(value, onChange) =>
                 jsSetting === false ? (
@@ -54,7 +53,6 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                         onChange={onChange}
                         value={value}
                         readOnly={readOnly}
-                        orientation={orientation}
                         labelProps={props.labelProps}
                     >
                         {(value, onChange) => createClonedElement(value, onChange)}
