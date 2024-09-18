@@ -20,7 +20,6 @@ namespace Shesha.ConfigurationItems
 
         private ConfigurationFrameworkRuntimeState _defaultState = new ConfigurationFrameworkRuntimeState { 
             ViewMode = ConfigurationItemViewMode.Live,
-            FrontEndApplication = "default-app"
         };
 
         private ConfigurationFrameworkRuntimeState State 
