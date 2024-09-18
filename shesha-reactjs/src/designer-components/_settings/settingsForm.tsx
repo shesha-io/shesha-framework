@@ -50,11 +50,11 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
     };
 
   const valuesChange = (changedValues) => {
-    const model = form.getFieldValue([]);
-    const incomingState = updateSettingsFromValues(model, changedValues);
-    setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
-    onValuesChange(changedValues, incomingState);
-    form.setFieldsValue(incomingState);
+      const model = form.getFieldValue([]);
+      const incomingState = updateSettingsFromValues(model, changedValues);
+      setState({model: incomingState, values: getValuesFromSettings(incomingState)});
+      onValuesChange(changedValues, incomingState);
+      form.setFieldsValue(incomingState);
   };
 
   const settingsChange = (changedValues) => {

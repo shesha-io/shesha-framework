@@ -33,15 +33,15 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const toolboxComponent = getToolboxComponent(componentModel.type);
   if (!toolboxComponent) return <div>Component not found</div>;
 
-  actualModel.hidden = allData.form?.formMode !== 'designer'
+  actualModel.hidden = allData.form?.formMode !== 'designer' 
     && (
       actualModel.hidden
-      || !anyOfPermissionsGranted(actualModel?.permissions || [])
-      || !isComponentFiltered(componentModel)); // check `model` without modification
+        || !anyOfPermissionsGranted(actualModel?.permissions || [])
+        || !isComponentFiltered(componentModel)); // check `model` without modification
   actualModel.readOnly = actualModel.readOnly;
 
   // binding only input and output components
-  if (!toolboxComponent.isInput && !toolboxComponent.isOutput)
+  if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
     actualModel.propertyName = undefined;
 
   return (

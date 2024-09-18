@@ -78,24 +78,24 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   return (
     <>
       <Form.Item {...{ label: componentlabel, readOnly }} hidden={mode === 'formData'} >
-        <Input
-          readOnly={readOnly}
-          value={formData.componentName}
+        <Input 
+          readOnly={readOnly} 
+          value={formData.componentName} 
           onChange={(e) => {
             setState(prev => ({ ...prev, componentName: e.target.value }));
             onValuesChange({ componentName: e.target.value });
-          }}
+          }} 
         />
       </Form.Item>
       <Form.Item {...{ label: contextlabel, readOnly }} hidden={mode === 'formData'} >
-        <DataContextSelector
-          {...model}
-          readOnly={readOnly}
-          value={formData?.context}
+        <DataContextSelector 
+          {...model} 
+          readOnly={readOnly} 
+          value={formData?.context} 
           onChange={(value) => {
             onValuesChange({ context: value });
             setState({ ...state, context: value });
-          }}
+          }} 
         />
       </Form.Item>
       <ConditionalWrap

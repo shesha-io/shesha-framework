@@ -11,7 +11,7 @@ import {
   Tabs
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
-import { CloseOutlined, CloseSquareFilled, CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { CloseOutlined, CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
 import { Show } from '@/components';
@@ -82,21 +82,21 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
   const renderCodeEditor = () => (
-    <BaseCodeEditor
-      value={effectiveValue}
-      onChange={onChange}
-      readOnly={readOnly}
-      placeholder={props.placeholder}
-      language={language}
-
-      path={src?.path}
-      wrapInTemplate={props.wrapInTemplate}
-      templateSettings={props.templateSettings}
-      fileName={props.fileName ?? props.propertyName}
-      availableConstants={props.availableConstants}
-      style={mode === 'dialog' ? { height: "100%" } : undefined}
-    />
-  );
+      <BaseCodeEditor
+        value={effectiveValue}
+        onChange={onChange}
+        readOnly={readOnly}
+        placeholder={props.placeholder}
+        language={language}
+  
+        path={src?.path}
+        wrapInTemplate={props.wrapInTemplate}
+        templateSettings={props.templateSettings}
+        fileName={props.fileName ?? props.propertyName}
+        availableConstants={props.availableConstants}
+        style={mode === 'dialog' ? { height: "100%" } : undefined}
+      />
+    );
 
   const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 

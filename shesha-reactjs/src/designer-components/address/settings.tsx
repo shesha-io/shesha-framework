@@ -226,7 +226,7 @@ const AddressSettings: FC<ISettingsFormFactoryArgs<IAddressCompomentProps>> = ({
           <Checkbox disabled={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-            
+      
       <SettingsCollapsiblePanel header="Security">
         <SettingsFormItem
           jsSetting

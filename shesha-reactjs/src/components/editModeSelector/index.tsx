@@ -9,14 +9,12 @@ export interface IReadOnlyModeSelectorProps {
 }
 
 const EditModeSelector: FC<IReadOnlyModeSelectorProps> = (props) => {
-
+  
   const val: EditMode = props.value === false
     ? 'readOnly'
     : !props.value || props.value === true
       ? 'inherited'
       : props.value;
-
-  console.log("EditModeSelector", props);
 
   return (
     <Select disabled={props.readOnly} value={val} onChange={props.onChange}>

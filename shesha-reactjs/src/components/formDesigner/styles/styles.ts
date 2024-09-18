@@ -293,7 +293,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
                 }
             }
-        }  
+        }
         .${shaDesignerHeader} {
             display: flex;
             justify-content: space-between;
