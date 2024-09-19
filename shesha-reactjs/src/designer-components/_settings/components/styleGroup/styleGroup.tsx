@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ConfigProvider, Collapse, CollapseProps } from 'antd';
 import FontComponent from '../../../styleFont/components/font/fontComponent';
 import SizeComponent from '../../../styleDimensions/components/size/sizeComponent';
@@ -8,6 +8,10 @@ import ShadowComponent from '../../../styleShadow/components/shadow/shadowCompon
 import StyleBox from '../../../styleBox/components/box';
 import { SettingInput } from '../utils';
 import FormItem from '../formItem';
+import { IDimensionsValue } from '@/designer-components/styleDimensions/components/size/interfaces';
+import { IBorderValue } from '@/designer-components/styleBorder/components/border/interfaces';
+import { IBackgroundValue } from '@/designer-components/styleBackground/components/background/interfaces';
+import { IShadowValue } from '@/designer-components/styleShadow/components/shadow/interfaces';
 
 export type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
 
@@ -20,31 +24,51 @@ export interface IStyleGroupType {
 
 const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value }) => {
 
+    const fontValue = useMemo(() => {
+        return value?.font
+    }, value?.font);
+
+    const dimensionsValue: IDimensionsValue = useMemo(() => {
+        return value?.dimensions
+    }, [value?.dimensions]);
+
+    const borderValue: IBorderValue = useMemo(() => {
+        return value?.border
+    }, [{ ...value?.border }]);
+
+    const backgroundValue: IBackgroundValue = useMemo(() => {
+        return value
+    }, [{ ...value?.background }]);
+
+    const shadowValue: IShadowValue = useMemo(() => {
+        return value?.shadow
+    }, [value?.shadow]);
+
     const items: CollapseProps['items'] = [
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent value={value?.font} onChange={onChange} />
+            children: <FontComponent value={fontValue} onChange={onChange} />
         },
         {
             key: '2',
             label: 'Size',
-            children: <SizeComponent noOverflow value={value?.dimensions} onChange={onChange} />
+            children: <SizeComponent noOverflow value={dimensionsValue} onChange={onChange} />
         },
         {
             key: '3',
             label: 'Border',
-            children: <BorderComponent value={value?.border} onChange={onChange} />
+            children: <BorderComponent value={borderValue} onChange={onChange} />
         },
         {
             key: '1',
             label: 'Background',
-            children: <BackgroundComponent value={value?.background} onChange={onChange} />
+            children: <BackgroundComponent value={backgroundValue} onChange={onChange} />
         },
         {
             key: '5',
             label: 'Shadow',
-            children: <ShadowComponent value={value?.shadow} onChange={onChange} />
+            children: <ShadowComponent value={shadowValue} onChange={onChange} />
         },
         {
             key: '6',
@@ -73,6 +97,9 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
                         colorBorder: 'white',
                         headerPadding: '0px 16px',
                     },
+                    Tag: {
+                        padding: 0,
+                    }
                 },
             }}
         >

@@ -47,13 +47,11 @@ import Statistic from '@/designer-components/statistic';
 import StatusTag from '@/designer-components/statusTag';
 import StyleBox from '@/designer-components/styleBox';
 import BorderConfigurator from '@/designer-components/styleBorder';
-import StyleLabel from '@/designer-components/styleLabel';
 import SizeConfigurator from '@/designer-components/styleDimensions';
 import SubForm from '@/designer-components/subForm';
 import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
 import Tabs from '@/designer-components/tabs';
-import SearchableTabs from '@/designer-components/_settings/components/tabs/searchableTabsComponent';
 import Text from '@/designer-components/text';
 import ValidationErrors from '@/designer-components/validationErrors';
 import Wizard from '@/designer-components/wizard';
@@ -109,6 +107,7 @@ import ShadowConfigurator from '@/designer-components/styleShadow';
 import LabelConfigurator from '@/designer-components/styleLabel';
 import StyleGroup from '@/designer-components/_settings/components/styleGroup';
 import SettingsTabs from '@/designer-components/_settings/components/tabs';
+import PrefixSuffixConfigurator from '@/designer-components/stylePrefixSuffix';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -247,6 +246,7 @@ export const getToolboxComponents = (
         SizeConfigurator,
         ShadowConfigurator,
         LabelConfigurator,
+        PrefixSuffixConfigurator,
         StyleGroup,
         SettingsTabs,
         CodeEditor,

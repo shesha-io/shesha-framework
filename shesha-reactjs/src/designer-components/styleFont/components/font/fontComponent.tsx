@@ -13,20 +13,18 @@ export interface IFontType {
 const FontComponent: FC<IFontType> = (props) => {
     const { value, readOnly } = props;
 
-    console.log("FONT VALUE:::", value);
-
     return (
         <>
             <InputRow inputs={[
-                { label: 'Size', property: 'font.size', readOnly, value },
-                { label: 'Font Weight', property: 'font.weight', type: 'dropdown', dropdownOptions: fontWeights, readOnly, value }
+                { label: 'Size', property: 'styles.font.size', readOnly, value: value?.size },
+                { label: 'Font Weight', property: 'styles.font.weight', type: 'dropdown', dropdownOptions: fontWeights, readOnly, value: value?.weight }
             ]} />
             <InputRow inputs={[
-                { label: 'Color', property: 'font.color', type: 'color', readOnly, value },
-                { label: 'Family', property: 'font.type', type: 'dropdown', dropdownOptions: fontTypes, readOnly, value }
+                { label: 'Color', property: 'styles.font.color', type: 'color', readOnly, value: value?.color },
+                { label: 'Family', property: 'styles.font.type', type: 'dropdown', dropdownOptions: fontTypes, readOnly, value: value?.type }
             ]} />
             <InputRow inputs={[
-                { label: 'Align', property: 'font.align', type: 'radio', buttonGroupOptions: alignOptions, readOnly, value }
+                { label: 'Align', property: 'styles.font.align', type: 'radio', buttonGroupOptions: alignOptions, readOnly, value: value?.align }
             ]} />
         </>
     );

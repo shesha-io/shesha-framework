@@ -5,12 +5,13 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
   const flexWrapper = cx("", css`
         display: flex;
-        width: 150px;
+        width: 200px;
         flex-direction: row;
         gap: 8px;
         position: absolute;
         justify-content: flex-end;
         top: -2px;
+        right: 0;
         z-index: 2;
     `);
 

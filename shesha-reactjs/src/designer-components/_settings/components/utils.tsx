@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { Button, Input, InputNumber, Radio, Select, Switch } from "antd";
+import { Input, InputNumber, Radio, Select, Switch } from "antd";
 import FormItem from "./formItem";
-import { CodeEditor, ColorPicker } from '@/components';
+import { CodeEditor, ColorPicker, IconPicker } from '@/components';
 import { useSearchQuery } from './tabs/context';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
@@ -21,8 +21,8 @@ export interface IDropdownOption {
 
 interface IInputProps {
     label: string;
-    property: string;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code' | 'button'
+    property: any;
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code' | 'iconPicker'
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -33,9 +33,8 @@ interface IInputProps {
     jsSetting?: boolean;
     children?: React.ReactNode;
     description?: string;
-    icon?: React.ReactNode;
-    className?: string
     size?: SizeType;
+    hideLabel?: boolean;
 }
 
 const { Option } = Select;
@@ -58,7 +57,7 @@ const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ value, o
     );
 }
 
-const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, className, buttonGroupOptions, hasUnits, property, description, onChange, readOnly, icon }) => {
+const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
 
     switch (type) {
         case 'color':
@@ -76,7 +75,7 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, c
                 ))}
             </Select>;
         case 'radio':
-            return <Radio.Group value={value} onChange={onChange} size={size}>
+            return <Radio.Group value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
                 ))}
@@ -91,8 +90,8 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, c
             return <TextArea readOnly={readOnly} size={size} value={value} />
         case 'code':
             return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} />;
-        case 'button':
-            <Button onClick={() => onChange(!value)} icon={icon} className={className} size={size}>Press</Button>
+        case 'iconPicker':
+            <IconPicker selectBtnSize='small' readOnly={readOnly} value={value} />
         default:
             return <Input
                 size={size}
@@ -105,14 +104,14 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, c
     }
 }
 
-export const SettingInput: React.FC<IInputProps> = ({ children, label, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description, className, icon }) => {
+export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description }) => {
     const { searchQuery } = useSearchQuery();
 
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
         return (
-            <div key={label} style={{ flex: '1 1 120px', minWidth: '100px' }}>
-                <FormItem name={`styles.${property}`} label={label} jsSetting={jsSetting} readOnly={readOnly} >
-                    {children ? children : <InputComponent size='small' className={className} label={label} type={type} dropdownOptions={dropdownOptions} icon={icon} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
+            <div key={label} style={children || property === 'labelAlign' ? { width: 'fit-content' } : { flex: '1 1 120px' }}>
+                <FormItem name={`${property}`} label={hideLabel ? null : label} jsSetting={jsSetting} readOnly={readOnly} >
+                    {children ? children : <InputComponent size='small' label={label} type={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
                 </FormItem>
             </div>
         );
@@ -129,7 +128,7 @@ interface InputRowProps {
 export const InputRow: React.FC<InputRowProps> = ({ inputs }) => {
 
     return (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px', width: '100%' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px' }}>
             {inputs.map((props) => (
                 <SettingInput key={props.label} {...props} />
             ))}

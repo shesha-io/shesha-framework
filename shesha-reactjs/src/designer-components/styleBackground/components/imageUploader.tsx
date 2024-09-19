@@ -41,7 +41,7 @@ const ImageUploader = ({ backgroundImage, readOnly }) => {
 
     return (
         <div style={{ position: 'relative' }}>
-            <FormItem name="background.file" label="File" jsSetting>
+            <FormItem name="style.background.file" label="File" jsSetting>
                 <Upload
                     listType="text"
                     fileList={fileList}

@@ -107,7 +107,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
         <Button
           hidden={props.readOnly}
           className={`${styles.jsSwitch} inlineJS'`}
-          type='link'
+          type='text'
           danger={mode === 'value' && !!code}
           ghost
           size='small'

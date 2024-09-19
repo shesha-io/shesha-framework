@@ -1,41 +1,30 @@
-import { Button, Radio } from 'antd';
+import { Button } from 'antd';
 import React, { FC } from 'react';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useStyles } from '../../styles/styles';
 import { SettingInput } from '@/designer-components/_settings/components/utils';
 import { labelAlignOptions } from './utils';
-import FormItem from '@/designer-components/_settings/components/formItem';
 
 
 export interface ILabelProps {
     readOnly?: boolean;
-    onChange?: any;
-    model?: any;
-    value?: any;
+    onChange?: (value: any) => void;
+    value?: boolean;
 }
 
-
-const LabelConfiguratorComponent: FC<ILabelProps> = ({ model, readOnly, onChange }) => {
-
-    const { labelAlign, label, hideLabel } = model;
+const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, onChange }) => {
 
     const { styles } = useStyles();
 
     return (
         <>
             <div className={styles.flexWrapper} >
-                <FormItem name='labelAlign' jsSetting={false}>
-                    <Radio.Group size='small' value={labelAlign} disabled={readOnly} >
-                        {labelAlignOptions.map(({ value, icon, title }) => (
-                            <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
-                        ))}
-                    </Radio.Group>
-                </FormItem>
-                <FormItem name='hideLabel' jsSetting={false}>
-                    <Button size='small' icon={hideLabel ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => onChange({ hideLabel: !hideLabel })} />
-                </FormItem>
+                <SettingInput label='labelAlign' hideLabel property='labelAlign' readOnly={value || readOnly} type='radio' buttonGroupOptions={labelAlignOptions} jsSetting={false} />
+                <SettingInput label="hideLabel" hideLabel property='hideLabel' readOnly={readOnly} jsSetting={false}>
+                    <Button type='primary' size='small' icon={value ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => onChange(!value)} />
+                </SettingInput>
             </div>
-            <SettingInput label="Label" value={label} property='label' readOnly={readOnly || hideLabel} />
+            <SettingInput label="Label" property='label' readOnly={value || readOnly} />
         </>
     );
 };

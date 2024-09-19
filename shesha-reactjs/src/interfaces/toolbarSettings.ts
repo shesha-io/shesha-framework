@@ -272,6 +272,7 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'backgroundStyle');
   }
 
+
   public addBorderStyle(props: BorderStyleType | ((data: T) => BorderStyleType)) {
     return this.addProperty(props, 'borderStyle');
   }
@@ -285,7 +286,7 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addPrefixSuffixStyle(props: PrefixSuffixStyleType | ((data: T) => PrefixSuffixStyleType)) {
-    return this.addProperty(props, 'prefixSuffix');
+    return this.addProperty(props, 'prefixSuffixStyle');
   }
 
   public addShadowStyle(props: ShadowStyleType | ((data: T) => ShadowStyleType)) {

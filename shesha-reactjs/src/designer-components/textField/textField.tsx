@@ -54,7 +54,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const form = useForm();
     const { styles } = useStyles();
 
-    model.componentName === 'textField1' && console.log("TextFieldComponent", model);
+    model.componentName === 'textField2' && console.log("TextFieldComponent", model);
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -101,7 +101,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model?.hideBorder ? 'borderless' : undefined,
+      variant: model?.styles?.border?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,

@@ -21,7 +21,9 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Display",
             children: (
                 <>
-                    <LabelConfiguratorComponent model={model} readOnly={readOnly} />
+                    <FormItem name='hideLabel' jsSetting={false}>
+                        <LabelConfiguratorComponent readOnly={readOnly} />
+                    </FormItem>
                     <SettingInput label="Text Type" value={model.textType} property='textType' readOnly={readOnly} type='dropdown' dropdownOptions={['text', 'password'].map(value => ({ label: value, value }))} />
                     <SettingInput label="Placeholder" value={model.placeholder} property='placeholder' readOnly={readOnly} />
                     <SettingInput label="Description" value={model.description} property='description' readOnly={readOnly} type='textarea' />

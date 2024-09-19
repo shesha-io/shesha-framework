@@ -1,5 +1,5 @@
 import { CodeOutlined } from '@ant-design/icons';
-import React, { FC } from 'react';
+import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import EditModeSelector from '@/components/editModeSelector/index';
@@ -16,7 +16,7 @@ const EditModeSelectorComponent: IToolboxComponent<IConfigurableFormComponent> =
   name: 'Edit mode Selector',
   icon: <CodeOutlined />,
   Factory: ({ model }) => {
-    return <ConfigurableFormItem model={model}><EditModeSelector readOnly={model.readOnly} /></ConfigurableFormItem>;
+    return <ConfigurableFormItem model={model}><EditModeSelector readOnly={model.readOnly}/></ConfigurableFormItem>;
   },
   settingsFormMarkup: settingsForm,
 };

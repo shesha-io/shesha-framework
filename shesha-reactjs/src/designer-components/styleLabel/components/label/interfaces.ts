@@ -1,12 +1,6 @@
-import { IConfigurableFormComponent, LabelAlign } from "@/providers";
+import { IConfigurableFormComponent } from "@/providers";
 
 export interface ILabelComponentProps extends IConfigurableFormComponent {
-    value?: ILabelValue;
+    value?: boolean;
     onChange?: Function;
-}
-
-export interface ILabelValue {
-    label: string;
-    hidden?: boolean;
-    align?: LabelAlign;
 }

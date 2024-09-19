@@ -62,30 +62,8 @@
               "dataSourceType": "values",
               "version": 5,
               "referenceListId": null,
-              "valueFormat": "listItem"
-            },
-            {
-              "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
-              "type": "dropdown",
-              "propertyName": "labelAlign",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Label align",
-              "values": [
-                {
-                  "label": "left",
-                  "value": "left",
-                  "id": "2d6411ae-0b56-4b4c-ad7c-fb15aa7fa1f5"
-                },
-                {
-                  "label": "right",
-                  "value": "right",
-                  "id": "9e89461b-f916-4689-8789-1854ccedc666"
-                }
-              ],
-              "dataSourceType": "values",
-              "version": 5,
-              "referenceListId": null,
-              "valueFormat": "listItem"
+              "valueFormat": "listItem",
+              "jsSetting": true
             },
             {
               "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
@@ -94,7 +72,8 @@
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Placeholder",
               "version": 3,
-              "textType": "text"
+              "textType": "text",
+              "jsSetting": true
             },
             {
               "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
@@ -102,42 +81,13 @@
               "propertyName": "description",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Description",
-              "version": 2
+              "version": 2,
+              "jsSetting": true
             },
             {
               "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
-              "type": "textField",
-              "propertyName": "prefix",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Prefix",
-              "version": 3,
-              "textType": "text"
-            },
-            {
-              "id": "123b1754-682d-4f2c-b49a-a1f25046747s",
-              "type": "iconPicker",
-              "propertyName": "prefixIcon",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Prefix Icon",
-              "version": 3,
-              "textType": "text"
-            },
-            {
-              "id": "d68b1754-682c-4f2c-b49a-a1f250467474",
-              "type": "textField",
-              "propertyName": "suffix",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Suffix",
-              "version": 3
-            },
-            {
-              "id": "123b1754-682c-4f2c-b49a-a1f250467474",
-              "type": "iconPicker",
-              "propertyName": "suffixIcon",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Suffix Icon",
-              "version": 3,
-              "textType": "text"
+              "type": "prefixSuffixStyle",
+              "parentId": "s4gmBg31azZC0UjZjpfTm"
             },
             {
               "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
@@ -147,16 +97,8 @@
               "label": "Default Value",
               "description": "Enter default value of component. (formData, formMode, globalState) are exposed",
               "version": 3,
-              "textType": "text"
-            },
-            {
-              "id": "0225b82d-19aa-47c7-b665-90508112bd23",
-              "type": "checkbox",
-              "propertyName": "passEmptyStringByDefault",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Empty as default",
-              "description": "Whether the component should be initialized with an empty string",
-              "version": 2
+              "textType": "text",
+              "jsSetting": true
             },
             {
               "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
@@ -164,7 +106,9 @@
               "propertyName": "hidden",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Hidden",
-              "version": 2
+              "version": 2,
+              "jsSetting": true,
+              "layout": "horizontal"
             },
             {
               "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
@@ -395,11 +339,12 @@
           "components": [
             {
               "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-              "type": "checkbox",
+              "type": "switch",
               "propertyName": "validate.required",
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Required",
-              "version": 2
+              "jsSetting": true,
+              "layout": "horizontal"
             },
             {
               "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
@@ -408,7 +353,8 @@
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Min Length",
               "validate": {},
-              "version": 2
+              "version": 2,
+              "jsSetting": true
             },
             {
               "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
@@ -417,7 +363,8 @@
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Max Length",
               "validate": {},
-              "version": 2
+              "version": 2,
+              "jsSetting": true
             },
             {
               "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
@@ -427,7 +374,8 @@
               "label": "Message",
               "validate": {},
               "version": 3,
-              "textType": "text"
+              "textType": "text",
+              "jsSetting": true
             },
             {
               "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
@@ -438,6 +386,7 @@
               "validate": {},
               "labelAlign": "right",
               "hidden": false,
+              "jsSetting": true,
               "description": "Enter custom validator logic for form.item rules. Returns a Promise",
               "settingsValidationErrors": [],
               "exposedVariables": [
@@ -481,7 +430,7 @@
             {
               "id": "try26voxhs-HxJ5k5ngYE",
               "type": "styleGroup",
-              "parentId": "rZf26voxh4d6a1fbf801",
+              "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
               "propertyName": "styles"
             }
           ]
@@ -511,11 +460,11 @@
   ],
   "formSettings": {
     "layout": "vertical",
+    "size": "small",
     "colon": false,
     "labelCol": {
       "span": 24
     },
-    "size": "small",
     "wrapperCol": {
       "span": 24
     },

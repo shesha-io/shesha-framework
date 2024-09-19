@@ -5,7 +5,7 @@ export interface IBackgroundValue {
     size?: 'cover' | 'contain' | 'auto' | string;
     position: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top left' | 'top right' | 'bottom left' | 'bottom right' | string;
     repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
-    gradient?: { direction: string, colors: { [key: string]: string } };
+    gradient?: { direction: string, colors: string[] };
     color?: string;
     url?: string;
     file?: string;

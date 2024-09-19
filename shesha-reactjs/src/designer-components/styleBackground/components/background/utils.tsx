@@ -17,8 +17,8 @@ export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<Reac
     if (input.type === 'color') {
         style.backgroundColor = input.color;
     } else if (input.type === 'gradient') {
-        const colors = Object.values(input.gradient?.colors) || [];
-        style.backgroundImage = `linear-gradient(${input.gradient?.direction || 'to right'}, ${colors.join(', ')})`;
+        const colors = input?.gradient?.colors || [];
+        style.backgroundImage = `linear-gradient(${input.gradient?.direction || 'to right'}, ${colors.filter(color => color !== undefined && color !== '').join(', ')})`;
     } else if (input.type === 'url') {
         style.backgroundImage = `url(${input.url})`;
     } else if (input.type === 'upload') {

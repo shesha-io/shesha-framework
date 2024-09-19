@@ -17,7 +17,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     const [filteredTabs, setFilteredTabs] = useState(tabs);
 
     useEffect(() => {
-
         setFilteredTabs(tabs.map((tab: any) => ({
             ...tab,
             label: tab.label || tab.title,
@@ -29,7 +28,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                 </ParentProvider>
                 : searchFormItems(tab.children, searchQuery)
         })));
-    }, [tabs, searchQuery, model]);
+    }, [searchQuery]);
 
     return (
         <SearchQueryProvider searchQuery={searchQuery} onChange={onChange}>
