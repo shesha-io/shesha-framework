@@ -22,19 +22,23 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   isInput: false,
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
-  Factory: ({ model,form }) => {
+  Factory: ({ model, form }) => {
     return (
       <DataContextProvider
         id={'ctx_' + model.id}
         name={model.componentName}
         description={`Wizard context for ${model.componentName}`}
         type="control"
-        
+
       >
         <Tabs {...model} form={form} />
       </DataContextProvider>
     );
   },
+  initModel: (model) => ({
+    ...model,
+    stylingBox: "{\"marginBottom\":\"5\"}"
+  }),
   migrator: (m) =>
     m
       .add<IWizardComponentPropsV0>(0, (prev) => {
@@ -88,7 +92,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           ) as IWizardComponentProps
       )
       .add<IWizardComponentProps>(4, (prev) => migrateWizardActions(prev))
-      .add<IWizardComponentProps>(5, (prev) => ({...migrateFormApi.properties(prev)}))
+      .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
   ,
   settingsFormFactory: (props) => <WizardSettingsForm {...props} />,
