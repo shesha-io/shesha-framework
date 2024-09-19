@@ -105,15 +105,15 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const onValuesChange = (_changedValues, values) => {
     if (autoSave && !readOnly) {
       if (activeDevice === 'desktop') {
-        const updatedDesktopStyles = { ...desktopStyles, ...values };
+        const updatedDesktopStyles = { ...componentModel, ...desktopStyles, ...values };
         setDesktopStyles(updatedDesktopStyles);
         debouncedSave({ ...values, desktop: updatedDesktopStyles });
       } else if (activeDevice === 'mobile') {
-        const updatedMobileStyles = { ...mobileStyles, ...values };
+        const updatedMobileStyles = { ...componentModel, ...mobileStyles, ...values };
         setMobileStyles(updatedMobileStyles);
         debouncedSave({ ...values, mobile: updatedMobileStyles });
       } else if (activeDevice === 'tablet') {
-        const updatedTabletStyles = { ...tabletStyles, ...values };
+        const updatedTabletStyles = { ...componentModel, ...tabletStyles, ...values };
         setTabletStyles(updatedTabletStyles);
         debouncedSave({ ...values, tablet: updatedTabletStyles });
       }

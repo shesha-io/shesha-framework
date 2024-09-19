@@ -50,7 +50,7 @@ export const DesignerMainArea: FC<IDesignerMainAreaProps> = () => {
     const magnifiedWidth = useMemo(() => width * (zoom / 100), [width, zoom]);
 
     const customWidth = useMemo(() => {
-        if (activeDevice === 'mobile' || activeDevice === 'custom' || activeDevice === 'tablet') {
+        if (activeDevice === 'mobile' || activeDevice === 'tablet') {
             return `${width}px`;
         }
         return `${magnifiedWidth}%`;
