@@ -20,7 +20,6 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     const { data } = useFormData();
     const { globalState } = useGlobalState();
 
-    console.log(model);
     const { back, components, cancel, content, current, currentStep, done, next, visibleSteps } = useWizard(model);
 
     const {
