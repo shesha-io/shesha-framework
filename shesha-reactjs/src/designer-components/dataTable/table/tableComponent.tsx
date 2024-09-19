@@ -14,7 +14,7 @@ import { TableOutlined } from '@ant-design/icons';
 import { TableWrapper } from './tableWrapper';
 import { useDataTableStore } from '@/providers';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import ConfigError from '@/components/configErrors';
+import ComponentError from '@/components/componentErrors';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',

@@ -115,7 +115,9 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
       <div>
         <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
           <div style={{ padding: '5px 3px' }}>
-            <FormComponent componentModel={componentModel} componentRef={componentRef} />
+            <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} >
+              <FormComponent componentModel={componentModel} componentRef={componentRef} />
+            </CustomErrorBoundary>
           </div>
         </DragWrapper>
       </div>
@@ -139,7 +141,7 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <CustomErrorBoundary>
+    <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} >
       <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
     </CustomErrorBoundary>
   ); 

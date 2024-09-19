@@ -1,21 +1,13 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import DataTableProvider from '@/providers/dataTable';
-import React, {
-    FC,
-    useMemo
-} from 'react';
-import { Alert } from 'antd';
+import React, { FC, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
-import {
-    useForm,
-    useFormData,
-    useNestedPropertyMetadatAccessor
-} from '@/providers';
+import { useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
-import ConfigError from '@/components/configErrors';
+import { SheshaErrors } from '@/utils/errors';
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
 }
@@ -28,33 +20,16 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
     const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
 
-    const isDesignMode = formMode === 'designer';
-
     const getDataPath = evaluateString(endpoint, { data });
 
-    throw new Error('Child Table component was removed');
-
-    /*const configurationWarningMessage = !sourceType
-        ? 'Select `Source type` on the settings panel'
-        : sourceType === 'Entity' && !entityType
-            ? 'Select `Entity Type` on the settings panel'
-            : sourceType === 'Url' && !endpoint
-                ? 'Select `Custom Endpoint` on the settings panel'
-                : sourceType === 'Form' && !propertyName
-                    ? 'Select `propertyName` on the settings panel'
-                    : null;
-
-    if (isDesignMode && configurationWarningMessage)
-      return <ConfigError errors={[configurationWarningMessage]} type={'Data Table Context'} />;
-        /*return (
-            <Alert
-                className="sha-designer-warning"
-                message="Table is not configured"
-                description={configurationWarningMessage}
-                type="warning"
-                showIcon
-            />
-        );*/
+    if (!sourceType)
+      throw SheshaErrors.throwModelError('sourceType', '`Source type` is not configured');
+    if (sourceType === 'Entity' && !entityType)
+      throw SheshaErrors.throwModelError('entityType', '`Entity Type` is not configured');
+    if (sourceType === 'Url' && !endpoint)
+      throw SheshaErrors.throwModelError('endpoint', '`Custom Endpoint` is not configured');
+    if (sourceType === 'Form' && !propertyName)
+      throw SheshaErrors.throwModelError('propertyName', '`propertyName` is not configured');
 
     const provider = (getFieldValue = undefined, onChange = undefined) => (
         <DataTableProvider

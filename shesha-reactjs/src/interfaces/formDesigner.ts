@@ -13,11 +13,6 @@ import {
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
 
-export interface IModelValidation {
-  hasErrors: boolean;
-  errors?: string[];
-}
-
 export interface ISettingsFormInstance {
   submit: () => void;
   reset: () => void;
@@ -139,7 +134,7 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
 
   getFieldsToFetch?: (propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[];
 
-  validateModel?: (model: TModel) => IModelValidation;
+  validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
 }
 
 export interface SettingsMigrationContext {
