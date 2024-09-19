@@ -47,7 +47,7 @@ import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
 import { DataContextProvider } from '../dataContextProvider';
 import { SHESHA_ROOT_DATA_CONTEXT_MANAGER, SheshaCommonContexts } from '../dataContextManager/models';
-import { useApplicationPlugin } from './context/applicationContext';
+import { useApplicationPlugin, usePublicApplicationApi } from './context/applicationContext';
 import { FormManager } from '../formManager';
 import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
 import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/provider';
@@ -232,4 +232,4 @@ const useSheshaApplication = (require: boolean = true): ISheshaApplication => {
   return { ...stateContext, ...actionsContext };
 };
 
-export { ShaApplicationProvider, useSheshaApplication, useSheshaApplicationState, useApplicationPlugin };
+export { ShaApplicationProvider, useSheshaApplication, useSheshaApplicationState, useApplicationPlugin, usePublicApplicationApi };

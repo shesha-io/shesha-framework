@@ -86,7 +86,7 @@ export function removeURLParameter(url: string, parameter: string) {
 }
 
 
-export const buildUrl = (url: string, queryParams?: Record<string, string>) => {
+export const buildUrl = (url: string, queryParams?: Record<string, any>) => {
   const urlWithoutQuery = getUrlWithoutQueryParams(url);
   const urlQueryPatams = getQueryParams(url);
 
