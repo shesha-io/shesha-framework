@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
@@ -7,6 +8,6 @@ namespace Shesha.Permissions
     {
         List<string> GetObjectTypes();
         string GetObjectType(Type type);
-        List<PermissionedObjectDto> GetAll(string objectType = null);
+        Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null);
     }
 }

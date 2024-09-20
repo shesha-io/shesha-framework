@@ -27,6 +27,7 @@ export const getSettings = (data: any) =>
             validate: {
               required: true,
             },
+            jsSetting: false
           })
           .addCheckbox({
             id: '12345e70-99a0-4825-ae6c-8b933004e119',

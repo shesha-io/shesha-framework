@@ -116,7 +116,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
       [
         { match: 'data', data: formData },
         { match: 'globalState', data: globalState },
-        { match: 'pageContext', data: {...pageContext.getFull()} ?? {} },
+        { match: 'pageContext', data: {...pageContext?.getFull()} },
       ],
       propertyMetadataAccessor
     ).then(evaluatedFilters => {

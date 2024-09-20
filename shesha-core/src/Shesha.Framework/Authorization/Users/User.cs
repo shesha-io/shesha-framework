@@ -99,6 +99,10 @@ namespace Shesha.Authorization.Users
         [Display(Name = "Type of account")]
         public virtual RefListTypeOfAccount? TypeOfAccount { get; set; }
 
+        [SaveAsJson]
+        [Display(Name = "Allow only selected FrontEnd Applications", Description = "Leave empty to allow any FrontEnd Applications")]
+        public virtual List<string> AllowedFrontEndApps { get; set; }
+
         public static User CreateUser(int? tenantId, string username, string emailAddress)
         {
             var user = new User

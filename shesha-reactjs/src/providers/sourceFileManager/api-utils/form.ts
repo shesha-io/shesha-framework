@@ -11,6 +11,13 @@ export interface ISetFormDataPayload {
   mergeValues: boolean;
 }
 
+export interface FormFullName {
+  readonly name: string;
+  readonly module?: string | null;
+}
+export type FormUid = string;
+export type FormIdentifier = FormFullName | FormUid;
+
 export interface IFormSettings {
   modelType?: string;
 };
@@ -23,6 +30,12 @@ export interface FormInstance<Values> {
  * Form instance API
  */
 export interface FormApi<Values = any> {
+  /**
+   * Add deferred update data to 'data' object 
+   * @param data model data object for updating
+   * @returns The deferred update data
+   */
+  addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
   /**
    * Set field value
    * @param name field name

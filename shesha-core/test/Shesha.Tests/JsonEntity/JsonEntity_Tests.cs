@@ -89,7 +89,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task DynamicExpression()
+        public async Task DynamicExpressionAsync()
         {
             LoginAsHostAdmin();
 
@@ -109,7 +109,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task GetAllJsonProperties()
+        public async Task GetAllJsonPropertiesAsync()
         {
             LoginAsHostAdmin();
 
@@ -131,9 +131,9 @@ namespace Shesha.Tests.JsonEntity
                     var jsonProps = entityType.GetProperties().Where(x => x.PropertyType.IsJsonEntityType()).ToList();
                     var genericProps = entityType.GetProperties().Where(x => x.PropertyType == typeof(GenericEntityReference)).ToList();
                     if (jsonProps.Any())
-                        await mapProvider.UpdateClassNames(entityType, jsonProps, oldValue, newValue, true);
+                        await mapProvider.UpdateClassNamesAsync(entityType, jsonProps, oldValue, newValue, true);
                     if (genericProps.Any())
-                        await mapProvider.UpdateClassNames(entityType, genericProps, oldValue, newValue, false);
+                        await mapProvider.UpdateClassNamesAsync(entityType, genericProps, oldValue, newValue, false);
                 }
                 catch (Exception)
                 {
@@ -142,7 +142,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task GetJsonEntity()
+        public async Task GetJsonEntityAsync()
         {
             var i = new TestInt();
 
@@ -170,7 +170,7 @@ namespace Shesha.Tests.JsonEntity
 
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var obj = _jsonRepository.Get(Guid.Parse("FB57A090-6FDC-452C-8945-9356377271B9"));
+                var obj = await _jsonRepository.GetAsync(Guid.Parse("FB57A090-6FDC-452C-8945-9356377271B9"));
 
                 var fn = obj.JsonPerson.FirstName;
 
@@ -185,13 +185,13 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task GetUpdate()
+        public async Task GetUpdateAsync()
         {
             LoginAsHostAdmin();
 
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var obj = _jsonRepository.Get(Guid.Parse("FB57A090-6FDC-452C-8945-9356377271B9"));
+                var obj = await _jsonRepository.GetAsync(Guid.Parse("FB57A090-6FDC-452C-8945-9356377271B9"));
                 await _jsonRepository.InsertOrUpdateAsync(obj);
             }
         }
@@ -265,7 +265,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task ObjectToJson()
+        public async Task ObjectToJsonAsync()
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
@@ -348,7 +348,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task BindModelToDto()
+        public async Task BindModelToDtoAsync()
         {
             LoginAsHostAdmin();
 
@@ -415,7 +415,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task CreateJsonEntity()
+        public async Task CreateJsonEntityAsync()
         {
             for (var i = 0; i < 1000; i++)
             {
@@ -434,7 +434,7 @@ namespace Shesha.Tests.JsonEntity
                     {
                         FirstName = "JsonEntity",
                         LastName = "JsonEntity",
-                        Person = _personRepository.Get(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
+                        Person = await _personRepository.GetAsync(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
                     },
                     JsonPerson = new JsonPerson()
                     {
@@ -479,7 +479,7 @@ namespace Shesha.Tests.JsonEntity
         }
 
         [Fact]
-        public async Task GetDto()
+        public async Task GetDtoAsync()
         {
             using (var uow = _unitOfWorkManager.Begin())
             {

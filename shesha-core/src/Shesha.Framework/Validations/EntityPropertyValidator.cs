@@ -16,28 +16,28 @@ namespace Shesha.Validations
 {
     public abstract class EntityPropertyValidator<TEntity, TId> : IPropertyValidator where TEntity : class, IEntity<TId>
     {
-        public async Task<bool> ValidateObject(object obj, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
+        public async Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
         {
             if (obj is TEntity entity)
             {
-                return await ValidateEntity(entity, validationResult, propertiesToValidate);
+                return await ValidateEntityAsync(entity, validationResult, propertiesToValidate);
             }
             return true;
         }
-        public virtual async Task<bool> ValidateEntity(TEntity entity, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
+        public virtual async Task<bool> ValidateEntityAsync(TEntity entity, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
         {
             return await Task.FromResult(true);
         }
 
-        public async Task<bool> ValidateProperty(object obj, string propertyName, object value, List<ValidationResult> validationResult)
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object value, List<ValidationResult> validationResult)
         {
             if (obj is TEntity entity)
             {
-                return await ValidateEntityProperty(entity, propertyName, value, validationResult);
+                return await ValidateEntityPropertyAsync(entity, propertyName, value, validationResult);
             }
             return true;
         }
-        public virtual async Task<bool> ValidateEntityProperty(TEntity entity, string propertyName, object value, List<ValidationResult> validationResult)
+        public virtual async Task<bool> ValidateEntityPropertyAsync(TEntity entity, string propertyName, object value, List<ValidationResult> validationResult)
         {
             return await Task.FromResult(true);
         }
@@ -55,7 +55,7 @@ namespace Shesha.Validations
             _entityConfigurationStore = entityConfigurationStore;
         }
 
-        public async Task<bool> ValidateProperty(object obj, string propertyName, object value, List<ValidationResult> validationResult)
+        public async Task<bool> ValidatePropertyAsync(object obj, string propertyName, object value, List<ValidationResult> validationResult)
         {
             if (!obj.GetType().IsEntityType() 
                 && !obj.GetType().IsJsonEntityType())
@@ -69,7 +69,7 @@ namespace Shesha.Validations
             return Validate(obj, propertyName, value, validationResult, props, true);
         }
 
-        public Task<bool> ValidateObject(object obj, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
+        public Task<bool> ValidateObjectAsync(object obj, List<ValidationResult> validationResult, List<string> propertiesToValidate = null)
         {
             return Task.FromResult(true);
 
