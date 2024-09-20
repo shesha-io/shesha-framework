@@ -5,7 +5,7 @@ import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import PrefixSuffixComponent, { IPrefixSuffixType } from './components/prefixSuffix/prefixSuffixComponent';
+import PrefixSuffixComponent, { IPrefixSuffixType } from './prefixSuffixComponent';
 
 export interface IPrefixSuffixProps extends IConfigurableFormComponent {
     onChange?: (value: IPrefixSuffixType) => void;

@@ -1,8 +1,5 @@
-import { Col, Input } from 'antd';
+import { Col } from 'antd';
 import React, { FC } from 'react';
-import FormItem from '@/designer-components/_settings/components/formItem';
-import { IconPicker } from '@/components';
-import { useStyles } from '../../styles/styles';
 import { InputRow } from '@/designer-components/_settings/components/utils';
 
 export interface IPrefixSuffixType {

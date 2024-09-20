@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from "@/providers";
 
-export interface ISizeComponentProps extends IConfigurableFormComponent {
+export interface IDimensionsProps extends IConfigurableFormComponent {
     value?: IDimensionsValue;
     onChange?: Function;
 }
@@ -20,11 +20,10 @@ export interface IDimensionsValue {
     overflow?: string;
 }
 
-export interface ISizeType {
+export interface IDimensionsType {
     onChange?: (value) => void;
     value?: IDimensionsValue;
     readOnly?: boolean;
     model?: any;
     noOverflow?: boolean;
-    renderSettingsItem?: (name: string, label: string, component: React.ReactNode) => React.ReactNode;
 }

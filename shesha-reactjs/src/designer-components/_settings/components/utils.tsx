@@ -22,7 +22,7 @@ export interface IDropdownOption {
 interface IInputProps {
     label: string;
     property: any;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code' | 'iconPicker'
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code' | 'iconPicker';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -39,7 +39,7 @@ interface IInputProps {
 
 const { Option } = Select;
 
-const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ value, onChange }) => {
+const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, onChange }) => {
 
     return (
         <Select
@@ -55,7 +55,7 @@ const UnitSelector: FC<{ property: string, value: any, onChange }> = ({ value, o
             ))}
         </Select>
     );
-}
+};
 
 const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
 
@@ -83,15 +83,15 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
         case 'switch':
             return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber min={0} max={100} readOnly={readOnly} size={size} value={value} />
+            return <InputNumber min={0} max={100} readOnly={readOnly} size={size} value={value} />;
         case 'customDropdown':
-            return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />
+            return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'textarea':
-            return <TextArea readOnly={readOnly} size={size} value={value} />
+            return <TextArea readOnly={readOnly} size={size} value={value} />;
         case 'code':
             return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} />;
         case 'iconPicker':
-            <IconPicker selectBtnSize='small' readOnly={readOnly} value={value} />
+            return <IconPicker selectBtnSize='small' readOnly={readOnly} value={value} />;
         default:
             return <Input
                 size={size}
@@ -102,7 +102,7 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
                 addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={property} value={value} /> : null}
             />;
     }
-}
+};
 
 export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description }) => {
     const { searchQuery } = useSearchQuery();
@@ -117,7 +117,7 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
         );
     }
 
-    return null
+    return null;
 
 };
 
@@ -133,7 +133,7 @@ export const InputRow: React.FC<InputRowProps> = ({ inputs }) => {
                 <SettingInput key={props.label} {...props} />
             ))}
         </div>
-    )
+    );
 };
 
 export const searchFormItems = (children: React.ReactNode, searchQuery: string): React.ReactNode => {
@@ -156,6 +156,22 @@ export const searchFormItems = (children: React.ReactNode, searchQuery: string):
                 return child;
             }
         }
+
         return null;
     });
+};
+
+export const filterDynamicComponents = (components, query) => {
+
+    const filterResult = components.map(c => {
+        if (!c.label) return c;
+
+        return ({
+            ...c,
+            hidden: !c.label?.toLowerCase().includes(query.toLowerCase()),
+            components: c.components ? filterDynamicComponents(c.components, query) : undefined
+        });
+    });
+
+    return filterResult;
 };

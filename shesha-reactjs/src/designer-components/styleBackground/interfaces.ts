@@ -3,7 +3,7 @@ import { IConfigurableFormComponent } from "@/providers";
 export interface IBackgroundValue {
     type: 'color' | 'url' | 'upload' | 'storedFile' | 'gradient';
     size?: 'cover' | 'contain' | 'auto' | string;
-    position: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top left' | 'top right' | 'bottom left' | 'bottom right' | string;
+    position?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top left' | 'top right' | 'bottom left' | 'bottom right' | string;
     repeat?: 'no-repeat' | 'repeat' | 'repeat-x' | 'repeat-y';
     gradient?: { direction: string, colors: string[] };
     color?: string;

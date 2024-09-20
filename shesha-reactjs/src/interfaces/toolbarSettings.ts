@@ -30,16 +30,16 @@ import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfac
 import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
 import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
 import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
-import { IFontType } from '@/designer-components/styleFont/components/font/fontComponent';
-import { IBackgroundProps } from '@/designer-components/styleBackground/components/background/interfaces';
-import { IBorderProps } from '@/designer-components/styleBorder/components/border/interfaces';
-import { ILabelComponentProps } from '@/designer-components/styleLabel/components/label/interfaces';
-import { IPrefixSuffixType } from '@/designer-components/stylePrefixSuffix/components/prefixSuffix/prefixSuffixComponent';
-import { IShadowType } from '@/designer-components/styleShadow/components/shadow/shadowComponent';
-import { ILabelProps } from '@/designer-components/styleLabel/components/label/labelConfigurator';
+import { IFontType } from '@/designer-components/styleFont/fontComponent';
+import { IBackgroundProps } from '@/designer-components/styleBackground/interfaces';
+import { IBorderProps } from '@/designer-components/styleBorder/interfaces';
+import { ILabelComponentProps } from '@/designer-components/styleLabel/interfaces';
+import { ILabelProps } from '@/designer-components/styleLabel/labelConfigurator';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
-import { ISizeType } from '@/designer-components/styleDimensions/components/size/interfaces';
 import { IStyleGroupType } from '@/designer-components/_settings/components/styleGroup/styleGroup';
+import { IDimensionsType } from '@/designer-components/styleDimensions/interfaces';
+import { IPrefixSuffixType } from '@/designer-components/stylePrefixSuffix/prefixSuffixComponent';
+import { IShadowType } from '@/designer-components/styleShadow/shadowComponent';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -113,7 +113,7 @@ type BackgroundStyleType = ToolbarSettingsProp & Omit<IBackgroundProps, 'hidden'
 
 type BorderStyleType = ToolbarSettingsProp & Omit<IBorderProps, 'hidden' | 'type'>;
 
-type DimensionStyleType = ToolbarSettingsProp & Omit<ISizeType, 'hidden' | 'type'>;
+type DimensionStyleType = ToolbarSettingsProp & Omit<IDimensionsType, 'hidden' | 'type'>;
 
 type LabelStyleType = ToolbarSettingsProp & Omit<ILabelComponentProps, 'hidden' | 'type'>;
 
@@ -278,7 +278,7 @@ export class DesignerToolbarSettings<T> {
   }
 
   public addSizeStyle(props: DimensionStyleType | ((data: T) => DimensionStyleType)) {
-    return this.addProperty(props, 'sizeStyle');
+    return this.addProperty(props, 'dimensionsStyle');
   }
 
   public addLabelStyle(props: LabelStyleType | ((data: T) => LabelStyleType)) {

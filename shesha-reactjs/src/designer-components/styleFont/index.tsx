@@ -5,8 +5,8 @@ import { FileTextOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import { IFontComponentProps } from './components/font/interfaces';
-import FontComponent from './components/font/fontComponent';
+import { IFontComponentProps } from './interfaces';
+import FontComponent from './fontComponent';
 
 const FontConfigurator: IToolboxComponent<IFontComponentProps> = {
     type: 'fontStyle',
@@ -20,7 +20,7 @@ const FontConfigurator: IToolboxComponent<IFontComponentProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                <FontComponent model={model} readOnly={model.readOnly}/>
+                <FontComponent model={model} readOnly={model.readOnly} />
             </ConfigurableFormItem>
         );
     },

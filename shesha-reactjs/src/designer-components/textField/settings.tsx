@@ -7,7 +7,7 @@ import PermissionAutocomplete from '@/components/permissionAutocomplete';
 import StyleGroupComponent from '../_settings/components/styleGroup/styleGroup';
 import SearchableTabs from '../_settings/components/tabs/searchableTabsComponent';
 import { SettingInput } from '../_settings/components/utils';
-import LabelConfiguratorComponent from '../styleLabel/components/label/labelConfigurator';
+import LabelConfiguratorComponent from '../styleLabel/labelConfigurator';
 import FormItem from '../_settings/components/formItem';
 
 const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) => {

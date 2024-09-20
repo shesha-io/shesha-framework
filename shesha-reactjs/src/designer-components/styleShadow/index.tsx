@@ -5,8 +5,8 @@ import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import { IShadowComponentProps } from './components/shadow/interfaces';
-import ShadowComponent from './components/shadow/shadowComponent';
+import { IShadowComponentProps } from './interfaces';
+import ShadowComponent from './shadowComponent';
 
 const ShadowConfigurator: IToolboxComponent<IShadowComponentProps> = {
     type: 'shadowStyle',

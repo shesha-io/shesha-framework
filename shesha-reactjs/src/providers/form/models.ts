@@ -6,11 +6,11 @@ import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/i
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
-import { IFontValue } from '@/designer-components/styleFont/components/font/interfaces';
-import { IBackgroundValue } from '@/designer-components/styleBackground/components/background/interfaces';
-import { IBorderValue } from '@/designer-components/styleBorder/components/border/interfaces';
-import { IShadowValue } from '@/designer-components/styleShadow/components/shadow/interfaces';
-import { IDimensionsValue } from '@/designer-components/styleDimensions/components/size/interfaces';
+import { IFontValue } from '@/designer-components/styleFont/interfaces';
+import { IBackgroundValue } from '@/designer-components/styleBackground/interfaces';
+import { IBorderValue } from '@/designer-components/styleBorder/interfaces';
+import { IDimensionsValue } from '@/designer-components/styleDimensions/interfaces';
+import { IShadowValue } from '@/designer-components/styleShadow/interfaces';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';

@@ -18,8 +18,6 @@ const BorderComponent: FC<IBorderProps> = (props) => {
     const activeBorder = value?.activeBorder || 'all';
     const activeRadius = value?.activeRadius || 'all';
 
-    console.log("BORDER VALUE:::", value);
-
     return (
         <>
             <SettingInput label='Hide Border' property='styles.border.hideBorder' value={value} readOnly={readOnly} type='switch' />

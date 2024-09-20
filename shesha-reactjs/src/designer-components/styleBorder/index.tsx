@@ -5,8 +5,8 @@ import { StrikethroughOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import { IBorderProps } from './components/border/interfaces';
-import BorderComponent from './components/border/borderComponent';
+import { IBorderProps } from './interfaces';
+import BorderComponent from './borderComponent';
 
 const BorderConfigurator: IToolboxComponent<IBorderProps> = {
     type: 'borderStyle',

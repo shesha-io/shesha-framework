@@ -18,13 +18,13 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
-import { getSizeStyle } from '../styleDimensions/components/size/utils';
-import { getBorderStyle } from '../styleBorder/components/border/utils';
-import { getBackgroundStyle } from '../styleBackground/components/background/utils';
+import { getSizeStyle } from '../styleDimensions/utils';
+import { getBorderStyle } from '../styleBorder/utils';
+import { getBackgroundStyle } from '../styleBackground/utils';
 import settingsFormJson from './settingsForm.json';
 import { useStyles } from './styles/styles';
-import { getShadowStyle } from '../styleShadow/components/shadow/utils';
-import { getFontStyle } from '../styleFont/components/font/utils';
+import { getShadowStyle } from '../styleShadow/utils';
+import { getFontStyle } from '../styleFont/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -54,13 +54,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const form = useForm();
     const { styles } = useStyles();
 
-    model.componentName === 'textField2' && console.log("TextFieldComponent", model);
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
-    const { backendUrl } = useSheshaApplication();
+    const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const { dimensions, border, font, shadow, background } = model?.styles || {};
-    const sizeStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
+    const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
@@ -68,14 +67,14 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     useEffect(() => {
       const fetchStyles = async () => {
-        getBackgroundStyle(background).then((style) => {
+        getBackgroundStyle(background, backendUrl, httpHeaders).then((style) => {
           setBackgroundStyles(style);
         });
       };
       fetchStyles();
-    }, [background, background?.gradient?.colors]);
+    }, [background, background?.gradient?.colors, background, backendUrl, httpHeaders]);
 
-    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
+    if (model?.styles?.background?.type === 'storedFile' && model?.styles?.background.storedFile?.id && !isValidGuid(model.styles.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -84,7 +83,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const additionalStyles: CSSProperties = removeUndefinedProps({
       ...stylingBoxAsCSS,
-      ...sizeStyles,
+      ...dimensionsStyles,
       ...borderStyles,
       ...fontStyles,
       ...backgroundStyles,
@@ -144,10 +143,12 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
                 },
               },
             }}
-          >{inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
-            : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />}
-          </ConfigProvider>
+          >
+            {inputProps.readOnly
+              ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
+              : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />
+            }
+          </ConfigProvider>;
         }}
       </ConfigurableFormItem>
     );

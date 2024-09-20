@@ -1,13 +1,12 @@
 import React, { FC } from 'react';
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { overflowOptions } from './utils';
-import { ISizeType } from './interfaces';
+import { IDimensionsType } from './interfaces';
 
-const SizeComponent: FC<ISizeType> = (props) => {
+const SizeComponent: FC<IDimensionsType> = (props) => {
 
     const { value, readOnly, noOverflow, onChange } = props;
 
-    console.log("SIZE VALUE:::", value);
     const commonProps = { hasUnits: true, readOnly, value, onChange };
 
     return (

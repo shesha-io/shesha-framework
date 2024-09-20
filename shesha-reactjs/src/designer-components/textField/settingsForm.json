@@ -62,8 +62,7 @@
               "dataSourceType": "values",
               "version": 5,
               "referenceListId": null,
-              "valueFormat": "listItem",
-              "jsSetting": true
+              "valueFormat": "listItem"
             },
             {
               "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
@@ -72,8 +71,7 @@
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Placeholder",
               "version": 3,
-              "textType": "text",
-              "jsSetting": true
+              "textType": "text"
             },
             {
               "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
@@ -81,8 +79,7 @@
               "propertyName": "description",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Description",
-              "version": 2,
-              "jsSetting": true
+              "version": 2
             },
             {
               "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
@@ -97,8 +94,7 @@
               "label": "Default Value",
               "description": "Enter default value of component. (formData, formMode, globalState) are exposed",
               "version": 3,
-              "textType": "text",
-              "jsSetting": true
+              "textType": "text"
             },
             {
               "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
@@ -107,7 +103,6 @@
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Hidden",
               "version": 2,
-              "jsSetting": true,
               "layout": "horizontal"
             },
             {
@@ -343,7 +338,6 @@
               "propertyName": "validate.required",
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Required",
-              "jsSetting": true,
               "layout": "horizontal"
             },
             {
@@ -353,9 +347,7 @@
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Min Length",
               "validate": {},
-              "version": 2,
-              "jsSetting": true
-            },
+              "version": 2            },
             {
               "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
               "type": "numberField",
@@ -363,9 +355,7 @@
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Max Length",
               "validate": {},
-              "version": 2,
-              "jsSetting": true
-            },
+              "version": 2            },
             {
               "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
               "type": "textField",
@@ -374,9 +364,7 @@
               "label": "Message",
               "validate": {},
               "version": 3,
-              "textType": "text",
-              "jsSetting": true
-            },
+              "textType": "text"            },
             {
               "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
               "type": "codeEditor",
@@ -385,9 +373,7 @@
               "label": "Validator",
               "validate": {},
               "labelAlign": "right",
-              "hidden": false,
-              "jsSetting": true,
-              "description": "Enter custom validator logic for form.item rules. Returns a Promise",
+              "hidden": false,              "description": "Enter custom validator logic for form.item rules. Returns a Promise",
               "settingsValidationErrors": [],
               "exposedVariables": [
                 {

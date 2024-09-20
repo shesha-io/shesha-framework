@@ -1,6 +1,21 @@
 import React from "react";
 import { IBorderValue } from "./interfaces";
-import { ExpandOutlined, RadiusUpleftOutlined, RadiusUprightOutlined, RadiusBottomleftOutlined, RadiusBottomrightOutlined, BorderOutlined, BorderTopOutlined, BorderRightOutlined, BorderBottomOutlined, BorderLeftOutlined, MinusOutlined, DashOutlined, SmallDashOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+    ExpandOutlined,
+    RadiusUpleftOutlined,
+    RadiusUprightOutlined,
+    RadiusBottomleftOutlined,
+    RadiusBottomrightOutlined,
+    BorderOutlined,
+    BorderTopOutlined,
+    BorderRightOutlined,
+    BorderBottomOutlined,
+    BorderLeftOutlined,
+    MinusOutlined,
+    DashOutlined,
+    SmallDashOutlined,
+    CloseOutlined
+} from "@ant-design/icons";
 
 export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
     if (!input) return {};

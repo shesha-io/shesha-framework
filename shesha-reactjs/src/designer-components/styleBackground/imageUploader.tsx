@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Image, Upload } from 'antd';
-import type { UploadFile, UploadProps } from 'antd';
-import { toBase64 } from './background/utils';
+import type { UploadFile } from 'antd';
+import { toBase64 } from './utils';
 import FormItem from '@/designer-components/_settings/components/formItem';
 
-const ImageUploader = ({ backgroundImage, readOnly }) => {
+interface ImageUploaderProps {
+    backgroundImage: {
+        file: UploadFile;
+        fileList: UploadFile[];
+    } | null;
+    readOnly: boolean;
+}
+
+const ImageUploader: React.FC<ImageUploaderProps> = ({ backgroundImage, readOnly }) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     useEffect(() => {
-        if (backgroundImage) {
-            setFileList([
-                {
-                    uid: '-1',
-                    name: 'image.png',
-                    status: 'done',
-                    url: backgroundImage,
-                },
-            ]);
+        if (backgroundImage && backgroundImage.fileList) {
+            setFileList(backgroundImage.fileList);
         }
     }, [backgroundImage]);
 
@@ -32,6 +33,10 @@ const ImageUploader = ({ backgroundImage, readOnly }) => {
         setPreviewOpen(true);
     };
 
+    const handleChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
+        setFileList(newFileList);
+    };
+
     const uploadButton = (
         <button style={{ border: 0, background: 'none' }} type="button">
             <PlusOutlined />
@@ -41,12 +46,12 @@ const ImageUploader = ({ backgroundImage, readOnly }) => {
 
     return (
         <div style={{ position: 'relative' }}>
-            <FormItem name="style.background.file" label="File" jsSetting>
+            <FormItem name="styles.background.file" label="File" jsSetting>
                 <Upload
-                    listType="text"
+                    listType="picture"
                     fileList={fileList}
                     onPreview={handlePreview}
-                    beforeUpload={() => false}
+                    onChange={handleChange}
                     disabled={readOnly}
                 >
                     {fileList.length >= 1 ? null : uploadButton}

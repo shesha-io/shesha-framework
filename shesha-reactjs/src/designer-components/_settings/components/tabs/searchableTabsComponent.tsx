@@ -3,7 +3,7 @@ import { Tabs, Input } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
 import { SearchQueryProvider } from './context';
-import { searchFormItems } from '../utils';
+import { filterDynamicComponents, searchFormItems } from '../utils';
 
 interface SearchableTabsProps {
     model: any;
@@ -47,21 +47,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
             />
         </SearchQueryProvider>
     );
-};
-
-const filterDynamicComponents = (components, query) => {
-
-    const filterResult = components.map(c => {
-        if (!c.label) return c;
-
-        return ({
-            ...c,
-            hidden: !c.label?.toLowerCase().includes(query.toLowerCase()),
-            components: c.components ? filterDynamicComponents(c.components, query) : undefined
-        })
-    });
-
-    return filterResult;
 };
 
 export default SearchableTabs;

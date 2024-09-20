@@ -1,47 +1,57 @@
 import React, { useMemo } from 'react';
 import { ConfigProvider, Collapse, CollapseProps } from 'antd';
-import FontComponent from '../../../styleFont/components/font/fontComponent';
-import SizeComponent from '../../../styleDimensions/components/size/sizeComponent';
-import BorderComponent from '../../../styleBorder/components/border/borderComponent';
-import BackgroundComponent from '../../../styleBackground/components/background/background';
-import ShadowComponent from '../../../styleShadow/components/shadow/shadowComponent';
+import BorderComponent from '../../../styleBorder/borderComponent';
+import BackgroundComponent from '../../../styleBackground/background';
 import StyleBox from '../../../styleBox/components/box';
 import { SettingInput } from '../utils';
 import FormItem from '../formItem';
-import { IDimensionsValue } from '@/designer-components/styleDimensions/components/size/interfaces';
-import { IBorderValue } from '@/designer-components/styleBorder/components/border/interfaces';
-import { IBackgroundValue } from '@/designer-components/styleBackground/components/background/interfaces';
-import { IShadowValue } from '@/designer-components/styleShadow/components/shadow/interfaces';
+import { IBorderValue } from '@/designer-components/styleBorder/interfaces';
+import { IBackgroundValue } from '@/designer-components/styleBackground/interfaces';
+import { IDimensionsValue } from '@/designer-components/styleDimensions/interfaces';
+import { IShadowValue } from '@/designer-components/styleShadow/interfaces';
+import FontComponent from '@/designer-components/styleFont/fontComponent';
+import SizeComponent from '@/designer-components/styleDimensions/sizeComponent';
+import ShadowComponent from '@/designer-components/styleShadow/shadowComponent';
+import { IFontValue } from '@/designer-components/styleFont/interfaces';
 
 export type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
 
+interface IStyleGroupValueType {
+    background: IBackgroundValue;
+    border: IBorderValue;
+    dimensions: IDimensionsValue;
+    font: IFontValue;
+    shadow: IShadowValue;
+    stylingBox: any;
+    style: any;
+};
 export interface IStyleGroupType {
     onChange?: (value: any) => void;
     omitted?: omittedStyleType[];
-    value?: any;
+    value?: IStyleGroupValueType;
     readOnly?: boolean;
 }
 
 const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value }) => {
 
-    const fontValue = useMemo(() => {
-        return value?.font
-    }, value?.font);
+    const fontValue: IFontValue = useMemo(() => {
+        return value?.font;
+    }, [value?.font]);
 
     const dimensionsValue: IDimensionsValue = useMemo(() => {
-        return value?.dimensions
+        return value?.dimensions;
     }, [value?.dimensions]);
 
     const borderValue: IBorderValue = useMemo(() => {
-        return value?.border
+        return value?.border;
     }, [{ ...value?.border }]);
 
     const backgroundValue: IBackgroundValue = useMemo(() => {
-        return value
+        return value?.background;
     }, [{ ...value?.background }]);
 
     const shadowValue: IShadowValue = useMemo(() => {
-        return value?.shadow
+        return value?.shadow;
     }, [value?.shadow]);
 
     const items: CollapseProps['items'] = [
@@ -82,7 +92,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
                 </>
             )
         }
-    ].filter(item => !omitted.map(s => s.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase())).map((item, index) => ({ ...item, key: index.toString() }));
+    ].filter(item => !omitted.map(omit => omit.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase())).map((item, index) => ({ ...item, key: index.toString() }));
 
     const activateAllStylePanels = items.map(panel => panel.key.toString());
 

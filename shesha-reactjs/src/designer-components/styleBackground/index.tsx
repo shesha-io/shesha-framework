@@ -5,8 +5,8 @@ import { StrikethroughOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import BackgroundComponent from './components/background/background';
-import { IBackgroundProps } from './components/background/interfaces';
+import BackgroundComponent from './background';
+import { IBackgroundProps } from './interfaces';
 
 const BackgroundConfigurator: IToolboxComponent<IBackgroundProps> = {
     type: 'backgroundStyle',

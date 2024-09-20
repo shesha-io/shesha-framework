@@ -2,7 +2,7 @@ import { Button, Col, Form, Input, Row, Tag } from 'antd';
 import { Autocomplete } from '@/components/autocomplete';
 import React, { FC, useEffect } from 'react';
 import SizeAndRepeat from './sizeAndRepeat';
-import ImageUploader from '../imageUploader';
+import ImageUploader from './imageUploader';
 import FormItem from '@/designer-components/_settings/components/formItem';
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
@@ -20,11 +20,11 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
     const { gradient } = background;
 
     useEffect(() => {
-        if (!background) {
+        if (!background?.gradient?.colors) {
             const newColor = '#000000';
             onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: [newColor, newColor] } } });
         }
-    }, []);
+    }, [background.type]);
 
     const renderBackgroundInput = () => {
         switch (background?.type) {
@@ -63,7 +63,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                                     <SettingInput value={field.name} property={[field.name]} label='' readOnly={readOnly} type='color' />
                                                 </Tag>
                                             </Col>
-                                        )
+                                        );
                                     })}
                                     <Button
                                         type='primary'
