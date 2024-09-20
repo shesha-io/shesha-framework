@@ -47,12 +47,14 @@ import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
 import { DataContextProvider } from '../dataContextProvider';
 import { SHESHA_ROOT_DATA_CONTEXT_MANAGER, SheshaCommonContexts } from '../dataContextManager/models';
-import { useApplicationPlugin } from './context/applicationContext';
+import { useApplicationPlugin, usePublicApplicationApi } from './context/applicationContext';
 import { FormManager } from '../formManager';
 import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
 import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/provider';
 import { FormDataLoadersProvider } from '../form/loaders/formDataLoadersProvider';
 import { FormDataSubmittersProvider } from '../form/submitters/formDataSubmittersProvider';
+import { MainMenuProvider } from '../mainMenu';
+import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/models';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -76,7 +78,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
     children,
     backendUrl,
     applicationName,
-    applicationKey,
+    applicationKey = FRONTEND_DEFAULT_APP_KEY,
     accessTokenName,
     homePageUrl,
     router,
@@ -134,7 +136,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
       >
         <SettingsProvider>
           <ConfigurableActionDispatcherProvider>
-            <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
+            <ShaRoutingProvider 
+              getFormUrlFunc={getFormUrlFunc} 
+              router={router}
+              getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
+            >
               <DynamicActionsDispatcherProvider>
                 <ConditionalWrap
                   condition={!props.noAuth}
@@ -175,7 +181,11 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                             <DataSourcesProvider>
                                               <DynamicModalProvider>
                                                 <DebugPanel>
-                                                  <ApplicationActionsProcessor>{children}</ApplicationActionsProcessor>
+                                                  <ApplicationActionsProcessor>
+                                                    <MainMenuProvider>
+                                                      {children}
+                                                    </MainMenuProvider>
+                                                  </ApplicationActionsProcessor>
                                                 </DebugPanel>
                                               </DynamicModalProvider>
                                             </DataSourcesProvider>
@@ -222,4 +232,4 @@ const useSheshaApplication = (require: boolean = true): ISheshaApplication => {
   return { ...stateContext, ...actionsContext };
 };
 
-export { ShaApplicationProvider, useSheshaApplication, useSheshaApplicationState, useApplicationPlugin };
+export { ShaApplicationProvider, useSheshaApplication, useSheshaApplicationState, useApplicationPlugin, usePublicApplicationApi };

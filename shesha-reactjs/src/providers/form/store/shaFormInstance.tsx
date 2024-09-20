@@ -2,7 +2,7 @@ import React from "react";
 import { AfterSubmitHandler, FormEvents, IDataSubmitContext, InitByFormIdPayload, InitByMarkupPayload, InitByRawMarkupPayload, IShaFormInstance, LoadFormByIdPayload, OnMarkupLoadedHandler, OnValuesChangeHandler, ProcessingState, SubmitDataPayload, SubmitHandler } from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
 import { FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
-import { ExpressionCaller, ExpressionExecuter, IFormDataSubmitter } from "../submitters/interfaces";
+import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
 import { IFormManagerActionsContext } from "@/providers/formManager/contexts";
 import { useFormManager } from "@/providers/formManager";
 import { IFormDataLoadersContext, useFormDataLoaders } from "../loaders/formDataLoadersProvider";
@@ -13,13 +13,15 @@ import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { Form, FormInstance } from "antd";
 import { FormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
-import { setValueByPropertyName } from "@/utils/object";
+import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
 import { getQueryParams } from "@/utils/url";
+import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
+import { removeGhostKeys } from "@/utils/form";
 
 type ForceUpdateTrigger = () => void;
 interface ShaFormInstanceArguments {
@@ -36,11 +38,20 @@ class PublicFormApi<Values = any> implements FormApi<Values> {
     constructor(form: IShaFormInstance){
         this.#form = form;
     }
+    addDelayedUpdateData = (data: Values): IDelayedUpdateGroup[]  => {
+      const delayedUpdateData = this.#form?.getDelayedUpdates();
+      if (delayedUpdateData?.length > 0)
+        data['_delayedUpdate'] = delayedUpdateData;
+      return delayedUpdateData;
+    };
     setFieldValue = (name: string, value: any) => {
         this.#form.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });        
     };
     setFieldsValue = (values: Values) => {
         this.#form.setFormData({ values, mergeValues: true });
+    };
+    clearFieldsValue = () => {
+      this.#form?.setFormData({ values: {}, mergeValues: false });
     };
     submit = () => {
         this.#form.antdForm.submit();
@@ -142,6 +153,10 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formData = {};
     }
     
+    getDelayedUpdates = () => {
+      return this.dataSubmitContext?.getDelayedUpdates() || [];
+    };
+
     setDataSubmitContext = (context: IDataSubmitContext) => {
         this.dataSubmitContext = context;
     };
@@ -161,7 +176,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         this.formData = values;
         if (this.onValuesChange)
             this.onValuesChange(values, values);
-        this.events.onValuesUpdate?.(values);
+        this.events.onValuesUpdate?.({data: removeGhostKeys({...values})});
     };
 
     setFormData = (payload: ISetFormDataPayload) => {
@@ -170,7 +185,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             return;
 
         const newData = payload.mergeValues && this.formData
-            ? { ...this.formData, ...values }
+            ? deepMergeValues(this.formData, values)
             : values;
 
         if (mergeValues) {
@@ -275,14 +290,14 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         };
 
         this.events = {};
-        this.events.onPrepareSubmitData = makeCaller<Values, Values>(settings.onPrepareSubmitData);
-        this.events.onBeforeSubmit = makeCaller<Values, void>(settings.onBeforeSubmit);
+        this.events.onPrepareSubmitData = makeCaller<IDataArguments<Values>, Values>(settings.onPrepareSubmitData);
+        this.events.onBeforeSubmit = makeCaller<IDataArguments<Values>, void>(settings.onBeforeSubmit);
         this.events.onSubmitSuccess = makeCaller<void, void>(settings.onSubmitSuccess);
         this.events.onSubmitFailed = makeCaller<void, void>(settings.onSubmitFailed);
 
         this.events.onBeforeDataLoad = makeCaller<void, void>(settings.onBeforeDataLoad);
         this.events.onAfterDataLoad = makeCaller<void, void>(settings.onAfterDataLoad);
-        this.events.onValuesUpdate = makeCaller<Values, void>(settings.onValuesUpdate);
+        this.events.onValuesUpdate = makeCaller<IDataArguments<Values>, void>(settings.onValuesUpdate);
 
         this.modelMetadata = settings.modelType
             ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: 'entity' })
@@ -409,7 +424,8 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
         await this.loadFormByRawMarkupAsync();
 
         this.initialValues = initialValues;
-        this.formData = initialValues;
+        this.#setInternalFormData(initialValues);
+
         this.antdForm.resetFields();
         this.antdForm.setFieldsValue(initialValues);
         //await this.loadData(formArguments);
@@ -478,8 +494,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             return this.initialValues;
         }
 
-        const dataId = formArguments?.id;
-        const canLoadData = dataId && this.dataLoader;
+        const canLoadData = this.dataLoader && this.dataLoader.canLoadData(formArguments);
 
         if (canLoadData) {
             this.dataLoadingState = { status: 'loading', hint: 'Fetching data...', error: null };
@@ -488,7 +503,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             const data = await this.dataLoader.loadAsync({
                 formSettings: this.settings,
                 formFlatStructure: this.flatStructure,
-                dataId: dataId,
+                formArguments: formArguments,
                 expressionExecuter: this.expressionExecuter,
             });
 

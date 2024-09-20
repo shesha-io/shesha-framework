@@ -246,7 +246,7 @@
                                             {
                                                 "id": "oamRBlEs6O2Jlc2FGL_gY",
                                                 "type": "endpointsAutocomplete",
-                                                "propertyName": "dataLoadersSettings.gql.staticEndpoint",
+                                                "propertyName": "dataLoadersSettings.gql.staticEndpoint.url",
                                                 "label": "Endpoint",
                                                 "labelAlign": "right",
                                                 "parentId": "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",
@@ -299,7 +299,7 @@
                                             {
                                                 "id": "63f3360d-1e54-4a79-a888-8cd23b0bedd5",
                                                 "type": "propertyAutocomplete",
-                                                "propertyName": "fieldsToFetch",
+                                                "propertyName": "dataLoadersSettings.gql.fieldsToFetch",
                                                 "label": "Additional fields for fetch",
                                                 "mode": "multiple",
                                                 "labelAlign": "right",
@@ -334,7 +334,7 @@
                                             {
                                                 "id": "g90qK0lVMJf64_8auhs-7eQ7KMmCPa",
                                                 "type": "codeEditor",
-                                                "propertyName": "onDataLoad",
+                                                "propertyName": "dataLoadersSettings.custom.onDataLoad",
                                                 "label": "On Load",
                                                 "labelAlign": "right",
                                                 "parentId": "rlQNrfmmV5tVYCEjLkn6cxvgo_-Yor",
@@ -830,7 +830,7 @@
         "uniqueFormId": "",
         "permissions": null,
         "access": null,
-        "version": 3,
+        "version": 5,
         "dataLoaderType": null,
         "dataLoadersSettings": null,
         "dataSubmitterType": null,

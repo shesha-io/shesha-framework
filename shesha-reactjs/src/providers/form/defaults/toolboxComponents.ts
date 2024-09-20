@@ -101,6 +101,9 @@ import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/co
 import { HEADER_CONFIGURATION, HEADER_PUB_PORTAL_CONFIGURATION } from '@/components/mainLayout/constant';
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import { getToolboxComponentsVisibility } from '@/utils';
+import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
+import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
+import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import FontConfigurator from '@/designer-components/styleFont';
 import BackgroundConfigurator from '@/designer-components/styleBackground';
 import ShadowConfigurator from '@/designer-components/styleShadow';
@@ -222,6 +225,9 @@ export const getToolboxComponents = (
       visible: devMode,
       name: 'Dev',
       components: [
+        PropertyRouterComponent,
+        ThemeEditorComponent,
+        MainMenuEditorComponent,
         PermissionAutocompleteComponent,
         ColumnsEditorComponent, // Hidden
         ReferenceListAutocompleteComponent,

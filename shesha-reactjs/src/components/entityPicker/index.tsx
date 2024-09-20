@@ -9,6 +9,8 @@ import { IEntityPickerProps } from './models';
 import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
+import { getValueByPropertyName } from '@/utils/object';
+import { SheshaError } from '@/utils/errors';
 
 const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, value } = props;
@@ -69,8 +71,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
   // Check if all data for displaying is loaded
   const isLoaded = value 
     ? Array.isArray(value)
-      ? !value.find(x => typeof(x[displayEntityKey]) === 'undefined')
-      : typeof(value[displayEntityKey]) !== 'undefined'
+      ? !value.find(x => typeof(getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      : typeof(getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
 
   const valueId = Array.isArray(value)
@@ -89,9 +91,8 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
 
   const selectedMode = mode === 'single' ? undefined : mode;
 
-  if (!entityType) {
-    throw new Error('Please make sure that either entityType is configured for the entity picker to work properly');
-  }
+  if (!entityType) 
+    throw SheshaError.throwPropertyError('entityType');
 
   const handleMultiChange = (selectedValues: string[]) => {
     const newValues = value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {})));
@@ -120,7 +121,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     } else {
       result = (selectedItems ?? []).map(ent => {
         const key = incomeValueFunc(outcomeValueFunc(ent, {}), {});
-        return { label: ent[displayEntityKey], value: key, key };
+        return { label: getValueByPropertyName(ent, displayEntityKey), value: key, key };
       });
     }
 

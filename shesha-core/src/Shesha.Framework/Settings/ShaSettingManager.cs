@@ -46,6 +46,17 @@ namespace Shesha.Settings
             _userRepository = userRepository;
         }
 
+        public async Task<JObject> GetJObjectOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null)
+        {
+            var setting = _settingDefinitionManager.Get(module, name);
+
+            var settingValue = await _settingStore.GetSettingValueAsync(setting, context ?? GetCurrentContext());
+
+            return settingValue != null
+                ? JObject.Parse(settingValue.Value)
+                : JObject.FromObject(JsonConvert.SerializeObject(setting.GetDefaultValue()));
+        }
+
         public async Task<object> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null) 
         {
             var setting = _settingDefinitionManager.Get(module, name);

@@ -1,6 +1,6 @@
 import { useMutate } from '@/hooks';
 import useThunkReducer, { ThunkDispatch } from '@/hooks/thunkReducer';
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect } from 'react';
+import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { GetCurrentLoginInfoOutputAjaxResponse, sessionGetCurrentLoginInfo } from '@/apis/session';
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { ResetPasswordVerifyOtpResponse } from '@/apis/user';
@@ -49,6 +49,7 @@ import { authReducer } from './reducer';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import { Action } from 'redux-actions';
 import SheshaLoader from '@/components/sheshaLoader';
+import { useSettingValue } from '..';
 
 const DEFAULT_HOME_PAGE = '/';
 const loginEndpoint: IApiEndpoint = { url: '/api/TokenAuth/Authenticate', httpVerb: 'POST' };
@@ -57,6 +58,7 @@ const logoffEndpoint: IApiEndpoint = { url: '/api/TokenAuth/SignOff', httpVerb: 
 export interface IAuthProviderRefProps {
   anyOfPermissionsGranted?: (permissions: string[]) => boolean;
   headers?: any;
+  getIsLoggedIn: () => boolean;
 }
 
 interface IAuthProviderProps {
@@ -105,6 +107,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const { router } = useShaRouting();
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
+  const { value: defaultUrl, loadingState } = useSettingValue({ module: 'Shesha', name: 'Shesha.DefaultUrl' });
+
   const storedToken = getAccessTokenFromStorage(tokenName);
 
   const headersWithoutAuth = { ...(httpHeaders ?? {}) };
@@ -117,6 +121,8 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     token: storedToken?.accessToken,
     headers: initialHeaders,
   });
+
+  const currentUrl = useRef<string>(router.fullPath);
 
   const setters = getFlagSetters(dispatch);
 
@@ -175,6 +181,9 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const redirectToUnauthorized = () => {
     redirect(loginUrl);
   };
+  const redirectToDefaultUrl = () => {
+    redirect(defaultUrl || loginUrl);
+  };
 
   const fetchUserInfo = (headers: IHttpHeaders) => {
     if (state.isFetchingUserInfo || Boolean(state.loginInfo)) return;
@@ -209,7 +218,11 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
           clearAccessToken();
 
           dispatch(fetchUserDataActionErrorAction({ message: 'Not authorized' }));
-          redirectToUnauthorized();
+
+          if (currentUrl.current === '/' || currentUrl.current === '')
+            redirectToDefaultUrl();
+          else
+            redirectToUnauthorized();
         }
       })
       .catch((e) => {
@@ -286,13 +299,17 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   };
 
   useEffect(() => {
+    if (loadingState === 'loading' || loadingState === 'waiting')
+      return;
+
     const httpHeaders = getCleanedInitHeaders(getHttpHeaders());
 
-    const currentUrl = router.fullPath;
-
     if (!httpHeaders) {
-      if (currentUrl !== unauthorizedRedirectUrl) {
-        redirectToUnauthorized();
+      if (currentUrl.current !== unauthorizedRedirectUrl) {
+        if (currentUrl.current === '/' || currentUrl.current === '')
+          redirectToDefaultUrl();
+        else
+          redirectToUnauthorized();
       }
     } else {
       fireHttpHeadersChanged(state);
@@ -300,38 +317,38 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         fetchUserInfo(httpHeaders);
       }
     }
-  }, []);
+  }, [loadingState]);
 
   //#region  Login
   const { mutate: loginUserHttp } = useMutate<AuthenticateModel, AuthenticateResultModelAjaxResponse>();
 
   const loginSuccessHandler =
     (dispatchThunk: ThunkDispatch<IAuthStateContext, Action<any>>, getState: () => IAuthStateContext) =>
-    (data: AuthenticateResultModelAjaxResponse) =>
-      new Promise((resolve, reject) => {
-        dispatchThunk(loginUserSuccessAction());
-        if (data) {
-          const token = data.success && data.result ? (data.result as IAccessToken) : null;
-          if (token && token.accessToken) {
-            // save token to the localStorage
-            saveUserTokenToStorage(token, tokenName);
+      (data: AuthenticateResultModelAjaxResponse) =>
+        new Promise((resolve, reject) => {
+          dispatchThunk(loginUserSuccessAction());
+          if (data) {
+            const token = data.success && data.result ? (data.result as IAccessToken) : null;
+            if (token && token.accessToken) {
+              // save token to the localStorage
+              saveUserTokenToStorage(token, tokenName);
 
-            // save token to the state
-            dispatchThunk(setAccessTokenAction(token.accessToken));
+              // save token to the state
+              dispatchThunk(setAccessTokenAction(token.accessToken));
 
-            // get updated state and notify subscribers
-            const newState = getState();
-            fireHttpHeadersChanged(newState);
+              // get updated state and notify subscribers
+              const newState = getState();
+              fireHttpHeadersChanged(newState);
 
-            // get new headers and fetch the user info
-            const headers = getHttpHeadersFromState(newState);
-            fetchUserInfoAsync(headers).then(resolve).catch(reject);
-          } else {
-            dispatchThunk(loginUserErrorAction(data?.error as IErrorInfo));
-            reject({ stackTrace: data?.error, message: GENERIC_ERR_MSG });
-          }
-        } else reject({ message: GENERIC_ERR_MSG });
-      });
+              // get new headers and fetch the user info
+              const headers = getHttpHeadersFromState(newState);
+              fetchUserInfoAsync(headers).then(resolve).catch(reject);
+            } else {
+              dispatchThunk(loginUserErrorAction(data?.error as IErrorInfo));
+              reject({ stackTrace: data?.error, message: GENERIC_ERR_MSG });
+            }
+          } else reject({ message: GENERIC_ERR_MSG });
+        });
 
   const loginUserAsync = (loginFormData: ILoginForm) =>
     new Promise((resolve, reject) => {
@@ -362,9 +379,11 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
         redirect(url);
       })
       .catch((e) => {
-        const message = e?.message;
+        const message = e?.message || e?.data?.error?.message || 'Not authorized';
         const url = e?.url;
-        if (message) dispatch(fetchUserDataActionErrorAction({ message }));
+
+        dispatch(fetchUserDataActionErrorAction({ message }));
+
         if (url) redirect(url);
       });
   };
@@ -403,19 +422,24 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
 
     const granted = loginInfo.grantedPermissions || [];
 
-    return permissions.some((p) => 
-      granted.some(gp => 
-        gp.permission === p 
+    return permissions.some((p) =>
+      granted.some(gp =>
+        gp.permission === p
         && (
           !gp.permissionedEntity
-          || gp.permissionedEntity.length === 0 
+          || gp.permissionedEntity.length === 0
           || gp.permissionedEntity.some(pe => permissionedEntities?.some(ppe => pe?.id === ppe?.id && ppe?._className === pe?._className))
         )
       )
     );
   };
 
-  if (authRef) authRef.current = { anyOfPermissionsGranted, headers: state?.headers };
+  if (authRef)
+    authRef.current = {
+      anyOfPermissionsGranted,
+      headers: state?.headers,
+      getIsLoggedIn: () => state?.isLoggedIn,
+    };
 
   const anyOfPermissionsGrantedWrapper = (permissions: string[]) => {
     if (permissions?.length === 0) return true;

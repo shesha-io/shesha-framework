@@ -55,7 +55,7 @@ namespace Shesha.MappingMetadata
             return propertyMetadata;
         }
 
-        public async Task UpdateClassNames(Type entityType, List<PropertyInfo> properties, string oldValue, string newValue, bool replace)
+        public async Task UpdateClassNamesAsync(Type entityType, List<PropertyInfo> properties, string oldValue, string newValue, bool replace)
         {
             var session = _sessionFactory.GetCurrentSession();
 

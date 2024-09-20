@@ -59,7 +59,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
             }
         }
 
-        private async Task<ConfigurationItemBase> GetLiveVersionFor(DistributedConfigurableComponent item) 
+        private async Task<ConfigurationItemBase> GetLiveVersionForAsync(DistributedConfigurableComponent item) 
         {
             var query = _componentRepo.GetAll().Where(f => f.Name == item.Name && f.VersionStatus == ConfigurationItemVersionStatus.Live);
             query = query.Where(!string.IsNullOrWhiteSpace(item.ModuleName) 
@@ -103,7 +103,7 @@ namespace Shesha.Web.FormsDesigner.Services.Distribution
                 {
                     var liveVersion = existingComponent.VersionStatus == ConfigurationItemVersionStatus.Live
                         ? existingComponent
-                        : await GetLiveVersionFor(item);
+                        : await GetLiveVersionForAsync(item);
 
                     if (liveVersion != null)
                     {

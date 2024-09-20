@@ -11,6 +11,10 @@ export type ExpressionCaller<TArguments = any, TResult = any> = (args: TArgument
 export type ExpressionFactory<TArguments = any, TResult = any> = (expression: string) => ExpressionCaller<TArguments, TResult>;
 export type AsyncExpressionFactory<TArguments = any, TResult = any> = ExpressionFactory<TArguments, Promise<TResult>>;
 
+export interface IDataArguments<Values> {
+    data: Values;
+}
+
 export interface FormDataSubmitPayload extends Required<SubmitRelatedEvents> {
     data: any;
     formSettings: IFormSettings;
@@ -35,7 +39,7 @@ export interface GqlSubmitterSettings {
 }
 
 export const isGqlSubmitterSettings = (s: any): s is GqlSubmitterSettings => {
-    return s && typeof s === 'object';
+    return s && typeof s === 'object' && s.endpointType;
 };
 
 export type SubmitCaller = (data: any) => Promise<any>;

@@ -24,6 +24,7 @@ export const getSettings = (data: any) =>
               validate: {
                 required: true,
               },
+              jsSetting: false
             })
             .addTextField({
               id: nanoid(),

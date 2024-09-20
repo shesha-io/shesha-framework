@@ -3,6 +3,8 @@ import { IFormDto, IFormSettings } from "../models";
 import { migrateFormApi } from "@/designer-components/_common-migrations/migrateFormApi1";
 import { migrateFormLifecycle } from "@/designer-components/_common-migrations/migrateFormLifecycle";
 import { migrateDefaultApiEndpoints } from "@/designer-components/_common-migrations/migrateDefaultApiEndpoints";
+import { migrateFieldsToFetchAndOnDataLoad } from "@/designer-components/_common-migrations/migrateFieldsToFetchAndOnDataLoad";
+import { migrateGqlCustomEndpoint } from "@/designer-components/_common-migrations/migrateGqlCustomEndpoint";
 
 const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings>) =>
   migrator
@@ -15,6 +17,8 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings>
     .add(2, (prev) => migrateFormLifecycle(prev))
     .add(3, (prev) => ({ ...prev, onValuesUpdate: prev.onValuesUpdate ?? prev['onValuesChanged'] }))
     .add(4, (prev) => migrateDefaultApiEndpoints(prev))
+    .add(5, (prev) => migrateFieldsToFetchAndOnDataLoad(prev))
+    .add(6, (prev) => migrateGqlCustomEndpoint(prev))
   ;
 
 export const migrateFormSettings = (form: IFormDto) => {

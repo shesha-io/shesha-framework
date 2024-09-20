@@ -43,7 +43,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   dynamicComponents={model?.isDynamic ? col?.components : []}
                 />
               </Col>
-          ))}
+            ))}
         </ParentProvider>
       </Row>
     );
@@ -66,6 +66,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       ],
       gutterX: 12,
       gutterY: 12,
+      stylingBox: "{\"marginBottom\":\"5\"}"
     };
 
     return tabsModel;

@@ -50,35 +50,38 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
   availableConstants,
 }) => {
   const settingsEditor = useMemo(() => {
-    const settingsFormFactory = provider.settingsFormFactory
-      ? provider.settingsFormFactory
-      : provider.settingsFormMarkup
-        ? getDefaultFactory(provider.settingsFormMarkup, readOnly)
+    if (provider) {
+      const settingsFormFactory = provider.settingsFormFactory
+        ? provider.settingsFormFactory
+        : provider.settingsFormMarkup
+          ? getDefaultFactory(provider.settingsFormMarkup, readOnly)
+          : null;
+
+      const onCancel = () => {
+        //
+      };
+
+      const onSave = (values) => {
+        if (onChange) onChange(values);
+      };
+
+      const onValuesChange = (_changedValues, values) => {
+        if (onChange) onChange(values);
+      };
+
+      return settingsFormFactory
+        ? settingsFormFactory({
+          model: value,
+          onSave,
+          onCancel,
+          onValuesChange,
+          readOnly,
+          //exposedVariables,
+          availableConstants,
+        })
         : null;
-
-    const onCancel = () => {
-      //
-    };
-
-    const onSave = (values) => {
-      if (onChange) onChange(values);
-    };
-
-    const onValuesChange = (_changedValues, values) => {
-      if (onChange) onChange(values);
-    };
-
-    return settingsFormFactory
-      ? settingsFormFactory({
-        model: value,
-        onSave,
-        onCancel,
-        onValuesChange,
-        readOnly,
-        //exposedVariables,
-        availableConstants,
-      })
-      : null;
+    }
+    return null;
   }, [provider]);
 
   if (!settingsEditor) return null;

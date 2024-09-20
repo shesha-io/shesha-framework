@@ -47,6 +47,7 @@ const ColumnsComponent: IToolboxComponent<IKeyInformationBarProps> = {
         }
       ],
       orientation: 'horizontal',
+      stylingBox: "{\"marginBottom\":\"5\"}"
     };
 
     return tabsModel;

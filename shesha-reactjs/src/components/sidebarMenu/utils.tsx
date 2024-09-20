@@ -1,9 +1,8 @@
 import { MenuProps } from 'antd';
 import classNames from 'classnames';
 import React, { ReactNode } from 'react';
-import { ISidebarMenuItem } from '@/providers/sidebarMenu';
 import ShaIcon, { IconType } from '@/components/shaIcon';
-import { isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
+import { ISidebarMenuItem, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration } from '@/providers/index';
 import Link from 'next/link';
 

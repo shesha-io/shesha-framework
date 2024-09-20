@@ -98,6 +98,7 @@ const TabsComponent: IToolboxComponent<ITabsComponentProps> = {
     const tabsModel: ITabsComponentProps = {
       ...model,
       propertyName: 'custom Name',
+      stylingBox: "{\"marginBottom\":\"5\"}",
       tabs: [{ id: nanoid(), label: 'Tab 1', title: 'Tab 1', key: 'tab1', components: [] }],
     };
     return tabsModel;

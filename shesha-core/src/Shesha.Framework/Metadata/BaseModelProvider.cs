@@ -60,7 +60,7 @@ namespace Shesha.Metadata
             return models.FirstOrDefault(m => m.Alias == nameOrAlias || m.ClassName == nameOrAlias)?.Type;
         }
 
-        public async Task ClearCache()
+        public async Task ClearCacheAsync()
         {
             await ModelsCache.ClearAsync();
         }

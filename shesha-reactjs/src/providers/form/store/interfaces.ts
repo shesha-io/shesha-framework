@@ -7,7 +7,7 @@ import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { FormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
-import { SubmitCaller } from "../submitters/interfaces";
+import { ExpressionCaller, IDataArguments, SubmitCaller } from "../submitters/interfaces";
 
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
@@ -76,6 +76,8 @@ export interface IShaFormInstance<Values = any> {
     submitData: (payload?: SubmitDataPayload) => Promise<Values>;
     fetchData: () => Promise<Values>;
 
+    getDelayedUpdates: () => IDelayedUpdateGroup[];
+
     readonly markupLoadingState: ProcessingState;
     readonly dataLoadingState: ProcessingState;
     readonly dataSubmitState: ProcessingState;
@@ -113,8 +115,8 @@ export interface IShaFormInstance<Values = any> {
 }
 
 export interface SubmitRelatedEvents<Values = any> {
-    onPrepareSubmitData?: (data: Values) => Promise<Values>;
-    onBeforeSubmit?: (data: Values) => Promise<void>;
+    onPrepareSubmitData?: ExpressionCaller<IDataArguments<Values>, Promise<Values>>;
+    onBeforeSubmit?: ExpressionCaller<IDataArguments<Values>, Promise<void>>;
     onSubmitSuccess?: () => Promise<void>;
     onSubmitFailed?: () => Promise<void>;
 }
@@ -122,7 +124,7 @@ export interface SubmitRelatedEvents<Values = any> {
 export interface LiveFormEvents<Values = any> {
     onBeforeDataLoad?: () => Promise<void>;
     onAfterDataLoad?: () => Promise<void>;
-    onValuesUpdate?: (data: Values) => Promise<void>;
+    onValuesUpdate?: ExpressionCaller<IDataArguments<Values>, Promise<void>>;
 }
 
 export interface FormEvents<Values = any> extends LiveFormEvents<Values>, SubmitRelatedEvents<Values> {

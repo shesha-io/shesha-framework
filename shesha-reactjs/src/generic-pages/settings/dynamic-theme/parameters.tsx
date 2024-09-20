@@ -3,7 +3,6 @@ import { Divider, Form, Radio, Space, Tooltip, InputNumber } from 'antd';
 import React, { FC, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
-import { useTheme } from '@/providers';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
 import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
@@ -15,8 +14,18 @@ interface IThemeConfig {
   hint?: string;
 }
 
-const ThemeParameters: FC = () => {
-  const { theme, changeTheme } = useTheme();
+export interface ThemeParametersProps { 
+  value?: IConfigurableTheme;
+  onChange?: (theme: IConfigurableTheme) => void;
+  readonly?: boolean;
+}
+
+const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly }) => {
+  //const { theme, changeTheme } = useTheme();
+
+  const changeThemeInternal = (theme: IConfigurableTheme) => {
+    if (onChange) onChange(theme);
+  };
 
   const mergeThemeSection = (
     section: keyof IConfigurableTheme,
@@ -29,7 +38,7 @@ const ThemeParameters: FC = () => {
     section: keyof IConfigurableTheme,
     update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
   ) => {
-    changeTheme({
+    changeThemeInternal({
       ...theme,
       [section]: mergeThemeSection(section, update),
     });
@@ -51,6 +60,7 @@ const ThemeParameters: FC = () => {
             presets={[{ label: "Presets", defaultOpen: true, colors: presetColors ?? PRESET_COLORS }]}
             value={initialColor}
             onChange={onChange}
+            readOnly={readonly}
           />
           <span>{humanizeString(colorName)} </span>
           <Show when={Boolean(hint)}>
@@ -95,12 +105,10 @@ const ThemeParameters: FC = () => {
           'layoutBackground',
           'layoutBackground',
           theme?.layoutBackground,
-          (hex) => changeTheme({ ...theme, layoutBackground: hex }),
+          (hex) => changeThemeInternal({ ...theme, layoutBackground: hex }),
           BACKGROUND_PRESET_COLORS
         )}
       </Space>
-
-      <Divider />
 
       <SectionSeparator title="Text" />
 
@@ -117,8 +125,6 @@ const ThemeParameters: FC = () => {
         )}
       </Space>
 
-      <Divider />
-
       <SectionSeparator title="Sidebar" />
 
       <Form>
@@ -127,19 +133,18 @@ const ThemeParameters: FC = () => {
             name="sidebarTheme"
             value={theme?.sidebar}
             onChange={(e) => {
-              changeTheme({
+              changeThemeInternal({
                 ...theme,
                 sidebar: e.target.value,
               });
             }}
+            disabled={readonly}
           >
             <Radio value="dark">Dark</Radio>
             <Radio value="light">Light</Radio>
           </Radio.Group>
         </Form.Item>
       </Form>
-
-      <Divider />
 
       <SectionSeparator title="Form Span Settings" />
       <Form {...formItemLayout} fields={[
@@ -158,12 +163,12 @@ const ThemeParameters: FC = () => {
           <InputNumber placeholder="Label Span"
             style={{ width: "100%" }}
             onChange={(value: number) => {
-              changeTheme({
+              changeThemeInternal({
                 ...theme,
                 labelSpan: value,
               });
-            }
-            }
+            }}
+            readOnly={readonly}
           />
         </Form.Item>
 
@@ -171,12 +176,12 @@ const ThemeParameters: FC = () => {
           <InputNumber placeholder="Component Span"
             style={{ width: "100%" }}
             onChange={(value: number) => {
-              changeTheme({
+              changeThemeInternal({
                 ...theme,
                 componentSpan: value,
               });
-            }
-            }
+            }}
+            readOnly={readonly}
           />
         </Form.Item>
       </Form>
