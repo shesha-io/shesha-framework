@@ -4,7 +4,7 @@ import React, { FC } from 'react';
 import { useStyles } from './styles/styles';
 
 export interface IComponentErrorProps {
-  errors: IModelValidation;
+  errors?: IModelValidation;
   resetErrorBoundary?: (...args: Array<unknown>) => void;
   type?: ISheshaErrorTypes;
   message?: string;
@@ -50,7 +50,7 @@ const ComponentError: FC<IComponentErrorProps> = ({
     />
   );
 
-  return errors?.errors.length > 0
+  return errors?.errors?.length > 0
     ? <Tooltip overlayClassName={tooltipClassName} title={errortip(errors)}>{body}</Tooltip>
     : body;
 };

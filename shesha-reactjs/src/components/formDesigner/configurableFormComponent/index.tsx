@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import CustomErrorBoundary from '@/components/customErrorBoundary';
 import DragWrapper from './dragWrapper';
 import FormComponent from '../formComponent';
 import React, {
@@ -115,9 +114,7 @@ export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDes
       <div>
         <DragWrapper componentId={componentModel.id} componentRef={componentRef} readOnly={readOnly} >
           <div style={{ padding: '5px 3px' }}>
-            <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} >
-              <FormComponent componentModel={componentModel} componentRef={componentRef} />
-            </CustomErrorBoundary>
+            <FormComponent componentModel={componentModel} componentRef={componentRef} />
           </div>
         </DragWrapper>
       </div>
@@ -141,8 +138,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} >
-      <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
-    </CustomErrorBoundary>
+    <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
   ); 
 };

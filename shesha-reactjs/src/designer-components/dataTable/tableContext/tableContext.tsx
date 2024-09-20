@@ -23,13 +23,13 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     const getDataPath = evaluateString(endpoint, { data });
 
     if (!sourceType)
-      throw SheshaError.throwModelError('sourceType', '`Source type` is not configured');
+      throw SheshaError.throwPropertyError('sourceType');
     if (sourceType === 'Entity' && !entityType)
-      throw SheshaError.throwModelError('entityType', '`Entity Type` is not configured');
+      throw SheshaError.throwPropertyError('entityType');
     if (sourceType === 'Url' && !endpoint)
-      throw SheshaError.throwModelError('endpoint', '`Custom Endpoint` is not configured');
+      throw SheshaError.throwPropertyError('endpoint');
     if (sourceType === 'Form' && !propertyName)
-      throw SheshaError.throwModelError('propertyName', '`propertyName` is not configured');
+      throw SheshaError.throwPropertyError('propertyName');
 
     const provider = (getFieldValue = undefined, onChange = undefined) => (
         <DataTableProvider

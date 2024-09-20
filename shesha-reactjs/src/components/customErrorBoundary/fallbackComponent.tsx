@@ -15,11 +15,13 @@ const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBou
 
 interface ICustomErrorBoundaryFallbackProps extends FallbackProps {
   fullScreen?: boolean;
+  componentId?: string;
   componentName?: string;
   componentType?: string;
 }
 
 const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps> = ({
+  componentId,
   componentName,
   componentType,
   fullScreen = false,
@@ -58,10 +60,11 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
   if (SheshaError.isSheshaError(error)) {
     const shaErrors = error.cause?.errors;
     if (Boolean(shaErrors)) {
+      if (!shaErrors.componentId) shaErrors.componentId = componentId;
       if (!shaErrors.componentName) shaErrors.componentName = componentName;
       if (!shaErrors.componentType) shaErrors.componentType = componentType;
     }
-    return <ComponentError errors={shaErrors} message={error.message} type={error.cause?.type} />;
+    return <ComponentError errors={shaErrors} message={error.message} type={error.cause?.type} resetErrorBoundary={resetErrorBoundary}/>;
   }
 
   const shaError = {
