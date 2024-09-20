@@ -13,7 +13,7 @@ import { ConfigurationItemsViewMode } from "@/providers/appConfigurator/models";
 import { Form, FormInstance } from "antd";
 import { FormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
-import { setValueByPropertyName } from "@/utils/object";
+import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
@@ -185,7 +185,7 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
             return;
 
         const newData = payload.mergeValues && this.formData
-            ? { ...this.formData, ...values }
+            ? deepMergeValues(this.formData, values)
             : values;
 
         if (mergeValues) {

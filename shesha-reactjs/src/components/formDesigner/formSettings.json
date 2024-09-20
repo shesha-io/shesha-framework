@@ -246,7 +246,7 @@
                                             {
                                                 "id": "oamRBlEs6O2Jlc2FGL_gY",
                                                 "type": "endpointsAutocomplete",
-                                                "propertyName": "dataLoadersSettings.gql.staticEndpoint",
+                                                "propertyName": "dataLoadersSettings.gql.staticEndpoint.url",
                                                 "label": "Endpoint",
                                                 "labelAlign": "right",
                                                 "parentId": "R-QJrw5yvKwqKFR6wKMrOcMYfVN8AX",

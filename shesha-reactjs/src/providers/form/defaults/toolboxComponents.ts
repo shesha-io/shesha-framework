@@ -101,7 +101,7 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
-import ChevronComponent from '@/designer-components/chevron/chevron';
+import PropertyRouterComponent from '@/designer-components/propertyRouter';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -217,6 +217,7 @@ export const getToolboxComponents = (
       visible: devMode,
       name: 'Dev',
       components: [
+        PropertyRouterComponent,
         ThemeEditorComponent,
         MainMenuEditorComponent,
         PermissionAutocompleteComponent,

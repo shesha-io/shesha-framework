@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using Shesha.Authorization.Users;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities;
 using Shesha.EntityHistory;
 using Shesha.Extensions;
 
@@ -113,6 +114,7 @@ namespace Shesha.Domain
         /// User record, may be null for non registered users
         /// </summary>
         [CanBeNull]
+        [CascadeUpdateRules(false, true)]
         public virtual User User { get; set; }
 
         public override string ToString()
