@@ -7,7 +7,7 @@ import { evaluateYesNo } from '@/utils/form';
 import { useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
-import { SheshaErrors } from '@/utils/errors';
+import { SheshaError } from '@/utils/errors';
 
 interface ITableContextInnerProps extends ITableContextComponentProps {
 }
@@ -23,13 +23,13 @@ export const TableContextInner: FC<ITableContextInnerProps> = (props) => {
     const getDataPath = evaluateString(endpoint, { data });
 
     if (!sourceType)
-      throw SheshaErrors.throwModelError('sourceType', '`Source type` is not configured');
+      throw SheshaError.throwModelError('sourceType', '`Source type` is not configured');
     if (sourceType === 'Entity' && !entityType)
-      throw SheshaErrors.throwModelError('entityType', '`Entity Type` is not configured');
+      throw SheshaError.throwModelError('entityType', '`Entity Type` is not configured');
     if (sourceType === 'Url' && !endpoint)
-      throw SheshaErrors.throwModelError('endpoint', '`Custom Endpoint` is not configured');
+      throw SheshaError.throwModelError('endpoint', '`Custom Endpoint` is not configured');
     if (sourceType === 'Form' && !propertyName)
-      throw SheshaErrors.throwModelError('propertyName', '`propertyName` is not configured');
+      throw SheshaError.throwModelError('propertyName', '`propertyName` is not configured');
 
     const provider = (getFieldValue = undefined, onChange = undefined) => (
         <DataTableProvider

@@ -5,7 +5,7 @@ import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
 import { useForm, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
-import { IModelValidation, SheshaError, SheshaErrors } from '@/utils/errors';
+import { IModelValidation, SheshaError } from '@/utils/errors';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -32,7 +32,7 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
 
   const toolboxComponent = getToolboxComponent(componentModel.type);
   if (!toolboxComponent) 
-    throw SheshaErrors.throwError(`Component '${componentModel.type}' not found`);
+    throw SheshaError.throwError(`Component '${componentModel.type}' not found`);
 
   actualModel.hidden = allData.form?.formMode !== 'designer' 
     && (

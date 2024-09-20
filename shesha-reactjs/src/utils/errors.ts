@@ -19,14 +19,19 @@ export interface ISheshaErrorCause {
 }
 
 export class SheshaError extends Error {
+
+  public cause?: ISheshaErrorCause;
+  
   constructor(message: string, errors?: IModelValidation, type?: ISheshaErrorTypes) {
     super(message);
     this.name = 'SheshaError';
     this.cause = { type, errors };
   }
-}
 
-export class SheshaErrors {
+  static isSheshaError(error: Error): error is SheshaError {
+    return error instanceof SheshaError;
+  }
+
   static throwModelError(propertyName: string, error: string) {
     throw new SheshaError('', { hasErrors: true, errors: [{ propertyName, error }] }, 'warning');
   }
@@ -43,4 +48,3 @@ export class SheshaErrors {
     errors.errors.push({ propertyName, error });
   }
 }
-

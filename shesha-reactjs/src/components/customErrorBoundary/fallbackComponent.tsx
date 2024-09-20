@@ -5,7 +5,7 @@ import { Button, Space } from 'antd';
 import { useStyles } from './styles/styles';
 import { useShaRouting } from '@/providers';
 import ComponentError from '../componentErrors';
-import { IModelValidation, ISheshaErrorCause } from '@/utils/errors';
+import { IModelValidation, SheshaError } from '@/utils/errors';
 
 const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>) => {
   // Do something with the error
@@ -55,13 +55,13 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
     );
   }
 
-  if (error.name === 'SheshaError') {
-    const shaError = error.cause as ISheshaErrorCause;
-    if (Boolean(shaError?.errors)) {
-      if (!shaError.errors.componentName) shaError.errors.componentName = componentName;
-      if (!shaError.errors.componentType) shaError.errors.componentType = componentType;
+  if (SheshaError.isSheshaError(error)) {
+    const shaErrors = error.cause?.errors;
+    if (Boolean(shaErrors)) {
+      if (!shaErrors.componentName) shaErrors.componentName = componentName;
+      if (!shaErrors.componentType) shaErrors.componentType = componentType;
     }
-    return <ComponentError errors={shaError?.errors} message={error.message} type={shaError.type} />;
+    return <ComponentError errors={shaErrors} message={error.message} type={error.cause?.type} />;
   }
 
   const shaError = {
@@ -74,16 +74,6 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
   const shaMessage = `An error has ocured when '${componentName}' (${componentType}) rendered`;
 
   return <ComponentError errors={shaError} message={shaMessage} type='error' resetErrorBoundary={resetErrorBoundary}/>;
-
-  return (
-    <div className={styles.errorScreen}>
-      <div>{componentName}</div>
-      <div>{componentType}</div>
-      <h2>An error has occured</h2>
-      <h4>{error?.message}</h4>
-      {typeof resetErrorBoundary === 'function' && <button onClick={resetErrorBoundary}>Try again</button>}
-    </div>
-  );
 };
 
 export default CustomErrorBoundaryFallbackComponent;
