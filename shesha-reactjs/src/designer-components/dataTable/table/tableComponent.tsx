@@ -14,7 +14,6 @@ import { TableOutlined } from '@ant-design/icons';
 import { TableWrapper } from './tableWrapper';
 import { useDataTableStore } from '@/providers';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import ComponentError from '@/components/componentErrors';
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
@@ -36,11 +35,11 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
     );
   },
   validateModel: () => {
-    const errors = { hasErrors: false, errors: [] };
+    /*const errors = { hasErrors: false, errors: [] };
     const store = useDataTableStore(false);
     if (!store) errors.errors.push('Data Table must be used within a Data Table Context');
     errors.hasErrors = errors.errors.length > 0;
-    return errors;
+    return errors;*/
   },
   initModel: (model: ITableComponentProps) => {
     return {

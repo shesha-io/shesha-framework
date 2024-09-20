@@ -136,11 +136,6 @@ export type AvailableConstantsContext = {
   message: MessageInstance;
 };
 
-export const validateModelFields = (model: any, fields: string[]): boolean => {
-  if (!model) return false;
-  return fields.every(f => Boolean(model[f]));
-}
-
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
   const { backendUrl } = useSheshaApplication();
