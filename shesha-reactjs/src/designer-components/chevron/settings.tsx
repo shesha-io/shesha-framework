@@ -76,16 +76,15 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
           </Select>
         </SettingsFormItem>
 
-        <Show when={values.colorSource == 'custom'}>
+        <Show when={values.colorSource === 'custom'}>
           <SettingsFormItem name="activeColor" label="Active Color" jsSetting >
             <ColorPicker readOnly={values.readOnly} allowClear />
           </SettingsFormItem>
+        </Show>
 
-
-          <SettingsFormItem name="fontColor" label="Font Color" jsSetting >
+        <SettingsFormItem name="fontColor" label="Font Color" jsSetting >
             <ColorPicker readOnly={values.readOnly} allowClear />
           </SettingsFormItem>
-        </Show>
 
         <SettingsFormItem name="showIcons" label="Show Icons?" valuePropName="checked" jsSetting>
           <Checkbox disabled={values.readOnly} />

@@ -41,16 +41,16 @@ const RefListItemGroupConfiguratorProvider: FC<PropsWithChildren<IRefListItemGro
 
 
   useEffect(() => {
-    if (props?.items?.length && props.items.some(x =>x.referenceList?.id == props?.referenceList?.id )) return;
+    if (props?.items?.length && props.items.some(x =>x.referenceList?.id === props?.referenceList?.id )) return;
     refetch(getRefListItems(props.referenceList?.id as string))
     .then((resp) => {
-      dispatch(setItems(resp.result.items))
+      dispatch(setItems(resp.result.items));
     })
     .catch((_e) => {
-      console.error("LOG:: reference list error", _e)
+      console.error("LOG:: reference list error", _e);
     });
 
-  }, [props?.referenceList?.id])
+  }, [props?.referenceList?.id]);
 
   const selectItem = (uid: string) => {
     dispatch(selectItemAction(uid));
