@@ -14,7 +14,7 @@ const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
             setFileList([
                 {
                     uid: '-1',
-                    name: 'image.png',
+                    name: '',
                     status: 'done',
                     url: backgroundImage.file,
                 },
@@ -49,6 +49,7 @@ const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
                 listType="picture"
                 fileList={fileList}
                 onPreview={handlePreview}
+                onRemove={() => setFileList([])}
                 onChange={handleChange}
                 beforeUpload={() => false}
                 disabled={readOnly}
