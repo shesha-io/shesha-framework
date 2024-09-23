@@ -8,7 +8,7 @@ import {
 import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
 import { Select } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
-import { useEntityAutocomplete } from '@/utils/autocomplete';
+import { useEntityAutocomplete, AutocompleteValueType } from '@/utils/autocomplete';
 
 /**
  * Entity autocomplete
@@ -42,8 +42,16 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     filter,
   } = props;
 
+  const extractAutoCompleteRawValue = (localValue: any): AutocompleteValueType => {
+    if (Array.isArray(localValue))
+      return localValue.map(val => {
+        return val?.id ? val.id : val;
+      });
+    else
+      return typeof localValue === 'string' ? localValue : localValue?.id ?? undefined;
+  };
 
-  const rawValue = typeof value === 'string' || Array.isArray(value) ? value : (value as any)?.id ?? undefined;
+  const rawValue = extractAutoCompleteRawValue(value);
   /* TODO: uncomment and test with arrays and numbers
       : Array.isArray(value)
         ? value
@@ -181,7 +189,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       className="sha-dropdown"
-      dropdownStyle={{...style, height: 'auto'}}
+      dropdownStyle={{ ...style, height: 'auto' }}
       showSearch={!disableSearch}
       labelInValue={true}
       notFoundContent={notFoundContent}
@@ -205,11 +213,11 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       mode={value && mode === 'multiple' ? mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
     >
       {options?.map(({ value: localValue, label, data }) => (
-      
-       <Select.Option value={localValue} key={localValue} data={data}>
+
+        <Select.Option value={localValue} key={localValue} data={data}>
           {label}
         </Select.Option>
-        
+
       ))}
     </Select>
   );
