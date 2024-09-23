@@ -13,7 +13,7 @@ interface AutocompleteReturn {
   loading: boolean;
 }
 
-export type AutocompleteValueType = string | string[];
+export type AutocompleteValueType = string | object[];
 
 export interface IAutocompleteProps {
   entityType: string;
@@ -26,7 +26,12 @@ export interface IAutocompleteProps {
 const buildFilterById = (value: AutocompleteValueType): string => {
   if (!value) return null;
 
-  const ids = Array.isArray(value) ? value : [value];
+  const valueArray = Array.isArray(value) ? value : [value];
+  //map the ids - if array of objects get the id
+  const ids = valueArray.map(valueObject=>{
+    return valueObject?.id ? valueObject.id : valueObject;
+  });
+  
   return getEntityFilterByIds(ids);
 };
 
