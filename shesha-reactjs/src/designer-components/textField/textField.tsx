@@ -1,4 +1,4 @@
-import { CodeOutlined } from '@ant-design/icons';
+import { CodeOutlined, ConsoleSqlOutlined } from '@ant-design/icons';
 import { ConfigProvider, Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import moment from 'moment';
@@ -59,12 +59,14 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const { dimensions, border, font, shadow, background } = model?.styles || {};
+
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
+    if (model.propertyName === 'textField1') console.log('model', model);
     useEffect(() => {
       const fetchStyles = async () => {
         getBackgroundStyle(background, backendUrl, httpHeaders).then((style) => {

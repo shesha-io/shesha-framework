@@ -7,6 +7,7 @@ import FormItem from '@/designer-components/_settings/components/formItem';
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
 import { PlusOutlined } from '@ant-design/icons';
+import { IBackgroundValue } from './interfaces';
 interface IBackgroundProps {
     value?: any;
     readOnly?: boolean;
@@ -16,8 +17,10 @@ interface IBackgroundProps {
 const BackgroundComponent: FC<IBackgroundProps> = (props) => {
     const { value = {}, readOnly, onChange } = props;
 
-    const background = value?.background || { gradient: { colors: {} } };
+    const background = value || { gradient: { colors: {} } };
     const { gradient } = background;
+
+    console.log('background', value, background);
 
     useEffect(() => {
         if (!background?.gradient?.colors) {
@@ -26,8 +29,8 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
         }
     }, [background.type]);
 
-    const renderBackgroundInput = () => {
-        switch (background?.type) {
+    const renderBackgroundInput = (type: IBackgroundValue['type']) => {
+        switch (type) {
             case 'gradient':
                 return (
                     <>
@@ -93,10 +96,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                 );
             case 'upload':
                 return (
-                    <ImageUploader
-                        backgroundImage={background?.file}
-                        readOnly={readOnly}
-                    />
+                    <SettingInput property={'styles.background.file'} label="File" readOnly={readOnly} type='imageUploader' />
                 );
             case 'storedFile':
                 return (
@@ -148,7 +148,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
     return (
         <>
             <SettingInput buttonGroupOptions={backgroundTypeOptions} value={background?.type || 'color'} property='styles.background.type' readOnly={readOnly} type='radio' label='Type' />
-            {renderBackgroundInput()}
+            {renderBackgroundInput(background?.type)}
             <SizeAndRepeat readOnly={readOnly} backgroundSize={background?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
         </>
     );

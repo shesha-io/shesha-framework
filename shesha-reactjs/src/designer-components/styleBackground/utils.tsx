@@ -13,6 +13,7 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
 
 export const getBackgroundStyle = async (input?: IBackgroundValue, backendUrl?, httpHeaders?): Promise<React.CSSProperties> => {
 
+
     if (!input) return {};
     const style: React.CSSProperties = {};
 
@@ -24,18 +25,9 @@ export const getBackgroundStyle = async (input?: IBackgroundValue, backendUrl?, 
     } else if (input.type === 'url') {
         style.backgroundImage = `url(${input.url})`;
     } else if (input.type === 'upload') {
-        style.backgroundImage = `url(${input.file})`;
+        style.backgroundImage = `url(${input.file.file})`;
     } else if (input.type === 'storedFile') {
 
-        axios({
-            url: `${backendUrl}/api/StoredFile/Download?id=${input.storedFile.id}`,
-            method: 'GET',
-            responseType: 'blob',
-            headers: { ...httpHeaders, "Content-Type": "application/octet-stream" },
-        }).then((response) => {
-            const url = URL.createObjectURL(new Blob([response.data])).replace('blob:', '');
-            style.backgroundImage = `url(${url})`;
-        });
     }
 
     if (input.size) {

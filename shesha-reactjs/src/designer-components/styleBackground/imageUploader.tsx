@@ -1,63 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Image, Upload } from 'antd';
-import type { UploadFile } from 'antd';
+import type { UploadFile, UploadProps } from 'antd';
 import { toBase64 } from './utils';
-import FormItem from '@/designer-components/_settings/components/formItem';
 
-interface ImageUploaderProps {
-    backgroundImage: {
-        file: UploadFile;
-        fileList: UploadFile[];
-    } | null;
-    readOnly: boolean;
-}
-
-const ImageUploader: React.FC<ImageUploaderProps> = ({ backgroundImage, readOnly }) => {
+const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     useEffect(() => {
-        if (backgroundImage && backgroundImage.fileList) {
-            setFileList(backgroundImage.fileList);
+        if (backgroundImage.file) {
+            setFileList([
+                {
+                    uid: '-1',
+                    name: 'image.png',
+                    status: 'done',
+                    url: backgroundImage.file,
+                },
+            ]);
         }
     }, [backgroundImage]);
-
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await toBase64(file.originFileObj as File);
         }
-
         setPreviewImage(file.url || (file.preview as string));
         setPreviewOpen(true);
     };
-
-    const handleChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
+    const handleChange: UploadProps['onChange'] = async ({ fileList: newFileList }) => {
         setFileList(newFileList);
+        if (newFileList.length > 0 && newFileList[0].originFileObj) {
+            const base64Image = await toBase64(newFileList[0].originFileObj as File);
+            onChange({ file: base64Image });
+        } else if (newFileList.length === 0) {
+            onChange({ file: null });
+        }
     };
-
     const uploadButton = (
         <button style={{ border: 0, background: 'none' }} type="button">
             <PlusOutlined />
             <div style={{ marginTop: 8 }}>Upload</div>
         </button>
     );
-
     return (
         <div style={{ position: 'relative' }}>
-            <FormItem name="styles.background.file" label="File" jsSetting>
-                <Upload
-                    listType="picture"
-                    fileList={fileList}
-                    onPreview={handlePreview}
-                    onChange={handleChange}
-                    disabled={readOnly}
-                >
-                    {fileList.length >= 1 ? null : uploadButton}
-                </Upload>
-            </FormItem>
-
+            <Upload
+                listType="picture"
+                fileList={fileList}
+                onPreview={handlePreview}
+                onChange={handleChange}
+                beforeUpload={() => false}
+                disabled={readOnly}
+            >
+                {fileList.length >= 1 ? null : uploadButton}
+            </Upload>
             <Image
                 style={{ display: 'none' }}
                 preview={{
@@ -69,5 +66,4 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ backgroundImage, readOnly
         </div>
     );
 };
-
 export default ImageUploader;

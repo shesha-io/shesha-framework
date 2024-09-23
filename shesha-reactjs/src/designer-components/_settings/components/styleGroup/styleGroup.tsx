@@ -42,13 +42,9 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
         return value?.dimensions;
     }, [value?.dimensions]);
 
-    const borderValue: IBorderValue = useMemo(() => {
-        return value?.border;
-    }, [{ ...value?.border }]);
+    const borderValue: IBorderValue = value?.border;
 
-    const backgroundValue: IBackgroundValue = useMemo(() => {
-        return value?.background;
-    }, [{ ...value?.background }]);
+    const backgroundValue: IBackgroundValue = value?.background;
 
     const shadowValue: IShadowValue = useMemo(() => {
         return value?.shadow;
@@ -75,11 +71,11 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             label: 'Background',
             children: <BackgroundComponent value={backgroundValue} onChange={onChange} />
         },
-        {
-            key: '5',
-            label: 'Shadow',
-            children: <ShadowComponent value={shadowValue} onChange={onChange} />
-        },
+        // {
+        //     key: '5',
+        //     label: 'Shadow',
+        //     children: <ShadowComponent value={shadowValue} onChange={onChange} />
+        // },
         {
             key: '6',
             label: 'Styling',

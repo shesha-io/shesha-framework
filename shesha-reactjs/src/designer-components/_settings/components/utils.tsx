@@ -6,6 +6,7 @@ import { useSearchQuery } from './tabs/context';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import ImageUploader from '@/designer-components/styleBackground/imageUploader';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -22,7 +23,7 @@ export interface IDropdownOption {
 interface IInputProps {
     label: string;
     property: any;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code' | 'iconPicker';
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code' | 'iconPicker' | 'imageUploader';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -65,8 +66,8 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
         case 'dropdown':
             return <Select
                 size={size}
-                value={value}
-                onChange={onChange}
+                onChange={
+                    onChange}
             >
                 {dropdownOptions.map(option => (
                     <Option key={option.value} value={value}>
@@ -91,7 +92,13 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
         case 'code':
             return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} />;
         case 'iconPicker':
-            return <IconPicker selectBtnSize='small' readOnly={readOnly} value={value} />;
+            return <IconPicker selectBtnSize='small' readOnly={readOnly} value={value} onChange={onChange} />;
+        case 'imageUploader':
+            return <ImageUploader
+                backgroundImage={value}
+                readOnly={readOnly}
+                onChange={onChange}
+            />
         default:
             return <Input
                 size={size}
