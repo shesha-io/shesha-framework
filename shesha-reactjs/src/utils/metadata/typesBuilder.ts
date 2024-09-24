@@ -300,6 +300,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
             const dataType = await this.#getTypescriptType(prop);
             if (dataType) {
                 typesImporter.import(dataType);
+                this.#appendCommentBlock(sb, [prop.label, prop.description]);
                 sb.append(`${prop.path}${prop.isNullable ? '?' : ''}: ${dataType.typeName};`);
             }
         });
