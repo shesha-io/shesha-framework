@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { Button, Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -8,6 +8,7 @@ import { useStyles } from '@/components/listEditor/styles/styles';
 import { getActualModel, getStyle } from '@/providers/form/utils';
 import { addPx } from '@/designer-components/button/util';
 import classNames from 'classnames';
+import { useDeepCompareMemo } from '@/hooks';
 
 const { Text } = Typography;
 
@@ -32,33 +33,9 @@ export interface IButtonGroupItemProps {
 export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelContext, actionConfiguration }) => {
 
   const { styles } = useStyles();
-  const actualItem = useMemo(() => getActualModel({ ...item, actionConfiguration }, actualModelContext)
+  const actualItem = useDeepCompareMemo(() => getActualModel({ ...item, actionConfiguration }, actualModelContext)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    , [
-      item.icon,
-      item.label,
-      item.tooltip,
-      item.iconPosition,
-      item.size,
-      item.buttonType,
-      item.borderColor,
-      item.borderRadius,
-      item.height,
-      item.width,
-      item.backgroundColor,
-      item.fontSize,
-      item.fontWeight,
-      item.color,
-      item.borderStyle,
-      item.borderWidth,
-      item.readOnly,
-      item.style,
-      item.block,
-      item.danger,
-      actionConfiguration,
-      actualModelContext,
-      actualModelContext
-    ]);
+    , [{ ...item }, { ...actionConfiguration }, { ...actualModelContext }]);
 
   const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius, height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth, readOnly, style: itemStyle, block, danger } = actualItem;
 
