@@ -78,6 +78,7 @@ import { useShaFormInstance } from './providers/shaFormProvider';
 import { QueryStringParams } from '@/utils/url';
 import { removeGhostKeys } from '@/utils/form';
 import { isEmpty } from 'lodash';
+import { TouchableProxy } from './touchableProxy';
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value = any> {
@@ -135,6 +136,52 @@ export type AvailableConstantsContext = {
   message: MessageInstance;
   httpClient: HttpClientApi;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+
+export function executeScript<TResult = any>(
+  expression: string,
+  expressionArgs: IExpressionExecuterArguments
+): Promise<TResult> {
+  return new Promise<TResult>((resolve, reject) => {
+    if (!expression) reject('Expression must be defined');
+
+    try {
+      let argsDefinition = '';
+      const argList: any[] = [];
+      for (const argumentName in expressionArgs) {
+        if (expressionArgs.hasOwnProperty(argumentName)) {
+          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
+          argList.push(expressionArgs[argumentName]);
+        }
+      }
+
+      const asyncFn = new AsyncFunction(argsDefinition, expression);
+      const result = asyncFn.apply(null, argList);
+      resolve(result);
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
+  if (!expression) throw new Error('Expression must be defined');
+
+  try {
+    const functionBody = `
+    with(context) {
+      ${expression}
+    }
+  `;
+    const dynamicFunction = new Function('context', functionBody);
+    return dynamicFunction(context);
+  } catch (error) {
+    console.error(`executeScriptSync error`, error);
+    return null;
+  }
+}
 
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
@@ -290,16 +337,14 @@ const getValue = (val: any, allData: any, calcValue: (setting: IPropertySetting,
 const calcValue = (setting: IPropertySetting, allData: any) => {
   const getSettingValue = (val: any) => getValue(val, allData, calcValue);
   try {
-    let vars = 'staticValue, getSettingValue';
-    const datas = [setting?._value, getSettingValue];
-    if (allData)
-      for (const key in allData) {
-        if (Object.hasOwn(allData, key)) {
-          vars += `, ${key}`;
-          datas.push(allData[key]);
-        }
-      }
-    const res = new Function(vars, setting?._code)(...datas);
+    if (allData.addAccessor && allData instanceof TouchableProxy) {
+      allData.addAccessor('staticValue', () => setting?._value);
+      allData.addAccessor('getSettingValue', () => getSettingValue);
+    } else {
+      allData.staticValue = setting?._value;
+      allData.getSettingValue = getSettingValue;
+    }
+    const res = executeScriptSync(setting?._code, allData);
     return res;
   } catch (error) {
     console.error("calcValue failed", error);
@@ -895,52 +940,6 @@ export const getFunctionExecutor = <TResult = any>(
   const expressionExecuter = new Function(argumentsList, expression);
   return expressionExecuter as FunctionExecutor<TResult>;
 };
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
-
-export function executeScript<TResult = any>(
-  expression: string,
-  expressionArgs: IExpressionExecuterArguments
-): Promise<TResult> {
-  return new Promise<TResult>((resolve, reject) => {
-    if (!expression) reject('Expression must be defined');
-
-    try {
-      let argsDefinition = '';
-      const argList: any[] = [];
-      for (const argumentName in expressionArgs) {
-        if (expressionArgs.hasOwnProperty(argumentName)) {
-          argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-          argList.push(expressionArgs[argumentName]);
-        }
-      }
-
-      const asyncFn = new AsyncFunction(argsDefinition, expression);
-      const result = asyncFn.apply(null, argList);
-      resolve(result);
-    } catch (e) {
-      reject(e);
-    }
-  });
-}
-
-export function executeScriptSync<TResult = any>(expression: string, context: IExpressionExecuterArguments): TResult {
-  if (!expression) throw new Error('Expression must be defined');
-
-  try {
-    const functionBody = `
-    with(context) {
-      ${expression}
-    }
-  `;
-    const dynamicFunction = new Function('context', functionBody);
-    return dynamicFunction(context);
-  } catch (error) {
-    console.error(`executeScriptSync error`, error);
-    return null;
-  }
-}
 
 const isComponentFiltered = (
   component: IConfigurableFormComponent,
