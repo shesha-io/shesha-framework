@@ -34,7 +34,31 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
   const { styles } = useStyles();
   const actualItem = useMemo(() => getActualModel({ ...item, actionConfiguration }, actualModelContext)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    , [{ ...item }, actualModelContext]);
+    , [
+      item.icon,
+      item.label,
+      item.tooltip,
+      item.iconPosition,
+      item.size,
+      item.buttonType,
+      item.borderColor,
+      item.borderRadius,
+      item.height,
+      item.width,
+      item.backgroundColor,
+      item.fontSize,
+      item.fontWeight,
+      item.color,
+      item.borderStyle,
+      item.borderWidth,
+      item.readOnly,
+      item.style,
+      item.block,
+      item.danger,
+      actionConfiguration,
+      actualModelContext,
+      actualModelContext
+    ]);
 
   const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius, height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth, readOnly, style: itemStyle, block, danger } = actualItem;
 
