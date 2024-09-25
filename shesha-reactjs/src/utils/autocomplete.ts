@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { EntityData, IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import { getEntityFilterByIds } from './graphQl';
-import { isEqual } from 'lodash';
+import { isEqual,isEmpty } from 'lodash';
 
 interface AutocompleteReturn {
   data: EntityData[];
@@ -13,7 +13,7 @@ interface AutocompleteReturn {
   loading: boolean;
 }
 
-export type AutocompleteValueType = string | object[];
+export type AutocompleteValueType = object | object[];
 
 export interface IAutocompleteProps {
   entityType: string;
@@ -22,17 +22,28 @@ export interface IAutocompleteProps {
   displayProperty?: string;
   value?: AutocompleteValueType;
 }
-
+const extractIdFromValue = (valueObject: any) :string =>{
+  return typeof valueObject === 'string' ? valueObject : valueObject?.id ?? undefined;
+}
 const buildFilterById = (value: AutocompleteValueType): string => {
   if (!value) return null;
 
-  const valueArray = Array.isArray(value) ? value : [value];
-  //map the ids - if array of objects get the id
-  const ids = valueArray.map(valueObject=>{
-    return valueObject?.id ? valueObject.id : valueObject;
-  });
+  const ids = [];
+
+  if (Array.isArray(value)) {
+    value.forEach(valueobject => {
+      const id = extractIdFromValue(valueobject);
+      if (id)
+        ids.push(id);
+    });
+  }
+  else {
+    const id = extractIdFromValue(value);
+    if (id)
+      ids.push(id);
+  }
   
-  return getEntityFilterByIds(ids);
+  return isEmpty(ids) ? undefined : getEntityFilterByIds(ids);
 };
 
 export const autocompleteValueIsEmpty = (value: any): boolean => {
