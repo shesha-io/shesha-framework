@@ -106,7 +106,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
       <div className={styles.jsContent}>
         <Button
           hidden={props.readOnly}
-          className={`${styles.jsSwitch} inlineJS'`}
+          className={`${styles.jsSwitch} inlineJS`}
           type='text'
           danger={mode === 'value' && !!code}
           ghost
@@ -115,7 +115,6 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
           color='lightslategrey'
           onClick={onSwitchMode}
         />
-
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
       </div>

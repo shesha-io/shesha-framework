@@ -40,8 +40,8 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
             }}
 
             className='sha-js-label'
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
+            labelCol={props.labelCol || { span: 24 }}
+            wrapperCol={props.wrapperCol || { span: 24 }}
         >
             {(value, onChange) =>
                 jsSetting === false ? (

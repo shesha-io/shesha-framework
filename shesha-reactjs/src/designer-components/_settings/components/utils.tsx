@@ -7,6 +7,7 @@ import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import ImageUploader from '@/designer-components/styleBackground/imageUploader';
+import { useStyles } from '../styles/styles';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -41,6 +42,7 @@ interface IInputProps {
 const { Option } = Select;
 
 const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, onChange }) => {
+    const { styles } = useStyles();
 
     return (
         <Select
@@ -50,6 +52,7 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
             onChange={(unit) => {
                 onChange({ unit, value: value?.value || '' });
             }}
+            className={styles.unitSelector}
         >
             {units.map(unit => (
                 <Option key={unit} value={unit} >{unit}</Option>
@@ -120,7 +123,7 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
                 <FormItem name={`${property}`} label={hideLabel ? null : label} jsSetting={jsSetting} readOnly={readOnly} >
                     {children ? children : <InputComponent size='small' label={label} type={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
                 </FormItem>
-            </div>
+            </div >
         );
     }
 
@@ -175,10 +178,11 @@ export const filterDynamicComponents = (components, query) => {
 
         return ({
             ...c,
+            className: [c.className,],
             hidden: !c.label?.toLowerCase().includes(query.toLowerCase()),
             components: c.components ? filterDynamicComponents(c.components, query) : undefined
         });
     });
 
-    return filterResult;
+    return filterResult.filter(c => !c.hidden);
 };

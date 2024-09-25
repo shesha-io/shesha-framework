@@ -26,7 +26,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                         containerId={tab.id + tab.key}
                         dynamicComponents={filterDynamicComponents(tab.components, searchQuery)} />
                 </ParentProvider>
-                : searchFormItems(tab.children, searchQuery)
+                : searchFormItems(tab.children, searchQuery),
         })));
     }, [searchQuery]);
 

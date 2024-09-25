@@ -8,12 +8,12 @@ export interface IPrefixSuffixType {
     model?: any;
 }
 
-const PrefixSuffixComponent: FC<IPrefixSuffixType> = ({ readOnly, model }) => {
+const PrefixSuffixComponent: FC<IPrefixSuffixType> = ({ readOnly, model, onChange }) => {
 
     return (
         <Col className="gutter-row" span={24} >
-            <InputRow inputs={[{ label: 'Prefix', property: 'prefix', readOnly: readOnly, value: model?.suffix }, { type: 'iconPicker', property: 'prefixIcon', label: 'Prefix Icon', readOnly }]} />
-            <InputRow inputs={[{ label: 'Suffix', property: 'suffix', readOnly: readOnly, value: model?.suffixIcon }, { type: 'iconPicker', property: 'suffixIcon', label: 'Suffix Icon', readOnly }]} />
+            <InputRow inputs={[{ label: 'Prefix', property: 'prefix', readOnly: readOnly, value: model?.suffix }, { type: 'iconPicker', property: 'prefixIcon', label: 'Prefix Icon', readOnly, onChange }]} />
+            <InputRow inputs={[{ label: 'Suffix', property: 'suffix', readOnly: readOnly, value: model?.suffixIcon }, { type: 'iconPicker', property: 'suffixIcon', label: 'Suffix Icon', readOnly, onChange }]} />
         </Col>
     );
 };

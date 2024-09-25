@@ -2,12 +2,12 @@ import { Button, Col, Form, Input, Row, Tag } from 'antd';
 import { Autocomplete } from '@/components/autocomplete';
 import React, { FC, useEffect } from 'react';
 import SizeAndRepeat from './sizeAndRepeat';
-import ImageUploader from './imageUploader';
 import FormItem from '@/designer-components/_settings/components/formItem';
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
 import { PlusOutlined } from '@ant-design/icons';
 import { IBackgroundValue } from './interfaces';
+import { useTheme } from '@/index';
 interface IBackgroundProps {
     value?: any;
     readOnly?: boolean;
@@ -16,16 +16,16 @@ interface IBackgroundProps {
 
 const BackgroundComponent: FC<IBackgroundProps> = (props) => {
     const { value = {}, readOnly, onChange } = props;
+    const { theme } = useTheme();
 
     const background = value || { gradient: { colors: {} } };
     const { gradient } = background;
 
-    console.log('background', value, background);
-
     useEffect(() => {
         if (!background?.gradient?.colors) {
-            const newColor = '#000000';
-            onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: [newColor, newColor] } } });
+            const color1 = theme.application.primaryColor;
+            const color2 = '#fff';
+            onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: [color1, color2] } } });
         }
     }, [background.type]);
 
@@ -138,7 +138,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                         value={background?.color}
                         property='styles.background.color'
                         readOnly={readOnly}
-                        label="Color"
+                        label='Color'
                         type='color'
                     />
                 );

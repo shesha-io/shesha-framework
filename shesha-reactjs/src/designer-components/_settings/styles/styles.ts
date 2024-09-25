@@ -71,10 +71,20 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         }
     `);
 
+    const unitSelector = cx(css`
+        .ant-select-selector {
+        padding: 1px 2px !important;
+    }
+        .ant-select-arrow {
+            margin-left: 2px !important;
+        }
+    `);
+
     return {
         jsSwitch,
         contentJs,
         contentCode,
         jsContent,
+        unitSelector
     };
 });

@@ -13,6 +13,7 @@ import FontComponent from '@/designer-components/styleFont/fontComponent';
 import SizeComponent from '@/designer-components/styleDimensions/sizeComponent';
 import ShadowComponent from '@/designer-components/styleShadow/shadowComponent';
 import { IFontValue } from '@/designer-components/styleFont/interfaces';
+import { CollapsiblePanel } from '@/components';
 
 export type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
 
@@ -67,15 +68,15 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             children: <BorderComponent value={borderValue} onChange={onChange} />
         },
         {
-            key: '1',
+            key: '4',
             label: 'Background',
             children: <BackgroundComponent value={backgroundValue} onChange={onChange} />
         },
-        // {
-        //     key: '5',
-        //     label: 'Shadow',
-        //     children: <ShadowComponent value={shadowValue} onChange={onChange} />
-        // },
+        {
+            key: '5',
+            label: 'Shadow',
+            children: <ShadowComponent value={shadowValue} onChange={onChange} />
+        },
         {
             key: '6',
             label: 'Styling',
@@ -101,7 +102,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
                         contentPadding: 0,
                         colorBgBase: 'white',
                         colorBorder: 'white',
-                        headerPadding: '0px 16px',
+                        headerPadding: 0,
                     },
                     Tag: {
                         padding: 0,
