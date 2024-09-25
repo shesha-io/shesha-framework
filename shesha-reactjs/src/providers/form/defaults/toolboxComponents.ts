@@ -101,7 +101,6 @@ import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/co
 import { HEADER_CONFIGURATION, HEADER_PUB_PORTAL_CONFIGURATION } from '@/components/mainLayout/constant';
 import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import { getToolboxComponentsVisibility } from '@/utils';
-import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
 import FontConfigurator from '@/designer-components/styleFont';
@@ -111,6 +110,8 @@ import LabelConfigurator from '@/designer-components/styleLabel';
 import PrefixSuffixConfigurator from '@/designer-components/stylePrefixSuffix';
 import StyleGroup from '@/designer-components/_settings/components/styleGroup';
 import SettingsTabs from '@/designer-components/_settings/components/tabs';
+import PropertyRouterComponent from '@/designer-components/propertyRouter';
+import ChevronComponent from '@/designer-components/chevron/chevron';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -161,6 +162,7 @@ export const getToolboxComponents = (
         Progress,
         RefListStatusComponent,
         StatusTag,
+        ChevronComponent
       ],
     },
     {

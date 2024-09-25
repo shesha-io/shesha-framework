@@ -94,6 +94,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
         templateSettings={props.templateSettings}
         fileName={props.fileName ?? props.propertyName}
         availableConstants={props.availableConstants}
+        resultType={props.resultType}
         style={mode === 'dialog' ? { height: "100%" } : undefined}
       />
     );

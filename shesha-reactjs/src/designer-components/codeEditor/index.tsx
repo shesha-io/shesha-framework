@@ -11,9 +11,10 @@ import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { useFormData } from '@/providers';
+import { useFormData, useShaFormInstance } from '@/providers';
 import { CodeEditorWithStandardConstants } from './codeEditorWithConstants';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
+import camelcase from 'camelcase';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -31,6 +32,7 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
     };
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
+    const shaFormInstance = useShaFormInstance();
 
     const usePassedConstants = model.availableConstantsExpression;
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
@@ -38,8 +40,26 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
         return Promise.reject("AvailableConstantsExpression is mandatory");
 
       const metadataBuilder = metadataBuilderFactory("baseProperties");
-      return executeScript<IObjectMetadata>(model.availableConstantsExpression, { data: formData, metadataBuilder });
-    }, [model.availableConstantsExpression, metadataBuilderFactory, formData]);
+      return executeScript<IObjectMetadata>(model.availableConstantsExpression, { 
+        data: formData, 
+        metadataBuilder,
+        form: shaFormInstance,
+      });
+    }, [model.availableConstantsExpression, metadataBuilderFactory, formData, shaFormInstance]);
+
+    const resultTypeEvaluator = () => {
+      if (!Boolean(model.resultTypeExpression?.trim()))
+        return undefined;
+
+      const resultTypePrefix = camelcase(model.templateSettings?.functionName ?? "evaluation", { pascalCase: true });
+      
+      const metadataBuilder = metadataBuilderFactory(`${resultTypePrefix}Result`, "Result of evaluation");
+      return executeScript<IObjectMetadata>(model.resultTypeExpression, { 
+        data: formData, 
+        metadataBuilder,
+        form: shaFormInstance,
+      });
+    };
 
     return (
       <ConfigurableFormItem model={model}>
@@ -54,8 +74,8 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
           };
 
           return usePassedConstants
-            ? <CodeEditor {...props} availableConstants={constantsAccessor} />
-            : <CodeEditorWithStandardConstants {...props} />;
+            ? <CodeEditor {...props} availableConstants={constantsAccessor} resultType={resultTypeEvaluator}/>
+            : <CodeEditorWithStandardConstants {...props} resultType={resultTypeEvaluator}/>;
         }
         }
       </ConfigurableFormItem>
