@@ -167,6 +167,9 @@ namespace Shesha
 
             // register Shesha exception to error converter
             IocManager.Resolve<ErrorInfoBuilder>().AddExceptionConverter(IocManager.Resolve<ShaExceptionToErrorInfoConverter>());
+
+            // Enabled by default for Background Jobs
+            Configuration.EntityHistory.IsEnabledForAnonymousUsers = true;
         }
     }
 }

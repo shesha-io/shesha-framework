@@ -4,7 +4,6 @@ import { createNamedContext } from '@/utils/react';
 export interface IShaRoutingStateContext {
   router?: IRouter;
   nextRoute?: string;
-  getFormUrlFunc?: (formId: FormIdentifier) => string;
 }
 
 export interface IShaRoutingActionsContext {
@@ -12,6 +11,8 @@ export interface IShaRoutingActionsContext {
   getFormUrl: (formId: FormIdentifier) => string;
   getUrlFromNavigationRequest: (request: INavigateActoinArguments) => string;
 }
+
+export type ShaRouting = IShaRoutingStateContext & IShaRoutingActionsContext;;
 
 export const SHA_ROUTING_CONTEXT_INITIAL_STATE: IShaRoutingStateContext = {};
 
