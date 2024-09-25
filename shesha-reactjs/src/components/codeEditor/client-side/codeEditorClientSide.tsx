@@ -1,13 +1,12 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Monaco, loader } from '@monaco-editor/react';
 import { IDisposable, IPosition, IRange, Uri, UriComponents, editor, languages } from 'monaco-editor';
 import { DataTypes, IObjectMetadata } from "@/interfaces";
-import { ModelTypeIdentifier, NestedProperties, PropertiesPromise, asPropertiesArray, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
-import { TypesBuilder } from "@/utils/metadata/typesBuilder";
+import { ModelTypeIdentifier, asPropertiesArray } from "@/interfaces/metadata";
 import { CodeEditorMayHaveTemplate } from "./codeEditorMayHaveTemplate";
 import { nanoid } from "@/utils/uuid";
 import _ from 'lodash';
-import { isPosition, isRange, makeCodeTemplate } from "./utils";
+import { isPosition, isRange } from "./utils";
 import { useMetadataDispatcher } from "@/providers";
 import { CODE_TEMPLATE_DEFAULTS, ICodeEditorProps } from "../models";
 import { useStyles } from './styles';
@@ -16,13 +15,16 @@ import { FileOutlined } from "@ant-design/icons";
 import { SizableColumns } from "@/components/sizableColumns";
 import { FileTree } from "./fileTree/fileTree";
 import { useLocalStorage } from "@/hooks";
+import { buildCodeEditorEnvironmentAsync } from "./codeFiles";
+import { useAsyncMemo } from "@/hooks/useAsyncMemo";
+import { CodeEditorLoadingProgressor } from "../loadingProgressor";
 
 // you can change the source of the monaco files
 loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs', } });
 
 interface EditorFileNamesState {
-    modelPath: string;
-    exposedVarsPath?: string;
+    modelFilePath: string;
+    modelDir: string;
 }
 
 interface IEmbeddedCodeEditorWidget extends editor.ICodeEditor {
@@ -63,19 +65,6 @@ const CodeWrapper: FC<CodeWrapperProps> = ({ children, leftPane }) => {
 
 //#region local utils
 
-const getImportBlock = (constantsMetadata: IObjectMetadata, fileName: string): string => {
-    const constants = asPropertiesArray(constantsMetadata?.properties, []);
-    if (constants.length > 0) {
-        const constantsNames = constants.map(p => p.path).sort().join(",\r\n    ");
-        return `//#region Exposed variables
-import {
-    ${constantsNames}
-} from './${fileName}.variables';
-//#endregion\r\n\r\n`;
-    }
-    return undefined;
-};
-
 const prefixPath = (path: string, prefix: string): string => {
     if (!prefix)
         return path;
@@ -101,6 +90,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         value,
         onChange,
         availableConstants,
+        resultType,
         fileName,
         path,
         wrapInTemplate,
@@ -116,6 +106,8 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const [isDevMode] = useLocalStorage('application.isDevMode', false);
 
     const { getMetadata } = useMetadataDispatcher();
+    //const metadataFetcher = (typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId.name });
+    const metadataFetcher = useCallback((typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId.name }), [getMetadata]);
 
     const subscriptions = useRef<IDisposable[]>([]);
     const addSubscription = (subscription: IDisposable) => {
@@ -128,19 +120,40 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
         };
     }, []);
 
-    const template = useMemo(() => {
-        if (wrapInTemplate !== true)
-            return undefined;
+    const fileUid = useRef<string>(null);
+    const fileNamesState = useMemo<EditorFileNamesState>(() => {
+        const effectiveFileName = fileName || "index";
+        let effectiveFolder = path;
+        if (!effectiveFolder) {
+            fileUid.current = fileUid.current ?? nanoid();
+            effectiveFolder = fileUid.current;
+        }
+        effectiveFolder = _.trimStart(effectiveFolder, '/');
 
-        const { useAsyncDeclaration, functionName } = templateSettings;
+        const result: EditorFileNamesState = {
+            modelFilePath: prefixFilePath(`${effectiveFolder}/${effectiveFileName}.ts`),
+            modelDir: prefixFilePath(effectiveFolder),
+        };
 
-        const importBlock = getImportBlock(availableConstants, fileName);
-
-        const result = (code) => makeCodeTemplate`${importBlock}const ${functionName} = ${useAsyncDeclaration ? "async " : ""}() => {
-${(c) => c.editable(code)}
-};`;
         return result;
-    }, [wrapInTemplate, fileName, availableConstants, templateSettings]);
+    }, [path, fileName]);
+
+    const codeEditorEnvironment = useAsyncMemo(async () => {
+        return await buildCodeEditorEnvironmentAsync({
+            wrapInTemplate,
+            fileName,
+            availableConstants,
+            templateSettings,
+            resultType,
+            metadataFetcher,
+            directory: fileNamesState.modelDir,
+        });
+    }, [wrapInTemplate,
+        fileName,
+        availableConstants,
+        templateSettings,
+        resultType,
+        metadataFetcher]);
 
     const addExtraLib = (monaco: Monaco, content: string, filePath?: string): IDisposable => {
         const uri = monaco.Uri.parse(filePath);
@@ -187,37 +200,12 @@ ${(c) => c.editable(code)}
         });
     };
 
-    const fetchProperties = (properties: NestedProperties): PropertiesPromise => {
-        return isPropertiesArray(properties)
-            ? Promise.resolve(properties)
-            : isPropertiesLoader(properties)
-                ? properties()
-                : Promise.resolve([]);
-    };
-
-    const fileUid = useRef<string>(null);
-    const fileNamesState = useMemo<EditorFileNamesState>(() => {
-        const effectiveFileName = fileName || "index";
-        let effectiveFolder = path;
-        if (!effectiveFolder) {
-            fileUid.current = fileUid.current ?? nanoid();
-            effectiveFolder = fileUid.current;
-        }
-        effectiveFolder = _.trimStart(effectiveFolder, '/');
-
-        const result: EditorFileNamesState = {
-            modelPath: prefixFilePath(`${effectiveFolder}/${effectiveFileName}.ts`),
-            exposedVarsPath: prefixFilePath(`${effectiveFolder}/${effectiveFileName}.variables.d.ts`),
-        };
-
-        return result;
-    }, [path, fileName]);
     const isInitialPath = (path?: string): boolean => {
         if (!path)
             return false;
-        
+
         const normalizedPath = _.trimStart(path, '/');
-        return fileNamesState.modelPath === normalizedPath;
+        return fileNamesState.modelFilePath === normalizedPath;
     };
 
     const navigateToModel = (fileUri?: UriComponents, selectionOrPosition?: IRange | IPosition) => {
@@ -245,8 +233,14 @@ ${(c) => c.editable(code)}
             setInternalReadOnly(newInternalReadOnly);
     };
 
-    const initEditor = (_editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-        const localProperties = fetchProperties(availableConstants?.properties ?? []);
+    const onEditorMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+        if (!codeEditorEnvironment)
+            throw new Error('Code editor environment is not ready');
+
+        editorRef.current = editor;
+        monacoInst.current = monaco;
+
+        initDiagnosticsOptions(monaco);
 
         monaco.editor.registerEditorOpener({
             async openCodeEditor(_source: editor.ICodeEditor, resource: Uri, selectionOrPosition?: IRange | IPosition) {
@@ -258,41 +252,15 @@ ${(c) => c.editable(code)}
             }
         });
 
-        localProperties.then(properties => {
-            if (properties.length === 0)
-                return;
-
-            const isFileExists = (fileName: string): boolean => {
-                const uri = monaco.Uri.parse(prefixLibPath(fileName));
-                const existingModel = monaco.editor.getModel(uri);
-                return Boolean(existingModel);
-            };
-            const registerFile = (fileName: string, content: string) => {
-                addExtraLib(monaco, content, prefixLibPath(fileName));
-            };
-
-            const metadataFetcher = (typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId.name });
-
-            const builder = new TypesBuilder(metadataFetcher, isFileExists, registerFile);
-            builder.build(properties).then(builderResult => {
-                if (builderResult.content) {
-                    const varsModel = addExtraLib(monaco, builderResult.content, fileNamesState.exposedVarsPath);
-                    // dispose variables model
-                    addSubscription(varsModel);
-                }
-            }).catch(error => {
-                console.error("Failed to build exposed variables", error);
-            });
+        // init editor
+        const registerFile = (fileName: string, content: string) => {
+            addExtraLib(monaco, content, fileName.startsWith('/') ? fileName : prefixLibPath(fileName));
+        };
+        const { sourceFiles } = codeEditorEnvironment;
+        
+        sourceFiles.forEach((sourceFile) => {
+            registerFile(sourceFile.filePath, sourceFile.content);
         });
-    };
-
-    const onEditorMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
-        editorRef.current = editor;
-        monacoInst.current = monaco;
-
-        initDiagnosticsOptions(monaco);
-
-        initEditor(editor, monaco);
 
         const createEditorSubscription = monaco.editor.onDidCreateEditor(newEditor => {
             if (isChildEditor(newEditor)) {
@@ -309,6 +277,7 @@ ${(c) => c.editable(code)}
         });
         addSubscription(createEditorSubscription);
 
+        const { template } = codeEditorEnvironment;
         if (template && availableConstants && asPropertiesArray(availableConstants.properties, []).length > 0)
             editor.trigger(null, 'editor.fold', { selectionLines: [0] });
     };
@@ -327,6 +296,27 @@ ${(c) => c.editable(code)}
 
     const showTree = isDevMode && (!props.language || props.language === 'typescript' || props.language === 'javascript');
     const finalReadOnly = readOnly || internalReadOnly;
+
+    const renderCodeEditor = () => {
+        return codeEditorEnvironment
+        ? (
+            <CodeEditorMayHaveTemplate
+                path={fileNamesState.modelFilePath}
+                language={props.language}
+                theme="vs-dark"
+                value={value}
+                onChange={onChange}
+                options={{
+                    automaticLayout: true,
+                    readOnly: finalReadOnly,
+                }}
+                onMount={onEditorMount}
+                template={codeEditorEnvironment.template}
+            />
+        )
+        : <CodeEditorLoadingProgressor message="Load environment..."/>;
+    };
+
     return showTree
         ? (
             <div className={styles.codeEditor} style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
@@ -352,38 +342,14 @@ ${(c) => c.editable(code)}
                             )
                             : undefined}
                     >
-                        <CodeEditorMayHaveTemplate
-                            path={fileNamesState.modelPath}
-                            language={props.language}
-                            theme="vs-dark"
-                            value={value}
-                            onChange={onChange}
-                            options={{
-                                automaticLayout: true,
-                                readOnly: finalReadOnly,
-                            }}
-                            onMount={onEditorMount}
-                            template={template}
-                        />
+                        {renderCodeEditor()}
                     </CodeWrapper>
                 </div>
             </div>
         )
         : (
             <div style={{ minHeight: "300px", height: "300px", width: "100%", ...style }}>
-                <CodeEditorMayHaveTemplate
-                    path={fileNamesState.modelPath}
-                    language={props.language}
-                    theme="vs-dark"
-                    value={value}
-                    onChange={onChange}
-                    options={{
-                        automaticLayout: true,
-                        readOnly: finalReadOnly,
-                    }}
-                    onMount={onEditorMount}
-                    template={template}
-                />
+                {renderCodeEditor()}
             </div>
         );
 };
