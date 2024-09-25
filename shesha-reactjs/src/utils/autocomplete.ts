@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { EntityData, IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import { getEntityFilterByIds } from './graphQl';
-import { isEqual,isEmpty } from 'lodash';
+import { isEqual } from 'lodash';
 
 interface AutocompleteReturn {
   data: EntityData[];
@@ -22,28 +22,15 @@ export interface IAutocompleteProps {
   displayProperty?: string;
   value?: AutocompleteValueType;
 }
-const extractIdFromValue = (valueObject: any) :string =>{
-  return typeof valueObject === 'string' ? valueObject : valueObject?.id ?? undefined;
-}
+
 const buildFilterById = (value: AutocompleteValueType): string => {
   if (!value) return null;
-
-  const ids = [];
-
-  if (Array.isArray(value)) {
-    value.forEach(valueobject => {
-      const id = extractIdFromValue(valueobject);
-      if (id)
-        ids.push(id);
-    });
-  }
-  else {
-    const id = extractIdFromValue(value);
-    if (id)
-      ids.push(id);
-  }
+   
+  const ids = (Array.isArray(value) ? value : [value]).map(val => {
+    return typeof val === 'string' ? val : val?.id ?? undefined;
+  }).filter(x => Boolean(x));
   
-  return isEmpty(ids) ? undefined : getEntityFilterByIds(ids);
+  return getEntityFilterByIds(ids);
 };
 
 export const autocompleteValueIsEmpty = (value: any): boolean => {
