@@ -103,6 +103,7 @@ import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEdit
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
+import KanbanComponent from '@/designer-components/kanban';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -153,7 +154,8 @@ export const getToolboxComponents = (
         Progress,
         RefListStatusComponent,
         StatusTag,
-        ChevronComponent
+        ChevronComponent,
+        KanbanComponent
       ],
     },
     {
