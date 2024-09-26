@@ -2,7 +2,7 @@ import React, { FC, MutableRefObject } from 'react';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
-import { useForm, useSheshaApplication } from '@/providers';
+import { useCanvas, useForm, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useDeepCompareMemo } from '@/hooks';
 import { IModelValidation } from '@/utils/errors';
@@ -20,10 +20,11 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const { form, isComponentFiltered } = formInstance;
   const getToolboxComponent = useFormDesignerComponentGetter();
   const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { activeDevice } = useCanvas();
 
   const parent = useParent(false);
 
-  const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
+  let actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
     const result = getActualModelWithParent(
       { ...componentModel, editMode: typeof componentModel.editMode === 'undefined' ? undefined : componentModel.editMode }, // add editMode property if not exists
       allData, parent
@@ -44,10 +45,13 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       actualModel.hidden
         || !anyOfPermissionsGranted(actualModel?.permissions || [])
         || !isComponentFiltered(componentModel));
-  actualModel.readOnly = actualModel.readOnly;
 
   if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
     actualModel.propertyName = undefined;
+
+  actualModel = Boolean(activeDevice) && typeof activeDevice === 'string'
+      ? { ...actualModel, ...actualModel?.[activeDevice] }
+      : actualModel;
 
   if (formInstance.formMode === 'designer') {
     const validationResult: IModelValidation = {hasErrors: false, errors: []};

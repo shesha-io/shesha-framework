@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import { useStyles } from '../styles/styles';
 import { Radio } from 'antd';
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
-import { useCanvasConfig } from '@/providers';
+import { useCanvas } from '@/providers';
 
 export interface ICanvasConfigProps {
 
@@ -10,48 +10,20 @@ export interface ICanvasConfigProps {
 
 export const CanvasConfig: FC<ICanvasConfigProps> = () => {
   const { styles } = useStyles();
-  const { setCanvasWidth } = useCanvasConfig();
-  const [radioValue, setRadioValue] = useState('desktop');
-
-
-  useEffect(() => {
-    setCanvasWidth(100, 'desktop');
-    return () => {
-      setRadioValue('desktop');
-    };
-  }, []);
+  const { setDesignerDevice, designerDevice } = useCanvas();
 
   return (
     <div className={styles.shaDesignerCanvasConfig}>
-      <Radio.Group className="radio-group" value={radioValue} buttonStyle="solid" size={'middle'}>
-        <Radio.Button className="radio-button" value="desktop" onClick={() => {
-          setRadioValue('desktop');
-          setCanvasWidth(100, 'desktop');
-        }}
-          title="Desktop"
-        >
+      <Radio.Group className="radio-group" value={designerDevice} buttonStyle="solid" size={'middle'}>
+        <Radio.Button className="radio-button" value="desktop" onClick={() => setDesignerDevice('desktop')} title="Desktop">
           <DesktopOutlined />
         </Radio.Button>
 
-        <Radio.Button
-          className="radio-button"
-          value="tablet"
-          onClick={() => {
- setRadioValue('tablet'); setCanvasWidth(924, 'tablet'); 
-}}
-          title="Tablet"
-        >
+        <Radio.Button className="radio-button" value="tablet" onClick={() => setDesignerDevice('tablet')} title="Tablet">
           <TabletOutlined />
         </Radio.Button>
 
-        <Radio.Button
-          className="radio-button"
-          value="mobile"
-          onClick={() => {
- setRadioValue('mobile'); setCanvasWidth(428, 'mobile'); 
-}}
-          title="Mobile"
-        >
+        <Radio.Button className="radio-button" value="mobile" onClick={() => setDesignerDevice('mobile')} title="Mobile">
           <MobileOutlined />
         </Radio.Button>
       </Radio.Group>
