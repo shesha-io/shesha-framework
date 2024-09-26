@@ -136,7 +136,15 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
    */
   migrator?: SettingsMigrator<TModel>;
 
+  /**
+   * Returns fields to fetch, used when it is necessary to get additional fields, and not just what is specified in the propertyName field
+   */
   getFieldsToFetch?: (propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[];
+
+  /**
+   * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
+   */
+  validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
 }
 
 export interface SettingsMigrationContext {

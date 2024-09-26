@@ -60,9 +60,9 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const [tabletStyles, setTabletStyles] = useState({...componentModel, ...componentModel.tablet} || {});
 
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
-    return toolboxComponent.settingsFormFactory
+    return toolboxComponent?.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
-      : toolboxComponent.settingsFormMarkup
+      : toolboxComponent?.settingsFormMarkup
         ? getDefaultFactory(toolboxComponent.settingsFormMarkup)
         : null;
   });

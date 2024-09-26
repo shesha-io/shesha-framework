@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import { Alert, message } from 'antd';
+import { message } from 'antd';
 import React, { useCallback, useMemo } from 'react';
 import { EntityPicker } from '@/components';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
@@ -108,17 +108,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       }
       return !!value ? value.id : null;
     }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, model.entityType]);
-
-    if (form.formMode === 'designer' && !model.entityType) {
-      return (
-        <Alert
-          showIcon
-          message="EntityPicker not configured properly"
-          description="Please make sure that you've specified 'entityType' property."
-          type="warning"
-        />
-      );
-    }
 
     const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
     const computedStyle = getStyle(style, formData) ?? {};
@@ -235,6 +224,9 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         ];
       }
       return null;
+  },
+  validateModel: (model, addModelError) => {
+    if (!model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');
   },
 };
 
