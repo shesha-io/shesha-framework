@@ -73,6 +73,25 @@ namespace Shesha.Permissions
             return type.Assembly.GetTypes().FirstOrDefault(t => t.IsPublic && !t.IsAbstract && typeof(AbpModule).IsAssignableFrom(t));
         }
 
+        private Dictionary<Assembly, Module> _modules = new Dictionary<Assembly, Module>();
+
+        private async Task<Module> GetModuleOfAssemblyAsync(Assembly assembly)
+        {
+            Module module = null;
+            if (_modules.TryGetValue(assembly, out module))
+            {
+                return module;
+            }
+            module = await _moduleManager.GetOrCreateModuleAsync(assembly);
+            _modules.Add(assembly, module);
+            return module;
+        }
+
+        private string GetMd5(PermissionedObjectDto dto)
+        {
+            return $"{dto.ModuleId}|{dto.Parent}|{dto.Name}|{string.Join("|", dto.AdditionalParameters.Select(x => x.Key + "@" + x.Value))}"
+                .ToMd5Fingerprint();
+        }
 
         public async Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null)
         {
@@ -85,7 +104,7 @@ namespace Shesha.Permissions
                 return new ApiDescriptor()
                 {
                     Description = a,
-                    Module = await _moduleManager.GetOrCreateModuleAsync(module.Assembly),
+                    Module = await GetModuleOfAssemblyAsync(module.Assembly),
                     Service = descriptor.ControllerTypeInfo.AsType(),
                     HttpMethod = a.HttpMethod,
                     Endpoint = a.RelativePath,
@@ -112,16 +131,11 @@ namespace Shesha.Permissions
 
                     if (objectType != null && objType != objectType) continue;
 
-                    string name = null;
-                    string fullName = null;
-                    string description = null;
-                    Module eModule = null;
-
                     if (objType == ShaPermissionedObjectsTypes.WebCrudApi)
                         continue;
 
                     var serviceName = service.Name;
-                    serviceName = serviceName.EndsWith("AppService") 
+                    serviceName = serviceName.EndsWith("AppService")
                         ? serviceName.Replace("AppService", "")
                         : serviceName;
                     serviceName = serviceName.EndsWith("Controller")
@@ -130,13 +144,14 @@ namespace Shesha.Permissions
 
                     var parent = new PermissionedObjectDto()
                     {
-                        Object = fullName ?? service.FullName,
-                        ModuleId = (eModule ?? module)?.Id,
-                        Module = (eModule ?? module)?.Name,
-                        Name = name ?? GetName(service, serviceName),
+                        Object = service.FullName,
+                        ModuleId = module?.Id,
+                        Module = module?.Name,
+                        Name = GetName(service, serviceName),
                         Type = objType,
-                        Description = description ?? GetDescription(service),
+                        Description = GetDescription(service),
                     };
+                    parent.Md5 = GetMd5(parent);
                     allApiPermissions.Add(parent);
 
                     var methods = api.Where(a => a.Module == module && a.Service == service).ToList();
@@ -158,7 +173,9 @@ namespace Shesha.Permissions
 
                         child.AdditionalParameters.Add("HttpMethod", methodInfo.HttpMethod);
                         child.AdditionalParameters.Add("Endpoint", methodInfo.Endpoint);
+
                         //parent.Child.Add(child);
+                        child.Md5 = GetMd5(child);
                         allApiPermissions.Add(child);
                     }
                 }

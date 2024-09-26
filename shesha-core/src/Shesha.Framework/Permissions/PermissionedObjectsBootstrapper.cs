@@ -69,7 +69,7 @@ namespace Shesha.Permission
 
                     // ToDo: think how to update Protected objects in the bootstrapper
                     // Update items
-                    var toUpdate = dbItems.Where(dbi => items.Any(i => dbi.Object == i.Object)).ToList();
+                    var toUpdate = dbItems.Where(dbi => items.Any(i => dbi.Object == i.Object && dbi.Md5 != i.Md5)).ToList();
                     foreach (var dbItem in toUpdate)
                     {
                         var item = items.FirstOrDefault(x => x.Object == dbItem.Object);
@@ -77,6 +77,7 @@ namespace Shesha.Permission
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent;
                         dbItem.Name = item.Name;
+                        dbItem.Md5 = item.Md5;
                         await _permissionedObjectRepository.UpdateAsync(dbItem);
                         foreach (var parameter in item.AdditionalParameters)
                         {
