@@ -17,6 +17,7 @@ export interface IUserProfileInfo {
 }
 
 export interface ICurrentUserApi {
+    readonly isLoggedIn: boolean;
     readonly id: string;
     readonly userName: string;
     readonly firstName: string;

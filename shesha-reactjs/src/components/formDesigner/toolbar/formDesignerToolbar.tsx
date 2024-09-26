@@ -12,6 +12,7 @@ import { PreviewButton } from './previewButton';
 import { FormSettingsButton } from './formSettingsButton';
 import { useStyles } from '../styles/styles';
 import { CanvasConfig } from './canvasConfig';
+import { CustomActions } from './customActions';
 
 export interface IProps { }
 
@@ -54,6 +55,7 @@ export const FormDesignerToolbar: FC<IProps> = () => {
             <DebugButton />
 
             {!readOnly && (<UndoRedoButtons />)}
+            <CustomActions />
           </div>
         </>
       }

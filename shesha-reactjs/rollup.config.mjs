@@ -10,6 +10,7 @@ import json from '@rollup/plugin-json';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json' assert { type: 'json' };
 import eslint from '@rollup/plugin-eslint';
+import { codeAsText } from "./src/rollup-plugins/codeAsText.js";
 
 export default {
   input: ['src/index.tsx', 'src/providers/index.ts'],
@@ -61,6 +62,7 @@ export default {
     'zlib',
   ],
   plugins: [
+    codeAsText(),
     eslint({ throwOnError: true, include: 'src/**/*.ts{,x}' }),
     multi(),
     peerDepsExternal({

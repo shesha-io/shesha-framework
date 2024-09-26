@@ -45,9 +45,9 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
   const { getCachedComponentEditor } = useFormDesignerActions();
   
   const SettingsForm = getCachedComponentEditor(componentModel.type, () => {
-    return toolboxComponent.settingsFormFactory
+    return toolboxComponent?.settingsFormFactory
       ? toolboxComponent.settingsFormFactory
-      : toolboxComponent.settingsFormMarkup
+      : toolboxComponent?.settingsFormMarkup
         ? getDefaultFactory(toolboxComponent.settingsFormMarkup)
         : null;
   });

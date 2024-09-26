@@ -8,6 +8,7 @@ import { nanoid } from '@/utils/uuid';
 import { IModalProps } from '@/providers/dynamicModal/models';
 import { isEmpty } from 'lodash';
 import { hasDynamicFilter } from '@/providers/dataTable/utils';
+import { SheshaError } from '@/utils/errors';
 
 const UNIQUE_ID = 'HjHi0UVD27o8Ub8zfz6dH';
 
@@ -157,7 +158,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps) => {
   }, [state?.showModal]);
 
   if (!entityType) {
-    throw new Error('Please make sure that either entityType is configured for the entity picker to work properly');
+    throw SheshaError.throwPropertyError('entityType');
   }
 
   const onAddNew = () => {

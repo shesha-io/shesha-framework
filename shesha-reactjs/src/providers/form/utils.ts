@@ -135,6 +135,7 @@ export type AvailableConstantsContext = {
   backendUrl: string;
   message: MessageInstance;
 };
+
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
   const { backendUrl } = useSheshaApplication();

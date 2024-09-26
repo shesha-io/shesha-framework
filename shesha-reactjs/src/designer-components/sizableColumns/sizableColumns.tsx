@@ -57,6 +57,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
         { id: nanoid(), size: 50, components: [] },
         { id: nanoid(), size: 50, components: [] },
       ],
+      stylingBox: "{\"marginBottom\":\"5\"}"
     };
 
     return tabsModel;
