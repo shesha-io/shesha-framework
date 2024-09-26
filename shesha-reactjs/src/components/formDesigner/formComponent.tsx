@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, useEffect, useState } from 'react';
+import React, { FC, MutableRefObject } from 'react';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
 import { useParent } from '@/providers/parentProvider/index';
@@ -22,14 +22,6 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
   const parent = useParent(false);
-
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => setScreenWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const actualModel: IConfigurableFormComponent = useDeepCompareMemo(() => {
     const result = getActualModelWithParent(
