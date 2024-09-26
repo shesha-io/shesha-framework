@@ -13,7 +13,7 @@ interface AutocompleteReturn {
   loading: boolean;
 }
 
-export type AutocompleteValueType = object | object[];
+export type AutocompleteValueType = string | string[] | object | object[];
 
 export interface IAutocompleteProps {
   entityType: string;
