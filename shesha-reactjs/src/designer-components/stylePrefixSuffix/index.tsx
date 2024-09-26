@@ -23,7 +23,7 @@ const PrefixSuffixConfigurator: IToolboxComponent<IPrefixSuffixProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                <PrefixSuffixComponent model={model} readOnly={model.readOnly} />
+                <PrefixSuffixComponent readOnly={model.readOnly} />
             </ConfigurableFormItem>
         );
     },

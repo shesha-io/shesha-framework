@@ -24,7 +24,7 @@ export interface IDropdownOption {
 interface IInputProps {
     label: string;
     property: any;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'code' | 'iconPicker' | 'imageUploader';
+    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'codeEditor' | 'iconPicker' | 'imageUploader';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -37,6 +37,7 @@ interface IInputProps {
     description?: string;
     size?: SizeType;
     hideLabel?: boolean;
+    layout?: 'horizontal' | 'vertical';
 }
 
 const { Option } = Select;
@@ -79,7 +80,7 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
                 ))}
             </Select>;
         case 'radio':
-            return <Radio.Group value={value} onChange={onChange} size={size} disabled={readOnly}>
+            return <Radio.Group buttonStyle='solid' value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
                 ))}
@@ -92,10 +93,11 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
             return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'textarea':
             return <TextArea readOnly={readOnly} size={size} value={value} />;
-        case 'code':
+        case 'codeEditor':
             return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} />;
         case 'iconPicker':
-            return <IconPicker selectBtnSize='small' readOnly={readOnly} value={value} onChange={onChange} />;
+            // console.log('iconPicker', value)
+            return <IconPicker value={value} selectBtnSize='small' readOnly={readOnly} onIconChange={onChange} />;
         case 'imageUploader':
             return <ImageUploader
                 backgroundImage={value}
@@ -114,12 +116,13 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
     }
 };
 
-export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description }) => {
+export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting = true, description, layout }) => {
     const { searchQuery } = useSearchQuery();
 
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
+        console.log("Children: ", children);
         return (
-            <div key={label} style={children || property === 'labelAlign' ? { width: 'fit-content' } : { flex: '1 1 120px' }}>
+            <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
                 <FormItem name={`${property}`} label={hideLabel ? null : label} jsSetting={jsSetting} readOnly={readOnly} >
                     {children ? children : <InputComponent size='small' label={label} type={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
                 </FormItem>

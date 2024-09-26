@@ -21,14 +21,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             .sidebar-container & {
                 right: 0;
                 left: auto;
-                &.inlineJS {
-                height: 20px;
-                }
-
-                &.inlineJS {
-                    margin-left: 5px;
-                }
-                
             }
             .${sheshaStyles.verticalSettingsClass} & {
                 right: 0;

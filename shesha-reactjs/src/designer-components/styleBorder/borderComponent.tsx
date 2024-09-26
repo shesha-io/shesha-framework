@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { IBorderValue } from './interfaces';
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { borderOptions, radiusOptions, styleOptions } from './utils';
@@ -15,8 +15,8 @@ const BorderComponent: FC<IBorderProps> = (props) => {
 
     const { value, readOnly } = props;
     const hideBorder = value?.hideBorder || false;
-    const activeBorder = value?.activeBorder || 'all';
-    const activeRadius = value?.activeRadius || 'all';
+    const activeBorder = useMemo(() => value?.activeBorder || 'all', [value?.activeBorder]);
+    const activeRadius = useMemo(() => value?.activeRadius || 'all', [value?.activeRadius]);
 
     return (
         <>

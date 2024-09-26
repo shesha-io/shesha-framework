@@ -11,6 +11,7 @@ import { TwoToneIconTypes, TWO_FACED_ICON_GROUPS } from './iconNamesTwoTone';
 import { humanizeString } from '@/utils/string';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
+import { ColorPicker } from '../colorPicker';
 
 export type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
 type IconModes = 'outlined' | 'filled' | 'twoFaced';
@@ -35,7 +36,7 @@ const ICON_MODE_GROUPS = {
 
 export interface IIconPickerProps extends IconBaseProps {
   /** The icon name */
-  value?: ShaIconTypes;
+  value?: any;
 
   /** A callback for when the icon changes */
   onIconChange?: (icon: ReactNode, iconName: ShaIconTypes) => void;
@@ -67,7 +68,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   defaultValue,
   ...props
 }) => {
- 
+
   const { styles } = useStyles();
   const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes>(defaultValue);
   const [showModal, setShowModal] = useState(false);
@@ -78,7 +79,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   });
 
   useEffect(() => {
-      setLocalSelectedIcon(value || defaultValue);
+    setLocalSelectedIcon(typeof value === 'object' ? value.props.iconName : value || defaultValue);
   }, [defaultValue, value]);
 
 
@@ -141,7 +142,7 @@ const IconPicker: FC<IIconPickerProps> = ({
           >
             <ShaIcon
               iconName={localSelectedIcon}
-              style={{ fontSize: 24 }}
+              style={{ fontSize: 24, color: value?.props?.style?.color || 'rgba(0,0,0,.45)' }}
               {...props}
               name={localSelectedIcon}
               title={localSelectedIcon}
@@ -178,7 +179,7 @@ const IconPicker: FC<IIconPickerProps> = ({
             onChange={changeIconModes}
             optionType="button"
           />
-
+          <ColorPicker allowClear onChange={(color) => onIconChange(<ShaIcon iconName={localSelectedIcon} style={{ fontSize: 30, color: color?.toString() || 'rgba(0,0,0,.45)' }} {...props} />, localSelectedIcon)} />
           <div className={styles.shaIconPickerSearchInputContainer}>
             <Input.Search allowClear onChange={onSearchChange} value={searchQuery} />
           </div>

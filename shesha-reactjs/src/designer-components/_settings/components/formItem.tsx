@@ -21,6 +21,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         {
             ...childElement?.props,
             readOnly,
+            size: 'small',
             disabled: readOnly,
             onChange: handleChange(onChange),
             [valuePropName]: value
@@ -31,7 +32,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         <ConfigurableFormItem
             model={{
                 propertyName: name,
-                label,
+                label: <span style={{ fontWeight: 500, color: 'darkslategrey' }}>{label}</span>,
                 type: '',
                 id: '',
                 description: tooltip,

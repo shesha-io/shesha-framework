@@ -27,8 +27,8 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
     const shaIconPickerModal = cx("sha-icon-picker-modal", css`
         .${shaIconPickerSearch} {
             display: flex;
+            gap: ${sheshaStyles.paddingLG}px;
             margin-bottom: ${sheshaStyles.paddingLG}px;
-    
             .${shaIconPickerSearchInputContainer} {
                 margin-left: ${sheshaStyles.paddingLG}px;
                 flex: 1;

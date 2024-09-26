@@ -35,21 +35,15 @@ export interface IStyleGroupType {
 
 const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value }) => {
 
-    const fontValue: IFontValue = useMemo(() => {
-        return value?.font;
-    }, [value?.font]);
+    const fontValue: IFontValue = useMemo(() => value?.font, [value?.font]);
 
-    const dimensionsValue: IDimensionsValue = useMemo(() => {
-        return value?.dimensions;
-    }, [value?.dimensions]);
+    const dimensionsValue: IDimensionsValue = useMemo(() => value?.dimensions, [value?.dimensions]);
 
-    const borderValue: IBorderValue = value?.border;
+    const borderValue: IBorderValue = useMemo(() => value?.border, [value?.border]);
 
-    const backgroundValue: IBackgroundValue = value?.background;
+    const backgroundValue: IBackgroundValue = useMemo(() => value?.background, [value?.background]);
 
-    const shadowValue: IShadowValue = useMemo(() => {
-        return value?.shadow;
-    }, [value?.shadow]);
+    const shadowValue: IShadowValue = useMemo(() => value?.shadow, [value?.shadow]);
 
     const items: CollapseProps['items'] = [
         {
@@ -82,14 +76,14 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             label: 'Styling',
             children: (
                 <>
-                    <SettingInput label="Style" property='style' readOnly={false} type='code' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
+                    <SettingInput label="Style" property='style' readOnly={false} type='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
                     <FormItem name="stylingBox" jsSetting={false}>
                         <StyleBox />
                     </FormItem>
                 </>
             )
         }
-    ].filter(item => !omitted.map(omit => omit.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase())).map((item, index) => ({ ...item, key: index.toString() }));
+    ].filter(item => !omitted.map(omit => omit.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase())).map((item, index) => ({ ...item, key: index.toString(), label: <span style={{ fontWeight: 700 }}>{item.label}</span> }));
 
     const activateAllStylePanels = items.map(panel => panel.key.toString());
 

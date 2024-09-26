@@ -20,7 +20,7 @@ const BorderConfigurator: IToolboxComponent<IBorderProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {(value, onChange) => <BorderComponent value={value} onChange={onChange} />}
+                <BorderComponent readOnly={model.readOnly} />
             </ConfigurableFormItem>
         );
     },

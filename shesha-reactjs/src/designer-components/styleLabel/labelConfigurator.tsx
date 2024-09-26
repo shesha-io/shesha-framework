@@ -19,8 +19,8 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ value, readOnly, onChange
     return (
         <>
             <div className={styles.flexWrapper} >
-                <SettingInput label='labelAlign' hideLabel property='labelAlign' readOnly={value || readOnly} type='radio' buttonGroupOptions={labelAlignOptions} jsSetting={false} />
-                <SettingInput label="hideLabel" hideLabel property='hideLabel' readOnly={readOnly} jsSetting={false}>
+                <SettingInput label='label Align' hideLabel property='labelAlign' readOnly={value || readOnly} type='radio' buttonGroupOptions={labelAlignOptions} jsSetting={false} />
+                <SettingInput label="hide Label" hideLabel property='hideLabel' readOnly={readOnly} jsSetting={false}>
                     <Button type='primary' ghost={value ? false : true} size='small' icon={value ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => onChange(!value)} />
                 </SettingInput>
             </div>

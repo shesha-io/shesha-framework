@@ -1,4 +1,4 @@
-import { CodeOutlined, ConsoleSqlOutlined } from '@ant-design/icons';
+import { CodeOutlined } from '@ant-design/icons';
 import { ConfigProvider, Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import moment from 'moment';
@@ -16,7 +16,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { IconType, ShaIcon, ValidationErrors } from '@/components';
+import { ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
 import { getSizeStyle } from '../styleDimensions/utils';
 import { getBorderStyle } from '../styleBorder/utils';
@@ -25,6 +25,7 @@ import settingsFormJson from './settingsForm.json';
 import { useStyles } from './styles/styles';
 import { getShadowStyle } from '../styleShadow/utils';
 import { getFontStyle } from '../styleFont/utils';
+import { TextFieldSettingsForm } from './settings';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -69,7 +70,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     if (model.propertyName === 'textField1') console.log('model', model);
     useEffect(() => {
       const fetchStyles = async () => {
-        getBackgroundStyle(background, backendUrl, httpHeaders).then((style) => {
+        getBackgroundStyle(background).then((style) => {
           setBackgroundStyles(style);
         });
       };
@@ -100,8 +101,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const inputProps: InputProps = {
       className: `sha-input ${styles.textFieldInput}`,
       placeholder: model.placeholder,
-      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon {...model.prefixIcon.props} />}</>,
+      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon {...model.suffixIcon.props} />}</>,
       variant: model?.styles?.border?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
@@ -157,7 +158,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   },
   // settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  // validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   // settingsFormMarkup: settingFormMarkup,
   // validateSettings: (model) => validateConfigurableComponentSettings(settingFormMarkup, model),
   initModel: (model) => ({

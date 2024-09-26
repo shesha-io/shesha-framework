@@ -1,7 +1,6 @@
 import React from "react";
 import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue } from "./interfaces";
-import axios from "axios";
 
 
 export const toBase64 = file => new Promise<string>((resolve, reject) => {
@@ -11,8 +10,7 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
     reader.onerror = reject;
 });
 
-export const getBackgroundStyle = async (input?: IBackgroundValue, backendUrl?, httpHeaders?): Promise<React.CSSProperties> => {
-
+export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<React.CSSProperties> => {
 
     if (!input) return {};
     const style: React.CSSProperties = {};
