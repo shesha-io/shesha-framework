@@ -28,7 +28,12 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     return (
       <ParentProvider model={model}>
-        <SizableColumns cursor="col-resize" style={style} sizes={columns.map((col) => col.size)}>
+        <SizableColumns
+          key={`split-${columns?.length}`}
+          cursor="col-resize"
+          style={style}
+          sizes={columns?.map((col) => col.size)}
+        >
           {columns &&
             columns.map((col) => (
               <Fragment key={col.id}>
@@ -57,9 +62,9 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
     return tabsModel;
   },
   settingsFormFactory: (props) => <SizableColumnsSettingsForm {...props} />,
-  migrator: (m) =>m
+  migrator: (m) => m
     .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
-    .add<ISizableColumnComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ISizableColumnComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
     .add<ISizableColumnComponentProps>(2, (prev) => removeComponents(prev))
   ,
   customContainerNames: ['columns'],
