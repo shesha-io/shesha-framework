@@ -10,7 +10,7 @@ export interface IProps {
   readOnly: boolean;
   value?: ISizableColumnProps[];
   onChange?: any;
-}
+};
 
 export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) => {
 
@@ -28,7 +28,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
       if (preValue[i] !== value[i]) {
         return true;
       }
-    }
+    };
 
     return false;
   }
@@ -62,14 +62,14 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
           key={hasOrderChanged ? 'new-order' : 'original-order'}
         >
           {({ item, itemOnChange, readOnly }) => {
-            return <InputNumber
+            return (<InputNumber
               style={{ marginLeft: '1.5rem' }}
               defaultValue={item?.size}
               disabled={readOnly}
               onChange={value => itemOnChange({
                 ...item, size: value
               })}
-            />
+            />);
           }
           }
         </ListEditor>
