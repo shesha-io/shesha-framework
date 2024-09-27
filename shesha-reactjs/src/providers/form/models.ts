@@ -189,6 +189,7 @@ export interface IConfigurableFormComponent
   noDataSecondaryText?: string;
 
   permissions?: string[];
+
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
