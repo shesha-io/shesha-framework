@@ -52,9 +52,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    model?.desktop && console.log(model?.desktop);
-
-
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
