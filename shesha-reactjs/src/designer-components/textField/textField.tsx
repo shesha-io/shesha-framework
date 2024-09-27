@@ -156,10 +156,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         width: prev.width,
         height: prev.height,
         hideBorder: prev.hideBorder,
-        borderSize: prev.borderSize ?? 1,
-        borderRadius: 8,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
         borderColor: prev.borderColor,
-        fontSize: prev.fontSize ?? 12,
+        fontSize: prev.fontSize,
         fontColor: prev.fontColor,
         backgroundColor: prev.backgroundColor,
         stylingBox: prev.stylingBox
