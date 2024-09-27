@@ -23,6 +23,25 @@ import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
 
 const settingsForm = settingsFormJson as FormMarkup;
+const commonStyles = {
+  size: '',
+  width: '',
+  height: '',
+  hideBorder: false,
+  borderSize: 1,
+  bordereRadius: 8,
+  borderColor: '',
+  fontSize: 12,
+  fontColor: '',
+  backgroundColor: '',
+  stylingBox: '',
+};
+
+const commonStylesNull: Record<string, null> = {};
+
+Object.keys(commonStyles).forEach(key => {
+  commonStylesNull[key] = undefined;
+});
 
 const renderInput = (type: TextType) => {
   switch (type) {
@@ -47,6 +66,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
+    console.log(model.propertyName, model);
     const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
@@ -131,9 +151,20 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<ITextFieldComponentProps>(5, (prev) => ({...prev, desktop: {size: '', width: '', height: '', hideBorder: false, borderSize: 1, bordereRadius: 8, borderColor: '', fontSize: 12, fontColor: '', backgroundColor: '', stylingBox: ''}}))
-    .add<ITextFieldComponentProps>(6, (prev) => ({...prev, tablet: {size: '', width: '', height: '', hideBorder: false, borderSize: 1, bordereRadius: 8, borderColor: '', fontSize: 12, fontColor: '', backgroundColor: '', stylingBox: ''}}))
-    .add<ITextFieldComponentProps>(7, (prev) => ({...prev, mobile: {size: '', width: '', height: '', hideBorder: false, borderSize: 1, bordereRadius: 8, borderColor: '', fontSize: 12, fontColor: '', backgroundColor: '', stylingBox: ''}}))
+    .add<ITextFieldComponentProps>(5, (prev) => {
+      Object.keys(commonStylesNull).forEach(key => {
+        if (key in prev) {
+          prev[key] = commonStylesNull[key];
+        }
+      });
+      return prev;
+    })
+    .add<ITextFieldComponentProps>(6, (prev) => ({
+      ...prev,
+      desktop: { ...commonStyles },
+      tablet: { ...commonStyles },
+      mobile: { ...commonStyles }
+    }))
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
