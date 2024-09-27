@@ -23,25 +23,6 @@ import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
 
 const settingsForm = settingsFormJson as FormMarkup;
-const commonStyles = {
-  size: '',
-  width: '',
-  height: '',
-  hideBorder: false,
-  borderSize: 1,
-  bordereRadius: 8,
-  borderColor: '',
-  fontSize: 12,
-  fontColor: '',
-  backgroundColor: '',
-  stylingBox: '',
-};
-
-const commonStylesNull: Record<string, null> = {};
-
-Object.keys(commonStyles).forEach(key => {
-  commonStylesNull[key] = undefined;
-});
 
 const renderInput = (type: TextType) => {
   switch (type) {
