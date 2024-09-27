@@ -190,11 +190,6 @@ export interface IConfigurableFormComponent
 
   permissions?: string[];
 
-  mobile?: IConfigurableFormComponent | object;
-
-  desktop?: IConfigurableFormComponent | object;
-
-  tablet?: IConfigurableFormComponent | object;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

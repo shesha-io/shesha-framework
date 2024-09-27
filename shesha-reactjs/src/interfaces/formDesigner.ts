@@ -16,8 +16,6 @@ import { IModelMetadata, IPropertyMetadata } from './metadata';
 export interface ISettingsFormInstance {
   submit: () => void;
   reset: () => void;
-  setFieldsValue: (payload: any) => void;
-  getFieldsValue?: () => void;
 }
 
 export interface IFormLayoutSettings {
@@ -36,8 +34,6 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   model: TModel;
   onSave: (values: TModel) => void;
   onCancel: () => void;
-  setFieldsValue?: (payload: any) => void;
-  getFieldsValue?: () => void;
   onValuesChange?: (changedValues: any, values: TModel) => void;
   toolboxComponent: IToolboxComponent;
   formRef?: MutableRefObject<ISettingsFormInstance | null>;

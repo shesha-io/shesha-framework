@@ -47,7 +47,6 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
     formRef.current = {
       submit: () => form.submit(),
       reset: () => form.resetFields(),
-      setFieldsValue: (values) => form.setFieldsValue(values),
     };
 
   const valuesChange = (changedValues) => {
