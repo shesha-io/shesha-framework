@@ -52,6 +52,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
+    model?.desktop && console.log(model?.desktop);
+
+
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 
@@ -131,6 +134,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<ITextFieldComponentProps>(5, (prev) => ({...prev, desktop: {size: '', width: '', height: '', hideBorder: false, borderSize: 1, bordereRadius: 8, borderColor: '', fontSize: 12, fontColor: '', backgroundColor: '', stylingBox: ''}}))
+    .add<ITextFieldComponentProps>(6, (prev) => ({...prev, tablet: {size: '', width: '', height: '', hideBorder: false, borderSize: 1, bordereRadius: 8, borderColor: '', fontSize: 12, fontColor: '', backgroundColor: '', stylingBox: ''}}))
+    .add<ITextFieldComponentProps>(7, (prev) => ({...prev, mobile: {size: '', width: '', height: '', hideBorder: false, borderSize: 1, bordereRadius: 8, borderColor: '', fontSize: 12, fontColor: '', backgroundColor: '', stylingBox: ''}}))
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
