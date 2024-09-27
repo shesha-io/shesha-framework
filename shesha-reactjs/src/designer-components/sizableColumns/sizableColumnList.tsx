@@ -48,6 +48,7 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
         cancelText={readOnly ? 'Close' : undefined}
       >
         <ListEditor<ISizableColumnProps>
+
           value={[...value]}
           onChange={onChange}
           initNewItem={(_items) => ({
@@ -56,9 +57,6 @@ export const SizableColumnsList: FC<IProps> = ({ value, onChange, readOnly }) =>
             components: [],
           })
           }
-          onSelectionChange={(selectedItem) => {
-            console.log("selectedItem", { selectedItem });
-          }}
           readOnly={readOnly}
           header={(headerProps) => <DefaultGroupHeader {...headerProps} addItemText={'Add Column'} />}
           key={hasOrderChanged ? 'new-order' : 'original-order'}
