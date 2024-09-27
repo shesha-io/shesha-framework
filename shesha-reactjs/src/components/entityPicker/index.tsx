@@ -16,20 +16,20 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, value } = props;
 
   // Check if all data for displaying is loaded
-  const isLoaded = value
+  const isLoaded = value 
     ? Array.isArray(value)
-      ? !value.find(x => typeof(x[displayEntityKey]) === 'undefined')
-      : typeof(value[displayEntityKey]) !== 'undefined'
+      ? !value.find(x => typeof(getValueByPropertyName(x, displayEntityKey)) === 'undefined')
+      : typeof(getValueByPropertyName(value, displayEntityKey)) !== 'undefined'
     : false;
+
+  const valueId = Array.isArray(value)
+    ? value.map(x => props.incomeValueFunc(x, {}))
+    : props.incomeValueFunc(value, {});
 
   const selection = useEntitySelectionData({
     entityType: entityType,
     propertyName: displayEntityKey,
-    selection: !isLoaded 
-      ? Array.isArray(value)
-        ? value.map(x => props.incomeValueFunc(x, {}))
-        : props.incomeValueFunc(value, {})
-      : null,
+    selection: !isLoaded ? valueId : null,
   });
 
   const selectedItems = isLoaded
@@ -37,7 +37,7 @@ const EntityPickerReadOnly = (props: IEntityPickerProps) => {
     : selection?.rows;
 
   const displayText = useMemo(() => {
-    return selectedItems?.map(ent => ent[displayEntityKey]).join(', ');
+    return selectedItems?.map(ent => getValueByPropertyName(ent, displayEntityKey)).join(', ');
   }, [selectedItems]);
 
   return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} />;
