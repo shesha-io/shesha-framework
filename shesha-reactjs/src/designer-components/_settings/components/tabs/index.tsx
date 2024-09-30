@@ -34,7 +34,7 @@ const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
   settingsFormFactory: (props) => <TabSettingsForm {...props} />,
   customContainerNames: ['tabs'],
   getContainers: (model) => {
-    return model.tabs.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    return model.tabs.map<IFormComponentContainer>((tab) => ({ id: tab.id }));
   },
 };
 

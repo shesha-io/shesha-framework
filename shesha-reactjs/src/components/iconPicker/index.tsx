@@ -179,7 +179,7 @@ const IconPicker: FC<IIconPickerProps> = ({
             onChange={changeIconModes}
             optionType="button"
           />
-          <ColorPicker allowClear onChange={(color) => onIconChange(<ShaIcon iconName={localSelectedIcon} style={{ fontSize: 30, color: color?.toString() || 'rgba(0,0,0,.45)' }} {...props} />, localSelectedIcon)} />
+          <ColorPicker value={value?.style?.color} allowClear onChange={(color) => onIconChange(<ShaIcon iconName={localSelectedIcon} style={{ fontSize: 30, color: color?.toString() || 'rgba(0,0,0,.45)' }} {...props} />, localSelectedIcon)} />
           <div className={styles.shaIconPickerSearchInputContainer}>
             <Input.Search allowClear onChange={onSearchChange} value={searchQuery} />
           </div>

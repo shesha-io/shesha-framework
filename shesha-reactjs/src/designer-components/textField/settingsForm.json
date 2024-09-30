@@ -48,16 +48,6 @@
                   "label": "password",
                   "value": "password",
                   "id": "8f85c476-e632-4fa7-89ad-2be6cfb7f1f1"
-                },
-                {
-                  "label": "email",
-                  "value": "email",
-                  "id": "fa24fbe1-5a55-4071-9fce-fe2ed32a68fe"
-                },
-                {
-                  "label": "number",
-                  "value": "number",
-                  "id": "55df881f-f84c-42ce-bfc2-df3798643e2d"
                 }
               ],
               "dataSourceType": "values",

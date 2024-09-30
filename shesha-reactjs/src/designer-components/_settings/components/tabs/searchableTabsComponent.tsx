@@ -17,18 +17,33 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     const [filteredTabs, setFilteredTabs] = useState(tabs);
 
     useEffect(() => {
-        setFilteredTabs(tabs.map((tab: any) => ({
-            ...tab,
-            label: tab.label || tab.title,
-            children: tab.components
-                ? <ParentProvider model={model}>
-                    <ComponentsContainer
-                        containerId={tab.id + tab.key}
-                        dynamicComponents={filterDynamicComponents(tab.components, searchQuery)} />
-                </ParentProvider>
-                : searchFormItems(tab.children, searchQuery),
-        })));
-    }, [searchQuery]);
+        const newFilteredTabs = tabs
+            .map((tab: any) => {
+                const filteredComponents = tab.components
+                    ? filterDynamicComponents(tab.components, searchQuery)
+                    : searchFormItems(tab.children, searchQuery);
+
+                const hasVisibleComponents = Array.isArray(filteredComponents)
+                    ? filteredComponents.some(comp => !comp.hidden)
+                    : !!filteredComponents;
+
+                return {
+                    ...tab,
+                    label: tab.label || tab.title,
+                    children: tab.components
+                        ? <ParentProvider model={model}>
+                            <ComponentsContainer
+                                containerId={tab.id + tab.key}
+                                dynamicComponents={filteredComponents} />
+                        </ParentProvider>
+                        : filteredComponents,
+                    hidden: !hasVisibleComponents
+                };
+            })
+            .filter(tab => !tab.hidden);
+
+        setFilteredTabs(newFilteredTabs);
+    }, [searchQuery, tabs]);
 
     return (
         <SearchQueryProvider searchQuery={searchQuery} onChange={onChange}>

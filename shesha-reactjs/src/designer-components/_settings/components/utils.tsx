@@ -96,7 +96,6 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
         case 'codeEditor':
             return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} />;
         case 'iconPicker':
-            // console.log('iconPicker', value)
             return <IconPicker value={value} selectBtnSize='small' readOnly={readOnly} onIconChange={onChange} />;
         case 'imageUploader':
             return <ImageUploader
@@ -116,11 +115,10 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
     }
 };
 
-export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting = true, description, layout }) => {
+export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting = true, description }) => {
     const { searchQuery } = useSearchQuery();
 
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
-        console.log("Children: ", children);
         return (
             <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
                 <FormItem name={`${property}`} label={hideLabel ? null : label} jsSetting={jsSetting} readOnly={readOnly} >

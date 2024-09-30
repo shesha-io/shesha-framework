@@ -14,7 +14,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             ${responsive.mobile} {
                 right: 0;
                 left: auto;
-                top: -28px;
+                // top: -28px;
             }
 
             // special style when inside the sidebar
@@ -23,9 +23,9 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
                 left: auto;
             }
             .${sheshaStyles.verticalSettingsClass} & {
-                right: 0;
-                left: auto;
-                top: -28px;
+                right: auto;
+                left: -25px;
+                top: 25px;
             }
         }
     `);
@@ -42,9 +42,10 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             padding-top: 4px;
         }
         .${sheshaStyles.verticalSettingsClass} & {
-            padding-top: 4px;
+            // padding-top: 4px;
         }
     `);
+
     const jsContent = cx(css`
         margin-left: 64px;
         ${responsive.mobile} {
@@ -59,7 +60,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         }
         .${sheshaStyles.verticalSettingsClass} & {
             margin-right: 0;
-            margin-left: 0;
+            margin-left: 25px;
         }
     `);
 
