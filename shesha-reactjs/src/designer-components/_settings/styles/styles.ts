@@ -23,9 +23,9 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
                 left: auto;
             }
             .${sheshaStyles.verticalSettingsClass} & {
-                right: auto;
-                left: -25px;
-                top: 25px;
+                // right: auto;
+                // left: -25px;
+                // top: 25px;
             }
         }
     `);
@@ -42,12 +42,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             padding-top: 4px;
         }
         .${sheshaStyles.verticalSettingsClass} & {
-            // padding-top: 4px;
+            padding-top: 4px;
         }
     `);
 
     const jsContent = cx(css`
-        margin-left: 64px;
+        
         ${responsive.mobile} {
             margin-left: 0;
         }
@@ -57,10 +57,12 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             margin-right: 0;
             margin-left: 0;
             display: flex;
+            flex-direction: row;
         }
         .${sheshaStyles.verticalSettingsClass} & {
             margin-right: 0;
-            margin-left: 25px;
+            display: flex;
+            flex-direction: row;
         }
     `);
 
