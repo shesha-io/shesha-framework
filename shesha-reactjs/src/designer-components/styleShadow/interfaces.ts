@@ -6,15 +6,10 @@ export interface IShadowComponentProps extends IConfigurableFormComponent {
     readonly?: boolean;
 };
 
-interface IValue {
+export interface IShadowValue {
     offsetX?: number;
     offsetY?: number;
     blurRadius?: number;
     spreadRadius?: number;
     color: string;
 }
-export interface IShadowValue {
-    type: 'text' | 'box';
-    text?: IValue;
-    box?: IValue;
-};

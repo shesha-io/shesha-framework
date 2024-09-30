@@ -21,6 +21,7 @@
               "propertyName": "propertyName",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Property name",
+              "size": "small",
               "validate": {
                 "required": true
               }
@@ -38,6 +39,7 @@
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Type",
               "size": "small",
+              "jsSettings": true,
               "values": [
                 {
                   "label": "text",
@@ -467,6 +469,29 @@
       "description": "Default form settings",
       "displayName": "DEFAULT_FORM_SETTINGS",
       "props": {}
+    },
+    "access": null,
+    "permissions": null,
+    "version": 6,
+    "dataLoaderType": "gql",
+    "dataSubmitterType": "gql",
+    "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
+    "onAfterDataLoad": null,
+    "onPrepareSubmitData": null,
+    "onBeforeSubmit": null,
+    "onSubmitSuccess": null,
+    "onSubmitFailed": null,
+    "dataSubmittersSettings": {
+      "gql": {
+        "endpointType": "default",
+        "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
+      }
+    },
+    "dataLoadersSettings": {
+      "gql": {
+        "endpointType": "default"
+      },
+      "custom": {}
     }
   }
 }

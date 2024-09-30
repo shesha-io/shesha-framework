@@ -47,25 +47,16 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                 <Row gutter={[8, 8]}>
                                     {fields.map((field) => {
                                         return (
-                                            <Col
+                                            <Tag
                                                 key={field.name}
-                                                xs={{ flex: '100%' }}
-                                                sm={{ flex: '50%' }}
-                                                md={{ flex: '40%' }}
-                                                lg={{ flex: '20%' }}
-                                                xl={{ flex: '10%' }}
+                                                closable={field.key > 1}
+                                                onClose={() => {
+                                                    remove(field.name);
+                                                }}
+                                                style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', width: 'max-content' }}
                                             >
-                                                <Tag
-                                                    key={field.name}
-                                                    closable={field.key > 1}
-                                                    onClose={() => {
-                                                        remove(field.name);
-                                                    }}
-                                                    style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', width: 'max-content' }}
-                                                >
-                                                    <SettingInput value={field.name} property={[field.name]} label='' readOnly={readOnly} type='color' />
-                                                </Tag>
-                                            </Col>
+                                                <SettingInput value={field.name} property={[field.name]} label='color' hideLabel={true} readOnly={readOnly} type='color' />
+                                            </Tag>
                                         );
                                     })}
                                     <Button

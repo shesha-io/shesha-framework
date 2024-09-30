@@ -10,7 +10,7 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { FormMarkup, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
-import { ITextFieldComponentProps, TextType } from './interfaces';
+import { IInputStyles, IStyleType, ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
@@ -125,6 +125,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       setGlobalState,
     };
 
+    console.log('TextField Model::: ', model);
+
     return (
       <ConfigurableFormItem
         model={model}
@@ -171,7 +173,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-  ,
+    .add<ITextFieldComponentProps>(5, (prev) => ({ ...prev, prefixIcon: prev.prefixIcon ? { icon: prev.prefixIcon, color: '#ccc' } : undefined, suffixIcon: prev.suffixIcon ? { icon: prev.suffixIcon, color: '#ccc' } : undefined })),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,

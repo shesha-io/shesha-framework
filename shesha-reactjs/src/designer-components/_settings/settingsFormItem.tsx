@@ -15,6 +15,7 @@ import { getFieldNameFromExpression } from '@/index';
 export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
     label?: string;
+    hideLabel?: boolean;
     jsSetting?: boolean;
     readOnly?: boolean;
     disabled?: boolean;

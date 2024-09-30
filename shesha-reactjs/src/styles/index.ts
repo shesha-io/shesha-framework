@@ -1,4 +1,4 @@
-import { FullToken, createInstance } from "antd-style";
+import { FullToken, createStyles, css, createGlobalStyle, ThemeProvider } from "antd-style";
 
 export const sheshaStyles = {
     paddingSM: 4,
@@ -58,17 +58,4 @@ export const getWarningHoverEffects = (token: FullToken) => {
     `;
 };
 
-export interface SheshaStyleTokens {
-
-}
-
-const { createStyles, ThemeProvider } = createInstance<SheshaStyleTokens>({
-    key: 'css',
-    hashPriority: 'high',
-    speedy: true,
-    customToken: {
-        // custom tokens
-    },
-});
-
-export { createStyles, ThemeProvider };
+export { css, createGlobalStyle, createStyles, ThemeProvider };

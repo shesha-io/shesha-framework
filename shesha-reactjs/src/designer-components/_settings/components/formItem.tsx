@@ -31,6 +31,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
     return (
         <ConfigurableFormItem
             model={{
+                hideLabel: props.hideLabel,
                 propertyName: name,
                 label: <span style={{ fontWeight: 500, color: 'darkslategrey' }}>{label}</span>,
                 type: '',
@@ -39,10 +40,8 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                 validate: { required },
                 hidden
             }}
-
+            
             className='sha-js-label'
-            labelCol={props.labelCol || { span: 24 }}
-            wrapperCol={props.wrapperCol || { span: 24 }}
         >
             {(value, onChange) =>
                 jsSetting === false ? (
