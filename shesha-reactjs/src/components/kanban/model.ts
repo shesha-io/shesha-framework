@@ -15,47 +15,7 @@ export interface IAddNewRecordProps {
     buttons?: ButtonGroupItemProps[];
   }
   
-// export interface IKanbanComponentProps {
-//     entityType?: string;
-//     groupingProperty?: string;
-//     modalFormId?: string; 
-//     columnStyle?: CSSProperties;
-//     gap?: string | number;
-//     readonly?: boolean;
-//     height?: string | number;
-//     minHeight?: string | number;
-//     maxHeight?: string | number;
-//     fontSize?: string | number;
-//     backgroundColor?: string;
-//     color?: string;
-//     headerStyle?: any;
-//     formId?: FormIdentifier;
-//     onChange?: (value: string | string[] | IEntityReferenceDto | IEntityReferenceDto[], data: IAnyObject) => void;
-//     onSelect?: (data: IAnyObject) => void;
-//     value?: string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
-//     displayEntityKey?: string;
-//     width?: number | string;
-//     disabled?: boolean;
-//     loading?: boolean;
-//     name?: string;
-//     mode?: 'single' | 'multiple' | 'tags';
-//     size?: SizeType;
-//     title?: string;
-//     useButtonPicker?: boolean;
-//     pickerButtonProps?: ButtonProps;
-//     defaultValue?: string;
-//     entityFooter?: ReactNode;
-//     configurableColumns?: IConfigurableColumnsProps[]; // Type it later
-//     addNewRecordsProps?: IAddNewRecordProps;
-//     style?: CSSProperties;
-//     readOnly?: boolean;
-//     placeholder: string;
-//     incomeValueFunc: IncomeValueFunc;
-//     outcomeValueFunc: OutcomeValueFunc;
-//     filters: any;
-// }
 
-//////
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
@@ -92,6 +52,7 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   modalFormId?: string;
   createFormId?: string;
   headerBackgroundColor: string;
+  actionConfiguration: any;
 }
 
 export interface IChevronControlProps extends IKanbanProps {

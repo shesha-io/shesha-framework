@@ -1,25 +1,20 @@
 import React from "react";
+import { Card, Col, Row } from "antd";
 
+export const KanbanPlaceholder = () => {
+  const placeholderColumns = ["To Do", "In Progress", "Review", "Done"];
 
-// const columns = [
-//     { id: '1', name: 'ToDo' },
-//     { id: '2', name: 'InProgress' },
-//     { id: '3', name: 'Done' },
-//     { id: '4', name: 'Testing' },
-//     { id: '5', name: 'Won' },
-//     { id: '6', name: 'Lost' }
-// ];
-
-// const initialTasks = [
-//     { id: 1, name: 'task1', description: 'Box', column: 'Male' },
-//     { id: 2, name: 'task2', description: 'Box', column: 'Female' },
-//     { id: 3, name: 'task3', description: 'Box', column: 'Male' },
-//     { id: 4, name: 'task4', description: 'Box', column: 'Male' },
-//   ];
-  
-
-export const KanbanPlaceholder = () =>{
-    return(
-      <h1>I will create a placeholder!</h1>
-    );
+  return (
+    <Row gutter={16} style={{ padding: "10px" }}>
+      {placeholderColumns.map((column) => (
+        <Col key={column} span={6}>
+          <Card title={column} bordered={false} style={{ minHeight: "200px", backgroundColor: "#f5f5f5" }}>
+            <p style={{ textAlign: "center", color: "#999" }}>kanban placeholder</p>
+          </Card>
+        </Col>
+      ))}
+    </Row>
+  );
 };
+
+export default KanbanPlaceholder;

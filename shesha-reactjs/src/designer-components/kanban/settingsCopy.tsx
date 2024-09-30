@@ -1,5 +1,5 @@
 import { Autocomplete, CodeEditor, ColorPicker, FormAutocomplete, PropertyAutocomplete, Show } from '@/components';
-import RefListItemSelectorSettingsModal from '@/components/chevron/options/modal';
+import RefListItemSelectorSettingsModal from '@/components/kanban/options/modal';
 import { Checkbox, Input } from 'antd';
 import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '../_settings/settingsForm';
@@ -34,7 +34,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
               <SettingsFormItem name="modalFormId" label="Render Form" jsSetting>
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </SettingsFormItem>
-          <MetadataProvider modelType={values.entityType.name}>
+          <MetadataProvider modelType={values.entityType?.name}>
           <SettingsFormItem name="groupingProperty" label="Grouping property" jsSetting>
             <PropertyAutocomplete readOnly={props.readOnly} autoFillProps={false} />
           </SettingsFormItem>

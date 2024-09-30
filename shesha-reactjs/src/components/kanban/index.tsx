@@ -1,12 +1,18 @@
-import React, { CSSProperties, useEffect, useState, useMemo } from 'react';
-import { Button, Dropdown, Flex, Form, MenuProps, message, Modal, Popconfirm } from 'antd';
-import { ReactSortable } from 'react-sortablejs';
+import React, { CSSProperties, useEffect, useState, useMemo, useCallback } from 'react';
+import { Form, message, Modal } from 'antd';
 import { IKanbanProps } from './model';
-import { getColumns, getHeight, getMetaData, useKanbanActions } from './utils';
-import { KanbanPlaceholder } from './placeholder';
-import { ConfigurableForm, useFormState, useGet } from '@/index';
-import { MoreOutlined, PlusOutlined } from '@ant-design/icons';
+import { getHeight, getMetaData, useKanbanActions } from './utils';
+import KanbanPlaceholder from './placeholder';
+import {
+  ConfigurableForm,
+  useAvailableConstantsData,
+  useConfigurableActionDispatcher,
+  useFormState,
+  useGet,
+} from '@/index';
 import { useStyles } from './styles';
+import KanbanColumn from './components/kanbanColumn';
+import { MoveEvent } from 'react-sortablejs';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const {
@@ -22,11 +28,11 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     fontSize,
     headerBackgroundColor,
     headerStyle,
-    allowNewRecord,
     fontColor,
     createFormId,
+    items,
   } = props;
-  
+
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState([]);
@@ -40,53 +46,110 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const allData = useAvailableConstantsData();
+  const { executeAction } = useConfigurableActionDispatcher();
+  // const dynamicContext = useActionDynamicContext(actionConfiguration);
 
   useEffect(() => {
+    setColumns(items);
     if (!isInDesigner && entityType && groupingProperty) {
       var type: any;
       refetch(getMetaData('/api/services/app/Metadata/Get', entityType?.id)).then((resp: any) => {
-        type = resp.result.properties.find(
-          (x: any) => x.path.toLowerCase() === groupingProperty.toLowerCase()
-        );
+        type = resp.result.properties.find((x: any) => x.path.toLowerCase() === groupingProperty.toLowerCase());
 
         if (type?.dataType === 'reference-list-item') {
           const endpoints = resp.result.apiEndpoints;
-          setUrls({updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url});
+          setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
           refetch({ path: `${resp.result.apiEndpoints.list.url}?maxResultCount=1000` })
             .then((resp) => {
               setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
-              refetch(getColumns('/api/services/app/Entities/GetAll', type?.referenceListName))
-                .then((resp: any) => {
-                  setColumns(resp?.result?.items);
-                })
-                .catch((err) => console.error('Error fetching columns:', err));
             })
             .catch((err) => console.error('Error fetching tasks:', err));
         }
       });
     }
-  }, [groupingProperty, trigger]);
+  }, [groupingProperty, trigger, items]);
 
-  const handleUpdate = async (newTasks: any[], columnValue: any) => {
-    setTasks((prevTasks) => {
-      const updatedTasks = prevTasks.map((task) => {
-        const movedTask = newTasks.find((newTask) => newTask.id === task.id);
-        if (movedTask && task[groupingProperty] !== columnValue) {
-          const updatedTask = { ...task, [groupingProperty]: columnValue };
-          const payload = { id: task.id, [groupingProperty]: columnValue };
-          updateKanban(payload, urls.updateUrl);
-          return updatedTask;
+  const onEnd = useCallback(
+    (evt: any, column: any): Promise<boolean> => {
+      return new Promise((resolve) => {
+        const { to, dragged } = evt;
+        const draggedTask = dragged?.dataset?.id;
+        const targetColumn = to?.dataset?.columnId;
+
+        console.log('Dragged Task:', draggedTask);
+        console.log('Target Column:', targetColumn);
+
+        if (!column || !column.actionConfiguration) {
+          resolve(true); // Allow the drop if no action configuration
+          return;
         }
-        return task;
-      });
 
-      return updatedTasks.sort((a, b) => {
-        const aIndex = newTasks.findIndex((t) => t.id === a.id);
-        const bIndex = newTasks.findIndex((t) => t.id === b.id);
-        return aIndex - bIndex;
+        const evaluationContext = {
+          ...allData,
+          selectedRow: column,
+          draggedTask,
+        };
+
+        executeAction({
+          actionConfiguration: column.actionConfiguration,
+          argumentsEvaluationContext: evaluationContext,
+          success: (response) => {
+            console.log('Custom Success Logic:', response);
+            resolve(true);
+          },
+          fail: (error) => {
+            console.log('Custom Failure Logic:', error);
+            resolve(false);
+          },
+        });
       });
-    });
-  };
+    },
+    [allData, executeAction]
+  );
+
+  const handleUpdate = useCallback(
+    async (newTasks: any[], column: any) => {
+      const hasChanged = newTasks.some((task, index) => task.id !== tasks[index]?.id);
+
+      if (!hasChanged) {
+        return; // Exit if there's no change
+      }
+
+      const canUpdate = await onEnd(
+        {
+          to: { dataset: { columnId: column.id } },
+          dragged: { dataset: { id: newTasks[0]?.id } },
+        },
+        column
+      );
+
+      if (!canUpdate) {
+        console.log('Update prevented due to failed action execution');
+        return; // Exit the function without updating
+      }
+
+      setTasks((prevTasks) => {
+        const updatedTasks = prevTasks.map((task) => {
+          const movedTask = newTasks.find((newTask) => newTask.id === task.id);
+          if (movedTask && task[groupingProperty] !== column.itemValue) {
+            const updatedTask = { ...task, [groupingProperty]: column.itemValue };
+            const payload = { id: task.id, [groupingProperty]: column.itemValue };
+            updateKanban(payload, urls.updateUrl);
+            return updatedTask;
+          }
+          return task;
+        });
+
+        return updatedTasks.sort((a, b) => {
+          const aIndex = newTasks.findIndex((t) => t.id === a.id);
+          const bIndex = newTasks.findIndex((t) => t.id === b.id);
+          return aIndex - bIndex;
+        });
+      });
+    },
+    [tasks, groupingProperty, onEnd, updateKanban, urls.updateUrl]
+  );
 
   useEffect(() => {
     if (selectedItem) {
@@ -97,10 +160,10 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   }, [selectedItem, form]);
 
   const style: CSSProperties = {
-    flex: '1 0 200px',
+    flex: '1 0 100px',
     justifyContent: 'space-between',
     margin: '0 10px',
-    padding: '10px',
+    padding: '0px',
     border: '1px solid #ddd',
     minHeight: '150px',
     maxHeight: '500px',
@@ -122,11 +185,17 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     fontSize: 100,
     borderRadius: 5,
     padding: '0 10px',
-    marginBottom: 10,
+    marginTop: 10,
     backgroundColor: '#1890ff',
   };
 
-  const newHeaderStyle = { ...hStyle, ...headerStyle, fontSize, backgroundColor:headerBackgroundColor, color:fontColor };
+  const newHeaderStyle = {
+    ...hStyle,
+    ...headerStyle,
+    fontSize,
+    backgroundColor: headerBackgroundColor,
+    color: fontColor,
+  };
   const newStyle = { ...style, ...columnStyle, ...getHeight(height, minHeight, maxHeight) };
 
   const handleEditClick = (item) => {
@@ -141,11 +210,11 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
 
       updateKanban(updatedItem, urls.updateUrl);
 
-      var updatedTasks = tasks.map((task) => task.id === selectedItem.id ? {...task, ...updatedItem} : task);
+      var updatedTasks = tasks.map((task) => (task.id === selectedItem.id ? { ...task, ...updatedItem } : task));
 
       setTasks([...updatedTasks]);
       setTrigger((prev) => prev + 1);
-      
+
       form.resetFields();
       setIsModalVisible(false);
       setSelectedItem(null);
@@ -178,140 +247,63 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     form.resetFields(); // Reset the form to clear previous values
     setIsModalVisible(true);
   };
-  
+
   const closeModal = () => {
     setIsModalVisible(false);
     form.resetFields();
     setSelectedItem(undefined);
     // console.log('close modal', selectedItem);
-    
-};
-
+  };
 
   const memoizedFilteredTasks = useMemo(() => {
-    return columns.map(column => {
-      return (
-        {
-          column,
-          tasks: tasks.filter(task => {
-            return task[groupingProperty] === column.itemValue;
-          })
-        }
-      );
+    return columns.map((column) => {
+      return {
+        column,
+        tasks: tasks.filter((task) => {
+          return task[groupingProperty] === column.itemValue;
+        }),
+      };
     });
   }, [columns, tasks, groupingProperty]);
 
   return (
     <>
-      {isInDesigner ? (
+      {items.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
         <div style={{ overflowX: 'auto' }}>
-          <Flex gap={gap || 10} style={{ display: 'flex', minWidth: '1000px' }}>
+          <div style={{ display: 'flex', gap: gap || 10 }}>
             {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
-              <div key={column.itemValue} style={newStyle}>
-                <div style={{ flexGrow: 1 }}>
-                  <Flex
-                    justify={allowNewRecord ? 'space-between' : 'center'}
-                    align="center"
-                    style={{ width: '100%', ...newHeaderStyle }}
-                  >
-                    <h3>
-                      {column.item} ({columnTasks.length})
-                    </h3>
-                    {allowNewRecord ? (
-                      <Button type="text" onClick={() => handleCreateClick(column.itemValue)}  icon={<PlusOutlined/>} />
-                    ) : null}
-                  </Flex>
-                  <ReactSortable
-                    list={columnTasks}
-                    setList={(newTasks) => handleUpdate(newTasks, column.itemValue)}
-                    fallbackOnBody={true}
-                    swapThreshold={0.5}
-                    group={{ name: 'tasksGroup', pull: true, put: true }}
-                    sort={true}
-                    animation={75}
-                    ghostClass="task-item-ghost"
-                    emptyInsertThreshold={20}
-                    scroll={true}
-                    bubbleScroll={true}
-                    disabled={readonly}
-                  >
-                    {columnTasks.length === 0 ? (
-                      <div
-                        style={{
-                          textAlign: 'center',
-                          color: '#999',
-                          padding: '20px',
-                          border: '1px dashed #d9d9d9',
-                          borderRadius: '5px',
-                        }}
-                      >
-                        No Item Found
-                      </div>
-                    ) : (
-                      columnTasks.map((t) => {
-                        const items: MenuProps['items'] = [
-                          {
-                            key: '1',
-                            label: 'Edit',
-                            onClick: () => handleEditClick(t),
-                          },
-                          {
-                            key: '2',
-                            label: (
-                              <Popconfirm
-                                title="Are you sure you want to delete this item?"
-                                onConfirm={() => handleDelete(t.id)}
-                                okText="Yes"
-                                cancelText="No"
-                              >
-                                Delete
-                              </Popconfirm>
-                            ),
-                          },
-                        ];
-                        return (
-                          <div key={t.id} className={styles.container}>
-                            <ConfigurableForm 
-                            key={selectedItem ? selectedItem.id : 'new-item'} 
-                            initialValues={t} 
-                            formId={modalFormId}
-                            mode={'readonly'}
-                             
-                            />
-                            <Dropdown trigger={['click']} menu={{ items }} placement="bottomRight">
-                              <Button type="text" className={`${styles.threeDotsStyle} three-dots`} icon={<MoreOutlined />} />
-                            </Dropdown>                             
-                          </div>
-                        );
-                      })
-                    )}
-                  </ReactSortable>
-                </div>
-              </div>
+              <KanbanColumn
+                key={column.itemValue}
+                column={column}
+                columnTasks={columnTasks}
+                groupingProperty={groupingProperty}
+                readonly={readonly}
+                newStyle={newStyle}
+                newHeaderStyle={newHeaderStyle}
+                handleUpdate={handleUpdate}
+                handleEditClick={handleEditClick}
+                handleDelete={handleDelete}
+                handleCreateClick={handleCreateClick}
+                styles={styles}
+                selectedItem={selectedItem}
+                modalFormId={modalFormId}
+                onEnd={(evt: MoveEvent) => onEnd(evt, column)}
+              />
             ))}
-          </Flex>
+          </div>
         </div>
       )}
+
       <Modal
         title={selectedItem ? 'Edit Item' : 'New Item'}
         open={isModalVisible}
-        onOk={() => {
-          form.validateFields()
-            .then(() => {
-              if (selectedItem) handleEdit();
-              else handleCreate();
-            }).catch((error) => {
-              console.error('error', error);
-              message.error(error);
-              return;
-            });
-        }}
+        onOk={() => form.validateFields().then(selectedItem ? handleEdit : handleCreate)}
         onCancel={closeModal}
         width={1000}
       >
-        <ConfigurableForm initialValues={selectedItem ? selectedItem : {}} form={form} formId={createFormId} mode="edit"/>
+        <ConfigurableForm initialValues={selectedItem || {}} form={form} formId={createFormId} mode="edit" />
       </Modal>
     </>
   );

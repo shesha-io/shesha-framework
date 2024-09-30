@@ -7,6 +7,7 @@ import { Alert } from 'antd';
 import KanbanReactComponent from '@/components/kanban';
 import { IKanbanProps } from '@/components/kanban/model';
 import { KanbanSettingsForm } from './settingsCopy';
+import { RefListItemGroupConfiguratorProvider } from '@/components/kanban/provider';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
@@ -31,8 +32,9 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     return (
       <div>
         <ConfigurableFormItem model={model}>
-          {() => {
+          {(value) => {
             return (
+              <RefListItemGroupConfiguratorProvider value={value} items={model.items} referenceList={model.referenceList} readOnly={model.readOnly}>
               <KanbanReactComponent
                 {...model}
                 headerStyle={{
@@ -42,6 +44,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
                   ...getStyle(model?.columnStyle, formData),
                 }}
               />
+              </RefListItemGroupConfiguratorProvider>
             );
           }}
         </ConfigurableFormItem>
