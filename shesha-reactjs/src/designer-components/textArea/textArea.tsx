@@ -145,7 +145,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<ITextAreaComponentProps>(2, (prev) => migrateReadOnly(prev))
       .add<ITextAreaComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-      .add<ITextAreaComponentProps>(5, (prev) => {
+      .add<ITextAreaComponentProps>(4, (prev) => {
         const styles: IInputStyles = {
           size: prev.size,
           width: prev.width,

@@ -97,7 +97,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
             : 'listItem',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
-    .add<IDropdownComponentProps>(5, (prev) => {
+    .add<IDropdownComponentProps>(7, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
         stylingBox: prev.stylingBox,
