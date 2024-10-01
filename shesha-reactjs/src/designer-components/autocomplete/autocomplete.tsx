@@ -30,6 +30,7 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
+import { IInputStyles } from '../textField/interfaces';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -268,6 +269,22 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       ...migrateFormApi.eventsAndProperties(prev),
       defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     }))
+    .add<IAutocompleteComponentProps>(6, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        width: prev.width,
+        height: prev.height,
+        hideBorder: prev.hideBorder,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        fontSize: prev.fontSize,
+        backgroundColor: prev.backgroundColor,
+        stylingBox: prev.stylingBox
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
