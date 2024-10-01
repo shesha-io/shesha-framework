@@ -1,7 +1,11 @@
 ﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Net.Mail;
 using Abp.UI;
+using DocumentFormat.OpenXml.Drawing;
+using GraphQL;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Exceptions;
 using Shesha.Otp.Configuration;
@@ -19,14 +23,24 @@ namespace Shesha.Otp
         private readonly IOtpStorage _otpStorage;
         private readonly IOtpGenerator _otpGenerator;
         private readonly IOtpSettings _otpSettings;
+        private readonly IRepository<OtpConfig, Guid> _otpConfigRepository;
+        private readonly IRepository<Person, Guid> _personRepository;
+        private readonly IOtpAppServiceHelper _otpServiceHelper;
 
-        public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings)
+        public OtpAppService(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage,
+            IOtpGenerator passwordGenerator, IOtpSettings otpSettings,
+            IRepository<OtpConfig, Guid> otpConfigRepository,
+            IRepository<Person, Guid> personRepository,
+            IOtpAppServiceHelper otpServiceHelper)
         {
             _smsGateway = smsGateway;
             _emailSender = emailSender;
             _otpStorage = otpStorage;
             _otpGenerator = passwordGenerator;
             _otpSettings = otpSettings;
+            _otpConfigRepository = otpConfigRepository;
+            _personRepository = personRepository;
+            _otpServiceHelper = otpServiceHelper;
         }
 
         /// <summary>
@@ -44,13 +58,14 @@ namespace Shesha.Otp
             {
                 // TODO: Generate password reset token
                 pinCode = Guid.NewGuid().ToString("N");
-            }else
+            }
+            else
             {
                 pinCode = _otpGenerator.GeneratePin();
             }
 
 
-            // generate new pin and save
+            // generate new OtpItem and save
             var otp = new OtpDto()
             {
                 OperationId = Guid.NewGuid(),
@@ -67,14 +82,15 @@ namespace Shesha.Otp
             if (settings.IgnoreOtpValidation)
             {
                 otp.SendStatus = OtpSendStatus.Ignored;
-            } else
+            }
+            else
             {
                 try
                 {
                     otp.SentOn = DateTime.Now;
 
-                    await SendInternal(otp);
-                    
+                    await _otpServiceHelper.SendInternal(otp);
+
                     otp.SendStatus = OtpSendStatus.Sent;
                 }
                 catch (Exception e)
@@ -85,14 +101,14 @@ namespace Shesha.Otp
             }
 
             // set expiration and save
-            var lifeTime = input.Lifetime.HasValue && input.Lifetime.Value != 0 
-                ? input.Lifetime .Value
+            var lifeTime = input.Lifetime.HasValue && input.Lifetime.Value != 0
+                ? input.Lifetime.Value
                 : settings.DefaultLifetime;
 
             otp.ExpiresOn = DateTime.Now.AddSeconds(lifeTime);
 
             await _otpStorage.SaveAsync(otp);
-            
+
             // return response
             var response = new SendPinResponse
             {
@@ -103,131 +119,221 @@ namespace Shesha.Otp
         }
 
         /// <summary>
-        /// Resend one-time-pin
+        /// 
         /// </summary>
-        public async Task<ISendPinResponse> ResendPinAsync(IResendPinInput input)
+        /// <param name="module"></param>
+        /// <param name="otpConfig"></param>
+        /// <param name="sourceEntityId"></param>
+        /// <param name="sendTo"></param>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException"></exception>
+        public async Task<ISendPinResponse> SendPinWithConfig(string module, string otpConfig, Guid? sourceEntityId, string sendTo)
         {
-            var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            var otp = await _otpStorage.GetAsync(input.OperationId);
-            if (otp == null)
-                throw new UserFriendlyException("OTP not found, try to request a new one");
+            var config = await _otpServiceHelper.GetOtpConfigAsync(module, otpConfig);
+            if (string.IsNullOrEmpty(sendTo))
+                throw new UserFriendlyException("SendTo must be specified");
 
-            if (otp.ExpiresOn < DateTime.Now)
-                throw new UserFriendlyException("OTP has expired, try to request a new one");
+            var pinCode = _otpServiceHelper.GenerateOtpCode(config.SendType ?? OtpSendType.Sms);
+            var otp = _otpServiceHelper.CreateOtp(sendTo, config, sourceEntityId, pinCode);
+            await _otpServiceHelper.SendOtpAsync(otp, config);
+            await _otpStorage.SaveAsync(otp);
 
-            // note: we ignore _otpSettings.IgnoreOtpValidation here, the user pressed `resend` manually
-
-            // send otp
-            var sendTime = DateTime.Now;
-            try
-            {
-                await SendInternal(otp);
-            }
-            catch (Exception e)
-            {
-                await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
-                {
-                    newOtp.SentOn = sendTime;
-                    newOtp.SendStatus = OtpSendStatus.Failed;
-                    newOtp.ErrorMessage = e.FullMessage();
-                    
-                    return Task.CompletedTask;
-                });
-            }
-            
-            // extend lifetime
-            var lifeTime = input.Lifetime ?? settings.DefaultLifetime;
-            var newExpiresOn = DateTime.Now.AddSeconds(lifeTime);
-
-            await _otpStorage.UpdateAsync(input.OperationId, newOtp =>
-            {
-                newOtp.SentOn = sendTime;
-                newOtp.SendStatus = OtpSendStatus.Sent;
-                newOtp.ExpiresOn = newExpiresOn;
-
-                return Task.CompletedTask;
-            });
-
-            // return response
-            var response = new SendPinResponse
-            {
-                OperationId = otp.OperationId,
-                SentTo = otp.SendTo
-            };
-            return response;
+            return new SendPinResponse { OperationId = otp.OperationId, SentTo = otp.SendTo, ModuleName = config.Module.Name, ActionType = config.ActionType, SourceEntityId = otp.SourceEntityId};
         }
 
-        private async Task SendInternal(OtpDto otp)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="module"></param>
+        /// <param name="otpConfig"></param>
+        /// <param name="sourceEntityId"></param>
+        /// <param name="personId"></param>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException"></exception>
+        public async Task<SendPinResponse> SendPinToPersonWithConfig(string module, string otpConfig, Guid? sourceEntityId, Guid personId)
+        {
+            var config = await _otpServiceHelper.GetOtpConfigAsync(module, otpConfig);
+            var person = await _personRepository.GetAsync(personId);
+            if (person == null)
+                throw new UserFriendlyException("Person not found");
+
+            string sendTo = _otpServiceHelper.GetSendToAddress(person, config.SendType);
+            var pinCode = _otpServiceHelper.GenerateOtpCode(config.SendType ?? OtpSendType.Sms);
+            var otp = _otpServiceHelper.CreateOtp(sendTo, config, sourceEntityId, pinCode, personId.ToString());
+            await _otpServiceHelper.SendOtpAsync(otp, config);
+            await _otpStorage.SaveAsync(otp);
+
+            return new SendPinResponse { OperationId = otp.OperationId, SentTo = otp.SendTo, ModuleName = config.Module.Name, ActionType = config.ActionType, SourceEntityId = otp.SourceEntityId };
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="operationId"></param>
+        /// <param name="lifetime"></param>
+        /// <returns></returns>
+        public async Task<ISendPinResponse> ResendPinAsync(Guid operationId, int? lifetime)
         {
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            switch (otp.SendType)
-            {
-                case OtpSendType.Sms:
+            var otp = await _otpServiceHelper.GetOtpWithOperationId(operationId);
+            return await _otpServiceHelper.ProcessOtpResendAsync(
+                otp,
+                lifetime,
+                async (otp) => await _otpServiceHelper.SendInternal(otp),
+                async (otp) =>
                 {
-                    var bodyTemplate = settings.DefaultBodyTemplate;
-                    if (string.IsNullOrWhiteSpace(bodyTemplate))
-                        bodyTemplate = OtpDefaults.DefaultBodyTemplate;
+                    await _otpStorage.UpdateAsync(operationId, newOtp =>
+                    {
+                        newOtp.SentOn = DateTime.Now;
+                        newOtp.SendStatus = OtpSendStatus.Sent;
+                        newOtp.ExpiresOn = DateTime.Now.AddSeconds(lifetime ?? settings.DefaultLifetime);
+                        return Task.CompletedTask;
+                    });
+                },
+                lifetime ?? settings.DefaultLifetime
+            );
+        }
 
-                    // todo: use mustache
-                    var messageBody = bodyTemplate.Replace("{{password}}", otp.Pin);
-                    await _smsGateway.SendSmsAsync(otp.SendTo, messageBody);
-                    break;
-                }
-                case OtpSendType.Email:
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="operationId"></param>
+        /// <param name="lifetime"></param>
+        /// <param name="moduleName"></param>
+        /// <param name="otpConfigName"></param>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException"></exception>
+        public async Task<ISendPinResponse> ResendPinWithConfig(Guid? operationId, int? lifetime, string moduleName, string otpConfigName)
+        {
+            var otp = await _otpServiceHelper.GetOtpWithOperationId(operationId);
+
+            var config = await _otpServiceHelper.GetOtpConfigAsync(moduleName, otpConfigName);
+            if (config.NotificationTemplate == null || !config.NotificationTemplate.IsEnabled)
+                throw new UserFriendlyException("Invalid or disabled notification template in config");
+
+            return await _otpServiceHelper.ProcessOtpResendAsync(
+                otp,
+                lifetime,
+                async (otp) => await _otpServiceHelper.SendInternalWithConfig(otp, config),
+                async (otp) =>
                 {
-                    var bodyTemplate = settings.DefaultBodyTemplate;
-                    var subjectTemplate = settings.DefaultSubjectTemplate;
+                    await _otpStorage.UpdateAsync(otp.OperationId, newOtp =>
+                    {
+                        newOtp.SentOn = DateTime.Now;
+                        newOtp.SendStatus = OtpSendStatus.Sent;
+                        newOtp.ExpiresOn = DateTime.Now.AddSeconds(lifetime ?? config.Lifetime ?? 300);
+                        return Task.CompletedTask;
+                    });
+                },
+                lifetime ?? config.Lifetime ?? 300
+            );
+        }
 
-                    var body = bodyTemplate.Replace("{{password}}", otp.Pin);
-                    var subject= subjectTemplate.Replace("{{password}}", otp.Pin);
-
-                    await _emailSender.SendAsync(otp.SendTo, subject, body, false);
-                    break;
-                }
-                case OtpSendType.EmailLink:
+        public async Task<ISendPinResponse> ResendPinAsyncUsingComposite(string moduleName, string actionType, Guid sourceEntityId, int? lifetime)
+        {
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+            var otp = await _otpServiceHelper.GetOtpWithCompositeKey(moduleName, actionType, sourceEntityId);
+            return await _otpServiceHelper.ProcessOtpResendAsync(
+                otp,
+                lifetime,
+                async (otp) => await _otpServiceHelper.SendInternal(otp),
+                async (otp) =>
                 {
-                    var subjectTemplate = settings.DefaultEmailSubjectTemplate;
-                    var bodyTemplate  = settings.DefaultEmailBodyTemplate;
+                    await _otpStorage.UpdateAsync(otp.OperationId, newOtp =>
+                    {
+                        newOtp.SentOn = DateTime.Now;
+                        newOtp.SendStatus = OtpSendStatus.Sent;
+                        newOtp.ExpiresOn = DateTime.Now.AddSeconds(lifetime ?? settings.DefaultLifetime);
+                        return Task.CompletedTask;
+                    });
+                },
+                lifetime ?? settings.DefaultLifetime
+            );
+        }
 
-                    var body = bodyTemplate.Replace("{{token}}", otp.Pin);
-                    body = body.Replace("{{userid}}", otp.RecipientId);
-                    await _emailSender.SendAsync(otp.SendTo, subjectTemplate, body, true);
-                    break;
-                }
-                default:
-                    throw new NotSupportedException($"unsupported {nameof(otp.SendType)}: {otp.SendType}");
-            }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="actionType"></param>
+        /// <param name="sourceEntityId"></param>
+        /// <param name="lifetime"></param>
+        /// <param name="moduleName"></param>
+        /// <param name="otpConfigName"></param>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException"></exception>
+        public async Task<ISendPinResponse> ResendPinWithConfigUsingComposite(string moduleName, string actionType, Guid sourceEntityId, int? lifetime, string otpConfigName)
+        {
+            var otp = await _otpServiceHelper.GetOtpWithCompositeKey(moduleName, actionType, sourceEntityId);
+
+            var config = await _otpServiceHelper.GetOtpConfigAsync(moduleName, otpConfigName);
+            if (config.NotificationTemplate == null || !config.NotificationTemplate.IsEnabled)
+                throw new UserFriendlyException("Invalid or disabled notification template in config");
+
+            return await _otpServiceHelper.ProcessOtpResendAsync(
+                otp,
+                lifetime,
+                async (otp) => await _otpServiceHelper.SendInternalWithConfig(otp, config),
+                async (otp) =>
+                {
+                    await _otpStorage.UpdateAsync(otp.OperationId, newOtp =>
+                    {
+                        newOtp.SentOn = DateTime.Now;
+                        newOtp.SendStatus = OtpSendStatus.Sent;
+                        newOtp.ExpiresOn = DateTime.Now.AddSeconds(lifetime ?? config.Lifetime ?? 300);
+                        return Task.CompletedTask;
+                    });
+                },
+                lifetime ?? config.Lifetime ?? 300
+            );
         }
 
         /// <summary>
         /// Verify one-time-pin
         /// </summary>
-        public async Task<IVerifyPinResponse> VerifyPinAsync(IVerifyPinInput input)
+        public async Task<IVerifyPinResponse> VerifyPinWithComposite(string moduleName, string actionType, Guid sourceEntityId, string pin)
         {
+            // Retrieve OTP settings
             var settings = await _otpSettings.OneTimePins.GetValueAsync();
-            if (!settings.IgnoreOtpValidation)
-            {
-                var pinDto = await _otpStorage.GetAsync(input.OperationId);
-                if (pinDto == null || pinDto.Pin != input.Pin)
-                {
-                    var message = pinDto.SendType == OtpSendType.EmailLink ? "Invalid email link" : "Wrong one time pin";
-                    return VerifyPinResponse.Failed(message);
-                }
 
-                if (pinDto.ExpiresOn < DateTime.Now)
-                {
-                    var message = pinDto.SendType == OtpSendType.EmailLink ? "The link you have supplied has expired" : "One-time pin has expired, try to send a new one";
-                    return VerifyPinResponse.Failed(message);
-                }
-            }
+            // Retrieve OTP details
+            var pinDto = await _otpServiceHelper.RetrieveOtpAsync(moduleName, actionType, sourceEntityId);
 
-            return VerifyPinResponse.Success();
+            // Validate OTP and return the response
+            return _otpServiceHelper.ValidateOtp(pinDto, pin, settings.IgnoreOtpValidation);
         }
 
+        public async Task<IVerifyPinResponse> VerifyPinAsync(Guid operationId, string pin)
+        {
+            // Retrieve OTP settings
+            var settings = await _otpSettings.OneTimePins.GetValueAsync();
+
+            // Retrieve OTP details
+            var pinDto = await _otpServiceHelper.RetrieveOtpAsync(operationId);
+
+            // Validate OTP and return the response
+            return _otpServiceHelper.ValidateOtp(pinDto, pin, settings.IgnoreOtpValidation);
+        }
+
+
         /// inheritedDoc
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IOtpDto> GetAsync(Guid operationId)
         {
             return await _otpStorage.GetAsync(operationId);
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IOtpDto> GetWithCompositeKey(string moduleName, string actionType, Guid sourceEntityId)
+        {
+            if (string.IsNullOrEmpty(moduleName))
+            {
+                throw new UserFriendlyException("ModuleName is required to get Otp item");
+            }
+            if (string.IsNullOrEmpty(actionType))
+            {
+                throw new UserFriendlyException("ActionType is required to get Otp item");
+            }
+            return await _otpStorage.GetAsync(moduleName, actionType, sourceEntityId.ToString());
         }
 
         /// inheritDoc
@@ -262,7 +368,7 @@ namespace Shesha.Otp
                 EmailSubject = emailSettings.DefaultEmailSubjectTemplate,
                 EmailBodyTemplate = emailSettings.DefaultEmailBodyTemplate,
             };
-            
+
             return settings;
         }
     }
