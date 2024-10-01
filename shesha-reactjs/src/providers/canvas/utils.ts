@@ -12,7 +12,7 @@ export const getWidthByDeviceType = (deviceType: IDeviceTypes): string => {
   return deviceType === 'desktop'
     ? '100%'
     : deviceType === 'tablet'
-      ? '924px'
+      ? '724px'
       : '599px';
 };
 

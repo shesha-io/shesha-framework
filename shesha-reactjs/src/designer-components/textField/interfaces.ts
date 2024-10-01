@@ -17,6 +17,7 @@ export interface IInputStyles {
   width?: string;
   backgroundColor?: string;
   hideBorder?: boolean;
+  style?: string;
 }
 export interface ITextFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
   placeholder?: string;

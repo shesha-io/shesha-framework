@@ -343,6 +343,22 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+    {
       "id": "1HN3kJVk0rT-XYjOfKJOv",
       "type": "collapsiblePanel",
       "propertyName": "pnlStyle",
@@ -454,6 +470,8 @@
       "hideWhenEmpty": true,
       "settingsValidationErrors": []
     }
+  ]
+  }
   ],
   "formSettings": {
     "layout": "horizontal",

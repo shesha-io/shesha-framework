@@ -143,7 +143,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         fontSize: prev.fontSize,
         fontColor: prev.fontColor,
         backgroundColor: prev.backgroundColor,
-        stylingBox: prev.stylingBox
+        stylingBox: prev.stylingBox,
+        style: prev.style,
       };
 
       return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
