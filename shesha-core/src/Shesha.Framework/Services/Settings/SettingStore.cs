@@ -84,10 +84,12 @@ namespace Shesha.Services.Settings
             definition.Category = input.Category;
             definition.IsUserSpecific = input.IsUserSpecific;
             definition.ClientAccess = input.ClientAccess;
-
+            
             definition.Normalize();
 
             await Repository.InsertAsync(definition);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             return definition;
         }
@@ -120,13 +122,15 @@ namespace Shesha.Services.Settings
 
             await Repository.InsertAsync(newVersion);
 
+            
+
             return newVersion;
         }
 
         public async Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
         {
             return await Repository.GetAll()
-                .Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression())
+                .Where(x => x.Name == id.Name && x.Module.Name == id.Module)
                 .Where(s => s.IsLast && s.VersionStatus == ConfigurationItemVersionStatus.Live)
                 .FirstOrDefaultAsync();
         }
