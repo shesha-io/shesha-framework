@@ -66,6 +66,22 @@
       }
     },
     {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+    {
       "id": "b8954bf6-f76d-4139-a850-c11bf06d8b69",
       "type": "collapsiblePanel",
       "propertyName": "pnlStyle",
@@ -112,7 +128,9 @@
           }
         ]
       }
-    },
+    }
+  ]
+  },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",

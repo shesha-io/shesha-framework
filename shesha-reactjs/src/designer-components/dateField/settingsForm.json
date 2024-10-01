@@ -165,16 +165,6 @@
             "propertyName": "editMode",
             "parentId": "VmAusRlLZo3cYRFk88xnf",
             "label": "Edit mode"
-          },
-          {
-            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "VmAusRlLZo3cYRFk88xnf",
-            "hidden": false,
-            "validate": {},
-            "version": 2
           }
         ]
       },
@@ -269,6 +259,22 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+    {
       "id": "gCBUNeJjyMzcs1G2RRAK8",
       "type": "collapsiblePanel",
       "propertyName": "pnlStyle",
@@ -286,6 +292,16 @@
       "content": {
         "id": "Fd2QdtLi2FOTaZJZvFz3Q",
         "components": [
+          {
+            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+            "hidden": false,
+            "validate": {},
+            "version": 2
+          },
           {
             "id": "06ab0599-914d-4d2d-875c-765a495472f8",
             "type": "codeEditor",
@@ -351,7 +367,7 @@
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": []
-    },
+    }]},
     {
       "id": "kE28pclZaV8tpOab8iJyl",
       "type": "collapsiblePanel",

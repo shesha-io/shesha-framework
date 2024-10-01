@@ -116,15 +116,6 @@
       "propertyName": "editMode",
       "parentId": "root",
       "label": "Edit mode"
-    },
-    {
-      "id": "bf95c7d8-aa8a-41d2-bf47-b47a7ce99ada",
-      "type": "checkbox",
-      "propertyName": "hideBorder",
-      "label": "Hide border",
-      "parentId": "root",
-      "hidden": false,
-      "validate": {}
     }]
         }
       },
@@ -199,8 +190,23 @@
   ]
 }
     },
-
     {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+      {
       "id": "b8c06332-2e5e-40ad-a5f0-770de616ee3e",
       "type": "collapsiblePanel",
       "propertyName": "pnlStyle",
@@ -223,7 +229,15 @@
         "id": "54bf6-f76d-4139-a850-c99bf06c8b69",
         "components": [
           {
-
+            "id": "bf95c7d8-aa8a-41d2-bf47-b47a7ce99ada",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "root",
+            "hidden": false,
+            "validate": {}
+          },
+          {
       "id": "77711f71-809f-40d3-bdb1-d5fcd9c9cdef",
       "type": "codeEditor",
       "propertyName": "style",
@@ -260,9 +274,11 @@
       ],
       "dataSourceType": "values"
     }
+    ]
+    }
+  }
   ]
-}
-    },
+  },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",

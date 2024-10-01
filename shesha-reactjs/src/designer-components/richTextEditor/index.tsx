@@ -13,6 +13,7 @@ import { useDeepCompareMemoKeepReference } from '@/hooks';
 import { useFormData } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -84,6 +85,14 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     .add<IRichTextEditorProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRichTextEditorProps>(1, (prev) => migrateReadOnly(prev))
     .add<IRichTextEditorProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IRichTextEditorProps>(3, (prev) => {
+      const styles = {
+        style: prev.style,
+        theme: prev.theme
+      };
+  
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
 };
 
