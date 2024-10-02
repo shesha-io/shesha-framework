@@ -8,6 +8,6 @@ namespace Shesha.Permissions
     {
         List<string> GetObjectTypes();
         string GetObjectType(Type type);
-        Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null);
+        Task<List<PermissionedObjectDto>> GetAllAsync(string objectType = null, bool skipUnchangedAssembly = false);
     }
 }
