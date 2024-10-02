@@ -1,5 +1,5 @@
 import { TypeDefinition, TypeDefinitionLoader } from "@/interfaces/metadata";
-import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 
 const getNavigatorApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
     var navigatorSource = [
@@ -33,6 +33,6 @@ const getNavigatorApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefi
     });
 };
 
-export const getNavigatorApiProperties = (builder: MetadataBuilder): MetadataBuilder =>
+export const getNavigatorApiProperties = (builder: IObjectMetadataBuilder): IObjectMetadataBuilder =>
     builder
         .setTypeDefinition(getNavigatorApiTypeDefinition);
