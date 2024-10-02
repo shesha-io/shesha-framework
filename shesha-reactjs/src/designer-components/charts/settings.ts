@@ -1,4 +1,4 @@
-import { DesignerToolbarSettings } from "../../index";
+import { DesignerToolbarSettings } from "../../interfaces";
 import { nanoid } from "@/utils/uuid";
 
 export const settingsForm = new DesignerToolbarSettings()

@@ -323,26 +323,11 @@ export function applyFilters(
   filters: Array<IFilter>
 ): Array<any> {
   // Start with the unfiltered data
-  let filteredData = [...data];
+  let filteredData = data ? [...data] : [];
 
-  // Then we sort of recursively apply each filter onto the filtered data :)
   // Apply each filter one by one
   filters?.forEach((filter) => {
     const { property, operator, value } = filter;
-    // // Validate if the first object has the property (even nested)
-    // const isValidProperty = filters.every((filter) => {
-    //   const { property } = filter;
-    //   const firstItemValue = getPropertyValue(data[0], property);
-    //   if (firstItemValue === undefined) {
-    //     console.error(`Invalid property: '${property}' is not a valid property in the data.`);
-    //     return false;
-    //   }
-    //   return true;
-    // });
-
-    // if (!isValidProperty) {
-    //   return [];
-    // }
     filteredData = filterData(filteredData, property, operator, value);
   });
 
