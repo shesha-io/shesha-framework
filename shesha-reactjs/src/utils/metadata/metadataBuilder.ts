@@ -8,7 +8,7 @@ import {
 } from '@/publicJsApis/metadataBuilder';
 
 import { IMetadata } from '@/publicJsApis/metadata';
-import metadataSourceCode from '@/publicJsApis/metadata.ts?raw';
+import { metadataSourceCode } from '@/publicJsApis';
 
 export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
     // internal methods

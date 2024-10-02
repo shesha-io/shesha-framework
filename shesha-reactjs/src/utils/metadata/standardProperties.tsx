@@ -5,8 +5,7 @@ import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
 import { queryStringValuesDefinition } from '@/providers/sourceFileManager/api-utils/queryString';
-import metadataBuilderSourceCode from '@/publicJsApis/metadataBuilder.ts?raw';
-import metadataSourceCode from '@/publicJsApis/metadata.ts?raw';
+import { metadataSourceCode, metadataBuilderSourceCode } from '@/publicJsApis';
 
 export const SheshaConstants = {
   http: "shesha:http",

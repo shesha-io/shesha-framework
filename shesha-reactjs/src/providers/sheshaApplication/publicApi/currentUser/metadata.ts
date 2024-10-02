@@ -1,12 +1,12 @@
 import { TypeDefinition, TypeDefinitionLoader } from "@/interfaces/metadata";
 import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
-import userApiCode from "@/publicJsApis/userApi.ts?raw";
+import { userApiSourceCode } from "@/publicJsApis";
 
 const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
     return Promise.resolve({
         typeName: "UserApi",
         files: [{
-            content: userApiCode,
+            content: userApiSourceCode,
             fileName: "apis/userApi.d.ts",
         }],        
     });
