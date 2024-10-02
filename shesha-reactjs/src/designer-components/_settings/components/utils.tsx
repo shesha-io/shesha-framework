@@ -54,6 +54,7 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
                 onChange({ unit, value: value?.value || '' });
             }}
             className={styles.unitSelector}
+            removeIcon={<></>}
         >
             {units.map(unit => (
                 <Option key={unit} value={unit} >{unit}</Option>
@@ -62,7 +63,7 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
     );
 };
 
-const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
+const InputComponent: FC<IInputProps> = ({ label, size, value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
 
     switch (type) {
         case 'color':
@@ -72,15 +73,10 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
                 size={size}
                 onChange={
                     onChange}
-            >
-                {dropdownOptions.map(option => (
-                    <Option key={option.value} value={value}>
-                        {option.label}
-                    </Option>
-                ))}
-            </Select>;
+                options={dropdownOptions}
+            />
         case 'radio':
-            return <Radio.Group buttonStyle='solid' value={value} onChange={onChange} size={size} disabled={readOnly}>
+            return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
                 ))}
@@ -121,10 +117,10 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
         return (
             <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
-                <FormItem name={`${property}`} hideLabel={hideLabel} label={label} jsSetting={jsSetting} readOnly={readOnly} >
+                <FormItem name={`${property}`} hideLabel={hideLabel} label={label} jsSetting={jsSetting} readOnly={readOnly} layout={type === 'switch' ? 'horizontal' : undefined}>
                     {children ? children : <InputComponent size='small' label={label} type={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
                 </FormItem>
-            </div >
+            </div>
         );
     }
 

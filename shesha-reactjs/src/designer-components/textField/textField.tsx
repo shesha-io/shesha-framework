@@ -16,7 +16,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { ShaIcon, ValidationErrors } from '@/components';
+import { IconType, ShaIcon, ValidationErrors } from '@/components';
 import { removeUndefinedProps } from '@/utils/object';
 import { getSizeStyle } from '../styleDimensions/utils';
 import { getBorderStyle } from '../styleBorder/utils';
@@ -26,6 +26,7 @@ import { useStyles } from './styles/styles';
 import { getShadowStyle } from '../styleShadow/utils';
 import { getFontStyle } from '../styleFont/utils';
 import { TextFieldSettingsForm } from './settings';
+import { splitValueAndUnit } from '../_settings/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -67,7 +68,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
-    if (model.propertyName === 'textField1') console.log('model', model);
+
     useEffect(() => {
       const fetchStyles = async () => {
         getBackgroundStyle(background).then((style) => {
@@ -101,8 +102,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const inputProps: InputProps = {
       className: `sha-input ${styles.textFieldInput}`,
       placeholder: model.placeholder,
-      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon {...model.prefixIcon.props} />}</>,
-      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon {...model.suffixIcon.props} />}</>,
+      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       variant: model?.styles?.border?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
@@ -125,8 +126,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       setGlobalState,
     };
 
-    console.log('TextField Model::: ', model);
-
     return (
       <ConfigurableFormItem
         model={model}
@@ -143,8 +142,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
             theme={{
               components: {
                 Input: {
-                  fontFamily: model.font?.type,
-                  fontSize: model.font?.size || 14
+                  fontFamily: model?.styles?.font?.type,
+                  fontSize: model?.styles?.font?.size || 14
                 },
               },
             }}
@@ -173,8 +172,54 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<ITextFieldComponentProps>(5, (prev) => ({ ...prev, prefixIcon: prev.prefixIcon ? { icon: prev.prefixIcon, color: '#ccc' } : undefined, suffixIcon: prev.suffixIcon ? { icon: prev.suffixIcon, color: '#ccc' } : undefined })),
-  linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
+    .add<ITextFieldComponentProps>(5, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        width: prev.width,
+        height: prev.height,
+        hideBorder: prev.hideBorder,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        fontSize: prev.fontSize,
+        fontColor: prev.fontColor,
+        backgroundColor: prev.backgroundColor,
+        stylingBox: prev.stylingBox
+      };
+
+      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+    })
+    .add<ITextFieldComponentProps>(6, (prev) => {
+
+      const newModel = { ...prev };
+
+      const migrateStyles = (styles: IInputStyles): IStyleType => ({
+        border: {
+          border: { all: { width: styles.borderSize } },
+          radius: { all: styles.borderRadius },
+        },
+        background: {
+          type: 'color',
+          color: styles.backgroundColor,
+        },
+        font: {
+          color: styles.fontColor,
+          size: styles.fontSize as number,
+          weight: styles.fontWeight as number,
+        },
+        dimensions: {
+          height: typeof styles.height === 'string' ? splitValueAndUnit(styles.height) : { value: styles.height, unit: 'px' },
+          width: typeof styles.width === 'string' ? splitValueAndUnit(styles.width) : { value: styles.width, unit: 'px' },
+        },
+      });
+
+      newModel.desktop = migrateStyles(prev.desktop as IInputStyles);
+      newModel.tablet = migrateStyles(prev.tablet as IInputStyles);
+      newModel.mobile = migrateStyles(prev.mobile as IInputStyles);
+
+      return newModel;
+    })
+  , linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {
       ...model,
       textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text',

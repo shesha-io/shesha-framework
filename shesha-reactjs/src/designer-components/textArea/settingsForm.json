@@ -602,13 +602,14 @@
     }
   ],
   "formSettings": {
-    "layout": "horizontal",
+    "isSettingsForm": true,
+    "layout": "vertical",
     "colon": true,
     "labelCol": {
-      "span": 8
+      "span": 24
     },
     "wrapperCol": {
-      "span": 16
+      "span": 24
     },
     "displayName": "DEFAULT_FORM_SETTINGS",
     "__docgenInfo": {

@@ -22,6 +22,11 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
     const { gradient } = background;
 
     useEffect(() => {
+
+        if (!background.type) {
+            onChange({ ...value, background: { ...background, type: 'color' } });
+        }
+
         if (!background?.gradient?.colors) {
             const color1 = theme.application.primaryColor;
             const color2 = '#fff';
@@ -55,7 +60,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                                 }}
                                                 style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', width: 'max-content' }}
                                             >
-                                                <SettingInput value={field.name} property={[field.name]} label='color' hideLabel={true} readOnly={readOnly} type='color' />
+                                                <SettingInput value={field.name} property={field.name} label='color' hideLabel={true} readOnly={readOnly} type='color' />
                                             </Tag>
                                         );
                                     })}

@@ -58,6 +58,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             margin-left: 0;
             display: flex;
             flex-direction: row;
+            width: 100%;
         }
         .${sheshaStyles.verticalSettingsClass} & {
             margin-right: 0;

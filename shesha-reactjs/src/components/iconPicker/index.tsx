@@ -79,7 +79,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   });
 
   useEffect(() => {
-    setLocalSelectedIcon(typeof value === 'object' ? value.props.iconName : value || defaultValue);
+    setLocalSelectedIcon(typeof value === 'object' ? value?.props?.iconName || null : value || defaultValue);
   }, [defaultValue, value]);
 
 

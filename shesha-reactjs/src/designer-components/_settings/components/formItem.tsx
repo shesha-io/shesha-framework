@@ -4,7 +4,7 @@ import SettingsControl from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
-    const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value' } = props;
+    const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout } = props;
     const childElement = children as ReactElement;
     const readOnly = props.readOnly || childElement.props.readOnly || childElement.props.disabled;
 
@@ -38,9 +38,10 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                 id: '',
                 description: tooltip,
                 validate: { required },
-                hidden
+                hidden,
+                layout
             }}
-            
+
             className='sha-js-label'
         >
             {(value, onChange) =>

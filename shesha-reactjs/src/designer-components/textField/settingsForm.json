@@ -335,16 +335,12 @@
             {
               "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
               "type": "switch",
+              "jsSettings": true,
               "propertyName": "validate.required",
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Required",
-              "layout": "horizontal",
-              "labelCol": {
-                "span": 8
-              },
-              "wrapperCol": {
-                "span": 16
-              }
+              "size": "small",
+              "layout": "horizontal"
             },
             {
               "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
@@ -424,10 +420,27 @@
           "label": "Styling",
           "components": [
             {
-              "id": "try26voxhs-HxJ5k5ngYE",
-              "type": "styleGroup",
-              "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
-              "propertyName": "styles"
+              "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+              "type": "propertyRouter",
+              "propertyName": "propertyRouter1",
+              "componentName": "propertyRouter1",
+              "labelAlign": "right",
+              "parentId": "root",
+              "hidden": false,
+              "isDynamic": false,
+              "propertyRouteName": {
+                "_mode": "code",
+                "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                "_value": ""
+              },
+              "components": [
+                {
+                  "id": "try26voxhs-HxJ5k5ngYE",
+                  "type": "styleGroup",
+                  "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
+                  "propertyName": "styles"
+                }
+              ]
             }
           ]
         },

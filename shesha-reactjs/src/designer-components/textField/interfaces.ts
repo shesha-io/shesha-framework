@@ -32,15 +32,28 @@ export interface IInputStyles {
   width?: string;
   backgroundColor?: string;
   hideBorder?: boolean;
+  styles?: IStyleType;
 }
 export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
   prefix?: string;
   suffix?: string;
-  suffixIcon?: any;
-  prefixIcon?: any;
-  hideBorder?: boolean;
+  suffixIcon?: IconType;
+  prefixIcon?: IconType;
   initialValue?: string;
   textType?: TextType;
   styles?: IStyleType;
+  width?: string;
+  height?: string;
+  hideBorder?: boolean;
+  borderSize?: number;
+  borderRadius?: number;
+  borderColor?: string;
+  fontSize?: string;
+  fontColor?: string;
+  backgroundColor?: string;
+  stylingBox?: string;
+  desktop?: IInputStyles | IStyleType;
+  mobile?: IInputStyles | IStyleType;
+  tablet?: IInputStyles | IStyleType;
 }

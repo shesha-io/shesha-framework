@@ -10,7 +10,7 @@ const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     useEffect(() => {
-        if (backgroundImage.file) {
+        if (backgroundImage?.file) {
             setFileList([
                 {
                     uid: '-1',

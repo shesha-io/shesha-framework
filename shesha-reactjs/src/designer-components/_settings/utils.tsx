@@ -42,6 +42,12 @@ export const updateSettingsFromValues = <T,>(model: T, values: T): T => {
     return copy;
 };
 
+export const splitValueAndUnit = (value: string) => {
+    const match = value.match(/^(\d+)(\D+)$/);
+    if (!match) return { value: parseFloat(value), unit: 'px' }; // Default to 'px' if no unit is found
+    return { value: parseFloat(match[1]), unit: match[2] };
+};
+
 export const getValueFromPropertySettings = (value: any): any => {
     if (isPropertySettings(value))
         return value._value;

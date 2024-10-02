@@ -6,7 +6,7 @@ export interface IDimensionsProps extends IConfigurableFormComponent {
 }
 
 export interface IInputUnits {
-    value: number | string;
+    value: number;
     unit: string;
 }
 
