@@ -9,12 +9,15 @@ import PieChart from './components/pie';
 import { IChartsProps } from './model';
 import { applyFilters, getAllProperties, getChartData, getEntityMetaData, getRefListValues, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData } from './utils';
 import { useGet } from '@/hooks';
+import useStyles from './styles';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
   const { setData, setIsFilterVisible, setIsLoaded, setRefLists, setFilterdData, setChartFilters, setControlProps } = useChartDataActionsContext();
+
+  const { styles, cx } = useStyles();
 
   useEffect(() => {
     setControlProps({
@@ -84,22 +87,20 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   if (!state.isLoaded) {
     return (
       <Flex align="center" justify='center'>
-        <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+        <Spin indicator={<LoadingOutlined className={cx(styles.chartControlSpinFontSize)} spin />} />
       </Flex>
     );
   }
 
   return (
-    <div style={{ border: '1px solid #ddd', padding: 10, position: 'relative' }}>
+    <div className={cx(styles.chartControlContainer)}>
       <h3>
         {props.showName ? <p>{props.name}</p> : null}
       </h3>
       <div>
         {props.showDescription ? <p>{props.description}</p> : null}
       </div>
-      <Flex justify='start' align='center'
-        style={{ marginTop: 10, gap: 10 }}
-      >
+      <Flex justify='start' align='center' className={cx(styles.chartControlButtonContainer)}>
         <Button size='small' onClick={toggleFilterVisibility}>
           {state.isFilterVisible ? 'Hide Filter' : 'Show Filter'}
         </Button>

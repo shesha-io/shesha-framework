@@ -1,20 +1,9 @@
-import { createStyles, css } from 'antd-style';
+import { createStyles } from 'antd-style';
 
-const useStyles = createStyles({
-  shaChartControlOuterDiv: css`
-      border: '1px solid #ddd';
-      padding: 10;
-      position: 'relative';
-    `,
-  // style={{ fontSize: 48 }}
-  shaChartControlLoadingIndicator: css`
-      fontSize: 48;
-    `,
-  // style={{ marginTop: 10, gap: 10 }}
-  shaChartControlFlex: css`
-      marginTop: 10;
-      gap: 10;
-    `,
-});
+const useStyles = createStyles(({ }) => ({
+  chartControlContainer: { border: '1px solid #ddd', padding: 10, position: 'relative' },
+  chartControlButtonContainer: { marginTop: 10, gap: 10 },
+  chartControlSpinFontSize: { fontSize: 48 }
+}));
 
 export default useStyles;
