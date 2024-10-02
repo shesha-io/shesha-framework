@@ -89,6 +89,8 @@ namespace Shesha.Services.Settings
 
             await Repository.InsertAsync(definition);
 
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
             return definition;
         }
 
