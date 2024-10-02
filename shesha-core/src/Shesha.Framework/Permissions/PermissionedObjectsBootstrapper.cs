@@ -47,11 +47,11 @@ namespace Shesha.Permission
 
                 foreach (var objectType in objectTypes)
                 {
-                    var items = await permissionedObjectProvider.GetAllAsync(objectType);
+
+                    var items = await permissionedObjectProvider.GetAllAsync(objectType, true);
 
                     var dbItems = await _permissionedObjectRepository.GetAll()
                         .Where(x => x.Type == objectType || x.Type.Contains($"{objectType}.")).ToListAsync();
-
 
                     // Add news items
                     var toAdd = items.Where(i => dbItems.All(dbi => dbi.Object != i.Object))
@@ -67,7 +67,6 @@ namespace Shesha.Permission
                         }
                     }
 
-                    // ToDo: think how to update Protected objects in the bootstrapper
                     // Update items
                     var toUpdate = dbItems.Where(dbi => items.Any(i => dbi.Object == i.Object && dbi.Md5 != i.Md5)).ToList();
                     foreach (var dbItem in toUpdate)
@@ -85,12 +84,13 @@ namespace Shesha.Permission
                         }
                     }
 
+                    // TODO: AS - think how to inactivate deleted items take into account skipped Assembly
                     // Inactivate deleted items
-                    var toDelete = dbItems.Where(dbi => items.All(i => dbi.Object != i.Object)).ToList();
+                    /*var toDelete = dbItems.Where(dbi => items.All(i => dbi.Object != i.Object)).ToList();
                     foreach (var item in toDelete)
                     {
                         await _permissionedObjectRepository.DeleteAsync(item);
-                    }
+                    }*/
                 }
             }
             

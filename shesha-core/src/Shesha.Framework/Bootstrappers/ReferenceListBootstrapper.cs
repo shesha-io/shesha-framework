@@ -9,6 +9,8 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Services;
+using Shesha.Startup;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -28,6 +30,8 @@ namespace Shesha.Bootstrappers
         private readonly IRepository<ReferenceList, Guid> _listRepo;
         private readonly IRepository<ReferenceListItem, Guid> _listItemRepo;
         private readonly IModuleManager _moduleManager;
+        private readonly IApplicationStartupSession _startupSession;
+
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
@@ -36,7 +40,8 @@ namespace Shesha.Bootstrappers
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<ReferenceList, Guid> listRepo,
             IRepository<ReferenceListItem, Guid> listItemRepo,
-            IModuleManager moduleManager
+            IModuleManager moduleManager,
+            IApplicationStartupSession startupSession
         )
         {
             _typeFinder = typeFinder;
@@ -44,6 +49,7 @@ namespace Shesha.Bootstrappers
             _listRepo = listRepo;
             _listItemRepo = listItemRepo;
             _moduleManager = moduleManager;
+            _startupSession = startupSession;
         }
 
         [UnitOfWork(IsDisabled = true)]
@@ -65,9 +71,12 @@ namespace Shesha.Bootstrappers
             {
                 Logger.Warn($"Reference lists to bootstrap not found");
                 return;
-            }                
+            }
 
-            Logger.Warn($"Found {grouppedLists.Count()} assemblies to bootstrap");
+            var all = grouppedLists.Count();
+            Logger.Warn($"Found {all} assemblies to bootstrap");
+            grouppedLists = grouppedLists.Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly)).ToList();
+            Logger.Warn($"{all - grouppedLists.Count()} assemblies skipped as unchanged");
 
             foreach (var group in grouppedLists) 
             {
