@@ -39,8 +39,11 @@
             "propertyName": "label",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Label",
-            "version": 4,
-            "textType": "text"
+            "version": 5,
+            "textType": "text",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
@@ -72,8 +75,11 @@
             "propertyName": "placeholder",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Placeholder",
-            "version": 4,
-            "textType": "text"
+            "version": 5,
+            "textType": "text",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
@@ -264,7 +270,7 @@
                 "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
                 "hidden": false,
                 "isDynamic": false,
-                "version": 4,
+                "version": 5,
                 "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
@@ -276,7 +282,10 @@
                   "maxLength": "",
                   "message": ""
                 },
-                "context": null
+                "context": null,
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
               },
               {
                 "id": "9bwTOXitpfb7rb0DhhQIecgxfkvAZh",
@@ -299,7 +308,9 @@
                 },
                 "validate": {},
                 "wrapInTemplate": true,
-                "language": "typescript"
+                "language": "typescript",
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\n        .addAllStandard()\n        .addStandard(\"shesha:metadataBuilder\")\n        .build();",
+                "resultTypeExpression": "    return metadataBuilder.metadata();"
               },
               {
                 "id": "wyBAGG_zgniuhrUFhVawlX6H5NUqZ2",
@@ -322,7 +333,9 @@
                 },
                 "validate": {},
                 "wrapInTemplate": true,
-                "language": "typescript"
+                "language": "typescript",
+                "availableConstantsExpression": "    return metadataBuilder.object()\r\n        .addStandard([\"shesha:metadataBuilder\", \"shesha:form\", \"shesha:formData\"])\r\n        .build();",
+                "resultTypeExpression": "    return metadataBuilder.metadata();"
               }
             ],
             "settingsValidationErrors": [],

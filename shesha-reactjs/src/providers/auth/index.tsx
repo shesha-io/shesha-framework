@@ -52,7 +52,6 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
     unauthorizedRedirectUrl,
     onSetRequestHeaders: (headers) => {
       // set application headers
-      console.warn('AuthProvider.onSetRequestHeaders', headers);
       app.setRequestHeaders(headers);
     }
   });

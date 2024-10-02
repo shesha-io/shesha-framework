@@ -1,7 +1,7 @@
 import { IConfigurableFormComponent } from '@/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { CodeLanguages } from './types';
-import { IObjectMetadata } from '@/interfaces/metadata';
+import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
 import { CodeTemplateSettings } from '@/components/codeEditor/models';
 
 export interface IExecutableCodeEditor {
@@ -23,7 +23,7 @@ export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type
   mode?: 'inline' | 'dialog';
   language?: CodeLanguages;
   availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>);
-  resultType?: IObjectMetadata | (() => Promise<IObjectMetadata>);
+  resultType?: IMetadata | (() => Promise<IMetadata>);
 }
 
 export interface ICodeEditorComponentProps extends IConfigurableFormComponent, IExecutableCodeEditor {

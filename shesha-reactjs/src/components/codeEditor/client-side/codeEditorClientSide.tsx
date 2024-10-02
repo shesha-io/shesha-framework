@@ -106,7 +106,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     const [isDevMode] = useLocalStorage('application.isDevMode', false);
 
     const { getMetadata } = useMetadataDispatcher();
-    //const metadataFetcher = (typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId.name });
+    
     const metadataFetcher = useCallback((typeId: ModelTypeIdentifier): Promise<IObjectMetadata> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId.name }), [getMetadata]);
 
     const subscriptions = useRef<IDisposable[]>([]);

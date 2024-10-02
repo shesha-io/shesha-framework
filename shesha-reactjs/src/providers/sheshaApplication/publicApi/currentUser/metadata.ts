@@ -1,6 +1,6 @@
 import { TypeDefinition, TypeDefinitionLoader } from "@/interfaces/metadata";
-import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
-import userApiCode from "./metadata.public.ts?raw";
+import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import userApiCode from "@/publicJsApis/userApi.ts?raw";
 
 const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
     return Promise.resolve({
@@ -12,7 +12,7 @@ const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinitio
     });
 };
 
-export const getUserApiProperties = (builder: MetadataBuilder): MetadataBuilder =>
+export const getUserApiProperties = (builder: IObjectMetadataBuilder): IObjectMetadataBuilder =>
     builder
         .addBoolean("isLoggedIn", "Is logged in")
         .addString("id", "Id")

@@ -10,6 +10,7 @@ import { ApplicationPluginRegistration } from '../context/applicationContext';
 import { getUtilsApiProperties } from './utils/metadata';
 import { getFormsApiProperties } from './forms/metadata';
 import { getNavigatorApiProperties } from './navigator/metadata';
+import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 
 
 export interface UseApplicationContextMetadataProps {
@@ -26,7 +27,7 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
   const metadataBuilderFactory = useMetadataBuilderFactory();
 
   const contextMetadata = useMemo<Promise<IModelMetadata>>(() => {
-    const builder = metadataBuilderFactory(SheshaCommonContexts.ApplicationContext);
+    const builder = metadataBuilderFactory().object(SheshaCommonContexts.ApplicationContext) as IObjectMetadataBuilder;
     builder
       .addObject("user", "Current User", getUserApiProperties)
       .addObject("settings", "Settings", m => getSettingsApiProperties(m, httpClient))

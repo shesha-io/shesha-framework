@@ -193,9 +193,13 @@ export class Authenticator implements IAuthenticator {
             try {
                 // fetch user profile
                 const userProfile = await this.#fetchUserInfoHttp();
-                this.#loginInfo = userProfile;
-
-                this.#updateState('ready', null, null);
+                if (userProfile.user){
+                    this.#loginInfo = userProfile;
+                    this.#updateState('ready', null, null);
+                } else {
+                    this.#updateState('waiting', null, null);
+                    this.#router.push(notAuthorizedRedirectUrl);
+                }
             } catch (error) {
                 this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
                 this.#router.push(notAuthorizedRedirectUrl);
