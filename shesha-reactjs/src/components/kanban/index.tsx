@@ -48,7 +48,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const allData = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
-  // const dynamicContext = useActionDynamicContext(actionConfiguration);
 
   useEffect(() => {
     setColumns(items);
@@ -68,79 +67,88 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         }
       });
     }
-  }, [groupingProperty, trigger, items]);
+  }, [groupingProperty, trigger, items, entityType, isInDesigner, refetch]);
 
   const onEnd = useCallback(
     (evt: any, column: any): Promise<boolean> => {
       return new Promise((resolve) => {
         const { to, dragged } = evt;
         const draggedTask = dragged?.dataset?.id;
-        const targetColumn = to?.dataset?.columnId;
-
-        console.log('Dragged Task:', draggedTask);
-        console.log('Target Column:', targetColumn);
-
-        if (!column || !column.actionConfiguration) {
-          resolve(true); // Allow the drop if no action configuration
+        const targetColumn = to?.dataset;
+  
+        if (!column || !targetColumn?.actionConfiguration) {
+          resolve(true); // Allow the drag and drop to proceed without action
           return;
         }
-
+  
+        // Ensure the task is not dropped back into the same column based on the value
+        if (column.itemValue === dragged?.dataset.value) {
+          resolve(true); // Skip further actions
+          return;
+        }
+  
         const evaluationContext = {
           ...allData,
           selectedRow: column,
           draggedTask,
         };
-
+  
+        // Perform the action
         executeAction({
           actionConfiguration: column.actionConfiguration,
           argumentsEvaluationContext: evaluationContext,
-          success: (response) => {
-            console.log('Custom Success Logic:', response);
-            resolve(true);
+          success: () => {
+            resolve(true); // Action succeeded, allow update
           },
           fail: (error) => {
-            console.log('Custom Failure Logic:', error);
-            resolve(false);
+            console.error('Action failed:', error);
+            resolve(false); // Action failed, prevent update
           },
         });
       });
     },
     [allData, executeAction]
   );
+  
+  
 
   const handleUpdate = useCallback(
     async (newTasks: any[], column: any) => {
+      // Check if the tasks have changed (e.g., their order or column)
       const hasChanged = newTasks.some((task, index) => task.id !== tasks[index]?.id);
 
       if (!hasChanged) {
-        return; // Exit if there's no change
+        return; // Exit early if no changes are found
       }
-
+  
+      // Call onEnd to check whether action execution is necessary
       const canUpdate = await onEnd(
         {
-          to: { dataset: { columnId: column.id } },
-          dragged: { dataset: { id: newTasks[0]?.id } },
+          to: { dataset: { columnId: column.id, actionConfiguration: column.actionConfiguration } },
+          dragged: { dataset: { id: newTasks[0]?.id, value: newTasks[0]?.appointmentType } },
         },
         column
       );
-
+  
+      // If onEnd returns false, don't update tasks
       if (!canUpdate) {
-        console.log('Update prevented due to failed action execution');
         return; // Exit the function without updating
       }
-
+  
+      // If we get here, we can safely update tasks
       setTasks((prevTasks) => {
         const updatedTasks = prevTasks.map((task) => {
           const movedTask = newTasks.find((newTask) => newTask.id === task.id);
           if (movedTask && task[groupingProperty] !== column.itemValue) {
             const updatedTask = { ...task, [groupingProperty]: column.itemValue };
             const payload = { id: task.id, [groupingProperty]: column.itemValue };
-            updateKanban(payload, urls.updateUrl);
+            updateKanban(payload, urls.updateUrl); // Send update to the server
             return updatedTask;
           }
           return task;
         });
-
+  
+        // Sort tasks based on their new order in the column
         return updatedTasks.sort((a, b) => {
           const aIndex = newTasks.findIndex((t) => t.id === a.id);
           const bIndex = newTasks.findIndex((t) => t.id === b.id);
@@ -150,6 +158,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     },
     [tasks, groupingProperty, onEnd, updateKanban, urls.updateUrl]
   );
+  
 
   useEffect(() => {
     if (selectedItem) {
@@ -168,25 +177,21 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     minHeight: '150px',
     maxHeight: '500px',
     height: '500px',
-    borderRadius: '8px',
     marginBottom: '10px',
     backgroundColor: '#f5f5f5',
     transition: 'background-color 0.3s',
     flexGrow: 1,
+    boxSizing: 'border-box',
     width: '250px',
     maxWidth: '250px',
-    minWidth: '250px',
-    boxSizing: 'border-box',
   };
 
   const hStyle: CSSProperties = {
     textAlign: 'center',
-    color: '#595959',
+    color: '#000',
     fontSize: 100,
-    borderRadius: 5,
     padding: '0 10px',
-    marginTop: 10,
-    backgroundColor: '#1890ff',
+    backgroundColor: '#ffffff',
   };
 
   const newHeaderStyle = {
@@ -229,7 +234,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     const updatedTasks = tasks.filter((task) => task.id !== id);
     setTasks(updatedTasks);
     deleteKanban(id, urls.deleteUrl);
-    setTrigger((prev) => prev + 1);
+
   };
 
   const handleCreate = () => {

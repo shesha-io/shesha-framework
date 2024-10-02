@@ -9,13 +9,14 @@ export const useStyles = createStyles({
     `,
     actions: css`
         position: absolute;
-        right: 10px;
-        top: 10px;
+        right: 15px;
+        top: 15px;
     `,
     threeDotsStyle: css`
         position: absolute;
         top: 0;  
         right: 0; 
+        margin: 5px;
         z-index: 10;
         opacity: 0; 
         transition: opacity 0.3s ease;

@@ -28,6 +28,7 @@ export const getMetaData = (endpoint: string, entityType: string) => {
   };
 };
 
+
 export const useKanbanActions = () => {
   const { mutate } = useMutate<any>();
 
