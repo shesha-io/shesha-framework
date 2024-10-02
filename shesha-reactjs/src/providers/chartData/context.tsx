@@ -38,13 +38,13 @@ export interface IChartDataContext {
 export interface IChartDataAtionsContext {
   setControlProps?: (controlProps: any) => void;
   setData?: (data: any[]) => void;
-  setRefLists2?: (refLists: any) => void;
-  setFilterdData2?: (data: any[]) => void;
-  setChartFilters2?: (filters: IFilter[]) => void;
-  onFilter2?: () => void;
+  setRefLists?: (refLists: any) => void;
+  setFilterdData?: (data: any[]) => void;
+  setChartFilters?: (filters: IFilter[]) => void;
+  onFilter?: () => void;
 
-  setIsLoaded2?: (isLoaded: boolean) => void;
-  setIsFilterVisible2?: (isFilterVisible: boolean) => void;
+  setIsLoaded?: (isLoaded: boolean) => void;
+  setIsFilterVisible?: (isFilterVisible: boolean) => void;
 }
 
 export const INITIAL_STATE: IChartDataContext = {

@@ -65,6 +65,9 @@ export interface IChartData {
     datasets: any[];
 }
 
+/**
+ * To be used in the filter component
+ */
 export type TOperator =
     'equals' |
     'not_equals' |

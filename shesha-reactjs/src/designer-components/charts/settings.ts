@@ -113,6 +113,7 @@ export const settingsForm = new DesignerToolbarSettings()
       _mode: "code",
       _value: false
     },
+    defaultValue: false,
   })
   .addCheckbox({
     id: nanoid(),

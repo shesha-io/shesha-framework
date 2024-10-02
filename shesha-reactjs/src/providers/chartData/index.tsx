@@ -11,27 +11,27 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     dispatch(SetDataAction(data));
   };
 
-  const setRefLists2 = (refLists: any[]) => {
+  const setRefLists = (refLists: any[]) => {
     dispatch(SetRefListsAction(refLists));
   };
 
-  const setFilterdData2 = (filteredData: any[]) => {
+  const setFilterdData = (filteredData: any[]) => {
     dispatch(SetFilterdDataAction(filteredData));
   };
 
-  const setChartFilters2 = (filters: IFilter[]) => {
+  const setChartFilters = (filters: IFilter[]) => {
     dispatch(SetChartFiltersAction(filters));
   };
 
-  const setIsLoaded2 = (isLoaded: boolean) => {
+  const setIsLoaded = (isLoaded: boolean) => {
     dispatch(SetIsLoadedAction(isLoaded));
   };
 
-  const setIsFilterVisible2 = (isFilterVisible: boolean) => {
+  const setIsFilterVisible = (isFilterVisible: boolean) => {
     dispatch(SetIsFilterVisibleAction(isFilterVisible));
   };
 
-  const onFilter2 = () => {
+  const onFilter = () => {
     // implement this function
   };
 
@@ -43,12 +43,12 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     <ChartDataStateContext.Provider value={state}>
       <ChartDataActionsContext.Provider value={{
         setData,
-        setRefLists2,
-        setFilterdData2,
-        setChartFilters2,
-        onFilter2,
-        setIsLoaded2,
-        setIsFilterVisible2,
+        setRefLists,
+        setFilterdData,
+        setChartFilters,
+        onFilter,
+        setIsLoaded,
+        setIsFilterVisible,
         setControlProps
       }}>
         {children}

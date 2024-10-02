@@ -14,7 +14,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
-  const { setData, setIsFilterVisible2, setIsLoaded2, setRefLists2, setFilterdData2, setChartFilters2, setControlProps } = useChartDataActionsContext();
+  const { setData, setIsFilterVisible, setIsLoaded, setRefLists, setFilterdData, setChartFilters, setControlProps } = useChartDataActionsContext();
 
   useEffect(() => {
     setControlProps({
@@ -31,7 +31,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       .then((resp) => {
         setData(resp.result?.items);
       })
-      .then(() => setIsLoaded2(true))
+      .then(() => setIsLoaded(true))
       .catch((err) => console.error('err data', err));
 
     // Get reference lists for all the ref list properties of the chosen entity type
@@ -47,7 +47,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         refListPropertiesFiltered?.forEach((refListProperty: any) => {
           refetch(getRefListValues(refListProperty.referenceListName))
             .then((resp2) => {
-              setRefLists2({ ...state.refLists, [`${refListProperty.label}`.toLowerCase()]: resp2.result?.items });
+              setRefLists({ ...state.refLists, [`${refListProperty.label}`.toLowerCase()]: resp2.result?.items });
             })
             .catch((err) => console.error('err ref list data', err));
         });
@@ -57,17 +57,17 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   useEffect(() => {
     if (state.data) {
-      setFilterdData2(state.data);
+      setFilterdData(state.data);
     }
   }, [state.data]);
 
   const toggleFilterVisibility = () => {
-    setIsFilterVisible2(!state.isFilterVisible);
+    setIsFilterVisible(!state.isFilterVisible);
   };
 
   const resetFilter = () => {
-    setChartFilters2([{ property: '', operator: 'equals', value: '' }]);
-    setFilterdData2(state.data);
+    setChartFilters([{ property: '', operator: 'equals', value: '' }]);
+    setFilterdData(state.data);
   };
 
   const onFilter = () => {
@@ -76,7 +76,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       return;
     }
     const afterFilterData = applyFilters(state.data, state.chartFilters);
-    setFilterdData2(afterFilterData);
+    setFilterdData(afterFilterData);
   };
 
   let data: any;
@@ -109,7 +109,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       </Flex>
       <FilterComponent
         filters={state.chartFilters}
-        setFilters={setChartFilters2}
+        setFilters={setChartFilters}
         properties={filterProperties?.length > 0 ? filterProperties : getAllProperties(state.filteredData)}
         isVisible={state.isFilterVisible}
         onClose={toggleFilterVisibility}

@@ -64,17 +64,6 @@ const getRandomColor = () => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
-// a function that given the string rgb of a color, it returns a lighter version of it
-// const getLighterColor = (color: string) => {
-//   const rgb = color.replace(/[^\d,]/g, '').split(',');
-//   const r = Math.floor((255 + parseInt(rgb[0])) / 2);
-//   const g = Math.floor((255 + parseInt(rgb[1])) / 2);
-//   const b = Math.floor((255 + parseInt(rgb[2])) / 2);
-//   return `rgb(${r}, ${g}, ${b})`;
-// };
-
-// Prepare line chart data dynamically
-
 /**
  * Function to group and aggregate data
  * @param data - The data to be aggregated
