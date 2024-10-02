@@ -1,4 +1,5 @@
-﻿using Abp.Dependency;
+﻿using Abp.Collections.Extensions;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Reflection;
@@ -7,6 +8,7 @@ using Shesha.Bootstrappers;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Modules;
+using Shesha.Startup;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -25,13 +27,22 @@ namespace Shesha.ConfigurationItems
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Module, Guid> _moduleRepo;
         private readonly IIocManager _iocManager;
+        private readonly IApplicationStartupSession _startupSession;
 
-        public ConfigurableModuleBootstrapper(ITypeFinder typeFinder, IUnitOfWorkManager unitOfWorkManager, IRepository<Module, Guid> moduleRepo, IIocManager iocManager)
+        public ConfigurableModuleBootstrapper
+        (
+            ITypeFinder typeFinder,
+            IUnitOfWorkManager unitOfWorkManager,
+            IRepository<Module, Guid> moduleRepo,
+            IIocManager iocManager,
+            IApplicationStartupSession startupSession
+        )
         {
             _typeFinder = typeFinder;
             _unitOfWorkManager = unitOfWorkManager;
             _moduleRepo = moduleRepo;
             _iocManager = iocManager;
+            _startupSession = startupSession;
         }
 
         [UnitOfWork(IsDisabled = true)]
@@ -48,7 +59,10 @@ namespace Shesha.ConfigurationItems
                 using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
                     var dbModules = await _moduleRepo.GetAll().ToListAsync();
-                    var moduleTypes = _typeFinder.Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type)).ToList();
+                    var moduleTypes = _typeFinder
+                        .Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type))
+                        .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly))
+                        .ToList();
                     foreach (var type in moduleTypes) 
                     {
                         var instance = _iocManager.Resolve(type) as SheshaModule;
@@ -100,7 +114,9 @@ namespace Shesha.ConfigurationItems
         private async Task DoProcessAsync()
         {
             var codeModules = await GetCodeModulesAsync();
-            var allSubModules = _typeFinder.Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
+            var allSubModules = _typeFinder
+                .Find(t => t != null && t.IsPublic && !t.IsGenericType && !t.IsAbstract && typeof(ISheshaSubmodule).IsAssignableFrom(t))
+                .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly))
                 .Select(t => {
                     return _iocManager.Resolve(t) as ISheshaSubmodule;
                 })
