@@ -43,5 +43,6 @@ export * from './dataContextManager';
 export * from './dataContextProvider';
 export * from './canvas';
 export * from './dataContextProvider';
+export * from './chartData';
 
 export { useApplicationContextData, useApplicationContextMetadata };
