@@ -130,7 +130,7 @@ namespace Shesha.Services.Settings
         public async Task<SettingConfiguration> GetSettingConfigurationAsync(ConfigurationItemIdentifier id)
         {
             return await Repository.GetAll()
-                .Where(x => x.Name == id.Name && x.Module.Name == id.Module)
+                .Where(new ByNameAndModuleSpecification<SettingConfiguration>(id.Name, id.Module).ToExpression())
                 .Where(s => s.IsLast && s.VersionStatus == ConfigurationItemVersionStatus.Live)
                 .FirstOrDefaultAsync();
         }
