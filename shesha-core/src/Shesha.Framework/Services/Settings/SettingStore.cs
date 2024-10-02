@@ -122,8 +122,6 @@ namespace Shesha.Services.Settings
 
             await Repository.InsertAsync(newVersion);
 
-            
-
             return newVersion;
         }
 
