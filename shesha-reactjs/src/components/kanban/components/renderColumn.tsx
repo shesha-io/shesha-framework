@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, Popconfirm } from 'antd';
 import { ReactSortable } from 'react-sortablejs';
 import { PlusOutlined, MoreOutlined, RightOutlined, LeftOutlined, SettingFilled } from '@ant-design/icons';
-import { ConfigurableForm } from '@/index';
+import { ConfigurableForm, useMutate } from '@/index';
 import { MenuProps } from 'antd';
 import { Flex } from 'antd';
 import { CSSProperties } from 'react';
+import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 
 interface KanbanColumnProps {
   column: any;
@@ -22,6 +23,7 @@ interface KanbanColumnProps {
   styles: any;
   selectedItem: any;
   modalFormId: string;
+  collapse: boolean;
 }
 
 const RenderColumn: React.FC<KanbanColumnProps> = ({
@@ -31,53 +33,62 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   externalColumnStyle,
   newHeaderStyle,
   handleUpdate,
-  onEnd, 
+  onEnd,
   handleEditClick,
   handleDelete,
   handleCreateClick,
+  collapse,
   styles,
   selectedItem,
   modalFormId,
 }) => {
-    // const { mutate } = useMutate<any>();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { mutate } = useMutate<any>();
+  const [isCollapsed, setIsCollapsed] = useState(collapse);
+  const { storeSettings, userSettings } = useRefListItemGroupConfigurator();
 
+  // Initialize collapse state from props
+  useEffect(() => {
+    setIsCollapsed(collapse);
+  }, [collapse]);
 
-//   const updateSettings = (columnItemValue: any, isCollapsed: boolean) => {
-//     mutate(
-//       {
-//         url: '/api/services/app/Settings/UpdateUserValue',
-//         httpVerb: 'POST',
-//       },
-//       {
-//         name: `refListItems.${columnItemValue}`,
-//         module: 'Shesha',
-//         value: isCollapsed, // Store collapsed state
-//           "datatype": "boolean"
-//       }
-//     )
-//       .then((resp: any) => {
-//         if (resp.success) {
-//           console.log('Collapse state updated successfully');
-//         }
-//       })
-//       .catch((error: any) => {
-//         console.error('Error updating collapse state:', error);
-//       });
-//   };
-  
-
-//   useEffect(() => {
-//     if (column.itemValue) {
-//       updateSettings(column.itemValue, isCollapsed);
-//     }
-//   }, [isCollapsed]);
-
-  // Toggle the fold/unfold state
-  const toggleFold = () => {
-    setIsCollapsed(!isCollapsed);
+  // Update user settings and persist to backend
+  const toggleFold = async () => {
+    try {
+      const newCollapseState = !isCollapsed;
+      
+      // First update the local state
+      setIsCollapsed(newCollapseState);
+      
+      // Update the settings in the provider
+      await storeSettings(column.itemValue, newCollapseState);
+      
+      const updatedSettings = {
+        ...userSettings,
+        [column.itemValue]: newCollapseState
+      };
+      
+      // Serialize the updated settings
+      const serializedSettings = JSON.stringify(updatedSettings);
+      
+      await mutate(
+        { 
+          url: '/api/services/app/Settings/UpdateUserValue', 
+          httpVerb: 'POST' 
+        },
+        {
+          name: 'mSettings',
+          module: 'Shesha',
+          value: serializedSettings,
+          datatype: 'string',
+        }
+      );
+    } catch (error) {
+      console.error('Error updating collapse state:', error);
+      // Revert local state if persistence fails
+      setIsCollapsed(!isCollapsed);
+    }
   };
-
+  
   const columnDropdownItems: MenuProps['items'] = [
     {
       key: '1',
@@ -87,9 +98,9 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     },
     {
       key: '2',
-      label: isCollapsed? 'Uncollapse' : 'Collapse',
+      label: isCollapsed ? 'Uncollapse' : 'Collapse',
       onClick: toggleFold,
-      icon: isCollapsed ? <RightOutlined /> : <LeftOutlined />
+      icon: isCollapsed ? <RightOutlined /> : <LeftOutlined />,
     },
   ];
 
@@ -101,57 +112,53 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
     border: '1px solid #ddd',
     marginBottom: '10px',
     backgroundColor: '#f5f5f5',
-    transition: 'background-color 0.3s, width 0.9s ease', // Smooth transition for width    flexGrow: 1,
+    transition: 'transform 0.5s ease, width 0.5s ease',
     boxSizing: 'border-box',
     width: '250px',
     maxWidth: '250px',
-    height: '300px', 
+    height: '400px',
     display: 'flex',
-    flexDirection: 'column', 
-    scrollbarWidth: 'none',  
+    flexDirection: 'column',
+    scrollbarWidth: 'none',
     msOverflowStyle: 'none',
+    ...externalColumnStyle,
   };
 
- const collapseColumnStyle: CSSProperties = {
+  const collapseColumnStyle: CSSProperties = {
     ...columnStyle,
-    width: 35, 
-    backgroundColor:  '#f0f0f0',
-    transition: 'width 0.9s ease',
+    width: 40,
+    backgroundColor: '#f0f0f0',
+    transition: 'transform 0.5s ease, width 0.5s ease',
     position: 'relative',
     flex: '0 0 auto',
- };
- console.log('collapseColumnStyle', collapseColumnStyle);
+  };
 
- const headerStyle: CSSProperties ={
+  const headerStyle: CSSProperties = {
     ...newHeaderStyle,
-    transition: 'width 0.9s ease',
     writingMode: 'vertical-rl',
-    transform: 'rotate(180deg)', 
+    transform: 'rotate(180deg)',
     textAlign: 'center',
-    width: '35px',
+    width: '45px',
     height: '100%',
     padding: '10px 0',
- };
+    transition: 'transform 0.5s ease, width 0.5s ease',
+  };
 
   return (
     <>
-      {column.hidden ? null : (
+      {!column.hidden && (
         <div key={column.id} style={isCollapsed ? collapseColumnStyle : columnStyle} data-column-id={column.id}>
-          {/* Header with Add button and dropdown */}
           <Flex justify="space-between" align="center" style={isCollapsed ? headerStyle : newHeaderStyle}>
             <h3>
               {column.item} ({columnTasks.length})
             </h3>
             <Flex align="center">
-              {/* Dropdown for Add and Fold/Unfold */}
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
-                <Button type="text" icon={< SettingFilled />} />
+                <Button type="text" icon={<SettingFilled />} />
               </Dropdown>
-              
             </Flex>
           </Flex>
 
-          {/* Sortable list of tasks */}
           {!isCollapsed && (
             <ReactSortable
               list={columnTasks}
@@ -168,12 +175,13 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               disabled={readonly}
               onEnd={(evt) => onEnd(evt, column)}
               className={styles.container}
-              style={{ 
-                flex: '1',  // Let the sortable task list take the remaining column height
-                overflowY: 'auto',  // Scrollable when it overflows
-                minHeight: '400px',
-                maxHeight: '400px',  // Optional, you can adjust this based on the column's height
-                padding: '10px'
+              style={{
+                flex: '1 1 auto',
+                overflowY: 'auto',
+                minHeight: 200,
+                maxHeight: 300,
+                padding: '10px',
+                border: '1px solid red',
               }}
             >
               {columnTasks.length === 0 ? (

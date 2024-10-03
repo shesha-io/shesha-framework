@@ -13,6 +13,7 @@ import {
 import { useStyles } from './styles';
 import KanbanColumn from './components/renderColumn';
 import { MoveEvent } from 'react-sortablejs';
+import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const {
@@ -39,15 +40,16 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { refetch } = useGet({ path: '', lazy: true });
   const { formMode } = useFormState();
   const isInDesigner = formMode === 'designer';
-  const { updateKanban, deleteKanban, createKanbanItem } = useKanbanActions();
+  const { updateKanban, deleteKanban, createKanbanItem, fetchColumnState } = useKanbanActions();
   const { styles } = useStyles();
-  const [trigger, setTrigger] = useState(0);
   const [form] = Form.useForm();
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [settings, setSettings] = useState({});
   const allData = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
+  const { storeSettings } = useRefListItemGroupConfigurator();
 
   useEffect(() => {
     setColumns(items);
@@ -67,7 +69,33 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         }
       });
     }
-  }, [groupingProperty, trigger, items, entityType, isInDesigner, refetch]);
+  }, [groupingProperty, items, entityType]);
+
+
+  useEffect(() => {
+    const initializeSettings = async () => {
+      try {
+        const resp = await fetchColumnState();
+        if (!resp?.result) return;
+  
+        const parsedSettings = JSON.parse(resp.result);
+        if (parsedSettings) {
+          setSettings(parsedSettings);
+  
+          // Loop through and store settings asynchronously
+          for (const [columnId, isCollapsed] of Object.entries(parsedSettings)) {
+            await storeSettings(columnId, isCollapsed as boolean); // Await inside loop
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing settings:', error);
+        setSettings({}); // Fallback to empty settings on error
+      }
+    };
+  
+    initializeSettings(); // Call the async function
+  }, []);
+  
 
   const onEnd = useCallback(
     (evt: any, column: any): Promise<boolean> => {
@@ -169,6 +197,8 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     color: fontColor ?? '#000', 
     fontSize: fontSize ?? 15,   
     padding: '10px 10px',
+    transform: 'rotate(360deg)',
+    transition: 'transform 0.5s ease, width 0.5s ease', 
     backgroundColor: headerBackgroundColor ?? '#ffffff',  
     ...headerStyle,  
   };
@@ -195,7 +225,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       var updatedTasks = tasks.map((task) => (task.id === selectedItem.id ? { ...task, ...updatedItem } : task));
 
       setTasks([...updatedTasks]);
-      setTrigger((prev) => prev + 1);
 
       form.resetFields();
       setIsModalVisible(false);
@@ -238,15 +267,12 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   };
 
   const memoizedFilteredTasks = useMemo(() => {
-    return columns.map((column) => {
-      return {
-        column,
-        tasks: tasks.filter((task) => {
-          return task[groupingProperty] === column.itemValue;
-        }),
-      };
-    });
-  }, [columns, tasks, groupingProperty]);
+    return columns.map((column) => ({
+      column,
+      tasks: tasks.filter((task) => task[groupingProperty] === column.itemValue),
+      isCollapsed: settings[column.itemValue] || false, // Default to false if not set
+    }));
+  }, [columns, tasks, groupingProperty, settings]);
 
   return (
     <>
@@ -258,6 +284,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
             {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
               <KanbanColumn
                 key={column.itemValue}
+                collapse={settings[column.itemValue] ?? false}
                 column={column}
                 columnTasks={columnTasks}
                 groupingProperty={groupingProperty}

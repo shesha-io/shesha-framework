@@ -26,6 +26,23 @@ export const getMetaData = (endpoint: string, entityType: string) => {
 export const useKanbanActions = () => {
   const { mutate } = useMutate<any>();
 
+  const fetchColumnState = async () => {
+    try {
+      const response = await mutate({
+        url: '/api/services/app/Settings/GetUserValue',
+        httpVerb: 'POST',
+      }, {
+        name: `mSettings`,
+        module: 'Shesha',
+      });
+  
+      if (response?.success && response?.result !== undefined) {
+        return response;
+      }
+    } catch (error) {
+      console.error('Error fetching column state:', error);
+    }
+  };
   const updateKanban = (payload: any, url: string) => {
     mutate(
       {
@@ -80,6 +97,6 @@ export const useKanbanActions = () => {
 
       return Promise;
   };
-  return { updateKanban, deleteKanban, createKanbanItem };
+  return { updateKanban, deleteKanban, createKanbanItem, fetchColumnState };
 };
 
