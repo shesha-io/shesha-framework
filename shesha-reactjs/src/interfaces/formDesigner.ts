@@ -12,6 +12,7 @@ import {
 } from '@/providers/form/models';
 import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
+import { GetErrorPlaceholderFunc } from '@/utils/errors';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -51,6 +52,11 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
 }
 
 export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<ComponentFactoryArguments<TModel>>;
+
+export interface IErrorActions {
+  addError: (propertyName: string, error: string) => void;
+  addWarning: (propertyName: string, error: string) => void;
+}
 
 export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent /*, TSettingsContext = any*/> {
   /**
@@ -140,7 +146,12 @@ export interface IToolboxComponent<TModel extends IConfigurableFormComponent = I
   /**
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
    */
-  validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
+  useValidateModel?: (model: TModel, errorActions: IErrorActions) => void;
+
+  /**
+   * React node that is rendered when there is an error in the model
+   */
+  errorPlaceholder?: GetErrorPlaceholderFunc;
 }
 
 export interface SettingsMigrationContext {

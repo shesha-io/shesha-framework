@@ -4,15 +4,20 @@ export type ISheshaErrorTypes = 'info' | 'warning' | 'error';
 export interface IModelError {
   propertyName?: string;
   error: string;
+  type?: ISheshaErrorTypes;
 }
 
 export interface IModelValidation {
   componentId?: string;
   componentName?: string;
   componentType?: string;
-  hasErrors: boolean;
+  message?: string;
   errors?: IModelError[];
+  model?: any;
 }
+
+export type GetErrorPlaceholderFunc = (errors: IModelValidation) => React.ReactNode;
+
 
 export interface ISheshaErrorCause {
   type?: ISheshaErrorTypes;
@@ -29,7 +34,9 @@ export class SheshaError extends Error {
   constructor(message: string, errors?: IModelValidation, type?: ISheshaErrorTypes) {
     super(message);
     this.name = 'SheshaError';
-    this.cause = { type, errors };
+    this.cause = { type, errors: errors || { errors: [{error: message, type}] } };
+    if (!this.cause.errors?.message)
+      this.cause.errors.message = message;
   }
 
   /** Check if the Error object is a SheshaError */
@@ -39,7 +46,7 @@ export class SheshaError extends Error {
 
     /** Throw a SheshaError with model property error */
   static throwPropertyError(propertyName: string, error: string = null) {
-    throw new SheshaError('', { hasErrors: true, errors: [{ propertyName, error: error || `Please make sure the '${propertyName}' property is configured properly.` }] }, 'warning');
+    throw new SheshaError('', { errors: [{ propertyName, error: error || `Please make sure the '${propertyName}' property is configured properly.`, type: 'warning' }] }, 'warning');
   }
   
   /** Throw a SheshaError with model errors */

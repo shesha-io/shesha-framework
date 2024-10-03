@@ -6,8 +6,9 @@ import { useParent } from '@/providers/parentProvider/index';
 import { getActualModelWithParent, useAvailableConstantsData } from '@/providers/form/utils';
 import { useForm, useSheshaApplication } from '@/index';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
-import { IModelValidation } from '@/utils/errors';
+import { IModelValidation, SheshaError } from '@/utils/errors';
 import ComponentError from '@/components/componentErrors';
+import { ErrorWrapper } from '@/components/componentErrors/errorWrapper';
 
 export interface IConfigurableFormComponentProps {
   model: IConfigurableFormComponent;
@@ -30,11 +31,36 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
       allData, parent);
   }, [model, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
 
+  const validationResult: IModelValidation = {
+    errors: [],
+    componentId: actualModel.id,
+    componentName: actualModel.componentName,
+    componentType: actualModel.type,
+    model: actualModel,
+  };
+  toolboxComponent.useValidateModel?.(
+    actualModel,
+    {
+      addError: (propertyName: any, error: any) => {
+        validationResult.errors.push({ propertyName, error, type: 'error' });
+      },
+      addWarning: (propertyName, error) => {
+        validationResult.errors.push({ propertyName, error, type: 'warning' });
+      },
+    }
+  );
+
   if (!toolboxComponent) 
-    return <ComponentError errors={{
-        hasErrors: true, componentId: model.id, componentName: model.componentName, componentType: model.type
-      }} message={`Component '${model.type}' not found`} type='error'
-    />;
+    throw new SheshaError(
+      `Component '${model.type}' not found`,
+      {
+        componentId: model.id,
+        componentName: model.componentName,
+        componentType: model.type,
+        model: actualModel,
+      },
+      'error'
+    );
 
   // TODO: AS review hidden and enabled for SubForm
   actualModel.hidden = allData.form?.formMode !== 'designer'
@@ -49,29 +75,30 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model }) => {
     actualModel.propertyName = undefined;
 
   if (formInstance.formMode === 'designer') {
-    const validationResult: IModelValidation = {hasErrors: false, errors: []};
-    toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
-      validationResult.hasErrors = true;
-      validationResult.errors.push({ propertyName, error });
-    });
-    if (validationResult.hasErrors) {
-      validationResult.componentId = model.id;
-      validationResult.componentName = model.componentName;
-      validationResult.componentType = model.type;
-      return <ComponentError errors={validationResult} message='' type='warning'/>;
+    if (validationResult.errors.length > 0) {
+      if (validationResult.errors.find(x => x.type === 'error')) 
+        return <ComponentError errors={validationResult} type='warning' toolboxComponent={toolboxComponent}/>;
+      if (!validationResult.message)
+        validationResult.message = `'${validationResult.componentType}' has configuration issue(s)`;
+      return (
+        <ErrorWrapper errors={validationResult}>
+          <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
+        </ErrorWrapper>
+      );
     }
   }
 
-  return (
-    <CustomErrorBoundary>
-      <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
-    </CustomErrorBoundary>
-  );
+  return <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />;
 };
 
 const DynamicCompomnentErrorWrapper: FC<IConfigurableFormComponentProps> = (model) => {
   return (
-    <CustomErrorBoundary componentName={model.model.componentName} componentType={model.model.type} componentId={model.model.id}>
+      <CustomErrorBoundary 
+        componentName={model.model.componentName}
+        componentType={model.model.type}
+        componentId={model.model.id}
+        model={model.model}
+      >
       <DynamicComponent {...model} />
     </CustomErrorBoundary>
   );

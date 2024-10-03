@@ -1,58 +1,39 @@
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
-import { Alert, Button, Tooltip } from 'antd';
 import React, { FC } from 'react';
 import { useStyles } from './styles/styles';
+import { ErrorWrapper } from './errorWrapper';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/index';
+import getDefaultErrorPlaceholder from './defaultErrorPlaceholder';
 
 export interface IComponentErrorProps {
-  errors?: IModelValidation;
+  errors: IModelValidation;
   resetErrorBoundary?: (...args: Array<unknown>) => void;
   type?: ISheshaErrorTypes;
-  message?: string;
+  errorPlaceholder?: React.ReactNode;
+  toolboxComponent?: IToolboxComponent<IConfigurableFormComponent>;
 }
+
 const ComponentError: FC<IComponentErrorProps> = ({
   errors,
   resetErrorBoundary,
-  type = 'warning',
-  message,
+  errorPlaceholder,
+  toolboxComponent,
 }) => {
 
   const { styles } = useStyles();
+  
+  if (!errors.message)
+    errors.message = `'${errors.componentType}' has configuration issue(s)`;
+  
+  const placeholder = errorPlaceholder ?? toolboxComponent?.errorPlaceholder?.(errors) ?? getDefaultErrorPlaceholder(errors, toolboxComponent);
 
-  const errortip = (errors: IModelValidation) => <ul>{errors.errors.map((error) => <li>{error.error}</li>)}</ul>;
-
-  const tooltipClassName = type === 'info'
-    ? styles.cmoponentErrorInfo
-    : type === 'warning'
-      ? styles.cmoponentErrorWaring
-      : type === 'error'
-        ? styles.cmoponentErrorError
-        : '';
-
-  const alertClassName = type === 'info'
-    ? styles.cmoponentErrorTextInfo
-    : type === 'warning'
-      ? styles.cmoponentErrorTextWaring
-      : type === 'error'
-        ? styles.cmoponentErrorTextError
-        : '';
-    
-  const messageText = !message 
-    ? `'${errors.componentType}' has configuration issue(s)`
-    : message;
-
-  const body = (
-    <Alert
-      className={alertClassName}
-      type={type}
-      message={<strong>{messageText}</strong>}
-      action={Boolean(resetErrorBoundary) && <Button type="link" onClick={resetErrorBoundary}>Try again</Button>}
-      showIcon={true} 
-    />
+  return (
+    <div className={styles.cmoponentError}>
+      <ErrorWrapper errors={errors} resetErrorBoundary={resetErrorBoundary} toolboxComponent={toolboxComponent}>
+        {Boolean(placeholder) && placeholder}
+      </ErrorWrapper>
+    </div>
   );
-
-  return errors?.errors?.length > 0
-    ? <Tooltip overlayClassName={tooltipClassName} title={errortip(errors)}>{body}</Tooltip>
-    : body;
 };
 
 export default ComponentError;

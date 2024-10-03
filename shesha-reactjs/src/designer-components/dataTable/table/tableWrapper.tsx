@@ -20,14 +20,9 @@ import {
     useSheshaApplication,
 } from '@/providers';
 import { GlobalTableStyles } from './styles/styles';
-import { Alert } from 'antd';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { FilterList } from '../filterList/filterList';
-
-const NotConfiguredWarning: FC = () => {
-    return <Alert className="sha-designer-warning" message="Table is not configured properly" type="warning" />;
-};
-
+import { SheshaError } from '@/utils/errors';
 
 export const TableWrapper: FC<ITableComponentProps> = (props) => {
     const { id, items, useMultiselect, tableStyle, containerStyle } = props;
@@ -51,7 +46,9 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         tableFilter,
     } = useDataTableStore();
 
-    const { totalRows } = useDataTable();
+    const store = useDataTable(false);
+    if (!store)
+      throw SheshaError.throwError('Data Table must be used within a Data Table Context');
 
     requireColumns(); // our component requires columns loading. it's safe to call on each render
 
@@ -80,7 +77,8 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
         return <Fragment />;
     };
 
-    if (isDesignMode && !repository) return <NotConfiguredWarning />;
+    if (isDesignMode && !repository) 
+      throw SheshaError.throwError('Data Table must be used within a Data Table Context');
 
     const toggleFieldPropertiesSidebar = () => {
         if (!isSelectingColumns && !isFiltering) setIsInProgressFlag({ isFiltering: true });
@@ -100,7 +98,7 @@ export const TableWrapper: FC<ITableComponentProps> = (props) => {
             allowFullCollapse
         >
             <GlobalTableStyles />
-            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
+            {tableFilter?.length > 0 && <FilterList filters={tableFilter} rows={store.totalRows} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}
             <DataTable
                 onMultiRowSelect={setMultiSelectedRow}
                 selectedRowIndex={selectedRow?.index}

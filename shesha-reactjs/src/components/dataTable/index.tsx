@@ -55,6 +55,7 @@ import { adjustWidth, getCruadActionConditions } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { getFormApi } from '@/providers/form/formApi';
+import { SheshaError } from '@/utils/errors';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -111,6 +112,9 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const { globalState, setState: setGlobalState } = useGlobalState();
   const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
+
+  if (!store)
+    throw SheshaError.throwError('Data Table must be used within a Data Table Context');
 
   if (tableRef) tableRef.current = store;
 

@@ -55,7 +55,12 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   name: 'Entity Picker',
   icon: <EllipsisOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
-   Factory: ({ model }) => {
+  useValidateModel: (model, errorActions) => {
+    if (!model.entityType) errorActions.addWarning('entityType', 'Select `Entity Type` on the settings panel');
+    if (Boolean(model.entityType) && !model.displayEntityKey) errorActions.addWarning('displayEntityKey', 'Configure `Display Property` on the settings panel');
+    if (Boolean(model.entityType) && !(model.items?.length > 0)) errorActions.addWarning('items', 'Configure `Columns` on the settings panel');
+  },
+  Factory: ({ model }) => {
     const form = useForm();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -224,9 +229,6 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
         ];
       }
       return null;
-  },
-  validateModel: (model, addModelError) => {
-    if (!model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');
   },
 };
 

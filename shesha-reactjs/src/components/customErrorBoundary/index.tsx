@@ -6,9 +6,10 @@ export interface ICustomErrorBoundaryProps  {
   componentId?: string;
   componentName?: string;
   componentType?: string;
+  model?: any;
 }
 
-export const CustomErrorBoundary: FC<PropsWithChildren<ICustomErrorBoundaryProps>> = ({ children, componentId, componentName, componentType }) => {
+export const CustomErrorBoundary: FC<PropsWithChildren<ICustomErrorBoundaryProps>> = ({ children, componentId, componentName, componentType, model }) => {
 
   const fallbackComponent: FC<any> = ({
     error,
@@ -17,6 +18,7 @@ export const CustomErrorBoundary: FC<PropsWithChildren<ICustomErrorBoundaryProps
     return <CustomErrorBoundaryFallbackComponent 
       error={error} resetErrorBoundary={resetErrorBoundary}
       componentName={componentName} componentType={componentType} componentId={componentId}
+      model={model}
     />;
   };
 

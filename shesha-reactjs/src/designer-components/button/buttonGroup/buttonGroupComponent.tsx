@@ -17,6 +17,9 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
+  useValidateModel: (model, errorActions) => {
+    if (model.items?.length === 0) errorActions.addError('items', `Button group is empty. Press 'Customize Button Group' button to add items`);
+  },
   Factory: ({ model ,form}) => {
     return model.hidden ? null : <ButtonGroup {...model} disabled={model.readOnly} form={form} />;
   },

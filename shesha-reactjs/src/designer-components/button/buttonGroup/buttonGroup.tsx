@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
-    Alert,
     Button,
     Divider,
     Dropdown,
@@ -205,15 +204,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
         , [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
     const filteredItems = actualItems?.filter(getIsVisible);
-
-    if (actualItems.length === 0 && isDesignMode)
-        return (
-            <Alert
-                className="sha-designer-warning"
-                message="Button group is empty. Press 'Customize Button Group' button to add items"
-                type="warning"
-            />
-        );
 
     if (isInline) {
         return (

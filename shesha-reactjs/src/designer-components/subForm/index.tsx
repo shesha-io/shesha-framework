@@ -79,6 +79,18 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       propertyName + '._className',
     ];
   },
+  useValidateModel: (model, errorActions) => {
+    if (model.formSelectionMode === 'name' && !model.formId) errorActions.addError('formId', 'Select `Form` on the settings panel');
+    if (model.formSelectionMode === 'dynamic' && !model.formType) errorActions.addError('formType', 'Select `Form type` on the settings panel');
+  },
+  errorPlaceholder: () => {
+    return (
+      <div style={{textAlign: 'center'}}>
+        <FormOutlined style={{ fontSize: '160px', color: 'silver' }} />
+      </div>
+    );
+  },
+
 };
 
 export default SubFormComponent;

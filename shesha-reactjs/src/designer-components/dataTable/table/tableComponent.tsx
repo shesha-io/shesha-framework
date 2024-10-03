@@ -1,6 +1,5 @@
 import React from 'react';
 import TableSettings from './tableComponent-settings';
-import { Alert } from 'antd';
 import { IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ITableComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
@@ -21,25 +20,19 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
   name: 'Data Table',
   icon: <TableOutlined />,
   Factory: ({ model }) => {
-    const store = useDataTableStore(false);
-    if (model.hidden)
-      return null;
-    return store ? (
-      <TableWrapper {...model} />
-    ) : //<ConfigError errors={['Data Table must be used within a Data Table Context']} type={'Data Table'} />;
-      (<Alert
-        className="sha-designer-warning"
-        message="Data Table must be used within a Data Table Context"
-        type="warning"
-      />
-    );
+    return model.hidden ? null : <TableWrapper {...model} />;
   },
-  validateModel: () => {
-    /*const errors = { hasErrors: false, errors: [] };
+  useValidateModel: (model, errorActions) => {
     const store = useDataTableStore(false);
-    if (!store) errors.errors.push('Data Table must be used within a Data Table Context');
-    errors.hasErrors = errors.errors.length > 0;
-    return errors;*/
+    if (!store) errorActions.addError('', 'Data Table must be used within a Data Table Context');
+    if (!model.items || model.items.length === 0) errorActions.addError('items', 'At least one column must be defined');
+  },
+  errorPlaceholder: (_error) => {
+    return (
+      <div style={{textAlign: 'center'}}>
+        <TableOutlined style={{ fontSize: '80px', color: 'silver' }} />
+      </div>
+    );
   },
   initModel: (model: ITableComponentProps) => {
     return {

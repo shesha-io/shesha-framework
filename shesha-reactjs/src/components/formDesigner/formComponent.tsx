@@ -5,9 +5,10 @@ import { useParent } from '@/providers/parentProvider/index';
 import { useCanvas, useForm, useSheshaApplication } from '@/providers';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { useDeepCompareMemo } from '@/hooks';
-import { IModelValidation } from '@/utils/errors';
+import { IModelValidation, SheshaError } from '@/utils/errors';
 import { CustomErrorBoundary } from '..';
 import ComponentError from '../componentErrors';
+import { ErrorWrapper } from '../componentErrors/errorWrapper';
 
 export interface IFormComponentProps {
   componentModel: IConfigurableFormComponent;
@@ -33,18 +34,43 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
     return result;
   }, [componentModel, parent, allData.contexts.lastUpdate, allData.data, allData.globalState, allData.selectedRow]);
 
-  const toolboxComponent = getToolboxComponent(componentModel.type);
+  const toolboxComponent = getToolboxComponent(actualModel.type);
+  const validationResult: IModelValidation = {
+    errors: [],
+    componentId: actualModel.id,
+    componentName: actualModel.componentName,
+    componentType: actualModel.type,
+    model: actualModel,
+  };
+  toolboxComponent.useValidateModel?.(
+    actualModel,
+    {
+      addError: (propertyName: any, error: any) => {
+        validationResult.errors.push({ propertyName, error, type: 'error' });
+      },
+      addWarning: (propertyName, error) => {
+        validationResult.errors.push({ propertyName, error, type: 'warning' });
+      },
+    }
+  );
+
   if (!toolboxComponent) 
-    return <ComponentError errors={{
-        hasErrors: true, componentId: componentModel.id, componentName: componentModel.componentName, componentType: componentModel.type
-      }} message={`Component '${componentModel.type}' not found`} type='error'
-    />;
+    throw new SheshaError(
+      `Component '${actualModel.type}' not found`,
+      {
+        componentId: actualModel.id,
+        componentName: actualModel.componentName,
+        componentType: actualModel.type,
+        model: actualModel,
+      },
+      'error'
+    );
 
   actualModel.hidden = allData.form?.formMode !== 'designer' 
     && (
       actualModel.hidden
         || !anyOfPermissionsGranted(actualModel?.permissions || [])
-        || !isComponentFiltered(componentModel));
+        || !isComponentFiltered(actualModel));
 
   if (!toolboxComponent.isInput && !toolboxComponent.isOutput) 
     actualModel.propertyName = undefined;
@@ -54,16 +80,16 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
       : actualModel;
 
   if (formInstance.formMode === 'designer') {
-    const validationResult: IModelValidation = {hasErrors: false, errors: []};
-    toolboxComponent.validateModel?.(actualModel, (propertyName, error) => {
-      validationResult.hasErrors = true;
-      validationResult.errors.push({ propertyName, error });
-    });
-    if (validationResult.hasErrors) {
-      validationResult.componentId = componentModel.id;
-      validationResult.componentName = componentModel.componentName;
-      validationResult.componentType = componentModel.type;
-      return <ComponentError errors={validationResult} message='' type='warning'/>;
+    if (validationResult.errors.length > 0) {
+      if (validationResult.errors.find(x => x.type === 'error')) 
+        return <ComponentError errors={validationResult} type='warning' toolboxComponent={toolboxComponent}/>;
+      if (!validationResult.message)
+        validationResult.message = `'${validationResult.componentType}' has configuration issue(s)`;
+      return (
+        <ErrorWrapper errors={validationResult}>
+          <toolboxComponent.Factory model={actualModel} componentRef={componentRef} form={form} />
+        </ErrorWrapper>
+      );
     }
   }
 
@@ -72,7 +98,12 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel, componentRef }
 
 const FormCompomnentErrorWrapper: FC<IFormComponentProps> = ({ componentModel, componentRef }) => {
   return (
-    <CustomErrorBoundary componentName={componentModel.componentName} componentType={componentModel.type} componentId={componentModel.id}>
+    <CustomErrorBoundary 
+      componentName={componentModel.componentName}
+      componentType={componentModel.type}
+      componentId={componentModel.id}
+      model={componentModel}
+    >
       <FormComponent componentModel={componentModel} componentRef={componentRef} />
     </CustomErrorBoundary>
   );

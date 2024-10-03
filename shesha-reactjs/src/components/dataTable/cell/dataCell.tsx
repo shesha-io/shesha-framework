@@ -113,7 +113,12 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
   }
 
   return (
-    <CustomErrorBoundary>
+    <CustomErrorBoundary 
+      componentName={componentModel.componentName}
+      componentType={componentModel.type}
+      componentId={componentModel.id}
+      model={componentModel}
+    >
       <component.Factory
         model={componentModel}
         componentRef={componentRef}

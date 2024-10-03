@@ -6,6 +6,7 @@ import { useStyles } from './styles/styles';
 import { useShaRouting } from '@/providers';
 import ComponentError from '../componentErrors';
 import { IModelValidation, SheshaError } from '@/utils/errors';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>) => {
   // Do something with the error
@@ -18,6 +19,7 @@ interface ICustomErrorBoundaryFallbackProps extends FallbackProps {
   componentId?: string;
   componentName?: string;
   componentType?: string;
+  model?: any;
 }
 
 const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps> = ({
@@ -27,9 +29,12 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
   fullScreen = false,
   error,
   resetErrorBoundary,
+  model,
 }) => {
   const { styles } = useStyles();
   const { router } = useShaRouting();
+  const getToolboxComponent = useFormDesignerComponentGetter();
+
   errorBoundaryErrorHandler({ error });
 
   if (fullScreen) {
@@ -57,26 +62,30 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
     );
   }
 
+  const toolboxComponent = getToolboxComponent(componentType);
+
   if (SheshaError.isSheshaError(error)) {
     const shaErrors = error.cause?.errors;
     if (Boolean(shaErrors)) {
       if (!shaErrors.componentId) shaErrors.componentId = componentId;
       if (!shaErrors.componentName) shaErrors.componentName = componentName;
       if (!shaErrors.componentType) shaErrors.componentType = componentType;
+      if (!shaErrors.model) shaErrors.model = model;
     }
-    return <ComponentError errors={shaErrors} message={error.message} type={error.cause?.type} resetErrorBoundary={resetErrorBoundary}/>;
+    return <ComponentError errors={shaErrors} type={error.cause?.type} resetErrorBoundary={resetErrorBoundary} toolboxComponent={toolboxComponent}/>;
   }
 
   const shaError = {
-    hasErrors: true,
     componentName: componentName,
     componentType: componentType,
-    errors: [{ error: error.message }],
+    errors: [{ error: error.message, type: 'error' }],
+    message: Boolean(componentName) || Boolean(componentType) 
+      ? `An error has occurred when '${componentName}' (${componentType}) rendered`
+      : `An error has occurred`,
+    model: model,
   } as IModelValidation;
 
-  const shaMessage = `An error has ocured when '${componentName}' (${componentType}) rendered`;
-
-  return <ComponentError errors={shaError} message={shaMessage} type='error' resetErrorBoundary={resetErrorBoundary}/>;
+  return <ComponentError errors={shaError} type='error' resetErrorBoundary={resetErrorBoundary} toolboxComponent={toolboxComponent}/>;
 };
 
 export default CustomErrorBoundaryFallbackComponent;

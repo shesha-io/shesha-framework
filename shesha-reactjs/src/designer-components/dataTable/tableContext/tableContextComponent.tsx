@@ -18,6 +18,12 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   isOutput: true,
   name: 'DataTable Context',
   icon: <LayoutOutlined />,
+  useValidateModel: (model, errorActions) => {
+    if (!model.sourceType) errorActions.addError('sourceType', 'Select `Source type` on the settings panel');
+    if (model.sourceType === 'Entity' && !model.entityType) errorActions.addError('entityType', 'Select `Entity Type` on the settings panel');
+    if (model.sourceType === 'Url' && !model.endpoint) errorActions.addError('endpoint', 'Select `Custom Endpoint` on the settings panel');
+    if (model.sourceType === 'Form' && !model.propertyName) errorActions.addError('propertyName', 'Select `propertyName` on the settings panel');
+  },
   Factory: ({ model }) => {
     return model.hidden ? null : <TableContext {...model} />;
   },
@@ -36,12 +42,6 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];
-  },
-  validateModel: (model, addModelError) => {
-    if (!model.sourceType) addModelError('sourceType', 'Select `Source type` on the settings panel');
-    if (model.sourceType === 'Entity' && !model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');
-    if (model.sourceType === 'Url' && !model.endpoint) addModelError('endpoint', 'Select `Custom Endpoint` on the settings panel');
-    if (model.sourceType === 'Form' && !model.propertyName) addModelError('propertyName', 'Select `propertyName` on the settings panel');
   },
 };
 

@@ -10,7 +10,6 @@ import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
 import { getValueByPropertyName } from '@/utils/object';
-import { SheshaError } from '@/utils/errors';
 
 const EntityPickerReadOnly = (props: IEntityPickerProps) => {
   const { entityType, displayEntityKey, value } = props;
@@ -90,9 +89,6 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     : selection?.rows;
 
   const selectedMode = mode === 'single' ? undefined : mode;
-
-  if (!entityType) 
-    throw SheshaError.throwPropertyError('entityType');
 
   const handleMultiChange = (selectedValues: string[]) => {
     const newValues = value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {})));

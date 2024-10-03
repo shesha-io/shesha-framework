@@ -410,8 +410,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .${shaComponentControls} {
               text-align: right;
               position: absolute;
-              right: 5px;
-              top: 5px;
+              right: 8px;
+              top: 8px;
               display: block;
               min-height: 20px;
               z-index: 1000;
