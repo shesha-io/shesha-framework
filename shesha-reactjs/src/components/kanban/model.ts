@@ -1,21 +1,5 @@
-import { IEntityReferenceDto } from '@/interfaces';
-import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
-import { ButtonGroupItemProps, IButtonGroupItem, IButtonItem } from '@/providers';
-import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-
-export type IncomeValueFunc = (value: any, args: any) => string;
-export type OutcomeValueFunc = (value: any, args: any) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
-
-export interface IAddNewRecordProps {
-    modalFormId?: FormIdentifier;
-    modalTitle?: string;
-    showModalFooter?: boolean;
-    footerButtons?: ModalFooterButtons;
-    modalWidth?: number | string;
-    buttons?: ButtonGroupItemProps[];
-  }
-  
-
+import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IButtonGroupItem, IButtonItem } from '@/providers';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
@@ -31,6 +15,10 @@ export interface IRefListItemGroup extends IRefListGroupItemBase {
   childItems?: RefListGroupItemProps[];
 }
 
+export interface IKanbanButton extends IButtonGroupItem {
+  itemValue: number;
+  item: string;
+}
 export interface IKanbanProps extends IConfigurableFormComponent {
   items?: IKanbanButton[];
   referenceList?: any;
@@ -53,13 +41,4 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   createFormId?: string;
   headerBackgroundColor: string;
   actionConfiguration: any;
-}
-
-export interface IChevronControlProps extends IKanbanProps {
-  value?: any;
-}
-
-export interface IKanbanButton extends IButtonGroupItem {
-  itemValue: number;
-  item: string;
 }

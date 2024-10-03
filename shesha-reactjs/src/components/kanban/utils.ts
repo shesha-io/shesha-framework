@@ -1,10 +1,4 @@
 import { useMutate } from "@/hooks";
-import { toSizeCssProp } from "@/utils/form";
-import { CSSProperties } from "react";
-
-export const addPx = (value: any) => {
-    return !value ? null : /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
-};
 
 export const getColumns = (endpoint: string, refListName: string) => {
     let queryParams = {
@@ -89,12 +83,3 @@ export const useKanbanActions = () => {
   return { updateKanban, deleteKanban, createKanbanItem };
 };
 
-export const getHeight = (height: string | number, minHeight: string | number, maxHeight: string | number) => {
-  const heightStyles: CSSProperties = {
-    height: toSizeCssProp(height),
-    minHeight: toSizeCssProp(minHeight),
-    maxHeight: toSizeCssProp(maxHeight),
-  };
-  
-  return heightStyles;
-};

@@ -1,5 +1,5 @@
 import { Autocomplete, CodeEditor, ColorPicker, FormAutocomplete, PropertyAutocomplete, Show } from '@/components';
-import RefListItemSelectorSettingsModal from '@/components/kanban/options/modal';
+import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
 import { Checkbox, Input } from 'antd';
 import React, { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '../_settings/settingsForm';
@@ -34,7 +34,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
               <SettingsFormItem name="modalFormId" label="Render Form" jsSetting>
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </SettingsFormItem>
-          <MetadataProvider modelType={values.entityType?.name}>
+          <MetadataProvider modelType={values?.entityType?.name}>
           <SettingsFormItem name="groupingProperty" label="Grouping property" jsSetting>
             <PropertyAutocomplete readOnly={props.readOnly} autoFillProps={false} />
           </SettingsFormItem>
@@ -69,7 +69,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
       </SettingsFormItem>
 
       <Show when={values.allowNewRecord}>
-       <MetadataProvider modelType={values.entityType.name}>
+       <MetadataProvider modelType={values.entityType?.name}>
           <SettingsFormItem name="createFormId" label="Form" jsSetting>
             <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
           </SettingsFormItem>
@@ -104,13 +104,13 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
             <Input type='number' disabled={readOnly}  />
           </SettingsFormItem>
           <SettingsFormItem name="height" label="Height" jsSetting>
-            <Input type='number' disabled={readOnly}  />
+            <Input type='number' disabled={readOnly}  defaultValue={300} />
           </SettingsFormItem>
           <SettingsFormItem name="minHeight" label="Min Height" jsSetting>
-            <Input type='number' disabled={readOnly}  />
+            <Input type='number' disabled={readOnly} defaultValue={300} />
           </SettingsFormItem>
           <SettingsFormItem name="maxHeight" label="Max Height" jsSetting>
-            <Input type='number' disabled={readOnly}  />
+            <Input type='number' disabled={readOnly} defaultValue={300} />
           </SettingsFormItem>
           <SettingsFormItem name="columnBackgroundColor" label="Background Color" jsSetting >
               <ColorPicker readOnly={readOnly} allowClear />

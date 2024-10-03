@@ -7,7 +7,7 @@ import { Alert } from 'antd';
 import KanbanReactComponent from '@/components/kanban';
 import { IKanbanProps } from '@/components/kanban/model';
 import { KanbanSettingsForm } from './settingsCopy';
-import { RefListItemGroupConfiguratorProvider } from '@/components/kanban/provider';
+import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',

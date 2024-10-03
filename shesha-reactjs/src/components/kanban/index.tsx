@@ -1,8 +1,8 @@
 import React, { CSSProperties, useEffect, useState, useMemo, useCallback } from 'react';
 import { Form, message, Modal } from 'antd';
 import { IKanbanProps } from './model';
-import { getHeight, getMetaData, useKanbanActions } from './utils';
-import KanbanPlaceholder from './placeholder';
+import { getMetaData, useKanbanActions } from './utils';
+import KanbanPlaceholder from './components/placeholder';
 import {
   ConfigurableForm,
   useAvailableConstantsData,
@@ -11,14 +11,14 @@ import {
   useGet,
 } from '@/index';
 import { useStyles } from './styles';
-import KanbanColumn from './components/kanbanColumn';
+import KanbanColumn from './components/renderColumn';
 import { MoveEvent } from 'react-sortablejs';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const {
     columnStyle,
-    minHeight,
-    height,
+    minHeight ,
+    height, 
     maxHeight,
     gap,
     readonly,
@@ -59,7 +59,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         if (type?.dataType === 'reference-list-item') {
           const endpoints = resp.result.apiEndpoints;
           setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-          refetch({ path: `${resp.result.apiEndpoints.list.url}?maxResultCount=1000` })
+          refetch({ path: `${resp.result.apiEndpoints.list.url}` })
             .then((resp) => {
               setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
             })
@@ -110,8 +110,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     [allData, executeAction]
   );
   
-  
-
   const handleUpdate = useCallback(
     async (newTasks: any[], column: any) => {
       // Check if the tasks have changed (e.g., their order or column)
@@ -120,7 +118,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       if (!hasChanged) {
         return; // Exit early if no changes are found
       }
-  
       // Call onEnd to check whether action execution is necessary
       const canUpdate = await onEnd(
         {
@@ -129,7 +126,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         },
         column
       );
-  
       // If onEnd returns false, don't update tasks
       if (!canUpdate) {
         return; // Exit the function without updating
@@ -168,42 +164,23 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     }
   }, [selectedItem, form]);
 
-  const style: CSSProperties = {
-    flex: '1 0 100px',
-    justifyContent: 'space-between',
-    margin: '0 10px',
-    padding: '0px',
-    border: '1px solid #ddd',
-    minHeight: '150px',
-    maxHeight: '500px',
-    height: '500px',
-    marginBottom: '10px',
-    backgroundColor: '#f5f5f5',
-    transition: 'background-color 0.3s',
-    flexGrow: 1,
-    boxSizing: 'border-box',
-    width: '250px',
-    maxWidth: '250px',
-  };
-
-  const hStyle: CSSProperties = {
+  const internalHeaderStyle: CSSProperties = {
     textAlign: 'center',
-    color: '#000',
-    fontSize: 100,
-    padding: '0 10px',
-    backgroundColor: '#ffffff',
+    color: fontColor ?? '#000', 
+    fontSize: fontSize ?? 15,   
+    padding: '10px 10px',
+    backgroundColor: headerBackgroundColor ?? '#ffffff',  
+    ...headerStyle,  
   };
 
-  const newHeaderStyle = {
-    ...hStyle,
-    ...headerStyle,
-    fontSize,
-    backgroundColor: headerBackgroundColor,
-    color: fontColor,
+  const externalColumnStyle: CSSProperties = {
+    ...columnStyle,
+    height: height ? height : 300, 
+    minHeight: minHeight ? minHeight : 300,
+    maxHeight: maxHeight ? maxHeight : 300,
   };
-  const newStyle = { ...style, ...columnStyle, ...getHeight(height, minHeight, maxHeight) };
-
-  const handleEditClick = (item) => {
+  
+  const handleEditClick = (item: any) => {
     setSelectedItem(item);
     setIsModalVisible(true);
   };
@@ -276,7 +253,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       {items.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
           <div style={{ display: 'flex', gap: gap || 10 }}>
             {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
               <KanbanColumn
@@ -285,8 +262,8 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
                 columnTasks={columnTasks}
                 groupingProperty={groupingProperty}
                 readonly={readonly}
-                newStyle={newStyle}
-                newHeaderStyle={newHeaderStyle}
+                externalColumnStyle={externalColumnStyle}
+                newHeaderStyle={internalHeaderStyle}
                 handleUpdate={handleUpdate}
                 handleEditClick={handleEditClick}
                 handleDelete={handleDelete}

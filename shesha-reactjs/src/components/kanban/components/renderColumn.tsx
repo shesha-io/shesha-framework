@@ -12,7 +12,7 @@ interface KanbanColumnProps {
   columnTasks: any[];
   groupingProperty: string;
   readonly: boolean;
-  newStyle: CSSProperties;
+  externalColumnStyle: CSSProperties;
   newHeaderStyle: CSSProperties;
   handleUpdate: (newTasks: any[], columnValue: any) => void;
   onEnd: (evt: any, column: any) => void;
@@ -28,7 +28,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   column,
   columnTasks,
   readonly,
-  newStyle,
+  externalColumnStyle,
   newHeaderStyle,
   handleUpdate,
   onEnd, 
@@ -92,16 +92,35 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
       icon: isCollapsed ? <RightOutlined /> : <LeftOutlined />
     },
   ];
- const styleTest: CSSProperties = {
-    ...newStyle,
-    width: 20,
+
+  const columnStyle: CSSProperties = {
+    flex: '1 0 100px',
+    justifyContent: 'space-between',
+    margin: '0 10px',
+    padding: '0px',
+    border: '1px solid #ddd',
+    marginBottom: '10px',
+    backgroundColor: '#f5f5f5',
+    transition: 'background-color 0.3s, width 0.9s ease', // Smooth transition for width    flexGrow: 1,
+    boxSizing: 'border-box',
+    width: '250px',
+    maxWidth: '250px',
+    height: '300px', 
+    display: 'flex',
+    flexDirection: 'column', 
+    scrollbarWidth: 'none',  
+    msOverflowStyle: 'none',
+  };
+
+ const collapseColumnStyle: CSSProperties = {
+    ...columnStyle,
+    width: 35, 
     backgroundColor:  '#f0f0f0',
     transition: 'width 0.9s ease',
     position: 'relative',
-    overflow: 'hidden', 
-    border: '1px solid orange', 
-    flex: '0 0 35px',
+    flex: '0 0 auto',
  };
+ console.log('collapseColumnStyle', collapseColumnStyle);
 
  const headerStyle: CSSProperties ={
     ...newHeaderStyle,
@@ -117,7 +136,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   return (
     <>
       {column.hidden ? null : (
-        <div key={column.id} style={isCollapsed ? styleTest : newStyle} data-column-id={column.id}>
+        <div key={column.id} style={isCollapsed ? collapseColumnStyle : columnStyle} data-column-id={column.id}>
           {/* Header with Add button and dropdown */}
           <Flex justify="space-between" align="center" style={isCollapsed ? headerStyle : newHeaderStyle}>
             <h3>
@@ -148,6 +167,14 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               bubbleScroll={true}
               disabled={readonly}
               onEnd={(evt) => onEnd(evt, column)}
+              className={styles.container}
+              style={{ 
+                flex: '1',  // Let the sortable task list take the remaining column height
+                overflowY: 'auto',  // Scrollable when it overflows
+                minHeight: '400px',
+                maxHeight: '400px',  // Optional, you can adjust this based on the column's height
+                padding: '10px'
+              }}
             >
               {columnTasks.length === 0 ? (
                 <div
@@ -190,6 +217,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                         initialValues={t}
                         formId={modalFormId}
                         mode={'readonly'}
+                        className={styles.container}
                       />
                       <Dropdown trigger={['click']} menu={{ items: taskDropdownItems }} placement="bottomRight">
                         <Button type="text" className={`${styles.threeDotsStyle} three-dots`} icon={<MoreOutlined />} />
