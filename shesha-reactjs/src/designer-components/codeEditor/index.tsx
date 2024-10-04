@@ -40,11 +40,14 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
         return Promise.reject("AvailableConstantsExpression is mandatory");
 
       const metadataBuilder = metadataBuilderFactory();
-      return executeScript<IObjectMetadata>(model.availableConstantsExpression, { 
+      const getConstantsArgs = { 
         data: formData, 
         metadataBuilder,
         form: shaFormInstance,
-      });
+      };
+      return typeof(model.availableConstantsExpression) === 'string'
+        ? executeScript<IObjectMetadata>(model.availableConstantsExpression, getConstantsArgs)
+        : model.availableConstantsExpression(getConstantsArgs);
     }, [model.availableConstantsExpression, metadataBuilderFactory, formData, shaFormInstance]);
 
     const resultTypeEvaluator = () => {

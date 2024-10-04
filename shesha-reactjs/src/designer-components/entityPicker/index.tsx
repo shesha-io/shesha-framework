@@ -206,6 +206,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
   ,
   settingsFormMarkup: entityPickerSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(entityPickerSettings, model),
+
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     return {
       ...model,
