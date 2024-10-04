@@ -70,6 +70,7 @@ export type ConfigurableFormComponentTypes =
   | 'textField'
   | 'textArea'
   | 'iconPicker'
+  | 'colorPicker'
   | 'container'
   | 'collapsiblePanel'
   | 'autocomplete'
