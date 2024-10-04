@@ -179,7 +179,7 @@
             "templateSettings": {
               "functionName": "getDataSourceUrl"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "c153b326-7ff2-4bb0-af21-45f80e8cd6e0",
@@ -209,7 +209,7 @@
             "templateSettings": {
               "functionName": "reducerFunction"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addArray(\"data\", \"An array of items returned from the server\").build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addArray(\"data\", \"An array of items returned from the server\").build();"
           },
           {
             "id": "gWL0lQBLM5toTa53dcEe1",
@@ -379,7 +379,7 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       }

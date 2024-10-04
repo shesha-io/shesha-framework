@@ -49,8 +49,8 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
     if (!props.availableConstantsExpression?.trim())
       return Promise.reject("AvailableConstantsExpression is mandatory");
 
-    const metadataBuilder = metadataBuilderFactory("baseProperties");
-
+    const metadataBuilder = metadataBuilderFactory();
+  
     return executeScript<IObjectMetadata>(props.availableConstantsExpression, { data: formData, metadataBuilder });
   }, [props.availableConstantsExpression, metadataBuilderFactory, formData]);
 
