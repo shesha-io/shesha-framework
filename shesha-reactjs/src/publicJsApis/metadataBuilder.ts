@@ -21,6 +21,8 @@ export interface IObjectMetadataBuilder {
   build(): IObjectMetadata;
 
   addObject(path: string, label: string, propertiesBuilder?: PropertiesBuilder<this>): this;
+  
+  addMetadataBuilder(): this;
 }
 
 export interface IMetadataBuilder<TObjectBuilder extends IObjectMetadataBuilder = IObjectMetadataBuilder> {

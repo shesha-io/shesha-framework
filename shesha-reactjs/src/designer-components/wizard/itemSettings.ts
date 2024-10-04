@@ -1,5 +1,13 @@
 import { DesignerToolbarSettings } from '@/interfaces';
 import { IWizardStepProps } from './models';
+import { GetAvailableConstantsFunc } from '../codeEditor/interfaces';
+
+const getStandardConstants: GetAvailableConstantsFunc = async ({ metadataBuilder }) => {
+  return metadataBuilder
+    .object("constants")
+    .addStandard(["shesha:formData", "shesha:globalState"])
+    .build();
+};
 
 export const getSettings = (_data?: IWizardStepProps) =>
   new DesignerToolbarSettings()
@@ -129,7 +137,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       templateSettings: {
         functionName: 'getNextButtonCustomEnabled'
       },
-      availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
+      availableConstantsExpression: getStandardConstants,
     })
     .addConfigurableActionConfigurator({
       id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
@@ -186,7 +194,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       templateSettings: {
         functionName: 'getBackButtonCustomEnabled'
       },
-      availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
+      availableConstantsExpression: getStandardConstants,
     })
     .addConfigurableActionConfigurator({
       id: '39a6c902-2d58-4e92-a139-20b6c85f5cbb',
@@ -243,7 +251,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       templateSettings: {
         functionName: 'getDoneButtonCustomEnabled'
       },
-      availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
+      availableConstantsExpression: getStandardConstants,
     })
     .addConfigurableActionConfigurator({
       id: 'D5133335-4349-459A-8E9E-4371C814CE1A',
@@ -300,7 +308,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       templateSettings: {
         functionName: 'getCancelButtonCustomEnabled'
       },
-      availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
+      availableConstantsExpression: getStandardConstants,
     })
     .addConfigurableActionConfigurator({
       id: 'd2fde7ff-bc23-4fe3-ab4c-6ad0eb79d8bf',
@@ -354,7 +362,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       templateSettings: {
         functionName: 'getStyle'
       },
-      availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
+      availableConstantsExpression: getStandardConstants,
     })
     .addCodeEditor({
       id: '78f2f5ee-9826-4567-a938-d7bc03ba90ac',
@@ -386,7 +394,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       templateSettings: {
         functionName: 'getCustomVisibility'
       },
-      availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
+      availableConstantsExpression: getStandardConstants,
     })
     .addCodeEditor({
       id: '377bbbee-d7f6-42bf-8f08-fc9303424518',
@@ -419,7 +427,7 @@ export const getSettings = (_data?: IWizardStepProps) =>
       templateSettings: {
         functionName: 'getCustomEnabled'
       },
-      availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
+      availableConstantsExpression: getStandardConstants,
     })
     .addPermissionAutocomplete({
       id: '3d24cc31-a797-40b8-b178-1e77eabb69c4',
