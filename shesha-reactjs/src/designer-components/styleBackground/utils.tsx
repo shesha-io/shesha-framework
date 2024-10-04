@@ -10,22 +10,25 @@ export const toBase64 = file => new Promise<string>((resolve, reject) => {
     reader.onerror = reject;
 });
 
-export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<React.CSSProperties> => {
+
+export const getBackgroundStyle = async (input?: IBackgroundValue, url?: string): Promise<React.CSSProperties> => {
 
     if (!input) return {};
     const style: React.CSSProperties = {};
-
 
     if (input.type === 'color') {
         style.backgroundColor = input.color;
     } else if (input.type === 'gradient') {
         const colors = input?.gradient?.colors || [];
-        style.backgroundImage = `linear-gradient(${input.gradient?.direction || 'to right'}, ${colors.filter(color => color !== undefined && color !== '').join(', ')})`;
+        style.backgroundImage = `linear-gradient(${input.gradient?.direction || 'to right'}, ${Object.values(colors).filter(color => color !== undefined && color !== '').join(', ')})`;
     } else if (input.type === 'url') {
         style.backgroundImage = `url(${input.url})`;
     } else if (input.type === 'upload') {
-        style.backgroundImage = `url(${input.file.file})`;
+        style.backgroundImage = `url(${input?.file?.file})`;
+    } else if (input.type === 'storedFile') {
+        style.backgroundImage = `url(${url})`;
     }
+
 
     if (input.size) {
         style.backgroundSize = input.size;

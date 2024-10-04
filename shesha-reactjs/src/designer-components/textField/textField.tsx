@@ -69,11 +69,23 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
 
     useEffect(() => {
+
       const fetchStyles = async () => {
-        getBackgroundStyle(background).then((style) => {
-          setBackgroundStyles(style);
-        });
-      };
+
+        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
+          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
+            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
+            .then((response) => {
+              return response.blob();
+            })
+            .then((blob) => {
+              return URL.createObjectURL(blob);
+            }) : '';
+
+        const style = await getBackgroundStyle(background, storedImageUrl);
+        setBackgroundStyles(style);
+      }
+
       fetchStyles();
     }, [background, background?.gradient?.colors, background, backendUrl, httpHeaders]);
 
@@ -124,6 +136,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       moment,
       setGlobalState,
     };
+
+    console.log("Model: ", model);
 
     return (
       <ConfigurableFormItem
