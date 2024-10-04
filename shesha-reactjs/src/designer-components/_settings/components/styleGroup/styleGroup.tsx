@@ -3,7 +3,7 @@ import { ConfigProvider, Collapse, CollapseProps } from 'antd';
 import BorderComponent from '../../../styleBorder/borderComponent';
 import BackgroundComponent from '../../../styleBackground/background';
 import StyleBox from '../../../styleBox/components/box';
-import { SettingInput } from '../utils';
+import { IDropdownOption, SettingInput } from '../utils';
 import FormItem from '../formItem';
 import { IBorderValue } from '@/designer-components/styleBorder/interfaces';
 import { IBackgroundValue } from '@/designer-components/styleBackground/interfaces';
@@ -44,6 +44,12 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
 
     const shadowValue: IShadowValue = useMemo(() => value?.shadow, [value?.shadow]);
 
+    const sizeOptions: IDropdownOption[] = [
+        { label: 'Small', value: 'small' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Large', value: 'large' },
+    ];
+
     const items: CollapseProps['items'] = [
         {
             key: '1',
@@ -75,6 +81,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             label: 'Styling',
             children: (
                 <>
+                    <SettingInput label="Size" property='size' readOnly={false} type='dropdown' description="The size of the element" dropdownOptions={sizeOptions} />
                     <SettingInput label="Style" property='style' readOnly={false} type='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
                     <FormItem name="stylingBox" jsSetting={false}>
                         <StyleBox />

@@ -160,6 +160,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     textType: 'text',
+    background: { type: 'color' },
+    border: { activeBorder: 'all', activeRadius: 'all' },
     ...model,
   }),
   migrator: (m) => m
