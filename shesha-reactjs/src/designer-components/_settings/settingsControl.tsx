@@ -103,18 +103,18 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
+      <Button
+        hidden={props.readOnly}
+        className={`${styles.jsSwitch} inlineJS`}
+        type='text'
+        danger={mode === 'value' && !!code}
+        ghost
+        size='small'
+        icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+        color='lightslategrey'
+        onClick={onSwitchMode}
+      />
       <div className={styles.jsContent}>
-        <Button
-          hidden={props.readOnly}
-          className={`${styles.jsSwitch} inlineJS`}
-          type='text'
-          danger={mode === 'value' && !!code}
-          ghost
-          size='small'
-          icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
-          color='lightslategrey'
-          onClick={onSwitchMode}
-        />
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
       </div>

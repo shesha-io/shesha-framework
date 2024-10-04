@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, Input, Button } from 'antd';
+import { Tabs, Input } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
 import { SearchQueryProvider } from './context';
-import { filterDynamicComponents, searchFormItems, SettingInput } from '../utils';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { filterDynamicComponents, searchFormItems } from '../utils';
 
 interface SearchableTabsProps {
     model: any;
@@ -12,7 +11,7 @@ interface SearchableTabsProps {
     onChange?: (value: any) => void;
 }
 
-const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, value }) => {
+const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
 
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
@@ -33,12 +32,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange, value 
                     ...tab,
                     label: <div style={{ display: 'flex', gap: '5px', verticalAlign: 'middle', flexDirection: 'row-reverse', alignItems: 'baseline' }}>
                         {tab.label || tab.title}
-                        {tab.label === 'Display' && <SettingInput label="" hideLabel property='hidden' readOnly={model.readOnly} jsSetting={false}>
-                            <><Button type='text' style={{ alignItems: 'center' }} ghost={value ? false : true} size='small' icon={value ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => {
-                                value({ ...model, hidden: !value.hidden });
-                            }} />
-                            </>
-                        </SettingInput>}
+                        {tab.label === 'Display'}
                     </div>,
                     children: tab.components
                         ? <ParentProvider model={model}>

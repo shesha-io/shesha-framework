@@ -11,7 +11,7 @@ import { ConfigurableFormItem } from '@/components';
 
 const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
   type: 'searchableTabs',
-  isInput: true,
+  isInput: false,
   isOutput: true,
   name: 'Searchable Tabs',
   icon: <FolderOutlined />,
@@ -19,7 +19,7 @@ const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
 
     return model.hidden ? null : (
       <ConfigurableFormItem model={model} className='sha-js-label'>
-        {(onChange, value) => <SearchableTabs model={model} onChange={onChange} value={value} />}
+        {(value, onChange) => <SearchableTabs model={model} onChange={onChange} value={value} />}
       </ConfigurableFormItem>
     );
   },

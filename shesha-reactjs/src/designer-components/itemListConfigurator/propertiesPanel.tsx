@@ -19,14 +19,14 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
     const [form] = Form.useForm();
 
     const formRef = useRef<ConfigurableFormInstance>(null);
-  
+
     const debouncedSave = useDebouncedCallback(
-      values => {
-        onChange?.({ ...item, ...values });
-      },
-      // delay in ms
-      300
-    );  
+        values => {
+            onChange?.({ ...item, ...values });
+        },
+        // delay in ms
+        300
+    );
 
     const editor = useMemo(() => {
         const emptyEditor = null;
@@ -47,15 +47,14 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
                     onValuesChange={debouncedSave}
                     className={sheshaStyles.verticalSettingsClass}
                     isSettingsForm={true}
-                    layout='vertical'
                 />
             </SourceFilesFolderProvider>
         );
     }, [item]);
 
     return Boolean(item)
-    ? (<>{editor}</>)
-    : (<div>
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
-    </div>);
+        ? (<>{editor}</>)
+        : (<div>
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
+        </div>);
 };

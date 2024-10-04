@@ -94,7 +94,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
   initialValue,
   className,
   labelCol,
-  wrapperCol
+  wrapperCol,
 }) => {
   const { formData } = useForm();
 
@@ -104,9 +104,6 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
-    if (model.layout === 'horizontal') {
-      return { labelCol: { span: 8 }, wrapperCol: { span: 16 }, layout: 'horizontal' };
-    }
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
 
@@ -125,10 +122,9 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     initialValue: initialValue,
     tooltip: model.description,
     rules: model.hidden ? [] : getValidationRules(model, { formData }),
-    ...layout,
+    labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     name: model.context ? undefined : getFieldNameFromExpression(propName),
-    layout: 'horizontal'
   };
 
   if (typeof children === 'function') {

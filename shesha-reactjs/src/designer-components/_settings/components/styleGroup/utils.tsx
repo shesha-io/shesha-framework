@@ -1,7 +1,4 @@
 import React from 'react';
-import { Collapse } from 'antd';
-
-const { Panel } = Collapse;
 
 const isContentEmpty = (children) => {
     if (!children) return true;

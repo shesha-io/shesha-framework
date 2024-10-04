@@ -1,9 +1,9 @@
 import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
 
     const jsSwitch = cx(css`
+        position: absolute;
         &.${prefixCls}-btn {
             margin-right: 5px;
             display: flex;
@@ -12,20 +12,14 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             color: lightslategrey;
             max-width: 100%;
             ${responsive.mobile} {
-                right: 0;
-                left: auto;
-                // top: -28px;
+                right: auto;
+                left: 0;
             }
 
             // special style when inside the sidebar
             .sidebar-container & {
-                right: 0;
-                left: auto;
-            }
-            .${sheshaStyles.verticalSettingsClass} & {
-                // right: auto;
-                // left: -25px;
-                // top: 25px;
+                right: auto;
+                left: 0;
             }
         }
     `);
@@ -33,7 +27,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
     const contentJs = cx(css`
         position: relative;
         top: 0px;
-        width: 100%;
     `);
     const contentCode = cx(css`
         position: relative;
@@ -41,29 +34,20 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         ${responsive.mobile} {
             padding-top: 4px;
         }
-        .${sheshaStyles.verticalSettingsClass} & {
-            padding-top: 4px;
-        }
+
     `);
 
     const jsContent = cx(css`
-        
+        position: relative;
+        margin-left: 28px;
         ${responsive.mobile} {
-            margin-left: 0;
+            margin-left: 28px;
         }
 
         // special style when inside the sidebar
         .sidebar-container & {
+            margin-left: 28px;
             margin-right: 0;
-            margin-left: 0;
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-        }
-        .${sheshaStyles.verticalSettingsClass} & {
-            margin-right: 0;
-            display: flex;
-            flex-direction: row;
         }
     `);
 
