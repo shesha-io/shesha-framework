@@ -43,6 +43,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                 return (
                                     <Tag
                                         key={id}
+                                        bordered={false}
                                         closable={id !== '1' && id !== '2'}
                                         onClose={() => {
                                             const newColors = { ...gradient.colors };
