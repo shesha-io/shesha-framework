@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
 import { IShadowValue } from './interfaces';
-import { LinkedinOutlined, MinusSquareOutlined } from '@ant-design/icons';
 
 
 export interface IShadowType {

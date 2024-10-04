@@ -63,7 +63,7 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
     );
 };
 
-const InputComponent: FC<IInputProps> = ({ label, size, value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
+const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
 
     switch (type) {
         case 'color':
@@ -74,7 +74,7 @@ const InputComponent: FC<IInputProps> = ({ label, size, value, type, dropdownOpt
                 onChange={
                     onChange}
                 options={dropdownOptions}
-            />
+            />;
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {buttonGroupOptions.map(({ value, icon, title }) => (
@@ -98,7 +98,7 @@ const InputComponent: FC<IInputProps> = ({ label, size, value, type, dropdownOpt
                 backgroundImage={value}
                 readOnly={readOnly}
                 onChange={onChange}
-            />
+            />;
         default:
             return <Input
                 size={size}

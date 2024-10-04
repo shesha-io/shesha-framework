@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, Row, Tag } from 'antd';
+import { Button, Form, Input, Row, Tag } from 'antd';
 import { Autocomplete } from '@/components/autocomplete';
 import React, { FC, useEffect } from 'react';
 import SizeAndRepeat from './sizeAndRepeat';

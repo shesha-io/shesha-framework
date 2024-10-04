@@ -15,6 +15,7 @@ export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<Reac
     if (!input) return {};
     const style: React.CSSProperties = {};
 
+
     if (input.type === 'color') {
         style.backgroundColor = input.color;
     } else if (input.type === 'gradient') {
@@ -24,8 +25,6 @@ export const getBackgroundStyle = async (input?: IBackgroundValue): Promise<Reac
         style.backgroundImage = `url(${input.url})`;
     } else if (input.type === 'upload') {
         style.backgroundImage = `url(${input.file.file})`;
-    } else if (input.type === 'storedFile') {
-
     }
 
     if (input.size) {

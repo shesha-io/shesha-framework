@@ -13,7 +13,7 @@ export const getSizeStyle = (input?: IDimensionsValue): React.CSSProperties => {
         if (sizeValue && typeof sizeValue === 'object') {
             const { value, unit } = sizeValue;
             if (value) {
-                style[prop] = /^\d+(\.\d+)?$/.test(value as string) ? `${value}${unit ?? 'px'}` : `${value}`;
+                style[prop] = /^\d+(\.\d+)?$/.test(`${value}`) ? `${value}${unit ?? 'px'}` : `${value}`;
             }
         }
     });

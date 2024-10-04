@@ -25,7 +25,6 @@ import settingsFormJson from './settingsForm.json';
 import { useStyles } from './styles/styles';
 import { getShadowStyle } from '../styleShadow/utils';
 import { getFontStyle } from '../styleFont/utils';
-import { TextFieldSettingsForm } from './settings';
 import { splitValueAndUnit } from '../_settings/utils';
 
 const settingsForm = settingsFormJson as FormMarkup;
