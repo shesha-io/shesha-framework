@@ -1,5 +1,6 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IButtonGroupItem, IButtonItem } from '@/providers';
+import { CSSProperties } from 'styled-components';
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
@@ -34,8 +35,8 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   readonly?: boolean;
   collapsible?: boolean;
   gap?: number;
-  headerStyle?: any;
-  columnStyle?: any;
+  externaHeaderStyle?: CSSProperties | string;
+  externalColumnStyle?: CSSProperties | string;
   groupingProperty?: string;
   modalFormId?: string;
   createFormId?: string;

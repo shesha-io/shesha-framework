@@ -6,7 +6,7 @@ import { getStyle } from '@/providers/form/utils';
 import { Alert } from 'antd';
 import KanbanReactComponent from '@/components/kanban';
 import { IKanbanProps } from '@/components/kanban/model';
-import { KanbanSettingsForm } from './settingsCopy';
+import { KanbanSettingsForm } from './settings';
 import { RefListItemGroupConfiguratorProvider } from '@/providers/refList/provider';
 
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
@@ -18,12 +18,12 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   Factory: ({ model }) => {
     const form = useForm();
     const { data: formData } = useFormData();
-    
+
     if (form.formMode === 'designer' && !model.entityType) {
       return (
         <Alert
           showIcon
-          message="EntityPicker not configured properly"
+          message="Kanban not configured properly"
           description="Please make sure that you've specified 'entityType' property."
           type="warning"
         />
@@ -34,16 +34,21 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
         <ConfigurableFormItem model={model}>
           {(value) => {
             return (
-              <RefListItemGroupConfiguratorProvider value={value} items={model.items} referenceList={model.referenceList} readOnly={model.readOnly}>
-              <KanbanReactComponent
-                {...model}
-                headerStyle={{
-                  ...getStyle(model?.headerStyle, formData),
-                }}
-                columnStyle={{
-                  ...getStyle(model?.columnStyle, formData),
-                }}
-              />
+              <RefListItemGroupConfiguratorProvider
+                value={value}
+                items={model.items}
+                referenceList={model.referenceList}
+                readOnly={model.readOnly}
+              >
+                <KanbanReactComponent
+                  {...model}
+                  externaHeaderStyle={{
+                    ...getStyle(model?.externaHeaderStyle as string, formData),
+                  }}
+                  externalColumnStyle={{
+                    ...getStyle(model?.externalColumnStyle as string, formData),
+                  }}
+                />
               </RefListItemGroupConfiguratorProvider>
             );
           }}
@@ -56,10 +61,8 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     hideLabel: true,
   }),
   settingsFormFactory: (props) => {
-      return (
-        <KanbanSettingsForm {...props} />
-      );
-    }
+    return <KanbanSettingsForm {...props} />;
+  },
 };
 
 export default KanbanComponent;

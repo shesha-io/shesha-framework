@@ -1,8 +1,8 @@
-import React, { CSSProperties, useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Form, message, Modal } from 'antd';
 import { IKanbanProps } from './model';
 import { getMetaData, useKanbanActions } from './utils';
-import KanbanPlaceholder from './components/placeholder';
+import KanbanPlaceholder from './components/kanbanPlaceholder';
 import {
   ConfigurableForm,
   useAvailableConstantsData,
@@ -10,26 +10,15 @@ import {
   useFormState,
   useGet,
 } from '@/index';
-import { useStyles } from './styles';
 import KanbanColumn from './components/renderColumn';
 import { MoveEvent } from 'react-sortablejs';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const {
-    columnStyle,
-    minHeight ,
-    height, 
-    maxHeight,
     gap,
-    readonly,
     groupingProperty,
-    modalFormId,
     entityType,
-    fontSize,
-    headerBackgroundColor,
-    headerStyle,
-    fontColor,
     createFormId,
     items,
   } = props;
@@ -41,7 +30,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { formMode } = useFormState();
   const isInDesigner = formMode === 'designer';
   const { updateKanban, deleteKanban, createKanbanItem, fetchColumnState } = useKanbanActions();
-  const { styles } = useStyles();
   const [form] = Form.useForm();
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState(null);
@@ -52,25 +40,22 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const { storeSettings } = useRefListItemGroupConfigurator();
 
   useEffect(() => {
-    setColumns(items);
-    if (!isInDesigner && entityType && groupingProperty) {
-      var type: any;
-      refetch(getMetaData('/api/services/app/Metadata/Get', entityType?.id)).then((resp: any) => {
-        type = resp.result.properties.find((x: any) => x.path.toLowerCase() === groupingProperty.toLowerCase());
-
-        if (type?.dataType === 'reference-list-item') {
-          const endpoints = resp.result.apiEndpoints;
-          setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-          refetch({ path: `${resp.result.apiEndpoints.list.url}` })
-            .then((resp) => {
-              setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
-            })
-            .catch((err) => console.error('Error fetching tasks:', err));
-        }
+    if (!isInDesigner && entityType.id && groupingProperty) {
+      refetch(getMetaData('/api/services/app/Metadata/Get', entityType?.id)).then((resp: any) => { 
+      const endpoints = resp.result.apiEndpoints;
+      setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
+      refetch({ path: `${resp.result.apiEndpoints.list.url}` })
+        .then((resp) => {
+          setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
+        })
+        .catch((err) => console.error('Error fetching tasks:', err));
       });
     }
-  }, [groupingProperty, items, entityType]);
+  }, [groupingProperty, entityType.id]);
 
+  useEffect(() => {
+    setColumns(items);
+  }, [items]);
 
   useEffect(() => {
     const initializeSettings = async () => {
@@ -81,7 +66,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         const parsedSettings = JSON.parse(resp.result);
         if (parsedSettings) {
           setSettings(parsedSettings);
-  
           // Loop through and store settings asynchronously
           for (const [columnId, isCollapsed] of Object.entries(parsedSettings)) {
             await storeSettings(columnId, isCollapsed as boolean); // Await inside loop
@@ -89,13 +73,21 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         }
       } catch (error) {
         console.error('Error initializing settings:', error);
-        setSettings({}); // Fallback to empty settings on error
+        setSettings({});
       }
     };
   
-    initializeSettings(); // Call the async function
+    initializeSettings();
   }, []);
   
+
+  useEffect(() => {
+    if (selectedItem) {
+      form.setFieldsValue(selectedItem);
+    } else {
+      form.resetFields();
+    }
+  }, [selectedItem, form]);
 
   const onEnd = useCallback(
     (evt: any, column: any): Promise<boolean> => {
@@ -183,32 +175,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     [tasks, groupingProperty, onEnd, updateKanban, urls.updateUrl]
   );
   
-
-  useEffect(() => {
-    if (selectedItem) {
-      form.setFieldsValue(selectedItem);
-    } else {
-      form.resetFields();
-    }
-  }, [selectedItem, form]);
-
-  const internalHeaderStyle: CSSProperties = {
-    textAlign: 'center',
-    color: fontColor ?? '#000', 
-    fontSize: fontSize ?? 15,   
-    padding: '10px 10px',
-    transform: 'rotate(360deg)',
-    transition: 'transform 0.5s ease, width 0.5s ease', 
-    backgroundColor: headerBackgroundColor ?? '#ffffff',  
-    ...headerStyle,  
-  };
-
-  const externalColumnStyle: CSSProperties = {
-    ...columnStyle,
-    height: height ? height : 300, 
-    minHeight: minHeight ? minHeight : 300,
-    maxHeight: maxHeight ? maxHeight : 300,
-  };
   
   const handleEditClick = (item: any) => {
     setSelectedItem(item);
@@ -283,21 +249,16 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
           <div style={{ display: 'flex', gap: gap || 10 }}>
             {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
               <KanbanColumn
+                props={props}
                 key={column.itemValue}
                 collapse={settings[column.itemValue] ?? false}
                 column={column}
                 columnTasks={columnTasks}
-                groupingProperty={groupingProperty}
-                readonly={readonly}
-                externalColumnStyle={externalColumnStyle}
-                newHeaderStyle={internalHeaderStyle}
                 handleUpdate={handleUpdate}
                 handleEditClick={handleEditClick}
                 handleDelete={handleDelete}
                 handleCreateClick={handleCreateClick}
-                styles={styles}
                 selectedItem={selectedItem}
-                modalFormId={modalFormId}
                 onEnd={(evt: MoveEvent) => onEnd(evt, column)}
               />
             ))}
