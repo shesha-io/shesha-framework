@@ -139,7 +139,13 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             style: prev.style,
             wrapperStyle: prev.wrapperStyle,
             className: prev.className,
-            stylingBox: prev.stylingBox
+            stylingBox: prev.stylingBox,
+            width: prev.width,
+            height: prev.height,
+            minWidth: prev.minWidth,
+            minHeight: prev.minHeight,
+            maxHeight: prev.maxHeight,
+            maxWidth: prev.maxWidth
           };
     
           return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
