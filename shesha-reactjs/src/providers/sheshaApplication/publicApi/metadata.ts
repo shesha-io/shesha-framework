@@ -27,8 +27,9 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
   const metadataBuilderFactory = useMetadataBuilderFactory();
 
   const contextMetadata = useMemo<Promise<IModelMetadata>>(() => {
-    const builder = metadataBuilderFactory().object(SheshaCommonContexts.ApplicationContext) as IObjectMetadataBuilder;
-    builder
+    const metadataBuilder = metadataBuilderFactory();
+    const apiBuilder = metadataBuilder.object(SheshaCommonContexts.ApplicationContext) as IObjectMetadataBuilder;
+    apiBuilder
       .addObject("user", "Current User", getUserApiProperties)
       .addObject("settings", "Settings", m => getSettingsApiProperties(m, httpClient))
       .addObject("entities", "Entities", m => getEntitiesApiProperties(m, httpClient))
@@ -38,10 +39,10 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
       ;
 
     props.plugins.forEach(plugin => {
-      plugin.buildMetadata(builder);
+      plugin.buildMetadata(apiBuilder, metadataBuilder);
     });
 
-    const meta = builder.build();
+    const meta = apiBuilder.build();
 
     return Promise.resolve(meta);
     // eslint-disable-next-line react-hooks/exhaustive-deps
