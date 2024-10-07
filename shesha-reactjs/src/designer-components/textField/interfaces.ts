@@ -1,5 +1,6 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { CSSProperties } from 'styled-components';
 
 export type TextType = 'text' | 'password';
 
@@ -20,6 +21,9 @@ export interface IInputStyles {
   style?: string;
 }
 export interface ITextFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
+  desktop?: CSSProperties;
+  tablet?: CSSProperties;
+  mobile?: CSSProperties;
   placeholder?: string;
   prefix?: string;
   suffix?: string;

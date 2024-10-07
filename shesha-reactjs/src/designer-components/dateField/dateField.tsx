@@ -88,7 +88,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       ...prev,
       showNow: Boolean(prev.showNow || prev['showToday'])
     }))
-    .add<IDateFieldProps>(6, (prev) => {
+    .add<IDateFieldProps>(5, (prev) => {
       const styles: IInputStyles = {
         size: prev.size,
         hideBorder: prev.hideBorder,

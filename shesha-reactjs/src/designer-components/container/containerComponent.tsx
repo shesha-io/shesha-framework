@@ -134,6 +134,16 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           backgroundBase64: prev.backgroundBase64 ?? prev['base64'],
           backgroundStoredFileId: prev.backgroundStoredFileId ?? prev['storedFileId'],
         }))
+        .add<IContainerComponentProps>(5, (prev) => {
+          const styles = {
+            style: prev.style,
+            wrapperStyle: prev.wrapperStyle,
+            className: prev.className,
+            stylingBox: prev.stylingBox
+          };
+    
+          return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+        })
   ,
 };
 

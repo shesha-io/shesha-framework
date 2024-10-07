@@ -444,6 +444,21 @@ export const getSettings = (data: any) =>
         ]
       }
     })
+    .addPropertyRouter({
+      id: nanoid(),
+      propertyName: 'propertyRouter1',
+      componentName: 'propertyRouter1',
+      label: 'Property router1',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      propertyRouteName: {
+        _mode: "code",
+        _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        _value: ""
+      },
+      components: [
+        ...new DesignerToolbarSettings()
     .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'pnlBackground',
@@ -621,62 +636,80 @@ export const getSettings = (data: any) =>
           .toJson()
         ]
       }
+    }).toJson()
+    ]
     })
-    .addCollapsiblePanel({
-      id: 'db6e32f3-7a8b-4686-a0eb-81b2e36796ef',
-      propertyName: 'pnlStyle',
+    .addPropertyRouter({
+      id: nanoid(),
+      propertyName: 'propertyRouter2',
+      componentName: 'propertyRouter2',
+      label: 'Property router2',
+      labelAlign: 'right',
       parentId: 'root',
-      label: 'Style',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnl64664-cbc9-4cef-bdbc-6fbea44cd0ca',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addTextField({
-              textType: 'text',
-              id: '648fea09-e548-44b3-9c90-2187ad63fd07',
-              propertyName: 'className',
-              label: 'Custom CSS Class',
-              labelAlign: 'right',
-              parentId: 'root',
-              hidden: false,
-              description: 'Custom CSS Class to add to this component',
-              validate: {},
-              settingsValidationErrors: [],
-            })
-            .addCodeEditor({
-              id: '4e319199-d27c-4ed0-9934-fa2cb62745d1',
-              propertyName: 'style',
-              label: 'Style',
-              parentId: 'root',
-              mode: 'dialog',
-              description: 'The style that will be applied to the container',
-              exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
-            })
-            .addCodeEditor({
-              id: '71b5da4f-9300-41bf-b0c4-9d9f3757d402',
-              propertyName: 'wrapperStyle',
-              label: 'Wrapper Style',
-              parentId: 'root',
-              mode: 'dialog',
-              description: 'The style that will be applied to the container wrapper',
-              exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
-              hidden: { _code: 'return  getSettingValue(data?.noDefaultStyling);', _mode: 'code', _value: false } as any,
-            })
-            .addStyleBox({
-              id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
-              propertyName: 'stylingBox',
-              parentId: 'root',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: false,
-            }).toJson(),
-        ],
+      hidden: false,
+      propertyRouteName: {
+        _mode: "code",
+        _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        _value: ""
       },
-    })
+      components: [
+        ...new DesignerToolbarSettings()
+        .addCollapsiblePanel({
+          id: 'db6e32f3-7a8b-4686-a0eb-81b2e36796ef',
+          propertyName: 'pnlStyle',
+          parentId: 'root',
+          label: 'Style',
+          labelAlign: 'left',
+          expandIconPosition: 'start',
+          ghost: true,
+          collapsible: 'header',
+          content: {
+            id: 'pnl64664-cbc9-4cef-bdbc-6fbea44cd0ca',
+            components: [
+              ...new DesignerToolbarSettings()
+                .addTextField({
+                  textType: 'text',
+                  id: '648fea09-e548-44b3-9c90-2187ad63fd07',
+                  propertyName: 'className',
+                  label: 'Custom CSS Class',
+                  labelAlign: 'right',
+                  parentId: 'root',
+                  hidden: false,
+                  description: 'Custom CSS Class to add to this component',
+                  validate: {},
+                  settingsValidationErrors: [],
+                })
+                .addCodeEditor({
+                  id: '4e319199-d27c-4ed0-9934-fa2cb62745d1',
+                  propertyName: 'style',
+                  label: 'Style',
+                  parentId: 'root',
+                  mode: 'dialog',
+                  description: 'The style that will be applied to the container',
+                  exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
+                })
+                .addCodeEditor({
+                  id: '71b5da4f-9300-41bf-b0c4-9d9f3757d402',
+                  propertyName: 'wrapperStyle',
+                  label: 'Wrapper Style',
+                  parentId: 'root',
+                  mode: 'dialog',
+                  description: 'The style that will be applied to the container wrapper',
+                  exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
+                  hidden: { _code: 'return  getSettingValue(data?.noDefaultStyling);', _mode: 'code', _value: false } as any,
+                })
+                .addStyleBox({
+                  id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
+                  propertyName: 'stylingBox',
+                  parentId: 'root',
+                  validate: {},
+                  settingsValidationErrors: [],
+                  jsSetting: false,
+                }).toJson(),
+            ],
+          },
+        }).toJson(),
+      ]}) 
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
       propertyName: 'pnlSecurity',
