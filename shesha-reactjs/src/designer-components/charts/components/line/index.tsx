@@ -10,13 +10,13 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import { IChartDataProps } from '../../model';
+import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 interface ILineChartProps extends IChartDataProps {
-    data: any;
+    data: IChartData;
 }
 
 const LineChart: React.FC<ILineChartProps> = ({ data }) => {
@@ -53,7 +53,7 @@ const LineChart: React.FC<ILineChartProps> = ({ data }) => {
         }
     };
 
-    return <Line data={data} options={options} />;
+    return <Line data={data as any} options={options} />;
 };
 
 export default LineChart;

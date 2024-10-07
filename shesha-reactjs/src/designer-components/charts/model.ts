@@ -1,4 +1,13 @@
+import { IRefListPropertyMetadata } from "@/interfaces/metadata";
 import { IConfigurableFormComponent } from "@/providers";
+
+/**
+ * Chart data that will go into the actual chart component from ChartJS
+ */
+export interface IChartData {
+    labels: string[];
+    datasets: object[];
+}
 
 export interface IChartProps extends IConfigurableFormComponent {
     chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
@@ -31,9 +40,7 @@ export interface IChartsProps {
     showLegend?: boolean;
     legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'center';
     entityType?: string;
-    filters?: {
-        and?: [];
-    };
+    filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
     legendProperty?: string;
@@ -54,15 +61,10 @@ export interface IChartsProps {
 export interface IChartDataProps extends IChartsProps {
     labels?: string[];
     chartData?: number[];
-    data?: object[];
+    data?: IChartData;
     refLists?: {
-        [key: string]: any[];
+        [key: string]: IRefListPropertyMetadata[];
     };
-}
-
-export interface IChartData {
-    labels: string[];
-    datasets: any[];
 }
 
 /**

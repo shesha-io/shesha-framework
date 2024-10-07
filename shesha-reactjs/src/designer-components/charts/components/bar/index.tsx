@@ -1,13 +1,13 @@
 import { BarElement, CategoryScale, Chart as ChartJS, ChartOptions, Legend, LinearScale, Title, Tooltip } from 'chart.js';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import { IChartDataProps } from '../../model';
+import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 interface BarChartProps extends IChartDataProps {
-  data: any;
+  data: IChartData;
 }
 
 const BarChart: React.FC<BarChartProps> = ({ data }) => {
@@ -46,7 +46,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
     }
   };
 
-  return <Bar data={data} options={options} />;
+  return <Bar data={data as any} options={options} />;
 };
 
 export default BarChart;

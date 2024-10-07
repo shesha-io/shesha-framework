@@ -1,6 +1,6 @@
-import { IFilter, TOperator } from "./model";
+import { IChartData, IFilter, TOperator } from "./model";
 
-export const getChartData = (entityType: string, dataProperty: string, filters: any, legendProperty?: string, axisProperty?: string) => {
+export const getChartData = (entityType: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string) => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
@@ -40,12 +40,15 @@ export const getRefListValues = (refListName: string) => {
   };
 };
 
-export function getPropertyValue(obj: object, path: string) {
+/**
+ * Used to get the property value of an entity no matter how deep the property is nested
+ */
+export function getPropertyValue(obj: { [key: string]: string | number | object }, path: string) {
   if (!path || typeof obj !== 'object') return undefined;
 
   const properties = path.split('.');
 
-  return properties?.reduce((prev: { [key: string]: any }, curr: string) => {
+  return properties?.reduce((prev: { [key: string]: string | number | object }, curr: string) => {
     return prev && prev[curr] !== undefined ? prev[curr] : undefined;
   }, obj);
 }
@@ -73,7 +76,7 @@ const getRandomColor = () => {
  * @returns Aggregated data
  * */
 const aggregateData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string) => {
-  const groupedData = data.reduce((acc: any, item: any) => {
+  const groupedData = data.reduce((acc: object, item: { [key: string]: string | number | object }) => {
     const xValue = getPropertyValue(item, xProperty); // Use getPropertyValue to support nested properties
     const yValue = getPropertyValue(item, yProperty) ?? 0; // Use getPropertyValue for y-axis value
 
@@ -89,13 +92,10 @@ const aggregateData = (data: object[], xProperty: string, yProperty: string, agg
     let aggregatedValue;
     switch (aggregationMethod) {
       case 'sum':
-        aggregatedValue = values.reduce((acc: any, val: any) => acc + val, 0);
+        aggregatedValue = values.reduce((acc: number, val: number) => acc + val, 0);
         break;
       case 'average':
-        aggregatedValue = values.reduce((acc: any, val: any) => acc + val, 0) / values.length;
-        break;
-      case 'count':
-        aggregatedValue = values.length;
+        aggregatedValue = values.reduce((acc: number, val: number) => acc + val, 0) / values.length;
         break;
       case 'min':
         aggregatedValue = Math.min(...values);
@@ -103,8 +103,9 @@ const aggregateData = (data: object[], xProperty: string, yProperty: string, agg
       case 'max':
         aggregatedValue = Math.max(...values);
         break;
+      case 'count': // Count the number of items, also used as the default case
       default:
-        aggregatedValue = values.reduce((acc: any, val: any) => acc + val, 0); // Default to sum
+        aggregatedValue = values.length;
     }
     return { x: key, y: aggregatedValue };
   });
@@ -133,7 +134,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
 };
 
 // Prepare function for bar chart data with aggregation
-export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod = 'sum') => {
+export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod = 'sum'): IChartData => {
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
@@ -151,19 +152,19 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
 };
 
 // Prepare pie chart data dynamically
-export const preparePieChartData = (data: any[], legendProperty: string, valueProperty: string, aggregationMethod: string) => {
-  const labels = [...new Set(data?.map(item => getPropertyValue(item, legendProperty)))];
+export const preparePieChartData = (data: object[], legendProperty: string, valueProperty: string, aggregationMethod: string) => {
+  const labels = [...new Set(data?.map((item: { [key: string]: string | number | object }) => getPropertyValue(item, legendProperty)))];
 
   const datasets = [{
     label: `${valueProperty} (${aggregationMethod})`,
-    data: labels.map(label => {
-      const filteredData = data?.filter(item => getPropertyValue(item, legendProperty) === label);
-      const values: any[] = filteredData?.map(item => getPropertyValue(item, valueProperty));
+    data: labels.map((label: string) => {
+      const filteredData = data?.filter((item: { [key: string]: string | number | object }) => getPropertyValue(item, legendProperty) === label);
+      const values: any[] = filteredData?.map((item: { [key: string]: string | number | object }) => getPropertyValue(item, valueProperty));
 
       // Aggregation logic
-      if (aggregationMethod === 'sum') return values.reduce((acc: any, val: any) => acc + (val || 0), 0);
+      if (aggregationMethod === 'sum') return values.reduce((acc: number, val: number) => acc + (val || 0), 0);
       if (aggregationMethod === 'count') return values.length;
-      if (aggregationMethod === 'average') return values.reduce((acc: any, val: any) => acc + (val || 0), 0) / values.length;
+      if (aggregationMethod === 'average') return values.reduce((acc: number, val: number) => acc + (val || 0), 0) / values.length;
       if (aggregationMethod === 'min') return Math.min(...values);
       if (aggregationMethod === 'max') return Math.max(...values);
       return 0;
@@ -180,21 +181,21 @@ export const preparePieChartData = (data: any[], legendProperty: string, valuePr
 
 export const preparePivotChartData = (data: object[], axisProperty: string, legendProperty: string, valueProperty: string, aggregationMethod: string, chartType, refLists?: { [key: string]: any[] }) => {
   // axisProperty: can be a dot separated string like 'organisation.name', so we need to extract both the object and property
-  const labels = [...new Set(data?.map((item: any) => {
+  const labels = [...new Set(data?.map((item: { [key: string]: string | number | object }) => {
     return getPropertyValue(item, axisProperty);
   }))];  // Unique axis labels
-  const legendItems = [...new Set(data?.map((item: any) => item[legendProperty]))];  // Unique legend items
+  const legendItems = [...new Set(data?.map((item: object) => item[legendProperty]))];  // Unique legend items
 
   // Helper function to calculate based on aggregation type
-  const aggregateValues = (items: any, aggregationMethod: any) => {
-    const values = items?.map((item: any) => item[valueProperty]);
+  const aggregateValues = (items: object[], aggregationMethod: string) => {
+    const values = items?.map((item: object) => item[valueProperty]);
     switch (aggregationMethod) {
       case 'sum':
-        return values.reduce((acc: any, val: any) => acc + val, 0);
+        return values.reduce((acc: number, val: number) => acc + val, 0);
       case 'count':
         return values.length;
       case 'average':
-        return values.reduce((acc: any, val: any) => acc + val, 0) / values.length;
+        return values.reduce((acc: number, val: number) => acc + val, 0) / values.length;
       case 'min':
         return Math.min(...values);
       case 'max':
@@ -208,11 +209,11 @@ export const preparePivotChartData = (data: object[], axisProperty: string, lege
   const datasets = legendItems.map(legend => {
     const barBackgroundColors = getRandomColor();
     let colors: any = [];
-    const legendDisplayValue = refLists[legendProperty]?.find((it: any) => it.itemValue === legend)?.item;
+    const legendDisplayValue = refLists[legendProperty]?.find((it: { itemValue }) => it.itemValue === legend)?.item;
     return {
       label: legendDisplayValue,  // The label for the legend (series)
       data: labels?.map(label => {
-        const matchingItems = data.filter((item: any) => getPropertyValue(item, axisProperty) === label && item[legendProperty] === legend);
+        const matchingItems = data.filter((item: { [key: string]: string | number | object }) => getPropertyValue(item, axisProperty) === label && item[legendProperty] === legend);
         switch (chartType) {
           case 'bar':
           case 'line':
@@ -237,14 +238,14 @@ export const preparePivotChartData = (data: object[], axisProperty: string, lege
   };
 };
 
-export function filterData(preFilteredData: any[], property: string, operator: TOperator, value: string | number): any[] {
+export function filterData(preFilteredData: object[], property: string, operator: TOperator, value: string | number): object[] {
   if (!Array.isArray(preFilteredData) || preFilteredData?.length === 0) {
     console.error('Invalid data: preFilteredData must be a non-empty array');
     return [];
   }
 
   // Filter the data based on the operator
-  return preFilteredData?.filter((item: any) => {
+  return preFilteredData?.filter((item: { [key: string]: string | number | object }) => {
     const itemValue: string | number = getPropertyValue(item, property) as unknown as string | number;
     // Convert the item to a string if itemValue is a number and it is not a number
     if (typeof itemValue === 'number') {
@@ -308,9 +309,9 @@ export function filterData(preFilteredData: any[], property: string, operator: T
 };
 
 export function applyFilters(
-  data: Array<any>,
+  data: Array<object>,
   filters: Array<IFilter>
-): Array<any> {
+): Array<object> {
   // Start with the unfiltered data
   let filteredData = data ? [...data] : [];
 
@@ -324,7 +325,7 @@ export function applyFilters(
 }
 
 // from that array we need make a list of all the properties of the objects
-export function getAllProperties(data: Array<any>): Array<string> {
+export function getAllProperties(data: Array<object>): Array<string> {
   // Start with an empty array
   let properties: Array<string> = [];
 

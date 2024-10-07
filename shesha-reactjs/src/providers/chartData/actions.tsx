@@ -1,3 +1,4 @@
+import { IChartData, IFilter } from "@/designer-components/charts/model";
 import { createAction } from "redux-actions";
 
 export enum ChartDataActionsEnum {
@@ -10,16 +11,16 @@ export enum ChartDataActionsEnum {
     SetControlProps = "SET_CONTROL_PROPS",
 }
 
-export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: any) => ({ data, items: data }));
+export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: IChartData[]) => ({ data, items: data }));
 
-export const SetRefListsAction = createAction(ChartDataActionsEnum.SetRefLists, (refLists: any) => ({ refLists }));
+export const SetRefListsAction = createAction(ChartDataActionsEnum.SetRefLists, (refLists: { [key: string]: any[] }) => ({ refLists }));
 
-export const SetFilterdDataAction = createAction(ChartDataActionsEnum.SetFilterdData, (filteredData: any) => ({ filteredData }));
+export const SetFilterdDataAction = createAction(ChartDataActionsEnum.SetFilterdData, (filteredData: object[]) => ({ filteredData }));
 
-export const SetChartFiltersAction = createAction(ChartDataActionsEnum.SetChartFilters, (chartFilters: any) => ({ chartFilters }));
+export const SetChartFiltersAction = createAction(ChartDataActionsEnum.SetChartFilters, (chartFilters: IFilter[]) => ({ chartFilters }));
 
 export const SetIsLoadedAction = createAction(ChartDataActionsEnum.SetIsLoaded, (isLoaded: boolean) => ({ isLoaded }));
 
 export const SetIsFilterVisibleAction = createAction(ChartDataActionsEnum.SetIsFilterVisible, (isFilterVisible: boolean) => ({ isFilterVisible }));
 
-export const SetControlPropsAction = createAction(ChartDataActionsEnum.SetControlProps, (controlProps: any) => ({ ...controlProps }));
+export const SetControlPropsAction = createAction(ChartDataActionsEnum.SetControlProps, (controlProps: object) => ({ ...controlProps }));

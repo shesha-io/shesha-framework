@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Select, Input, Space, Row, Col, Flex } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { IFilter } from '../../model';
 
 const { Option } = Select;
 
@@ -13,8 +14,8 @@ const FilterComponent = ({
   onFilter,
   resetFilter
 }: {
-  filters: any[];
-  setFilters: (arg: any[]) => void;
+  filters: IFilter[];
+  setFilters: (arg: IFilter[]) => void;
   properties: any[];
   isVisible: boolean;
   onClose: () => void;
@@ -24,13 +25,13 @@ const FilterComponent = ({
   // Add new filter condition
   const addCondition = () => {
     // Update filters state with new filter condition
-    setFilters([...filters, { property: '', operator: '', value: '' }]);
+    setFilters([...filters, { property: '', operator: 'contains', value: '' }]);
     // Trigger filter function with new filters
     onFilter();
   };
 
   // Handle input change for each filter condition
-  const handleInputChange = (index: number, field: any, value: any) => {
+  const handleInputChange = (index: number, field: any, value: string) => {
     const newFilters = filters?.map((filter, idx) =>
       idx === index ? { ...filter, [field]: value } : filter
     );

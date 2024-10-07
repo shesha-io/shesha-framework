@@ -6,15 +6,20 @@ import BarChart from './components/bar';
 import FilterComponent from './components/filterComponent';
 import LineChart from './components/line';
 import PieChart from './components/pie';
-import { IChartsProps } from './model';
-import { applyFilters, getAllProperties, getChartData, getEntityMetaData, getRefListValues, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData } from './utils';
+import { IChartData, IChartsProps } from './model';
+import { applyFilters, getAllProperties, getChartData, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData } from './utils';
 import { useGet } from '@/hooks';
 import useStyles from './styles';
+import { IModelMetadata, useMetadataDispatcher } from '@/index';
+import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
+import { IRefListPropertyMetadata } from '@/interfaces/metadata';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
+  const { getMetadata } = useMetadataDispatcher();
+  const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsFilterVisible, setIsLoaded, setRefLists, setFilterdData, setChartFilters, setControlProps } = useChartDataActionsContext();
 
   const { styles, cx } = useStyles();
@@ -37,25 +42,27 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       .then(() => setIsLoaded(true))
       .catch((err) => console.error('err data', err));
 
-    // Get reference lists for all the ref list properties of the chosen entity type
-    refetch(getEntityMetaData(entityType))
-      .then((resp) => {
-        const refListProperties = resp?.result?.properties?.filter((p: any) => p.dataType === 'reference-list-item');
+    getMetadata({ modelType: entityType, dataType: 'entity' })
+      .then((resp: IModelMetadata) => {
+        const refListProperties = (resp?.properties as Array<object>)?.filter((p: IRefListPropertyMetadata) => p.dataType === 'reference-list-item');
 
-        // We need to further filter such that if label.toLowerCase() is equal to either valueProperty or legendProperty or axisProperty in lowercase again
-        const refListPropertiesFiltered = refListProperties?.filter((p: any) => {
+        // We need to further filter such that if label.toLowerCase() is equal to either valueProperty or legendProperty or axisProperty (in lowercase) again
+        const refListPropertiesFiltered = refListProperties?.filter((p: IRefListPropertyMetadata) => {
           return p.label.toLowerCase() === valueProperty.toLowerCase() || p.label.toLowerCase() === legendProperty.toLowerCase() || p.label.toLowerCase() === axisProperty.toLowerCase();
         });
 
-        refListPropertiesFiltered?.forEach((refListProperty: any) => {
-          refetch(getRefListValues(refListProperty.referenceListName))
-            .then((resp2) => {
-              setRefLists({ ...state.refLists, [`${refListProperty.label}`.toLowerCase()]: resp2.result?.items });
+        refListPropertiesFiltered?.forEach((refListProperty: IRefListPropertyMetadata) => {
+          getReferenceList({ refListId: { module: refListProperty?.referenceListModule, name: refListProperty?.referenceListName } })
+            .promise
+            .then((refListResponse: {
+              items: Array<object>;
+            }) => {
+              setRefLists({ ...state.refLists, [`${refListProperty.label}`.toLowerCase()]: refListResponse?.items });
             })
-            .catch((err) => console.error('err ref list data', err));
+            .catch((err) => console.error('err metadata', err));
         });
       })
-      .catch((err) => console.error('err entity metadata', err));
+      .catch((err) => console.error('err metadata', err));
   }, [chartType]);
 
   useEffect(() => {
@@ -82,7 +89,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     setFilterdData(afterFilterData);
   };
 
-  let data: any;
+  let data: IChartData;
 
   if (!state.isLoaded) {
     return (

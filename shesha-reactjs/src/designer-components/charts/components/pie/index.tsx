@@ -8,13 +8,13 @@ import {
   Title,
   ChartOptions,
 } from 'chart.js';
-import { IChartDataProps } from '../../model';
+import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
 interface IPieChartProps extends IChartDataProps {
-  data: any;
+  data: IChartData;
 }
 
 const PieChart = ({ data }: IPieChartProps) => {
@@ -42,7 +42,7 @@ const PieChart = ({ data }: IPieChartProps) => {
     },
   };
 
-  return <Pie data={data} options={options} />;
+  return <Pie data={data as any} options={options} />;
 };
 
 export default PieChart;

@@ -1,4 +1,5 @@
-import { IFilter } from "@/designer-components/charts/model";
+import { IChartsProps, IFilter } from "@/designer-components/charts/model";
+import { IRefListPropertyMetadata } from "@/interfaces/metadata";
 import { createContext } from "react";
 
 export interface IChartDataContext {
@@ -24,22 +25,24 @@ export interface IChartDataContext {
   stacked?: boolean;
   aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
 
-  data?: any[];
-  items?: any[];
-  refLists?: any;
+  data?: object[];
+  items?: object[];
+  refLists?: {
+    [key: string]: IRefListPropertyMetadata[];
+  };
 
   isLoaded?: boolean;
 
   chartFilters?: IFilter[];
-  filteredData?: any[];
+  filteredData?: object[];
   isFilterVisible?: boolean;
 }
 
 export interface IChartDataAtionsContext {
-  setControlProps?: (controlProps: any) => void;
-  setData?: (data: any[]) => void;
-  setRefLists?: (refLists: any) => void;
-  setFilterdData?: (data: any[]) => void;
+  setControlProps?: (controlProps: IChartsProps) => void;
+  setData?: (data: object[]) => void;
+  setRefLists?: (refLists: object) => void;
+  setFilterdData?: (data: object[]) => void;
   setChartFilters?: (filters: IFilter[]) => void;
   onFilter?: () => void;
 

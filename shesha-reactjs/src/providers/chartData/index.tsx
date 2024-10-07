@@ -2,20 +2,20 @@ import React, { useContext, useReducer, PropsWithChildren, FC } from "react";
 import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
 import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction, SetRefListsAction } from "./actions";
-import { IFilter } from "@/designer-components/charts/model";
+import { IChartsProps, IFilter } from "@/designer-components/charts/model";
 
 const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChildren<{}>) => {
   const [state, dispatch] = useReducer(chartDataReducer, INITIAL_STATE);
 
-  const setData = (data: any[]) => {
+  const setData = (data: object[]) => {
     dispatch(SetDataAction(data));
   };
 
-  const setRefLists = (refLists: any[]) => {
+  const setRefLists = (refLists: object[]) => {
     dispatch(SetRefListsAction(refLists));
   };
 
-  const setFilterdData = (filteredData: any[]) => {
+  const setFilterdData = (filteredData: object[]) => {
     dispatch(SetFilterdDataAction(filteredData));
   };
 
@@ -35,7 +35,7 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     // implement this function
   };
 
-  const setControlProps = (controlProps: any) => {
+  const setControlProps = (controlProps: IChartsProps) => {
     dispatch(SetControlPropsAction(controlProps));
   };
 
