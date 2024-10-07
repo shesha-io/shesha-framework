@@ -20,12 +20,12 @@ export interface ICustomEventHandler {
   message: MessageInstance;
   moment: object;
   setGlobalState: (payload: ISetStatePayload) => void;
-}
+};
 
 export interface ICustomAddressEventHandler extends ICustomEventHandler {
   onChange: Function;
   onSelect: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>;
-}
+};
 
 export const onCustomEventsHandler = <FormCustomEvent = any>(
   event: FormCustomEvent,
@@ -81,7 +81,7 @@ export const customEventHandler = <T = any>({
       setGlobalState
     );
 
-  }
+  };
 
 
   return {
