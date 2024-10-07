@@ -208,7 +208,7 @@ export const preparePivotChartData = (data: object[], axisProperty: string, lege
   const backgroundColors = labels.map(() => getRandomColor());
   const datasets = legendItems.map(legend => {
     const barBackgroundColors = getRandomColor();
-    let colors: any = [];
+    let colors: string[] = [];
     const legendDisplayValue = refLists[legendProperty]?.find((it: { itemValue }) => it.itemValue === legend)?.item;
     return {
       label: legendDisplayValue,  // The label for the legend (series)

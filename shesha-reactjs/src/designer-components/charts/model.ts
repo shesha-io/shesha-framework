@@ -5,7 +5,7 @@ import { IConfigurableFormComponent } from "@/providers";
  * Chart data that will go into the actual chart component from ChartJS
  */
 export interface IChartData {
-    labels: string[];
+    labels: (string | number | object)[];
     datasets: object[];
 }
 
@@ -20,9 +20,7 @@ export interface IChartProps extends IConfigurableFormComponent {
     showYAxisLabelTitle?: boolean;
     legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'center';
     entityType?: string;
-    filters?: {
-        and?: [];
-    };
+    filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
     legendProperty?: string;
