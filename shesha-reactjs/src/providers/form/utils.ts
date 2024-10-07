@@ -1614,6 +1614,9 @@ export interface EvaluationContext {
   evaluationFilter?: (context: EvaluationContext, data: any) => boolean;
 };
 const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
+  if (!data)
+    return data;
+  
   const { path, contextData, evaluationFilter } = evaluationContext;
   if (evaluationFilter && !evaluationFilter(evaluationContext, data))
     return data;
