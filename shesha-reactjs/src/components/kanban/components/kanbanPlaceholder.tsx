@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Col, Row } from "antd";
 
 export const KanbanPlaceholder = () => {
-  const placeholderColumns = ["To Do", "In Progress", "Review", "Done"];
+  const placeholderColumns = ["This", "Is", "A", "Placeholder"];
 
   return (
     <Row gutter={16} style={{ padding: "10px" }}>

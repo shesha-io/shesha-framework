@@ -35,11 +35,12 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   readonly?: boolean;
   collapsible?: boolean;
   gap?: number;
-  externaHeaderStyle?: CSSProperties | string;
-  externalColumnStyle?: CSSProperties | string;
+  headerStyles?: CSSProperties | string;
+  columnStyle?: CSSProperties | string;
   groupingProperty?: string;
   modalFormId?: string;
   createFormId?: string;
   headerBackgroundColor: string;
   actionConfiguration: any;
+  kanbanReadonly: boolean;
 }

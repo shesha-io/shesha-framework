@@ -1,8 +1,7 @@
 import { FormOutlined } from '@ant-design/icons';
 import React from 'react';
 import { ConfigurableFormItem } from '@/components';
-import { IToolboxComponent, useForm, useFormData } from '@/index';
-import { getStyle } from '@/providers/form/utils';
+import { IToolboxComponent, useForm } from '@/index';
 import { Alert } from 'antd';
 import KanbanReactComponent from '@/components/kanban';
 import { IKanbanProps } from '@/components/kanban/model';
@@ -17,7 +16,6 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
   Factory: ({ model }) => {
     const form = useForm();
-    const { data: formData } = useFormData();
 
     if (form.formMode === 'designer' && !model.entityType) {
       return (
@@ -42,12 +40,6 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
               >
                 <KanbanReactComponent
                   {...model}
-                  externaHeaderStyle={{
-                    ...getStyle(model?.externaHeaderStyle as string, formData),
-                  }}
-                  externalColumnStyle={{
-                    ...getStyle(model?.externalColumnStyle as string, formData),
-                  }}
                 />
               </RefListItemGroupConfiguratorProvider>
             );

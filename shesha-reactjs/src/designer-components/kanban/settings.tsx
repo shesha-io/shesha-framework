@@ -52,27 +52,29 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
-      <SettingsFormItem name="readonly" label="Readonly" valuePropName="checked" jsSetting>
+      <SettingsFormItem name="kanbanReadonly" label="Readonly" valuePropName="checked" jsSetting>
         <Checkbox disabled={values.readOnly} />
       </SettingsFormItem>
-      <SettingsFormItem name="collapsible" label="Collapsible" valuePropName="checked" jsSetting>
-        <Checkbox disabled={values.readOnly} />
-      </SettingsFormItem>
-      <SettingsFormItem name="showIcons" label="Show Icons?" valuePropName="checked" jsSetting>
-        <Checkbox disabled={values.readOnly} />
-      </SettingsFormItem>
-      <SettingsFormItem name="allowNewRecord" label="Allow New Record" valuePropName="checked" jsSetting>
-        <Checkbox disabled={values.readOnly} />
-      </SettingsFormItem>
+      <Show when={!values.kanbanReadonly}>
+        <SettingsFormItem name="collapsible" label="Collapsible" valuePropName="checked" jsSetting>
+          <Checkbox disabled={values.readOnly} />
+        </SettingsFormItem>
 
-      <Show when={values.allowNewRecord}>
-        <MetadataProvider modelType={values.entityType?.name}>
-          <SettingsFormItem name="createFormId" label="Form" jsSetting>
-            <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
-          </SettingsFormItem>
-        </MetadataProvider>
+        <SettingsFormItem name="allowNewRecord" label="Allow New Record" valuePropName="checked" jsSetting>
+          <Checkbox disabled={values.readOnly} />
+        </SettingsFormItem>
+
+        <Show when={values.allowNewRecord}>
+          <MetadataProvider modelType={values.entityType?.name}>
+            <SettingsFormItem name="createFormId" label="Form" jsSetting>
+              <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+            </SettingsFormItem>
+          </MetadataProvider>
+        </Show>
       </Show>
-
+      <SettingsFormItem name="showIcons" label="Show Icons" valuePropName="checked" jsSetting>
+        <Checkbox disabled={values.readOnly} />
+      </SettingsFormItem>
       {/* Column Styles */}
       <SettingsCollapsiblePanel header="Column Styles">
         <SettingsFormItem name="columnStyle" label="Style">
@@ -91,9 +93,6 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
               },
             ]}
             wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'getStyle',
-            }}
             availableConstants={getStyleConstants}
           />
         </SettingsFormItem>
@@ -101,13 +100,13 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
           <Input type="number" disabled={readOnly} />
         </SettingsFormItem>
         <SettingsFormItem name="height" label="Height" jsSetting>
-          <Input type="number" disabled={readOnly} defaultValue={300} />
+          <Input type="number" disabled={readOnly} />
         </SettingsFormItem>
         <SettingsFormItem name="minHeight" label="Min Height" jsSetting>
-          <Input type="number" disabled={readOnly} defaultValue={300} />
+          <Input type="number" disabled={readOnly} />
         </SettingsFormItem>
         <SettingsFormItem name="maxHeight" label="Max Height" jsSetting>
-          <Input type="number" disabled={readOnly} defaultValue={300} />
+          <Input type="number" disabled={readOnly} />
         </SettingsFormItem>
         <SettingsFormItem name="columnBackgroundColor" label="Background Color" jsSetting>
           <ColorPicker readOnly={readOnly} allowClear />
@@ -116,12 +115,12 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
 
       {/* Header Styles */}
       <SettingsCollapsiblePanel header="Header Styles">
-        <SettingsFormItem name="headerStyle" label="Style">
+        <SettingsFormItem name="headerStyles" label="Style">
           <CodeEditor
             readOnly={readOnly}
             mode="dialog"
             label="Style"
-            propertyName="externalHeaderStyle"
+            propertyName="headerStyles"
             description="CSS Style"
             exposedVariables={[
               {
@@ -132,9 +131,6 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
               },
             ]}
             wrapInTemplate={true}
-            templateSettings={{
-              functionName: 'getStyle',
-            }}
             availableConstants={getStyleConstants}
           />
         </SettingsFormItem>

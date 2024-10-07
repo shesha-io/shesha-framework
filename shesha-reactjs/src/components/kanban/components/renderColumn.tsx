@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, Popconfirm } from 'antd';
 import { ReactSortable } from 'react-sortablejs';
 import { PlusOutlined, MoreOutlined, RightOutlined, LeftOutlined, SettingFilled } from '@ant-design/icons';
-import { ConfigurableForm } from '@/index';
+import { ConfigurableForm, getStyle, IconPicker, useFormData } from '@/index';
 import { MenuProps } from 'antd';
 import { Flex } from 'antd';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { useKanbanActions } from '../utils';
 import { useStyles } from '../styles/styles';
+import { addPx } from '@/designer-components/button/util';
 
 interface KanbanColumnProps {
   column: any;
@@ -32,18 +33,13 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   handleEditClick,
   handleDelete,
   handleCreateClick,
-  props
+  props,
 }) => {
-  const {
-    modalFormId,
-    externaHeaderStyle,   
-    readonly,
-  } = props;
-  
   const [isCollapsed, setIsCollapsed] = useState(collapse);
   const { updateUserSettings } = useKanbanActions();
   const { storeSettings, userSettings } = useRefListItemGroupConfigurator();
-  const {styles} = useStyles({props, isCollapsed}); 
+  const { styles } = useStyles({ ...props, isCollapsed });
+  const { data: formData } = useFormData();
 
   // Initialize collapse state from props
   useEffect(() => {
@@ -79,28 +75,52 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
       label: 'Add',
       onClick: () => handleCreateClick(column.itemValue),
       icon: <PlusOutlined />,
+      disabled: !props.allowNewRecord,
     },
     {
       key: '2',
       label: isCollapsed ? 'Uncollapse' : 'Collapse',
       onClick: toggleFold,
       icon: isCollapsed ? <RightOutlined /> : <LeftOutlined />,
+      disabled: !props.collapsible,
     },
   ];
 
   return (
     <>
       {!column.hidden && (
-        <div key={column.id} className={isCollapsed ? styles.collapseColumnStyle : styles.combinedColumnStyle} data-column-id={column.id}>
-          <Flex justify="space-between" align="center"  className={isCollapsed ? styles.collapsedHeaderStyle : styles.internalHeaderStyle}  style={isCollapsed ?? {...externaHeaderStyle}}>
+        <div
+          key={column.id}
+          className={styles.combinedColumnStyle}
+          style={{ ...(getStyle(props.columnStyle, formData) || {}) }}
+          data-column-id={column.id}
+        >
+          <Flex
+            justify={props.kanbanReadonly || props.readonly ? 'center' : 'space-between'} // Apply space-between when editable (settings dropdown exists)
+            align="center"
+            className={styles.combinedHeaderStyle}
+            style={{ ...(getStyle(props.headerStyles, formData) || {}) }}
+          >
+            {props.showIcons && column.icon && (
+              <IconPicker
+                value={column.icon}
+                readOnly
+                style={{ color: props.fontColor, fontSize: addPx(props.fontSize) }}
+              />
+            )}
             <h3>
               {column.item} ({columnTasks.length})
             </h3>
-            <Flex align="center">
+
+            {/* Render collapsible icon if in readonly mode and collapsible is true */}
+            {props.kanbanReadonly || props.readonly ? null : (
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
-                <Button type="text" icon={<SettingFilled />} />
+                <Button
+                  type="text"
+                  icon={<SettingFilled style={{ color: props.fontColor, fontSize: addPx(props.fontSize) }} />}
+                />
               </Dropdown>
-            </Flex>
+            )}
           </Flex>
 
           {!isCollapsed && (
@@ -116,7 +136,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               emptyInsertThreshold={20}
               scroll={true}
               bubbleScroll={true}
-              disabled={readonly}
+              disabled={props.kanbanReadonly || props.readonly}
               onEnd={(evt) => onEnd(evt, column)}
               className={styles.container}
               style={{
@@ -127,11 +147,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               }}
             >
               {columnTasks.length === 0 ? (
-                <div
-                  className={styles.noTask}
-                >
-                  No Item Found
-                </div>
+                <div className={styles.noTask}>No Item Found</div>
               ) : (
                 columnTasks.map((t) => {
                   const taskDropdownItems: MenuProps['items'] = [
@@ -159,7 +175,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                       <ConfigurableForm
                         key={selectedItem ? selectedItem.id : 'new-item'}
                         initialValues={t}
-                        formId={modalFormId}
+                        formId={props.modalFormId}
                         mode={'readonly'}
                         className={styles.taskContainer}
                       />

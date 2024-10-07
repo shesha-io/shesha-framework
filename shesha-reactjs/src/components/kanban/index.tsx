@@ -1,27 +1,24 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Form, message, Modal } from 'antd';
 import { IKanbanProps } from './model';
-import { getMetaData, useKanbanActions } from './utils';
+import {  useKanbanActions } from './utils';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import {
   ConfigurableForm,
+  DataTypes,
   useAvailableConstantsData,
   useConfigurableActionDispatcher,
   useFormState,
   useGet,
+  useMetadataDispatcher,
 } from '@/index';
 import KanbanColumn from './components/renderColumn';
 import { MoveEvent } from 'react-sortablejs';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
+import { addPx } from '../sectionSeparator/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const {
-    gap,
-    groupingProperty,
-    entityType,
-    createFormId,
-    items,
-  } = props;
+  const { gap, groupingProperty, entityType, createFormId, items } = props;
 
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
@@ -38,17 +35,18 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const allData = useAvailableConstantsData();
   const { executeAction } = useConfigurableActionDispatcher();
   const { storeSettings } = useRefListItemGroupConfigurator();
+  const { getMetadata } = useMetadataDispatcher();
 
   useEffect(() => {
     if (!isInDesigner && entityType.id && groupingProperty) {
-      refetch(getMetaData('/api/services/app/Metadata/Get', entityType?.id)).then((resp: any) => { 
-      const endpoints = resp.result.apiEndpoints;
-      setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-      refetch({ path: `${resp.result.apiEndpoints.list.url}` })
-        .then((resp) => {
-          setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
-        })
-        .catch((err) => console.error('Error fetching tasks:', err));
+      getMetadata({ modelType: entityType.id, dataType: DataTypes.entityReference }).then((resp: any) => {
+        const endpoints = resp?.apiEndpoints;
+        setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
+        refetch({ path: `${resp?.apiEndpoints.list.url}` })
+          .then((resp) => {
+            setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
+          })
+          .catch((err) => console.error('Error fetching tasks:', err));
       });
     }
   }, [groupingProperty, entityType.id]);
@@ -62,7 +60,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       try {
         const resp = await fetchColumnState();
         if (!resp?.result) return;
-  
+
         const parsedSettings = JSON.parse(resp.result);
         if (parsedSettings) {
           setSettings(parsedSettings);
@@ -76,10 +74,9 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         setSettings({});
       }
     };
-  
+
     initializeSettings();
   }, []);
-  
 
   useEffect(() => {
     if (selectedItem) {
@@ -95,24 +92,24 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         const { to, dragged } = evt;
         const draggedTask = dragged?.dataset?.id;
         const targetColumn = to?.dataset;
-  
+
         if (!column || !targetColumn?.actionConfiguration) {
           resolve(true); // Allow the drag and drop to proceed without action
           return;
         }
-  
+
         // Ensure the task is not dropped back into the same column based on the value
         if (column.itemValue === dragged?.dataset.value) {
           resolve(true); // Skip further actions
           return;
         }
-  
+
         const evaluationContext = {
           ...allData,
           selectedRow: column,
           draggedTask,
         };
-  
+
         // Perform the action
         executeAction({
           actionConfiguration: column.actionConfiguration,
@@ -129,7 +126,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     },
     [allData, executeAction]
   );
-  
+
   const handleUpdate = useCallback(
     async (newTasks: any[], column: any) => {
       // Check if the tasks have changed (e.g., their order or column)
@@ -150,7 +147,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       if (!canUpdate) {
         return; // Exit the function without updating
       }
-  
+
       // If we get here, we can safely update tasks
       setTasks((prevTasks) => {
         const updatedTasks = prevTasks.map((task) => {
@@ -163,7 +160,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
           }
           return task;
         });
-  
+
         // Sort tasks based on their new order in the column
         return updatedTasks.sort((a, b) => {
           const aIndex = newTasks.findIndex((t) => t.id === a.id);
@@ -174,8 +171,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     },
     [tasks, groupingProperty, onEnd, updateKanban, urls.updateUrl]
   );
-  
-  
+
   const handleEditClick = (item: any) => {
     setSelectedItem(item);
     setIsModalVisible(true);
@@ -206,7 +202,6 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     const updatedTasks = tasks.filter((task) => task.id !== id);
     setTasks(updatedTasks);
     deleteKanban(id, urls.deleteUrl);
-
   };
 
   const handleCreate = () => {
@@ -245,24 +240,22 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       {items.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
-          <div style={{ display: 'flex', gap: gap || 10 }}>
-            {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
-              <KanbanColumn
-                props={props}
-                key={column.itemValue}
-                collapse={settings[column.itemValue] ?? false}
-                column={column}
-                columnTasks={columnTasks}
-                handleUpdate={handleUpdate}
-                handleEditClick={handleEditClick}
-                handleDelete={handleDelete}
-                handleCreateClick={handleCreateClick}
-                selectedItem={selectedItem}
-                onEnd={(evt: MoveEvent) => onEnd(evt, column)}
-              />
-            ))}
-          </div>
+        <div style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) || 50 }}>
+          {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
+            <KanbanColumn
+              props={props}
+              key={column.itemValue}
+              collapse={settings[column.itemValue] ?? false}
+              column={column}
+              columnTasks={columnTasks}
+              handleUpdate={handleUpdate}
+              handleEditClick={handleEditClick}
+              handleDelete={handleDelete}
+              handleCreateClick={handleCreateClick}
+              selectedItem={selectedItem}
+              onEnd={(evt: MoveEvent) => onEnd(evt, column)}
+            />
+          ))}
         </div>
       )}
 
