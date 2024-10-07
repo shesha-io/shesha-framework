@@ -84,29 +84,30 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   return (
     <SheshaApplicationInstanceContext.Provider value={application}>
       <SettingsProvider>
-        <ConfigurableActionDispatcherProvider>
-          <ShaRoutingProvider
-            getFormUrlFunc={getFormUrlFunc}
-            router={router}
-            getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
-          >
-            <DynamicActionsDispatcherProvider>
-              <ConditionalWrap
-                condition={!props.noAuth}
-                wrap={(authChildren) => (
-                  <AuthProvider
-                    tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
-                    unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                    authRef={authRef}
-                    homePageUrl={homePageUrl}
-                  >
-                    {authChildren}
-                  </AuthProvider>
-                )}
-              >
-                <ConfigurationItemsLoaderProvider>
-                  <FormManager>
-                    <ThemeProvider {...(themeProps || {})}>
+        <ThemeProvider {...(themeProps || {})}>
+          <ConfigurableActionDispatcherProvider>
+            <ShaRoutingProvider
+              getFormUrlFunc={getFormUrlFunc}
+              router={router}
+              getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
+            >
+              <DynamicActionsDispatcherProvider>
+                <ConditionalWrap
+                  condition={!props.noAuth}
+                  wrap={(authChildren) => (
+                    <AuthProvider
+                      tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
+                      unauthorizedRedirectUrl={unauthorizedRedirectUrl}
+                      authRef={authRef}
+                      homePageUrl={homePageUrl}
+                    >
+                      {authChildren}
+                    </AuthProvider>
+                  )}
+                >
+                  <ConfigurationItemsLoaderProvider>
+                    <FormManager>
+
                       <GlobalSheshaStyles />
                       <ShaFormStyles />
                       <GlobalPageStyles />
@@ -158,13 +159,13 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                           </EntityMetadataFetcherProvider>
                         </ReferenceListDispatcherProvider>
                       </AppConfiguratorProvider>
-                    </ThemeProvider>
-                  </FormManager>
-                </ConfigurationItemsLoaderProvider>
-              </ConditionalWrap>
-            </DynamicActionsDispatcherProvider>
-          </ShaRoutingProvider>
-        </ConfigurableActionDispatcherProvider>
+                    </FormManager>
+                  </ConfigurationItemsLoaderProvider>
+                </ConditionalWrap>
+              </DynamicActionsDispatcherProvider>
+            </ShaRoutingProvider>
+          </ConfigurableActionDispatcherProvider>
+        </ThemeProvider>
       </SettingsProvider>
     </SheshaApplicationInstanceContext.Provider>
   );

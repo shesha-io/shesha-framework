@@ -1,4 +1,4 @@
-import { DataTypes } from "@/index";
+import { DataTypes } from "@/interfaces";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { DataContextType, IDataContextProviderActionsContext } from "../dataContextProvider/contexts";
 
