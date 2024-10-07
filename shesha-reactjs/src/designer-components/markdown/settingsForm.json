@@ -108,7 +108,7 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       }

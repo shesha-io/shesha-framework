@@ -198,7 +198,7 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       },
@@ -234,7 +234,7 @@
               "templateSettings": {
                 "functionName": "getStyle"
               },
-              "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+              "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
             }
           ],
           "parentId": "eGd67Tsl-XNfIh0Jnxapv"

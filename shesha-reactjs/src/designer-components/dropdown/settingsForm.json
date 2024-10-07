@@ -317,7 +317,7 @@
                 "templateSettings": {
                   "functionName": "getKeyValue"
                 },
-                "availableConstantsExpression": "    return metadataBuilder.addObject(\"value\", \"Field value\tobject\").build();"
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addObject(\"value\", \"Field value\tobject\").build();"
               },
               {
                 "id": "26ab0599-914d-4d2d-875c-765a495472f8",
@@ -347,7 +347,7 @@
                 "templateSettings": {
                   "functionName": "getCustomValue"
                 },
-                "availableConstantsExpression": "    return metadataBuilder.addObject(\"value\", \"Field value\tobject\").build();"
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addObject(\"value\", \"Field value\tobject\").build();"
               },
               {
                 "id": "36ab0599-914d-4d2d-875c-765a495472f8",
@@ -372,7 +372,7 @@
                 "templateSettings": {
                   "functionName": "getCustomLabel"
                 },
-                "availableConstantsExpression": "    return metadataBuilder.addObject(\"value\", \"Field value\tobject\").build();"
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addObject(\"value\", \"Field value\tobject\").build();"
               },
               {
                 "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534x0",
@@ -547,7 +547,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addStandard([\"shesha:formData\", \"shesha:globalState\", \"shesha:http\", \"shesha:message\", \"shesha:moment\", \"shesha:setGlobalState\", \"shesha:contexts\", \"shesha:pageContext\"])\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addStandard([\"shesha:formData\", \"shesha:globalState\", \"shesha:http\", \"shesha:message\", \"shesha:moment\", \"shesha:setGlobalState\", \"shesha:contexts\", \"shesha:pageContext\"])\r\n        .addObject(\"value\", \"Component current value\")\r\n        .build();  "
           }
         ]
       },
@@ -630,7 +630,7 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",

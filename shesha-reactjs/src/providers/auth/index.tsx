@@ -1,7 +1,7 @@
 import React, { FC, MutableRefObject, PropsWithChildren, useContext } from 'react';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { useShaRouting } from '@/providers/shaRouting';
-import { useHttpClient, useSheshaApplication } from '..';
+import { useHttpClient, useSettings, useSheshaApplication } from '..';
 import { useAuthenticatorInstance } from './authenticator';
 import { IAuthenticator } from './models';
 
@@ -43,16 +43,17 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   const httpClient = useHttpClient();
   const { router } = useShaRouting();
   const app = useSheshaApplication();
+  const settings = useSettings();
   
   const [authenticator] = useAuthenticatorInstance({
     httpClient,
+    settings,
     router,
     tokenName,
     homePageUrl,
     unauthorizedRedirectUrl,
     onSetRequestHeaders: (headers) => {
       // set application headers
-      console.warn('AuthProvider.onSetRequestHeaders', headers);
       app.setRequestHeaders(headers);
     }
   });

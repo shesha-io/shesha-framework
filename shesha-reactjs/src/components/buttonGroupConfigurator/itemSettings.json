@@ -230,6 +230,7 @@
           "parentId": "root",
           "label": "Size",
           "allowClear": true,
+          "version": 3,
           "dataSourceType": "values",
           "values": [
             {
@@ -269,7 +270,8 @@
           "propertyName": "backgroundColor",
           "parentId": "root",
           "label": "Background Color",
-          "allowClear": true
+          "allowClear": true,
+          "version": 3
         },
         {
           "id": "d498779d-012a-4c6a-82a9-77231234ve28",
@@ -284,7 +286,8 @@
           "propertyName": "color",
           "parentId": "root",
           "label": "Color",
-          "allowClear": true
+          "allowClear": true,
+          "version": 3
         },
         {
           "id": "d498779d-012a-4c6a-82c9-00731245ae28",
@@ -335,7 +338,8 @@
           "propertyName": "borderColor",
           "parentId": "root",
           "label": "Border Color",
-          "allowClear": true
+          "allowClear": true,
+          "version": 3
         },
         {
           "id": "d498779d-012a-4c6a-10ma9-77231245ae28",
