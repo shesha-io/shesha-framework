@@ -189,11 +189,12 @@ export class Authenticator implements IAuthenticator {
         if (this.loginInfo)
             return;
 
+
         const getRedirectUrlAsync = async(): Promise<string> => {
             const currentPath = this.#router.path;
             if (currentPath === '/' || currentPath === ''){
                 const defaultUrl = await this.#settings.getSetting({ module: 'Shesha', name: 'Shesha.DefaultUrl' });
-                if (typeof(defaultUrl) === 'string')
+                if (typeof(defaultUrl) === 'string' && Boolean(defaultUrl.trim()))
                     return defaultUrl;
             }       
     
