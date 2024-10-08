@@ -36,7 +36,7 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <SettingsFormItem name="modalFormId" label="Render Form" jsSetting>
           <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
         </SettingsFormItem>
-        <MetadataProvider dataType='entity' modelType={values.entityType.id}>
+        <MetadataProvider dataType='entity' modelType={values?.entityType?.id}>
           <SettingsFormItem name="groupingProperty" label="Grouping property" jsSetting>
             <PropertyAutocomplete readOnly={props.readOnly} autoFillProps={false} />
           </SettingsFormItem>
