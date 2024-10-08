@@ -48,7 +48,8 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
         // We need to further filter such that if label.toLowerCase() is equal to either valueProperty or legendProperty or axisProperty (in lowercase) again
         const refListPropertiesFiltered = refListProperties?.filter((p: IRefListPropertyMetadata) => {
-          return p.label.toLowerCase() === valueProperty.toLowerCase() || p.label.toLowerCase() === legendProperty.toLowerCase() || p.label.toLowerCase() === axisProperty.toLowerCase();
+          const strLabel = p.label + '';
+          return strLabel?.toLowerCase() === valueProperty?.toLowerCase() || strLabel?.toLowerCase() === legendProperty?.toLowerCase() || strLabel?.toLowerCase() === axisProperty?.toLowerCase();
         });
 
         refListPropertiesFiltered?.forEach((refListProperty: IRefListPropertyMetadata) => {
