@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Flex, Result, Spin } from 'antd';
+import { Alert, Button, Flex, Result, Spin } from 'antd';
 import React, { useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import BarChart from './components/bar';
@@ -10,7 +10,7 @@ import { IChartData, IChartsProps } from './model';
 import { applyFilters, getAllProperties, getChartData, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData } from './utils';
 import { useGet } from '@/hooks';
 import useStyles from './styles';
-import { IModelMetadata, useMetadataDispatcher } from '@/index';
+import { IModelMetadata, useForm, useMetadataDispatcher } from '@/index';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { IRefListPropertyMetadata } from '@/interfaces/metadata';
 
@@ -21,6 +21,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsFilterVisible, setIsLoaded, setRefLists, setFilterdData, setChartFilters, setControlProps } = useChartDataActionsContext();
+  const form = useForm();
 
   const { styles, cx } = useStyles();
 
@@ -70,6 +71,27 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       setFilterdData(state.data);
     }
   }, [state.data]);
+
+  if (!entityType || !chartType || !valueProperty || !axisProperty) {
+    // Collect the missing properties in an array
+    const missingProperties: string[] = [];
+    if (!entityType) missingProperties.push("'entityType'");
+    if (!chartType) missingProperties.push("'chartType'");
+    if (!valueProperty) missingProperties.push("'valueProperty'");
+    if (!axisProperty) missingProperties.push("'axisProperty'");
+
+    // Dynamically build the description
+    const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
+
+    return (
+      <Alert
+        showIcon
+        message="Chart control properties not correctly!"
+        description={descriptionMessage} // Dynamically constructed description
+        type="info"
+      />
+    );
+  }
 
   const toggleFilterVisibility = () => {
     setIsFilterVisible(!state.isFilterVisible);

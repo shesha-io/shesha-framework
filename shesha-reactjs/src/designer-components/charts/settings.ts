@@ -38,6 +38,12 @@ export const settingsForm = new DesignerToolbarSettings()
     label: 'Show Description',
     parentId: 'root',
   })
+  .addCheckbox({
+    id: nanoid(),
+    propertyName: 'hidden',
+    label: 'Hidden',
+    parentId: 'root',
+  })
   .addSectionSeparator({
     id: nanoid(),
     componentName: 'separator2',

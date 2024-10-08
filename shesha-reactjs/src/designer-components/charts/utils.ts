@@ -105,11 +105,11 @@ export function filterData(preFilteredData: object[], property: string, operator
         return itemValue !== value;
 
       case 'contains':
-        const result = typeof itemValue === 'string' && (itemValue as string).includes(value as unknown as string);
+        const result = typeof itemValue === 'string' && ((itemValue as string).toLowerCase()).includes((value as unknown as string).toLowerCase());
         return result;
 
       case 'does_not_contain':
-        return typeof itemValue === 'string' && !(itemValue as string).includes(value as unknown as string);
+        return typeof itemValue === 'string' && !((itemValue as string).toLowerCase()).includes((value as unknown as string).toLowerCase());
 
       case 'is_empty':
         return (itemValue as unknown as string) === '' || itemValue == null;
