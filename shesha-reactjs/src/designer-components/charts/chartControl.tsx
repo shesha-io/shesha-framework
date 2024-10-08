@@ -7,7 +7,7 @@ import FilterComponent from './components/filterComponent';
 import LineChart from './components/line';
 import PieChart from './components/pie';
 import { IChartData, IChartsProps } from './model';
-import { applyFilters, getAllProperties, getChartData, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData } from './utils';
+import { applyFilters, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData } from './utils';
 import { useGet } from '@/hooks';
 import useStyles from './styles';
 import { IModelMetadata, useMetadataDispatcher } from '@/index';
@@ -35,12 +35,12 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    refetch(getChartData(entityType, valueProperty, filters, legendProperty, axisProperty))
+    refetch(getChartDataRefetchParams(entityType, valueProperty, filters, legendProperty, axisProperty))
       .then((resp) => {
         setData(resp.result?.items);
       })
       .then(() => setIsLoaded(true))
-      .catch((err) => console.error('err data', err));
+      .catch((err: any) => console.error('err data', err));
 
     getMetadata({ modelType: entityType, dataType: 'entity' })
       .then((resp: IModelMetadata) => {
@@ -60,10 +60,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             }) => {
               setRefLists({ ...state.refLists, [`${refListProperty.label}`.toLowerCase()]: refListResponse?.items });
             })
-            .catch((err) => console.error('err metadata', err));
+            .catch((err: any) => console.error('err metadata', err));
         });
       })
-      .catch((err) => console.error('err metadata', err));
+      .catch((err: any) => console.error('err metadata', err));
   }, [chartType]);
 
   useEffect(() => {
