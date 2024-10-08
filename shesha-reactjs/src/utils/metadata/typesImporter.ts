@@ -2,6 +2,8 @@ import _ from "lodash";
 import { TypeAndLocation } from "./models";
 import { trimSuffix } from "../string";
 
+export const DTS_EXTENSION = '.d.ts';
+
 export class TypesImporter {
     readonly #imports: Map<string, Set<string>> = new Map<string, Set<string>>();
 
@@ -18,10 +20,10 @@ export class TypesImporter {
     }
 
     static cleanupFileNameForImport = (path: string) => {
-        return path.endsWith(".d.ts") 
+        return path.endsWith(DTS_EXTENSION) 
             ? path.startsWith('.') 
                 ? path
-                : trimSuffix(path, ".d.ts")
+                : trimSuffix(path, DTS_EXTENSION)
             : trimSuffix(path, ".ts");
     };
 

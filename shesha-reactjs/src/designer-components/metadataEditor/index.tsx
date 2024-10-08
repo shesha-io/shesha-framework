@@ -30,7 +30,7 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
       if (!model.baseProperties)
         return [];
       
-      const metadataBuilder = metadataBuilderFactory("baseProperties");
+      const metadataBuilder = metadataBuilderFactory();
       const result = executeScriptSync<IPropertyMetadata[]>(model.baseProperties, { data: formData, metadataBuilder });
       return result;
     }, [model.baseProperties, formData]);

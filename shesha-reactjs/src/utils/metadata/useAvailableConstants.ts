@@ -8,18 +8,13 @@ import { useDataContextManager } from "@/providers/dataContextManager";
 import { useMetadataBuilderFactory } from "./hooks";
 import { SheshaConstants } from "@/utils/metadata/standardProperties";
 import { TypesImporter } from "./typesImporter";
-import { MetadataBuilder, MetadataBuilderAction } from "./metadataBuilder";
-
-export interface StandardConstantWithCustomName {
-    uid: string;
-    name: string;
-}
-export type StandardConstantInclusionArgs = string | StandardConstantWithCustomName;
+import { IObjectMetadataBuilder, MetadataBuilderAction } from "./metadataBuilder";
+import { StandardConstantInclusionArgs } from "@/publicJsApis/metadataBuilder";
 
 export interface AvailableConstantsArgs {
     addGlobalConstants?: boolean;
     standardConstants?: StandardConstantInclusionArgs[];
-    onBuild?: (metaBuilder: MetadataBuilder) => void;
+    onBuild?: (metaBuilder: IObjectMetadataBuilder) => void;
 }
 
 export const useGlobalConstants = (): IPropertyMetadata[] => {
@@ -87,7 +82,7 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
 export const useAppContextRegistration = (): MetadataBuilderAction => {
     const { getDataContext } = useDataContextManager();
 
-    const action = useCallback((builder: MetadataBuilder) => {
+    const action = useCallback((builder: IObjectMetadataBuilder) => {
         const appContext = getDataContext(SheshaCommonContexts.ApplicationContext);
         if (appContext?.metadata) {
             builder.addObject(SheshaCommonContexts.ApplicationContext, "", builder => {
@@ -120,13 +115,15 @@ export const useAvailableConstantsMetadata = ({ addGlobalConstants, onBuild, sta
     const metadataBuilderFactory = useMetadataBuilderFactory();
 
     const response = useMemo<IObjectMetadata>(() => {
-        const metaBuilder = metadataBuilderFactory("constants");
+        const metaBuilder = metadataBuilderFactory();
 
-        metaBuilder.addStandard(standardConstants);
+        const objectBuilder = metaBuilder.object("constants") as IObjectMetadataBuilder;
 
-        onBuild?.(metaBuilder);
+        objectBuilder.addStandard(standardConstants);
 
-        const meta = metaBuilder.build();
+        onBuild?.(objectBuilder);
+
+        const meta = objectBuilder.build();
 
         if (addGlobalConstants && globalProps && isPropertiesArray(meta.properties)) {
             meta.properties.push(...globalProps);
@@ -144,4 +141,3 @@ export const useAvailableStandardConstantsMetadata = (): IObjectMetadata => {
     });
     return availableConstants;
 };
-

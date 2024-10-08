@@ -17,10 +17,8 @@ import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import {
   switchApplicationModeAction,
-  switchConfigurationItemModeAction,
   toggleCloseEditModeConfirmationAction,
   toggleEditModeConfirmationAction,
-  toggleShowInfoBlockAction,
 } from './actions';
 import { genericItemActionArgumentsForm } from './configurable-actions/generic-item-arguments';
 import { APP_CONTEXT_INITIAL_STATE, AppConfiguratorActionsContext, AppConfiguratorStateContext } from './contexts';
@@ -64,7 +62,7 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
     const result = auth && auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
 
     return result;
-  }, [auth, auth?.isLoggedIn]);
+  }, [auth, auth?.isLoggedIn, auth?.state?.status]);
 
   useEffect(() => {
     // sync headers
@@ -104,7 +102,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   });
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
-
 
   //#region Configuration Framework renamed to Configuration Items
 
@@ -261,7 +258,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const toggleShowInfoBlock = (visible: boolean) => {
     configuratorSettings.setIsInformerVisible(visible);
-    dispatch(toggleShowInfoBlockAction(visible));
   };
 
   const switchApplicationMode = (mode: ApplicationMode) => {
@@ -270,7 +266,6 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
 
   const switchConfigurationItemMode = (mode: ConfigurationItemsViewMode) => {
     configuratorSettings.setMode(mode);
-    dispatch(switchConfigurationItemModeAction(mode));
   };
 
   const toggleEditModeConfirmation = (visible: boolean) => {
@@ -282,7 +277,11 @@ const AppConfiguratorProvider: FC<PropsWithChildren<IAppConfiguratorProviderProp
   };
 
   return (
-    <AppConfiguratorStateContext.Provider value={state}>
+    <AppConfiguratorStateContext.Provider value={{
+      ...state,
+      configurationItemMode: configuratorSettings.mode,
+      formInfoBlockVisible: configuratorSettings.isInformerVisible,
+    }}>
       <AppConfiguratorActionsContext.Provider
         value={{
           switchApplicationMode,

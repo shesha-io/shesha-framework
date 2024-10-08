@@ -163,7 +163,7 @@ export const getStaticExecuteExpressionParams = (params: string, dynamicParam?: 
 };
 
 export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: string]: any }, ...args: any[]) => {
-  const argList = [...args] || [];
+  const argList = [...args];
   Object.values(dynamicParam || {}).map((key) => argList.push(key));
 
   return fn.apply(null, argList);

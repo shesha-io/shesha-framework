@@ -1,5 +1,5 @@
 import { TypeDefinition, TypeDefinitionLoader } from "@/interfaces/metadata";
-import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 
 const getFormsApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
     var formsSource = [
@@ -22,6 +22,6 @@ const getFormsApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefiniti
     });
 };
 
-export const getFormsApiProperties = (builder: MetadataBuilder): MetadataBuilder =>
+export const getFormsApiProperties = (builder: IObjectMetadataBuilder): IObjectMetadataBuilder =>
     builder
         .setTypeDefinition(getFormsApiTypeDefinition);

@@ -120,7 +120,7 @@
             "templateSettings": {
               "functionName": "getTitleStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "941e00c5-0172-4c5a-ab1d-d0a29e06531e",
@@ -145,7 +145,7 @@
             "templateSettings": {
               "functionName": "useValueStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       }

@@ -7,7 +7,7 @@ import {
   ShaIcon,
   ShaLink,
 } from '@/index';
-import { IAuthActionsContext } from '@/providers/auth/contexts';
+import { IAuthenticator } from '@/providers/auth';
 import { LoginOutlined } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import { ItemType } from 'antd/es/menu/interface';
@@ -32,7 +32,7 @@ export const getMenuItem = (
 
 export const getAccountMenuItems = (
   accountDropdownListItems: IHeaderAction[],
-  logoutUser: IAuthActionsContext['logoutUser']
+  logoutUser: IAuthenticator['logoutUser']
 ) => {
   const result = (accountDropdownListItems ?? []).map<MenuItem>(({ icon, text, url: link, onClick }, index) => ({
     key: index,

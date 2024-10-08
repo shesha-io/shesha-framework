@@ -50,16 +50,17 @@ namespace Shesha.Authorization
                 return;
 
             var typeName = type.FullName;
+            var methodName = methodInfo.Name.RemovePostfix("Async");
 
             var isCrud = type.FindBaseGenericType(typeof(AbpCrudAppService<,,,,,>)) != null;
-            if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodInfo.Name.RemovePostfix("Async")))
+            if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 
             // ToDo: add RequireAll flag
             await _objectPermissionChecker.AuthorizeAsync(
                 false,
                 typeName,
-                methodInfo.Name,
+                methodName,
                 ShaPermissionedObjectsTypes.WebApiAction,
                 AbpSession.UserId.HasValue,
                 Domain.Enums.RefListPermissionedAccess.AllowAnonymous

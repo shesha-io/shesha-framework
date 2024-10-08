@@ -9,6 +9,7 @@ using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Scheduler.Utilities;
+using Shesha.Startup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,14 +26,24 @@ namespace Shesha.Scheduler.Bootstrappers
         private readonly IRepository<ScheduledJob, Guid> _jobRepo;
         private readonly IRepository<ScheduledJobTrigger, Guid> _triggerRepo;
         private readonly IScheduledJobManager _jobManager;
+        private readonly IApplicationStartupSession _startupSession;
 
-        public ScheduledJobBootstrapper(ITypeFinder typeFinder, IUnitOfWorkManager unitOfWorkManager, IRepository<ScheduledJob, Guid> jobRepo, IRepository<ScheduledJobTrigger, Guid> triggerRepo, IScheduledJobManager jobManager)
+        public ScheduledJobBootstrapper
+        (
+            ITypeFinder typeFinder,
+            IUnitOfWorkManager unitOfWorkManager,
+            IRepository<ScheduledJob, Guid> jobRepo,
+            IRepository<ScheduledJobTrigger, Guid> triggerRepo,
+            IScheduledJobManager jobManager,
+            IApplicationStartupSession startupSession
+        )
         {
             _typeFinder = typeFinder;
             _unitOfWorkManager = unitOfWorkManager;
             _jobRepo = jobRepo;
             _triggerRepo = triggerRepo;
             _jobManager = jobManager;
+            _startupSession = startupSession;
         }
 
         public async Task ProcessAsync()
@@ -53,6 +64,7 @@ namespace Shesha.Scheduler.Bootstrappers
                     Class = e,
                     Attribute = e.GetAttribute<ScheduledJobAttribute>()
                 })
+                .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Class.Assembly))
                 .ToList();
 
             // deactivate all jobs which are missing in the code

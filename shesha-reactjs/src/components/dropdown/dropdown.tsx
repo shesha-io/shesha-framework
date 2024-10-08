@@ -139,7 +139,8 @@ export const Dropdown: FC<IDropdownProps> = ({
     const selectedValue = options.length > 0 ? value || defaultValue : null;
 
     const getSelectValue = () => {
-        return options?.find(({ value: currentValue }) => currentValue === selectedValue)?.label;
+      const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
+        return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(x => x.label)?.join(', ');
     };
 
     if (readOnly) {

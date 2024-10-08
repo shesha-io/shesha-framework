@@ -10,6 +10,7 @@ import { IConfigurableFormRuntimeProps } from './models';
 import { FormFlatMarkupProvider } from '@/providers/form/providers/formMarkupProvider';
 import { ConditionalMetadataProvider, useAuth } from '@/providers';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
+import ParentProvider from '@/providers/parentProvider';
 
 export type IFormWithFlatMarkupProps = IConfigurableFormRuntimeProps & {
   formFlatMarkup: IFlatComponentsStructure;
@@ -48,6 +49,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
 
   return (
+    <ParentProvider model={{}} formMode={shaForm.formMode} formFlatMarkup={formFlatMarkup} isScope >
       <ConditionalMetadataProvider modelType={formSettings?.modelType}>
         <FormFlatMarkupProvider markup={formFlatMarkup}>
           <FormProvider
@@ -72,6 +74,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
           </FormProvider>
         </FormFlatMarkupProvider>
       </ConditionalMetadataProvider>
+    </ParentProvider>
   );
 };
 

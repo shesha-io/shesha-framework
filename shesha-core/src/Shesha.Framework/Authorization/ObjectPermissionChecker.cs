@@ -51,8 +51,8 @@ namespace Shesha.Authorization
                 return;
             }
 
-            var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method.RemovePostfix("Async")) 
-                ? PermissionedObjectManager.CrudMethods[method.RemovePostfix("Async")] 
+            var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method) 
+                ? PermissionedObjectManager.CrudMethods[method] 
                 : method;
             var permissionName = $"{permissionedObject}@{methodName}";
 

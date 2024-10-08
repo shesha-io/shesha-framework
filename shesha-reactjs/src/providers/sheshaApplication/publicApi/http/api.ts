@@ -13,7 +13,7 @@ export interface HttpResponse<T = any> {
  * Simplified HTTP client API
  */
 export interface HttpClientApi {
-    get<T = any, R = HttpResponse<T>>(url: string): Promise<R>;
+    get<T = any, R = HttpResponse<T>>(url: string, headers?: Record<string, string>): Promise<R>;
     delete<T = any, R = HttpResponse<T>>(url: string): Promise<R>;
     head<T = any, R = HttpResponse<T>>(url: string): Promise<R>;
     options<T = any, R = HttpResponse<T>>(url: string): Promise<R>;

@@ -135,6 +135,7 @@ export type AvailableConstantsContext = {
   backendUrl: string;
   message: MessageInstance;
 };
+
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
   const { backendUrl } = useSheshaApplication();
@@ -1613,6 +1614,9 @@ export interface EvaluationContext {
   evaluationFilter?: (context: EvaluationContext, data: any) => boolean;
 };
 const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
+  if (!data)
+    return data;
+  
   const { path, contextData, evaluationFilter } = evaluationContext;
   if (evaluationFilter && !evaluationFilter(evaluationContext, data))
     return data;
