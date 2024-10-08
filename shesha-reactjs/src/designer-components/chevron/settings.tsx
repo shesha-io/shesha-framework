@@ -27,6 +27,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
           defaultModelType={designerModelType ?? formSettings.modelType}
           formData={model}
           onValuesChange={onValuesChange}
+          
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>

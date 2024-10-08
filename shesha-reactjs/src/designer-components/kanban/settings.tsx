@@ -10,6 +10,7 @@ import { MetadataProvider } from '@/providers';
 import { IKanbanProps } from '@/components/kanban/model';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import { nanoid } from '@/utils/uuid';
 
 interface IKanbanSettingsState extends IKanbanProps {}
 
@@ -28,15 +29,18 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         <SettingsFormItem key="entityType" name="entityType" label="Entity Type" jsSetting>
           <Autocomplete dataSourceType="url" dataSourceUrl="/api/services/app/Metadata/EntityTypeAutocomplete" />
         </SettingsFormItem>
+        <SettingsFormItem name="componentName" label="Component Name" required>
+          <Input readOnly={readOnly} />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
         <SettingsFormItem name="modalFormId" label="Render Form" jsSetting>
           <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
         </SettingsFormItem>
-        <MetadataProvider modelType={values?.entityType?.name}>
+        <MetadataProvider dataType='entity' modelType={values.entityType.id}>
           <SettingsFormItem name="groupingProperty" label="Grouping property" jsSetting>
             <PropertyAutocomplete readOnly={props.readOnly} autoFillProps={false} />
           </SettingsFormItem>
         </MetadataProvider>
-      </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header="Columns">
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }}>
@@ -65,8 +69,19 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         </SettingsFormItem>
 
         <Show when={values.allowNewRecord}>
-          <MetadataProvider modelType={values.entityType?.name}>
-            <SettingsFormItem name="createFormId" label="Form" jsSetting>
+          <MetadataProvider modelType={values.entityType?.name} id={nanoid()}>
+            <SettingsFormItem name="createFormId" label="Create Form" jsSetting>
+              <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+            </SettingsFormItem>
+          </MetadataProvider>
+        </Show>
+        <SettingsFormItem name="allowEdit" label="Allow Edit" valuePropName="checked" jsSetting>
+          <Checkbox disabled={values.readOnly} />
+        </SettingsFormItem>
+
+        <Show when={values.allowEdit}>
+          <MetadataProvider modelType={values.entityType?.name}  id={nanoid()}>
+            <SettingsFormItem name="editFormId" label="Edit Form" jsSetting>
               <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
             </SettingsFormItem>
           </MetadataProvider>

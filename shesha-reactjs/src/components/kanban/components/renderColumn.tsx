@@ -61,7 +61,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
         ...userSettings,
         [column.itemValue]: newCollapseState,
       };
-      updateUserSettings(updatedSettings);
+      updateUserSettings(updatedSettings, props.componentName);
     } catch (error) {
       console.error('Error updating collapse state:', error);
       // Revert local state if persistence fails
@@ -70,22 +70,20 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
   };
 
   const columnDropdownItems: MenuProps['items'] = [
-    {
+    props.allowNewRecord && {
       key: '1',
       label: 'Add',
       onClick: () => handleCreateClick(column.itemValue),
       icon: <PlusOutlined />,
-      disabled: !props.allowNewRecord,
     },
-    {
+    props.collapsible && {
       key: '2',
       label: isCollapsed ? 'Uncollapse' : 'Collapse',
       onClick: toggleFold,
       icon: isCollapsed ? <RightOutlined /> : <LeftOutlined />,
-      disabled: !props.collapsible,
     },
-  ];
-
+  ].filter(Boolean); // Filter out any items that are `false` or `undefined`
+  
   return (
     <>
       {!column.hidden && (

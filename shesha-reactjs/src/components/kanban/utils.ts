@@ -3,7 +3,7 @@ import { useMutate } from '@/hooks';
 export const useKanbanActions = () => {
   const { mutate } = useMutate<any>();
 
-  const updateUserSettings = async (updatedSettings: any) => {
+  const updateUserSettings = async (updatedSettings: any, descriminator: string) => {
     try {
       const response = await mutate(
         {
@@ -11,7 +11,7 @@ export const useKanbanActions = () => {
           httpVerb: 'POST',
         },
         {
-          name: 'mSettings',
+          name: descriminator,
           module: 'Shesha',
           value: JSON.stringify(updatedSettings),
           datatype: 'string',
@@ -25,7 +25,7 @@ export const useKanbanActions = () => {
       console.error('Error updating user settings:', error);
     }
   };
-  const fetchColumnState = async () => {
+  const fetchColumnState = async (descriminator: string) => {
     try {
       const response = await mutate(
         {
@@ -33,7 +33,7 @@ export const useKanbanActions = () => {
           httpVerb: 'POST',
         },
         {
-          name: `mSettings`,
+          name: descriminator,
           module: 'Shesha',
         }
       );
@@ -46,39 +46,24 @@ export const useKanbanActions = () => {
     }
   };
   const updateKanban = (payload: any, url: string) => {
-    mutate(
+    return mutate(
       {
         url: url,
         httpVerb: 'PUT',
       },
       payload
-    )
-      .then((resp: any) => {
-        if (resp.success) {
-          return resp;
-        }
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
+    );
   };
 
   const createKanbanItem = (payload: any, url: string) => {
-    mutate(
+    return mutate(
       {
         url: url,
         httpVerb: 'POST',
       },
       payload
-    )
-      .then((resp: any) => {
-        if (resp.success) {
-          return resp;
-        }
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
+    );
+ 
   };
 
   const deleteKanban = (payload: any, url: string) => {

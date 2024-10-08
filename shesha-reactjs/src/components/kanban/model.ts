@@ -43,4 +43,7 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   headerBackgroundColor: string;
   actionConfiguration: any;
   kanbanReadonly: boolean;
+  componentName: string;
+  editFormId: string;
+  allowEdit: boolean;
 }

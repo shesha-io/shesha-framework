@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { Form, message, Modal } from 'antd';
+import { Flex, Form, message, Modal } from 'antd';
 import { IKanbanProps } from './model';
-import {  useKanbanActions } from './utils';
+import { useKanbanActions } from './utils';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import {
   ConfigurableForm,
@@ -15,10 +15,10 @@ import {
 import KanbanColumn from './components/renderColumn';
 import { MoveEvent } from 'react-sortablejs';
 import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
-import { addPx } from '../sectionSeparator/utils';
+import { addPx } from '../keyInformationBar/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, entityType, createFormId, items } = props;
+  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId } = props;
 
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
@@ -28,6 +28,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const isInDesigner = formMode === 'designer';
   const { updateKanban, deleteKanban, createKanbanItem, fetchColumnState } = useKanbanActions();
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -42,7 +43,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       getMetadata({ modelType: entityType.id, dataType: DataTypes.entityReference }).then((resp: any) => {
         const endpoints = resp?.apiEndpoints;
         setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-        refetch({ path: `${resp?.apiEndpoints.list.url}` })
+        refetch({ path: `${resp?.apiEndpoints.list.url}?maxResultCount=1000` })
           .then((resp) => {
             setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
           })
@@ -58,7 +59,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   useEffect(() => {
     const initializeSettings = async () => {
       try {
-        const resp = await fetchColumnState();
+        const resp = await fetchColumnState(componentName);
         if (!resp?.result) return;
 
         const parsedSettings = JSON.parse(resp.result);
@@ -127,6 +128,14 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     [allData, executeAction]
   );
 
+  const closeModal = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+    editForm.resetFields();
+    setSelectedItem(null);
+    setSelectedColumn(null);
+  };
+
   const handleUpdate = useCallback(
     async (newTasks: any[], column: any) => {
       // Check if the tasks have changed (e.g., their order or column)
@@ -178,24 +187,21 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   };
 
   const handleEdit = async () => {
-    try {
-      const updatedItem = form.getFieldsValue();
-      updatedItem.id = selectedItem.id;
+    const updatedItem = editForm.getFieldsValue();
+    updatedItem.id = selectedItem.id;
 
-      updateKanban(updatedItem, urls.updateUrl);
-
-      var updatedTasks = tasks.map((task) => (task.id === selectedItem.id ? { ...task, ...updatedItem } : task));
-
-      setTasks([...updatedTasks]);
-
-      form.resetFields();
-      setIsModalVisible(false);
-      setSelectedItem(null);
-      message.success('Item updated successfully');
-    } catch (error) {
-      console.error('Error updating item:', error);
-      message.error('Failed to update the item.');
-    }
+    updateKanban(updatedItem, urls.updateUrl)
+      .then((resp: any) => {
+        if (resp.success) {
+          const updatedTasks = tasks.map((task) => (task.id === selectedItem.id ? { ...task, ...resp.result } : task));
+          setTasks([...updatedTasks]);
+          closeModal();
+          message.success('Item updated successfully');
+        }
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
   };
 
   const handleDelete = (id: string) => {
@@ -207,24 +213,26 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   const handleCreate = () => {
     const newValues = form.getFieldsValue();
     newValues[groupingProperty] = selectedColumn;
-    createKanbanItem(newValues, urls.postUrl);
-    setTasks([...tasks, newValues]);
-    setIsModalVisible(false);
-    setSelectedColumn(null);
+    createKanbanItem(newValues, urls.postUrl)
+      .then((response) => {
+        if (response?.success) {
+          setTasks([...tasks, response.result]);
+          setIsModalVisible(false);
+          setSelectedColumn(null);
+        } else {
+          message.error('Failed to create the item.');
+        }
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
   };
 
   const handleCreateClick = (columnValue) => {
     setSelectedColumn(columnValue);
-    setSelectedItem(undefined); // Ensure no item is selected for adding new
-    form.resetFields(); // Reset the form to clear previous values
-    setIsModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
+    setSelectedItem(null);
     form.resetFields();
-    setSelectedItem(undefined);
-    // console.log('close modal', selectedItem);
+    setIsModalVisible(true);
   };
 
   const memoizedFilteredTasks = useMemo(() => {
@@ -240,7 +248,9 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       {items.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <div style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) || 50 }}>
+        <Flex
+          style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}
+        >
           {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
@@ -256,17 +266,34 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
               onEnd={(evt: MoveEvent) => onEnd(evt, column)}
             />
           ))}
-        </div>
+        </Flex>
       )}
-
       <Modal
+        afterClose={closeModal}
         title={selectedItem ? 'Edit Item' : 'New Item'}
         open={isModalVisible}
-        onOk={() => form.validateFields().then(selectedItem ? handleEdit : handleCreate)}
+        onOk={() =>
+          selectedItem ? editForm.validateFields().then(handleEdit) : form.validateFields().then(handleCreate)
+        }
         onCancel={closeModal}
         width={1000}
       >
-        <ConfigurableForm initialValues={selectedItem || {}} form={form} formId={createFormId} mode="edit" />
+        {selectedItem ? (
+          <ConfigurableForm
+            key={selectedItem ? selectedItem : 'new-item'}
+            initialValues={selectedItem || {}}
+            form={editForm}
+            formId={editFormId}
+            mode="edit"
+          />
+        ) : (
+          <ConfigurableForm
+            key={selectedItem ? selectedItem : 'new-item'}
+            form={form}
+            formId={createFormId}
+            mode="edit"
+          />
+        )}
       </Modal>
     </>
   );
