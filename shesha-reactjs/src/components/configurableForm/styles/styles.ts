@@ -1,4 +1,4 @@
-import { createGlobalStyle, createStyles } from 'antd-style';
+import { createGlobalStyle } from 'antd-style';
 
 const formClassNames = {
     shaForm: 'sha-form',

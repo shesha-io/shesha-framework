@@ -24,7 +24,6 @@ import { IPersistedFormProps, useSheshaApplication, useTheme } from '@/providers
 import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
-import { useAppConfigurator } from '@/providers';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -98,7 +97,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const { setGlobalVariables } = useSheshaApplication();
 
   const sideMenuTheme = themeFromStorage?.sidebar;
-  const { formInfoBlockVisible } = useAppConfigurator();
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
@@ -112,7 +110,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 
   const isFixedHeading = useMemo(() => {
     return fixHeading && ((Boolean(title) && showHeading) || Boolean(heading));
-  }, [heading, title, heading, showHeading]);
+  }, [heading, title, heading, showHeading, fixHeading]);
 
   const onCollapse = (value: boolean) => {
     setGlobalVariables({ isSideBarExpanded: !value });

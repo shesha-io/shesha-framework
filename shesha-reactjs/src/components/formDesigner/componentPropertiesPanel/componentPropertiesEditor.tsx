@@ -71,8 +71,6 @@ export const ComponentPropertiesEditor: FC<IComponentPropertiesEditorProps> = (p
     // not used
   };
 
-
-  console.log("SETTINGS MARKUP FACTORY::", props.componentModel)
   return SettingsForm
     ? (
       <SettingsForm
