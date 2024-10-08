@@ -166,10 +166,9 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
       </Sider>
 
       <Layout className={styles.layout}>
-        <Header className={styles.antLayoutHeader} style={{ height: formInfoBlockVisible ? '85px' : 'auto' }}>
+        <Header className={styles.antLayoutHeader} style={{ background: '#ffffff', height: 'inherit' }}>
           <LayoutHeader collapsed={collapsed} headerFormId={headerFormId} />
         </Header>
-        {formInfoBlockVisible && <div style={{ height: '30px' }}></div>}
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <>
             {breadcrumb}

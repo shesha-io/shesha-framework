@@ -98,7 +98,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
 
   return (
     <ShaSpin spinning={isLoading}>
-      <div style={{ border: Boolean(showFormInfo) ? '1px #10239e solid' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={(event) => {
+      <div style={{ border: Boolean(showFormInfo) ? '1px #10239e dashed' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={(event) => {
         event.stopPropagation(); setFormInfoPanelShowing(false);
       }} onMouseEnter={(event) => {
         event.stopPropagation(); setFormInfoPanelShowing(true);

@@ -1,5 +1,5 @@
 import { IFlatComponentsStructure, IFormActions, IFormSections, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { FormProvider } from '@/providers/form';
 import Show from '../show';
@@ -27,7 +27,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     formRef,
     isActionsOwner,
     propertyFilter,
-    actions, 
+    actions,
     sections,
   } = props;
 
@@ -36,6 +36,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   } = props;
 
   const [shaForm] = useShaForm({ form: props.shaForm });
+  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(false);
 
   const { formInfoBlockVisible } = useAppConfigurator();
   const auth = useAuth(false);
@@ -64,13 +65,21 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
             actions={actions}
             sections={sections}
           >
-            <Show when={Boolean(showFormInfo)}>
-              <FormInfo formProps={persistedFormProps} onMarkupUpdated={onMarkupUpdated} />
-            </Show>
+            <div style={{ border: Boolean(showFormInfo) ? '2px #10239e solid' : 'none', position: 'relative', transition: '.3s', overflow: 'hidden' }} onMouseLeave={(event) => {
+              event.stopPropagation(); setFormInfoPanelShowing(false);
+            }} onMouseEnter={(event) => {
+              event.stopPropagation(); setFormInfoPanelShowing(true);
+            }}
+            >
+              <Show when={Boolean(showFormInfo)}>
+                <FormInfo formProps={persistedFormProps} visible={formInfoPanelShowing} onMarkupUpdated={onMarkupUpdated} />
+              </Show>
+          
             <ConfigurableFormRenderer
               shaForm={shaForm}
               {...props}
             />
+            </div>
           </FormProvider>
         </FormFlatMarkupProvider>
       </ConditionalMetadataProvider>

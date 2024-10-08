@@ -63,15 +63,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   `);
 
   const layoutHeaderLeft = css`
-        ${headerPart}
-        height: 100%;
-        .logo {
-          height: 100%;
-          img {
-            height: calc(${sheshaStyles.layoutHeaderHeight} - 8px);
-          }
-        }
-
         .search {
           display: flex;
           align-items: center;
@@ -224,7 +215,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   `);
 
   const shaSiteLayoutBackground = css`
-    min-height: calc(100vh - 55px);
     background: ${backgroundColor};
 
     .sha-site-layout-toolbar {

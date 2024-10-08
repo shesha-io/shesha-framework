@@ -15,7 +15,7 @@ const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, headerFormId }) => {
 
   const localHeaderFormId = headerFormId ?? HEADER_CONFIGURATION;
   return (
-    <div className={classNames(styles.layoutHeader, { collapsed })} style={{height: "auto", width: "auto"}}>
+    <div className={classNames(styles.layoutHeader, { collapsed })}>
       <div className={styles.headerWrapper}>
         <ConfigurableForm
           mode={'readonly'}

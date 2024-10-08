@@ -5,7 +5,6 @@ import { Button } from 'antd';
 import { CONFIGURATION_ITEM_STATUS_MAPPING } from '@/utils/configurationFramework/models';
 import { getFormFullName } from '@/utils/form';
 import StatusTag from '@/components/statusTag';
-import HelpTextPopover from '@/components/helpTextPopover';
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { QuickEditDialog } from '../formDesigner/quickEdit/quickEditDialog';
 import { useStyles } from './styles/styles';
@@ -23,7 +22,7 @@ export interface FormInfoProps {
 }
 
 export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visible }) => {
-  const { id, versionNo, description, versionStatus, name, module } = formProps;
+  const { id, versionNo, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
   const { styles } = useStyles();
 
@@ -47,9 +46,8 @@ useEffect(()=>{
 useEffect(()=>{
   if(formInfoBlockVisible === true){
     setPanelShowing(true);
-    setTimeout(()=>{
-setPanelShowing(false); setAllowHidePanel(true);
-},3000);
+    setPanelShowing(false);
+    setAllowHidePanel(true);
   }
 }, [formInfoBlockVisible]);
 
@@ -57,27 +55,38 @@ setPanelShowing(false); setAllowHidePanel(true);
 <div
   className={`${styles.shaFormInfoCard}`}
   style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     top: panelShowing ? '-2px' : '-22px',
     opacity: panelShowing ? '1' : '0',
-    zIndex: '2',
+    zIndex: 2,
     position: 'absolute',
-    transition: '.3s'
+    transition: '.3s',
+    height: '35px',
+    background: 'rgba(0, 0, 255, .75)',
+    maxWidth: '100%',
+    width: 'auto',
+    padding: '0 5px',
+    margin: 5,
+    borderRadius: 5,
+    //borderBottomRightRadius: '20px'
   }}
 >
-<div style={{ display: 'flex', alignItems: 'center' }}>
-      {id && (
-        <Button type="link" onClick={onModalOpen} style={{transform: 'skew(45deg)', marginLeft: "-10px"}}>
-          <EditOutlined style={{color: "#FFFFFF"}} title="Click to open this form in the designer" />
-        </Button>
-      )}
-      <p className={styles.shaFormInfoCardTitle} title={`${getFormFullName(module, name)} v${versionNo}`} style={{ marginLeft: id ? '-8px' : '0', transform: 'skew(45deg)'}}>
-        {getFormFullName(module, name)} v{versionNo}
-      </p>
-      {false && <HelpTextPopover content={description}></HelpTextPopover>}
-      <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} style={{ marginLeft: '7px', transform: 'skew(45deg)' }}></StatusTag>
-    </div>
+  {id && (
+    <Button type="link" onClick={onModalOpen} style={{ padding: 0 }}>
+      <EditOutlined style={{ color: "#FFFFFF" }} title="Click to open this form in the designer" />
+    </Button>
+  )}
 
-    <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info"  style={{transform: 'skew(45deg)', marginLeft: '0px', color: '#FFFFFF'}}/>
+  <p title={`${getFormFullName(module, name)} v${versionNo}`} style={{ marginLeft: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexGrow: 1, color: '#fff', fontSize: 12, textShadow: '0px 0px 2px rgba(0,0,0,.45)' }}>
+    {getFormFullName(module, name)} v{versionNo}
+  </p>
+  
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+    <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} style={{ marginRight: '5px' }} />
+    <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" style={{ color: '#FFFFFF' }} />
+  </div>
 
   {id && open && (
     <QuickEditDialog
@@ -88,6 +97,8 @@ setPanelShowing(false); setAllowHidePanel(true);
     />
   )}
 </div>
+
+
 
   );
 };
