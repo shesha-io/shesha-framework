@@ -7,24 +7,25 @@ import {
   Legend,
   Title,
   ChartOptions,
+  CategoryScale,
 } from 'chart.js';
 import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+ChartJS.register(CategoryScale, ArcElement, Tooltip, Legend, Title);
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
 }
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisLabel, showTitle, title, legendPosition } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
       legend: {
-        display: showLegend,
+        display: showXAxisLabel,
         position: legendPosition ?? 'top',
       },
       title: {

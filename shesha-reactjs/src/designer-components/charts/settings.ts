@@ -79,10 +79,11 @@ export const settingsForm = new DesignerToolbarSettings()
     label: 'Stacked',
     parentId: 'root',
     hidden: {
-      _code: "return getSettingValue(data?.chartType) !== `bar` && getSettingValue(data?.simpleOrPivot) !== `simple`",
+      _code: "return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)",
       _mode: "code",
-      _value: false
+      _value: true
     },
+    defaultValue: true,
   })
   .addTextField({
     id: nanoid(),
