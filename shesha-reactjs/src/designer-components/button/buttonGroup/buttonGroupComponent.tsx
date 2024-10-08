@@ -14,6 +14,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
+  isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model ,form}) => {
@@ -71,6 +72,19 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       return newModel ;
     })
     .add<IButtonGroupComponentProps>(9, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IButtonGroupComponentProps>(10, (prev) => {
+      const setDownIcon = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
+        if (isGroup(item)) {
+          item.downIcon = !item.downIcon ? "DownOutlined" : item.downIcon;
+          item.childItems = (item.childItems ?? []).map(setDownIcon);
+        }
+        return item;
+      };
+      return {
+        ...prev,
+        items: prev.items.map(setDownIcon),
+      };
+    })
   ,
   settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),
 };

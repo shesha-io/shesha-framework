@@ -10,7 +10,8 @@ import {
     registerMessageAction,
     registerMomentAction,
     registerSelectedRowAction,
-    registerSetGlobalStateAction
+    registerSetGlobalStateAction,
+    registerQueryAction
 } from "@/utils/metadata/standardProperties";
 import { useAppContextRegistration, useFormDataRegistration } from "./useAvailableConstants";
 
@@ -36,7 +37,8 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.pageContext, registerPageContextAction);
         builder.registerStandardProperty(SheshaConstants.form, registerFormAction);
         builder.registerStandardProperty(SheshaConstants.formData, registerFormDataAction);
-        builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);        
+        builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);
+        builder.registerStandardProperty(SheshaConstants.query, registerQueryAction);
 
         return builder;
     };

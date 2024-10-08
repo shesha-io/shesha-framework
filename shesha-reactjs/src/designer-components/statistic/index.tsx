@@ -25,6 +25,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
   name: 'Statistic',
   icon: <BarChartOutlined />,
   isInput: true,
+  isOutput: true,
   Factory: ({ model: passedModel }) => {
     const { style, valueStyle, prefix, suffix, ...model } = passedModel;
     const { data: formData } = useFormData();

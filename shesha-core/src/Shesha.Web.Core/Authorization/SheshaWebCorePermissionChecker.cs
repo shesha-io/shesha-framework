@@ -1,5 +1,6 @@
 using Abp.Domain.Repositories;
 using Shesha.Authorization;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Utilities;
@@ -36,7 +37,7 @@ namespace Boxfusion.Authorization
                 return false;
 
             // system administrator has all rights
-            if (await IsInAnyOfRoles(person, RoleNames.SystemAdministrator))
+            if (await IsInAnyOfRolesAsync(person, RoleNames.SystemAdministrator))
                 return true;
 
             // add custom permission checks here...
@@ -45,7 +46,7 @@ namespace Boxfusion.Authorization
         }
 
         /// inheritedDoc
-        public async Task<bool> IsInAnyOfRoles(Person person, params string[] roles)
+        public async Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
         {
             return await _rolePersonRepository.GetAll()
                 .Where(e => roles.Contains(e.Role.Name) && e.Person == person)
@@ -57,14 +58,24 @@ namespace Boxfusion.Authorization
         /// </summary>
         /// <param name="person"></param>
         /// <returns></returns>
-        public async Task<bool> IsDataAdministrator(Person person)
+        public async Task<bool> IsDataAdministratorAsync(Person person)
         {
-            return await IsInAnyOfRoles(person, RoleNames.SystemAdministrator);
+            return await IsInAnyOfRolesAsync(person, RoleNames.SystemAdministrator);
         }
 
         public bool IsGranted(long userId, string permissionName)
         {
             return AsyncHelper.RunSync(() => IsGrantedAsync(userId, permissionName));
+        }
+
+        public async Task<bool> IsGrantedAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            return await IsGrantedAsync(userId, permissionName);
+        }
+
+        public bool IsGranted(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
+        {
+            return IsGranted(userId, permissionName);
         }
     }
 }

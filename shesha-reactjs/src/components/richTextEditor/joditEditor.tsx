@@ -45,6 +45,14 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
         updatePlaceholder(value);
     }, [value]);
 
+    const updateConfig = (newConfig: any) => {
+      setFullConfig({ ...defaultOptions, ...newConfig, placeholder: fullConfig.placeholder });
+  };
+
+  useEffect(() => {
+    updateConfig(config);
+  }, [config]);
+
     const handleBlur = (newValue: string) => {
         onChange?.(newValue);
     };

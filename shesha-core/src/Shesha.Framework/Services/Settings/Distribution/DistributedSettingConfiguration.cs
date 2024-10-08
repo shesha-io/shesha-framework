@@ -16,6 +16,8 @@ namespace Shesha.Services.Settings.Distribution
         public string Category { get; set; }
         public bool IsClientSpecific { get; set; }
         public SettingAccessMode AccessMode { get; set; }
+        public bool IsUserSpecific { get; set; }
+        public UserSettingAccessMode ClientAccess { get; set; }
 
         public List<DistributedSettingValue> Values { get; set; } = new List<DistributedSettingValue>();
     }

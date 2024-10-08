@@ -107,7 +107,7 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, formItemWrapperCol]);
 
-  const propName = namePrefix //&& (!model.context || !isCommonContext(model.context))
+  const propName = namePrefix && !model.initialContext
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
@@ -131,23 +131,22 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     if (model.context) {
       return (
         <ConfigurableFormItemContext
-            formItemProps={formItemProps}
-            valuePropName={valuePropName}
-            propertyName={propName}
-            contextName={model.context}
-          >
-            {children}
-          </ConfigurableFormItemContext>
+          formItemProps={formItemProps}
+          valuePropName={valuePropName}
+          propertyName={propName}
+          contextName={model.context}
+        >
+          {children}
+        </ConfigurableFormItemContext>
       );
     } else {
-      formItemProps.name = getFieldNameFromExpression(propName);
       return (
         <ConfigurableFormItemForm
-            formItemProps={formItemProps}
-            valuePropName={valuePropName}
-          >
-            {children}
-          </ConfigurableFormItemForm>
+          formItemProps={formItemProps}
+          valuePropName={valuePropName}
+        >
+          {children}
+        </ConfigurableFormItemForm>
       );
     }
   } else {

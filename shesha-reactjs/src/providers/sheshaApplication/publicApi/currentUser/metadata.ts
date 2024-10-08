@@ -1,46 +1,12 @@
 import { TypeDefinition, TypeDefinitionLoader } from "@/interfaces/metadata";
 import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import userApiCode from "./metadata.public.ts?raw";
 
 const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
-    var userSource = [
-        "/**",
-        " * Current logged in User API",
-        " */",
-        "export interface UserApi {",
-        "    /**",
-        "     * Is user logged in",
-        "     */",
-        "    isLoggedIn: boolean;",
-        "    /**",
-        "     * Internal Id",
-        "     */",
-        "    id: string;",
-        "    /**",
-        "     * User Name",
-        "     */",
-        "    userName: string;",
-        "    /**",
-        "     * First Name",
-        "     */",
-        "    firstName: string;",
-        "    /**",
-        "     * Last Name",
-        "     */",
-        "    lastName: string;",
-        "    /**",
-        "     * Has role",
-        "     */",
-        "    hasRoleAsync: (role: string) => Promise<boolean>;",
-        "    /**",
-        "     * Has permission",
-        "     */",
-        "    hasPermissionAsync: (permission: string) => Promise<boolean>;",
-        "}",
-    ].join("\n");
     return Promise.resolve({
         typeName: "UserApi",
         files: [{
-            content: userSource,
+            content: userApiCode,
             fileName: "apis/userApi.d.ts",
         }],        
     });

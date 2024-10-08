@@ -85,6 +85,7 @@ export const useConfigurationItemsExportAction = () => {
           title: "Export Configuration Items",
           isVisible: true,
           showModalFooter: false,
+          width: "60%",
           onClose: (positive, result) => {
             if (positive) {
               resolve(result);

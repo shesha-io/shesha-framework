@@ -8,6 +8,7 @@ export interface CustomFieldSettings {
   referenceListName?: string;
   referenceListModule?: string;
   allowInherited?: boolean;
+  propertyMetadata: IPropertyMetadata;
 }
 
 export interface IProperty {

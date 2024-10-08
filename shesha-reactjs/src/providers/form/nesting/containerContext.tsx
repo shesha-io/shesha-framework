@@ -21,7 +21,7 @@ export function useComponentContainer() {
     const context = useContext(ComponentsContainerContext);
 
     if (!context)
-        throw new Error('useFormActions must be used within a FormProvider');
+        throw new Error('useComponentContainer must be used within a ComponentsContainerProvider');
 
     return context;
 };

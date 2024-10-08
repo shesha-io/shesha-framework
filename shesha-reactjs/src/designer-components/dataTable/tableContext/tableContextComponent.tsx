@@ -14,10 +14,10 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   type: 'datatableContext',
+  isInput: true,
+  isOutput: true,
   name: 'DataTable Context',
   icon: <LayoutOutlined />,
-  isOutput: true,
-  isInput: true,
   Factory: ({ model }) => {
     return model.hidden ? null : <TableContext {...model} />;
   },
@@ -36,6 +36,12 @@ const TableContextComponent: IToolboxComponent<ITableContextComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];
+  },
+  validateModel: (model, addModelError) => {
+    if (!model.sourceType) addModelError('sourceType', 'Select `Source type` on the settings panel');
+    if (model.sourceType === 'Entity' && !model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');
+    if (model.sourceType === 'Url' && !model.endpoint) addModelError('endpoint', 'Select `Custom Endpoint` on the settings panel');
+    if (model.sourceType === 'Form' && !model.propertyName) addModelError('propertyName', 'Select `propertyName` on the settings panel');
   },
 };
 

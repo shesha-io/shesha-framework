@@ -20,7 +20,6 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const onOkClick = () => {
     if (jsonLogicResult) {
       if (jsonLogicResult && jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
-        console.log(jsonLogicResult);
         // show errors
         return;
       }

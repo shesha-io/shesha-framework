@@ -32,6 +32,7 @@ export const getSettings = (data: any) =>
               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
               label: 'Component name',
               validate: { required: true },
+              jsSetting: false
             })
             .addCheckbox({
               id: 'bf1823d6-dca4-408a-b7d8-5b42eacb076d',
@@ -267,9 +268,359 @@ export const getSettings = (data: any) =>
               description:
                 'The CSS justify-items property defines the default justify-self for all items of the box, giving them all a default way of justifying each box along the appropriate axis.',
             })
+            .addDropdown({
+              id: nanoid(),
+              propertyName: 'overflow',
+              label: 'Overflow',
+              labelAlign: 'right',
+              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+              dataSourceType: 'values',
+              values: [
+                {
+                  label: "Auto",
+                  value: "auto",
+                  id: nanoid()
+                },
+                {
+                  label: "Hidden",
+                  value: "hidden",
+                  id: nanoid()
+                },
+                {
+                  label: "Scroll",
+                  value: "scroll",
+                  id: nanoid()
+                },
+              
+              ],
+              validate: {},
+              description:
+                'The CSS justify-items property defines the default justify-self for all items of the box, giving them all a default way of justifying each box along the appropriate axis.',
+            })
             .toJson(),
         ],
       },
+    })
+    .addCollapsiblePanel({
+      id: '1b1400e7-1f62-431a-9bf4-feb966d90be3',
+      propertyName: 'pnlWidth',
+      parentId: 'root',
+      label: 'Container Width',
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+        components: [...new DesignerToolbarSettings()
+          .addTextField({
+            id: 'e6be0d18-7f9e-4ee6-ab4a-19dacf3a3fd6',
+            propertyName: 'width',
+            label: 'Width',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container default width (can be %, px, or vw)',
+          })
+          .addTextField({
+            id: '4e024dd1-e7e2-4a0e-8478-e4f6eeba1c94',
+            propertyName: 'minWidth',
+            label: 'Min Width',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container minimum width (can be %, px, or vw)',
+          })
+          .addTextField({
+            id: '747d4a30-02e1-4136-ad78-7126e4d36e29',
+            propertyName: 'maxWidth',
+            label: 'Max Width',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container maximum width (can be %, px, or vw)',
+          })
+          .addTextField({
+            id: '789ef4cf-843d-4cbf-a932-953d313a3293s',
+            propertyName: 'height',
+            label: 'Height',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container default height (can be %, px, or vw)',
+          })
+          .addTextField({
+            id: 'e5b2ef1b-e72b-4477-8794-e1aaa33c0efa',
+            propertyName: 'minHeight',
+            label: 'Min Height',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container minimum height (can be %, px, or vw)',
+          })
+          .addTextField({
+            id: '95f424dc-d307-47d8-bad8-ebe6be282cc0',
+            propertyName: 'maxHeight',
+            label: 'Max Height',
+            labelAlign: 'right',
+            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+            validate: {},
+            description:
+              'Container maximum height (can be %, px, or vw)',
+          }).toJson()
+        ]
+      }
+    })
+    .addCollapsiblePanel({
+      id: 'pnlc68f29dc-6af4-4ad6-8a30-c71681aca484',
+      propertyName: 'pnlBorder',
+      parentId: 'root',
+      label: 'Border',
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl75426727-1739-4812-9eac-9da4d950d311',
+        components: [...new DesignerToolbarSettings()
+          .addTextField({
+            id: '4ed82d6b-b297-4757-aa3d-6428337d0a18',
+            propertyName: 'borderWidth',
+            label: 'Border Width',
+            labelAlign: 'right',
+            parentId: 'pnlc68f29dc-6af4-4ad6-8a30-c71681aca484',
+            validate: {},
+            description:
+              'Container border width (can px)',
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'borderStyle',
+            label: 'Border Style',
+            labelAlign: 'right',
+            dataSourceType: "values",
+            values: [
+              {
+                label: "Solid",
+                value: "solid",
+                id: nanoid()
+              },
+              {
+                label: "Dashed",
+                value: "dashed",
+                id: nanoid()
+              },
+              {
+                label: "Dotted",
+                value: "dotted",
+                id: nanoid()
+              }
+            ]
+          })
+          .addColorPicker({
+            id: nanoid(),
+            propertyName: 'borderColor',
+            label: 'Border Color',
+            title: 'Choose Border color',
+            allowClear: true,
+            showText: true,
+          })
+          .addTextField({
+            id: '31598a37-c351-4c3c-8f87-3809d2ebaa85',
+            propertyName: 'borderRadius',
+            label: 'Border Radius',
+            labelAlign: 'right',
+            parentId: 'pnlc68f29dc-6af4-4ad6-8a30-c71681aca484',
+            validate: {},
+            description:
+              'Container corner radius (can px or %)',
+          })
+          .toJson()
+        ]
+      }
+    })
+    .addCollapsiblePanel({
+      id: nanoid(),
+      propertyName: 'pnlBackground',
+      parentId: 'root',
+      label: 'Background',
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: nanoid(),
+        components: [...new DesignerToolbarSettings()
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'backgroundType',
+            label: 'Background Type',
+            labelAlign: 'right',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            dataSourceType: "values",
+            values: [
+              {
+                label: "Color",
+                value: "color",
+                id: nanoid()
+              },
+              {
+                label: "Image",
+                value: "image",
+                id: nanoid()
+              }
+            ]
+          })
+          .addColorPicker({
+            id: nanoid(),
+            propertyName: 'backgroundColor',
+            label: 'Color',
+            title: 'Choose Background color',
+            allowClear: true,
+            showText: true,
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundType) !== 'color';",
+              _mode: 'code',
+              _value: false,
+            } as any
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'backgroundDataSource',
+            label: 'Image Source Type',
+            labelAlign: 'right',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            dataSourceType: "values",
+            values: [
+              {
+                label: "StoredFile",
+                value: "storedFileId",
+                id: nanoid()
+              },
+              {
+                label: "Url",
+                value: "url",
+                id: nanoid()
+              },
+              {
+                label: "Base64",
+                value: "base64",
+                id: nanoid()
+              }
+            ],
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'backgroundCover',
+            label: 'Background Size',
+            labelAlign: 'right',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            dataSourceType: "values",
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any,
+            values: [
+              {
+                label: "Contain",
+                value: "contain",
+                id: nanoid()
+              },
+              {
+                label: "Cover",
+                value: "cover",
+                id: nanoid()
+              }
+            ],
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'backgroundRepeat',
+            label: 'Background Repeat',
+            labelAlign: 'right',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            dataSourceType: "values",
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any,
+            values: [
+              {
+                label: "Repeat",
+                value: "repeat",
+                id: nanoid()
+              },
+              {
+                label: "No Repeat",
+                value: "no-repeat",
+                id: nanoid()
+              }, {
+                label: "Repeat-X",
+                value: "repeat-x",
+                id: nanoid()
+              },
+              {
+                label: "Repeat-Y",
+                value: "repeat-y",
+                id: nanoid()
+              },
+              {
+                label: "Round",
+                value: "round",
+                id: nanoid()
+              },
+            ],
+          })
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'backgroundUrl',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            label: 'Background Image URL',
+            description: 'Add a background image URL',
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundDataSource) !== 'url' || getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any,
+          })
+          .addTextArea({
+            id: nanoid(),
+            propertyName: 'backgroundBase64',
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            label: 'Base64',
+            description: 'Add a base64 encoded image',
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundDataSource) !== 'base64' || getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any,
+          })
+          .addTextField({
+            id: nanoid(),
+            propertyName: "backgroundStoredFileId",
+            parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+            label: "StoredFile ID",
+            hidden: {
+              _code: "return getSettingValue(data?.backgroundDataSource) !== 'storedFileId' || getSettingValue(data?.backgroundType) !== 'image';",
+              _mode: 'code',
+              _value: false,
+            } as any,
+          })
+          .toJson()
+        ]
+      }
     })
     .addCollapsiblePanel({
       id: 'db6e32f3-7a8b-4686-a0eb-81b2e36796ef',
@@ -284,70 +635,70 @@ export const getSettings = (data: any) =>
         id: 'pnl64664-cbc9-4cef-bdbc-6fbea44cd0ca',
         components: [
           ...new DesignerToolbarSettings()
-    .addTextField({
-      textType: 'text',
-      id: '648fea09-e548-44b3-9c90-2187ad63fd07',
-      propertyName: 'className',
-      label: 'Custom CSS Class',
-      labelAlign: 'right',
-      parentId: 'root',
-      hidden: false,
-      description: 'Custom CSS Class to add to this component',
-      validate: {},
-      settingsValidationErrors: [],
+            .addTextField({
+              textType: 'text',
+              id: '648fea09-e548-44b3-9c90-2187ad63fd07',
+              propertyName: 'className',
+              label: 'Custom CSS Class',
+              labelAlign: 'right',
+              parentId: 'root',
+              hidden: false,
+              description: 'Custom CSS Class to add to this component',
+              validate: {},
+              settingsValidationErrors: [],
+            })
+            .addCodeEditor({
+              id: '4e319199-d27c-4ed0-9934-fa2cb62745d1',
+              propertyName: 'style',
+              label: 'Style',
+              parentId: 'root',
+              mode: 'dialog',
+              description: 'The style that will be applied to the container',
+              exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
+            })
+            .addCodeEditor({
+              id: '71b5da4f-9300-41bf-b0c4-9d9f3757d402',
+              propertyName: 'wrapperStyle',
+              label: 'Wrapper Style',
+              parentId: 'root',
+              mode: 'dialog',
+              description: 'The style that will be applied to the container wrapper',
+              exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
+              hidden: { _code: 'return  getSettingValue(data?.noDefaultStyling);', _mode: 'code', _value: false } as any,
+            })
+            .addStyleBox({
+              id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
+              propertyName: 'stylingBox',
+              parentId: 'root',
+              validate: {},
+              settingsValidationErrors: [],
+              jsSetting: false,
+            }).toJson(),
+        ],
+      },
     })
-    .addCodeEditor({
-      id: '4e319199-d27c-4ed0-9934-fa2cb62745d1',
-      propertyName: 'style',
-      label: 'Style',
+    .addCollapsiblePanel({
+      id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
+      propertyName: 'pnlSecurity',
       parentId: 'root',
-      mode: 'dialog',
-      description: 'The style that will be applied to the container',
-      exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
+      label: 'Security',
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...new DesignerToolbarSettings()
+          .addPermissionAutocomplete({
+            id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
+            propertyName: 'permissions',
+            label: 'Permissions',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            validate: {},
+          }).toJson()
+        ]
+      }
     })
-    .addCodeEditor({
-      id: '71b5da4f-9300-41bf-b0c4-9d9f3757d402',
-      propertyName: 'wrapperStyle',
-      label: 'Wrapper Style',
-      parentId: 'root',
-      mode: 'dialog',
-      description: 'The style that will be applied to the container wrapper',
-      exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
-      hidden: { _code: 'return  getSettingValue(data?.noDefaultStyling);', _mode: 'code', _value: false } as any,
-    })
-    .addStyleBox({
-      id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
-      propertyName: 'stylingBox',
-      parentId: 'root',
-      validate: {},
-      settingsValidationErrors: [],
-      jsSetting: false,
-    }).toJson(),
-    ],
-  },
-})
-.addCollapsiblePanel({
-  id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
-  propertyName: 'pnlSecurity',
-  parentId: 'root',
-  label: 'Security',
-  labelAlign: "left",
-  expandIconPosition: "start",
-  ghost: true,
-  collapsible: 'header',
-  content: {
-    id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-    components: [...new DesignerToolbarSettings() 
-      .addPermissionAutocomplete({
-        id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
-        propertyName: 'permissions',
-        label: 'Permissions',
-        labelAlign: 'right',
-        parentId: 'root',
-        hidden: false,
-        validate: {},
-      }).toJson()
-    ]
-}
-})
-.toJson();
+    .toJson();

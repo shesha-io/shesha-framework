@@ -1,9 +1,8 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { DialogButton } from './dialogButton';
+import React, { FC } from 'react';
 import { useStyles } from '../styles/styles';
 import { Radio } from 'antd';
-import { DesktopOutlined, TabletOutlined } from '@ant-design/icons';
-import { useCanvasConfig } from '@/providers';
+import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
+import { useCanvas } from '@/providers';
 
 export interface ICanvasConfigProps {
 
@@ -11,37 +10,21 @@ export interface ICanvasConfigProps {
 
 export const CanvasConfig: FC<ICanvasConfigProps> = () => {
   const { styles } = useStyles();
-  const { setCanvasWidth } = useCanvasConfig();
-  const [radioValue, setRadioValue] = useState('desktop');
-  const dialogRef = useRef(null);
-
-  useEffect(() => {
-    dialogRef.current.addEventListener('click', () => {
-      setRadioValue('dialog');
-    });
-  }, []);
+  const { setDesignerDevice, designerDevice } = useCanvas();
 
   return (
     <div className={styles.shaDesignerCanvasConfig}>
-      <Radio.Group value={radioValue} buttonStyle="solid" size={'middle'}>
-        <Radio.Button className="radio-button" value="desktop" onClick={() => {
-          setRadioValue('desktop');
-          setCanvasWidth(100);
-        }
-        }
-          title="Desktop">
+      <Radio.Group className="radio-group" value={designerDevice} buttonStyle="solid" size={'middle'}>
+        <Radio.Button className="radio-button" value="desktop" onClick={() => setDesignerDevice('desktop')} title="Desktop">
           <DesktopOutlined />
         </Radio.Button>
-        <Radio.Button className="radio-button" value="tablet" onClick={() => {
-          setRadioValue('tablet');
-          setCanvasWidth(75);
-        }}
-          title="Tablet"
-        >
+
+        <Radio.Button className="radio-button" value="tablet" onClick={() => setDesignerDevice('tablet')} title="Tablet">
           <TabletOutlined />
         </Radio.Button>
-        <Radio.Button className="radio-button" value="dialog" onClick={() => dialogRef.current.click()} title="Custom-Width">
-          <DialogButton refLink={dialogRef} />
+
+        <Radio.Button className="radio-button" value="mobile" onClick={() => setDesignerDevice('mobile')} title="Mobile">
+          <MobileOutlined />
         </Radio.Button>
       </Radio.Group>
     </div>

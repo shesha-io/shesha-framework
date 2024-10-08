@@ -7,6 +7,9 @@ import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import { getEntitiesApiProperties } from './entities/metadata';
 import { ApplicationPluginRegistration } from '../context/applicationContext';
+import { getUtilsApiProperties } from './utils/metadata';
+import { getFormsApiProperties } from './forms/metadata';
+import { getNavigatorApiProperties } from './navigator/metadata';
 
 
 export interface UseApplicationContextMetadataProps {
@@ -28,6 +31,9 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
       .addObject("user", "Current User", getUserApiProperties)
       .addObject("settings", "Settings", m => getSettingsApiProperties(m, httpClient))
       .addObject("entities", "Entities", m => getEntitiesApiProperties(m, httpClient))
+      .addObject("forms", "Forms", m => getFormsApiProperties(m))
+      .addObject("utils", "Utils", m => getUtilsApiProperties(m))
+      .addObject("navigator", "Navigator", m => getNavigatorApiProperties(m))
       ;
 
     props.plugins.forEach(plugin => {

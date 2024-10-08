@@ -54,14 +54,17 @@ namespace Shesha.Permission
         [UnitOfWork]
         public async Task SetPermissionsAsync()
         {
-            var dbPermissions = _permissionDefinitionRepository.GetAllList();
+            var dbPermissions = await _permissionDefinitionRepository.GetAllListAsync();
 
             // Update DB-related items
             var dbRootPermissions = dbPermissions.Where(x => string.IsNullOrEmpty(x.Parent)).ToList();
             foreach (var dbPermission in dbRootPermissions)
             {
-                var permission = await _permissionManager.CreatePermissionAsync(dbPermission);
-                await CreateChildPermissionsAsync(dbPermissions, permission);
+                if (_permissionManager.GetPermissionOrNull(dbPermission.Name) == null)
+                {
+                    var permission = await _permissionManager.CreatePermissionAsync(dbPermission);
+                    await CreateChildPermissionsAsync(dbPermissions, permission);
+                }
                 dbPermissions.Remove(dbPermission);
             }
 
@@ -86,7 +89,7 @@ namespace Shesha.Permission
                     else
                     {
                         // remove permission with missed parent
-                        _permissionDefinitionRepository.Delete(dbPermission);
+                        await _permissionDefinitionRepository.DeleteAsync(dbPermission);
                     }
                     dbPermissions.Remove(dbPermission);
                 }
@@ -98,9 +101,12 @@ namespace Shesha.Permission
             var dbChildPermissions = dbPermissions.Where(x => x.Parent == permission.Name).ToList();
             foreach (var dbChildPermission in dbChildPermissions)
             {
-                var childPermission = await _permissionManager.CreatePermissionAsync(dbChildPermission);
-                await CreateChildPermissionsAsync(dbPermissions, childPermission);
-                dbPermissions.Remove(dbChildPermission);
+                if (_permissionManager.GetPermissionOrNull(dbChildPermission.Name) == null)
+                {
+                    var childPermission = await _permissionManager.CreatePermissionAsync(dbChildPermission);
+                    await CreateChildPermissionsAsync(dbPermissions, childPermission);
+                    dbPermissions.Remove(dbChildPermission);
+                }
             }
         }
 

@@ -56,7 +56,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const openEditorDialog = () => setShowDialog(true);
 
   const onDialogCancel = () => {
-    if (!readOnly && value !== internalValue) {
+    if (!readOnly && (value ?? "").trim() !== (internalValue ?? "").trim()) {
       modal.confirm({
         title: 'Close code editor?',
         icon: <ExclamationCircleFilled />,
@@ -82,21 +82,22 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
   const renderCodeEditor = () => (
-    <BaseCodeEditor
-      value={effectiveValue}
-      onChange={onChange}
-      readOnly={readOnly}
-      placeholder={props.placeholder}
-      language={language}
-
-      path={src?.path}
-      wrapInTemplate={props.wrapInTemplate}
-      templateSettings={props.templateSettings}
-      fileName={props.fileName ?? props.propertyName}
-      availableConstants={props.availableConstants}
-      style={mode === 'dialog' ? { height: "100%" } : undefined}
-    />
-  );
+      <BaseCodeEditor
+        value={effectiveValue}
+        onChange={onChange}
+        readOnly={readOnly}
+        placeholder={props.placeholder}
+        language={language}
+  
+        path={src?.path}
+        wrapInTemplate={props.wrapInTemplate}
+        templateSettings={props.templateSettings}
+        fileName={props.fileName ?? props.propertyName}
+        availableConstants={props.availableConstants}
+        resultType={props.resultType}
+        style={mode === 'dialog' ? { height: "100%" } : undefined}
+      />
+    );
 
   const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 

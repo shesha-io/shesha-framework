@@ -14,14 +14,13 @@ export interface ISidebarMenuStateContext
   isExpanded: boolean;
   actions?: IHeaderAction[];
   accountDropdownListItems?: IHeaderAction[];
+  items: ISidebarMenuItem[];
 }
 
 export interface ISidebarMenuActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   expand: () => void;
   collapse: () => void;
-  isItemVisible: (item: ISidebarMenuItem) => boolean;
-  getItems: () => ISidebarMenuItem[];
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
 
@@ -31,6 +30,7 @@ export const SIDEBAR_MENU_CONTEXT_INITIAL_STATE: ISidebarMenuStateContext = {
   error: {},
   actioned: {},
   isExpanded: false,
+  items: [],
 };
 
 export const SidebarMenuStateContext = createNamedContext<ISidebarMenuStateContext>(SIDEBAR_MENU_CONTEXT_INITIAL_STATE, "SidebarMenuStateContext");

@@ -22,6 +22,8 @@ import { Select, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useQueryBuilder } from '@/providers';
 
+type PropertyPredicate = (property: IPropertyItem) => boolean;
+
 export interface IPropertySelectProps {
   id?: string;
   value?: string;
@@ -31,6 +33,8 @@ export interface IPropertySelectProps {
   onChange?: (value: string) => void;
   onSelect?: (value: string, selectedProperty: IPropertyItem) => void;
   readOnly?: boolean;
+  isPropertyVisible?: PropertyPredicate;
+  isPropertySelectable?: PropertyPredicate;
 }
 
 export interface IQbItem {
@@ -42,11 +46,13 @@ export interface IQbItem {
 interface IOption {
   value: string;
   label: string | React.ReactNode;
+  disabled?: boolean;
 }
 
 interface IAutocompleteState {
   options: IOption[];
   propertyItems: IPropertyItem[];
+  prefix: string;
 }
 
 const getFullPath = (path: string, prefix: string) => {
@@ -59,7 +65,7 @@ export interface IHasPropertyType {
 
 export type IPropertyItem = (IPropertyMetadata | ISpecification) & IHasPropertyType;
 
-const isPropertyMetadata = (item: IPropertyItem): item is IPropertyMetadata & IHasPropertyType => {
+export const isPropertyMetadata = (item: IPropertyItem): item is IPropertyMetadata & IHasPropertyType => {
   return item.itemType === 'property';
 };
 
@@ -77,7 +83,7 @@ export const getPropertyItemIdentifier = (item: IPropertyItem, prefix: string): 
   return null;
 };
 
-const propertyItem2option = (item: IPropertyItem, prefix: string): IOption => {
+const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: PropertyPredicate): IOption => {
   if (isSpecification(item)) {
     const value = item.name;
     const label = (
@@ -101,15 +107,16 @@ const propertyItem2option = (item: IPropertyItem, prefix: string): IOption => {
 
     return {
       value: value,
-      label: label
+      label: label,
+      disabled: isSelectable ? !isSelectable(item) : undefined
     };
   }
 
   throw new Error('Unknown type of item');
 };
 
-const propertyItems2options = (properties: IPropertyItem[], prefix: string): IOption[] => {
-  return properties.filter(p => !(p.itemType === 'property' && (p as IPropertyMetadata).dataType === DataTypes.array)).map(p => propertyItem2option(p, prefix));
+const propertyItems2options = (properties: IPropertyItem[], prefix: string, isSelectable: PropertyPredicate): IOption[] => {
+  return properties.filter(p => !(p.itemType === 'property' && (p as IPropertyMetadata).dataType === DataTypes.array)).map(p => propertyItem2option(p, prefix, isSelectable));
 };
 
 const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem[] => {
@@ -127,53 +134,67 @@ const modelMetadata2Properties = (modelMetadata?: IModelMetadata): IPropertyItem
   return [...properties, ...specifications];
 };
 
-export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...props }) => {
+export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isPropertySelectable, isPropertyVisible, ...props }) => {
 
   const { fetchContainer } = useQueryBuilder();
 
   const initialProperties = [];
 
-  const [state, setState] = useState<IAutocompleteState>({ options: propertyItems2options(initialProperties, null), propertyItems: initialProperties });
+  const [state, setState] = useState<IAutocompleteState>({ options: propertyItems2options(initialProperties, null, isPropertySelectable), propertyItems: initialProperties, prefix: null });
 
   const setProperties = (properties: IPropertyItem[], prefix: string) => {
+
+    const filteredProperties = isPropertyVisible
+      ? properties.filter(p => isPropertyVisible(p))
+      : properties;
+
     setState({
-      propertyItems: properties,
-      options: propertyItems2options(properties, prefix)
+      propertyItems: filteredProperties,
+      options: propertyItems2options(filteredProperties, prefix, isPropertySelectable),
+      prefix,
     });
   };
 
-  const containerPath = useMemo(() => {
-    if (!props.value || Array.isArray(props.value))
+  const getPrefixFromString = (value: string) => {
+    if (!value)
       return null;
 
-    const lastIdx = props.value.lastIndexOf('.');
+    const lastIdx = value.lastIndexOf('.');
 
     if (state.propertyItems && state.propertyItems.length > 0 && lastIdx > -1) {
       // Check specifications, specification name may contain namespace and it shouldn't be recognized as a container
-      const spec = state.propertyItems.find(s => isSpecification(s) && s.name === props.value);
+      const spec = state.propertyItems.find(s => isSpecification(s) && s.name === value);
       if (spec)
         return null;
     }
 
     return lastIdx === -1
       ? null
-      : props.value.substring(0, lastIdx);
+      : value.substring(0, lastIdx);
+  };
+
+  const containerPath = useMemo(() => {
+    if (!props.value || Array.isArray(props.value))
+      return null;
+
+    return getPrefixFromString(props.value);
   }, [props.value]);
 
   const isFirstLoading = useRef<boolean>(true);
   useEffect(() => {
-    if (!containerPath && !isFirstLoading.current)
-      return;
+    const firstLoad = isFirstLoading.current;
 
     if (isFirstLoading.current === true) {
       isFirstLoading.current = false;
     }
 
-    // fetch container if changed
-    fetchContainer(containerPath).then(m => {
-      const propertyItems = modelMetadata2Properties(m);
-      setProperties(propertyItems, containerPath);
-    });
+    if (firstLoad || containerPath !== state.prefix) {
+      // fetch container if changed
+      fetchContainer(containerPath).then(m => {
+        const propertyItems = modelMetadata2Properties(m);
+        setProperties(propertyItems, containerPath);
+      });
+    }
   }, [containerPath]);
 
   const getPropertyItem = (path: string): IPropertyItem => {
@@ -189,9 +210,6 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
   };
 
   const onSearch = (data: string) => {
-    if (props.onChange)
-      props.onChange(data);
-
     const filteredOptions: IOption[] = [];
     state.propertyItems.forEach(p => {
       const fullPath = p.itemType === 'property'
@@ -199,12 +217,19 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
         : (p as ISpecification).friendlyName;
 
       if (fullPath.toLowerCase()?.startsWith(data?.toLowerCase())) {
-        const option = propertyItem2option(p, containerPath);
+        const option = propertyItem2option(p, containerPath, isPropertySelectable);
         filteredOptions.push(option);
       }
     });
 
-    setState({ propertyItems: state.propertyItems, options: filteredOptions });
+    setState(s => ({ propertyItems: state.propertyItems, options: filteredOptions, prefix: s.prefix }));
+
+    if (props.onChange)
+      props.onChange(data);
+  };
+
+  const onClear = () => {
+    props.onChange?.(null);
   };
 
   return (
@@ -221,6 +246,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, ...
       dropdownStyle={props?.dropdownStyle}
       popupMatchSelectWidth={false}
       allowClear
+      onClear={onClear}
     >
     </Select>
   );

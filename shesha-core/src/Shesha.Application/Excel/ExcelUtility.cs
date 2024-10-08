@@ -385,7 +385,7 @@ namespace Shesha.Excel
 
                     if (!(val is Dictionary<string, object> dict))
                         throw new NotSupportedException("Nested entities must be presented as `Dictionaty<string, object>`");
-                    return dict[EntityConstants.DisplayNameField].ToString();
+                    return dict[EntityConstants.DisplayNameField]?.ToString();
                 });
             } else
                 return new Func<object, string>(val => val?.ToString());

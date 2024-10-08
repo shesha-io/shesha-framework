@@ -63,7 +63,7 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
             bottom: 0;
             left: 0;
             right: 0;
-            z-index: 1000;
+            z-index: 10;
             cursor: pointer;
 
             .sha-configurable-logo-button-wrapper {

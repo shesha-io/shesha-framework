@@ -16,6 +16,7 @@ export interface IDataContextProviderProps {
   metadata?: Promise<IModelMetadata>;
   onChangeData?: ContextOnChangeData;
   onChangeAction?: IConfigurableActionConfiguration;
+  onInitAction?: IConfigurableActionConfiguration;
 }
 
 export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps>> = (props) => {
@@ -33,7 +34,7 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
   const { onChangeContextData } = useDataContextManager();
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useRef<any>({});
-  allData.current = useAvailableConstantsData(id);
+  allData.current = useAvailableConstantsData({ topContextId: id });
 
   const dataRef = useRef<any>({});
   const initialDataRef = useRef<any>(undefined);
@@ -101,6 +102,10 @@ export const DataContextProvider: FC<PropsWithChildren<IDataContextProviderProps
     initialDataRef.current = initialData;
     initialData.then((data) => {
       setDatainternal(data);
+      executeAction({
+        actionConfiguration: props.onInitAction,
+        argumentsEvaluationContext: {...allData.current},
+      });
     });
   }
 

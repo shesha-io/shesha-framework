@@ -302,6 +302,8 @@ namespace Shesha.Metadata
         {
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(propInfo.PropertyType);
 
+            var s = propType.FullName;
+
             return GetDataTypeByPropertyType(propType, propInfo) ?? throw new NotSupportedException($"Data type not supported: {propType.FullName}");
         }
 
@@ -385,7 +387,8 @@ namespace Shesha.Metadata
         {
             return type.ImplementsGenericInterface(typeof(IList<>)) ||
                 type.ImplementsGenericInterface(typeof(ICollection<>)) ||
-                type.ImplementsGenericInterface(typeof(IEnumerable<>));
+                type.ImplementsGenericInterface(typeof(IEnumerable<>)) ||
+                type.GetInterface(nameof(IEnumerable)) != null;
         }
    }
 }

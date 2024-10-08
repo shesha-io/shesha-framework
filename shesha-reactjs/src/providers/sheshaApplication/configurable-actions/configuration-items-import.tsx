@@ -83,6 +83,7 @@ export const useConfigurationItemsImportAction = () => {
           ...actionArgs,
           id: modalId,
           title: "Import Configuration Items",
+          width: "60%",
           isVisible: true,
           onClose: (positive, result) => {
             if (positive) {

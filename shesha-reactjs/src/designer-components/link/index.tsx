@@ -38,6 +38,7 @@ export interface ILinkProps extends IConfigurableFormComponent {
 const settingsForm = settingsFormJson as FormMarkup;
 const LinkComponent: IToolboxComponent<ILinkProps> = {
   type: 'link',
+  isInput: false,
   name: 'link',
   icon: <LinkOutlined />,
   Factory: ({ model }) => {

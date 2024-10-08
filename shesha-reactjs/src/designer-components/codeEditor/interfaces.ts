@@ -23,6 +23,7 @@ export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type
   mode?: 'inline' | 'dialog';
   language?: CodeLanguages;
   availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>);
+  resultType?: IObjectMetadata | (() => Promise<IObjectMetadata>);
 }
 
 export interface ICodeEditorComponentProps extends IConfigurableFormComponent, IExecutableCodeEditor {
@@ -31,4 +32,6 @@ export interface ICodeEditorComponentProps extends IConfigurableFormComponent, I
   language?: CodeLanguages;
   availableConstantsExpression?: string;
   availableConstants?: IObjectMetadata;
+  
+  resultTypeExpression?: string;
 }

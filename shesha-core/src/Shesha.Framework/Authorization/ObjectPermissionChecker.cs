@@ -2,6 +2,7 @@
 using Abp.Configuration.Startup;
 using Abp.Dependency;
 using Abp.Domain.Entities;
+using Abp.Domain.Uow;
 using Abp.Localization;
 using Shesha.Domain.Enums;
 using Shesha.Permissions;
@@ -19,33 +20,43 @@ namespace Shesha.Authorization
         private readonly IPermissionedObjectManager _permissionedObjectManager;
         private readonly IShaPermissionChecker _permissionChecker;
         private readonly ILocalizationManager _localizationManager;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public ObjectPermissionChecker(
             IAuthorizationConfiguration authConfiguration,
             IPermissionedObjectManager permissionedObjectManager,
             IShaPermissionChecker permissionChecker,
-            ILocalizationManager localizationManager
-            )
+            ILocalizationManager localizationManager,
+            IUnitOfWorkManager unitOfWorkManager
+        )
         {
             _authConfiguration = authConfiguration;
             _permissionedObjectManager = permissionedObjectManager;
             _permissionChecker = permissionChecker;
             _localizationManager = localizationManager;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
-        public async Task AuthorizeAsync(bool requireAll, string permissionedObject, string method, bool IsAuthenticated, RefListPermissionedAccess? replaceInherited = null)
+        [UnitOfWork]
+        public async Task AuthorizeAsync(
+            bool requireAll,
+            string permissionedObject,
+            string method,
+            string objectType,
+            bool IsAuthenticated,
+            RefListPermissionedAccess? replaceInherited = null)
         {
             if (!_authConfiguration.IsEnabled)
             {
                 return;
             }
 
-            var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method.RemovePostfix("Async")) 
-                ? PermissionedObjectManager.CrudMethods[method.RemovePostfix("Async")] 
+            var methodName = PermissionedObjectManager.CrudMethods.ContainsKey(method) 
+                ? PermissionedObjectManager.CrudMethods[method] 
                 : method;
             var permissionName = $"{permissionedObject}@{methodName}";
 
-            var permission = await _permissionedObjectManager.GetAsync(permissionName);
+            var permission = await _permissionedObjectManager.GetOrDefaultAsync(permissionName, objectType);
 
             var actualAccess = replaceInherited != null && permission?.ActualAccess == RefListPermissionedAccess.Inherited
                 ? replaceInherited

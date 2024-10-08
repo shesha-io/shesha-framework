@@ -1,17 +1,13 @@
 import { FormInstance } from 'antd';
-import { IFormValidationErrors, IToolboxComponent, IToolboxComponentGroup } from '@/interfaces';
+import { IModelMetadata, IToolboxComponentGroup } from '@/interfaces';
 import {
   DEFAULT_FORM_SETTINGS,
-  FormAction,
   FormMode,
-  FormSection,
   IConfigurableFormComponent,
-  IFormAction,
-  IFormActions,
-  IFormSection,
   IFormSettings,
 } from './models';
 import { createNamedContext } from '@/utils/react';
+import { IShaFormInstance } from './store/interfaces';
 
 export interface IHasComponentGroups {
   toolboxComponentGroups: IToolboxComponentGroup[];
@@ -22,12 +18,14 @@ export interface IFormStateInternalContext {
   formSettings: IFormSettings;
   formMode: FormMode;
   form?: FormInstance<any>;
-  actions: IFormAction[];
-  sections: IFormSection[];
 
   // runtime props
+  initialValues?: any;
   formData?: any;
-  validationErrors?: IFormValidationErrors;
+
+  // TODO: review and remove
+  modelMetadata?: IModelMetadata;
+  shaForm?: IShaFormInstance;
 }
 
 export interface IFormStateContext extends IFormStateInternalContext {
@@ -42,38 +40,16 @@ export interface ISetFormDataPayload {
   mergeValues: boolean;
 }
 
-export interface IRegisterActionsPayload {
-  id: string /** component id */;
-  actions: IFormActions /** component actions */;
-}
-
 export interface IFormActionsContext {
   setFormMode: (formMode: FormMode) => void;
-  updateStateFormData: (payload: ISetFormDataPayload) => void;
   setFormData: (payload: ISetFormDataPayload) => void;
-  setValidationErrors: (payload: IFormValidationErrors) => void;
-  registerActions: (id: string, actions: IFormActions) => void;
-  /**
-   * Get closest form action by name
-   *
-   * @param id: id of the current component
-   * @param name: name of the action
-   */
-  getAction: (id: string, name: string) => FormAction;
-  getSection: (id: string, name: string) => FormSection;
-
-  getToolboxComponent: (type: string) => IToolboxComponent;
 
   isComponentFiltered: (component: IConfigurableFormComponent) => boolean;
-  prepareDataForSubmit: () => Promise<object>;
-  executeExpression: <TResult = any>(expression: string, exposedData?: any) => Promise<TResult>;
 }
 
 /** Form initial state */
 export const FORM_CONTEXT_INITIAL_STATE: IFormStateContext = {
   formMode: 'designer',
-  actions: [],
-  sections: [],
   formSettings: DEFAULT_FORM_SETTINGS,
 };
 

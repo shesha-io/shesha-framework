@@ -11,6 +11,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentProps> = {
   type: 'sectionSeparator',
+  isInput: false,
   name: 'Section Separator',
   icon: <LineOutlined />,
   Factory: ({ model }) => {
@@ -21,7 +22,8 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
 
     return (
       <SectionSeparator
-        title={model.label}
+        {...model}
+        title={!model.hideLabel && model.label}
         containerStyle={getLayoutStyle({ ...model, style: model?.containerStyle }, { data: formData, globalState })}
         titleStyle={getStyle(model?.titleStyle, formData)}
         tooltip={model?.description}
@@ -34,11 +36,16 @@ const SectionSeparatorComponent: IToolboxComponent<ISectionSeparatorComponentPro
     return {
       ...model,
       label: 'Section',
+      lineThickness: 2,
+      labelAlign: "left",
+      orientation: "horizontal",
     };
   },
   migrator: (m) => m
     .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<ISectionSeparatorComponentProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ISectionSeparatorComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
+    .add<ISectionSeparatorComponentProps>(2, (prev) => ({ ...prev, labelAlign: "left" }))
+    .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: prev['noMargin'] ? 0 : null }))
   ,
 };
 

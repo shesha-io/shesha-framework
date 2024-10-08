@@ -8,34 +8,26 @@ export interface IComponentWithAuthProps {
   landingPage: string;
   children: (query: NodeJS.Dict<string | string[]>) => React.ReactElement;
 }
-
 export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const { landingPage, unauthorizedRedirectUrl } = props;
-  const { isCheckingAuth, loginInfo, checkAuth, getAccessToken, isLoggedIn, isFetchingUserInfo, token } = useAuth();
+  const { state: authState, isLoggedIn, checkAuthAsync: checkAuth } = useAuth();
+  const [, forceUpdate] = React.useState({});
 
-  const loading = isFetchingUserInfo || (!isFetchingUserInfo && !loginInfo && token) || !isLoggedIn;
-
-  const { goingToRoute, router } = useShaRouting();
+  const { router } = useShaRouting();
 
   const loginUrl = useLoginUrl({ homePageUrl: landingPage, unauthorizedRedirectUrl });
 
   useEffect(() => {
-    const token = getAccessToken();
-
-    if (!loginInfo) {
-      if (token) {
-        checkAuth();
-      } else {
-        goingToRoute(loginUrl);
-      }
+    if (!isLoggedIn) {      
+      checkAuth(loginUrl).then(() => {
+        forceUpdate({});
+      });
     }
-  }, [isCheckingAuth]);
+  }, [checkAuth, loginUrl, isLoggedIn]);
 
-  return loading ? (
-    <SheshaLoader message='Initializing...' />
-  ) : (
-    <Fragment>{props.children(router?.query)}</Fragment>
-  );
+  return isLoggedIn
+    ? <Fragment>{props.children(router?.query)}</Fragment> 
+    : <SheshaLoader message={authState.hint || "Initializing..."} />;
 };
 
 /**

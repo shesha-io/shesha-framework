@@ -13,11 +13,20 @@ import { IDictionary } from '@/interfaces';
 
 type PropertyInclusionPredicate = (name: string) => boolean;
 
+export const updateModelExcludeFiltered = (model: any, updatedModel: any, filter: PropertyInclusionPredicate) => {
+  Object.keys(updatedModel).forEach((key) => {
+    if (!filter(key)) {
+      model[key] = updatedModel[key];
+    }
+  });
+  return model;
+};
+
 export interface IEditorAdapter {
   propertiesFilter: PropertyInclusionPredicate;
 }
 
-const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
+export const getAllExceptPredicate = (names: string[]): PropertyInclusionPredicate => {
   return (name: string) => {
     return names.indexOf(name) === -1;
   };
@@ -55,6 +64,14 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'dataSourceType',
       'dataSourceUrl',
       'entityTypeShortAlias',
+      'height',
+      'width',
+      'borderSize',
+      'borderRadius',
+      'borderColor',
+      'borderType',
+      'backgroundColor',
+      'stylingBox'
     ]),
   },
   [CheckboxComponent.type]: {
@@ -78,6 +95,16 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
       'initialValue',
       'passEmptyStringByDefault',
       'textType',
+      'height',
+      'width',
+      'borderSize',
+      'borderRadius',
+      'borderColor',
+      'backgroundColor',
+      'fontSize',
+      'fontColor',
+      'borderType',
+      'stylingBox'
     ]),
   },
   [EntityReferenceComponent.type]: {

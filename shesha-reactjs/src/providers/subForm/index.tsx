@@ -24,7 +24,6 @@ import {
   GetDataError,
   useDeepCompareMemoKeepReference,
   useMutate,
-  usePubSub
   } from '@/hooks';
 import { getQueryParams, QueryStringParams } from '@/utils/url';
 import { IAnyObject } from '@/interfaces';
@@ -93,7 +92,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
 
-  const { publish } = usePubSub();
   const { formData = {}, formMode } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const appContextData = useApplicationContextData();
@@ -351,12 +349,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         if (onCreated) {
           const evaluateOnCreated = () => {
             // tslint:disable-next-line:function-constructor
-            return new Function('data, globalState, submittedValue, message, publish, application', onCreated)(
+            return new Function('data, globalState, submittedValue, message, application', onCreated)(
               formData,
               globalState,
               submittedValue?.result,
               message,
-              publish,
               appContextData,
             );
           };
@@ -380,12 +377,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         if (onUpdated) {
           const evaluateOnUpdated = () => {
             // tslint:disable-next-line:function-constructor
-            return new Function('data, globalState, response, message, publish', onUpdated)(
+            return new Function('data, globalState, response, message', onUpdated)(
               formData,
               globalState,
               submittedValue?.result,
               message,
-              publish
             );
           };
 
@@ -550,7 +546,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           condition={Boolean(state.formSettings?.modelType)}
           wrap={(children) => <MetadataProvider modelType={state.formSettings.modelType}>{children}</MetadataProvider>}
         >
-          <ParentProvider model={props} subFormIdPrefix={id} context={context}>
+          <ParentProvider model={props} context={context} isScope
+            formFlatMarkup={{allComponents: state.allComponents, componentRelations: state.componentRelations}}
+          >
             {children}
           </ParentProvider>
         </ConditionalWrap>

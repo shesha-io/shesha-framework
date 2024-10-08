@@ -12,6 +12,9 @@ import { modelConfigurationsMerge } from '@/apis/modelConfigurations';
 import { useLocalStorage } from '@/hooks';
 import { useSheshaApplication } from '@/providers';
 import { ValidationErrors } from '@/components';
+import { SizableColumns } from '@/components/sizableColumns';
+import classNames from 'classnames';
+import { useStyles } from './styles';
 
 export interface IEntityConfiguratorPageProps {
   id?: string;
@@ -23,6 +26,8 @@ interface ILoadingState {
 }
 
 export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps> = ({ id }) => {
+  const { styles } = useStyles();
+
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const configuratorRef = useRef<IModelConfiguratorInstance>();
   const entityConfigTreeRef = useRef<IEntityConfigTreeInstance>();
@@ -160,22 +165,32 @@ export const EntityConfiguratorPage: PageWithLayout<IEntityConfiguratorPageProps
         loading={loadingState.loading}
         loadingText={loadingState.loadingText}
       >
-        <Row>
-          <Col span="6">
-            <div style={{ minHeight: '1000px', maxHeight: '1000px', overflow: 'none' }}>
-              <EntityConfigTree
-                onChange={onChange}
-                
-                defaultSelected={entityConfigId}
-                entityConfigTreeRef={entityConfigTreeRef}
-              />
+        <SizableColumns
+          sizes={[25, 75]}
+          minSize={150}
+          expandToMin={false}
+          gutterSize={8}
+          gutterAlign="center"
+          snapOffset={30}
+          dragInterval={1}
+          direction="horizontal"
+          cursor="col-resize"
+          className={classNames(styles.container)}
+        >
+          <div className={styles.mainArea}>
+            <EntityConfigTree
+              onChange={onChange}
+              defaultSelected={entityConfigId}
+              entityConfigTreeRef={entityConfigTreeRef}
+            />
+          </div>
+          <div className={styles.propsPanel}>
+            <div  className={classNames(styles.propsPanelContent  )}>
+              <IndexToolbar className={classNames(styles.propsPanelHeader)} items={toolbarItems} />
+              <ModelConfigurator id={entityConfigId} configuratorRef={configuratorRef} />
             </div>
-          </Col>
-          <Col span="18">
-            <IndexToolbar className='sha-paging-height' items={toolbarItems} />
-            <ModelConfigurator id={entityConfigId} configuratorRef={configuratorRef} />
-          </Col>
-        </Row>
+          </div>
+        </SizableColumns>
         <div>{contextHolder}</div>
         <Modal
           title="Merge entity confifurations"

@@ -16,6 +16,7 @@ namespace Shesha.Utilities
             var oldContext = SynchronizationContext.Current;
             var synch = new ExclusiveSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(synch);
+#pragma warning disable VSTHRD101 // Rethrow to preserve stack details
             synch.Post(async _ =>
             {
                 try
@@ -32,6 +33,7 @@ namespace Shesha.Utilities
                     synch.EndMessageLoop();
                 }
             }, null);
+#pragma warning restore VSTHRD101 // Rethrow to preserve stack details
             synch.BeginMessageLoop();
 
             SynchronizationContext.SetSynchronizationContext(oldContext);
@@ -49,6 +51,7 @@ namespace Shesha.Utilities
             var synch = new ExclusiveSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(synch);
             T ret = default(T);
+#pragma warning disable VSTHRD101 // Rethrow to preserve stack details
             synch.Post(async _ =>
             {
                 try
@@ -65,6 +68,7 @@ namespace Shesha.Utilities
                     synch.EndMessageLoop();
                 }
             }, null);
+#pragma warning restore VSTHRD101 // Rethrow to preserve stack details
             synch.BeginMessageLoop();
             SynchronizationContext.SetSynchronizationContext(oldContext);
             return ret;

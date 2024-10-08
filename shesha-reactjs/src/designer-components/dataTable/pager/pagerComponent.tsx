@@ -15,12 +15,15 @@ export interface IPagerComponentProps extends ITablePagerProps, IConfigurableFor
 
 const PagerComponent: IToolboxComponent<IPagerComponentProps> = {
   type: 'datatable.pager',
+  isInput: false,
   name: 'Table Pager',
   icon: <ControlOutlined />,
   Factory: ({ model }) => {
     const store = useDataTableStore(false);
     if (model.hidden) return null;
     
+    return <TablePager {...model} />;
+
     return store 
       ? <TablePager {...model} />
       : <Alert

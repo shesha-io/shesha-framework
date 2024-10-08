@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Services
 {
-    public interface IStoredFileServiceBase<T> /*: IService<T> */where T : StoredFile, new()
+    public interface IStoredFileServiceBase<T> where T : StoredFile, new()
     {
         Task MarkDownloadedAsync(StoredFileVersion fileVersion);
 
@@ -16,6 +16,10 @@ namespace Shesha.Services
         Task<IList<StoredFile>> GetAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory);
         Task<IList<StoredFile>> GetAttachmentsAsync<TId>(IEntity<TId> owner);
         Task<IList<StoredFile>> GetAttachmentsAsync<TId>(TId id, string typeShortAlias);
+
+        Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias, string fileCategory);
+        Task<IList<StoredFileVersion>> GetLastVersionsOfAttachmentsAsync<TId>(TId id, string typeShortAlias);
+
         Task<bool> HasAttachmentsOfCategoryAsync<TId>(IEntity<TId> owner, string fileCategory);
         Task<bool> HasAttachmentsOfCategoryAsync<TId>(TId id, string typeShortAlias, string fileCategory);
         Task<Stream> GetStreamAsync(StoredFileVersion fileVersion);
@@ -33,7 +37,17 @@ namespace Shesha.Services
         Task<List<StoredFileVersion>> GetFileVersionsAsync(StoredFile file);
 
         Task UpdateVersionContentAsync(StoredFileVersion version, Stream stream);
+        [Obsolete("Use CreateFileAsync instead")]
         Task<T> SaveFileAsync(Stream stream, string fileName, Action<StoredFile> prepareFileAction = null);
+
+        /// <summary>
+        /// Create new file and return created version
+        /// </summary>
+        /// <param name="stream">File content stream</param>
+        /// <param name="fileName">File name</param>
+        /// <param name="prepareFileAction">Custom preparation of file entity</param>
+        /// <returns></returns>
+        Task<StoredFileVersion> CreateFileAsync(Stream stream, string fileName, Action<StoredFile> prepareFileAction = null);
 
         /// <summary>
         /// Update file content and name

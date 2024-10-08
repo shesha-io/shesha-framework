@@ -42,9 +42,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task StringField_Equals_Fetch()
+        public async Task StringField_Equals_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_stringField_Equals_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_stringField_Equals_expression);
             Assert.NotNull(data);
         }
 
@@ -69,9 +69,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task StringField_NotEquals_Fetch()
+        public async Task StringField_NotEquals_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_stringField_NotEquals_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_stringField_NotEquals_expression);
             Assert.NotNull(data);
         }
 
@@ -95,9 +95,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task StringField_Like_Fetch()
+        public async Task StringField_Like_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_stringField_Like_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_stringField_Like_expression);
             Assert.NotNull(data);
         }
 
@@ -124,9 +124,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task StringField_NotLike_Fetch()
+        public async Task StringField_NotLike_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_stringField_NotLike_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_stringField_NotLike_expression);
             Assert.NotNull(data);
         }
 
@@ -147,9 +147,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task StringField_IsEmpty_Fetch()
+        public async Task StringField_IsEmpty_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_stringField_IsEmpty_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_stringField_IsEmpty_expression);
             Assert.NotNull(data);
         }
 
@@ -171,9 +171,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task StringField_IsNotEmpty_Fetch()
+        public async Task StringField_IsNotEmpty_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_stringField_IsNotEmpty_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_stringField_IsNotEmpty_expression);
             Assert.NotNull(data);
         }
 
@@ -198,9 +198,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task StringField_StartsWith_Fetch()
+        public async Task StringField_StartsWith_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_stringField_StartsWith_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_stringField_StartsWith_expression);
             Assert.NotNull(data);
         }
 
@@ -225,9 +225,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task StringField_EndsWith_Fetch()
+        public async Task StringField_EndsWith_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_stringField_EndsWith_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_stringField_EndsWith_expression);
             Assert.NotNull(data);
         }
 
@@ -297,9 +297,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task Int64Field_Equals_Fetch()
+        public async Task Int64Field_Equals_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_int64Field_Equals_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_int64Field_Equals_expression);
             Assert.NotNull(data);
         }
 
@@ -327,9 +327,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task Int64Field_LessThan_Fetch()
+        public async Task Int64Field_LessThan_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_int64Field_LessThan_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_int64Field_LessThan_expression);
             Assert.NotNull(data);
         }
 
@@ -358,9 +358,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task Int64Field_LessThanOrEqual_Fetch()
+        public async Task Int64Field_LessThanOrEqual_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_int64Field_LessThanOrEqual_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_int64Field_LessThanOrEqual_expression);
             Assert.NotNull(data);
         }
 
@@ -390,9 +390,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task Int64Field_GreaterThan_Fetch()
+        public async Task Int64Field_GreaterThan_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_int64Field_GreaterThan_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_int64Field_GreaterThan_expression);
             Assert.NotNull(data);
         }
 
@@ -421,9 +421,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task Int64Field_GreaterThanOrEqual_Fetch()
+        public async Task Int64Field_GreaterThanOrEqual_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_int64Field_GreaterThanOrEqual_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_int64Field_GreaterThanOrEqual_expression);
             Assert.NotNull(data);
         }
 
@@ -454,9 +454,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task BooleanField_Equals_Fetch()
+        public async Task BooleanField_Equals_FetchAsync()
         {
-            var data = await TryFetchData<User, Int64>(_booleanField_Equals_expression);
+            var data = await TryFetchDataAsync<User, Int64>(_booleanField_Equals_expression);
             Assert.NotNull(data);
         }
 
@@ -482,9 +482,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task BooleanField_NotEquals_Fetch()
+        public async Task BooleanField_NotEquals_FetchAsync()
         {
-            var data = await TryFetchData<User, Int64>(_booleanField_NotEquals_expression);
+            var data = await TryFetchDataAsync<User, Int64>(_booleanField_NotEquals_expression);
             Assert.NotNull(data);
         }
 
@@ -529,9 +529,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task NestedColumnResolver_Fetch()
+        public async Task NestedColumnResolver_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_nestedColumnResolver_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_nestedColumnResolver_expression);
             Assert.NotNull(data);
         }
 
@@ -939,9 +939,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task EntityReference_Equals_Fetch()
+        public async Task EntityReference_Equals_FetchAsync()
         {
-            var data = await TryFetchData<ShaRolePermission, Guid>(_entityReference_Equals_expression);
+            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression);
             Assert.NotNull(data);
         }
 
@@ -1005,9 +1005,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task EntityReference_IsNull_Fetch()
+        public async Task EntityReference_IsNull_FetchAsync()
         {
-            var data = await TryFetchData<ShaRolePermission, Guid>(_entityReference_IsNull_expression);
+            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_IsNull_expression);
             Assert.NotNull(data);
         }
 
@@ -1033,9 +1033,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task EntityReference_IsNotNull_Fetch()
+        public async Task EntityReference_IsNotNull_FetchAsync()
         {
-            var data = await TryFetchData<ShaRolePermission, Guid>(_entityReference_IsNotNull_expression);
+            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_IsNotNull_expression);
             Assert.NotNull(data);
         }
 
@@ -1085,9 +1085,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task ComplexExpression_Fetch()
+        public async Task ComplexExpression_FetchAsync()
         {
-            var data = await TryFetchData<ShaRolePermission, Guid>(_entityReference_Equals_expression);
+            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression);
             Assert.NotNull(data);
         }
 
@@ -1096,9 +1096,9 @@ namespace Shesha.Tests.JsonLogic
         #region sorting
 
         [Fact]
-        public async Task ComplexExpression_Fetch_SortBy_Asc()
+        public async Task ComplexExpression_Fetch_SortBy_AscAsync()
         {
-            var data = await TryFetchData<ShaRolePermission, Guid>(_entityReference_Equals_expression, queryable => 
+            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression, queryable => 
                 queryable.OrderBy(nameof(ShaRolePermission.Permission))
             );
 
@@ -1108,9 +1108,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task ComplexExpression_Fetch_SortBy_Desc()
+        public async Task ComplexExpression_Fetch_SortBy_DescAsync()
         {
-            var data = await TryFetchData<ShaRolePermission, Guid>(_entityReference_Equals_expression, queryable =>
+            var data = await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression, queryable =>
                 queryable.OrderByDescending(nameof(ShaRolePermission.Permission))
             );
 
@@ -1120,9 +1120,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task ComplexExpression_Fetch_SortBy_NestedEntity_Property_Asc()
+        public async Task ComplexExpression_Fetch_SortBy_NestedEntity_Property_AscAsync()
         {
-            await TryFetchData<ShaRolePermission, Guid>(_entityReference_Equals_expression, 
+            await TryFetchDataAsync<ShaRolePermission, Guid>(_entityReference_Equals_expression, 
                 queryable => queryable.OrderBy($"{nameof(ShaRolePermission.ShaRole)}.{nameof(ShaRolePermission.ShaRole.Name)}"),
                 data => {
                     Assert.NotNull(data);
@@ -1134,9 +1134,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task ComplexExpression_Fetch_SortBy_Title_Asc()
+        public async Task ComplexExpression_Fetch_SortBy_Title_AscAsync()
         {
-            await TryFetchData<User, Int64>(_booleanField_NotEquals_expression,
+            await TryFetchDataAsync<User, Int64>(_booleanField_NotEquals_expression,
                 queryable => queryable.OrderBy($"{nameof(User.TypeOfAccount)}"),
                 data => {
                     Assert.NotNull(data);
@@ -1205,9 +1205,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task NullableReflistField_Contains_Fetch()
+        public async Task NullableReflistField_Contains_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_nullable_reflistField_Contains_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_nullable_reflistField_Contains_expression);
             Assert.NotNull(data);
         }
 
@@ -1236,9 +1236,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task EntityReference_In_Fetch()
+        public async Task EntityReference_In_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_entityReference_In_Convert_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_entityReference_In_Convert_expression);
             Assert.NotNull(data);
         }
 
@@ -1268,9 +1268,9 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task Custom_Date_Funcs_Fetch()
+        public async Task Custom_Date_Funcs_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_custom_date_funcs_Convert_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_custom_date_funcs_Convert_expression);
             Assert.NotNull(data);
         }
 
@@ -1331,10 +1331,206 @@ namespace Shesha.Tests.JsonLogic
         }
 
         [Fact]
-        public async Task Custom_String_Funcs_Fetch()
+        public async Task Custom_String_Funcs_FetchAsync()
         {
-            var data = await TryFetchData<Person, Guid>(_custom_string_funcs_Convert_expression);
+            var data = await TryFetchDataAsync<Person, Guid>(_custom_string_funcs_Convert_expression);
             Assert.NotNull(data);
+        }
+
+        #endregion
+
+        #region decimal
+
+        private static class NumberExpressions
+        {
+            public const string Equal = @"{
+  ""and"": [
+    {
+      ""=="": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string Equal_linq = @"ent => (ent.NotNullableNumeric == 100)";
+
+            public const string NotEqual = @"{
+  ""and"": [
+    {
+      ""!="": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+
+            public const string NotEqual_linq = @"ent => Not((ent.NotNullableNumeric == 100))";
+
+            public const string Greater = @"{
+  ""and"": [
+    {
+      "">"": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string Greater_linq = @"ent => (ent.NotNullableNumeric > 100)";
+
+            public const string GreaterOrEqual = @"{
+  ""and"": [
+    {
+      "">="": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string GreaterOrEqual_linq = @"ent => (ent.NotNullableNumeric >= 100)";
+
+            public const string Less = @"{
+  ""and"": [
+    {
+      ""<"": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string Less_linq = @"ent => (ent.NotNullableNumeric < 100)";
+
+            public const string LessOrEqual = @"{
+  ""and"": [
+    {
+      ""<="": [
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+
+            public const string LessOrEqual_linq = @"ent => (ent.NotNullableNumeric <= 100)";
+
+            public const string Between = @"{
+  ""and"": [
+    {
+      ""<="": [
+        0,
+        {
+          ""var"": ""NotNullableNumeric""
+        },
+        100
+      ]
+    }
+  ]
+}";
+            public const string Between_linq = @"ent => ((0 <= ent.NotNullableNumeric) AndAlso (ent.NotNullableNumeric <= 100))";
+
+            public const string NotBetween = @"{
+  ""and"": [
+    {
+      ""!"": {
+        ""<="": [
+            0,
+            {
+              ""var"": ""NotNullableNumeric""
+            },
+            100
+        ]
+      }
+    }
+  ]
+}";
+            public const string NotBetween_linq = @"ent => Not(((0 <= ent.NotNullableNumeric) AndAlso (ent.NotNullableNumeric <= 100)))";
+        }
+
+
+
+
+        [Theory]
+        [InlineData("Equal", NumberExpressions.Equal, NumberExpressions.Equal_linq)]
+        [InlineData("NotEqual", NumberExpressions.NotEqual, NumberExpressions.NotEqual_linq)]
+        [InlineData("Greater", NumberExpressions.Greater, NumberExpressions.Greater_linq)]
+        [InlineData("GreaterOrEqual", NumberExpressions.GreaterOrEqual, NumberExpressions.GreaterOrEqual_linq)]
+        [InlineData("Less", NumberExpressions.Less, NumberExpressions.Less_linq)]
+        [InlineData("LessOrEqual", NumberExpressions.LessOrEqual, NumberExpressions.LessOrEqual_linq)]
+        [InlineData("Between", NumberExpressions.Between, NumberExpressions.Between_linq)]
+        [InlineData("NotBetween", NumberExpressions.NotBetween, NumberExpressions.NotBetween_linq)]
+        public void DecimalField_Convert(string name, string jsonLogicExpression, string expectation)
+        {
+            Console.WriteLine($"Test: '{name}'");
+
+            var linqExpression = ConvertToExpression<EntityWithNumericProp<decimal>>(jsonLogicExpression);
+            Assert.Equal(expectation, linqExpression.ToString());
+        }
+
+        [Theory]
+        [InlineData("Equal", NumberExpressions.Equal, NumberExpressions.Equal_linq)]
+        [InlineData("NotEqual", NumberExpressions.NotEqual, NumberExpressions.NotEqual_linq)]
+        [InlineData("Greater", NumberExpressions.Greater, NumberExpressions.Greater_linq)]
+        [InlineData("GreaterOrEqual", NumberExpressions.GreaterOrEqual, NumberExpressions.GreaterOrEqual_linq)]
+        [InlineData("Less", NumberExpressions.Less, NumberExpressions.Less_linq)]
+        [InlineData("LessOrEqual", NumberExpressions.LessOrEqual, NumberExpressions.LessOrEqual_linq)]
+        [InlineData("Between", NumberExpressions.Between, NumberExpressions.Between_linq)]
+        [InlineData("NotBetween", NumberExpressions.NotBetween, NumberExpressions.NotBetween_linq)]
+        public void FloatField_Convert(string name, string jsonLogicExpression, string expectation)
+        {
+            Console.WriteLine($"Test: '{name}'");
+
+            var linqExpression = ConvertToExpression<EntityWithNumericProp<float>>(jsonLogicExpression);
+            Assert.Equal(expectation, linqExpression.ToString());
+        }
+
+        [Theory]
+        [InlineData("Equal", NumberExpressions.Equal, NumberExpressions.Equal_linq)]
+        [InlineData("NotEqual", NumberExpressions.NotEqual, NumberExpressions.NotEqual_linq)]
+        [InlineData("Greater", NumberExpressions.Greater, NumberExpressions.Greater_linq)]
+        [InlineData("GreaterOrEqual", NumberExpressions.GreaterOrEqual, NumberExpressions.GreaterOrEqual_linq)]
+        [InlineData("Less", NumberExpressions.Less, NumberExpressions.Less_linq)]
+        [InlineData("LessOrEqual", NumberExpressions.LessOrEqual, NumberExpressions.LessOrEqual_linq)]
+        [InlineData("Between", NumberExpressions.Between, NumberExpressions.Between_linq)]
+        [InlineData("NotBetween", NumberExpressions.NotBetween, NumberExpressions.NotBetween_linq)]
+        public void DoubleField_Convert(string name, string jsonLogicExpression, string expectation)
+        {
+            Console.WriteLine($"Test: '{name}'");
+
+            var linqExpression = ConvertToExpression<EntityWithNumericProp<double>>(jsonLogicExpression);
+            Assert.Equal(expectation, linqExpression.ToString());
+        }
+
+        [Theory]
+        [InlineData("Equal", NumberExpressions.Equal, NumberExpressions.Equal_linq)]
+        [InlineData("NotEqual", NumberExpressions.NotEqual, NumberExpressions.NotEqual_linq)]
+        [InlineData("Greater", NumberExpressions.Greater, NumberExpressions.Greater_linq)]
+        [InlineData("GreaterOrEqual", NumberExpressions.GreaterOrEqual, NumberExpressions.GreaterOrEqual_linq)]
+        [InlineData("Less", NumberExpressions.Less, NumberExpressions.Less_linq)]
+        [InlineData("LessOrEqual", NumberExpressions.LessOrEqual, NumberExpressions.LessOrEqual_linq)]
+        [InlineData("Between", NumberExpressions.Between, NumberExpressions.Between_linq)]
+        [InlineData("NotBetween", NumberExpressions.NotBetween, NumberExpressions.NotBetween_linq)]
+        public void ByteField_Convert(string name, string jsonLogicExpression, string expectation)
+        {
+            Console.WriteLine($"Test: '{name}'");
+
+            var linqExpression = ConvertToExpression<EntityWithNumericProp<byte>>(jsonLogicExpression);
+            Assert.Equal(expectation, linqExpression.ToString());
         }
 
         #endregion

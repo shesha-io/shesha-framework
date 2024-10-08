@@ -1,11 +1,12 @@
 import React, { FC, Fragment } from 'react';
 import { Alert, AlertProps } from 'antd';
+import classNames from 'classnames';
 import { IErrorInfo, isErrorInfo, isHasErrorInfo } from '@/interfaces/errorInfo';
 import { IAjaxResponseBase, isAjaxResponseBase, isAxiosResponse } from '@/interfaces/ajaxResponse';
 import { useStyles } from './styles/styles';
 import { AxiosResponse } from 'axios';
 
-export interface IValidationErrorsProps {
+export interface IValidationErrorsProps extends AlertProps {
   error: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error;
   renderMode?: 'alert' | 'raw';
   defaultMessage?: string;
@@ -16,14 +17,27 @@ const DEFAULT_ERROR_MSG = 'Sorry, an error has occurred. Please try again later'
 /**
  * A component for displaying validation errors
  */
-export const ValidationErrors: FC<IValidationErrorsProps> = ({ error, renderMode = 'alert', defaultMessage = 'Please correct the errors and try again:' }) => {
+export const ValidationErrors: FC<IValidationErrorsProps> = ({
+  error,
+  renderMode = 'alert',
+  defaultMessage = 'Please correct the errors and try again:',
+  className,
+  ...rest
+}) => {
   const { styles } = useStyles();
   if (!error) return null;
 
   const renderValidationErrors = (props: AlertProps) => {
-
     if (renderMode === 'alert') {
-      return <Alert className={styles.shaValidationErrorAlert} type="error" showIcon closable {...props} />;
+      return (
+        <Alert
+          className={classNames(styles.shaValidationErrorAlert, className)}
+          type="error"
+          showIcon
+          closable
+          {...props}
+        />
+      );
     }
 
     return (
@@ -40,44 +54,39 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({ error, renderMode
   };
 
   if (typeof error === 'string') {
-    return renderValidationErrors({ message: error });
+    return renderValidationErrors({ message: error, ...rest });
   }
 
-  const errorObj = error instanceof Error
-    ? { message: error.message } as IErrorInfo
-    : isAxiosResponse(error) && isAjaxResponseBase(error.data)
-      ? error.data.error
-      : isAjaxResponseBase(error)
-        ? error.error
-        : isHasErrorInfo(error)
-          ? error.errorInfo
-          : isErrorInfo(error)
-            ? error
-            : undefined;
+  const errorObj =
+    error instanceof Error
+      ? ({ message: error.message } as IErrorInfo)
+      : isAxiosResponse(error) && isAjaxResponseBase(error.data)
+        ? error.data.error
+        : isAjaxResponseBase(error)
+          ? error.error
+          : isHasErrorInfo(error)
+            ? error.errorInfo
+            : isErrorInfo(error)
+              ? error
+              : undefined;
 
   const { message, details, validationErrors } = errorObj || {};
 
   if (validationErrors?.length) {
-    const violations = (
-      <ul>
-        {validationErrors?.map((e, i) => (
-          <li key={i}>{e.message}</li>
-        ))}
-      </ul>
-    );
+    const violations = <ul>{validationErrors?.map((e, i) => <li key={i}>{e.message}</li>)}</ul>;
 
-    return renderValidationErrors({ message: defaultMessage, description: violations });
+    return renderValidationErrors({ message: defaultMessage, description: violations, ...rest });
   }
 
   if (message) {
-    return renderValidationErrors({ message });
+    return renderValidationErrors({ message, ...rest });
   }
 
   if (details) {
-    return renderValidationErrors({ message: details });
+    return renderValidationErrors({ message: details, ...rest });
   }
 
-  return renderValidationErrors({ message: DEFAULT_ERROR_MSG });
+  return renderValidationErrors({ message: DEFAULT_ERROR_MSG, ...rest });
 };
 
 export default ValidationErrors;

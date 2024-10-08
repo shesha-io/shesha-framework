@@ -32,7 +32,7 @@ export const FiltersList: FC<IFiltersListProps> = ({ value, onChange, readOnly }
             initNewItem={makeNewFilter}
             readOnly={readOnly}
         >
-            {({ item, itemOnChange, readOnly }) => (<FilterItem value={item} onChange={itemOnChange} readOnly={readOnly}/>)}
+            {({ item, itemOnChange, readOnly }) => (<FilterItem value={item} onChange={itemOnChange} readOnly={readOnly} />)}
         </ListEditor>
     );
 };

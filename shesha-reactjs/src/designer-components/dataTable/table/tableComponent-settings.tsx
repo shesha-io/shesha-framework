@@ -204,8 +204,8 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props
         <Input readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="items" label="Customize columns" jsSetting>
-        <ColumnsConfig readonly={readOnly} />
+      <SettingsFormItem name="items" label={readOnly ? "View columns" : "Customize columns"} jsSetting>
+        <ColumnsConfig readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="useMultiselect" label="Use Multi-select" valuePropName="checked" jsSetting>

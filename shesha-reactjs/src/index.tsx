@@ -10,9 +10,12 @@ export * from './shesha-constants';
 export * from './utils';
 export { type GetProps, type MutateProps, get, mutate } from './utils/fetchers';
 export * from './utils/publicUtils';
+export * from './components/mainLayout/constant';
 
-export { removeZeroWidthCharsFromString } from './providers/form/utils';
+export * from './providers/form/utils';
 export { requestHeaders } from './utils/requestHeaders';
+
+export { ConfigurableComponentRenderer } from './components/configurableComponentRenderer';
 
 export { DynamicPage } from './generic-pages/dynamic';
 export { EntityConfiguratorPage } from './generic-pages/entity-config/configurator';

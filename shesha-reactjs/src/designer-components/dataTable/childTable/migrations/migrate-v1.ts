@@ -3,8 +3,8 @@ import { IConfigurableActionConfiguration } from "@/interfaces/configurableActio
 import { SettingsMigrationContext } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
 import { IButtonItem } from "@/providers/buttonGroupConfigurator/models";
-import { IShowModalActionArguments as IShowModalActionArguments } from "@/providers/dynamicModal/configurable-actions/show-dialog-arguments";
 import { getClosestTableId } from "@/providers/form/utils";
+import { IShowModalActionArgumentsV0 } from "@/providers/dynamicModal/migrations/ver0";
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
     return {
@@ -61,7 +61,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
 
             const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
-            const modalArguments: IShowModalActionArguments = {
+            const modalArguments: IShowModalActionArgumentsV0 = {
                 modalTitle: buttonProps.modalTitle,
                 formId: buttonProps.modalFormId,
 
@@ -266,17 +266,6 @@ interface IModalPropsV0 {
     width?: number;
 
     modalConfirmDialogMessage?: string;
-
-    /**
-     * If passed and the form has `getUrl` defined, you can use this function to prepare `fetchedData` for as `initialValues`
-     * If you want to use only `initialValues` without combining them with `fetchedData` and then ignore `fetchedData`
-     *
-     * If not passed, `fetchedData` will be used as `initialValues`
-     *
-     * Whenever the form has a getUrl and that url has queryParams, buy default, the `dynamicModal` will fetch the form and, subsequently, the data
-     * for that form
-     */
-    prepareInitialValues?: (fetchedData: any) => any;
 
     onCancel?: () => void;
 }

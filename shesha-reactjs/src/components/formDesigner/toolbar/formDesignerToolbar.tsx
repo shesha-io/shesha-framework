@@ -12,6 +12,7 @@ import { PreviewButton } from './previewButton';
 import { FormSettingsButton } from './formSettingsButton';
 import { useStyles } from '../styles/styles';
 import { CanvasConfig } from './canvasConfig';
+import { CustomActions } from './customActions';
 
 export interface IProps { }
 
@@ -20,6 +21,11 @@ export const FormDesignerToolbar: FC<IProps> = () => {
   const { router } = useShaRouting(false) ?? {};
   const { readOnly } = useFormDesignerState();
   const { styles } = useStyles();
+
+  const { formSettings } = useFormDesignerState();
+  const { anyOfPermissionsGranted } = useSheshaApplication();
+
+  const isGranted = formSettings?.access !== 4 || anyOfPermissionsGranted(formSettings?.permissions || []);
 
   const onVersionCreated = (newVersion: FormConfigurationDto) => {
     const url = `${routes.formsDesigner}?id=${newVersion.id}`;
@@ -33,21 +39,26 @@ export const FormDesignerToolbar: FC<IProps> = () => {
 
   return (
     <div className={styles.shaDesignerToolbar}>
-      <div className={styles.shaDesignerToolbarLeft}>
-        {!readOnly && (
-          <SaveMenu />
-        )}
-        <CreateNewVersionButton onSuccess={onVersionCreated} />
-        <PublishButton />
-      </div>
-      <CanvasConfig/>
-      <div className={styles.shaDesignerToolbarRight}>
-        <FormSettingsButton />
-        <PreviewButton />
-        <DebugButton />
+      {isGranted &&
+        <>
+          <div className={styles.shaDesignerToolbarLeft}>
+            {!readOnly && (
+              <SaveMenu />
+            )}
+            <CreateNewVersionButton onSuccess={onVersionCreated} />
+            <PublishButton />
+          </div>
+          <CanvasConfig/>
+          <div className={styles.shaDesignerToolbarRight}>
+            <FormSettingsButton />
+            <PreviewButton />
+            <DebugButton />
 
-        {!readOnly && (<UndoRedoButtons />)}
-      </div>
+            {!readOnly && (<UndoRedoButtons />)}
+            <CustomActions />
+          </div>
+        </>
+      }
     </div>
   );
 };

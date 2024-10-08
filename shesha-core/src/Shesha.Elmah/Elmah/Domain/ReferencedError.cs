@@ -26,6 +26,7 @@ namespace Shesha.Elmah.Domain
         public virtual string TimeUtc { get; set; }
         public virtual string Type { get; set; }
         public virtual string User { get; set; }
+        public virtual string Location { get; set; }
 
         [NotMapped]
         public virtual string DetailsUrl { 

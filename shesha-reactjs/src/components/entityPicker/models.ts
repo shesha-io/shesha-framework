@@ -25,8 +25,6 @@ export interface IAddNewRecordProps {
   modalTitle?: string;
   showModalFooter?: boolean;
   footerButtons?: ModalFooterButtons;
-  submitHttpVerb?: 'POST' | 'PUT';
-  onSuccessRedirectUrl?: string;
   modalWidth?: number | string;
   buttons?: ButtonGroupItemProps[];
 }

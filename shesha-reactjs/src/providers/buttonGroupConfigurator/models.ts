@@ -33,7 +33,9 @@ export interface IButtonGroupItemBase {
   hidden?: boolean;
   isDynamic?: boolean;
   itemType: ButtonGroupItemType;
-  icon?: string;
+  icon?: string | React.ReactNode;
+  iconPosition?: 'start' | 'end';
+  downIcon?: string;
   buttonType?: ButtonType;
   ghost?: boolean;
   permissions?: string[];
@@ -41,6 +43,16 @@ export interface IButtonGroupItemBase {
   size?: SizeType;
   editMode?: EditMode;
   readOnly?: boolean;
+  width?: string;
+  height?: string;
+  backgroundColor?: string;
+  fontSize?: string;
+  color?: string;
+  fontWeight?: string;
+  borderWidth?: string;
+  borderColor?: string;
+  borderStyle?: 'dotted' | 'solid' | 'dashed';
+  borderRadius?: string;
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase {

@@ -2,7 +2,7 @@ import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ReactNode } from 'react';
-import { DesignerToolbarSettings, IAsyncValidationError } from '@/interfaces';
+import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
@@ -17,7 +17,7 @@ export interface ISubmitActionArguments {
 }
 
 export const SubmitActionArgumentsMarkup = new DesignerToolbarSettings()
-  .addCheckbox({ id: nanoid(), propertyName: 'validateFields', parentId: 'root', label: 'Validate fields', defaultValue: false})
+  .addCheckbox({ id: nanoid(), propertyName: 'validateFields', parentId: 'root', label: 'Validate fields', defaultValue: false })
   .toJson();
 
 export type FormMode = 'designer' | 'edit' | 'readonly';
@@ -112,6 +112,9 @@ export interface IComponentBindingProps {
 
   /** data context ID, empty for from data */
   context?: string;
+
+  /** initial data context ID, empty for from data */
+  initialContext?: string;
 }
 
 export interface IComponentVisibilityProps {
@@ -134,12 +137,12 @@ export interface IComponentMetadata {
  */
 export interface IConfigurableFormComponent
   extends IFormComponentContainer,
-    IHasVersion,
-    IComponentBindingProps,
-    IComponentLabelProps,
-    IComponentVisibilityProps,
-    IComponentRuntimeProps,
-    IComponentMetadata {
+  IHasVersion,
+  IComponentBindingProps,
+  IComponentLabelProps,
+  IComponentVisibilityProps,
+  IComponentRuntimeProps,
+  IComponentMetadata {
   /** Type of the component */
   type: string;
 
@@ -178,7 +181,7 @@ export interface IConfigurableFormComponent
 
   /** Default css style applied as string */
   stylingBox?: string;
-  
+
   noDataText?: string;
 
   noDataIcon?: string;
@@ -186,6 +189,7 @@ export interface IConfigurableFormComponent
   noDataSecondaryText?: string;
 
   permissions?: string[];
+
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
@@ -211,33 +215,60 @@ export interface IFlatComponentsStructure {
   componentRelations: IComponentRelations;
 }
 
-export interface IFormSettings extends IHasVersion {
+export interface IFormSettingsCommon {
   modelType?: string;
-
-  postUrl?: string;
-  putUrl?: string;
-  deleteUrl?: string;
-  getUrl?: string;
-
   layout: FormLayout;
   colon: boolean;
   labelCol: ColProps;
   wrapperCol: ColProps;
-  preparedValues?: string;
   size?: SizeType;
-  formKeysToPersist?: string[];
+    /** if true then need to update components structure for using Setting component */
+    isSettingsForm?: boolean;
+    permissions?: string[];
+    access?: number;
+}
+
+export interface ILegacyFormSettings extends IFormSettingsCommon {
+  version?: -1 | 1 | null | undefined;
   fieldsToFetch?: string[];
   excludeFormFieldsInPayload?: string;
-  uniqueFormId?: string;
-  onDataLoaded?: string;
-  onInitialized?: string;
-  onUpdate?: string;
-  initialValues?: IKeyValue[];
 
-  /** if true then need to update components structure for using Setting component */
-  isSettingsForm?: boolean;
-  permissions?: string[];
+  //#region urls
+  postUrl?: string;
+  putUrl?: string;
+  deleteUrl?: string;
+  getUrl?: string;
+  //#endregion
+
+  //#region lifecycle
+  initialValues?: IKeyValue[];
+  preparedValues?: string; // replace with onBeforeSubmit(data: TData): TData
+  onInitialized?: string;
+  onDataLoaded?: string;
+  onUpdate?: string;
+  //#endregion 
 }
+
+export interface IFormLifecycleSettings {
+  dataLoaderType?: string;
+  dataLoadersSettings?: IDictionary<object>;
+  dataSubmitterType?: string;
+  dataSubmittersSettings?: IDictionary<object>;
+
+  //#region lifecycle 
+  onBeforeDataLoad?: string;
+  onAfterDataLoad?: string;
+
+  onValuesUpdate?: string;
+
+  onPrepareSubmitData?: string;
+  onBeforeSubmit?: string;
+  onSubmitSuccess?: string;
+  onSubmitFailed?: string;
+  //#endregion lifecycle
+}
+
+export type IFormSettings = ILegacyFormSettings & IFormLifecycleSettings;
 
 export interface IFormProps extends IFlatComponentsStructure {
   id?: string;
@@ -278,8 +309,6 @@ export interface IPersistedFormProps {
   label?: string;
   description?: string;
   markup?: FormRawMarkup;
-  // formSettings?: IFormSettings;
-  // flatStructure: IFlatComponentsStructure;
   /**
    * Version number
    */
@@ -295,12 +324,25 @@ export interface IPersistedFormProps {
   isLastVersion?: boolean;
 }
 
-export interface IConfigurableFormBaseProps {
-  formId?: FormIdentifier;
-  formSettings?: IFormSettings;
-  flatStructure?: IFlatComponentsStructure;
-  formProps?: IPersistedFormProps;
-}
+type AllKeys<T> = T extends unknown ? keyof T : never;
+type Id<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
+type _ExclusifyUnion<T, K extends PropertyKey> =
+    T extends unknown ? Id<T & Partial<Record<Exclude<K, keyof T>, never>>> : never;
+type ExclusifyUnion<T> = _ExclusifyUnion<T, AllKeys<T>>;
+
+export type HasFormId = {
+  formId: FormIdentifier;
+};
+export type HasFormFlatMarkup = {
+  formSettings: IFormSettings;
+  flatStructure: IFlatComponentsStructure;
+};
+export type HasFormRawMarkup = {
+  markup: FormMarkup;
+  cacheKey?: string;
+};
+
+export type HasFormIdOrMarkup = ExclusifyUnion<HasFormId | HasFormFlatMarkup | HasFormRawMarkup>;
 
 export type FormAction = (values?: any, parameters?: any) => void;
 
@@ -317,26 +359,6 @@ export interface IFormActions {
 
 export interface IFormSections {
   [key: string]: FormSection;
-}
-
-/** Form action available in the designer */
-export interface IFormAction {
-  /** Action owner (id of the owner component or null - form) */
-  owner?: string;
-  /** Action name */
-  name: string;
-  /** Action body */
-  body: (values?: any, parameters?: any) => void;
-}
-
-/** Form section available in the designer */
-export interface IFormSection {
-  /** Action owner (id of the owner component or null - form) */
-  owner?: string;
-  /** Action name */
-  name: string;
-  /** Action body */
-  body: (data?: any) => ReactNode;
 }
 
 /**

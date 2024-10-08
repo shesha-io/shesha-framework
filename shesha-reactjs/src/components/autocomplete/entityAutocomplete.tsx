@@ -9,7 +9,6 @@ import { ReadOnlyDisplayFormItem } from './../readOnlyDisplayFormItem';
 import { Select } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEntityAutocomplete } from '@/utils/autocomplete';
-import { useSubscribe } from '@/hooks';
 
 /**
  * Entity autocomplete
@@ -40,19 +39,11 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     quickviewDisplayPropertyName,
     quickviewGetEntityUrl,
     quickviewWidth,
-    subscribedEventNames,
     filter,
   } = props;
 
 
-  const rawValue = typeof value === 'string' || Array.isArray(value) ? value : (value as any)?.id ?? undefined;
-  /* TODO: uncomment and test with arrays and numbers
-      : Array.isArray(value)
-        ? value
-        : undefined;
-      */
 
-  // TODO: move part of logic to the `useEntityAutocomplete`, implement support of multiple mode (it was not supported before because of wrong loading of provided value)
   const {
     data: fetchedData,
     loading,
@@ -60,7 +51,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     search: searchEntity,
   } = useEntityAutocomplete({
     entityType: typeShortAlias,
-    value: rawValue,
+    value: value as any,
     filter,
     displayProperty: entityDisplayProperty,
   });
@@ -94,14 +85,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     // delay in ms
     200
   );
-
-  const debouncedClear = useDebouncedCallback((localValue) => {
-    searchEntity(localValue);
-
-    if (onChange) onChange(null);
-  }, 300);
-
-  useSubscribe(subscribedEventNames, () => debouncedClear(autocompleteText));
 
   const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
     if (!Boolean(localValue)) return undefined;
@@ -191,6 +174,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       className="sha-dropdown"
+      dropdownStyle={{...style, height: 'auto'}}
       showSearch={!disableSearch}
       labelInValue={true}
       notFoundContent={notFoundContent}
@@ -214,9 +198,11 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       mode={value && mode === 'multiple' ? mode : undefined} // When mode is multiple and value is null, the control shows an empty tag
     >
       {options?.map(({ value: localValue, label, data }) => (
-        <Select.Option value={localValue} key={localValue} data={data}>
+      
+       <Select.Option value={localValue} key={localValue} data={data}>
           {label}
         </Select.Option>
+        
       ))}
     </Select>
   );

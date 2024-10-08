@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Abp.Domain.Entities;
-using Abp.Modules;
+﻿using Abp.Domain.Entities;
 using Abp.Reflection;
 using Shesha.Permissions;
-using Shesha.Reflection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Shesha.Permission
 {
-    public class EntityPermissionedObjectProvider : PermissionedObjectProviderBase, IPermissionedObjectProvider
+    /*public class EntityPermissionedObjectProvider : PermissionedObjectProviderBase, IPermissionedObjectProvider
     {
 
         public EntityPermissionedObjectProvider(IAssemblyFinder assembleFinder) : base(assembleFinder)
@@ -18,7 +16,7 @@ namespace Shesha.Permission
 
         public List<string> GetObjectTypes()
         {
-            return new List<string> {PermissionedObjectsSheshaTypes.Entity} ;
+            return new List<string> {ShaPermissionedObjectsTypes.Entity} ;
         }
 
         public string GetObjectType(Type type)
@@ -29,15 +27,13 @@ namespace Shesha.Permission
                    && type.GetInterfaces().Any(x =>
                        x.IsGenericType &&
                        x.GetGenericTypeDefinition() == entityType)
-                ? PermissionedObjectsSheshaTypes.Entity
+                ? ShaPermissionedObjectsTypes.Entity
                 : null;
         }
 
         public List<PermissionedObjectDto> GetAll(string objectType = null)
         {
-            return new List<PermissionedObjectDto>();
-            
-            /*if (!GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
+            if (!GetObjectTypes().Contains(objectType)) return new List<PermissionedObjectDto>();
 
             var assemblies = _assembleFinder.GetAllAssemblies().Distinct(new AssemblyFullNameComparer()).Where(a => !a.IsDynamic).ToList();
             var allPermissions = new List<PermissionedObjectDto>();
@@ -116,7 +112,6 @@ namespace Shesha.Permission
             }
 
             return allPermissions;
-            */
         }
-    }
+    }*/
 }

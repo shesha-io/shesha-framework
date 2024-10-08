@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 import { normalizeUrl } from '@/utils/url';
 import { isSidebarButton } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration, isNavigationActionConfiguration, useConfigurableActionDispatcher, useShaRouting } from '@/providers/index';
@@ -6,10 +6,10 @@ import { Menu } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { sidebarMenuItemToMenuItem } from './utils';
 import { evaluateString, useAvailableConstantsData } from '@/providers/form/utils';
-import { useLocalStorage } from '@/hooks';
-import { useSidebarMenu } from '@/providers/sidebarMenu';
+import { useDeepCompareMemo, useLocalStorage } from '@/hooks';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { useMainMenu } from '@/providers/mainMenu';
 
 export interface ISidebarMenuProps {
   isCollapsed?: boolean;
@@ -18,10 +18,10 @@ export interface ISidebarMenuProps {
 
 const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('openedSidebarKeys', null);
-  const { getItems, isItemVisible } = useSidebarMenu();
+  const { items } = useMainMenu();
   const { executeAction } = useConfigurableActionDispatcher();
   const { getUrlFromNavigationRequest, router } = useShaRouting();
-  const {executionContext, evaluationContext} = useAvailableConstantsData();
+  const executionContext = useAvailableConstantsData();
   
   const { styles } = useStyles();
 
@@ -29,7 +29,6 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
 
   const [selectedKey, setSelectedKey] = useState<string>();
 
-  const items = getItems();
   const initialSelection = useRef<string>(undefined);
 
   const onButtonClick = (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => {
@@ -40,23 +39,18 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
     });
   };
 
-
-
-  const menuItems = useMemo(() => {
+  const menuItems = useDeepCompareMemo(() => {
     return (items ?? []).map((item) =>
-    
       sidebarMenuItemToMenuItem({
         item,
-        isItemVisible,
         onButtonClick,
-        isRootItem: true,
         getFormUrl: (args) => {
           const url = getUrlFromNavigationRequest(args?.actionArguments);
-          const href = evaluateString(decodeURIComponent(url), evaluationContext);
+          const href = evaluateString(decodeURIComponent(url), executionContext);
           return href;
         },
         getUrl: (url) => {
-          const href = evaluateString(decodeURIComponent(url), evaluationContext);
+          const href = evaluateString(decodeURIComponent(url), executionContext);
           return href;
         },
         onItemEvaluation: (nestedItem) => {
@@ -72,7 +66,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
         },
       })
     );
-  }, [items]);
+  }, [items, {...executionContext}]);
 
   if (menuItems.length === 0) return null;
 

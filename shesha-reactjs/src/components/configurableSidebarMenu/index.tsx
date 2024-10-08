@@ -1,12 +1,13 @@
-import React, { FC, useMemo } from 'react';
-import { ConfigurableApplicationComponent, ISettingsEditorProps } from '@/components/configurableComponent';
+import React, { FC } from 'react';
+import { ISettingsEditorProps } from '@/components/configurableComponent';
 import { SidebarMenu } from '@/components/sidebarMenu';
-import { ISidebarMenuItem, SidebarMenuProvider } from '@/providers/sidebarMenu';
 import { ComponentSettingsModal } from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
-import CustomErrorBoundary from '@/components/customErrorBoundary';
-import { migrateToConfigActions } from './migrations/migrateToConfigActions';
 import { EditOutlined } from '@ant-design/icons';
+import ConfigurableComponentRenderer from '../configurableComponentRenderer';
+import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
+import { useMainMenu } from '@/providers/mainMenu';
+import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
 export interface ISideBarMenuProps {
   items: ISidebarMenuItem[];
@@ -24,9 +25,9 @@ export interface IConfigurableSidebarMenuProps {
   isApplicationSpecific: boolean;
 }
 
-const emptyItems = [];
-
 export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props => {
+  
+  const { loadedMenu, changeMainMenu, saveMainMenu } = useMainMenu();
 
   const editor = (editorProps: ISettingsEditorProps<ISideBarMenuProps>) => {
     return (
@@ -38,20 +39,34 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
       />
     );
   };
-  const memoizedDefaults = useMemo(() => props.defaultSettings ?? { items: [] }, [props.defaultSettings]);
+
+  const context: IConfigurableComponentContext<ISideBarMenuProps> = {
+    settings: loadedMenu,
+    load: () => {/**/},
+    save: (settings: ISideBarMenuProps) => {
+      return saveMainMenu({...loadedMenu, ...settings})
+        .then(() => {
+          changeMainMenu({...loadedMenu, ...settings});
+        });
+    },
+    setIsInProgressFlag: () => {/**/},
+    setSucceededFlag: () => {/**/},
+    setFailedFlag: () => {/**/},
+    setActionedFlag: () => {/**/},
+    resetIsInProgressFlag: () => {/**/},
+    resetSucceededFlag: () => {/**/},
+    resetFailedFlag: () => {/**/},
+    resetActionedFlag: () => {/**/},
+    resetAllFlag: () => {/**/},
+  };
 
   return (
-    <CustomErrorBoundary>
-      <ConfigurableApplicationComponent<ISideBarMenuProps>
-        defaultSettings={memoizedDefaults}
-        settingsEditor={{
-          render: editor,
-        }}
-        name={props.name}
-        isApplicationSpecific={props.isApplicationSpecific}
-        migrator={m => m.add(1, prev => migrateToConfigActions(prev))}
-      >
-        {(componentState, BlockOverlay) => {
+    <ConfigurableComponentRenderer
+      canConfigure={true}
+      contextAccessor={() => context}
+      settingsEditor={{render: editor}}
+    >
+      {(componentState, BlockOverlay) => {
           return (
             <div className={`sidebar ${componentState.wrapperClassName}`} style={{position: "relative", width: "100%"}}>
               <BlockOverlay>
@@ -59,15 +74,11 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
                 <EditOutlined style={{color: "#FFFFFF"}}/>
                 </div>
               </BlockOverlay>
-
-              <SidebarMenuProvider items={componentState.settings?.items ?? emptyItems}>
-                <SidebarMenu theme={props.theme} />
-              </SidebarMenuProvider>
+              <SidebarMenu theme={props.theme} />
             </div>
           );
         }}
-      </ConfigurableApplicationComponent>
-    </CustomErrorBoundary>
+    </ConfigurableComponentRenderer>
   );
 };
 

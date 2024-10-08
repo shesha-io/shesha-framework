@@ -7,8 +7,8 @@ export const getSettings = () =>
       propertyName: 'pnlDisplay',
       parentId: 'root',
       label: 'Display',
-      labelAlign: "left",
-      expandIconPosition: "start",
+      labelAlign: 'left',
+      expandIconPosition: 'start',
       ghost: true,
       collapsible: 'header',
       hidden: {_code: 'return getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false} as any,
@@ -32,8 +32,28 @@ export const getSettings = () =>
             id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
             propertyName: 'editMode',
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
-            label: "Edit mode",
+            label: 'Edit mode',
             jsSetting: true,
+          })
+          .addCodeEditor({
+            id: '9bwTOXitpfb7rb0DhhQIecgxfkvAZh',
+            propertyName: 'availableConstantsExpression',
+            componentName: 'availableConstantsExpression',
+            label: 'Available constants',
+            labelAlign: 'right',
+            parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+            mode: 'dialog',
+            version: 3,
+            settingsValidationErrors: [],
+            templateSettings: {
+              functionName: 'getAvailableConstants',
+              useAsyncDeclaration: true
+            },
+            availableConstantsExpression: '    const { modelType } = data ?? {};\r\n    const mb = metadataBuilder;\r\n    const isEntity = modelType ? await mb.isEntityAsync(modelType) : false;' +
+              '\r\n    if (modelType && isEntity){\r\n        await mb.addEntityAsync(\"data\", \"Form data\", modelType);\r\n    } else {\r\n        mb.addObject(\"data\", \"Form data\");\r\n    };' +
+              '\r\n    mb.addMetadataBuilder();\r\n    return mb.build();',
+            validate: {},
+            wrapInTemplate: true
           })
           .toJson()
         ]

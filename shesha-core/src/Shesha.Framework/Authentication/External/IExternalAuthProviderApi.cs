@@ -6,9 +6,9 @@ namespace Shesha.Authentication.External
     {
         ExternalLoginProviderInfo ProviderInfo { get; }
 
-        Task<bool> IsValidUser(string userId, string accessCode);
+        Task<bool> IsValidUserAsync(string userId, string accessCode);
 
-        Task<ExternalAuthUserInfo> GetUserInfo(string accessCode);
+        Task<ExternalAuthUserInfo> GetUserInfoAsync(string accessCode);
 
         void Initialize(ExternalLoginProviderInfo providerInfo);
     }

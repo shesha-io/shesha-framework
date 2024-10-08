@@ -1,7 +1,7 @@
-import React, { FC, ReactNode } from 'react';
-import './styles';
-import { Row, Col } from 'antd';
-import { UnAuthedLayoutContainer } from './styles';
+import React, { FC, ReactNode } from "react";
+import { Row, Col } from "antd";
+import { useUi } from "@shesha-io/reactjs";
+import { UnAuthedLayoutContainer } from "./styles";
 
 interface IProps {
   className?: string;
@@ -10,16 +10,14 @@ interface IProps {
   children?: ReactNode;
 }
 
-const accountFormCols = {
-  xs: { span: 14, offset: 5 },
-  sm: { span: 12, offset: 6 },
-  md: { span: 10, offset: 7 },
-  lg: { span: 8, offset: 8 },
-  xl: { span: 6, offset: 9 },
-  xxl: { span: 4.5, offset: 10.5 },
-};
+export const UnAuthedAccountPageLayout: FC<IProps> = ({
+  className,
+  children,
+  heading,
+  hint,
+}) => {
+  const { accountFormCols } = useUi();
 
-export const UnAuthedAccountPageLayout: FC<IProps> = ({ className, children, heading, hint }) => {
   return (
     <UnAuthedLayoutContainer className={className}>
       <div className="un-authed-account-page-layout-form-container">
@@ -30,9 +28,15 @@ export const UnAuthedAccountPageLayout: FC<IProps> = ({ className, children, hea
                 <img src="/images/app-logo.png" />
               </div>
             </div>
-            {heading && <h2 className="un-authed-account-page-layout-heading">{heading}</h2>}
+            {heading && (
+              <h2 className="un-authed-account-page-layout-heading">
+                {heading}
+              </h2>
+            )}
 
-            {hint && <p className="un-authed-account-page-layout-hint">{hint}</p>}
+            {hint && (
+              <p className="un-authed-account-page-layout-hint">{hint}</p>
+            )}
 
             {children}
           </Col>

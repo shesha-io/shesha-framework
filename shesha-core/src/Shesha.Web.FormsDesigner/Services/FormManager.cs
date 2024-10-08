@@ -8,6 +8,7 @@ using Shesha.ConfigurationItems.Models;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Dto.Interfaces;
 using Shesha.Extensions;
+using Shesha.Permissions;
 using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
@@ -23,11 +24,23 @@ namespace Shesha.Web.FormsDesigner.Services
     /// </summary>
     public class FormManager : ConfigurationItemManager<FormConfiguration>, IFormManager, ITransientDependency
     {
-        public FormManager(IRepository<FormConfiguration, Guid> repository, IRepository<Module, Guid> moduleRepository, IUnitOfWorkManager unitOfWorkManager) : base(repository, moduleRepository, unitOfWorkManager)
+        private readonly IPermissionedObjectManager _permissionedObjectManager;
+        public FormManager(
+            IRepository<FormConfiguration, Guid> repository,
+            IRepository<Module, Guid> moduleRepository,
+            IUnitOfWorkManager unitOfWorkManager,
+            IPermissionedObjectManager permissionedObjectManager
+        ) : base(repository, moduleRepository, unitOfWorkManager)
         {
+            _permissionedObjectManager = permissionedObjectManager;
         }
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
+
+        public static string GetFormPermissionedObjectName(string module, string name)
+        {
+            return $"{module}.{name}";
+        }
 
         /// inheritedDoc
         public override async Task<FormConfiguration> CreateNewVersionAsync(FormConfiguration form)
@@ -62,6 +75,7 @@ namespace Shesha.Web.FormsDesigner.Services
                 await ConfigurationItemRepository.UpdateAsync(form.Configuration);
             }
             */
+
             return newVersion;
         }
 
@@ -236,6 +250,12 @@ namespace Shesha.Web.FormsDesigner.Services
             form.Normalize();
 
             await Repository.InsertAsync(form);
+
+            await _permissionedObjectManager.CopyAsync(
+                GetFormPermissionedObjectName(item.Module?.Name, item.Name),
+                GetFormPermissionedObjectName(form.Module?.Name, form.Name),
+                ShaPermissionedObjectsTypes.Form
+            );
 
             return form;
         }

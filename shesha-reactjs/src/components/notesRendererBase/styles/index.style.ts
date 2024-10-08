@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { sheshaStyles, getTextHoverEffects } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const textHoverEffect = getTextHoverEffects(token);
 
   const saveBtn = cx(css`
@@ -34,7 +34,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     }
   `;
   const commentList = cx(css`
-    maxHeight: "480px",
+    maxheight: '480px';
   `);
 
   const commentItemBody = css`
@@ -45,11 +45,27 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         display: inline;
       }
     }
+
+    .${prefixCls}-divider {
+      margin: 0;
+    }
   `;
 
   const commentItem = css`
-    min-height: 96px;
-    height: auto;
+    margin-inline: 15px;
+    min-height: 50px;
+
+    .${prefixCls}-comment-inner {
+      padding-block: unset;
+
+      .${prefixCls}-typography {
+        margin-bottom: 0;
+      }
+
+      .${prefixCls}-comment-content-author {
+        margin-block: 10px;
+      }
+    }
   `;
 
   const notes = css`

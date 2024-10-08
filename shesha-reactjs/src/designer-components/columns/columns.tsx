@@ -2,7 +2,7 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Row, Col } from 'antd';
-import { useFormData, useGlobalState } from '@/providers';
+import { IFormComponentContainer, useFormData, useGlobalState } from '@/providers';
 import { nanoid } from '@/utils/uuid';
 import { IColumnsComponentProps } from './interfaces';
 import { getLayoutStyle } from '@/providers/form/utils';
@@ -11,9 +11,11 @@ import { ColumnsSettingsForm } from './columnsSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ParentProvider from '@/providers/parentProvider/index';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
   type: 'columns',
+  isInput: false,
   name: 'Columns',
   icon: <SplitCellsOutlined />,
   Factory: ({ model }) => {
@@ -41,7 +43,7 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
                   dynamicComponents={model?.isDynamic ? col?.components : []}
                 />
               </Col>
-          ))}
+            ))}
         </ParentProvider>
       </Row>
     );
@@ -52,7 +54,8 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
         0,
         (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IColumnsComponentProps
       )
-      .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev)),
+      .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev))
+      .add<IColumnsComponentProps>(2, (prev) => removeComponents(prev)),
   initModel: (model) => {
     const tabsModel: IColumnsComponentProps = {
       ...model,
@@ -63,12 +66,16 @@ const ColumnsComponent: IToolboxComponent<IColumnsComponentProps> = {
       ],
       gutterX: 12,
       gutterY: 12,
+      stylingBox: "{\"marginBottom\":\"5\"}"
     };
 
     return tabsModel;
   },
   settingsFormFactory: (props) => <ColumnsSettingsForm {...props} />,
   customContainerNames: ['columns'],
+  getContainers: (model) => {
+    return model.columns.map<IFormComponentContainer>((t) => ({ id: t.id }));
+  },
 };
 
 export default ColumnsComponent;

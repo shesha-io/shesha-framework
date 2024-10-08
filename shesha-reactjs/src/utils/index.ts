@@ -3,6 +3,8 @@ import { NestedPropertyMetadatAccessor } from '@/providers/metadataDispatcher/co
 import { IArgumentEvaluationResult, convertJsonLogicNode } from './jsonLogic';
 import { IMatchData, executeExpression } from '@/providers/form/utils';
 import { Cell } from 'react-table';
+import { IPersistedFormProps } from '@/providers';
+import { CSSProperties } from 'react';
 
 export type NumberOrString = number | string;
 /**
@@ -140,8 +142,7 @@ export const getColumnAnchored = (anchored: string) => {
 };
 
 export const calculateTotalColumnsOnFixed = (row: Cell<any, any, any>[], direction: IAnchoredDirection) => {
-  return row?.filter(({ column }: any) => getColumnAnchored(column?.anchored).direction === direction)
-    ?.length;
+  return row?.filter(({ column }: any) => getColumnAnchored(column?.anchored).direction === direction)?.length;
 };
 
 export const calculatePositionShift = (row: Cell<any, any, any>[], start: number, end: number) => {
@@ -162,7 +163,7 @@ export const getStaticExecuteExpressionParams = (params: string, dynamicParam?: 
 };
 
 export const executeExpressionPayload = (fn: Function, dynamicParam: { [key: string]: any }, ...args: any[]) => {
-  const argList = [...args] || [];
+  const argList = [...args];
   Object.values(dynamicParam || {}).map((key) => argList.push(key));
 
   return fn.apply(null, argList);
@@ -244,10 +245,24 @@ export const removeEmptyArrayValues = (list: any[]) =>
 
 export const executeFunction = (expression: string, args: { [key: string]: any }) => {
   try {
-    return executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args);
+    return expression
+      ? executeExpressionPayload(new Function(getStaticExecuteExpressionParams(null, args), expression), args)
+      : null;
   } catch (_e) {
     return null;
   }
+};
+
+export const getToolboxComponentsVisibility = (props: IPersistedFormProps, configs: IPersistedFormProps[]) =>
+  configs.some(({ name: n, module: m }) => props?.module === m && props?.name === n);
+
+export const convertJsonToCss = (style: CSSProperties) => {
+  const css = Object.entries(style || {})
+    .map(([k, v]) => [k.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`), v])
+    .map(([k, v]) => `${k}:${v}`)
+    .join(';');
+
+  return !!css ? `${css};` : null;
 };
 
 export { unwrapAbpResponse } from './fetchers';

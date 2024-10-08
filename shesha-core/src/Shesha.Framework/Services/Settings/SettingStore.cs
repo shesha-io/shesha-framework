@@ -82,6 +82,8 @@ namespace Shesha.Services.Settings
             definition.IsClientSpecific = input.IsClientSpecific;
             definition.AccessMode = input.AccessMode;
             definition.Category = input.Category;
+            definition.IsUserSpecific = input.IsUserSpecific;
+            definition.ClientAccess = input.ClientAccess;
 
             definition.Normalize();
 
@@ -112,6 +114,8 @@ namespace Shesha.Services.Settings
             newVersion.IsClientSpecific = item.IsClientSpecific;
             newVersion.AccessMode = item.AccessMode;
             newVersion.Category = item.Category;
+            newVersion.IsUserSpecific = item.IsUserSpecific;
+            newVersion.ClientAccess = item.ClientAccess;
             newVersion.Normalize();
 
             await Repository.InsertAsync(newVersion);
@@ -136,9 +140,9 @@ namespace Shesha.Services.Settings
         public async Task<SettingValue> GetSettingValueAsync(SettingDefinition setting, SettingManagementContext context)
         {
             return await WithUnitOfWorkAsync(async () => {
-                var settingConfiguration = await GetSettingConfiguration(setting);
+                var settingConfiguration = await GetSettingConfigurationAsync(setting);
                 var query = _settingValueRepository.GetAll()
-                    .Where(v => v.SettingConfiguration == settingConfiguration);
+                    .Where(v => v.SettingConfiguration.Id == settingConfiguration.Id);
 
                 if (setting.IsClientSpecific)
                 {
@@ -146,11 +150,16 @@ namespace Shesha.Services.Settings
                     query = query.Where(new ByApplicationSpecification<SettingValue>(appKey).ToExpression());
                 }
 
+                if (setting.IsUserSpecific)
+                {
+                    query = query.Where(new ByUserSpecification<SettingValue>(context.UserId).ToExpression());
+                }
+
                 return await query.FirstOrDefaultAsync();
             });
         }
 
-        private async Task<SettingConfiguration> GetSettingConfiguration(SettingDefinition setting) 
+        private async Task<SettingConfiguration> GetSettingConfigurationAsync(SettingDefinition setting) 
         {
             return await GetSettingConfigurationAsync(new SettingConfigurationIdentifier(setting.ModuleName, setting.Name));
         }

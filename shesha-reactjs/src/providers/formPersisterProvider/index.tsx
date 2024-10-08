@@ -84,6 +84,8 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
     const dto: FormUpdateMarkupInput = {
       id: state.formProps.id,
       markup: JSON.stringify(payload),
+      access: payload.formSettings.access,
+      permissions: payload.formSettings.permissions,
     };
 
     await formConfigurationUpdateMarkup(dto, { base: backendUrl, headers: httpHeaders })

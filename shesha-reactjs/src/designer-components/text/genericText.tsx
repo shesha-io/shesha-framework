@@ -4,7 +4,7 @@ import React, {
     FC,
     PropsWithChildren,
     useMemo
-    } from 'react';
+} from 'react';
 import { ITextTypographyProps, ITypographyProps } from './models';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TextProps } from 'antd/lib/typography/Text';
@@ -53,7 +53,7 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     const paddingStyle = getPaddingSizeStyle(padding);
 
     const textColor = useMemo(() => {
-        if (!contentType) return theme?.text?.default;
+        if (!contentType || !contentType[0]) return theme?.text?.default;
 
         if (contentType === 'secondary') return theme?.text?.secondary;
 

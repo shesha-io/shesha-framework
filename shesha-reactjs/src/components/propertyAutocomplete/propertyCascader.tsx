@@ -16,7 +16,7 @@ export interface PropertySelectorSingleProps {
 }
 export interface PropertySelectorMultipleProps {
     value?: string[][];
-    onChange?: (value: string[][]) => void;
+    onChange?: (value: string[]) => void;
     multiple?: true;
 }
 
@@ -138,7 +138,7 @@ export const PropertyCascader: React.FC<IPropertyCascaderProps> = (props) => {
         props.onChange(value);
     };
 
-    const onMultipleChange = (value: string[][], _selectedOptions: Option[][]) => {
+    const onMultipleChange = (value: string[], _selectedOptions: Option[]) => {
         if (!isMultiple(props))
             return;
 

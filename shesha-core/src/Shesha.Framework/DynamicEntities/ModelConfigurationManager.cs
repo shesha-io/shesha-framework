@@ -189,8 +189,8 @@ namespace Shesha.DynamicEntities
         {
             var copyPermission = async (string method, string type) =>
             {
-                var sourcePermission = await _permissionedObjectManager.GetAsync($"{source.FullClassName}{method}");
-                var destinationPermission = await _permissionedObjectManager.GetAsync($"{destination.FullClassName}{method}");
+                var sourcePermission = await _permissionedObjectManager.GetOrDefaultAsync($"{source.FullClassName}{method}", type);
+                var destinationPermission = await _permissionedObjectManager.GetOrDefaultAsync($"{destination.FullClassName}{method}", type);
                 destinationPermission.Access = sourcePermission.Access;
                 destinationPermission.Type = type;
                 sourcePermission.Permissions.ToList().ForEach(x =>
@@ -201,11 +201,11 @@ namespace Shesha.DynamicEntities
                 await _permissionedObjectManager.SetAsync(destinationPermission);
             };
 
-            await copyPermission("", PermissionedObjectsSheshaTypes.Entity);
-            await copyPermission("@Get", PermissionedObjectsSheshaTypes.EntityAction);
-            await copyPermission("@Create", PermissionedObjectsSheshaTypes.EntityAction);
-            await copyPermission("@Update", PermissionedObjectsSheshaTypes.EntityAction);
-            await copyPermission("@Delete", PermissionedObjectsSheshaTypes.EntityAction);
+            await copyPermission("", ShaPermissionedObjectsTypes.Entity);
+            await copyPermission("@Get", ShaPermissionedObjectsTypes.EntityAction);
+            await copyPermission("@Create", ShaPermissionedObjectsTypes.EntityAction);
+            await copyPermission("@Update", ShaPermissionedObjectsTypes.EntityAction);
+            await copyPermission("@Delete", ShaPermissionedObjectsTypes.EntityAction);
         }
 
         private async Task DeepUpdateAsync(EntityConfig source, EntityConfig destination)
@@ -215,7 +215,7 @@ namespace Shesha.DynamicEntities
             foreach (var entity in toUpdate)
             {
                 entity.EntityType = destination.FullClassName;
-                _entityPropertyRepository.Update(entity);
+                await _entityPropertyRepository.UpdateAsync(entity);
             }
 
             // update JsonEntity and GenericEntityReference properties
@@ -229,14 +229,14 @@ namespace Shesha.DynamicEntities
                 if (jsonProps.Any())
                     try
                     {
-                        await _mappingMetadataProvider.UpdateClassNames(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
+                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, jsonProps, source.FullClassName, destination.FullClassName, true);
                     }
                     catch { /* hide exception for entities without tables */ }
 
                 if (genericProps.Any())
                     try
                     {
-                        await _mappingMetadataProvider.UpdateClassNames(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
+                        await _mappingMetadataProvider.UpdateClassNamesAsync(entityType, genericProps, source.FullClassName, destination.FullClassName, false);
                     }
                     catch { /* hide exception for entities without tables */ }
             }
@@ -307,7 +307,7 @@ namespace Shesha.DynamicEntities
                 { MetadataSourceType.UserDefined, GetPropertyMapper(MetadataSourceType.UserDefined) }
             };
 
-            await BindProperties(mappers, properties, input.Properties, modelConfig, null);
+            await BindPropertiesAsync(mappers, properties, input.Properties, modelConfig, null);
 
             // delete missing properties
             var allPropertiesId = new List<Guid>();
@@ -326,31 +326,49 @@ namespace Shesha.DynamicEntities
 
             if (input.Permission != null)
             {
-                input.Permission.Type = PermissionedObjectsSheshaTypes.Entity;
+                input.Permission.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(input.Permission);
             }
             if (input.PermissionGet != null)
             {
-                input.PermissionGet.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                input.PermissionGet.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionGet);
             }
             if (input.PermissionCreate != null)
             {
-                input.PermissionCreate.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                input.PermissionCreate.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionCreate);
             }
             if (input.PermissionUpdate != null)
             {
-                input.PermissionUpdate.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                input.PermissionUpdate.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionUpdate);
             }
             if (input.PermissionDelete != null)
             {
-                input.PermissionDelete.Type = PermissionedObjectsSheshaTypes.EntityAction;
+                input.PermissionDelete.Type = ShaPermissionedObjectsTypes.EntityAction;
                 await _permissionedObjectManager.SetAsync(input.PermissionDelete);
             }
 
-            return await GetModelConfigurationAsync(modelConfig);
+            var dto = await GetModelConfigurationAsync(modelConfig);
+            // update permissions from the input because data is not saved to DB yet
+            dto.Permission = input.Permission;
+            dto.Permission.ActualAccess = input.Permission.Access;
+            dto.Permission.ActualPermissions = input.Permission.Permissions;
+            dto.PermissionGet = input.PermissionGet;
+            dto.PermissionGet.ActualAccess = input.PermissionGet.Access;
+            dto.PermissionGet.ActualPermissions = input.PermissionGet.Permissions;
+            dto.PermissionUpdate = input.PermissionUpdate;
+            dto.PermissionUpdate.ActualAccess = input.PermissionUpdate.Access;
+            dto.PermissionUpdate.ActualPermissions = input.PermissionUpdate.Permissions;
+            dto.PermissionDelete = input.PermissionDelete;
+            dto.PermissionDelete.ActualAccess = input.PermissionDelete.Access;
+            dto.PermissionDelete.ActualPermissions = input.PermissionDelete.Permissions;
+            dto.PermissionCreate = input.PermissionCreate;
+            dto.PermissionCreate.ActualAccess = input.PermissionCreate.Access;
+            dto.PermissionCreate.ActualPermissions = input.PermissionCreate.Permissions;
+
+            return dto;
         }
 
         private IMapper GetModelConfigMapper(MetadataSourceType sourceType)
@@ -385,7 +403,7 @@ namespace Shesha.DynamicEntities
             }
         }
 
-        private async Task BindProperties(Dictionary<MetadataSourceType, IMapper> mappers, List<EntityProperty> allProperties, List<ModelPropertyDto> inputProperties, EntityConfig modelConfig, EntityProperty parentProperty)
+        private async Task BindPropertiesAsync(Dictionary<MetadataSourceType, IMapper> mappers, List<EntityProperty> allProperties, List<ModelPropertyDto> inputProperties, EntityConfig modelConfig, EntityProperty parentProperty)
         {
             if (inputProperties == null) return;
             var sortOrder = 0;
@@ -408,7 +426,7 @@ namespace Shesha.DynamicEntities
 
                 // bind child properties
                 if (inputProp.Properties != null && inputProp.Properties.Any())
-                    await BindProperties(mappers, allProperties, inputProp.Properties, modelConfig, dbProp);
+                    await BindPropertiesAsync(mappers, allProperties, inputProp.Properties, modelConfig, dbProp);
 
                 dbProp.SortOrder = sortOrder++;
 
@@ -506,11 +524,11 @@ namespace Shesha.DynamicEntities
             changeDates.Add(modelConfig.LastModificationTime ?? modelConfig.CreationTime);
             dto.ChangeTime = changeDates.Max();
 
-            dto.Permission = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}");
-            dto.PermissionGet = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Get");
-            dto.PermissionCreate = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Create");
-            dto.PermissionUpdate = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Update");
-            dto.PermissionDelete = await _permissionedObjectManager.GetAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Delete");
+            dto.Permission = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}", ShaPermissionedObjectsTypes.Entity);
+            dto.PermissionGet = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Get", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionCreate = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Create", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionUpdate = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Update", ShaPermissionedObjectsTypes.EntityAction);
+            dto.PermissionDelete = await _permissionedObjectManager.GetOrDefaultAsync($"{modelConfig.Namespace}.{modelConfig.ClassName}@Delete", ShaPermissionedObjectsTypes.EntityAction);
 
             dto.NormalizeViewConfigurations(modelConfig);
 

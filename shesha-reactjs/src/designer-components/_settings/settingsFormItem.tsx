@@ -10,6 +10,7 @@ import { Form, FormItemProps } from 'antd';
 import { getPropertySettingsFromData } from './utils';
 import { useSettingsForm } from './settingsForm';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
+import { getFieldNameFromExpression } from '@/index';
 
 interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
@@ -50,8 +51,8 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
         </ConfigurableFormItem>;
       }
       return (
-        <Form.Item {...props} label={props.label} >
-          <SettingsControl propertyName={props.name.toString()} mode={mode}>
+        <Form.Item {...{...props, name: getFieldNameFromExpression(props.name)}} label={props.label} >
+          <SettingsControl propertyName={props.name} mode={mode}>
             {(value, onChange, propertyName) => children(value, onChange, propertyName)}
           </SettingsControl>
         </Form.Item>
@@ -82,7 +83,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             {(value, onChange) => {
                 return (
                     <SettingsControl
-                        propertyName={props.name.toString()}
+                        propertyName={props.name}
                         mode={'value'}
                         onChange={onChange}
                         value={value}

@@ -5,7 +5,7 @@ import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { FormProvider, ShaForm, useForm } from '@/providers';
-import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
+import { DEFAULT_FORM_SETTINGS, IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,
   deleteStartedAction,
@@ -31,6 +31,8 @@ import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
 import { ConfigurableFormInstance } from '../form/contexts';
+import { ShaFormProvider } from '../form/providers/shaFormProvider';
+import { useShaForm } from '../form/store/shaFormInstance';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -63,7 +65,6 @@ const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = 
   const {
     data,
     children,
-    formSettings,
   } = props;
 
   const form = useForm();
@@ -75,23 +76,19 @@ const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = 
 
       Promise.resolve(dataResponse).then((response) => {
         props.setInitialValues(response);
-        form.setFormData({values: response, mergeValues: false});
+        form.form.setFieldsValue(response);
       });
     } else {
       props.setInitialValues(data);
-      form.setFormData({values: data, mergeValues: false});
+
+      form.setFormData({ values: data, mergeValues: true });
     }
   }, [data]);
 
   return (
     <CrudContext.Provider value={props.context}>
       <ParentProvider model={{ readOnly: props.context.mode === 'read' }} formMode={props.context.mode === 'read' ? 'readonly' : 'edit'}>
-        <FormWrapper
-          form={form.form} initialValues={props.context.initialValues} onValuesChange={props.onValuesChange}
-          formSettings={formSettings} delayedUpdate={props.delayedUpdate}
-        >
           {children}
-        </FormWrapper>
       </ParentProvider>
     </CrudContext.Provider>
   );
@@ -111,7 +108,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     onSave,
     allowChangeMode,
     autoSave = false,
-    formSettings
+    formSettings = DEFAULT_FORM_SETTINGS
   } = props;
   const [state, dispatch] = useThunkReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
@@ -311,24 +308,45 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   const flatMarkup = state.mode === 'read' ? props.displayComponents : props.editorComponents;
 
+  const [shaForm] = useShaForm({
+    antdForm: form,
+    form: undefined,
+    init: (form) => {
+      form.initByMarkup({
+        formFlatMarkup: flatMarkup,
+        formSettings: formSettings,
+      });
+    }
+  });
   return (
-    <ShaForm.MarkupProvider markup={flatMarkup}>
-      <FormProvider
-        key={state.mode} /* important for re-rendering of the provider after mode change */
-        form={form}
-        name={''}
-        formSettings={formSettings}
-        mode={state.mode === 'read' ? 'readonly' : 'edit'}
-        isActionsOwner={false}
-        formRef={formRef}
-      >
-        <InternalCrudProvider {...props} context={contextValue} delayedUpdate={delayedUpdate}
-          onValuesChange={onValuesChange} 
-          setInitialValues={setInitialValues}
-          setInitialValuesLoading={setInitialValuesLoading}
-        />
-      </FormProvider>
-    </ShaForm.MarkupProvider>
+    <ShaFormProvider shaForm={shaForm}>
+      <ShaForm.MarkupProvider markup={flatMarkup}>
+        <FormProvider
+          key={state.mode} /* important for re-rendering of the provider after mode change */
+          form={form}
+          name={''}
+          formSettings={formSettings}
+          mode={state.mode === 'read' ? 'readonly' : 'edit'}
+          isActionsOwner={false}
+          formRef={formRef}
+          shaForm={shaForm}
+        >
+        <FormWrapper
+          form={form}
+          initialValues={contextValue.initialValues}
+          onValuesChange={onValuesChange}
+          formSettings={formSettings}
+          delayedUpdate={delayedUpdate}
+        >
+          <InternalCrudProvider {...props} context={contextValue} delayedUpdate={delayedUpdate}
+            onValuesChange={onValuesChange}
+            setInitialValues={setInitialValues}
+            setInitialValuesLoading={setInitialValuesLoading}
+          />
+        </FormWrapper>
+        </FormProvider>
+      </ShaForm.MarkupProvider>
+    </ShaFormProvider>
   );
 };
 

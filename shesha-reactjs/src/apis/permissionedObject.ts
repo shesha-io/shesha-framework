@@ -5,6 +5,7 @@ export interface PermissionedObjectDto {
   id?: string;
   object?: string | null;
   category?: string | null;
+  moduleName?: string | null;
   module?: string | null;
   type?: string | null;
   name?: string | null;

@@ -6,7 +6,6 @@ using Shesha.Scheduler;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Services;
-using Shesha.Services.StoredFiles;
 using System;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -29,7 +28,7 @@ namespace Shesha.DelayedUpdate
             _unitOfWorkManager = unitOfWorkManager;
         }
 
-        public override Task DoExecuteAsync(CancellationToken cancellationToken)
+        public async override Task DoExecuteAsync(CancellationToken cancellationToken)
         {
             var date = DateTime.Now.AddDays(-2);
             var files = _fileRepository.GetAll().Where(x => x.Temporary && x.CreationTime < date).ToList();
@@ -40,16 +39,14 @@ namespace Shesha.DelayedUpdate
 
                 try
                 {
-                    _storedFileService.Delete(files[i]);
+                    await _storedFileService.DeleteAsync(files[i]);
                     JobStatistics.NumSucceeded = JobStatistics.NumSucceeded + 1;
                 }
                 catch (Exception e)
                 {
                     Log?.Error(e.Message, e);
                 }
-            }
-
-            return Task.CompletedTask;
+            }            
         }
     }
 }

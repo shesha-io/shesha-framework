@@ -29,7 +29,7 @@ const wizardStepSettingsMarkup = getSettings();
 const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const allData = useAvailableConstantsData('all');
+  const allData = useAvailableConstantsData({ topContextId: 'all' });
   const { model } = useSettingsForm<IWizardComponentProps>();
 
   /*const onValuesChange = (changedValues: any, values: IWizardComponentProps) => {
@@ -162,7 +162,18 @@ const WizardSettings: FC<ISettingsFormFactoryArgs<IWizardComponentProps>> = (pro
           <ItemListConfiguratorModal<IWizardStepProps>
             readOnly={readOnly}
             initNewItem={onAddNewItem}
-            settingsMarkupFactory={() => wizardStepSettingsMarkup}
+            settingsMarkupFactory={() => {
+              return {
+                components: wizardStepSettingsMarkup,
+                formSettings: {
+                  layout: "horizontal",
+                  isSettingsForm: true,
+                  colon: true,
+                  labelCol: {span: 5},
+                  wrapperCol: {span: 13}
+                }
+              };
+            }}
             itemRenderer={({ item }) => ({
               label: item.title || item.label || item.name,
               description: item.tooltip,
