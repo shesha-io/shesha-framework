@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Flex, Result, Spin } from 'antd';
+import { Alert, Button, Flex, Result, Spin } from 'antd';
 import React, { useEffect } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import BarChart from './components/bar';
@@ -48,7 +48,8 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
         // We need to further filter such that if label.toLowerCase() is equal to either valueProperty or legendProperty or axisProperty (in lowercase) again
         const refListPropertiesFiltered = refListProperties?.filter((p: IRefListPropertyMetadata) => {
-          return p.label.toLowerCase() === valueProperty.toLowerCase() || p.label.toLowerCase() === legendProperty.toLowerCase() || p.label.toLowerCase() === axisProperty.toLowerCase();
+          const strLabel = p.label + '';
+          return strLabel?.toLowerCase() === valueProperty?.toLowerCase() || strLabel?.toLowerCase() === legendProperty?.toLowerCase() || strLabel?.toLowerCase() === axisProperty?.toLowerCase();
         });
 
         refListPropertiesFiltered?.forEach((refListProperty: IRefListPropertyMetadata) => {
@@ -70,6 +71,27 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       setFilterdData(state.data);
     }
   }, [state.data]);
+
+  if (!entityType || !chartType || !valueProperty || !axisProperty) {
+    // Collect the missing properties in an array
+    const missingProperties: string[] = [];
+    if (!entityType) missingProperties.push("'entityType'");
+    if (!chartType) missingProperties.push("'chartType'");
+    if (!valueProperty) missingProperties.push("'valueProperty'");
+    if (!axisProperty) missingProperties.push("'axisProperty'");
+
+    // Dynamically build the description
+    const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
+
+    return (
+      <Alert
+        showIcon
+        message="Chart control properties not correctly!"
+        description={descriptionMessage} // Dynamically constructed description
+        type="warning"
+      />
+    );
+  }
 
   const toggleFilterVisibility = () => {
     setIsFilterVisible(!state.isFilterVisible);

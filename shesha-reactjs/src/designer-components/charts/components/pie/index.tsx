@@ -2,29 +2,25 @@ import React from 'react';
 import { Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Title,
-  ChartOptions,
+  registerables, ChartOptions
 } from 'chart.js';
 import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+ChartJS.register(...registerables);
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
 }
 
 const PieChart = ({ data }: IPieChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisLabel, showTitle, title, legendPosition } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
       legend: {
-        display: showLegend,
+        display: showXAxisLabel,
         position: legendPosition ?? 'top',
       },
       title: {

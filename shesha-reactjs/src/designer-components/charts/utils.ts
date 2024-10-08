@@ -13,34 +13,6 @@ export const getChartData = (entityType: string, dataProperty: string, filters: 
 };
 
 /**
- * Used to get the fully qualified path for the metadata of an entity type
- */
-export const getEntityMetaData = (entityType: string) => {
-  let queryParams = {
-    container: entityType
-  };
-  return {
-    path: `/api/services/app/Metadata/Get`,
-    queryParams
-  };
-};
-
-/**
- * Used to get the properties of a reference list
- */
-export const getRefListValues = (refListName: string) => {
-  let queryParams = {
-    entityType: 'Shesha.Framework.ReferenceListItem',
-    filter: '{"and":[{"==":[{"var":"referenceList.isLast"},true]}]}',
-    quickSearch: refListName
-  };
-  return {
-    path: `/api/services/app/Entities/GetAll`,
-    queryParams: queryParams,
-  };
-};
-
-/**
  * Used to get the property value of an entity no matter how deep the property is nested
  */
 export function getPropertyValue(obj: { [key: string]: string | number | object }, path: string) {
@@ -59,13 +31,6 @@ export function getLastPartOfProperty(property: string) {
   if (property.indexOf('.') === -1) return property;
   return property.split('.').pop();
 }
-
-const getRandomColor = () => {
-  const r = Math.floor(Math.random() * 255);
-  const g = Math.floor(Math.random() * 255);
-  const b = Math.floor(Math.random() * 255);
-  return `rgb(${r}, ${g}, ${b})`;
-};
 
 /**
  * Function to group and aggregate data
@@ -113,131 +78,6 @@ const aggregateData = (data: object[], xProperty: string, yProperty: string, agg
   return aggregatedData;
 };
 
-// Prepare function for line chart data with aggregation
-export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod = 'sum') => {
-  const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
-
-  return {
-    labels: aggregatedData.map(item => item.x), // X-axis labels
-    datasets: [
-      {
-        label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`, // Legend label
-        data: aggregatedData.map(item => item.y), // Y-axis data
-        borderColor: 'white',
-        backgroundColor: aggregatedData.map(() => getRandomColor()), // Fill color below the line
-        fill: false,
-        // tension: 0.4 // Smooth the line
-        pointRadius: 5,
-      }
-    ]
-  };
-};
-
-// Prepare function for bar chart data with aggregation
-export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod = 'sum'): IChartData => {
-  const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
-
-  return {
-    labels: aggregatedData.map(item => item.x), // X-axis labels
-    datasets: [
-      {
-        label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`, // Legend label
-        data: aggregatedData.map(item => item.y), // Y-axis data
-        backgroundColor: aggregatedData.map(() => getRandomColor()), // Bar color
-        borderColor: 'white',
-        borderWidth: 1,
-      }
-    ]
-  };
-};
-
-// Prepare pie chart data dynamically
-export const preparePieChartData = (data: object[], legendProperty: string, valueProperty: string, aggregationMethod: string) => {
-  const labels = [...new Set(data?.map((item: { [key: string]: string | number | object }) => getPropertyValue(item, legendProperty)))];
-
-  const datasets = [{
-    label: `${valueProperty} (${aggregationMethod})`,
-    data: labels.map((label: string) => {
-      const filteredData = data?.filter((item: { [key: string]: string | number | object }) => getPropertyValue(item, legendProperty) === label);
-      const values: any[] = filteredData?.map((item: { [key: string]: string | number | object }) => getPropertyValue(item, valueProperty));
-
-      // Aggregation logic
-      if (aggregationMethod === 'sum') return values.reduce((acc: number, val: number) => acc + (val || 0), 0);
-      if (aggregationMethod === 'count') return values.length;
-      if (aggregationMethod === 'average') return values.reduce((acc: number, val: number) => acc + (val || 0), 0) / values.length;
-      if (aggregationMethod === 'min') return Math.min(...values);
-      if (aggregationMethod === 'max') return Math.max(...values);
-      return 0;
-    }),
-    backgroundColor: labels.map(() => getRandomColor()),
-    borderColor: 'white',
-  }];
-
-  return {
-    labels,
-    datasets
-  };
-};
-
-export const preparePivotChartData = (data: object[], axisProperty: string, legendProperty: string, valueProperty: string, aggregationMethod: string, chartType, refLists?: { [key: string]: any[] }) => {
-  // axisProperty: can be a dot separated string like 'organisation.name', so we need to extract both the object and property
-  const labels = [...new Set(data?.map((item: { [key: string]: string | number | object }) => {
-    return getPropertyValue(item, axisProperty);
-  }))];  // Unique axis labels
-  const legendItems = [...new Set(data?.map((item: object) => item[legendProperty]))];  // Unique legend items
-
-  // Helper function to calculate based on aggregation type
-  const aggregateValues = (items: object[], aggregationMethod: string) => {
-    const values = items?.map((item: object) => item[valueProperty]);
-    switch (aggregationMethod) {
-      case 'sum':
-        return values.reduce((acc: number, val: number) => acc + val, 0);
-      case 'count':
-        return values.length;
-      case 'average':
-        return values.reduce((acc: number, val: number) => acc + val, 0) / values.length;
-      case 'min':
-        return Math.min(...values);
-      case 'max':
-        return Math.max(...values);
-      default:
-        return 0;  // Default to 0 if no aggregation matches
-    }
-  };
-
-  const backgroundColors = labels.map(() => getRandomColor());
-  const datasets = legendItems.map(legend => {
-    const barBackgroundColors = getRandomColor();
-    let colors: string[] = [];
-    const legendDisplayValue = refLists[legendProperty]?.find((it: { itemValue }) => it.itemValue === legend)?.item;
-    return {
-      label: legendDisplayValue,  // The label for the legend (series)
-      data: labels?.map(label => {
-        const matchingItems = data.filter((item: { [key: string]: string | number | object }) => getPropertyValue(item, axisProperty) === label && item[legendProperty] === legend);
-        switch (chartType) {
-          case 'bar':
-          case 'line':
-            colors.push(barBackgroundColors);
-            break;
-          default:
-            colors.push(...backgroundColors);
-            break;
-        }
-        return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod) : 0;
-      }),
-      fill: false,
-      borderColor: 'white',
-      backgroundColor: colors,
-      pointRadius: 5,
-    };
-  });
-
-  return {
-    labels: labels,
-    datasets: datasets
-  };
-};
-
 export function filterData(preFilteredData: object[], property: string, operator: TOperator, value: string | number): object[] {
   if (!Array.isArray(preFilteredData) || preFilteredData?.length === 0) {
     console.error('Invalid data: preFilteredData must be a non-empty array');
@@ -265,11 +105,11 @@ export function filterData(preFilteredData: object[], property: string, operator
         return itemValue !== value;
 
       case 'contains':
-        const result = typeof itemValue === 'string' && (itemValue as string).includes(value as unknown as string);
+        const result = typeof itemValue === 'string' && ((itemValue as string).toLowerCase()).includes((value as unknown as string).toLowerCase());
         return result;
 
       case 'does_not_contain':
-        return typeof itemValue === 'string' && !(itemValue as string).includes(value as unknown as string);
+        return typeof itemValue === 'string' && !((itemValue as string).toLowerCase()).includes((value as unknown as string).toLowerCase());
 
       case 'is_empty':
         return (itemValue as unknown as string) === '' || itemValue == null;
@@ -338,3 +178,169 @@ export function getAllProperties(data: Array<object>): Array<string> {
   // Return the unique properties
   return [...new Set(properties)];
 }
+
+function getPredictableColorHSL(value: string): string {
+  // Hash the string value to get a semi-random seed without bitwise operations
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    // A non-linear function to mix character codes :)
+    hash += (value.charCodeAt(i) * (i + 1)) ** 3.5;  // Raising to 3.5 to exaggerate differences
+  }
+
+  // Use the hash to calculate the hue (0 - 360 degrees on the color wheel)
+  const hue = Math.abs(hash % 360);
+
+  // Set a fixed saturation and lightness for the color to ensure visibility
+  const saturation = 60 + (hash % 30);  // Varies between 60% and 90% for some saturation variation
+  const lightness = 57 + (hash % 20);  // Varies between 50% and 70% for lightness variation
+
+  // Construct the HSL color string
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+// Replace getRandomColor with getPredictableColor
+function getPredictableColor(input: string | number): string {
+  if (typeof input === 'string') {
+    return getPredictableColorHSL(input.toString());
+  }
+
+  // If the input is a number, convert it to a string and return the color
+  return getPredictableColorHSL(input + '');
+}
+
+// Define types for chart data
+export interface IAggregatedDataPoint {
+  x: string | number;
+  y: number;
+}
+
+// Update the relevant functions to use getPredictableColor
+
+export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod = 'sum'): IChartData => {
+  const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
+
+  return {
+    labels: aggregatedData.map(item => item.x),
+    datasets: [
+      {
+        label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
+        data: aggregatedData.map(item => item.y),
+        borderColor: 'white',
+        backgroundColor: getPredictableColor(yProperty),
+        fill: false,
+        pointRadius: 5,
+      }
+    ]
+  };
+};
+
+export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod = 'sum'): IChartData => {
+  const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
+
+  return {
+    labels: aggregatedData.map(item => item.x),
+    datasets: [
+      {
+        label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
+        data: aggregatedData.map(item => item.y),
+        backgroundColor: aggregatedData.map(item => getPredictableColor(item.x.toString())),
+        borderColor: 'white',
+        borderWidth: 1,
+      }
+    ]
+  };
+};
+
+export const preparePieChartData = (data: object[], legendProperty: string, valueProperty: string, aggregationMethod: string): IChartData => {
+  const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
+
+  const datasets = [{
+    label: `${valueProperty} (${aggregationMethod})`,
+    data: labels.map((label: string) => {
+      const filteredData = data?.filter((item: { [key: string]: any }) => getPropertyValue(item, legendProperty) === label);
+      const values: number[] = filteredData?.map((item: { [key: string]: any }) => getPropertyValue(item, valueProperty) as number);
+
+      // Aggregation logic
+      if (aggregationMethod === 'sum') return values.reduce((acc, val) => acc + (val || 0), 0);
+      if (aggregationMethod === 'count') return values.length;
+      if (aggregationMethod === 'average') return values.reduce((acc, val) => acc + (val || 0), 0) / values.length;
+      if (aggregationMethod === 'min') return Math.min(...values);
+      if (aggregationMethod === 'max') return Math.max(...values);
+      return 0;
+    }),
+    backgroundColor: labels.map((label: string) => getPredictableColor(label)),
+    borderColor: 'white',
+  }];
+
+  return {
+    labels,
+    datasets
+  };
+};
+
+// Helper function for aggregation
+function aggregateValues(items: object[], aggregationMethod: string, valueProperty: string): number {
+  const values: number[] = items.map((item: { [key: string]: any }) => item[valueProperty]);
+  switch (aggregationMethod) {
+    case 'sum':
+      return values.reduce((acc, val) => acc + (val || 0), 0);
+    case 'count':
+      return values.length;
+    case 'average':
+      return values.reduce((acc, val) => acc + (val || 0), 0) / values.length;
+    case 'min':
+      return Math.min(...values);
+    case 'max':
+      return Math.max(...values);
+    default:
+      return 0;
+  }
+}
+
+export const preparePivotChartData = (
+  data: object[],
+  axisProperty: string,
+  legendProperty: string,
+  valueProperty: string,
+  aggregationMethod: string,
+  chartType: string,
+  refLists?: { [key: string]: any[] }
+): IChartData => {
+  const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
+  const legendItems = [...new Set(data?.map((item: { [key: string]: any }) => item[legendProperty]))];
+
+  const datasets = legendItems.map(legend => {
+    const strLegend = typeof legend === 'string' ? legend : legend + '';
+    const barBackgroundColor = getPredictableColor(strLegend);
+    let colors: string[] = [];
+    const legendDisplayValue = refLists?.[legendProperty]?.find((it: { itemValue: any }) => it.itemValue === legend)?.item;
+    return {
+      label: legendDisplayValue,
+      data: labels?.map(label => {
+        const matchingItems = data.filter((item: { [key: string]: any }) =>
+          getPropertyValue(item, axisProperty) === label && item[legendProperty] === legend
+        );
+        switch (chartType) {
+          case 'bar':
+          case 'line':
+            colors.push(barBackgroundColor);
+            break;
+          default:
+            const strLabel = typeof label === 'string' ? label : legend + '';
+            colors.push(getPredictableColor(strLabel));
+            break;
+        }
+        return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
+      }),
+      fill: false,
+      borderColor: 'white',
+      backgroundColor: colors,
+      pointRadius: 5,
+    };
+  });
+
+  return {
+    labels: labels,
+    datasets: datasets
+  };
+};

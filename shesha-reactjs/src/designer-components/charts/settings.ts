@@ -38,6 +38,12 @@ export const settingsForm = new DesignerToolbarSettings()
     label: 'Show Description',
     parentId: 'root',
   })
+  .addCheckbox({
+    id: nanoid(),
+    propertyName: 'hidden',
+    label: 'Hidden',
+    parentId: 'root',
+  })
   .addSectionSeparator({
     id: nanoid(),
     componentName: 'separator2',
@@ -79,10 +85,11 @@ export const settingsForm = new DesignerToolbarSettings()
     label: 'Stacked',
     parentId: 'root',
     hidden: {
-      _code: "return getSettingValue(data?.chartType) !== `bar` && getSettingValue(data?.simpleOrPivot) !== `simple`",
+      _code: "return !(getSettingValue(data?.chartType) === `bar` && getSettingValue(data?.simpleOrPivot) === `pivot`)",
       _mode: "code",
-      _value: false
+      _value: true
     },
+    defaultValue: true,
   })
   .addTextField({
     id: nanoid(),
@@ -94,13 +101,14 @@ export const settingsForm = new DesignerToolbarSettings()
       _value: false
     },
     label: 'Title',
+    description: 'The title of the chart (if any)',
     labelAlign: 'right',
-    validate: { required: true },
   })
   .addCheckbox({
     id: nanoid(),
     propertyName: 'showTitle',
     label: 'Show Title',
+    description: 'Show the title of the chart',
     parentId: 'root',
   })
   .addCheckbox({
@@ -170,6 +178,7 @@ export const settingsForm = new DesignerToolbarSettings()
     id: nanoid(),
     propertyName: 'entityType',
     label: 'Entity type',
+    description: 'The entity type you want to use for the chart',
     labelAlign: 'right',
     parentId: 'root',
     hidden: false,
@@ -235,7 +244,6 @@ export const settingsForm = new DesignerToolbarSettings()
     parentId: 'root',
     isDynamic: false,
     description: 'The properties you want users to filter by. Use the propeties that you have selected for axis, value (and legend).',
-    validate: { required: true },
     modelType: '{{data.entityType}}',
     autoFillProps: false,
     settingsValidationErrors: [],
