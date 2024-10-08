@@ -10,7 +10,7 @@ import { IChartData, IChartsProps } from './model';
 import { applyFilters, getAllProperties, getChartData, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData } from './utils';
 import { useGet } from '@/hooks';
 import useStyles from './styles';
-import { IModelMetadata, useForm, useMetadataDispatcher } from '@/index';
+import { IModelMetadata, useMetadataDispatcher } from '@/index';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { IRefListPropertyMetadata } from '@/interfaces/metadata';
 
@@ -21,7 +21,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsFilterVisible, setIsLoaded, setRefLists, setFilterdData, setChartFilters, setControlProps } = useChartDataActionsContext();
-  const form = useForm();
 
   const { styles, cx } = useStyles();
 
@@ -88,7 +87,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         showIcon
         message="Chart control properties not correctly!"
         description={descriptionMessage} // Dynamically constructed description
-        type="info"
+        type="warning"
       />
     );
   }
