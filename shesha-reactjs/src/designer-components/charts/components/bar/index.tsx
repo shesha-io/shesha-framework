@@ -1,10 +1,10 @@
-import { BarElement, CategoryScale, Chart as ChartJS, ChartOptions, Legend, LinearScale, Title, Tooltip } from 'chart.js';
+import { Chart as ChartJS, ChartOptions, registerables } from 'chart.js';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(...registerables);
 
 interface BarChartProps extends IChartDataProps {
   data: IChartData;

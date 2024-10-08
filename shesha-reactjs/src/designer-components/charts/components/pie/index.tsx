@@ -2,17 +2,12 @@ import React from 'react';
 import { Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Title,
-  ChartOptions,
-  CategoryScale,
+  registerables, ChartOptions
 } from 'chart.js';
 import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
-ChartJS.register(CategoryScale, ArcElement, Tooltip, Legend, Title);
+ChartJS.register(...registerables);
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
