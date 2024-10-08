@@ -42,10 +42,12 @@ using Shesha.NHibernate.Uow;
 using Shesha.NHibernate.Utilites;
 using Shesha.Reflection;
 using Shesha.Services;
+using Shesha.Startup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using NhEnvironment = global::NHibernate.Cfg.Environment;
 
 namespace Shesha.NHibernate
@@ -198,7 +200,9 @@ namespace Shesha.NHibernate
             {
                 var prev = Configuration.EntityHistory.IsEnabledForAnonymousUsers;
                 Configuration.EntityHistory.IsEnabledForAnonymousUsers = false;
-                SeedDatabase();
+                AsyncHelper.RunSync(async () => {
+                    await SeedDatabaseAsync();
+                });
                 Configuration.EntityHistory.IsEnabledForAnonymousUsers = prev;
             }
         }
@@ -206,7 +210,7 @@ namespace Shesha.NHibernate
         /// <summary>
         /// Seed database (applies migrations, runs bootstrappers/seeders)
         /// </summary>
-        private void SeedDatabase()
+        private async Task SeedDatabaseAsync()
         {
             var ioc = StaticContext.IocManager;
 
@@ -241,10 +245,10 @@ namespace Shesha.NHibernate
 
             var initializationStart = DateTime.Now.ToUniversalTime();
             var initializedByCurrentInstance = false;
-            lockFactory.DoExclusive(seedDbKey, expiry, wait, retry, () =>
+            await lockFactory.DoExclusiveAsync(seedDbKey, expiry, wait, retry, async () =>
             {
                 // get last initialization time
-                var seedDbTime = cache.Get(seedDbFinishedOnKey, key => DateTime.MinValue);
+                var seedDbTime = await cache.GetAsync(seedDbFinishedOnKey, key => Task.FromResult(DateTime.MinValue));
 
                 if (seedDbTime != DateTime.MinValue && (
                         seedDbTime.Ticks > initializationStart.Ticks || /* DB was initialized while we were waiting for the lock */
@@ -255,65 +259,94 @@ namespace Shesha.NHibernate
                     return;
                 }
 
+                var appStartup = ioc.Resolve<IApplicationStartupSession>();
+
                 initializedByCurrentInstance = true;
                 Logger.Warn("Database initialization started");
 
-                if (!skipMigration) 
-                {
-                    Logger.Warn("Apply migrations...");
-                    var dbMigrator = ioc.Resolve<IAbpZeroDbMigrator>();
-                    dbMigrator?.CreateOrMigrateForHost();
-                    Logger.Warn("Apply migrations - finished");
-                } 
-                else
-                    Logger.Warn($"Migrations skipped due to configuration (`{SkipMigrationsSetting}` is {skipMigration})");
+                // Check DB structure and log application start if possible
+                var dbIsReadyForLogging = await appStartup.DbIsReadyForLoggingAsync();
+                var appStartLogArgs = new LogApplicationStartArgs { MigrationsDisabled = skipMigration, BootstrappersDisabled = skipBootstrappers };
+                var startupDto = dbIsReadyForLogging
+                    ? await appStartup.LogApplicationStartAsync(appStartLogArgs)
+                    : null;
 
-                if (!skipBootstrappers) 
+                try
                 {
-                    // find all seeders/bootstrappers and run them
-                    var bootstrapperTypes = _typeFinder.Find(t => typeof(IBootstrapper).IsAssignableFrom(t) && t.IsClass).ToList();
-                    bootstrapperTypes = SortByDependencies(bootstrapperTypes);
-
-                    foreach (var bootstrapperType in bootstrapperTypes)
+                    if (!skipMigration)
                     {
-                        AsyncHelper.RunSync(async () =>
-                        {
-                            if (ioc.IsRegistered(bootstrapperType) && ioc.Resolve(bootstrapperType) is IBootstrapper bootstrapper)
-                            {
-                                Logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
-
-                                var method = bootstrapperType.GetMethod(nameof(IBootstrapper.ProcessAsync));
-                                var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
-                                var useDefaultUnitOfWork = unitOfWorkAttribute == null || !unitOfWorkAttribute.IsDisabled;
-
-                                if (useDefaultUnitOfWork) 
-                                {
-                                    var uowManager = ioc.Resolve<IUnitOfWorkManager>();
-                                    using (var unitOfWork = uowManager.Begin())
-                                    {
-                                        await bootstrapper.ProcessAsync();
-                                        await unitOfWork.CompleteAsync();
-                                    }
-                                } else
-                                    await bootstrapper.ProcessAsync();
-
-                                Logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
-                            }
-                        });
+                        Logger.Warn("Apply migrations...");
+                        var dbMigrator = ioc.Resolve<IAbpZeroDbMigrator>();
+                        dbMigrator?.CreateOrMigrateForHost();
+                        Logger.Warn("Apply migrations - finished");
                     }
+                    else {
+                        if (!dbIsReadyForLogging)
+                            throw new Exception("DB structure doesn't allow ther application to start. Make sure that database migration are switched on");
+
+                        Logger.Warn($"Migrations skipped due to configuration (`{SkipMigrationsSetting}` is {skipMigration})");
+                    }                    
+
+                    // Log application start if DB was not ready for logging before the migrations
+                    if (!dbIsReadyForLogging)
+                        startupDto = await appStartup.LogApplicationStartAsync(appStartLogArgs);
+
+                    if (!skipBootstrappers) 
+                    {
+                        if (!appStartup.AllAssembliesStayUnchanged) 
+                        {
+                            // find all seeders/bootstrappers and run them
+                            var bootstrapperTypes = _typeFinder.Find(t => typeof(IBootstrapper).IsAssignableFrom(t) && t.IsClass).ToList();
+                            bootstrapperTypes = SortByDependencies(bootstrapperTypes);
+
+                            foreach (var bootstrapperType in bootstrapperTypes)
+                            {
+                                if (ioc.IsRegistered(bootstrapperType) && ioc.Resolve(bootstrapperType) is IBootstrapper bootstrapper)
+                                {
+                                    Logger.Warn($"Run bootstrapper: {bootstrapperType.Name}...");
+
+                                    var method = bootstrapperType.GetMethod(nameof(IBootstrapper.ProcessAsync));
+                                    var unitOfWorkAttribute = method.GetAttribute<UnitOfWorkAttribute>(true);
+                                    var useDefaultUnitOfWork = unitOfWorkAttribute == null || !unitOfWorkAttribute.IsDisabled;
+
+                                    if (useDefaultUnitOfWork)
+                                    {
+                                        var uowManager = ioc.Resolve<IUnitOfWorkManager>();
+                                        using (var unitOfWork = uowManager.Begin())
+                                        {
+                                            await bootstrapper.ProcessAsync();
+                                            await unitOfWork.CompleteAsync();
+                                        }
+                                    }
+                                    else
+                                        await bootstrapper.ProcessAsync();
+
+                                    Logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
+                                }
+                            }
+                        } else
+                            Logger.Warn($"Bootstrappers skipped. Previous startup was full, successful and all assemblies stay unchanged");
+                    }
+                    else
+                        Logger.Warn($"Bootstrappers skipped due to configuration (`{SkipBootstrappersSetting}` is {skipBootstrappers})");
+
+                    await appStartup.StartupSuccessAsync(startupDto.Id);
                 }
-                else
-                    Logger.Warn($"Bootstrappers skipped due to configuration (`{SkipBootstrappersSetting}` is {skipBootstrappers})");
+                catch(Exception e)
+                {
+                    if (startupDto != null) {
+                        await appStartup.StartupFailedAsync(startupDto.Id, e);
+                    }                        
+                    throw;
+                }
 
                 // update the DB seeding time
-                cache.Set(seedDbFinishedOnKey, initializationStart, TimeSpan.FromMinutes(10));
+                await cache.SetAsync(seedDbFinishedOnKey, initializationStart, TimeSpan.FromMinutes(10));
             });
 
             Logger.Warn(initializedByCurrentInstance 
                 ? "Database initialization finished" : 
                 "Database initialization skipped (locked by another instance)");
-
-            //SeedHelper.SeedHostDb(IocManager);
         }
 
         private List<Type> SortByDependencies(List<Type> types)

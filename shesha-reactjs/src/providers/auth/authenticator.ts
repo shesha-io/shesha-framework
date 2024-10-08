@@ -13,12 +13,14 @@ import { getLocalizationOrDefault } from "@/utils/localization";
 import { getTenantId } from "@/utils/multitenancy";
 import { HttpResponse } from "../sheshaApplication/publicApi/http/api";
 import { ASPNET_CORE_CULTURE, AuthenticationState, AuthenticationStatus, DEFAULT_HOME_PAGE, ERROR_MESSAGES, IAuthenticator, LoginUserResponse, URLS } from "./models";
+import { ISettingsActionsContext } from "../settings/contexts";
 
 type RerenderTrigger = () => void;
 
 export interface AuthenticatorArgs {
     httpClient: HttpClientApi;
     router: IRouter;
+    settings: ISettingsActionsContext;
     tokenName?: string;
     unauthorizedRedirectUrl?: string;
     homePageUrl?: string;
@@ -30,6 +32,7 @@ export interface AuthenticatorArgs {
 
 export class Authenticator implements IAuthenticator {
     #httpClient: HttpClientApi;
+    #settings: ISettingsActionsContext;
     #router: IRouter;
     #rerender: RerenderTrigger;
     #onSetRequestHeaders: (headers: IHttpHeaders) => void;
@@ -50,6 +53,7 @@ export class Authenticator implements IAuthenticator {
 
     constructor(args: AuthenticatorArgs, forceRootUpdate: RerenderTrigger) {
         this.#httpClient = args.httpClient;
+        this.#settings = args.settings;
         this.#router = args.router;
         this.#rerender = forceRootUpdate;
         this.state = { status: 'waiting' };
@@ -149,8 +153,6 @@ export class Authenticator implements IAuthenticator {
             throw error;
         }
 
-        // TODO: update headers
-
         this.#updateState('inprogress', 'User profile loading...');
         try {
             // fetch user profile
@@ -187,21 +189,41 @@ export class Authenticator implements IAuthenticator {
         if (this.loginInfo)
             return;
 
+
+        const getRedirectUrlAsync = async(): Promise<string> => {
+            const currentPath = this.#router.path;
+            if (currentPath === '/' || currentPath === ''){
+                const defaultUrl = await this.#settings.getSetting({ module: 'Shesha', name: 'Shesha.DefaultUrl' });
+                if (typeof(defaultUrl) === 'string' && Boolean(defaultUrl.trim()))
+                    return defaultUrl;
+            }       
+    
+            const redirectUrl = isSameUrls(currentPath, this.#homePageUrl) || isSameUrls(currentPath, notAuthorizedRedirectUrl)
+                ? ''
+                : `/?returnUrl=${encodeURIComponent(currentPath)}`;
+    
+            return `${notAuthorizedRedirectUrl}${redirectUrl}`;
+        }; 
+
         const token = this.#getToken();
         if (token) {
             this.#updateState('inprogress', 'User profile loading...');
             try {
                 // fetch user profile
                 const userProfile = await this.#fetchUserInfoHttp();
-                this.#loginInfo = userProfile;
-
-                this.#updateState('ready', null, null);
+                if (userProfile.user){
+                    this.#loginInfo = userProfile;
+                    this.#updateState('ready', null, null);
+                } else {
+                    this.#updateState('waiting', null, null);
+                    this.#router.push(await getRedirectUrlAsync());
+                }
             } catch (error) {
                 this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
-                this.#router.push(notAuthorizedRedirectUrl);
+                this.#router.push(await getRedirectUrlAsync());
             }
         } else
-            this.#router.push(notAuthorizedRedirectUrl);
+            this.#router.push(await getRedirectUrlAsync());
     };
 
     anyOfPermissionsGranted = (permissions: string[], permissionedEntities?: IEntityReferenceDto[]): boolean => {

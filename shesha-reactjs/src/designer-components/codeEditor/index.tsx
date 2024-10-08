@@ -10,11 +10,11 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IObjectMetadata } from '@/interfaces/metadata';
+import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
 import { useFormData, useShaFormInstance } from '@/providers';
 import { CodeEditorWithStandardConstants } from './codeEditorWithConstants';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
-import camelcase from 'camelcase';
+//import camelcase from 'camelcase';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -39,22 +39,24 @@ const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
       if (!model.availableConstantsExpression)
         return Promise.reject("AvailableConstantsExpression is mandatory");
 
-      const metadataBuilder = metadataBuilderFactory("baseProperties");
-      return executeScript<IObjectMetadata>(model.availableConstantsExpression, { 
+      const metadataBuilder = metadataBuilderFactory();
+      const getConstantsArgs = { 
         data: formData, 
         metadataBuilder,
         form: shaFormInstance,
-      });
+      };
+      return typeof(model.availableConstantsExpression) === 'string'
+        ? executeScript<IObjectMetadata>(model.availableConstantsExpression, getConstantsArgs)
+        : model.availableConstantsExpression(getConstantsArgs);
     }, [model.availableConstantsExpression, metadataBuilderFactory, formData, shaFormInstance]);
 
     const resultTypeEvaluator = () => {
       if (!Boolean(model.resultTypeExpression?.trim()))
         return undefined;
 
-      const resultTypePrefix = camelcase(model.templateSettings?.functionName ?? "evaluation", { pascalCase: true });
-      
-      const metadataBuilder = metadataBuilderFactory(`${resultTypePrefix}Result`, "Result of evaluation");
-      return executeScript<IObjectMetadata>(model.resultTypeExpression, { 
+      const metadataBuilder = metadataBuilderFactory();
+
+      return executeScript<IMetadata>(model.resultTypeExpression, { 
         data: formData, 
         metadataBuilder,
         form: shaFormInstance,

@@ -288,13 +288,38 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         return result;
     }
 
+    getBaseType = async (metadata: IObjectMetadata): Promise<TypeAndLocation> => {
+        const { typeDefinitionLoader } = metadata;
+        if (!typeDefinitionLoader)
+            return undefined;
+
+        const definition = await typeDefinitionLoader({ typeDefinitionBuilder: this });
+
+        definition.files.forEach(file => {
+            this.#internalRegisterFile(file.fileName, file.content);
+        });
+
+        const fileName = definition.files.length > 0
+            ? definition.files[0].fileName
+            : undefined;
+
+        return { typeName: definition.typeName, filePath: fileName };
+    };
+
     async buildType(metadata: IObjectMetadata): Promise<BuildResult> {
         const { name: typeName, properties } = metadata;
 
         const typesImporter = new TypesImporter();
 
+        const baseTypeDef = await this.getBaseType(metadata);
+        const extendsClause = baseTypeDef?.typeName
+            ? `extends ${baseTypeDef.typeName} `
+            : "";
+        if (baseTypeDef)
+            typesImporter.import(baseTypeDef);
+
         const sb = new StringBuilder();
-        sb.append(`export interface ${typeName} {`);
+        sb.append(`export interface ${typeName} ${extendsClause}{`);
         sb.incIndent();
         await this.#iterateProperties(properties, async (prop) => {
             const dataType = await this.#getTypescriptType(prop);

@@ -7,6 +7,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.MultiTenancy;
+using Nito.AsyncEx.Synchronous;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Utilities;
@@ -38,6 +39,72 @@ namespace Shesha.Authorization
             _authorizationConfiguration = authorizationConfiguration;
             _permissionDefinitionRepository = permissionDefinitionRepository;
             _shaPermissionChecker = shaPermissionChecker;
+        }
+
+        [UnitOfWork]
+        public override void Initialize()
+        {
+            base.Initialize();
+            InitializeDbPermissionsAsync().WaitAndUnwrapException();
+        }
+
+        
+        private async Task InitializeDbPermissionsAsync()
+        {
+            var dbPermissions = await _permissionDefinitionRepository.GetAllListAsync();
+
+            // Update DB-related items
+            var dbRootPermissions = dbPermissions.Where(x => string.IsNullOrEmpty(x.Parent)).ToList();
+            foreach (var dbPermission in dbRootPermissions)
+            {
+                if (GetPermissionOrNull(dbPermission.Name) == null)
+                {
+                    var permission = await CreatePermissionAsync(dbPermission);
+                    await CreateChildPermissionsAsync(dbPermissions, permission);
+                }
+                dbPermissions.Remove(dbPermission);
+            }
+
+
+            // Update code-related items
+            while (dbPermissions.Any())
+            {
+                var dbPermission = dbPermissions.FirstOrDefault();
+                if (dbPermission != null)
+                {
+                    var permission = GetPermissionOrNull(dbPermission.Parent);
+                    while (permission == null && dbPermissions.Any(x => x.Name == dbPermission?.Parent))
+                    {
+                        dbPermission = dbPermissions.FirstOrDefault(x => x.Name == dbPermission?.Parent);
+                        permission = GetPermissionOrNull(dbPermission?.Parent);
+                    }
+
+                    if (permission != null)
+                    {
+                        await CreateChildPermissionsAsync(dbPermissions, permission);
+                    }
+                    else
+                    {
+                        // remove permission with missed parent
+                        await _permissionDefinitionRepository.DeleteAsync(dbPermission);
+                    }
+                    dbPermissions.Remove(dbPermission);
+                }
+            }
+        }
+
+        private async Task CreateChildPermissionsAsync(List<PermissionDefinition> dbPermissions, Abp.Authorization.Permission permission)
+        {
+            var dbChildPermissions = dbPermissions.Where(x => x.Parent == permission.Name).ToList();
+            foreach (var dbChildPermission in dbChildPermissions)
+            {
+                if (GetPermissionOrNull(dbChildPermission.Name) == null)
+                {
+                    var childPermission = await CreatePermissionAsync(dbChildPermission);
+                    await CreateChildPermissionsAsync(dbPermissions, childPermission);
+                    dbPermissions.Remove(dbChildPermission);
+                }
+            }
         }
 
         public Abp.Authorization.Permission CreatePermission(Abp.Authorization.Permission parent, string name, ILocalizableString displayName = null,

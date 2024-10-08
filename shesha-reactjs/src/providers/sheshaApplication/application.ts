@@ -22,12 +22,7 @@ export interface IShaApplicationArgs {
 
     router?: IRouter;
     routes?: ISheshaRoutes;
-    //homePageUrl?: string;
     getFormUrlFunc?: (formId: FormIdentifier) => string;
-
-    //noAuth?: boolean;
-    //unauthorizedRedirectUrl?: string;
-
     authorizer: MutableRefObject<IAuthProviderRefProps>;
 }
 
@@ -70,27 +65,14 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     #initializationState: ApplicationInitializationState;
     #backendUrl: string;
     #httpHeaders: IHttpHeadersDictionary;
-
     #applicationKey?: string;
     #applicationName?: string;
-    //#accessTokenName?: string;
-
-    //#themeProps?: ThemeProviderProps;
-
-    //#router?: IRouter;
     #routes?: ISheshaRoutes;
-    //#homePageUrl?: string;
     #getFormUrlFunc?: (formId: FormIdentifier) => string;
-
-    //#noAuth?: boolean;
-    //#unauthorizedRedirectUrl?: string;
     #authorizer: MutableRefObject<IAuthProviderRefProps>;
-
     #formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
     #formDesignerComponentGroups?: IToolboxComponentGroup[];
-
     #globalVariables: Record<string, any>;
-
     #rerender: RerenderTrigger;
 
     get backendUrl() {
@@ -128,17 +110,8 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
         this.#backendUrl = args.backendUrl;
         this.#applicationKey = args.applicationKey ?? FRONTEND_DEFAULT_APP_KEY;
         this.#applicationName = args.applicationName;
-        //this.#accessTokenName = args.accessTokenName;
-
-        //this.#themeProps = args.themeProps;
-
-        //this.#router = args.router;
         this.#routes = args.routes ?? DEFAULT_SHESHA_ROUTES;
-        //this.#homePageUrl = args.homePageUrl;
         this.#getFormUrlFunc = args.getFormUrlFunc;
-        // const initialHeaders = applicationKey ? { [FRONT_END_APP_HEADER_NAME]: applicationKey } : {};
-        // TODO: calculate headers on the fly each time
-
         this.#formDesignerComponentRegistrations = {};
         this.#formDesignerComponentGroups = [];
 
