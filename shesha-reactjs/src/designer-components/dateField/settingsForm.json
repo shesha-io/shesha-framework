@@ -314,7 +314,7 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -501,7 +501,7 @@
             "templateSettings": {
               "functionName": "isDateDisabled"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addDate(\"current\", \"Component current value\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addDate(\"current\", \"Component current value\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
           }
         ]
       },
@@ -603,7 +603,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();"
           }
         ]
       },

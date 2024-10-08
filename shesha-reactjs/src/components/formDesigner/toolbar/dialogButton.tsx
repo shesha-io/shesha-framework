@@ -1,14 +1,14 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Dropdown, Form, Input, MenuProps } from 'antd';
 import { BlockOutlined } from '@ant-design/icons';
-import { useCanvasConfig } from '@/providers';
+import { useCanvas } from '@/providers';
 
 export interface IPreviewButtonProps {
   refLink?: React.LegacyRef<HTMLSpanElement>;
 }
 
 export const DialogButton: FC<IPreviewButtonProps> = ({ refLink }) => {
-  const { setCanvasWidth, setCanvasZoom, width, activeDevice } = useCanvasConfig();
+  const { setCanvasWidth, setCanvasZoom, designerWidth: width, designerDevice: activeDevice } = useCanvas();
   const [browserWidth, setBrowserWidth] = useState<number>();
   const [currentWidth, setCurrentWidth] = useState(width);
 

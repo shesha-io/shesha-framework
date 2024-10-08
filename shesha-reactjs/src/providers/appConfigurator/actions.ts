@@ -1,26 +1,14 @@
 import { createAction } from 'redux-actions';
-import { ApplicationMode, ConfigurationItemsViewMode } from './models';
+import { ApplicationMode } from './models';
 
 export enum AppConfiguratorActionEnums {
   SwitchMode = 'SWITCH_MODE',
   ToggleEditModeConfirmation = 'TOGGLE_EDIT_MODE_CONFIRMATION',
   ToggleCloseEditModeConfirmation = 'TOGGLE_CLOSE_EDIT_MODE_CONFIRMATION',
-  SwitchConfigurationItemsMode = 'SWITCH_CONFIGURATION_ITEMS_MODE',
-  ToggleFormInfoBlock = 'TOGGLE_FORM_INFO_BLOCK',
 }
-
-export const toggleShowInfoBlockAction = createAction<boolean, boolean>(
-  AppConfiguratorActionEnums.ToggleFormInfoBlock,
-  (p) => p
-);
 
 export const switchApplicationModeAction = createAction<ApplicationMode, ApplicationMode>(
   AppConfiguratorActionEnums.SwitchMode,
-  (p) => p
-);
-
-export const switchConfigurationItemModeAction = createAction<ConfigurationItemsViewMode, ConfigurationItemsViewMode>(
-  AppConfiguratorActionEnums.SwitchConfigurationItemsMode,
   (p) => p
 );
 

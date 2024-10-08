@@ -104,6 +104,7 @@ import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMe
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
 import KanbanComponent from '@/designer-components/kanban';
+import ChartComponent from '@/designer-components/charts';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -133,7 +134,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent],
     },
     {
       name: 'Advanced',
