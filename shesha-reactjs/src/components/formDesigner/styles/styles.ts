@@ -246,7 +246,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
         
                 &.active {
-                    background-color: #ebf3fb;
+                    background-color: ${token.colorPrimaryBg}80;
                 }
                 .${shaToolboxPanelItems} {
                     margin:-1rem -0.8rem;
@@ -328,7 +328,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
 
         .${shaComponentGhost} {
-            border: 1px dashed #4099ff;
+            border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
             opacity: 0.7;
 
@@ -348,9 +348,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         
             &.selected {
-              border: #61affe 1px solid;
+              border: ${token.colorPrimary} 1px solid;
               border-radius: 4px;
-              background-color: #ebf3fb;
+              background-color: ${token.colorPrimaryBg}80;
             }
         
             &.${hasConfigErrors} {
@@ -380,7 +380,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               height: 100%;
               position: relative;
               cursor: grab;
-              border: 1px dashed #61affe;
+              border: 1px dashed ${token.colorPrimary};
               box-sizing: border-box;
             }
             &:not(:hover) {

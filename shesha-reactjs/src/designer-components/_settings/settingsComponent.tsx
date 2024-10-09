@@ -12,6 +12,8 @@ import { getActualModel, useAvailableConstantsData, useDeepCompareMemo } from '@
 export interface ISettingsComponentProps extends IConfigurableFormComponent {
   components?: IConfigurableFormComponent[];
   availableConstantsExpression?: string;
+  resultTypeExpression?: string;
+  useAsyncEvaluation?: boolean;
 }
 
 const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
@@ -52,6 +54,8 @@ const SettingsComponent: IToolboxComponent<ISettingsComponentProps> = {
                     onChange={onChange}
                     value={value}
                     availableConstantsExpression={model.availableConstantsExpression}
+                    resultTypeExpression={model.resultTypeExpression}
+                    useAsyncEvaluation={model.useAsyncEvaluation}
                 >
                     {(_valueValue, _onChangeValue, propertyName) => {
                       return (

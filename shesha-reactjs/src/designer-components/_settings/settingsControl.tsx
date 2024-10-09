@@ -1,15 +1,15 @@
-import React, { FC, ReactElement, useCallback } from 'react';
+import React, { FC, ReactElement } from 'react';
 import { getPropertySettingsFromValue } from './utils';
-import { CodeEditor, IObjectMetadata, IPropertySetting, PropertySettingMode, useFormData } from '@/index';
+import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
-import { executeScript } from '@/providers/form/utils';
-import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
-import { ICodeEditorProps } from '../codeEditor/interfaces';
+import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
+import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
+import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -20,7 +20,9 @@ export interface ISettingsControlProps {
   mode: PropertySettingMode;
   onChange?: (value: IPropertySetting) => void;
   readonly children?: SettingsControlChildrenType;
-  availableConstantsExpression?: string;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc;
+  resultTypeExpression?: string | GetResultTypeFunc;
+  useAsyncEvaluation?: boolean;
 }
 
 const defaultExposedVariables: ICodeExposedVariable[] = [
@@ -40,18 +42,9 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
 export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   const { styles } = useStyles();
-  const metadataBuilderFactory = useMetadataBuilderFactory();
-  const { data: formData } = useFormData();
-
-  const usePassedConstants = props.availableConstantsExpression?.trim();
-  const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
-    if (!props.availableConstantsExpression?.trim())
-      return Promise.reject("AvailableConstantsExpression is mandatory");
-
-    const metadataBuilder = metadataBuilderFactory();
   
-    return executeScript<IObjectMetadata>(props.availableConstantsExpression, { data: formData, metadataBuilder });
-  }, [props.availableConstantsExpression, metadataBuilderFactory, formData]);
+  const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
+  const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
@@ -81,7 +74,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
-  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: props.readOnly,
@@ -92,13 +85,16 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
     propertyName: props.propertyName + 'Code',
     fileName: props.propertyName,
     wrapInTemplate: true,
-    templateSettings: { functionName: functionName },
+    templateSettings: { 
+      functionName: functionName,
+      useAsyncDeclaration: props.useAsyncEvaluation,
+    },
     exposedVariables: defaultExposedVariables
   };
 
-  const editor = usePassedConstants
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor}/>
-    : <CodeEditorWithStandardConstants {...codeEditorProps}/>;
+  const editor = constantsEvaluator
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType}/>
+    : <CodeEditorWithStandardConstants {...codeEditorProps}  resultType={resultType}/>;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
