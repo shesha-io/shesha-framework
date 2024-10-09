@@ -16,6 +16,7 @@ import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { asPropertiesArray } from '@/interfaces/metadata';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -61,6 +62,16 @@ const NumberFieldComponent: IToolboxComponent<INumberFieldComponentProps> = {
     .add<INumberFieldComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<INumberFieldComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<INumberFieldComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<INumberFieldComponentProps>(4, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        hideBorder: prev.hideBorder,
+        stylingBox: prev.stylingBox,
+        style: prev.style
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {

@@ -302,81 +302,6 @@ export const getSettings = (data: any) =>
       },
     })
     .addCollapsiblePanel({
-      id: '1b1400e7-1f62-431a-9bf4-feb966d90be3',
-      propertyName: 'pnlWidth',
-      parentId: 'root',
-      label: 'Container Width',
-      labelAlign: "left",
-      expandIconPosition: "start",
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
-        components: [...new DesignerToolbarSettings()
-          .addTextField({
-            id: 'e6be0d18-7f9e-4ee6-ab4a-19dacf3a3fd6',
-            propertyName: 'width',
-            label: 'Width',
-            labelAlign: 'right',
-            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
-            validate: {},
-            description:
-              'Container default width (can be %, px, or vw)',
-          })
-          .addTextField({
-            id: '4e024dd1-e7e2-4a0e-8478-e4f6eeba1c94',
-            propertyName: 'minWidth',
-            label: 'Min Width',
-            labelAlign: 'right',
-            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
-            validate: {},
-            description:
-              'Container minimum width (can be %, px, or vw)',
-          })
-          .addTextField({
-            id: '747d4a30-02e1-4136-ad78-7126e4d36e29',
-            propertyName: 'maxWidth',
-            label: 'Max Width',
-            labelAlign: 'right',
-            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
-            validate: {},
-            description:
-              'Container maximum width (can be %, px, or vw)',
-          })
-          .addTextField({
-            id: '789ef4cf-843d-4cbf-a932-953d313a3293s',
-            propertyName: 'height',
-            label: 'Height',
-            labelAlign: 'right',
-            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
-            validate: {},
-            description:
-              'Container default height (can be %, px, or vw)',
-          })
-          .addTextField({
-            id: 'e5b2ef1b-e72b-4477-8794-e1aaa33c0efa',
-            propertyName: 'minHeight',
-            label: 'Min Height',
-            labelAlign: 'right',
-            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
-            validate: {},
-            description:
-              'Container minimum height (can be %, px, or vw)',
-          })
-          .addTextField({
-            id: '95f424dc-d307-47d8-bad8-ebe6be282cc0',
-            propertyName: 'maxHeight',
-            label: 'Max Height',
-            labelAlign: 'right',
-            parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
-            validate: {},
-            description:
-              'Container maximum height (can be %, px, or vw)',
-          }).toJson()
-        ]
-      }
-    })
-    .addCollapsiblePanel({
       id: 'pnlc68f29dc-6af4-4ad6-8a30-c71681aca484',
       propertyName: 'pnlBorder',
       parentId: 'root',
@@ -444,6 +369,7 @@ export const getSettings = (data: any) =>
         ]
       }
     })
+
     .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'pnlBackground',
@@ -622,61 +548,137 @@ export const getSettings = (data: any) =>
         ]
       }
     })
-    .addCollapsiblePanel({
-      id: 'db6e32f3-7a8b-4686-a0eb-81b2e36796ef',
-      propertyName: 'pnlStyle',
+    .addPropertyRouter({
+      id: nanoid(),
+      propertyName: 'propertyRouter2',
+      componentName: 'propertyRouter2',
+      label: 'Property router2',
+      labelAlign: 'right',
       parentId: 'root',
-      label: 'Style',
-      labelAlign: 'left',
-      expandIconPosition: 'start',
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnl64664-cbc9-4cef-bdbc-6fbea44cd0ca',
-        components: [
-          ...new DesignerToolbarSettings()
-            .addTextField({
-              textType: 'text',
-              id: '648fea09-e548-44b3-9c90-2187ad63fd07',
-              propertyName: 'className',
-              label: 'Custom CSS Class',
-              labelAlign: 'right',
-              parentId: 'root',
-              hidden: false,
-              description: 'Custom CSS Class to add to this component',
-              validate: {},
-              settingsValidationErrors: [],
-            })
-            .addCodeEditor({
-              id: '4e319199-d27c-4ed0-9934-fa2cb62745d1',
-              propertyName: 'style',
-              label: 'Style',
-              parentId: 'root',
-              mode: 'dialog',
-              description: 'The style that will be applied to the container',
-              exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
-            })
-            .addCodeEditor({
-              id: '71b5da4f-9300-41bf-b0c4-9d9f3757d402',
-              propertyName: 'wrapperStyle',
-              label: 'Wrapper Style',
-              parentId: 'root',
-              mode: 'dialog',
-              description: 'The style that will be applied to the container wrapper',
-              exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
-              hidden: { _code: 'return  getSettingValue(data?.noDefaultStyling);', _mode: 'code', _value: false } as any,
-            })
-            .addStyleBox({
-              id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
-              propertyName: 'stylingBox',
-              parentId: 'root',
-              validate: {},
-              settingsValidationErrors: [],
-              jsSetting: false,
-            }).toJson(),
-        ],
+      hidden: false,
+      propertyRouteName: {
+        _mode: "code",
+        _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        _value: ""
       },
-    })
+      components: [
+        ...new DesignerToolbarSettings()
+        .addCollapsiblePanel({
+          id: 'db6e32f3-7a8b-4686-a0eb-81b2e36796ef',
+          propertyName: 'pnlStyle',
+          parentId: 'root',
+          label: 'Style',
+          labelAlign: 'left',
+          expandIconPosition: 'start',
+          ghost: true,
+          collapsible: 'header',
+          content: {
+            id: 'pnl64664-cbc9-4cef-bdbc-6fbea44cd0ca',
+            components: [
+              ...new DesignerToolbarSettings()
+                .addTextField({
+                  id: 'e6be0d18-7f9e-4ee6-ab4a-19dacf3a3fd6',
+                  propertyName: 'width',
+                  label: 'Width',
+                  labelAlign: 'right',
+                  parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+                  validate: {},
+                  description:
+                    'Container default width (can be %, px, or vw)',
+                })
+                .addTextField({
+                  id: '4e024dd1-e7e2-4a0e-8478-e4f6eeba1c94',
+                  propertyName: 'minWidth',
+                  label: 'Min Width',
+                  labelAlign: 'right',
+                  parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+                  validate: {},
+                  description:
+                    'Container minimum width (can be %, px, or vw)',
+                })
+                .addTextField({
+                  id: '747d4a30-02e1-4136-ad78-7126e4d36e29',
+                  propertyName: 'maxWidth',
+                  label: 'Max Width',
+                  labelAlign: 'right',
+                  parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+                  validate: {},
+                  description:
+                    'Container maximum width (can be %, px, or vw)',
+                })
+                .addTextField({
+                  id: '789ef4cf-843d-4cbf-a932-953d313a3293s',
+                  propertyName: 'height',
+                  label: 'Height',
+                  labelAlign: 'right',
+                  parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+                  validate: {},
+                  description:
+                    'Container default height (can be %, px, or vw)',
+                })
+                .addTextField({
+                  id: 'e5b2ef1b-e72b-4477-8794-e1aaa33c0efa',
+                  propertyName: 'minHeight',
+                  label: 'Min Height',
+                  labelAlign: 'right',
+                  parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+                  validate: {},
+                  description:
+                    'Container minimum height (can be %, px, or vw)',
+                })
+                .addTextField({
+                  id: '95f424dc-d307-47d8-bad8-ebe6be282cc0',
+                  propertyName: 'maxHeight',
+                  label: 'Max Height',
+                  labelAlign: 'right',
+                  parentId: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
+                  validate: {},
+                  description:
+                    'Container maximum height (can be %, px, or vw)',
+                })
+                .addTextField({
+                  textType: 'text',
+                  id: '648fea09-e548-44b3-9c90-2187ad63fd07',
+                  propertyName: 'className',
+                  label: 'Custom CSS Class',
+                  labelAlign: 'right',
+                  parentId: 'root',
+                  hidden: false,
+                  description: 'Custom CSS Class to add to this component',
+                  validate: {},
+                  settingsValidationErrors: [],
+                })
+                .addCodeEditor({
+                  id: '4e319199-d27c-4ed0-9934-fa2cb62745d1',
+                  propertyName: 'style',
+                  label: 'Style',
+                  parentId: 'root',
+                  mode: 'dialog',
+                  description: 'The style that will be applied to the container',
+                  exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
+                })
+                .addCodeEditor({
+                  id: '71b5da4f-9300-41bf-b0c4-9d9f3757d402',
+                  propertyName: 'wrapperStyle',
+                  label: 'Wrapper Style',
+                  parentId: 'root',
+                  mode: 'dialog',
+                  description: 'The style that will be applied to the container wrapper',
+                  exposedVariables: [{ id: nanoid(), name: 'data', description: 'Form data', type: 'object' }],
+                  hidden: { _code: 'return  getSettingValue(data?.noDefaultStyling);', _mode: 'code', _value: false } as any,
+                })
+                .addStyleBox({
+                  id: 'c26c0e0d-f3f6-425f-a8d0-e69f6a4139bd',
+                  propertyName: 'stylingBox',
+                  parentId: 'root',
+                  validate: {},
+                  settingsValidationErrors: [],
+                  jsSetting: false,
+                }).toJson(),
+            ],
+          },
+        }).toJson(),
+      ]}) 
     .addCollapsiblePanel({
       id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
       propertyName: 'pnlSecurity',

@@ -24,6 +24,7 @@ const designerClassNames = {
     shaToolboxComponents: "sha-toolbox-components",
     shaDesignerToolbarLeft: "sha-designer-toolbar-left",
     shaDesignerToolbarRight: "sha-designer-toolbar-right",
+    shaDesignerToolbarCenter: "sha-designer-toolbar-center",
     shaDesignerToolbox: "sha-designer-toolbox",
     shaDesignerWarning: "sha-designer-warning",
     shaDragging: "sha-dragging",
@@ -55,6 +56,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         shaToolboxComponents,
         shaDesignerToolbarLeft,
         shaDesignerToolbarRight,
+        shaDesignerToolbarCenter,
         shaDesignerCanvasConfig,
         shaDesignerToolbox,
         sidebarHeaderTitle,
@@ -174,6 +176,19 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 .${prefixCls}-btn {
                 margin-left: 2px;
                 }
+            }
+
+
+            .${shaDesignerToolbarCenter} {
+                width: 180px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                    small {
+                        align-content: center;
+                        align-items: center;
+                        width: 170px;
+                    }
             }
             .${shaDesignerCanvasConfig} {
                 display: flex;
