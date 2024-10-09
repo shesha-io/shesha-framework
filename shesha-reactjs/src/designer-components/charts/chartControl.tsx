@@ -98,15 +98,11 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   };
 
   const resetFilter = () => {
-    setChartFilters([{ property: '', operator: 'equals', value: '' }]);
+    setChartFilters([]);
     setFilterdData(state.data);
   };
 
   const onFilter = () => {
-    if (state.chartFilters?.length === 1 && (state?.chartFilters[0]?.property === '' || state?.chartFilters[0]?.value === '')) {
-      resetFilter();
-      return;
-    }
     const afterFilterData = applyFilters(state.data, state.chartFilters);
     setFilterdData(afterFilterData);
   };

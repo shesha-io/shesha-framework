@@ -103,6 +103,10 @@ const aggregateData = (data: object[], xProperty: string, yProperty: string, agg
  * @returns filtered data
  */
 export function filterData(preFilteredData: object[], property: string, operator: TOperator, value: string | number): object[] {
+  if (!property || !operator || value === undefined) {
+    console.error('Invalid filter: property, operator, and value are required');
+    return preFilteredData;
+  }
   if (!Array.isArray(preFilteredData) || preFilteredData?.length === 0) {
     console.error('Invalid data: preFilteredData must be a non-empty array');
     return [];
