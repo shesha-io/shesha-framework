@@ -11,17 +11,17 @@ interface BarChartProps extends IChartDataProps {
   data: IChartData;
 }
 
-const BarChart: React.FC<BarChartProps> = ({ data }) => {
-  ChartJS.register(
-    BarController,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Title,
-    Tooltip,
-    Legend
-  );
+ChartJS.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend
+);
 
+const BarChart: React.FC<BarChartProps> = ({ data }) => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, stacked } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {

@@ -11,18 +11,18 @@ interface ILineChartProps extends IChartDataProps {
     data: IChartData;
 }
 
-const LineChart: React.FC<ILineChartProps> = ({ data }) => {
-    ChartJS.register(
-        CategoryScale,
-        LineController,
-        LineElement,
-        PointElement,
-        LinearScale,
-        Title,
-        Tooltip,
-        Legend
-    );
+ChartJS.register(
+    CategoryScale,
+    LineController,
+    LineElement,
+    PointElement,
+    LinearScale,
+    Title,
+    Tooltip,
+    Legend
+);
 
+const LineChart: React.FC<ILineChartProps> = ({ data }) => {
     const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, tension } = useChartDataStateContext();
 
     data.datasets.forEach((dataset: any) => {

@@ -12,15 +12,15 @@ interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
 }
 
-const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
-  ChartJS.register(
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement,
-    RadialLinearScale,
-  );
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  RadialLinearScale,
+);
 
+const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisLabel, showTitle, title, legendPosition } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {

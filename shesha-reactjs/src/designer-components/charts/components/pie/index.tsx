@@ -12,28 +12,28 @@ interface IPieChartProps extends IChartDataProps {
   data: IChartData;
 }
 
-const PieChart = ({ data }: IPieChartProps) => {
-  ChartJS.register(
-    Title,
-    Tooltip,
-    Legend,
-    ArcElement,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    DoughnutController,
-    PieController,
-    RadialLinearScale,
-    Decimation,
-    Filler,
-    ArcElement,
-    LineController,
-    LineElement,
-    PointElement,
-    LinearScale,
-    Legend,
-  );
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  DoughnutController,
+  PieController,
+  RadialLinearScale,
+  Decimation,
+  Filler,
+  ArcElement,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Legend,
+);
 
+const PieChart = ({ data }: IPieChartProps) => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisLabel, showTitle, title, legendPosition } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {
