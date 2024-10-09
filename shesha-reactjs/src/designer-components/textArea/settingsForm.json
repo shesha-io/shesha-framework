@@ -232,6 +232,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -304,6 +309,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -316,7 +326,7 @@
             "templateSettings": {
               "functionName": "onFocus"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n  .addString(\"value\", \"Component current value\")\r\n       .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           },
           {
             "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
@@ -371,6 +381,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -383,7 +398,7 @@
             "templateSettings": {
               "functionName": "onBlur"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n     .addString(\"value\", \"Component current value\")\r\n     .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           }
         ]
       }

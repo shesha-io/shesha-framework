@@ -4,8 +4,8 @@ import { Button, Form, FormInstance } from "antd";
 import ConfigurableButton from "@/designer-components/button/configurableButton";
 import { useTheme } from "@/index";
 import { useStyles } from "./styles";
-import { fadeColor } from "./provider/utils";
-import { IChevronButton, IChevronControlProps } from "./provider/models";
+import { fadeColor } from "@/providers/refList/provider/utils";
+import { IChevronButton, IChevronControlProps} from "./models";
 import classNames from "classnames";
 import { addPx } from "@/designer-components/button/util";
 
