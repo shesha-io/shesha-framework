@@ -302,21 +302,6 @@ export const getSettings = (data: any) =>
       },
     })
     .addCollapsiblePanel({
-      id: '1b1400e7-1f62-431a-9bf4-feb966d90be3',
-      propertyName: 'pnlWidth',
-      parentId: 'root',
-      label: 'Container Width',
-      labelAlign: "left",
-      expandIconPosition: "start",
-      ghost: true,
-      collapsible: 'header',
-      content: {
-        id: 'pnld3933cd3-8810-4e29-a434-c84105d46fa2',
-        components: [...new DesignerToolbarSettings().toJson()
-        ]
-      }
-    })
-    .addCollapsiblePanel({
       id: 'pnlc68f29dc-6af4-4ad6-8a30-c71681aca484',
       propertyName: 'pnlBorder',
       parentId: 'root',
