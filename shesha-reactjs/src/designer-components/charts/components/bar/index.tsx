@@ -7,21 +7,21 @@ import { Bar } from 'react-chartjs-2';
 import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
-ChartJS.register(
-  BarController,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend
-);
-
 interface BarChartProps extends IChartDataProps {
   data: IChartData;
 }
 
 const BarChart: React.FC<BarChartProps> = ({ data }) => {
+  ChartJS.register(
+    BarController,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    Title,
+    Tooltip,
+    Legend
+  );
+
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, stacked } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {

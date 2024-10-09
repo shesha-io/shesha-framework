@@ -8,24 +8,38 @@ import {
 import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
-ChartJS.register(
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  RadialLinearScale,
-);
-
 interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
 }
 
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
+  ChartJS.register(
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement,
+    RadialLinearScale,
+  );
+
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisLabel, showTitle, title, legendPosition } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
+      scales: {
+        r: {
+          ticks: {
+            color: 'green',
+            font: {
+              size: 14  // Make ticks larger for better visibility
+            },
+            backdropColor: 'rgba(255, 255, 255, 0)'  // Remove the tick's backdrop
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.2)'  // Make grid lines more transparent
+          }
+        }
+      },
       legend: {
         display: showXAxisLabel,
         position: legendPosition ?? 'top',

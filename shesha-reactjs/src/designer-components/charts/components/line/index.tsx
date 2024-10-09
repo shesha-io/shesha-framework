@@ -2,26 +2,27 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
-    LineController, LineElement, PointElement, LinearScale, Title, Tooltip, Legend
+    CategoryScale, LineController, LineElement, PointElement, LinearScale, Title, Tooltip, Legend
 } from 'chart.js';
 import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
-
-ChartJS.register(
-    LineController,
-    LineElement,
-    PointElement,
-    LinearScale,
-    Title,
-    Tooltip,
-    Legend
-);
 
 interface ILineChartProps extends IChartDataProps {
     data: IChartData;
 }
 
 const LineChart: React.FC<ILineChartProps> = ({ data }) => {
+    ChartJS.register(
+        CategoryScale,
+        LineController,
+        LineElement,
+        PointElement,
+        LinearScale,
+        Title,
+        Tooltip,
+        Legend
+    );
+
     const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, tension } = useChartDataStateContext();
 
     data.datasets.forEach((dataset: any) => {
