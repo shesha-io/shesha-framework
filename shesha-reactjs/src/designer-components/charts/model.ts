@@ -27,6 +27,7 @@ export interface IChartProps extends IConfigurableFormComponent {
     xProperty?: string;
     yProperty?: string;
     tension?: number;
+    strokeColor?: string;
     aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
 }
 
@@ -47,6 +48,7 @@ export interface IChartsProps {
     xProperty?: string;
     yProperty?: string;
     tension?: number;
+    strokeColor?: string;
     simpleOrPivot?: 'simple' | 'pivot';
     showName?: boolean;
     showDescription?: boolean;

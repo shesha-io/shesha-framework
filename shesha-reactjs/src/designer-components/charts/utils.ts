@@ -265,7 +265,7 @@ function getPredictableColor(input: string | number): string {
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared line chart data
  */
-export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod = 'sum'): IChartData => {
+export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod = 'sum'): IChartData => {
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
@@ -274,7 +274,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
       {
         label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
         data: aggregatedData.map(item => item.y),
-        borderColor: 'white',
+        borderColor: strokeColor || 'white',
         backgroundColor: getPredictableColor(yProperty),
         fill: false,
         pointRadius: 5,
@@ -291,7 +291,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared bar chart data
  */
-export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod = 'sum'): IChartData => {
+export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod = 'sum'): IChartData => {
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
@@ -301,7 +301,7 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
         label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
         data: aggregatedData.map(item => item.y),
         backgroundColor: aggregatedData.map(item => getPredictableColor(item.x.toString())),
-        borderColor: 'white',
+        borderColor: strokeColor || 'white',
         borderWidth: 1,
       }
     ]
@@ -316,7 +316,7 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared pie chart data
  */
-export const preparePieChartData = (data: object[], legendProperty: string, valueProperty: string, aggregationMethod: string): IChartData => {
+export const preparePieChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: string): IChartData => {
   const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
   const datasets = [{
@@ -334,7 +334,7 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
       return 0;
     }),
     backgroundColor: labels.map((label: string) => getPredictableColor(label)),
-    borderColor: 'white',
+    borderColor: strokeColor || 'white',
   }];
 
   return {
@@ -343,8 +343,16 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
   };
 };
 
-// prepare polar area chart data
-export const preparePolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, aggregationMethod: string): IChartData => {
+/**
+ * prepare polar area chart data
+ * @param data raw data
+ * @param legendProperty legend property 
+ * @param valueProperty value property
+ * @param strokeColor stroke color
+ * @param aggregationMethod aggregation method (sum, average, count, min, max)
+ * @returns prepared polar area chart data
+ */
+export const preparePolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: string): IChartData => {
   const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
   const datasets = [{
@@ -362,31 +370,11 @@ export const preparePolarAreaChartData = (data: object[], legendProperty: string
       return 0;
     }),
     backgroundColor: labels.map((label: string) => getPredictableColor(label)),
-    borderColor: 'white',
+    borderColor: strokeColor || 'white',
   }];
 
   return {
     labels,
-    datasets
-  };
-};
-
-// prepare scatter chart data
-export const prepareScatterChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string): IChartData => {
-  const datasets = [{
-    label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
-    data: data.map((item: { [key: string]: any }) => {
-      const xValue = getPropertyValue(item, xProperty);
-      const yValue = getPropertyValue(item, yProperty);
-      return { x: xValue, y: yValue };
-    }),
-    backgroundColor: getPredictableColor(yProperty),
-    borderColor: 'white',
-    borderWidth: 1,
-  }];
-
-  return {
-    labels: data.map((item: { [key: string]: any }) => getPropertyValue(item, xProperty)),
     datasets
   };
 };
@@ -432,6 +420,7 @@ export const preparePivotChartData = (
   axisProperty: string,
   legendProperty: string,
   valueProperty: string,
+  strokeColor: string,
   aggregationMethod: string,
   chartType: string,
   refLists?: { [key: string]: any[] }
@@ -463,7 +452,7 @@ export const preparePivotChartData = (
         return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
       }),
       fill: false,
-      borderColor: 'white',
+      borderColor: strokeColor || 'white',
       backgroundColor: colors,
       pointRadius: 5,
     };

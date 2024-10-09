@@ -25,6 +25,7 @@ export interface IChartDataContext {
   stacked?: boolean;
   aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
   tension?: number;
+  strokeColor?: string;
 
   data?: object[];
   items?: object[];

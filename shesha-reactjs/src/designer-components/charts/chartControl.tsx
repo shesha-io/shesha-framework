@@ -16,7 +16,7 @@ import useStyles from './styles';
 import { applyFilters, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData, preparePolarAreaChartData } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
-  const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked, tension } = props;
+  const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked, tension, strokeColor } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
   const { getMetadata } = useMetadataDispatcher();
@@ -31,7 +31,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       axisProperty, showLegend, showTitle,
       title, legendPosition, showXAxisLabel,
       showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle,
-      simpleOrPivot, filterProperties, stacked, tension
+      simpleOrPivot, filterProperties, stacked, tension, strokeColor
     });
   }, []);
 
@@ -147,16 +147,18 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
         (() => {
           switch (chartType) {
             case 'line':
-              data = simpleOrPivot === 'simple' ? prepareLineChartData(state.filteredData, axisProperty, valueProperty, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, aggregationMethod, chartType, state.refLists);
+              data = simpleOrPivot === 'simple' ? prepareLineChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, state.refLists);
               return <LineChart data={data} />;
             case 'bar':
-              data = simpleOrPivot === 'simple' ? prepareBarChartData(state.filteredData, axisProperty, valueProperty, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, aggregationMethod, chartType, state.refLists);
+              data = simpleOrPivot === 'simple' ? prepareBarChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, state.refLists);
               return <BarChart data={data} />;
             case 'pie':
-              data = simpleOrPivot === 'simple' ? preparePieChartData(state.filteredData, axisProperty, valueProperty, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, aggregationMethod, chartType, state.refLists);
+              data = simpleOrPivot === 'simple' ? preparePieChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, state.refLists);
               return <PieChart data={data} />;
             case 'polarArea':
-              data = simpleOrPivot === 'simple' ? preparePolarAreaChartData(state.filteredData, axisProperty, valueProperty, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, aggregationMethod, chartType, state.refLists);
+              data = simpleOrPivot === 'simple'
+                ? preparePolarAreaChartData(state.filteredData, axisProperty, valueProperty, strokeColor, aggregationMethod)
+                : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, strokeColor, aggregationMethod, chartType, state.refLists);
               return <PolarAreaChart data={data} />;
             default:
               return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;

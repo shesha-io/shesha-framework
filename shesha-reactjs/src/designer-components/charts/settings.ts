@@ -202,6 +202,18 @@ export const settingsForm = new DesignerToolbarSettings()
               _value: true
             },
           })
+          .addColorPicker({
+            id: nanoid(),
+            propertyName: 'strokeColor',
+            parentId: 'root',
+            label: 'Stroke Color',
+            // hidden: {
+            //   _code: "return !(getSettingValue(data?.chartType) === `line`)",
+            //   _mode: "code",
+            //   _value: false
+            // },
+            defaultValue: '#000',
+          })
           .toJson()
         ]
     }
