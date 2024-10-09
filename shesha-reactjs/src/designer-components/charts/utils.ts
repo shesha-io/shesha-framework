@@ -343,6 +343,54 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
   };
 };
 
+// prepare polar area chart data
+export const preparePolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, aggregationMethod: string): IChartData => {
+  const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
+
+  const datasets = [{
+    label: `${valueProperty} (${aggregationMethod})`,
+    data: labels.map((label: string) => {
+      const filteredData = data?.filter((item: { [key: string]: any }) => getPropertyValue(item, legendProperty) === label);
+      const values: number[] = filteredData?.map((item: { [key: string]: any }) => getPropertyValue(item, valueProperty) as number);
+
+      // Aggregation logic
+      if (aggregationMethod === 'sum') return values.reduce((acc, val) => acc + (val || 0), 0);
+      if (aggregationMethod === 'count') return values.length;
+      if (aggregationMethod === 'average') return values.reduce((acc, val) => acc + (val || 0), 0) / values.length;
+      if (aggregationMethod === 'min') return Math.min(...values);
+      if (aggregationMethod === 'max') return Math.max(...values);
+      return 0;
+    }),
+    backgroundColor: labels.map((label: string) => getPredictableColor(label)),
+    borderColor: 'white',
+  }];
+
+  return {
+    labels,
+    datasets
+  };
+};
+
+// prepare scatter chart data
+export const prepareScatterChartData = (data: object[], xProperty: string, yProperty: string, aggregationMethod: string): IChartData => {
+  const datasets = [{
+    label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
+    data: data.map((item: { [key: string]: any }) => {
+      const xValue = getPropertyValue(item, xProperty);
+      const yValue = getPropertyValue(item, yProperty);
+      return { x: xValue, y: yValue };
+    }),
+    backgroundColor: getPredictableColor(yProperty),
+    borderColor: 'white',
+    borderWidth: 1,
+  }];
+
+  return {
+    labels: data.map((item: { [key: string]: any }) => getPropertyValue(item, xProperty)),
+    datasets
+  };
+};
+
 /**
  * Function to aggregate values based on the aggregation method
  * @param items the items to aggregate

@@ -24,6 +24,7 @@ export interface IChartDataContext {
   showYAxisLabelTitle?: boolean;
   stacked?: boolean;
   aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
+  tension?: number;
 
   data?: object[];
   items?: object[];
@@ -71,6 +72,7 @@ export const INITIAL_STATE: IChartDataContext = {
   showYAxisLabel: true,
   showYAxisLabelTitle: true,
   aggregationMethod: 'count',
+  tension: 0,
 
   data: [],
   items: [],

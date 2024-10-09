@@ -1,3 +1,7 @@
+import { useGet } from '@/hooks';
+import { IModelMetadata, useMetadataDispatcher } from '@/index';
+import { IRefListPropertyMetadata } from '@/interfaces/metadata';
+import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Button, Flex, Result, Spin } from 'antd';
 import React, { useEffect } from 'react';
@@ -6,16 +10,13 @@ import BarChart from './components/bar';
 import FilterComponent from './components/filterComponent';
 import LineChart from './components/line';
 import PieChart from './components/pie';
+import PolarAreaChart from './components/polarArea';
 import { IChartData, IChartsProps } from './model';
-import { applyFilters, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData } from './utils';
-import { useGet } from '@/hooks';
 import useStyles from './styles';
-import { IModelMetadata, useMetadataDispatcher } from '@/index';
-import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
-import { IRefListPropertyMetadata } from '@/interfaces/metadata';
+import { applyFilters, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData, preparePolarAreaChartData } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
-  const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked } = props;
+  const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisLabel, showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked, tension } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
   const { getMetadata } = useMetadataDispatcher();
@@ -30,7 +31,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       axisProperty, showLegend, showTitle,
       title, legendPosition, showXAxisLabel,
       showXAxisLabelTitle, showYAxisLabel, showYAxisLabelTitle,
-      simpleOrPivot, filterProperties, stacked
+      simpleOrPivot, filterProperties, stacked, tension
     });
   }, []);
 
@@ -154,6 +155,9 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
             case 'pie':
               data = simpleOrPivot === 'simple' ? preparePieChartData(state.filteredData, axisProperty, valueProperty, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, aggregationMethod, chartType, state.refLists);
               return <PieChart data={data} />;
+            case 'polarArea':
+              data = simpleOrPivot === 'simple' ? preparePolarAreaChartData(state.filteredData, axisProperty, valueProperty, aggregationMethod) : preparePivotChartData(state.filteredData, axisProperty, legendProperty, valueProperty, aggregationMethod, chartType, state.refLists);
+              return <PolarAreaChart data={data} />;
             default:
               return <Result status="404" title="404" subTitle="Sorry, please select a chart type." />;
           }
