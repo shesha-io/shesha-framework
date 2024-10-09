@@ -6,8 +6,16 @@ export const deepMergeValues = (target: any, source: any) => {
     { ...target },
     source,
     (objValue, srcValue, key, obj) => {
-        if (srcValue === undefined)
+        if (typeof objValue === "object" && typeof srcValue === "object") {
+          // make a copy of merged objects
+          return deepMergeValues(objValue, srcValue);
+        }
+
+        if (srcValue === undefined) {
+            // reset field to undefined
             obj[key] = undefined;
+        }
+
         return Array.isArray(objValue) ? srcValue : undefined;
     },
   );
