@@ -10,6 +10,7 @@ import { executeScript } from '@/providers/form/utils';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
+import { CodeFilled, CodeOutlined, FormOutlined } from '@ant-design/icons';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -81,7 +82,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
-  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: props.readOnly,
@@ -97,23 +98,22 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const editor = usePassedConstants
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor}/>
-    : <CodeEditorWithStandardConstants {...codeEditorProps}/>;
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
       <Button
         hidden={props.readOnly}
-        shape="round"
-        className={styles.jsSwitch}
-        type='primary'
+        className={`${styles.jsSwitch} inlineJS`}
+        type='text'
         danger={mode === 'value' && !!code}
         ghost
         size='small'
+        icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+        color='lightslategrey'
         onClick={onSwitchMode}
-      >
-        {mode === 'code' ? 'Value' : 'JS'}
-      </Button>
+      />
       <div className={styles.jsContent}>
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}

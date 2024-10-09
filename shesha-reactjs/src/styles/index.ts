@@ -42,7 +42,7 @@ export const getTextHoverEffects = (token: FullToken) => {
         &:hover {
             color: ${token.colorPrimary} !important;
         }
-        
+
         cursor: pointer;
     `;
 };

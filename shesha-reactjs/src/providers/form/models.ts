@@ -6,6 +6,11 @@ import { DesignerToolbarSettings, IAsyncValidationError, IDictionary } from '@/i
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { nanoid } from '@/utils/uuid';
+import { IFontValue } from '@/designer-components/styleFont/interfaces';
+import { IBackgroundValue } from '@/designer-components/styleBackground/interfaces';
+import { IBorderValue } from '@/designer-components/styleBorder/interfaces';
+import { IDimensionsValue } from '@/designer-components/styleDimensions/interfaces';
+import { IShadowValue } from '@/designer-components/styleShadow/interfaces';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -183,6 +188,22 @@ export interface IConfigurableFormComponent
   /** Default css style applied as string */
   stylingBox?: string;
 
+  /** Font style */
+  font?: IFontValue;
+
+  /** Background style */
+
+  background?: IBackgroundValue;
+
+  /** Border style */
+  border?: IBorderValue;
+
+  /** Shadow style */
+  shadow?: IShadowValue;
+
+  /** Dimension style */
+  dimension?: IDimensionsValue;
+
   noDataText?: string;
 
   noDataIcon?: string;
@@ -191,6 +212,7 @@ export interface IConfigurableFormComponent
 
   permissions?: string[];
 
+  layout?: FormLayout;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
@@ -223,10 +245,10 @@ export interface IFormSettingsCommon {
   labelCol: ColProps;
   wrapperCol: ColProps;
   size?: SizeType;
-    /** if true then need to update components structure for using Setting component */
-    isSettingsForm?: boolean;
-    permissions?: string[];
-    access?: number;
+  /** if true then need to update components structure for using Setting component */
+  isSettingsForm?: boolean;
+  permissions?: string[];
+  access?: number;
 }
 
 export interface ILegacyFormSettings extends IFormSettingsCommon {
@@ -328,7 +350,7 @@ export interface IPersistedFormProps {
 type AllKeys<T> = T extends unknown ? keyof T : never;
 type Id<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 type _ExclusifyUnion<T, K extends PropertyKey> =
-    T extends unknown ? Id<T & Partial<Record<Exclude<K, keyof T>, never>>> : never;
+  T extends unknown ? Id<T & Partial<Record<Exclude<K, keyof T>, never>>> : never;
 type ExclusifyUnion<T> = _ExclusifyUnion<T, AllKeys<T>>;
 
 export type HasFormId = {

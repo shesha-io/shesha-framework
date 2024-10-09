@@ -1,37 +1,25 @@
 import { createStyles } from '@/styles';
-import { sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
+
     const jsSwitch = cx(css`
+        position: absolute;
         &.${prefixCls}-btn {
-            position: absolute;
-            left: 0;
-            right: auto;
-            top: 4px;
-            font-size: 12px;
-            height: 20px;
-            width: 2.5rem;
-            margin-left: 5px;
             margin-right: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: lightslategrey;
+            max-width: 100%;
             ${responsive.mobile} {
-                right: 0;
-                left: auto;
-                top: -28px;
+                right: auto;
+                left: 0;
             }
 
             // special style when inside the sidebar
             .sidebar-container & {
-                right: 0;
-                left: auto;
-                top: -28px;
-            }
-            .${sheshaStyles.verticalSettingsClass} & {
-                right: 0;
-                left: auto;
-                top: -28px;
+                right: auto;
+                left: 0;
             }
         }
     `);
@@ -47,28 +35,28 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             padding-top: 4px;
         }
 
-        // special style when inside the sidebar
-        .sidebar-container & {
-            padding-top: 4px;
-        }
-        .${sheshaStyles.verticalSettingsClass} & {
-            padding-top: 4px;
-        }
     `);
+
     const jsContent = cx(css`
-        margin-left: 64px;
+        position: relative;
+        margin-left: 28px;
         ${responsive.mobile} {
-            margin-left: 0;
+            margin-left: 28px;
         }
 
         // special style when inside the sidebar
         .sidebar-container & {
+            margin-left: 28px;
             margin-right: 0;
-            margin-left: 0;
         }
-        .${sheshaStyles.verticalSettingsClass} & {
-            margin-right: 0;
-            margin-left: 0;
+    `);
+
+    const unitSelector = cx(css`
+        .ant-select-selector {
+        padding: 1px 2px !important;
+    }
+        .ant-select-arrow {
+            margin-left: 2px !important;
         }
     `);
 
@@ -77,5 +65,6 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
         contentJs,
         contentCode,
         jsContent,
+        unitSelector
     };
 });
