@@ -8,7 +8,7 @@ import { useAuthState, useShaRouting } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
 import { useCacheProvider } from '@/hooks/useCache';
 import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
-import { MetadataBuilder } from '@/utils/metadata/metadataBuilder';
+import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { createNamedContext } from '@/utils/react';
 
 export interface IApplicationDataProviderProps {
@@ -17,7 +17,7 @@ export interface IApplicationDataProviderProps {
 
 export interface ApplicationPluginRegistration {
   name: string;
-  buildMetadata: (builder: MetadataBuilder) => void;
+  buildMetadata: (apiBuilder: IObjectMetadataBuilder, metadataBuilder: IMetadataBuilder) => void;
   data: any;
 }
 

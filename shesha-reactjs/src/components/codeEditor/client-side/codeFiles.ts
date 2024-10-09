@@ -1,9 +1,9 @@
 import { asPropertiesArray, IObjectMetadata, isPropertiesArray, isPropertiesLoader, ModelTypeIdentifier, NestedProperties, PropertiesPromise } from "@/interfaces/metadata";
 import { makeCodeTemplate, TextTemplate } from "./utils";
-import { CodeTemplateSettings, isComplexType, ResultType } from "../models";
+import { CodeTemplateSettings, isEntityType, isObjectType, ResultType } from "../models";
 import { TypesBuilder } from "@/utils/metadata/typesBuilder";
 import { trimSuffix } from "@/utils/string";
-import { DTS_EXTENSION } from "@/utils/metadata/typesImporter";
+import { DTS_EXTENSION, TypesImporter } from "@/utils/metadata/typesImporter";
 
 export interface ISourceCodeFile {
     content: string;
@@ -91,7 +91,7 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
     let resultTypeName: string = null;
     let localDeclarationsBlock = "";
     if (resultType) {
-        if (isComplexType(resultType)) {
+        if (isObjectType(resultType)) {
             const resultTypeDeclaration = await tsBuilder.buildType(resultType);
             const responseFileName = getResponseFileName(fileName);
             registerFile(`/${directory}/${responseFileName}`, resultTypeDeclaration.content);
@@ -99,12 +99,22 @@ export const buildCodeEditorEnvironmentAsync = async (args: BuildSourceCodeFiles
 
             localDeclarationsBlock = `import { ${resultType.name} } from './${trimSuffix(responseFileName, DTS_EXTENSION)}';\r\n`;
         } else
-            resultTypeName = resultType.dataType;
+            if (isEntityType(resultType)) {
+                const entityType = await tsBuilder.getEntityType({ module: resultType.entityModule, name: resultType.entityType });
+                resultTypeName = `Partial<${entityType.typeName}>`;
+                
+                const typesImporter = new TypesImporter();
+                typesImporter.import(entityType);
+                const importSection = typesImporter.generateImports();
+
+                localDeclarationsBlock = `${importSection}\r\n`;
+            } else
+                resultTypeName = resultType.dataType;
     }
 
     if (wrapInTemplate) {
         const { useAsyncDeclaration, functionName } = args.templateSettings;
-        
+
         const variablesImportBlock = getVariablesImportBlock(availableConstants, trimSuffix(variablesFileName, DTS_EXTENSION));
         const finalResultTypeName = getResultTypeName(resultTypeName, useAsyncDeclaration);
         const resultTypeClause = finalResultTypeName ? `: ${finalResultTypeName}` : "";

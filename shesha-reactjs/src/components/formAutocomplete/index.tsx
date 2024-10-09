@@ -50,6 +50,7 @@ const getFilter = (term: string) => {
 };
 const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
 const FORM_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
+
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
     return {
         skipCount: 0,

@@ -1,5 +1,5 @@
 import { IHasEntityType, IPropertyMetadata, ITypeDefinitionLoadingContext, SourceFile, TypeDefinition, isEntityReferencePropertyMetadata, isPropertiesArray } from "@/interfaces/metadata";
-import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { EntitiesManager } from "./manager";
 import { HttpClientApi } from "../http/api";
 import { EntityConfigurationDto } from "./models";
@@ -263,6 +263,6 @@ const fetchEntitiesApiTypeDefinition = (context: ITypeDefinitionLoadingContext, 
  * @param {HttpClientApi} httpClient - the HttpClientApi instance
  * @return {MetadataBuilder} the MetadataBuilder instance with properties loader and type definition set
  */
-export const getEntitiesApiProperties = (builder: MetadataBuilder, httpClient: HttpClientApi): MetadataBuilder => builder
+export const getEntitiesApiProperties = (builder: IObjectMetadataBuilder, httpClient: HttpClientApi): IObjectMetadataBuilder => builder
     .setPropertiesLoader(() => fetchEntitiesApiAsMetadataProperties(httpClient))
     .setTypeDefinition((ctx) => fetchEntitiesApiTypeDefinition(ctx, httpClient));
