@@ -1,5 +1,5 @@
 import { Autocomplete, ColorPicker, Show } from '@/components';
-import RefListItemSelectorSettingsModal from '@/components/chevron/options/modal';
+import RefListItemSelectorSettingsModal from '@/providers/refList/options/modal';
 import { Checkbox, Input, Select } from 'antd';
 import React, { FC } from 'react';
 import { ContextPropertyAutocomplete } from '@/designer-components/contextPropertyAutocomplete';
@@ -9,7 +9,7 @@ import { useForm } from '@/providers';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import SettingsFormItem from '../_settings/settingsFormItem';
 import { Option } from 'antd/lib/mentions';
-import { IChevronProps } from '@/components/chevron/provider/models';
+import { IChevronProps } from '@/components/chevron/models';
 import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
 
 interface IChevronSettingsState extends IChevronProps { }
@@ -27,6 +27,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
           defaultModelType={designerModelType ?? formSettings.modelType}
           formData={model}
           onValuesChange={onValuesChange}
+          
         />
 
         <SettingsFormItem name="label" label="Label" jsSetting>
