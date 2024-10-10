@@ -51,7 +51,7 @@ const FilterComponent = ({
       }}
     >
       {filters?.map((filter, index) => (
-        <Space key={index} direction="vertical" className={cx(styles.fullWidth)}>
+        <Space key={index} direction="vertical" className={index > 0 ? cx(styles.fullWidth, styles['margin-top-5']) : cx(styles.fullWidth)}>
           <Row align="middle">
             <Col flex="auto">
               <Row gutter={8}>

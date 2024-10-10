@@ -10,7 +10,7 @@ export interface IChartData {
 }
 
 export interface IChartProps extends IConfigurableFormComponent {
-    chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
+    chartType?: 'polarArea' | 'bar' | 'line' | 'pie';
     showTitle?: boolean;
     title?: string;
     showLegend?: boolean;
@@ -26,11 +26,13 @@ export interface IChartProps extends IConfigurableFormComponent {
     legendProperty?: string;
     xProperty?: string;
     yProperty?: string;
+    tension?: number;
+    strokeColor?: string;
     aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
 }
 
 export interface IChartsProps {
-    chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
+    chartType?: 'polarArea' | 'bar' | 'line' | 'pie';
     showTitle?: boolean;
     title?: string;
     name?: string;
@@ -45,6 +47,8 @@ export interface IChartsProps {
     filterProperties?: string[];
     xProperty?: string;
     yProperty?: string;
+    tension?: number;
+    strokeColor?: string;
     simpleOrPivot?: 'simple' | 'pivot';
     showName?: boolean;
     showDescription?: boolean;
