@@ -3,8 +3,7 @@ import { ISettingsEditorProps } from '@/components/configurableComponent';
 import { SidebarMenu } from '@/components/sidebarMenu';
 import { ComponentSettingsModal } from './settingsModal';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
-import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
-import { Button } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import ConfigurableComponentRenderer from '../configurableComponentRenderer';
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { useMainMenu } from '@/providers/mainMenu';
@@ -69,10 +68,10 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
     >
       {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`}>
+            <div className={`sidebar ${componentState.wrapperClassName}`} style={{position: "relative", width: "100%"}}>
               <BlockOverlay>
-                <div className='sha-configurable-sidemenu-button-wrapper'>
-                  <Button title='Edit sidebar menu' shape='default' icon={<RebaseEditOutlined />} />
+                <div>
+                <EditOutlined style={{color: "#FFFFFF"}}/>
                 </div>
               </BlockOverlay>
               <SidebarMenu theme={props.theme} />
