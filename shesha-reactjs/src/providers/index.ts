@@ -9,6 +9,7 @@ export * from './configurableComponent';
 export * from './configurationItemsLoader';
 export * from './dataTable';
 export * from './dynamicModal';
+export { DynamicModalRenderer } from './dynamicModal/renderer';
 export * from './form';
 export { useShaFormInstance } from './form/providers/shaFormProvider';
 export * from './formManager';
