@@ -93,6 +93,16 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         ? { background: model?.backgroundColor }
         : {};
 
+    const basicShadow: CSSProperties = {
+      boxShadow: "0px 2px 4px 0px rgba(0,0,0,.15)"
+    };
+
+    const invertedShadow: CSSProperties = {
+      boxShadow: "0px -2px 4px 0px rgba(0,0,0,.15)"
+    };
+
+    const renderShadow = model?.allowShadow === true ? model?.shadowStyle === 'below' ? basicShadow : invertedShadow : '';
+
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
@@ -104,6 +114,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             ...heightStyles,
             ...borderStyles,
             ...backgroundStyles,
+            ...renderShadow,
             ...getStyle(model?.style, formData)
           }}
           dynamicComponents={model?.isDynamic ? model?.components : []}
