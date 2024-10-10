@@ -5,7 +5,7 @@ import { IEntityReferenceDto, IErrorInfo, ILoginForm } from "@/interfaces";
 import { HttpClientApi } from "../sheshaApplication/publicApi";
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from "@/apis/tokenAuth";
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from "@/apis/session";
-import { isSameUrls } from "@/utils/url";
+import { getQueryParam, isSameUrls } from "@/utils/url";
 import { IRouter } from "../shaRouting";
 import React from "react";
 import { IAccessToken, IHttpHeaders } from "@/interfaces/accessToken";
@@ -16,6 +16,8 @@ import { ASPNET_CORE_CULTURE, AuthenticationState, AuthenticationStatus, DEFAULT
 import { ISettingsActionsContext } from "../settings/contexts";
 
 type RerenderTrigger = () => void;
+
+const RETURN_URL_KEY = 'returnUrl';
 
 export interface AuthenticatorArgs {
     httpClient: HttpClientApi;
@@ -133,7 +135,7 @@ export class Authenticator implements IAuthenticator {
 
     #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
         if (isSameUrls(currentPath, this.#unauthorizedRedirectUrl)) {
-            const returnUrl = this.#router.query['returnUrl']?.toString();
+            const returnUrl = this.#router.query[RETURN_URL_KEY]?.toString();
 
             const redirects: string[] = [returnUrl, userLogin.homeUrl, this.#homePageUrl, DEFAULT_HOME_PAGE];
             const redirectUrl = redirects.find((r) => Boolean(r?.trim())); // skip all null/undefined and empty strings
@@ -161,7 +163,7 @@ export class Authenticator implements IAuthenticator {
 
             this.#updateState('ready', null, null);
 
-            const redirectUrl = this.#getRedirectUrl(this.#router.path, userProfile.user);
+            const redirectUrl = this.#getRedirectUrl(this.#router.fullPath, userProfile.user);
             return {
                 userProfile: userProfile,
                 url: redirectUrl ?? this.#router.path
@@ -189,18 +191,19 @@ export class Authenticator implements IAuthenticator {
         if (this.loginInfo)
             return;
 
-
         const getRedirectUrlAsync = async(): Promise<string> => {
             const currentPath = this.#router.path;
+            const fullPath = this.#router.fullPath;            
             if (currentPath === '/' || currentPath === ''){
                 const defaultUrl = await this.#settings.getSetting({ module: 'Shesha', name: 'Shesha.DefaultUrl' });
                 if (typeof(defaultUrl) === 'string' && Boolean(defaultUrl.trim()))
                     return defaultUrl;
             }       
     
-            const redirectUrl = isSameUrls(currentPath, this.#homePageUrl) || isSameUrls(currentPath, notAuthorizedRedirectUrl)
+            const existingReturnUrl = notAuthorizedRedirectUrl ? getQueryParam(RETURN_URL_KEY, notAuthorizedRedirectUrl) : undefined;
+            const redirectUrl = existingReturnUrl || isSameUrls(currentPath, this.#homePageUrl) || isSameUrls(currentPath, notAuthorizedRedirectUrl)
                 ? ''
-                : `/?returnUrl=${encodeURIComponent(currentPath)}`;
+                : `/?${RETURN_URL_KEY}=${encodeURIComponent(fullPath)}`;
     
             return `${notAuthorizedRedirectUrl}${redirectUrl}`;
         }; 

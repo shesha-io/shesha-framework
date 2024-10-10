@@ -1,14 +1,14 @@
 import React from 'react';
-import { Pie } from 'react-chartjs-2';
+import { PolarArea } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   ChartOptions,
-  Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, PointElement, DoughnutController, PieController, RadialLinearScale, Decimation, Filler, LineController, LineElement,
+  Title, Tooltip, Legend, ArcElement, RadialLinearScale,
 } from 'chart.js';
 import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 
-interface IPieChartProps extends IChartDataProps {
+interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
 }
 
@@ -17,28 +17,29 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  DoughnutController,
-  PieController,
   RadialLinearScale,
-  Decimation,
-  Filler,
-  ArcElement,
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  Legend,
 );
 
-const PieChart = ({ data }: IPieChartProps) => {
+const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisLabel, showTitle, title, legendPosition } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
+      scales: {
+        r: {
+          ticks: {
+            color: 'green',
+            font: {
+              size: 14  // Make ticks larger for better visibility
+            },
+            backdropColor: 'rgba(255, 255, 255, 0)'  // Remove the tick's backdrop
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.2)'  // Make grid lines more transparent
+          }
+        }
+      },
       legend: {
         display: showXAxisLabel,
         position: legendPosition ?? 'top',
@@ -58,7 +59,7 @@ const PieChart = ({ data }: IPieChartProps) => {
     },
   };
 
-  return <Pie data={data as any} options={options} />;
+  return <PolarArea data={data as any} options={options} />;
 };
 
-export default PieChart;
+export default PolarAreaChart;

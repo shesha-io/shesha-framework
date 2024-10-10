@@ -161,17 +161,6 @@
             "label": "Edit mode"
           },
           {
-            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "aUt4GeRhocL5W_aGaaR10",
-            "hidden": false,
-            "validate": {},
-            "description": "",
-            "version": 2
-          },
-          {
             "id": "30b5031e-24f5-4ef7-bede-db90e5914964",
             "type": "textField",
             "propertyName": "format",
@@ -378,6 +367,22 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+    {
       "id": "Vsrf7S8ssmciZPHKmADHm",
       "type": "collapsiblePanel",
       "propertyName": "pnlStyle",
@@ -395,6 +400,17 @@
       "content": {
         "id": "zCxTl6HxDRQTogJ9lFn8T",
         "components": [
+          {
+            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "zCxTl6HxDRQTogJ9lFn8T",
+            "hidden": false,
+            "validate": {},
+            "description": "",
+            "version": 2
+          },
           {
             "id": "06ab0599-914d-4d2d-875c-765a495472f8",
             "type": "codeEditor",
@@ -461,7 +477,9 @@
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": []
-    },
+    }
+  ]
+  },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",
