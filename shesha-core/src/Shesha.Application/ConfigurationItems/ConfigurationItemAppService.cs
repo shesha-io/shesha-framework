@@ -188,9 +188,31 @@ namespace Shesha.ConfigurationItems
             await UnitOfWorkManager.Current.SaveChangesAsync();
         }
 
-        private IConfigurationItemManager GetSingleManager(ConfigurationItemBase item) 
+        private IConfigurationItemManager GetSingleManager(ConfigurationItemBase item)
         {
             return IocManager.GetItemManager(item) ?? throw new ConfigurationItemManagerNotFoundException(item.GetType().Name);
+        }
+
+        /// <summary>
+        /// Publish All forms
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task PublishAllForms()
+        {
+            // todo: check rights
+           
+            //get all items that are on Draft or Ready
+            var items = await _itemsRepository.GetAll().Where(x=>x.VersionStatus == ConfigurationItemVersionStatus.Draft || x.VersionStatus == ConfigurationItemVersionStatus.Ready).ToListAsync();
+
+            foreach (var item in items)
+            {
+                var manager = GetSingleManager(item);
+
+                await manager.UpdateStatusAsync(item, ConfigurationItemVersionStatus.Live);
+            }
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
         }
 
         /// <summary>
