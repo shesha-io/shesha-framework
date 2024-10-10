@@ -2,7 +2,7 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 
 interface IPropertyRouterContent {
     components: IConfigurableFormComponent[];
-    id: string
+    id: string;
 }
 
 
