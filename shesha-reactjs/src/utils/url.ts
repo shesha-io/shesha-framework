@@ -37,8 +37,8 @@ export const getQueryParams = (url?: string): QueryStringParams => {
   return qs.parse(queryString, { ignoreQueryPrefix: true });
 };
 
-export const getQueryParam = (name: string) => {
-  const result = getQueryParams()[name];
+export const getQueryParam = (name: string, url?: string) => {
+  const result = getQueryParams(url)[name];
 
   return result;
 };
