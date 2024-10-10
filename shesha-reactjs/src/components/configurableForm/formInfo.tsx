@@ -37,69 +37,68 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
     setOpen(false);
   };
 
-useEffect(()=>{
-  if(allowHidePanel === true) {
-    setPanelShowing(visible);
-  }
-},[visible]);
+  const toggleFormPanel = () => {
+    if (allowHidePanel === true) {
+      setPanelShowing(visible);
+    }
+  };
 
-useEffect(()=>{
-  if(formInfoBlockVisible === true){
-    setPanelShowing(true);
-    setPanelShowing(false);
-    setAllowHidePanel(true);
-  }
-}, [formInfoBlockVisible]);
+  const toggleFormBlock = () => {
+    if (formInfoBlockVisible === true) {
+      setPanelShowing(true);
+      setAllowHidePanel(true);
+    }
+  };
+
+  useEffect(() => {
+    toggleFormBlock();
+  }, [formInfoBlockVisible]);
+
+  useEffect(() => {
+    toggleFormPanel();
+  }, [visible]);
 
   return (
-<div
-  className={`${styles.shaFormInfoCard}`}
-  style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    top: panelShowing ? '-2px' : '-22px',
-    opacity: panelShowing ? '1' : '0',
-    zIndex: 2,
-    position: 'absolute',
-    transition: '.3s',
-    height: '35px',
-    background: 'rgba(0, 0, 255, .75)',
-    maxWidth: '100%',
-    width: 'auto',
-    padding: '0 5px',
-    margin: 5,
-    borderRadius: 5,
-    //borderBottomRightRadius: '20px'
-  }}
->
-  {id && (
-    <Button type="link" onClick={onModalOpen} style={{ padding: 0 }}>
-      <EditOutlined style={{ color: "#FFFFFF" }} title="Click to open this form in the designer" />
-    </Button>
-  )}
+    <div
+      className={`${styles.shaFormInfoCard}`}
+      style={{
+        top: panelShowing ? '-2px' : '-22px',
+        opacity: panelShowing ? '1' : '0',
 
-  <p title={`${getFormFullName(module, name)} v${versionNo}`} style={{ marginLeft: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexGrow: 1, color: '#fff', fontSize: 12, textShadow: '0px 0px 2px rgba(0,0,0,.45)' }}>
-    {getFormFullName(module, name)} v{versionNo}
-  </p>
-  
-  <div style={{ display: 'flex', alignItems: 'center' }}>
-    <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} style={{ marginRight: '5px' }} />
-    <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" style={{ color: '#FFFFFF' }} />
-  </div>
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        transform: 'skew(30deg)'
+      }}>
 
-  {id && open && (
-    <QuickEditDialog
-      formId={id}
-      open={open}
-      onCancel={() => setOpen(false)}
-      onUpdated={onUpdated}
-    />
-  )}
-</div>
+        {id && (
+          <Button type="link" onClick={onModalOpen} style={{ padding: 0 }}>
+            <EditOutlined style={{ color: "#FFFFFF" }} title="Click to open this form in the designer" />
+          </Button>
+        )}
 
+        <p title={`${getFormFullName(module, name)} v${versionNo}`} className={styles.shaFormInfoCardTitle}>
+          {getFormFullName(module, name)} v{versionNo}
+        </p>
 
+        <div style={{ display: 'flex', alignItems: 'center', paddingRight: 5 }}>
+          <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} style={{ marginRight: '5px' }} />
+          <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" style={{ color: '#FFFFFF' }} />
+        </div>
 
+        {id && open && (
+          <QuickEditDialog
+            formId={id}
+            open={open}
+            onCancel={() => setOpen(false)}
+            onUpdated={onUpdated}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 

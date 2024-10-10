@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
@@ -38,9 +38,15 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     allComponents
   } = useSubForm();
 
-  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(false);
+  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(true);
 
   const form = useForm();
+
+  useEffect(()=>{
+    setTimeout(()=>{
+      setFormInfoPanelShowing(false);
+    }, 3000);
+  },[]);
 
   const validator = useValidator(false);
   if (validator && id && allComponents)

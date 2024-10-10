@@ -36,8 +36,7 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
   } = props;
 
   const [shaForm] = useShaForm({ form: props.shaForm });
-  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(false);
-
+  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(true);
   const { formInfoBlockVisible } = useAppConfigurator();
   const auth = useAuth(false);
   const { formFlatMarkup, formSettings, persistedFormProps, onMarkupUpdated } = props;
@@ -48,6 +47,10 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
     : null;
 
   const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
+
+  setTimeout(()=>{
+    setFormInfoPanelShowing(false);
+  }, 3000);
 
   return (
     <ParentProvider model={{}} formMode={shaForm.formMode} formFlatMarkup={formFlatMarkup} isScope >
