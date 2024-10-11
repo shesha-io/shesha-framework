@@ -1,5 +1,5 @@
 import { useMetadataFetcher } from "@/providers";
-import { MetadataBuilder } from "./metadataBuilder";
+import { IMetadataBuilder, MetadataBuilder } from "./metadataBuilder";
 import {
     SheshaConstants,
     registerContextsAction,
@@ -10,20 +10,22 @@ import {
     registerMessageAction,
     registerMomentAction,
     registerSelectedRowAction,
-    registerSetGlobalStateAction
+    registerSetGlobalStateAction,
+    registerQueryAction,
+    registerMetadataBuilderAction,
+    //registerConstantsBuilderAction
 } from "@/utils/metadata/standardProperties";
 import { useAppContextRegistration, useFormDataRegistration } from "./useAvailableConstants";
 
-export type MetadataBuilderFactory = (name: string, description?: string) => MetadataBuilder;
+export type MetadataBuilderFactory = () => IMetadataBuilder;
 
 export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
     const metadataFetcher = useMetadataFetcher();
     const registerFormDataAction = useFormDataRegistration();
-    const registerApplicationAction = useAppContextRegistration();
-    
+    const registerApplicationAction = useAppContextRegistration();    
 
-    return (name: string, description?: string) => {
-        const builder = new MetadataBuilder(metadataFetcher, name, description);
+    return () => {
+        const builder = new MetadataBuilder(metadataFetcher);
 
         // register standard constants
         builder.registerStandardProperty(SheshaConstants.http, registerHttpAction);
@@ -36,7 +38,11 @@ export const useMetadataBuilderFactory = (): MetadataBuilderFactory => {
         builder.registerStandardProperty(SheshaConstants.pageContext, registerPageContextAction);
         builder.registerStandardProperty(SheshaConstants.form, registerFormAction);
         builder.registerStandardProperty(SheshaConstants.formData, registerFormDataAction);
-        builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);        
+        builder.registerStandardProperty(SheshaConstants.application, registerApplicationAction);
+        builder.registerStandardProperty(SheshaConstants.query, registerQueryAction);
+        
+        builder.registerStandardProperty(SheshaConstants.metadataBuilder, registerMetadataBuilderAction, false);
+        //builder.registerStandardProperty(SheshaConstants.constantsBuilder, registerConstantsBuilderAction);
 
         return builder;
     };

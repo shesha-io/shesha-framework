@@ -47,21 +47,22 @@ namespace Shesha.Metadata
 
         public void HandleEvent(EntityChangedEventData<EntityProperty> eventData)
         {
-            AsyncHelper.RunSync(() => { return ClearCache(); });
+            AsyncHelper.RunSync(() => { return ClearCacheAsync(); });
         }
 
         public void HandleEvent(EntityChangingEventData<ConfigurationItem> eventData)
         {
             if (_entityConfigRepository.GetAll().Any(x => x.Id == eventData.Entity.Id))
             {
-                AsyncHelper.RunSync(() => { return ClearCache(); });
+                AsyncHelper.RunSync(() => { return ClearCacheAsync(); });
             };
         }
 
         protected async override Task<List<EntityModelDto>> FetchModelsAsync()
         {
-            var types = (await _entityConfigRepository.GetAll().ToListAsync())
-                .Select(async t =>
+            var entityConfigs = await _entityConfigRepository.GetAll().ToListAsync();
+            var dtos = (await entityConfigs
+                .SelectAsync(async t =>
                 {
                     var config = _entityConfigurationStore.GetOrNull(t.FullClassName);
 
@@ -83,12 +84,11 @@ namespace Shesha.Metadata
                         ModificationTime = metadata.ChangeTime, // t.LastModificationTime ?? t.CreationTime,
                         Metadata = metadata,
                     };
-                })
-                .Select(t => t.Result)
+                }))
                 .Where(t => t != null)
                 .ToList();
 
-            return types;
+            return dtos;
         }
     }
 }

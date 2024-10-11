@@ -20,6 +20,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { DatePickerWrapper } from './datePickerWrapper';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -87,6 +88,15 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
       ...prev,
       showNow: Boolean(prev.showNow || prev['showToday'])
     }))
+    .add<IDateFieldProps>(5, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        hideBorder: prev.hideBorder,
+        style: prev.style
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
 

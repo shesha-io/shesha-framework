@@ -1,27 +1,18 @@
 import { ICommonModalProps, IModalInstance } from './models';
 import { createNamedContext } from '@/utils/react';
 
+//#region modal provider
+
 export interface IDynamicModalStateContext {
-  //instances: IModalInstance[];
   instances: { [index: string]: IModalInstance };
 }
 
 export interface IDynamicModalActionsContext {
-  // toggle: (id: string, visible: boolean) => void;
-  // show: (id: string) => void;
-  // hide: (id: string) => void;
   open: (modalProps: ICommonModalProps) => void;
   modalExists: (id: string) => boolean;
   createModal: (modalProps: ICommonModalProps) => void;
   removeModal: (id: string) => void;
-
-  /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }
-
-// export interface IToggleModalPayload {
-//   id: string;
-//   isVisible: boolean;
-// }
 
 export const DYNAMIC_MODAL_CONTEXT_INITIAL_STATE: IDynamicModalStateContext = {
   instances: {},
@@ -31,23 +22,17 @@ export const DynamicModalStateContext = createNamedContext<IDynamicModalStateCon
 
 export const DynamicModalActionsContext = createNamedContext<IDynamicModalActionsContext>(undefined, "DynamicModalActionsContext");
 
+//#endregion
+
 //#region modal instance
 
 export interface IDynamicModalInstanceContext {
   instance?: IModalInstance;
-  // show: () => void;
-  // hide: () => void;
   close: () => void;
 }
 
 export const DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE: IDynamicModalInstanceContext = {
   instance: null,
-  // show: () => {
-  //   /*nop*/
-  // },
-  // hide: () => {
-  //   /*nop*/
-  // },
   close: () => {
     /*nop*/
   },
@@ -56,6 +41,29 @@ export const DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE: IDynamicModalInstance
 export const DynamicModalInstanceContext = createNamedContext<IDynamicModalInstanceContext>(
   DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE,
   "DynamicModalInstanceContext"
+);
+
+//#endregion
+
+//#region modal renderer
+
+export interface IDynamicModalRendererContext {
+  registerChildren: (id: string) => void;
+  unregisterChildren: (id: string) => void;
+};
+
+export const DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE: IDynamicModalRendererContext = {
+  registerChildren: () => {
+    /*nop*/
+  },
+  unregisterChildren: () => {
+    /*nop*/
+  },
+};
+
+export const DynamicModalRendererContext = createNamedContext<IDynamicModalRendererContext>(
+  DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE,
+  "DynamicModalRendererContext"
 );
 
 //#endregion

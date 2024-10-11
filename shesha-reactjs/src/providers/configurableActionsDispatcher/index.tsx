@@ -23,8 +23,23 @@ import {
 } from '@/interfaces/configurableAction';
 import { genericActionArgumentsEvaluator } from '../form/utils';
 import { GenericDictionary } from '@/interfaces';
+import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 
 export interface IConfigurableActionDispatcherProviderProps { }
+
+const getActualActionArguments = (action: IConfigurableActionDescriptor, actionArguments: any) => {
+  const { migrator } = action ?? {};
+  if (!migrator) 
+      return actionArguments;
+
+    const migratorInstance = new Migrator<any, any>();
+    const fluent = migrator(migratorInstance);
+    const versionedValue = {...actionArguments} as IHasVersion;
+    if (versionedValue.version === undefined) 
+      versionedValue.version = -1;
+    const model = fluent.migrator.upgrade(versionedValue, {});
+    return model;
+};
 
 function useConfigurableActionDispatcherState(require: boolean) {
   const context = useContext(ConfigurableActionDispatcherStateContext);
@@ -112,7 +127,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
   };
 
   const getActions = () => {
-    return { ...parent?.getActions(), ...actions.current };
+    return {...parent?.getActions(), ...actions.current};
   };
 
   const registerAction = (payload: IRegisterActionPayload) => {
@@ -157,18 +172,22 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren<IConfigurableAc
   const executeAction = (payload: IExecuteActionPayload) => {
     const { actionConfiguration, argumentsEvaluationContext } = payload;
     if (!actionConfiguration) return Promise.reject('Action configuration is mandatory');
-    const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } =
-      actionConfiguration;
+    const { actionOwner, actionName, actionArguments, handleSuccess, onSuccess, handleFail, onFail } = actionConfiguration;
     if (!actionName) return Promise.reject('Action name is mandatory');
 
     const action = getConfigurableAction({ owner: actionOwner, name: actionName });
 
     if (!action) return Promise.reject(`Action '${actionOwner}:${actionName}' not found`);
 
+    // migrate arguments
+    const actualArguments = action.hasArguments
+      ? getActualActionArguments(action, actionArguments)
+      : undefined;
+
     const argumentsEvaluator = action.evaluateArguments ?? genericActionArgumentsEvaluator;
     const executionContext = argumentsEvaluationContext;
 
-    return argumentsEvaluator({ ...actionArguments }, argumentsEvaluationContext)
+    return argumentsEvaluator({ ...actualArguments }, argumentsEvaluationContext)
       .then((preparedActionArguments) => {
         return action
           .executer(preparedActionArguments, executionContext)
@@ -270,7 +289,7 @@ function useConfigurableAction<TArguments = IConfigurableActionArguments, TRespo
 
     return !payload.isPermament
       ? () => {
-        unregisterAction(payload);
+      unregisterAction(payload);
       }
       : undefined;
   }, deps);
@@ -282,5 +301,6 @@ export {
   useConfigurableAction,
   useConfigurableActionDispatcher,
   useConfigurableActionDispatcherProxy,
-  type IConfigurableActionConfiguration
+  getActualActionArguments,
+  type IConfigurableActionConfiguration,  
 };

@@ -19,13 +19,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       overflow: hidden;
 
       .${shaModelConfiguratorForm} {
-        height: 100%;
+        height: calc(100vh - 180px);
         .ant-spin-nested-loading, .ant-spin-container, .ant-form:first-child {
           height: 100%;
           .sha-components-container.vertical, .sha-components-container-inner {
             height: 100%;
             .ant-tabs, .ant-tabs-content, .ant-tabs-tabpane-active {
               height: 100%;
+              .shaViewsEditorForm {
+                height: 100%;
+                overflow: auto;
+              }
               .shaPropertiesEditorForm.ant-form-item {
                 height: 100%;
                 .ant-form-item-row:first-child, .ant-col:first-child, .ant-form-item-control-input-content:first-child {

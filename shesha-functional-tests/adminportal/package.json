@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@ant-design/nextjs-registry": "^1.0.1",
     "@microsoft/applicationinsights-react-js": "^3.1.2",
     "@microsoft/applicationinsights-web": "^2.6.2",
     "@microsoft/signalr": "^8.0.7",
@@ -50,6 +51,7 @@
     "react-use": "^17.4.0",
     "sortablejs": "^1.14.0",
     "styled-components": "^5.2.1",
+    "swr": "^2.2.5",
     "url-loader": "^4.1.1"
   },
   "devDependencies": {

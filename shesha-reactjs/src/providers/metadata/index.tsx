@@ -93,4 +93,18 @@ const useMetaProperties = (dataTypes: ProperyDataType[]): IPropertyMetadata[] =>
   return properties;
 };
 
-export { MetadataProvider, useMetaProperties, useMetadata };
+const ConditionalMetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = (props) => {
+  return props.modelType
+    ? (
+      <MetadataProvider {...props}>
+        {props.children}
+      </MetadataProvider>
+    )
+    : (
+      <>
+        {props.children}
+      </>
+    );
+};
+
+export { MetadataProvider, ConditionalMetadataProvider, useMetaProperties, useMetadata };

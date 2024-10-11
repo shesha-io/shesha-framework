@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { IMonacoEditorProps, IHasCodeTemplate } from '../models';
 import { ConstrainedCodeEditor } from './constrainedCodeEditor';
 import { Editor } from '@monaco-editor/react';
+import { CodeEditorLoadingProgressor } from '../loadingProgressor';
 
 export interface ICodeEditorMayHaveTemplateProps extends IMonacoEditorProps, Partial<IHasCodeTemplate> {
 }
@@ -17,6 +18,6 @@ export interface ICodeEditorMayHaveTemplateProps extends IMonacoEditorProps, Par
  */
 export const CodeEditorMayHaveTemplate: FC<ICodeEditorMayHaveTemplateProps> = ({ template, ...restProps }) => {
     return template
-        ? <ConstrainedCodeEditor {...restProps} template={template} />
-        : <Editor {...restProps} />;
+        ? <ConstrainedCodeEditor {...restProps} template={template} loading={<CodeEditorLoadingProgressor />}/>
+        : <Editor {...restProps} loading={<CodeEditorLoadingProgressor />}/>;
 };

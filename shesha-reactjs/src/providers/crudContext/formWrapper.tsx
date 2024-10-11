@@ -14,7 +14,7 @@ interface FormWrapperProps {
 }
 
 export const FormWrapper: FC<PropsWithChildren<FormWrapperProps>> = ({ initialValues, onValuesChange, form, formSettings, delayedUpdate, children }) => {
-    const { updateStateFormData: setFormData } = useForm();
+    const { setFormData } = useForm();
     const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
 
     if (delayedUpdate)

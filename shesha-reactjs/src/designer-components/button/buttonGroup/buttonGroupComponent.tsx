@@ -14,6 +14,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
+  isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model ,form}) => {

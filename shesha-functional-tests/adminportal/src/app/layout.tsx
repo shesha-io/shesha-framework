@@ -2,7 +2,7 @@ import React from 'react';
 import { Suspense } from 'react';
 import { AppProvider } from './app-provider';
 import { unstable_noStore as noStore } from 'next/cache';
-import { AntdStyleRegistry } from './antdStyleRegistry';
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 export default function RootLayout({
     children,
@@ -16,11 +16,11 @@ export default function RootLayout({
         <html lang="en">
             <body>
                 <Suspense>
-                    <AntdStyleRegistry>
+                    <AntdRegistry>
                         <AppProvider backendUrl={backendUrl}>
                             {children}
                         </AppProvider>
-                    </AntdStyleRegistry>
+                    </AntdRegistry>
                 </Suspense>
             </body>
         </html>

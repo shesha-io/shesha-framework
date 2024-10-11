@@ -17,6 +17,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 
 const TableComponent: IToolboxComponent<ITableComponentProps> = {
   type: 'datatable',
+  isInput: true,
   name: 'Data Table',
   icon: <TableOutlined />,
   Factory: ({ model }) => {
@@ -25,13 +26,20 @@ const TableComponent: IToolboxComponent<ITableComponentProps> = {
       return null;
     return store ? (
       <TableWrapper {...model} />
-    ) : (
-      <Alert
+    ) : //<ConfigError errors={['Data Table must be used within a Data Table Context']} type={'Data Table'} />;
+      (<Alert
         className="sha-designer-warning"
         message="Data Table must be used within a Data Table Context"
         type="warning"
       />
     );
+  },
+  validateModel: () => {
+    /*const errors = { hasErrors: false, errors: [] };
+    const store = useDataTableStore(false);
+    if (!store) errors.errors.push('Data Table must be used within a Data Table Context');
+    errors.hasErrors = errors.errors.length > 0;
+    return errors;*/
   },
   initModel: (model: ITableComponentProps) => {
     return {

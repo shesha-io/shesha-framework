@@ -1,4 +1,6 @@
-export const formApiDefinition = `/** Form mode */
+export const formApiDefinition = `import { IEntityEndpoints } from 'entities/interfaces';
+
+/** Form mode */
 export type FormMode = 'readonly' | 'edit' | 'designer';
 
 export interface ISetFormDataPayload {
@@ -9,24 +11,31 @@ export interface ISetFormDataPayload {
   mergeValues: boolean;
 }
 
+export interface FormFullName {
+  readonly name: string;
+  readonly module?: string | null;
+}
+export type FormUid = string;
+export type FormIdentifier = FormFullName | FormUid;
+
 export interface IFormSettings {
   modelType?: string;
-
-  postUrl?: string;
-  putUrl?: string;
-  deleteUrl?: string;
-  getUrl?: string;
-
-  fieldsToFetch?: string[];
-
-  /** if true then need to update components structure for using Setting component */
-  isSettingsForm?: boolean;
 };
+
+export interface FormInstance<Values> {
+  
+}
 
 /**
  * Form instance API
  */
 export interface FormApi<Values = any> {
+  /**
+   * Add deferred update data to 'data' object 
+   * @param data model data object for updating
+   * @returns The deferred update data
+   */
+  addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
   /**
    * Set field value
    * @param name field name
@@ -38,6 +47,10 @@ export interface FormApi<Values = any> {
    * @param values 
    */
   setFieldsValue: (values: Values) => void;
+  /**
+   * Clear fields value
+   */
+  clearFieldsValue: () => void;
   /**
    * Submit form
    */
@@ -58,26 +71,11 @@ export interface FormApi<Values = any> {
   formMode: FormMode;
   /** Form data */
   data: Values;
-};
+  
+  /** Form arguments passed by caller */
+  formArguments?: any;
 
-export const getFormApi = (form: ConfigurableFormInstance): FormApi => {
-  return {
-    setFieldValue: (name: string, value: any) => {
-      form?.setFormData({values: setValueByPropertyName(form.formData, name, value, true), mergeValues: true});
-    },
-    setFieldsValue: (values: any) => {
-      form?.setFormData({values, mergeValues: true});
-    },
-    submit: () => {
-      form?.form?.submit();
-    },
-    setFormData: (payload: ISetFormDataPayload) => {
-      form?.setFormData(payload);
-    },
-
-    formSettings: form?.formSettings,
-    formMode: form?.formMode,
-    data: form?.formData,
-  };
+  /** Default API endpoints (create, read, update, delete). Note: available only when model type is entity */
+  defaultApiEndpoints: IEntityEndpoints;
 };
 `;

@@ -131,22 +131,22 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     if (model.context) {
       return (
         <ConfigurableFormItemContext
-            formItemProps={formItemProps}
-            valuePropName={valuePropName}
-            propertyName={propName}
-            contextName={model.context}
-          >
-            {children}
-          </ConfigurableFormItemContext>
+          formItemProps={formItemProps}
+          valuePropName={valuePropName}
+          propertyName={propName}
+          contextName={model.context}
+        >
+          {children}
+        </ConfigurableFormItemContext>
       );
     } else {
       return (
         <ConfigurableFormItemForm
-            formItemProps={formItemProps}
-            valuePropName={valuePropName}
-          >
-            {children}
-          </ConfigurableFormItemForm>
+          formItemProps={formItemProps}
+          valuePropName={valuePropName}
+        >
+          {children}
+        </ConfigurableFormItemForm>
       );
     }
   } else {

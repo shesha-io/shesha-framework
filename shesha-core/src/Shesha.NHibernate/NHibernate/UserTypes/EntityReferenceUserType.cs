@@ -2,6 +2,7 @@
 using NHibernate.Engine;
 using NHibernate.Type;
 using NHibernate.UserTypes;
+using Shesha.Configuration.Runtime;
 using Shesha.EntityReferences;
 using System;
 using System.Data.Common;
@@ -11,7 +12,7 @@ namespace Shesha.NHibernate.UserTypes
 {
     internal class EntityReferenceUserType : ICompositeUserType
     {
-        public string[] PropertyNames => new string[] { "Id", "_className" };
+        public string[] PropertyNames => new string[] { "Id", EntityConstants.ClassNameField };
 
         public IType[] PropertyTypes => new IType[] { NHibernateUtil.String, NHibernateUtil.String };
 

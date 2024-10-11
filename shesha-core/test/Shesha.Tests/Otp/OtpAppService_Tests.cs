@@ -16,18 +16,18 @@ namespace Shesha.Tests.Otp
     public class OtpAppService_Tests: SheshaNhTestBase
     {
         [Fact]
-        public async Task SuccessOtp_Test()
+        public async Task SuccessOtp_TestAsync()
         {
-            var response = await CheckOtpCommon(null);
+            var response = await CheckOtpCommonAsync(null);
 
             response.IsSuccess.ShouldBe(true);
             response.ErrorMessage.ShouldBeNullOrEmpty();
         }
 
         [Fact]
-        public async Task FailedOtp_Test()
+        public async Task FailedOtp_TestAsync()
         {
-            var response = await CheckOtpCommon(v => { v.Pin += "_wrong"; });
+            var response = await CheckOtpCommonAsync(v => { v.Pin += "_wrong"; });
 
             response.IsSuccess.ShouldBe(false);
             response.ErrorMessage.ShouldNotBeNullOrWhiteSpace();
@@ -35,15 +35,15 @@ namespace Shesha.Tests.Otp
         }
 
         [Fact]
-        public async Task SuccessEmailLink_Test()
+        public async Task SuccessEmailLink_TestAsync()
         {
-            var response = await CheckEmailLink(null);
+            var response = await CheckEmailLinkAsync(null);
 
             response.IsSuccess.ShouldBe(true);
             response.ErrorMessage.ShouldBeNullOrEmpty();
         }
 
-        private async Task<IVerifyPinResponse> CheckOtpCommon(Action<VerifyPinInput> transformAction)
+        private async Task<IVerifyPinResponse> CheckOtpCommonAsync(Action<VerifyPinInput> transformAction)
         {
             // todo: implement settings and register using normal way
             /*
@@ -95,7 +95,7 @@ namespace Shesha.Tests.Otp
             return await otp.VerifyPinAsync(verificationInput);
         }
     
-        private async Task<IVerifyPinResponse> CheckEmailLink(Action<VerifyPinInput> action)
+        private async Task<IVerifyPinResponse> CheckEmailLinkAsync(Action<VerifyPinInput> action)
         {
             var settings = LocalIocManager.Resolve<IOtpSettings>();
 

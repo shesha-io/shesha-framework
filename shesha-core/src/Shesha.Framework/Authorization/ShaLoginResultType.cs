@@ -46,5 +46,8 @@ namespace Shesha.Authorization
 
         [Description("Invalid OTP")]
         InvalidOTP = 14,
+
+        [Description("Forbidden Frontend")]
+        ForbiddenFrontend = 15,
     }
 }

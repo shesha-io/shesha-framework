@@ -10,6 +10,7 @@ import { getSettings } from './settingsForm';
 const HeaderAppControl: IToolboxComponent = {
   type: 'headerAppControl',
   name: 'Header App Control',
+  isInput: false,
   canBeJsSetting: false,
   icon: <SwapOutlined />,
   Factory: ({ model }) => {

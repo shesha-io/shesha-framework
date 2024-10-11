@@ -75,10 +75,13 @@ namespace Shesha.Elmah.PostgreSql
             {
                 connection.Open();
 
-                ExecuteCommand(connection, Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml));
+                var provider = StaticContext.IocManager.Resolve<ILoggingContextCollector>();
+                var exceptionDetails = provider.CurrentState?.AllExceptions?.FirstOrDefault(e => e.Exception == error.Exception);
+                var location = exceptionDetails?.Location;
+
+                ExecuteCommand(connection, Commands.LogError(id, ApplicationName, error.HostName, error.Type, error.Source, error.Message, error.User, error.StatusCode, error.Time, errorXml, location));
 
                 // gather refs and log them
-                var provider = StaticContext.IocManager.Resolve<ILoggingContextCollector>();
                 if (error.Exception != null && provider.CurrentState != null)
                 {
                     var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
@@ -288,14 +291,15 @@ CREATE INDEX ix_{tableName}_type_id ON {schemaName}.{tableName} USING BTREE
                 string user,
                 int statusCode,
                 DateTime time,
-                string xml)
+                string xml,
+                string location)
             {
                 var command = new NpgsqlCommand();
                 command.CommandText =
                     $@"
 /* elmah */
-INSERT INTO {DBConstants.Schema}.{DBConstants.ErrorsTable} (error_id, application, host, type, source, message, ""user"", status_code, time_utc, all_xml)
-VALUES (@error_id, @application, @host, @type, @source, @message, @user, @status_code, @time_utc, @all_xml)
+INSERT INTO {DBConstants.Schema}.{DBConstants.ErrorsTable} (error_id, application, host, type, source, message, ""user"", status_code, time_utc, all_xml, location)
+VALUES (@error_id, @application, @host, @type, @source, @message, @user, @status_code, @time_utc, @all_xml, @location)
 ";
                 command.Parameters.Add(new NpgsqlParameter("error_id", id));
                 command.Parameters.Add(new NpgsqlParameter("application", appName));
@@ -307,6 +311,7 @@ VALUES (@error_id, @application, @host, @type, @source, @message, @user, @status
                 command.Parameters.Add(new NpgsqlParameter("status_code", statusCode));
                 command.Parameters.Add(new NpgsqlParameter("time_utc", time.ToUniversalTime()));
                 command.Parameters.Add(new NpgsqlParameter("all_xml", xml));
+                command.Parameters.Add(new NpgsqlParameter("location", location));
 
                 return command;
             }

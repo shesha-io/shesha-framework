@@ -148,7 +148,7 @@ namespace Shesha.Scheduler
 
             try
             {
-                if (!Start(job.Name))
+                if (!await StartAsync(job.Name))
                 {
                     log.WarnFormat("Try to start job {0}. Job is still busy - exit", job.Name);
                     return;
@@ -161,7 +161,7 @@ namespace Shesha.Scheduler
                 }
                 finally
                 {
-                    Finish(job.Name);
+                    await FinishAsync(job.Name);
                 }
 
                 log.InfoFormat("Job {0} run finished.", job.Name);
@@ -284,14 +284,14 @@ namespace Shesha.Scheduler
             return signalrAppender;
         }
 
-        private void Finish(string name)
+        private async Task FinishAsync(string name)
         {
-            SignalrHub.Clients.Group(name).SendAsync("JobFinished");
+            await SignalrHub.Clients.Group(name).SendAsync("JobFinished");
         }
 
-        private bool Start(string name)
+        private async Task<bool> StartAsync(string name)
         {
-            SignalrHub.Clients.Group(name).SendAsync("JobStarted");
+            await SignalrHub.Clients.Group(name).SendAsync("JobStarted");
             return true;
         }
 

@@ -88,12 +88,17 @@ namespace Shesha.Authorization
             _mobileDeviceRepository = mobileDeviceRepository;
         }
 
+        protected virtual ShaLoginResult<TUser> AdditionalVerification(TUser user, TTenant tenant)
+        {
+            return null;
+        }
+
         public virtual async Task<ShaLoginResult<TUser>> LoginAsync(UserLoginInfo login, string imei = null, string tenancyName = null)
         {
             ShaLoginResult<TUser> result = null;
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                result = await LoginAsyncInternal(login, tenancyName);
+                result = await LoginInternalAsync(login, tenancyName);
                 await uow.CompleteAsync();
             }
 
@@ -102,7 +107,7 @@ namespace Shesha.Authorization
             return result;
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> LoginAsyncInternal(UserLoginInfo login, string tenancyName)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(UserLoginInfo login, string tenancyName)
         {
             if (login == null || login.LoginProvider.IsNullOrEmpty() || login.ProviderKey.IsNullOrEmpty())
             {
@@ -225,11 +230,11 @@ namespace Shesha.Authorization
         }
 
         public virtual async Task<ShaLoginResult<TUser>> LoginAsync(string userNameOrEmailAddress, string plainPassword, string imei = null, string tenancyName = null, bool shouldLockout = true)
-        {
+        { 
             ShaLoginResult<TUser> result = null;
             using (var uow = UnitOfWorkManager.Begin(TransactionScopeOption.RequiresNew))
             {
-                result = await LoginAsyncInternal(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
+                result = await LoginInternalAsync(userNameOrEmailAddress, plainPassword, imei, tenancyName, shouldLockout);
                 await uow.CompleteAsync();
             }
             
@@ -271,7 +276,7 @@ namespace Shesha.Authorization
             }
         }
 
-        protected virtual async Task<ShaLoginResult<TUser>> LoginAsyncInternal(string userNameOrEmailAddress, string plainPassword, string imei, string tenancyName, bool shouldLockout)
+        protected virtual async Task<ShaLoginResult<TUser>> LoginInternalAsync(string userNameOrEmailAddress, string plainPassword, string imei, string tenancyName, bool shouldLockout)
         {
             if (userNameOrEmailAddress.IsNullOrEmpty())
             {
@@ -331,6 +336,11 @@ namespace Shesha.Authorization
                     if (!(await CheckImeiAsync(imei)))
                         return new ShaLoginResult<TUser>(ShaLoginResultType.DeviceNotRegistered, tenant, user);
                 }
+
+                var addVerification = AdditionalVerification(user, tenant);
+                if (addVerification != null)
+                    return addVerification;
+
                 return await CreateLoginResultAsync(user, tenant);
             });
         }

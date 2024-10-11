@@ -16,11 +16,13 @@ import settingsFormJson from './settingsForm.json';
 import { executeFunction } from '@/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
 const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentProps> = {
   type: 'collapsiblePanel',
+  isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
@@ -87,6 +89,10 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
       </ParentProvider>
     );
   },
+  initModel: (model) => ({
+    ...model,
+    stylingBox: "{\"marginBottom\":\"5\"}"
+  }),
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) =>
@@ -129,7 +135,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
               : prev.expandIconPosition,
       }))
       .add<ICollapsiblePanelComponentProps>(4, (prev) => migrateVisibility(prev))
-      .add<ICollapsiblePanelComponentProps>(5, (prev) => ({...migrateFormApi.properties(prev)}))
+      .add<ICollapsiblePanelComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ICollapsiblePanelComponentProps>(6, (prev) => removeComponents(prev))
   ,
   customContainerNames: ['header', 'content'],
 };

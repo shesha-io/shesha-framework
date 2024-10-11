@@ -69,7 +69,7 @@ namespace Shesha.Services.StoredFiles
 
         private string GetAzureFileName(StoredFileVersion version) => version.Id + version.FileType;
 
-        private async Task<Stream> GetStreamAsyncInternal(string filePath)
+        private async Task<Stream> GetStreamInternalAsync(string filePath)
         {
             var blob = GetBlobClient(filePath.ToLower());
             var stream = new MemoryStream();
@@ -84,9 +84,9 @@ namespace Shesha.Services.StoredFiles
             return stream;
         }
 
-        public override Task<Stream> GetStreamAsync(StoredFileVersion fileVersion) => GetStreamAsyncInternal(GetAzureFileName(fileVersion));
+        public override Task<Stream> GetStreamAsync(StoredFileVersion fileVersion) => GetStreamInternalAsync(GetAzureFileName(fileVersion));
 
-        public async Task<Stream> GetStreamAsync(string filePath) => await GetStreamAsyncInternal(filePath);
+        public async Task<Stream> GetStreamAsync(string filePath) => await GetStreamInternalAsync(filePath);
 
         /// inheritedDo
         public override Stream GetStream(StoredFileVersion fileVersion)

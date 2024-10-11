@@ -4,9 +4,10 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm, useFormData } from '@/providers';
+import { useFormData } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent {
   className?: string;
@@ -14,10 +15,11 @@ export interface IValidationErrorsComponentProps extends IConfigurableFormCompon
 
 const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentProps> = {
   type: 'validationErrors',
+  isInput: false,
   name: 'Validation Errors',
   icon: <WarningOutlined />,
   Factory: ({ model }) => {
-    const { validationErrors, formMode } = useForm();
+    const { validationErrors, formMode } = useShaFormInstance();
     const { data: formData } = useFormData();
 
     if (formMode === 'designer')

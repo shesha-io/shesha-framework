@@ -55,9 +55,3 @@ export const useChildComponentIds = (containerId: string): string[] => {
     const childIds = componentRelations[containerId];
     return childIds ?? [];
 };
-
-
-/*
-getChildComponents: (id: string) => IConfigurableFormComponent[];
-getChildComponentIds: (containerId: string) => string[];
-*/

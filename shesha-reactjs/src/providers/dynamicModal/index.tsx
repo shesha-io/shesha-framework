@@ -1,9 +1,8 @@
 import { Modal } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { DynamicModal } from '@/components/dynamicModal';
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { EvaluationContext, evaluateKeyValuesToObject, recursiveEvaluator } from '../form/utils';
+import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
@@ -19,6 +18,8 @@ import {
 import { IModalProps } from './models';
 import DynamicModalReducer from './reducer';
 import { nanoid } from '@/utils/uuid';
+import { migrateToV0 } from './migrations/ver0';
+import { DynamicModalRenderer } from './renderer';
 
 export interface IDynamicModalProviderProps { }
 
@@ -64,7 +65,7 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   };
 
   const createModal = (modalProps: IModalProps) => {
-    dispatch(createModalAction({ modalProps }));
+    dispatch(createModalAction({ modalProps: { ...modalProps, width: modalProps.width ?? '60%' } }));
   };
 
   useConfigurableAction<IShowModalActionArguments>(
@@ -79,44 +80,44 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
 
         const { formMode, ...restArguments } = actionArgs;
 
-        const initialValues = evaluateKeyValuesToObject(actionArgs.additionalProperties, context ?? {});
-        const parentFormValues = context?.data ?? {};
+        const argumentsExpression = actionArgs.formArguments?.trim();
+        const argumentsPromise = argumentsExpression
+          ? executeScript(argumentsExpression, context)
+          : Promise.resolve(undefined);
 
-        const { modalWidth, customWidth, widthUnits } = actionArgs;
+        return argumentsPromise.then(dialogArguments => {
+          const parentFormValues = context?.data ?? {};
 
-        return new Promise((resolve, reject) => {
-          // fix wrong migration
-          const verb = !restArguments.submitHttpVerb || !Array.isArray(restArguments.submitHttpVerb)
-            ? restArguments.submitHttpVerb
-            : restArguments.submitHttpVerb[0];
+          const { modalWidth, customWidth, widthUnits } = actionArgs;
 
-          const modalProps: IModalProps = {
-            ...restArguments,
-            mode: formMode,
-            id: modalId,
-            title: actionArgs.modalTitle,
-            width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
-            initialValues: initialValues,
-            parentFormValues: parentFormValues,
-            isVisible: true,
-            submitHttpVerb: verb,
-            onCancel: () => {
-              reject();
-            },
-            onSubmitted: (values) => {
-              removeModal(modalId);
-              resolve(values); // TODO: return result e.g. we may need to handle created entity id and navigate to edit/details page
-            },
-            onClose: (positive = false, result) => {
-              if (positive)
-                resolve(result);
-              else
-                reject(result);
-            },
+          return new Promise((resolve, reject) => {
+            const modalProps: IModalProps = {
+              ...restArguments,
+              mode: formMode,
+              id: modalId,
+              title: actionArgs.modalTitle,
+              width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+              formArguments: dialogArguments,
+              parentFormValues: parentFormValues,
+              isVisible: true,
+              onCancel: () => {
+                reject("Cancelled");
+              },
+              onSubmitted: (values) => {
+                removeModal(modalId);
+                resolve(values); // TODO: return result e.g. we may need to handle created entity id and navigate to edit/details page
+              },
+              onClose: (positive = false, result) => {
+                if (positive)
+                  resolve(result);
+                else
+                  reject(result);
+              },
             wrapper: context.configurableActionsDispatcherProxy,
-          };
+            };
 
-          createModal({ ...modalProps });
+            createModal({ ...modalProps });
+          });
         });
       },
       argumentsFormMarkup: dialogArgumentsForm,
@@ -131,7 +132,8 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
       useDynamicContextHook: () => {
         const configurableActionsDispatcherProxy = useConfigurableActionDispatcherProxy(false);
         return { configurableActionsDispatcherProxy };
-      }
+      },
+      migrator: (m) => m.add<IShowModalActionArguments>(0, migrateToV0),
     },
     actionDependencies
   );
@@ -139,18 +141,14 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   const getLatestVisibleInstance = () => {
     const { instances = {} } = state;
     const keys = Object.keys(instances);
-    let highestIndexKey = null;
+    let highestInstance = null;
 
     for (let i = 0; i < keys.length; i++) {
-      if (
-        instances[keys[i]]?.isVisible &&
-        (highestIndexKey === null || instances[keys[i]]?.index > instances[highestIndexKey]?.index)
-      ) {
-        highestIndexKey = keys[i];
-      }
+      const instance = instances[keys[i]];
+      if (instance?.isVisible && (highestInstance === null || instance?.index > highestInstance?.index))
+        highestInstance = instance;
     };
-
-    return highestIndexKey ? instances[highestIndexKey] : null;
+    return highestInstance;
   };
 
   //#region Close the latest Dialog
@@ -187,43 +185,12 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     return Boolean(state.instances[id]);
   };
 
-  const renderInstances = () => {
-    const rendered = [];
-    for (const id in state.instances) {
-      if (state.instances.hasOwnProperty(id)) {
-        const instance = state.instances[id];
-
-        const instanceProps = instance.props;
-        rendered.push(
-          <DynamicModalInstanceContext.Provider
-            key={instance.id}
-            value={{
-              instance,
-              close: () => {
-                removeModal(instance.id);
-              }
-            }}
-          >
-            <DynamicModal {...instanceProps} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
-          </DynamicModalInstanceContext.Provider>
-        );
-      }
-    }
-    return rendered;
-  };
-
   return (
     <DynamicModalStateContext.Provider value={state}>
-      <DynamicModalActionsContext.Provider
-        value={{
-          open,
-          createModal,
-          removeModal,
-          modalExists,
-        }}
-      >
-        {renderInstances()}
-        {children}
+      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }} >
+        <DynamicModalRenderer id='root'>
+          {children}
+        </DynamicModalRenderer>
       </DynamicModalActionsContext.Provider>
     </DynamicModalStateContext.Provider>
   );
