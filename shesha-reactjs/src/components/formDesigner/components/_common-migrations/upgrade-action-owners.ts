@@ -20,10 +20,7 @@ const getActionOwner = (value: string, context: SettingsMigrationContext) => {
             const component = allComponents[id];
             const uniqueStateId = component['uniqueStateId'];
             if (uniqueStateId === value) {
-                //console.log(`upgrade: ${value} found in ${component.type} (${component.id})`);
-
                 if (actionOwnerTypes.includes(component.type)) {
-                    //console.log(`identified as an action owner - use this`);
                     return component.id;
                 }
             }

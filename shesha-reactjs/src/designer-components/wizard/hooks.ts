@@ -35,7 +35,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
   const { executeBooleanExpression, executeAction } = useFormExpression();
 
   const {
-    propertyName: actionOwnerName,
+    componentName: actionOwnerName,
     id: actionsOwnerId,
     steps: tabs,
     defaultActiveStep = 0,
@@ -126,7 +126,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const successCallback = (type: 'back' | 'next') => {
+  const successCallback = (type: 'back' | 'next' | 'reset') => {
     setTimeout(() => {
       const step = getWizardStep(visibleSteps, current, type);
 
@@ -188,7 +188,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         );
       }
     } catch (errInfo) {
-      console.log("Couldn't Proceed", errInfo);
+      console.error("Couldn't Proceed", errInfo);
     }
   };
 
@@ -214,7 +214,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
         (tab) => tab.afterDoneActionConfiguration
       );
     } catch (errInfo) {
-      console.log("Couldn't Proceed", errInfo);
+      console.error("Couldn't Proceed", errInfo);
     }
   };
 
@@ -277,6 +277,20 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       hasArguments: false,
       executer: () => {
         done();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies
+  );
+
+  useConfigurableAction(
+    {
+      name: 'Reset Steps',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: () => {
+        successCallback('reset');
         return Promise.resolve();
       },
     },

@@ -1,12 +1,12 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
-    const extraMargin = "28px";
+  const extraMargin = "28px";
 
-    const noContentPadding = "no-content-padding";
-    const hideWhenEmpty = "hide-empty";
+  const noContentPadding = "no-content-padding";
+  const hideWhenEmpty = "hide-empty";
 
-    const shaCollapsiblePanel = cx("sha-collapsible-panel", css`
+  const shaCollapsiblePanel = cx("sha-collapsible-panel", css`
       &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
         display: none;
       }
@@ -33,9 +33,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
       &:not(.${prefixCls}-collapse-ghost) {
         > .${prefixCls}-collapse-item {
           > .${prefixCls}-collapse-header {
-            border-top: 3px solid ${token.colorPrimary};
+            border-left: 3px solid ${token.colorPrimary};
             border-top-left-radius: ${token.borderRadiusLG}px;
             border-top-right-radius: ${token.borderRadiusLG}px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            background-color: #f0f0f0;
+            height: 45px;
+            margin:'auto 0px';
           }
         }
       }
@@ -67,7 +72,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           position: relative;
           display: flex;
           justify-content: space-between;
-    
+          align-items: center;
           .${prefixCls}-collapse-extra {
             float: unset;
           }
@@ -75,6 +80,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
           .${prefixCls}-collapse-header-text {
             flex-grow: 1;
             margin: auto 0;
+            margin-left: -5px;
           }
         }
     
@@ -108,9 +114,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
       }    
     `);
 
-    return {
-        shaCollapsiblePanel,
-        noContentPadding,
-        hideWhenEmpty,
-    };
+  return {
+    shaCollapsiblePanel,
+    noContentPadding,
+    hideWhenEmpty,
+  };
 });

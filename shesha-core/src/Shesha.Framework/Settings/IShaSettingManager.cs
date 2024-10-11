@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Settings
@@ -8,6 +9,15 @@ namespace Shesha.Settings
     /// </summary>
     public interface IShaSettingManager
     {
+        /// <summary>
+        /// Get setting value
+        /// </summary>
+        /// <param name="module">Module name</param>
+        /// <param name="name">Setting name</param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        Task<JObject> GetJObjectOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null);
+
         /// <summary>
         /// Get setting value
         /// </summary>

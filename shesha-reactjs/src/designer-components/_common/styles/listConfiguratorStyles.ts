@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
     const shaActionButtons = "sha-action-buttons";
     const sidebarContainerMainArea = "sidebar-container-main-area";
     const shaToolbarConfiguratorAlert = "sha-toolbar-configurator-alert";
@@ -64,9 +64,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
               }
 
               &.selected {
-                  border: #61affe 1px dashed;
-                  border-radius: 4px;
-                  background-color: #ebf3fb;
+                  border: ${token.colorPrimary} 1px dashed;
+                    border-radius: 4px;
+                    background-color: ${token.colorPrimaryBg}80;
               }
 
               .${shaToolbarItemDragHandle} {
@@ -110,7 +110,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           }
 
           .${shaToolbarItemGhost} {
-              border: 1px dashed #4099ff;
+              border: 1px dashed ${token.colorPrimary};
               border-radius: 2px;
               opacity: 0.7;
           }

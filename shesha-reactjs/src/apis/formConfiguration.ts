@@ -1,6 +1,9 @@
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
 import * as RestfulShesha from '@/utils/fetchers';
 import { FormIdFullNameDto } from './entityConfig';
+import { HttpClientApi } from '@/providers/sheshaApplication/publicApi';
+import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
+import qs from 'qs';
 
 /**
  * Status of the Shesha.Domain.ConfigurationItems.ConfigurationItem
@@ -137,6 +140,16 @@ export const formConfigurationGetByName = (
     queryParams,
     props
   );
+
+export interface FormGetByNamePayload extends FormConfigurationGetByNameQueryParams {
+  configurationItemMode?: ConfigurationItemsViewMode;
+}
+export const formConfigurationGetByName2 = (httpClient: HttpClientApi, payload: FormGetByNamePayload) => {
+  const { configurationItemMode, ...queryParams } = payload;
+  const url = `/api/services/Shesha/FormConfiguration/GetByName?${qs.stringify(queryParams)}`;
+  return httpClient.get<FormConfigurationDtoAjaxResponse>(url);
+};
+//httpClient
 
 /**
  * Form update markup input

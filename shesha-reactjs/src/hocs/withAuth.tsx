@@ -10,25 +10,24 @@ export interface IComponentWithAuthProps {
 }
 export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const { landingPage, unauthorizedRedirectUrl } = props;
-  const { isCheckingAuth, loginInfo, checkAuth, getAccessToken, isLoggedIn } = useAuth();
+  const { state: authState, isLoggedIn, checkAuthAsync: checkAuth } = useAuth();
+  const [, forceUpdate] = React.useState({});
 
-  const { goingToRoute, router } = useShaRouting();
+  const { router } = useShaRouting();
 
   const loginUrl = useLoginUrl({ homePageUrl: landingPage, unauthorizedRedirectUrl });
 
   useEffect(() => {
-    const token = getAccessToken();
-
-    if (!loginInfo) {
-      if (token) {
-        checkAuth();
-      } else {
-        goingToRoute(loginUrl);
-      }
+    if (!isLoggedIn) {      
+      checkAuth(loginUrl).then(() => {
+        forceUpdate({});
+      });
     }
-  }, [isCheckingAuth]);
+  }, [checkAuth, loginUrl, isLoggedIn]);
 
-  return isLoggedIn ? <Fragment>{props.children(router?.query)}</Fragment> : <SheshaLoader message="Initializing..." />;
+  return isLoggedIn
+    ? <Fragment>{props.children(router?.query)}</Fragment> 
+    : <SheshaLoader message={authState.hint || "Initializing..."} />;
 };
 
 /**

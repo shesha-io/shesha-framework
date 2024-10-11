@@ -1,5 +1,5 @@
 import { IHasEntityType, IPropertyMetadata, ITypeDefinitionLoadingContext, SourceFile, TypeDefinition, isEntityReferencePropertyMetadata, isPropertiesArray } from "@/interfaces/metadata";
-import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { EntitiesManager } from "./manager";
 import { HttpClientApi } from "../http/api";
 import { EntityConfigurationDto } from "./models";
@@ -111,11 +111,26 @@ const createEntityBaseModels = (context: ITypeDefinitionLoadingContext) => {
         "export type EntityCreatePayload<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> = Omit<TEntity, keyof IFullAuditedEntity<TId>>;",
         "export type EntityUpdatePayload<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> = Partial<Omit<TEntity, keyof IFullAudited>> & Pick<TEntity, \"id\">",
         "",
+        "export interface IApiEndpoint {",
+        "    /** Http verb (get/post/put etc) */",
+        "    httpVerb: string;",
+        "    /** Url */",
+        "    url: string;",
+        "  }",
+        "",
+        "export interface IEntityEndpoints extends Record<string, IApiEndpoint> {",
+        "   create: IApiEndpoint;",
+        "   read: IApiEndpoint;",
+        "   update: IApiEndpoint;",
+        "   delete: IApiEndpoint;",
+        "}",
+        "",
         "export interface EntityAccessor<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> {",
         "    createAsync: (value: EntityCreatePayload<TId, TEntity>) => Promise<TEntity>;",
         "    getAsync: (id: TId) => Promise<TEntity>;",
         "    updateAsync: (value: EntityUpdatePayload<TId, TEntity>) => Promise<TEntity>;",
         "    deleteAsync: (id: TId) => Promise<void>;",
+        "    getApiEndpointsAsync: () => Promise<IEntityEndpoints>;",
         "}"].join('\r\n');
 
     context.typeDefinitionBuilder.makeFile(BASE_ENTITY_MODULE, content);
@@ -148,7 +163,6 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
     };
 
     const writeObject = async (sb: StringBuilder, typesImporter: TypesImporter, property: IEntityPropertyMetadata): Promise<void> => {
-        //console.log(`LOG: process property '${property.path}'`, property);
         if (property.description)
             sb.append(`/** ${property.description} */`);
 
@@ -249,6 +263,6 @@ const fetchEntitiesApiTypeDefinition = (context: ITypeDefinitionLoadingContext, 
  * @param {HttpClientApi} httpClient - the HttpClientApi instance
  * @return {MetadataBuilder} the MetadataBuilder instance with properties loader and type definition set
  */
-export const getEntitiesApiProperties = (builder: MetadataBuilder, httpClient: HttpClientApi): MetadataBuilder => builder
+export const getEntitiesApiProperties = (builder: IObjectMetadataBuilder, httpClient: HttpClientApi): IObjectMetadataBuilder => builder
     .setPropertiesLoader(() => fetchEntitiesApiAsMetadataProperties(httpClient))
     .setTypeDefinition((ctx) => fetchEntitiesApiTypeDefinition(ctx, httpClient));

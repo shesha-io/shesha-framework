@@ -20,12 +20,7 @@ import {
 import { DEFAULT_FORM_SETTINGS } from '../form/models';
 import { EntitiesGetQueryParams } from '@/apis/entities';
 import { EntityAjaxResponse } from '@/generic-pages/dynamic/interfaces';
-import {
-  GetDataError,
-  useDeepCompareMemoKeepReference,
-  useMutate,
-  usePubSub
-  } from '@/hooks';
+import { GetDataError, useDeepCompareMemo, useMutate } from '@/hooks';
 import { getQueryParams, QueryStringParams } from '@/utils/url';
 import { IAnyObject } from '@/interfaces';
 import { ISubFormProviderProps } from './interfaces';
@@ -93,7 +88,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
 
-  const { publish } = usePubSub();
   const { formData = {}, formMode } = useForm();
   const { globalState, setState: setGlobalState } = useGlobalState();
   const appContextData = useApplicationContextData();
@@ -104,6 +98,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const onChangeInternal = (newValue: any) => {
     if (onChange) 
       onChange({...(typeof value === 'object' ? value : {} ), ...newValue });
+  };
+
+  const onClearInternal = () => {
+    if (onChange) 
+      onChange({});
   };
 
   /**
@@ -268,7 +267,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     return params;
   };
 
-  const finalQueryParams = useDeepCompareMemoKeepReference(() => {
+  const finalQueryParams = useDeepCompareMemo(() => {
     const result = getFinalQueryParams();
     return result;
   }, [queryParams, formMode, globalState, formData]);
@@ -283,6 +282,13 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     // Skip loadng if entity with this Id is already fetched
     if (!forceFetchData && finalQueryParams?.id === state.fetchedEntityId) {
+      return;
+    }
+
+    // clear sub-form values and skip loading if the Id is empty
+    if (!finalQueryParams?.id?.trim() || finalQueryParams?.id.trim() === 'undefined') {
+      onClearInternal();
+      dispatch(fetchDataSuccessAction({entityId: finalQueryParams?.id}));
       return;
     }
 
@@ -320,6 +326,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             onChangeInternal(dataResponse?.result);
             dispatch(fetchDataSuccessAction({entityId: dataResponse?.result?.id}));
           } else {
+            onClearInternal();
             dispatch(fetchDataErrorAction({ error: dataResponse.error as GetDataError<unknown> }));
           }
         })
@@ -351,12 +358,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         if (onCreated) {
           const evaluateOnCreated = () => {
             // tslint:disable-next-line:function-constructor
-            return new Function('data, globalState, submittedValue, message, publish, application', onCreated)(
+            return new Function('data, globalState, submittedValue, message, application', onCreated)(
               formData,
               globalState,
               submittedValue?.result,
               message,
-              publish,
               appContextData,
             );
           };
@@ -380,12 +386,11 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         if (onUpdated) {
           const evaluateOnUpdated = () => {
             // tslint:disable-next-line:function-constructor
-            return new Function('data, globalState, response, message, publish', onUpdated)(
+            return new Function('data, globalState, response, message', onUpdated)(
               formData,
               globalState,
               submittedValue?.result,
               message,
-              publish
             );
           };
 

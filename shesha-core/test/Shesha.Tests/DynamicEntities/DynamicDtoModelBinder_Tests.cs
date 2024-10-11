@@ -27,7 +27,7 @@ namespace Shesha.Tests.DynamicEntities
     public class DynamicDtoModelBinder_Tests : AbpIntegratedTestBase<SheshaTestModule>
     {
         [Fact]
-        public async Task BindFlatModel_Test()
+        public async Task BindFlatModel_TestAsync()
         {
             var bindingResult = await BindAsync<PersonDynamicDto>("flatModel.json", "flatModel.metadata.json");
 
@@ -54,7 +54,7 @@ namespace Shesha.Tests.DynamicEntities
         }
 
         [Fact]
-        public async Task Bind2NestedLevels_Test()
+        public async Task Bind2NestedLevels_TestAsync()
         {
             var bindingResult = await BindAsync<PersonDynamicDto>("nested2Levels.json", "nested2Levels.metadata.json");
 
@@ -69,7 +69,7 @@ namespace Shesha.Tests.DynamicEntities
         }
 
         [Fact]
-        public async Task Bind3NestedLevels_Test()
+        public async Task Bind3NestedLevels_TestAsync()
         {
             var bindingResult = await BindAsync<PersonDynamicDto>("nested3Levels.json", "nested3Levels.metadata.json");
 
@@ -89,7 +89,7 @@ namespace Shesha.Tests.DynamicEntities
         }
 
         [Fact]
-        public async Task BindEntityReference_DtoMode_Test()
+        public async Task BindEntityReference_DtoMode_TestAsync()
         {
             var bindingResult = await BindAsync<PersonDynamicDto>("entityReference_DtoMode.json", "entityReference_DtoMode.metadata.json");
 
@@ -141,7 +141,7 @@ namespace Shesha.Tests.DynamicEntities
                               .Returns(async (InputFormatterContext context) =>
                               {
                                   var model = await ReadJsonRequestAsync(context.ModelType, jsonResourceName);
-                                  return InputFormatterResult.Success(model);
+                                  return await InputFormatterResult.SuccessAsync(model);
                               })
                               .Verifiable();
             var inputFormatter = mockInputFormatter.Object;

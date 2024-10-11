@@ -1,4 +1,4 @@
-import ConfigurableForm from '@/components/configurableForm';
+import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
 import React, { FC } from 'react';
 import { CustomErrorBoundary } from '@/components';

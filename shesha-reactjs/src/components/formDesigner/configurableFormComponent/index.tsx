@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import CustomErrorBoundary from '@/components/customErrorBoundary';
 import DragWrapper from './dragWrapper';
 import FormComponent from '../formComponent';
 import React, {
@@ -21,24 +20,25 @@ import { getActualPropertyValue, useAvailableConstantsData } from '@/providers/f
 import { isPropertySettings } from '@/designer-components/_settings/utils';
 import { Show } from '@/components/show';
 import { Tooltip } from 'antd';
-import { ShaForm, useFormActions, useIsDrawingForm } from '@/providers/form';
+import { ShaForm, useIsDrawingForm } from '@/providers/form';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { ComponentProperties } from '../componentPropertiesPanel/componentProperties';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
-interface IConfigurableFormComponentDesignerProps {
+export interface IConfigurableFormComponentDesignerProps {
   componentModel: IConfigurableFormComponent;
   componentRef: MutableRefObject<any>;
 }
-const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
+export const ConfigurableFormComponentDesigner: FC<IConfigurableFormComponentDesignerProps> = ({ componentModel, componentRef }) => {
   const { styles } = useStyles();
-  const allData = useAvailableConstantsData('all');
+  const allData = useAvailableConstantsData({ topContextId: 'all' });
   const {
     selectedComponentId,
     readOnly,
     settingsPanelRef,
   } = useFormDesignerState();
-  const { getToolboxComponent } = useFormActions();
+  const getToolboxComponent = useFormDesignerComponentGetter();
 
   const isSelected = componentModel.id && selectedComponentId === componentModel.id;
 
@@ -138,8 +138,6 @@ export const ConfigurableFormComponent: FC<IConfigurableFormComponentProps> = ({
     : ConfigurableFormComponentDesigner;
 
   return (
-    <CustomErrorBoundary>
-      <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
-    </CustomErrorBoundary>
+    <ComponentRenderer componentModel={componentModel} componentRef={componentRef} />
   ); 
 };

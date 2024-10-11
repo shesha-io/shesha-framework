@@ -374,7 +374,7 @@ namespace Shesha.Services.StoredFiles
         /// <summary>
         /// returns next SortOrder for the new file
         /// </summary>
-        protected async Task<int> GetNextSortOrder<TId>(TId ownerId, string ownerType, Int64? category = null)
+        protected async Task<int> GetNextSortOrderAsync<TId>(TId ownerId, string ownerType, Int64? category = null)
         {
             return string.IsNullOrWhiteSpace(ownerType) || ownerId == null
                 ? 0

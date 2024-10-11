@@ -66,7 +66,7 @@ const DelayedUpdateProvider: FC<PropsWithChildren<IDelayedUpdateProps>> = ({ chi
 
   const getPayload = useCallback(() => {
     const obj = [...state.groups?.filter((g) => g.items?.length > 0)];
-    return obj.length > 0 ? obj : null;
+    return obj.length > 0 ? obj : undefined;
   }, [state]);
 
   return (

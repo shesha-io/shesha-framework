@@ -360,7 +360,8 @@ namespace Shesha
                 
                 case DataTypes.Array:
                     if (property.DataFormat == ArrayFormats.ReferenceListItem
-                        || property.DataFormat == ArrayFormats.ObjectReference)
+                        || property.DataFormat == ArrayFormats.ObjectReference
+                        || property.DataFormat == ArrayFormats.Object)
                     {
                         sb.AppendLine(propertyName);
                         break;
@@ -408,8 +409,9 @@ namespace Shesha
             }
 
             sb.AppendLine("id");
-            sb.AppendLine("_className");
-            sb.AppendLine("_displayName");
+            
+            sb.AppendLine(EntityConstants.ClassNameField);
+            sb.AppendLine(EntityConstants.DisplayNameField);
 
             return sb.ToString();
         }

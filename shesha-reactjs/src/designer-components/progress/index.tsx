@@ -27,6 +27,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   name: 'Progress',
   icon: <LineOutlined />,
   isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
     const {
       progressType,

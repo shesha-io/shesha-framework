@@ -16,6 +16,7 @@ import { useTheme } from 'antd-style';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
+  isInput: false,
   name: 'Container',
   icon: <GroupOutlined />,
   Factory: ({ model }) => {
@@ -135,6 +136,22 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
           backgroundBase64: prev.backgroundBase64 ?? prev['base64'],
           backgroundStoredFileId: prev.backgroundStoredFileId ?? prev['storedFileId'],
         }))
+        .add<IContainerComponentProps>(5, (prev) => {
+          const styles = {
+            style: prev.style,
+            wrapperStyle: prev.wrapperStyle,
+            className: prev.className,
+            stylingBox: prev.stylingBox,
+            width: prev.width,
+            height: prev.height,
+            minWidth: prev.minWidth,
+            minHeight: prev.minHeight,
+            maxHeight: prev.maxHeight,
+            maxWidth: prev.maxWidth
+          };
+    
+          return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+        })
   ,
 };
 

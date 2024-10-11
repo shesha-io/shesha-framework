@@ -4,7 +4,7 @@ import { IConfigurableFormComponent, FormMarkup } from '@/providers/form/models'
 import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
-import { FormWithRawMarkup } from '../configurableForm/formWithRawMarkup';
+import { ConfigurableForm } from '../configurableForm';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -33,7 +33,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   const [form] = Form.useForm();
 
   const linkToModelMetadata = (metadata: IPropertyMetadata, settingsForm: ConfigurableFormInstance) => {
-    const currentModel = form.getFieldsValue() as TModel;
+    const currentModel = form.getFieldValue([]) as TModel;
 
     const wrapper = toolboxComponent.linkToModelMetadata
       ? m => linkComponentToModelMetadata(toolboxComponent, m, metadata)
@@ -62,7 +62,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     };
 
   return (
-    <FormWithRawMarkup
+    <ConfigurableForm
       formName='componentSettings'
       labelCol={layoutSettings?.labelCol}
       wrapperCol={layoutSettings?.wrapperCol}

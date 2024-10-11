@@ -193,7 +193,7 @@
             "templateSettings": {
               "functionName": "getDataSourceUrl"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "c153b326-7ff2-4bb0-af21-45f80e8cd6e0",
@@ -223,7 +223,7 @@
             "templateSettings": {
               "functionName": "reducerFunction"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addArray(\"data\", \"An array of items returned from the server\").build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addArray(\"data\", \"An array of items returned from the server\").build();"
           },
           {
             "id": "OBr7mbe9PFn54MX0wjb9L",
@@ -325,6 +325,22 @@
       }
     },
     {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+    {
       "id": "3aIMnm2re1exM1M7pEEur9",
       "type": "collapsiblePanel",
       "propertyName": "pnlStyle",
@@ -369,11 +385,13 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           }
         ]
       }
-    },
+    }
+    ]
+  },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",

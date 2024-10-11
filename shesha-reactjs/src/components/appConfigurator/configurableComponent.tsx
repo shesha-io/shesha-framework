@@ -1,6 +1,5 @@
-import React, { FC, PropsWithChildren, useState } from 'react';
+import React, { FC, PropsWithChildren } from 'react';
 import { useAppConfigurator } from '@/providers';
-import { ComponentSettingsModal } from './componentSettingsModal';
 import { useStyles } from './styles/styles';
 
 export interface IComponentStateProps<TSettings = any> {
@@ -46,7 +45,6 @@ export const ConfigurableComponent = <TSettings extends any>({
   canConfigure = true,
   onStartEdit,
 }: IConfigurableComponentProps<TSettings>) => {
-  const [modalVisible, setModalVisible] = useState(false);
   const { mode } = useAppConfigurator();
   const { styles } = useStyles();
 
@@ -70,16 +68,7 @@ export const ConfigurableComponent = <TSettings extends any>({
   };
 
   const onOverlayClick = () => {
-    if (onStartEdit) onStartEdit();
-    else setModalVisible(true);
-  };
-
-  const onCancelClick = () => {
-    setModalVisible(false);
-  };
-
-  const onSave = (_model: TSettings) => {
-    setModalVisible(false);
+    onStartEdit?.();
   };
 
   return (
@@ -89,9 +78,6 @@ export const ConfigurableComponent = <TSettings extends any>({
           {overlayChildren}
         </BlockOverlay>
       ))}
-      {modalVisible && (
-        <ComponentSettingsModal<TSettings> onCancel={onCancelClick} onSave={onSave} model={null} />
-      )}
     </>
   );
 };

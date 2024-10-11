@@ -1,67 +1,37 @@
-import React, { PropsWithChildren, useContext, useReducer } from 'react';
-import { clearStateAction, setStateAction } from './actions';
+import React, { FC, PropsWithChildren, useContext, useState } from 'react';
 import {
-  GLOBAL_STATE_CONTEXT_INITIAL_STATE,
-  GlobalStateActionsContext,
-  GlobalStateStateContext,
-  ISetStatePayload,
+  GlobalStateContext,
+  IGlobalState,
 } from './contexts';
-import reducer from './reducer';
+import { GlobalState } from './globalState';
 
-export interface IGlobalStateProvider {}
+const GlobalStateProvider: FC<PropsWithChildren> = ({ children }) => {
+  const [state, forceUpdate] = React.useState({});
 
-function GlobalStateProvider({ children }: PropsWithChildren<IGlobalStateProvider>) {
-  const [state, dispatch] = useReducer(reducer, { ...GLOBAL_STATE_CONTEXT_INITIAL_STATE });
+  //ToDo: AS - need to review and implement a mechanism for subscribing to changes
 
-  const setState = (payload: ISetStatePayload) => dispatch(setStateAction(payload));
-
-  const clearState = (stateKey: string) => dispatch(clearStateAction(stateKey));
-
-  const getStateByKey = (key: string) => (state?.globalState || {})[key];
+  const [globalState] = useState<IGlobalState>(() => {
+    // init new instance of global state
+    return new GlobalState(() => forceUpdate({}));
+  });
 
   return (
-    <GlobalStateStateContext.Provider value={state}>
-      <GlobalStateActionsContext.Provider
-        value={{
-          setState,
-          clearState,
-          getStateByKey,
-          /* NEW_ACTION_GOES_HERE */
-        }}
-      >
-        {children}
-      </GlobalStateActionsContext.Provider>
-    </GlobalStateStateContext.Provider>
+    <GlobalStateContext.Provider value={{globalState, state}}>
+      {children}
+    </GlobalStateContext.Provider>
   );
-}
-
-function useGlobalStateState() {
-  const context = useContext(GlobalStateStateContext);
-
-  if (context === undefined) {
-    throw new Error('useGlobalStateState must be used within a GlobalStateProvider');
-  }
-
-  return context;
-}
-
-function useGlobalStateActions() {
-  const context = useContext(GlobalStateActionsContext);
-
-  if (context === undefined) {
-    throw new Error('useGlobalStateActions must be used within a GlobalStateProvider');
-  }
-
-  return context;
-}
+};
 
 function useGlobalState() {
-  return {
-    ...useGlobalStateState(),
-    ...useGlobalStateActions(),
-  };
+  const context = useContext(GlobalStateContext);
+
+  if (context === undefined) {
+    throw new Error('useGlobalState must be used within a GlobalStateProvider');
+  }
+
+  return context.globalState;
 }
 
 export default GlobalStateProvider;
 
-export { GlobalStateProvider, useGlobalState, useGlobalStateActions, useGlobalStateState };
+export { GlobalStateProvider, useGlobalState };

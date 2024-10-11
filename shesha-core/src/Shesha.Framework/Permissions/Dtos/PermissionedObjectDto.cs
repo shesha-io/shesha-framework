@@ -60,5 +60,7 @@ namespace Shesha.Permissions
                 : Access.ToString();
             return $"{Object} -> ({permissions})";
         }
+
+        public string Md5 { get; set; } 
     }
 }

@@ -8,6 +8,7 @@ import {
     IFetchConfigurationsSuccessPayload,
     ISettingsEditorStateContext,
     ISettingSelection,
+    SaveStatus,
     SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE
     } from './contexts';
 import { SettingsEditorActionEnums } from './actions';
@@ -57,13 +58,23 @@ export const settingsEditorReducer = handleActions<ISettingsEditorStateContext, 
                 loadingApplicationsError: action.payload,
             };
         },
-
+        [SettingsEditorActionEnums.SelectApplication]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<ISettingSelection>) => {
+          const { payload } = action;
+          return {
+              ...state,
+              selectedApplication: payload.app,
+              settingSelection: null,
+              editorBridge: null,
+              saveStatus: 'none',
+            };
+        },
         [SettingsEditorActionEnums.SelectSetting]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<ISettingSelection>) => {
             const { payload } = action;
             return {
                 ...state,
                 settingSelection: payload,
                 editorBridge: null,
+                saveStatus: 'none',
             };
         },
         [SettingsEditorActionEnums.SetEditorMode]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<FormMode>) => {
@@ -80,7 +91,14 @@ export const settingsEditorReducer = handleActions<ISettingsEditorStateContext, 
                 editorBridge: payload,
             };
         },
-    },
+        [SettingsEditorActionEnums.setSaveStatus]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<SaveStatus>) => {
+          const { payload } = action;
+          return {
+              ...state,
+              saveStatus: payload,
+          };
+      },
+  },
 
     SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE
 );

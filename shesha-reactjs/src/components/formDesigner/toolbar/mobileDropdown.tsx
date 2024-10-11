@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Dropdown, MenuProps, Select } from 'antd';
-import { useCanvasConfig } from '@/providers';
+import { useCanvas } from '@/providers';
 import { TabletOutlined } from '@ant-design/icons';
 
 export interface IPreviewButtonProps {
@@ -9,7 +9,7 @@ export interface IPreviewButtonProps {
 }
 
 export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef }) => {
-  const { setCanvasWidth, width, activeDevice } = useCanvasConfig();
+  const { setCanvasWidth, designerWidth: width, designerDevice: activeDevice } = useCanvas();
 
   const items: MenuProps['items'] = [
     {
@@ -32,79 +32,67 @@ export const MobileOptions: FC<IPreviewButtonProps> = ({ refLink, customEditRef 
             }}
             options={[
               {
-                value: '320',
+                value: '375px',
                 label: 'iPhone SE',
               },
               {
-                value: '414',
+                value: '414px',
                 label: 'iPhone XR',
               },
               {
-                value: '390',
+                value: '390px',
                 label: 'iPhone 12 Pro',
               },
               {
-                value: '430',
+                value: '430px',
                 label: 'iPhone 14 Pro Max',
               },
               {
-                value: '411',
-                label: 'Pixel 7',
-              },
-              {
-                value: '360',
+                value: '360px',
                 label: 'Samsung Galaxy S8+',
               },
               {
-                value: '321',
+                value: '412px',
                 label: 'Samsung Galaxy S20 Ultra',
               },
               {
-                value: '768',
+                value: '768px',
                 label: 'iPad Mini',
               },
               {
-                value: '834',
+                value: '820px',
                 label: 'iPad Air',
               },
               {
-                value: '1024',
+                value: '1024px',
                 label: 'iPad Pro',
               },
               {
-                value: '1025',
+                value: '912px',
                 label: 'Surface Pro 7',
               },
               {
-                value: '540',
+                value: '540px',
                 label: 'Surface Duo',
               },
               {
-                value: '280',
+                value: '344px',
                 label: 'Galaxy Z Fold 5',
               },
               {
-                value: '1920',
+                value: '853px',
                 label: 'Asus Zenbook Fold',
               },
               {
-                value: '1080',
-                label: 'Samsung Galaxy A51/71',
-              },
-              {
-                value: '1023',
-                label: 'Nest Hub',
-              },
-              {
-                value: '1280',
+                value: '1280px',
                 label: 'Nest Hub Max',
               },
               {
-                value: '322',
+                value: '322px',
                 label: 'iPhone 4',
               },
               {
-                value: '545',
+                value: '545px',
                 label: 'Edit...',
               },
             ]}

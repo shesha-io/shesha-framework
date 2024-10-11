@@ -1,18 +1,12 @@
 import jseu from 'js-encoding-utils';
 import { getLocalizationOrDefault } from './localization';
 import { getLocalStorage } from './storage';
+import { IAccessToken } from '@/interfaces';
 
 /**
  * Standard Authorization header name
  */
 export const AUTHORIZATION_HEADER_NAME = 'Authorization';
-
-// Fields to remove from the AuthContext
-interface IAccessToken {
-  accessToken?: string | null;
-  expireInSeconds?: number;
-  expireOn?: string;
-}
 
 export const saveUserToken = ({ accessToken, expireInSeconds, expireOn }: IAccessToken, tokenName?: string) => {
   const token = {

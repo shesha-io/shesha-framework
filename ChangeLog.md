@@ -1,33 +1,29 @@
 # Release Notes
 ## Enhancements
-- Made the header bar configurable. A backend update is required to retrieve the header configuration form.
-- Converted roles and permissions to `configurationItem`.
-- Added support for `wrap` orientation on the Datalist component.
-- Permissions can now be selected from a list instead of entered as free text.
-- Created a permission component that allows selection of one or more permissions.
-- Added support for full width on the search bar component.
-- Added support for `pageContext` on the query builder.
-- Added an `onChange` event property to the Entity Picker component.
-- Added a `name` property to the formConfiguration update endpoint.
-- Added support for typeShortAlias to the entityHistory endpoint and created an API for getting form settings from the code editor.
-- Implemented a click action listener.
-- Added an `allow delete` property to the Notes component.
+- **Ehanced Form Settings**: Introduced configurable form lifecycle management, providing more flexibility in form handling.
+  - **Appearance**: Contains all settings related to form view (layout, size etc).
+  - **Data**: Contains settings related to data processing and form lifecylce.
+  - **Security**: Security related settings.
+- **Enhanced App Settings Page**: Expanded the App Settings page to manage front-end specific settings in addition to general settings, including Default URL, Theme, and Main Menu configurations.
+  - **Default URL**: This is the url the user should be redirected to if the user is not authenticated and does not specify a specific page.
+  - **Main Menu Settings**: Here you can configure the sidebar menu items by adjusting their settings and ordering.
+  - **Theme Settings**: Here you customise the theme color of the application.
+- **Enhanced Button Component**: Added additional styling properties to the Button Component for improved customization.
+- **Exposed getAnonymousForms Endpoint**: Made the getAnonymousForms endpoint accessible for easier integration.
+- **Improved JavaScript Settings Component**: Updated the JS settings component for better performance and user experience.
+- **Configurable User Profile**: Allowed additional configurations to be configured below the user logged information.
+- Added `addDelayedUpdateData` variable which is required for files when using a script method.
+- **Style Section Hidden in Table**: The style section is now hidden for Textfield and Autocomplete components when rendered within a table.
+- **Font Weight on Table Column Names**: Increased the font weight to 600 for table column names to enhance visibility and readability.
+- **Reset Wizard State Action**: Exposed an action on Wizard actions that allows resetting the wizard state.
 
 ## Bug Fixes
-- Fixed an issue where formatting on nested entities configurations did not apply to subforms.
-- Fixed duplication of the `initialValue`s variable in onDataLoaded form settings.
-- Fixed duplication of the `formMode` variable on the file list changed property.
-- Ghost property appended to the payload when submitting the fileList component using the execute script action.
-- Ensured formatting on Entity Configuration now applies in real time in the current browser.
-- Fixed the issue where the `edit mode` property on the Address component was not working as expected.
-- Ensured values written to the `pageContext` are now reflected in its properties immediately.
-- Fixed the issue where `pageContext` did not append data to the subform after selection on an autocomplete.
-- Addressed the issue where custom buttons failed to adhere to form validations.
-- Optimized the Entity Picker component to prevent unnecessary calls on form load, improving performance.
-- Fixed the issue where the Tab component allowed users without defined permissions to view the component.
-- Ensured the file list component does not allow file deletion when the `Allow remove` property is set to false.
-- Fixed an error thrown when utilizing `pageContext` on a dialog view.
-- Fixed the issue where the Address component appears blank upon rendering and only becomes visible after the form state changes.
-
-## Configuration Changes
-- Added a standard form to display entity audit trail information.
+- **Component Label Issue**: Fixed an issue where components (Address, Entity Reference, Subform, ChildEntitiesTag Group) did not append the label by default when a property name was selected.
+- **Base64 Image Rendering**: Resolved a problem with Base64 images not rendering in the Image component and container background property.
+- **CRUD Operations Column Expansion**: Corrected the unexpected expansion of CRUD operations columns when using the toogle columns selector option.
+- **Table View Component Issue**: Fixed the "add item" modal in the newly created Table view component, which was not closeable by default.
+- **Permission Configurations Import**: Addressed a bug causing the application to break when importing permission configurations with ConfigMigrations.
+- **setFormData Initialization**: Resolved an issue where setFormData used on Initialization did not append values to the specified field in forms.
+- **Backend Endpoint Management**: Fixed the issue where the backend did not properly remove or reinstate endpoints when disabled or enabled.
+- **Duplicate Records from Button Clicks**: Fixed a bug causing duplicate records due to multiple clicks on the default, custom buttons and datalist during network delays.
+- **Notes Component Overflow Issue**: Fixed an issue where clicking 'More' on long notes caused them to overlap outside the line section on the Notes component.

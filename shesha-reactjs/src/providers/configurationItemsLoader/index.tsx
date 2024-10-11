@@ -29,6 +29,7 @@ import { IComponentsDictionary, IFormsDictionary, IReferenceListsDictionary } fr
 import metadataReducer from './reducer';
 import { getFormForbiddenMessage, getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
+import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
 type StoragesDictionary = IDictionary<LocalForage>;
@@ -252,6 +253,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       if (!isFormRawId(formId) && !isFormFullName(formId)) reject('Form identifier must be specified');
 
       const cacheKey = getFormCacheKey(formId, configurationItemMode);
+      const headers = {...httpHeaders, [SheshaHttpHeaders.ConfigItemsMode]: configurationItemMode };      
 
       getFromCache<FormConfigurationDto>(ItemTypes.Form, cacheKey).then((cachedDto) => {
         const promise = isFormFullName(formId)
@@ -262,12 +264,12 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
               version: formId.version,
               md5: cachedDto?.cacheMd5,
             },
-            { base: backendUrl, headers: httpHeaders /*, responseConverter*/ }
+            { base: backendUrl, headers: headers }
           )
           : isFormRawId(formId)
             ? formConfigurationGet(
               { id: formId, md5: cachedDto?.cacheMd5 },
-              { base: backendUrl, headers: httpHeaders /*, responseConverter*/ }
+              { base: backendUrl, headers: headers }
             )
             : Promise.reject('Form identifier must be specified');
 

@@ -12,6 +12,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import ParentProvider from '@/providers/parentProvider/index';
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 export interface IAlertProps extends IConfigurableFormComponent {
   text: string;
@@ -38,6 +39,7 @@ export interface ILinkProps extends IConfigurableFormComponent {
 const settingsForm = settingsFormJson as FormMarkup;
 const LinkComponent: IToolboxComponent<ILinkProps> = {
   type: 'link',
+  isInput: false,
   name: 'link',
   icon: <LinkOutlined />,
   Factory: ({ model }) => {
@@ -136,6 +138,13 @@ const LinkComponent: IToolboxComponent<ILinkProps> = {
     })
     .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ILinkProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
+    .add<ILinkProps>(4, (prev) => {
+      const styles: IInputStyles = {
+        style: prev.style
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
 
 };

@@ -19,6 +19,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const DividerComponent: IToolboxComponent<IDividerProps> = {
   type: 'divider',
+  isInput: false,
   name: 'Divider',
   icon: <LineOutlined />,
   tooltip: "Deprecated! Please use 'Section Separator' instead.",

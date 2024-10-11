@@ -4,6 +4,8 @@ import { httpApiDefinition } from "@/providers/sourceFileManager/api-utils/http"
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
 import { globalStateApiDefinition } from '@/providers/sourceFileManager/api-utils/globalState';
 import { formApiDefinition } from '@/providers/sourceFileManager/api-utils/form';
+import { queryStringValuesDefinition } from '@/providers/sourceFileManager/api-utils/queryString';
+import { metadataSourceCode, metadataBuilderSourceCode } from '@/publicJsApis';
 
 export const SheshaConstants = {
   http: "shesha:http",
@@ -17,6 +19,9 @@ export const SheshaConstants = {
   form: "shesha:form",
   formData: "shesha:formData",
   application: "shesha:application",
+  query: "shesha:query",
+  metadataBuilder: "shesha:metadataBuilder",
+  constantsBuilder: "shesha:constantsBuilder",
 };
 
 export const registerHttpAction: MetadataBuilderAction = (builder, name = "http") => {
@@ -118,6 +123,42 @@ export const registerFormAction: MetadataBuilderAction = (builder, name = "form"
     const definition: TypeDefinition = {
       typeName: 'FormApi',
       files: [{ content: formApiDefinition, fileName: 'apis/form.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerQueryAction: MetadataBuilderAction = (builder, name = "query") => {
+  builder.addCustom(name, "Query string values", () => {
+    const definition: TypeDefinition = {
+      typeName: 'ParsedQs',
+      files: [{ content: queryStringValuesDefinition, fileName: 'apis/queryString.ts' }],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerMetadataBuilderAction: MetadataBuilderAction = (builder, name = "metadataBuilder") => {
+  builder.addCustom(name, "Metadata builder", () => {
+    const definition: TypeDefinition = {
+      typeName: 'IMetadataBuilder',
+      files: [
+        { content: metadataBuilderSourceCode, fileName: 'apis/metadataBuilder.d.ts' },
+        { content: metadataSourceCode, fileName: 'apis/metadata.d.ts' }
+      ],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerConstantsBuilderAction: MetadataBuilderAction = (builder, name = "constantsBuilder") => {
+  builder.addCustom(name, "Constants Builder", () => {
+    const definition: TypeDefinition = {
+      typeName: 'IObjectMetadataBuilder',
+      files: [
+        { content: metadataBuilderSourceCode, fileName: 'apis/metadataBuilder.d.ts' },
+        { content: metadataSourceCode, fileName: 'apis/metadata.d.ts' }
+      ],
     };
     return Promise.resolve(definition);
   });

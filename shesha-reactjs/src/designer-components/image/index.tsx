@@ -17,9 +17,22 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
 import { useTheme } from 'antd-style';
 
-export interface IImageProps extends IConfigurableFormComponent, IFormItem {
+
+export interface IImageStyleProps {
   height?: number | string;
   width?: number | string;
+  objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none';
+  objectPosition?: string;
+  filter?: string;
+  borderSize?: number;
+  borderRadius?: number;
+  borderType?: string;
+  borderColor?: string;
+  stylingBox?: string;
+  opacity?: number;
+  style?: string;
+}
+export interface IImageProps extends IConfigurableFormComponent, IFormItem, IImageStyleProps {
   url?: string;
   storedFileId?: string;
   base64?: string;
@@ -30,15 +43,6 @@ export interface IImageProps extends IConfigurableFormComponent, IFormItem {
   allowPreview?: boolean;
   allowedFileTypes?: string[];
   alt?: string;
-  objectFit?: 'fill' | 'contain' | 'cover' | 'scale-down' | 'none';
-  objectPosition?: string;
-  filter?: string;
-  borderSize?: number;
-  borderRadius?: number;
-  borderType?: string;
-  borderColor?: string;
-  stylingBox?: string;
-  opacity?: number;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -48,7 +52,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
   name: 'Image',
   icon: <FileImageOutlined />,
   isInput: true,
-
+  isOutput: true,
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { formSettings } = useForm();
@@ -148,10 +152,22 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     })
     .add<IImageProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
     .add<IImageProps>(4, (prev) => ({...prev, dataSource: prev.dataSource as any === 'storedFileId' ? 'storedFile' : prev.dataSource}))
+    .add<IImageProps>(5, (prev) => {
+      const styles: IImageStyleProps = {
+        width: prev.width,
+        height: prev.height,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        stylingBox: prev.stylingBox,
+        style: prev.style,
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  
 };
 
 export default ImageComponent;
