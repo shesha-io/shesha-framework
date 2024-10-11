@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import { getPropertySettingsFromValue } from './utils';
 import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
 import { Button } from 'antd';
@@ -13,12 +13,12 @@ import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
-export interface ISettingsControlProps {
+export interface ISettingsControlProps<Value = any> {
   propertyName: string;
   readOnly?: boolean;
-  value?: IPropertySetting;
+  value?: IPropertySetting<Value>;
   mode: PropertySettingMode;
-  onChange?: (value: IPropertySetting) => void;
+  onChange?: (value: IPropertySetting<Value>) => void;
   readonly children?: SettingsControlChildrenType;
   availableConstantsExpression?: string | GetAvailableConstantsFunc;
   resultTypeExpression?: string | GetResultTypeFunc;
@@ -39,7 +39,7 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "message", description: "message framework", type: "object" },
 ];
 
-export const SettingsControl: FC<ISettingsControlProps> = (props) => {
+export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>) => {
 
   const { styles } = useStyles();
   

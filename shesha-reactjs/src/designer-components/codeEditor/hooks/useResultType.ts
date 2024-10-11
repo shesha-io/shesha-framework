@@ -14,7 +14,7 @@ export type ResultTypeEvaluator = () => Promise<IMetadata>;
 export const useResultTypeEvaluator = (model: UseResultTypeEvaluatorArgs): ResultTypeEvaluator => {
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const shaFormInstance = useShaFormInstance();
+    const shaFormInstance = useShaFormInstance(false);
 
     const resultTypeExpression = Boolean(model.resultTypeExpression) && !isEmptyString(model.resultTypeExpression)
         ? model.resultTypeExpression
