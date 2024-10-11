@@ -308,4 +308,6 @@ export const ConfigurationFrameworkActions = {
   cancelVersion: itemCancelVersion,
   publish: publishItem,
   setReady: setItemReady,
+  createNewVersion: createNewVersion,
+  createNewVersionRequest: createNewVersionRequest,
 };

@@ -38,6 +38,8 @@ namespace Shesha.Authorization
                     return new AbpAuthorizationException(L("UserNotFound"));
                 case ShaLoginResultType.InvalidOTP:
                     return new AbpAuthorizationException(L("InvalidOTP"));
+                case ShaLoginResultType.ForbiddenFrontend:
+                    return new AbpAuthorizationException(L("ForbiddenFrontend"));
 
                 default: // Can not fall to default actually. But other result types can be added in the future and we may forget to handle it
                     Logger.Warn("Unhandled login fail reason: " + result);

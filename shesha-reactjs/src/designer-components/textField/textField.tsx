@@ -11,7 +11,7 @@ import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/pr
 import { FormMarkup } from '@/providers/form/models';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
-import { ITextFieldComponentProps, TextType } from './interfaces';
+import { ITextFieldComponentProps, IInputStyles, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -131,6 +131,24 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<ITextFieldComponentProps>(5, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        width: prev.width,
+        height: prev.height,
+        hideBorder: prev.hideBorder,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        fontSize: prev.fontSize,
+        fontColor: prev.fontColor,
+        backgroundColor: prev.backgroundColor,
+        stylingBox: prev.stylingBox,
+        style: prev.style,
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {

@@ -9,6 +9,8 @@ import { getEntitiesApiProperties } from './entities/metadata';
 import { ApplicationPluginRegistration } from '../context/applicationContext';
 import { getUtilsApiProperties } from './utils/metadata';
 import { getFormsApiProperties } from './forms/metadata';
+import { getNavigatorApiProperties } from './navigator/metadata';
+import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 
 
 export interface UseApplicationContextMetadataProps {
@@ -25,20 +27,22 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
   const metadataBuilderFactory = useMetadataBuilderFactory();
 
   const contextMetadata = useMemo<Promise<IModelMetadata>>(() => {
-    const builder = metadataBuilderFactory(SheshaCommonContexts.ApplicationContext);
-    builder
+    const metadataBuilder = metadataBuilderFactory();
+    const apiBuilder = metadataBuilder.object(SheshaCommonContexts.ApplicationContext) as IObjectMetadataBuilder;
+    apiBuilder
       .addObject("user", "Current User", getUserApiProperties)
       .addObject("settings", "Settings", m => getSettingsApiProperties(m, httpClient))
       .addObject("entities", "Entities", m => getEntitiesApiProperties(m, httpClient))
       .addObject("forms", "Forms", m => getFormsApiProperties(m))
       .addObject("utils", "Utils", m => getUtilsApiProperties(m))
+      .addObject("navigator", "Navigator", m => getNavigatorApiProperties(m))
       ;
 
     props.plugins.forEach(plugin => {
-      plugin.buildMetadata(builder);
+      plugin.buildMetadata(apiBuilder, metadataBuilder);
     });
 
-    const meta = builder.build();
+    const meta = apiBuilder.build();
 
     return Promise.resolve(meta);
     // eslint-disable-next-line react-hooks/exhaustive-deps

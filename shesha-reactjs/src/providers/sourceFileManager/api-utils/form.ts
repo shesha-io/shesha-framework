@@ -11,6 +11,13 @@ export interface ISetFormDataPayload {
   mergeValues: boolean;
 }
 
+export interface FormFullName {
+  readonly name: string;
+  readonly module?: string | null;
+}
+export type FormUid = string;
+export type FormIdentifier = FormFullName | FormUid;
+
 export interface IFormSettings {
   modelType?: string;
 };

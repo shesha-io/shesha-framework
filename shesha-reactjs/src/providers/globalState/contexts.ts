@@ -13,6 +13,11 @@ export interface IGlobalState {
   getStateByKey?: (key: string) => IAnyObject;
 }
 
-export const GlobalStateContext = createNamedContext<IGlobalState>(undefined, "GlobalStateContext");
+export interface IGlobalStateContext {
+  globalState: IGlobalState;
+  state: any;
+}
+
+export const GlobalStateContext = createNamedContext<IGlobalStateContext>(undefined, "GlobalStateContext");
 
 export type GlobalStateRerenderTrigger = () => void;

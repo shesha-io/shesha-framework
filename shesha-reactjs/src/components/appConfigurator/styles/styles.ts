@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) => {
+export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, token }) => {
     const shaConfigurableComponent = "sha-configurable-component";
     const shaConfigurableComponentSelected = "sha-configurable-component-selected";    
     const shaConfigurableComponentOverlay = "sha-configurable-component-overlay";
@@ -50,11 +50,11 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive }) =
           min-height: 30px;
       
           &:hover {
-            //border: 2px dashed #4099ff;
+            //border: 2px dashed ${token.colorPrimary};
           }
       
           &.${shaConfigurableComponentSelected} {
-            border: 2px dashed #4099ff;
+            border: 2px dashed ${token.colorPrimary};
           }
       
           .${shaConfigurableComponentOverlay} {

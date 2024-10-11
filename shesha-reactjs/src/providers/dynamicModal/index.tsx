@@ -1,6 +1,5 @@
 import { Modal } from 'antd';
 import React, { FC, PropsWithChildren, useContext, useReducer } from 'react';
-import { DynamicModal } from '@/components/dynamicModal';
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
@@ -20,6 +19,7 @@ import { IModalProps } from './models';
 import DynamicModalReducer from './reducer';
 import { nanoid } from '@/utils/uuid';
 import { migrateToV0 } from './migrations/ver0';
+import { DynamicModalRenderer } from './renderer';
 
 export interface IDynamicModalProviderProps { }
 
@@ -141,18 +141,14 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
   const getLatestVisibleInstance = () => {
     const { instances = {} } = state;
     const keys = Object.keys(instances);
-    let highestIndexKey = null;
+    let highestInstance = null;
 
     for (let i = 0; i < keys.length; i++) {
-      if (
-        instances[keys[i]]?.isVisible &&
-        (highestIndexKey === null || instances[keys[i]]?.index > instances[highestIndexKey]?.index)
-      ) {
-        highestIndexKey = keys[i];
-      }
+      const instance = instances[keys[i]];
+      if (instance?.isVisible && (highestInstance === null || instance?.index > highestInstance?.index))
+        highestInstance = instance;
     };
-
-    return highestIndexKey ? instances[highestIndexKey] : null;
+    return highestInstance;
   };
 
   //#region Close the latest Dialog
@@ -189,43 +185,12 @@ const DynamicModalProvider: FC<PropsWithChildren<IDynamicModalProviderProps>> = 
     return Boolean(state.instances[id]);
   };
 
-  const renderInstances = () => {
-    const rendered = [];
-    for (const id in state.instances) {
-      if (state.instances.hasOwnProperty(id)) {
-        const instance = state.instances[id];
-
-        const instanceProps = instance.props;
-        rendered.push(
-          <DynamicModalInstanceContext.Provider
-            key={instance.id}
-            value={{
-              instance,
-              close: () => {
-                removeModal(instance.id);
-              }
-            }}
-          >
-            <DynamicModal {...instanceProps} key={instance.id} id={instance.id} isVisible={instance.isVisible} />
-          </DynamicModalInstanceContext.Provider>
-        );
-      }
-    }
-    return rendered;
-  };
-
   return (
     <DynamicModalStateContext.Provider value={state}>
-      <DynamicModalActionsContext.Provider
-        value={{
-          open,
-          createModal,
-          removeModal,
-          modalExists,
-        }}
-      >
-        {renderInstances()}
-        {children}
+      <DynamicModalActionsContext.Provider value={{ open, createModal, removeModal, modalExists }} >
+        <DynamicModalRenderer id='root'>
+          {children}
+        </DynamicModalRenderer>
       </DynamicModalActionsContext.Provider>
     </DynamicModalStateContext.Provider>
   );

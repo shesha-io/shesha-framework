@@ -23,6 +23,7 @@ import {
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -96,6 +97,15 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
             : 'listItem',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IDropdownComponentProps>(7, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        stylingBox: prev.stylingBox,
+        style: prev.style,
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;

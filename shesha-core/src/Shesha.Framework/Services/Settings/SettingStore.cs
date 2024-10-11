@@ -84,10 +84,12 @@ namespace Shesha.Services.Settings
             definition.Category = input.Category;
             definition.IsUserSpecific = input.IsUserSpecific;
             definition.ClientAccess = input.ClientAccess;
-
+            
             definition.Normalize();
 
             await Repository.InsertAsync(definition);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             return definition;
         }

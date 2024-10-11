@@ -65,5 +65,7 @@ namespace Shesha.Domain
         public virtual string Parent { get; set; }
 
         public virtual bool Hidden { get; set; }
+
+        public virtual string Md5 { get; set; }
     }
 }
