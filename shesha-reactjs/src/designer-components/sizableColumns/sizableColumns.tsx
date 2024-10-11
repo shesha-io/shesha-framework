@@ -28,7 +28,12 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     return (
       <ParentProvider model={model}>
-        <SizableColumns cursor="col-resize" style={style} sizes={columns.map((col) => col.size)}>
+        <SizableColumns
+          key={`split-${columns?.length}`}
+          cursor="col-resize"
+          style={style}
+          sizes={columns?.map((col) => col.size)}
+        >
           {columns &&
             columns.map((col) => (
               <Fragment key={col.id}>
