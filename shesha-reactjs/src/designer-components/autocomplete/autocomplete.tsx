@@ -1,5 +1,5 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { message, theme } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, Key } from 'react';
 import { Autocomplete, IAutocompleteProps, ISelectOption } from '@/components/autocomplete';
@@ -31,6 +31,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
 import { IInputStyles } from '../textField/interfaces';
+import { useTheme } from 'antd-style';
 
 interface IQueryParams {
   // tslint:disable-next-line:typedef-whitespace
@@ -48,6 +49,7 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
   icon: <FileSearchOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
+    const theme = useTheme();
     const { queryParams, filter } = model;
     const form = useForm();
     const { data } = useFormData();
@@ -177,8 +179,8 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       fontWeight: model.fontWeight,
       borderWidth: model.hideBorder ? '0px' : model.borderSize, //this is handled in the entityAutcomplete.tsx
       borderRadius: model.borderRadius,
-      borderStyle: model.hideBorder ? 'none' : model.borderType,
-      borderColor: model.borderColor,
+      borderStyle: model.hideBorder ? 'none' : (model.borderType || 'solid'),
+      borderColor: model.borderColor || theme.colorBorder,
       backgroundColor: model.backgroundColor,
       fontSize: model.fontSize,
       overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
