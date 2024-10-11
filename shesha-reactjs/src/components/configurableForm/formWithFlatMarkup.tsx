@@ -1,5 +1,5 @@
 import { IFlatComponentsStructure, IFormActions, IFormSections, IFormSettings, IPersistedFormProps } from '@/providers/form/models';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { FormProvider } from '@/providers/form';
 import Show from '../show';
@@ -48,9 +48,12 @@ export const FormWithFlatMarkup: FC<IFormWithFlatMarkupProps> = (props) => {
 
   const showFormInfo = Boolean(persistedFormProps) && formInfoBlockVisible && formStatusInfo && !!auth?.loginInfo;
 
-  setTimeout(()=>{
-    setFormInfoPanelShowing(false);
-  }, 3000);
+  useEffect(()=>{
+    setTimeout(()=>{
+      setFormInfoPanelShowing(false);
+    }, 3000);
+  },[])
+
 
   return (
     <ParentProvider model={{}} formMode={shaForm.formMode} formFlatMarkup={formFlatMarkup} isScope >
