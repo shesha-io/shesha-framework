@@ -27,7 +27,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                 const hasVisibleComponents = Array.isArray(filteredComponents)
                     ? filteredComponents.some(comp => !comp.hidden)
                     : !!filteredComponents;
-
                 return {
                     ...tab,
                     label: <div style={{ display: 'flex', gap: '5px', verticalAlign: 'middle', flexDirection: 'row-reverse', alignItems: 'baseline' }}>
@@ -45,7 +44,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                 };
             })
             .filter(tab => !tab.hidden);
-
         setFilteredTabs(newFilteredTabs);
     }, [searchQuery, tabs]);
 

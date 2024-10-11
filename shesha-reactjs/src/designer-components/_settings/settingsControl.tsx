@@ -50,7 +50,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
       return Promise.reject("AvailableConstantsExpression is mandatory");
 
     const metadataBuilder = metadataBuilderFactory();
-  
+
     return executeScript<IObjectMetadata>(props.availableConstantsExpression, { data: formData, metadataBuilder });
   }, [props.availableConstantsExpression, metadataBuilderFactory, formData]);
 
@@ -108,7 +108,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
         className={`${styles.jsSwitch} inlineJS`}
         type='text'
         danger={mode === 'value' && !!code}
-        ghost
+        // ghost
         size='small'
         icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
         color='lightslategrey'

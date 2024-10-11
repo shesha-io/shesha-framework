@@ -54,7 +54,6 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
                 onChange({ unit, value: value?.value || '' });
             }}
             className={styles.unitSelector}
-            removeIcon={<></>}
         >
             {units.map(unit => (
                 <Option key={unit} value={unit} >{unit}</Option>
@@ -67,7 +66,7 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
 
     switch (type) {
         case 'color':
-            return <ColorPicker size={size} value={value?.color ?? value} readOnly={readOnly} allowClear onChange={onChange} />;
+            return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} />;
         case 'dropdown':
             return <Select
                 size={size}
@@ -111,14 +110,14 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
     }
 };
 
-export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting = true, description }) => {
+export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting = true, description, value }) => {
     const { searchQuery } = useSearchQuery();
 
     if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
         return (
             <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
-                <FormItem name={`${property}`} hideLabel={hideLabel} label={label} jsSetting={jsSetting} readOnly={readOnly} layout={type === 'switch' ? 'horizontal' : undefined}>
-                    {children ? children : <InputComponent size='small' label={label} type={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} />}
+                <FormItem name={`${property}`} hideLabel={hideLabel} label={label} jsSetting={jsSetting} readOnly={readOnly} layout={type === 'switch' ? 'horizontal' : 'vertical'}>
+                    {children ? children : <InputComponent size='small' label={label} type={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} value={value} />}
                 </FormItem>
             </div>
         );
@@ -133,22 +132,21 @@ interface InputRowProps {
 }
 
 export const InputRow: React.FC<InputRowProps> = ({ inputs }) => {
+    const { searchQuery } = useSearchQuery();
+    const filteredInputs = inputs.filter(input => input.label.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return (
+    return filteredInputs.length > 0 ? (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px' }}>
             {inputs.map((props) => (
                 <SettingInput key={props.label} {...props} />
             ))}
-        </div>
-    );
+        </div>) : null;
 };
 
 export const searchFormItems = (children: React.ReactNode, searchQuery: string): React.ReactNode => {
-
     if (!searchQuery) return children;
 
     return React.Children.map(children, (child) => {
-
         if (!React.isValidElement(child)) return null;
 
         if (child.key === null && !child.props.children) return child;
@@ -169,17 +167,30 @@ export const searchFormItems = (children: React.ReactNode, searchQuery: string):
 };
 
 export const filterDynamicComponents = (components, query) => {
-
     const filterResult = components.map(c => {
-        if (!c.label) return c;
+        if (!c.label && !c.components) return c;
 
-        return ({
-            ...c,
-            className: [c.className,],
-            hidden: !c.label?.toLowerCase().includes(query.toLowerCase()),
-            components: c.components ? filterDynamicComponents(c.components, query) : undefined
-        });
+        let filteredComponent = { ...c };
+
+        // If the component has child components, filter them recursively
+        if (c.components) {
+            filteredComponent.components = filterDynamicComponents(c.components, query);
+        }
+
+        // Determine if this component should be hidden
+        const shouldHideComponent =
+            (c.label && !c.label.toLowerCase().includes(query.toLowerCase())) ||
+            (filteredComponent.components && filteredComponent.components.length === 0);
+
+        filteredComponent.hidden = shouldHideComponent;
+        filteredComponent.className = [c.className, shouldHideComponent ? 'hidden' : ''].filter(Boolean).join(' ');
+
+        return filteredComponent;
     });
 
-    return filterResult.filter(c => !c.hidden);
+    // Remove null components and hidden components without children
+    return filterResult.filter(c =>
+        c !== null &&
+        (!c.hidden || (c.components && c.components.length > 0))
+    );
 };

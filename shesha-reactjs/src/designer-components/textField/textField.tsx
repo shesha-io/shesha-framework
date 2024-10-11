@@ -84,10 +84,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
         const style = await getBackgroundStyle(background, storedImageUrl);
         setBackgroundStyles(style);
-      }
+      };
 
       fetchStyles();
-    }, [background, background?.gradient?.colors, background, backendUrl, httpHeaders]);
+    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
     if (model?.styles?.background?.type === 'storedFile' && model?.styles?.background.storedFile?.id && !isValidGuid(model.styles.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
@@ -136,8 +136,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       moment,
       setGlobalState,
     };
-
-    console.log("Model: ", model);
 
     return (
       <ConfigurableFormItem

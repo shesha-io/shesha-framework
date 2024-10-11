@@ -1,6 +1,6 @@
-import { Button, Form, Input, Row, Tag } from 'antd';
+import { Button, Input, Row, Tag } from 'antd';
 import { Autocomplete } from '@/components/autocomplete';
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useEffect } from 'react';
 import SizeAndRepeat from './sizeAndRepeat';
 import FormItem from '@/designer-components/_settings/components/formItem';
 import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
@@ -8,8 +8,8 @@ import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
 import { PlusOutlined } from '@ant-design/icons';
 import { IBackgroundValue } from './interfaces';
 import { useTheme } from '@/index';
-import { nanoid } from 'nanoid';
 import { removeNullUndefined } from '@/providers/utils';
+import { nanoid } from '@/utils/uuid';
 interface IBackgroundProps {
     value?: any;
     readOnly?: boolean;
@@ -19,10 +19,17 @@ interface IBackgroundProps {
 const BackgroundComponent: FC<IBackgroundProps> = (props) => {
     const { value = {}, readOnly, onChange } = props;
     const { theme } = useTheme();
+    const [colors, setColors] = React.useState<{}>(value?.background?.gradient?.colors || {});
+    useEffect(() => {
+        if (!value?.background?.gradient?.colors) {
+            setColors({ 1: theme.application.primaryColor, 2: '#fff' });
+            onChange({ ...value, background: { ...value?.background, gradient: { ...value?.background?.gradient, colors: { 1: theme.application.primaryColor, 2: '#fff' } } } });
+        }
+    }, []);
+
 
     const background = value || { gradient: { colors: [] } };
     const { gradient } = background;
-    const colors = useMemo(() => (gradient?.colors || { 1: theme.application.primaryColor, 2: '#fff' }), [gradient?.colors, theme.application.primaryColor]);
 
     const renderBackgroundInput = (type: IBackgroundValue['type']) => {
         switch (type) {
@@ -38,7 +45,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                             dropdownOptions={gradientDirectionOptions}
                         />
 
-                        <Row gutter={[8, 8]}>
+                        <Row>
                             {Object.entries(colors).map(([id, color]) => {
                                 return (
                                     <Tag
@@ -48,7 +55,8 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                         onClose={() => {
                                             const newColors = { ...gradient.colors };
                                             delete newColors[id];
-                                            onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: removeNullUndefined(newColors) } } });
+                                            setColors(removeNullUndefined(newColors));
+                                            onChange({ ...value, background: { ...background, gradient: { ...gradient?.colors, colors: removeNullUndefined(newColors) } } });
                                         }}
                                         style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', width: 'max-content' }}
                                     >
@@ -63,10 +71,13 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                 onClick={() => {
                                     const id = nanoid();
                                     const newColor = '#000000';
+                                    setColors({ ...colors, [id]: newColor });
                                     onChange({ ...value, background: { ...background, gradient: { ...gradient, colors: { ...gradient?.colors, [id]: newColor } } } });
                                 }}
                                 icon={<PlusOutlined />}
-                            >Add Color</Button>
+                            >
+                                Add Color
+                            </Button>
                         </Row>
                     </>
                 );

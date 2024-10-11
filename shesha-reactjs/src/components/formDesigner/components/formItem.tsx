@@ -125,6 +125,8 @@ const ConfigurableFormItem: FC<IConfigurableFormItemProps> = ({
     labelCol: layout?.labelCol,
     wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
     name: model.context ? undefined : getFieldNameFromExpression(propName),
+    size: model.size,
+    layout: model.layout,
   };
 
   if (typeof children === 'function') {

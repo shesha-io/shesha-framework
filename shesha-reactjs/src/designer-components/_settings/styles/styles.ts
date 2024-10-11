@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, responsive, prefixCls, token }) => {
 
     const jsSwitch = cx(css`
         position: absolute;
@@ -9,7 +9,7 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
             display: flex;
             justify-content: center;
             align-items: center;
-            color: lightslategrey;
+            color: ${token.colorPrimary};
             max-width: 100%;
             ${responsive.mobile} {
                 right: auto;
@@ -53,11 +53,13 @@ export const useStyles = createStyles(({ css, cx, responsive, prefixCls }) => {
 
     const unitSelector = cx(css`
         .ant-select-selector {
-        padding: 1px 2px !important;
+        padding: 0 !important;
+        padding-inline-end: 5px !important;
+        align-self: auto !important;
+        line-height: auto !important;
+        align-self: top !important;
+        padding-left: 0 !important;
     }
-        .ant-select-arrow {
-            margin-left: 2px !important;
-        }
     `);
 
     return {

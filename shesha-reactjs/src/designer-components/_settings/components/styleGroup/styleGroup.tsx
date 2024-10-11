@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
-import { ConfigProvider, Collapse, CollapseProps } from 'antd';
+import { ConfigProvider, CollapseProps } from 'antd';
 import BorderComponent from '../../../styleBorder/borderComponent';
 import BackgroundComponent from '../../../styleBackground/background';
 import StyleBox from '../../../styleBox/components/box';
 import { IDropdownOption, SettingInput } from '../utils';
-import FormItem from '../formItem';
 import { IBorderValue } from '@/designer-components/styleBorder/interfaces';
 import { IBackgroundValue } from '@/designer-components/styleBackground/interfaces';
 import { IDimensionsValue } from '@/designer-components/styleDimensions/interfaces';
@@ -13,6 +12,7 @@ import FontComponent from '@/designer-components/styleFont/fontComponent';
 import SizeComponent from '@/designer-components/styleDimensions/sizeComponent';
 import ShadowComponent from '@/designer-components/styleShadow/shadowComponent';
 import { IFontValue } from '@/designer-components/styleFont/interfaces';
+import { CollapsiblePanel } from '@/components';
 
 export type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
 
@@ -32,7 +32,7 @@ export interface IStyleGroupType {
     readOnly?: boolean;
 }
 
-const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value }) => {
+const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value, readOnly }) => {
 
     const fontValue: IFontValue = useMemo(() => value?.font, [value?.font]);
 
@@ -83,15 +83,17 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
                 <>
                     <SettingInput label="Size" property='size' readOnly={false} type='dropdown' description="The size of the element" dropdownOptions={sizeOptions} />
                     <SettingInput label="Style" property='style' readOnly={false} type='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
-                    <FormItem name="stylingBox" jsSetting={false}>
+                    <SettingInput property="stylingBox" jsSetting={false} label="margin padding" hideLabel readOnly={readOnly}>
                         <StyleBox />
-                    </FormItem>
+                    </SettingInput>
                 </>
+
             )
         }
-    ].filter(item => !omitted.map(omit => omit.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase())).map((item, index) => ({ ...item, key: index.toString(), label: <span style={{ fontWeight: 700 }}>{item.label}</span> }));
-
-    const activateAllStylePanels = items.map(panel => panel.key.toString());
+    ].filter(item => {
+        return !omitted.map(omit => omit.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase());
+    }
+    ).map((item, index) => ({ ...item, key: index.toString(), label: <span style={{ fontWeight: 700 }}>{item.label}</span> }));
 
     return (
         <ConfigProvider
@@ -110,10 +112,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
                 },
             }}
         >
-            <Collapse
-                defaultActiveKey={activateAllStylePanels}
-                items={items}
-            />
+            {items.map(item => <CollapsiblePanel ghost={true} hideWhenEmpty={true} key={item.key} header={item.label}>{item.children}</CollapsiblePanel>)}
         </ConfigProvider>
     );
 };
