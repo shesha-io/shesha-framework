@@ -15,7 +15,7 @@ export type ConstantsEvaluator = () => Promise<IObjectMetadata>;
 export const useConstantsEvaluator = (model: UseResultTypeEvaluatorArgs): ConstantsEvaluator => {
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const shaFormInstance = useShaFormInstance();
+    const shaFormInstance = useShaFormInstance(false);
 
     const availableConstantsExpression = Boolean(model.availableConstantsExpression) && !isEmptyString(model.availableConstantsExpression)
         ? model.availableConstantsExpression
