@@ -33,15 +33,17 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
           <Input readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
-        <SettingsFormItem name="modalFormId" label="Render Form" jsSetting>
-          <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+      <SettingsFormItem name="modalFormId" label="Render Form" jsSetting>
+        <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
+      </SettingsFormItem>
+      <MetadataProvider dataType="entity" modelType={values?.entityType?.id}>
+        <SettingsFormItem name="groupingProperty" label="Grouping property" jsSetting>
+          <PropertyAutocomplete readOnly={props.readOnly} autoFillProps={false} />
         </SettingsFormItem>
-        <MetadataProvider dataType='entity' modelType={values?.entityType?.id}>
-          <SettingsFormItem name="groupingProperty" label="Grouping property" jsSetting>
-            <PropertyAutocomplete readOnly={props.readOnly} autoFillProps={false} />
-          </SettingsFormItem>
-        </MetadataProvider>
-
+      </MetadataProvider>
+      <SettingsFormItem name="maxResultCount" label="Max Result Count" jsSetting>
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
       <SettingsCollapsiblePanel header="Columns">
         <SettingsFormItem name="referenceList" label="Reference List" style={{ width: '100%' }}>
           <Autocomplete
@@ -80,12 +82,15 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
         </SettingsFormItem>
 
         <Show when={values.allowEdit}>
-          <MetadataProvider modelType={values.entityType?.name}  id={nanoid()}>
+          <MetadataProvider modelType={values.entityType?.name} id={nanoid()}>
             <SettingsFormItem name="editFormId" label="Edit Form" jsSetting>
               <FormAutocomplete readOnly={readOnly} convertToFullId={true} />
             </SettingsFormItem>
           </MetadataProvider>
         </Show>
+        <SettingsFormItem name="allowDelete" label="Allow Delete" valuePropName="checked" jsSetting>
+          <Checkbox disabled={values.readOnly} />
+        </SettingsFormItem>
       </Show>
       <SettingsFormItem name="showIcons" label="Show Icons" valuePropName="checked" jsSetting>
         <Checkbox disabled={values.readOnly} />
@@ -121,6 +126,15 @@ const KanbanSettings: FC<ISettingsFormFactoryArgs<IKanbanProps>> = (props) => {
           <Input type="number" disabled={readOnly} />
         </SettingsFormItem>
         <SettingsFormItem name="maxHeight" label="Max Height" jsSetting>
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+        <SettingsFormItem name="width" label="Width" jsSetting>
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+        <SettingsFormItem name="minWidth" label="Min Width" jsSetting>
+          <Input type="number" disabled={readOnly} />
+        </SettingsFormItem>
+        <SettingsFormItem name="maxWidth" label="Max Width" jsSetting>
           <Input type="number" disabled={readOnly} />
         </SettingsFormItem>
         <SettingsFormItem name="columnBackgroundColor" label="Background Color" jsSetting>

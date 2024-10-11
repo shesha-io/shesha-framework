@@ -82,8 +82,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
       onClick: toggleFold,
       icon: isCollapsed ? <RightOutlined /> : <LeftOutlined />,
     },
-  ].filter(Boolean); // Filter out any items that are `false` or `undefined`
-  
+  ].filter(Boolean); 
   return (
     <>
       {!column.hidden && (
@@ -94,7 +93,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
           data-column-id={column.id}
         >
           <Flex
-            justify={props.kanbanReadonly || props.readonly ? 'center' : 'space-between'} // Apply space-between when editable (settings dropdown exists)
+            justify={props.kanbanReadonly || props.readonly ? 'center' : 'space-between'}
             align="center"
             className={styles.combinedHeaderStyle}
             style={{ ...(getStyle(props.headerStyles, formData) || {}) }}
@@ -149,12 +148,12 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
               ) : (
                 columnTasks.map((t) => {
                   const taskDropdownItems: MenuProps['items'] = [
-                    {
+                    props.allowEdit && {
                       key: '1',
                       label: 'Edit',
                       onClick: () => handleEditClick(t),
                     },
-                    {
+                    props.allowDelete && {
                       key: '2',
                       label: (
                         <Popconfirm
@@ -167,7 +166,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                         </Popconfirm>
                       ),
                     },
-                  ];
+                  ].filter(Boolean);
                   return (
                     <div key={t.id} className={styles.taskContainer} data-id={t.id}>
                       <ConfigurableForm
@@ -177,9 +176,11 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                         mode={'readonly'}
                         className={styles.taskContainer}
                       />
-                      <Dropdown trigger={['click']} menu={{ items: taskDropdownItems }} placement="bottomRight">
-                        <Button type="text" className={`${styles.threeDots} three-dots`} icon={<MoreOutlined />} />
-                      </Dropdown>
+                      {props.kanbanReadonly || props.readonly ? null : (
+                        <Dropdown trigger={['click']} menu={{ items: taskDropdownItems }} placement="bottomRight">
+                          <Button type="text" className={`${styles.threeDots} three-dots`} icon={<MoreOutlined />} />
+                        </Dropdown>
+                      )}
                     </div>
                   );
                 })

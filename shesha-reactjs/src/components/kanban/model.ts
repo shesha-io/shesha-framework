@@ -46,4 +46,8 @@ export interface IKanbanProps extends IConfigurableFormComponent {
   componentName: string;
   editFormId: string;
   allowEdit: boolean;
+  allowDelete: boolean;
+  maxResultCount: number;
+  maxWidth: number;
+  minWidth: number;
 }
