@@ -1,4 +1,4 @@
-import { useForm } from '@/providers/form';
+import { useFormState } from '@/providers/form';
 import { useSubForm } from '@/providers/subForm';
 
 /**
@@ -6,7 +6,7 @@ import { useSubForm } from '@/providers/subForm';
  * If the item is rendered within the SubForm, the value that gets returned is the value of the SubForm, else it will the main form's data
  */
 export const useFormData = () => {
-  const form = useForm(false);
+  const form = useFormState(false);
   const subForm = useSubForm(false);
 
   const data = subForm?.value ?? form?.formData;

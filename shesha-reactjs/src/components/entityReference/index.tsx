@@ -32,7 +32,7 @@ import {
 import { useStyles } from './styles/styles';
 import { isPropertiesArray } from '@/interfaces/metadata';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { getStyle } from '@/providers/form/utils';
+import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
 import { getFormApi } from '@/providers/form/formApi';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
@@ -95,6 +95,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { getEntityFormId } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { getMetadata } = useMetadataDispatcher();
+  const executionContext = useAvailableConstantsData();
 
   const [formIdentifier, setFormIdentifier] = useState<FormIdentifier>(
     props.formSelectionMode === 'name' ? props.formIdentifier : null
@@ -191,6 +192,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     };
 
     const evaluationContext = {
+      ...executionContext,
       entityReference: { id: entityId, entity: props.value },
       data: formData,
       moment: moment,

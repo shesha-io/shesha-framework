@@ -18,6 +18,8 @@ const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
   type: 'styleBox',
   name: 'Style Box',
   icon: <StrikethroughOutlined />,
+  isInput: true,
+  isOutput: true,
   canBeJsSetting: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   Factory: ({ model: passedModel }) => {

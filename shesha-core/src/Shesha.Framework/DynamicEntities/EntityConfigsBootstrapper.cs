@@ -15,6 +15,8 @@ using Shesha.JsonEntities;
 using Shesha.Metadata;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
+using Shesha.Services;
+using Shesha.Startup;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -35,6 +37,7 @@ namespace Shesha.DynamicEntities
         private readonly IEntityConfigurationStore _entityConfigurationStore;
         private readonly IAssemblyFinder _assembleFinder;
         private readonly IHardcodeMetadataProvider _metadataProvider;
+        private readonly IApplicationStartupSession _startupSession;
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
@@ -45,7 +48,8 @@ namespace Shesha.DynamicEntities
             IRepository<EntityProperty, Guid> entityPropertyRepository,
             IHardcodeMetadataProvider metadataProvider,
             IModuleManager moduleManager,
-            IUnitOfWorkManager unitOfWorkManager)
+            IUnitOfWorkManager unitOfWorkManager,
+            IApplicationStartupSession startupSession)
         {
             _entityConfigRepository = entityConfigRepository;
             _entityConfigurationStore = entityConfigurationStore;
@@ -54,6 +58,7 @@ namespace Shesha.DynamicEntities
             _metadataProvider = metadataProvider;
             _moduleManager = moduleManager;
             _unitOfWorkManager = unitOfWorkManager;
+            _startupSession = startupSession;
         }
 
         [UnitOfWork(IsDisabled = true)]
@@ -63,11 +68,15 @@ namespace Shesha.DynamicEntities
 
             var assemblies = _assembleFinder.GetAllAssemblies()
                 .Distinct(new AssemblyFullNameComparer())
-                .Where(a => !a.IsDynamic &&
-                            a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
+                .Where(a => !a.IsDynamic
+                            && a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t) && t != typeof(JsonEntity))
                 )
                 .ToList();
-            Logger.Warn($"Found {assemblies.Count()} assemblies to bootstrap");
+
+            var all = assemblies.Count();
+            Logger.Warn($"Found {all} assemblies to bootstrap");
+            assemblies = assemblies.Where(x => !_startupSession.AssemblyStaysUnchanged(x)).ToList();
+            Logger.Warn($"{all - assemblies.Count()} assemblies skipped as unchanged");
 
             foreach (var assembly in assemblies)
             {

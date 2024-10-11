@@ -2,10 +2,8 @@ import columnSettingsJson from './columnSettings.json';
 import React, {
   FC,
   useEffect,
-  useRef,
 } from 'react';
 import { ConfigurableForm } from '@/components';
-import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { Form } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
 import { ColumnsItemProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
@@ -13,11 +11,13 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { useDebouncedCallback } from 'use-debounce';
 import { sheshaStyles } from '@/styles';
 import { usePrevious } from 'react-use';
+import { IMetadataContext } from '@/providers/metadata/contexts';
 
 export interface IColumnPropertiesProps { 
   item?: ColumnsItemProps;
   onChange?: (item: ColumnsItemProps) => void;
   readOnly: boolean;
+  metadata?: IMetadataContext;
 }
 
 export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, readOnly }) => {
@@ -37,8 +37,6 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       }
     }
   }, [columnType]);
-
-  const formRef = useRef<ConfigurableFormInstance>(null);
 
   const debouncedSave = useDebouncedCallback(
     (values) => {
@@ -64,7 +62,6 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
 
   return (
     <ConfigurableForm
-      formRef={formRef}
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
@@ -80,5 +77,3 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
   );
 
 };
-
-export default ColumnProperties;

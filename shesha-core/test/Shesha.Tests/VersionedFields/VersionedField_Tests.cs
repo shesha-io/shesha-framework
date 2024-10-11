@@ -18,7 +18,7 @@ namespace Shesha.Tests.VersionedFields
         }
 
         [Fact]
-        public async Task ReadWrite_Test()
+        public async Task ReadWrite_TestAsync()
         {
             try 
             {

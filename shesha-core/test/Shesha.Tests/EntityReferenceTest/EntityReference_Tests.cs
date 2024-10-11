@@ -2,8 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Timing;
-using DocumentFormat.OpenXml.Vml.Office;
-using Newtonsoft.Json;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities;
@@ -12,9 +10,6 @@ using Shesha.Extensions;
 using Shesha.NHibernate;
 using Shesha.NHibernate.Session;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Xunit;
 using static Shesha.Tests.JsonEntity.JsonEntity_Tests;
@@ -26,9 +21,7 @@ namespace Shesha.Tests.EntityReferenceTest
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<Organisation, Guid> _organisationRepository;
-        //private readonly IRepository<EntityRef, Guid> _entityRefRepository;
         private readonly IRepository<ComplexTestString, Guid> _jsonStringRepository;
-        //private readonly IRepository<ComplexPersonTest, Guid> _jsonPersonRepository;
         private readonly IEntityModelBinder _entityModelBinder;
         private readonly IRepository<Module, Guid> _moduleRepo;
 
@@ -37,9 +30,7 @@ namespace Shesha.Tests.EntityReferenceTest
             _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
             _personRepository = Resolve<IRepository<Person, Guid>>();
             _organisationRepository = Resolve<IRepository<Organisation, Guid>>();
-            //_entityRefRepository = Resolve<IRepository<EntityRef, Guid>>();
             _jsonStringRepository = Resolve<IRepository<ComplexTestString, Guid>>();
-            //_jsonPersonRepository = Resolve<IRepository<ComplexPersonTest, Guid>>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
 
             _moduleRepo = Resolve<IRepository<Module, Guid>>();
@@ -60,7 +51,7 @@ namespace Shesha.Tests.EntityReferenceTest
         }
 
         [Fact]
-        public async Task TestGnericEntityReferenceConvert()
+        public async Task TestGnericEntityReferenceConvertAsync()
         {
             LoginAsHostAdmin();
 
@@ -78,7 +69,7 @@ namespace Shesha.Tests.EntityReferenceTest
         }
 
         [Fact]
-        public async Task TestGnericEntityReference()
+        public async Task TestGnericEntityReferenceAsync()
         {
             LoginAsHostAdmin();
 
@@ -106,7 +97,7 @@ namespace Shesha.Tests.EntityReferenceTest
         }
 
         [Fact]
-        public async Task CheckUow()
+        public async Task CheckUowAsync()
         {
             LoginAsHostAdmin();
 
@@ -140,71 +131,5 @@ namespace Shesha.Tests.EntityReferenceTest
                 await uow.CompleteAsync();
             }
         }
-
-        /*        [Table("Test_EntityRef")]
-                public class EntityRef : Entity<Guid>
-                {
-                    public GenericEntityReference AnyEntity { get; set; }
-
-                    public GenericEntityReference MyEntity { get; set; }
-
-                }
-
-                [Fact]
-                public async Task CheckUserType()
-                {
-                    LoginAsHostAdmin();
-
-                    using (var uow = _unitOfWorkManager.Begin())
-                    {
-                        EntityRef er = _entityRefRepository.GetAll().FirstOrDefault();
-
-                        Entity<Guid> anyEntity = er.AnyEntity;
-
-                        if (anyEntity is Person person)
-                        {
-
-                        }
-                        if (anyEntity is Organisation organisation)
-                        {
-
-                        }
-
-                        var entity = (Person)er.AnyEntity;
-
-                        if (anyEntity is Person person2)
-                        {
-                            var name = person2.FullName;
-                        }
-
-                        var org = _organisationRepository.GetAll().FirstOrDefault();
-
-                        GenericEntityReference eref = org;
-                        er.AnyEntity = org;
-                        _entityRefRepository.InsertOrUpdate(er);
-
-                        uow.Complete();
-                    }
-                }
-
-                [Fact]
-                public async Task CheckMuliProp()
-                {
-                    LoginAsHostAdmin();
-
-                    using (var uow = _unitOfWorkManager.Begin())
-                    {
-                        EntityRef er = _entityRefRepository.GetAll().FirstOrDefault();
-
-                        Entity<Guid> anyEntity = er.AnyEntity;
-
-                        er.MyEntity = anyEntity;
-
-                        _entityRefRepository.InsertOrUpdate(er);
-
-                        uow.Complete();
-                    }
-                }
-        */
     }
 }

@@ -29,12 +29,12 @@ namespace Shesha.Test
 
     public interface IComplexTestHardAppService : IApplicationService
     {
-        Task CheckData(ValidateDto dto);
+        Task CheckDataAsync(ValidateDto dto);
     }
 
     public class Aaaaaaa : ApplicationService, IComplexTestHardAppService, ITransientDependency
     {
-        public virtual Task CheckData(ValidateDto dto)
+        public virtual Task CheckDataAsync(ValidateDto dto)
         {
             throw new NotImplementedException();
         }
@@ -54,7 +54,7 @@ namespace Shesha.Test
         }
 
         [HttpGet]
-        public object GetDifferentEntitiesAsync()
+        public object GetDifferentEntities()
         {
             var list = new List<object>();
 
@@ -68,7 +68,7 @@ namespace Shesha.Test
         }
 
         [HttpGet]
-        public Task<List<object>> CheckGenericEntity()
+        public Task<List<object>> CheckGenericEntityAsync()
         {
             var entities = Repository.GetAll().Where(x => x.AnyEntity != null).ToList();
             var entity = entities.FirstOrDefault(x => x.AnyEntity._className == typeof(Person).FullName && x.AnyEntity.Id == "b3b60f2e-5b88-4f44-b8eb-d3987a8483d9");
@@ -88,7 +88,7 @@ namespace Shesha.Test
 
 
         [HttpGet]
-        public Task<JObject> CheckJObject()
+        public Task<JObject> CheckJObjectAsync()
         {
             var obj = new JObject();
             obj.Add(new JProperty("name", "Shurik"));
@@ -104,13 +104,13 @@ namespace Shesha.Test
         }
 
         [HttpGet]
-        public virtual Task CheckData(ValidateDto dto)
+        public virtual Task CheckDataAsync(ValidateDto dto)
         {
             return Task.CompletedTask;
         }
 
         [HttpGet]
-        public async Task CreateDate()
+        public async Task CreateDateAsync()
         {
 
             var o = new ComplexTest()
@@ -141,7 +141,7 @@ namespace Shesha.Test
                     LastName = "22222",
                     //Person = _personRepository.Get(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
                 },
-                AnyEntity = _personRepository.Get(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
+                AnyEntity = await _personRepository.GetAsync(Guid.Parse("B3B60F2E-5B88-4F44-B8EB-D3987A8483D9"))
             };
             await Repository.InsertOrUpdateAsync(o);
 
@@ -179,13 +179,13 @@ namespace Shesha.Test
         }
 
         [HttpGet]
-        public async Task CreateTable()
+        public async Task CreateTableAsync()
         {
             var connStr = NHibernateUtilities.ConnectionString;
 
             using (var con = new SqlConnection(connStr))
             {
-                con.Open();
+                await con.OpenAsync();
                 var backupCommand = new SqlCommand(@"
                     CREATE TABLE [dbo].[Test_ComplexTest](
 	                    [Id] [uniqueidentifier] NOT NULL,
@@ -208,13 +208,13 @@ namespace Shesha.Test
         }
 
         [HttpGet]
-        public async Task DeleteTable()
+        public async Task DeleteTableAsync()
         {
             var connStr = NHibernateUtilities.ConnectionString;
 
             using (var con = new SqlConnection(connStr))
             {
-                con.Open();
+                await con.OpenAsync();
                 var backupCommand = new SqlCommand("DROP TABLE [dbo].[Test_ComplexTest]", con);
                 await backupCommand.ExecuteNonQueryAsync();
             }

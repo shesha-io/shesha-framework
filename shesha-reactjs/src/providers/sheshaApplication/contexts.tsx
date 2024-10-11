@@ -2,7 +2,7 @@ import IRequestHeaders from '@/interfaces/requestHeaders';
 import { IDictionary, IToolboxComponentGroup } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
 
-export interface ISheshaRutes {
+export interface ISheshaRoutes {
   formsDesigner: string;
 }
 
@@ -16,12 +16,12 @@ export interface ISheshaApplicationStateContext {
   backendUrl: string;
   httpHeaders: IHttpHeadersDictionary;
   formDesignerComponentGroups?: IToolboxComponentGroup[];
-  routes: ISheshaRutes;
+  routes: ISheshaRoutes;
   globalVariables?: { [key in string]: any };
   formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
 }
 
-export const DEFAULT_SHESHA_ROUTES: ISheshaRutes = {
+export const DEFAULT_SHESHA_ROUTES: ISheshaRoutes = {
   formsDesigner: '/shesha/forms-designer',
 };
 
@@ -47,7 +47,10 @@ export const DEFAULT_ACCESS_TOKEN_NAME = 'xDFcxiooPQxazdndDsdRSerWQPlincytLDCarc
 
 export const SheshaApplicationStateContext = createNamedContext<ISheshaApplicationStateContext>(
   SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
-  "SheshaApplicationStateContext"
+  'SheshaApplicationStateContext'
 );
 
-export const SheshaApplicationActionsContext = createNamedContext<ISheshaApplicationActionsContext | undefined>(undefined, "SheshaApplicationActionsContext");
+export const SheshaApplicationActionsContext = createNamedContext<ISheshaApplicationActionsContext | undefined>(
+  undefined,
+  'SheshaApplicationActionsContext'
+);

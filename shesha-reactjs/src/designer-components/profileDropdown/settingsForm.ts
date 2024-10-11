@@ -31,6 +31,60 @@ export const getSettings = (data: any) =>
               label: 'Hidden',
               parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
             })
+            .addTextField({
+              id: nanoid(),
+              propertyName: 'subText',
+              label: 'Sub Text',
+              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
+            })
+            .addButtons({
+              id: nanoid(),
+              propertyName: 'items',
+              label: 'Configure Menu Buttons',
+              parentId: 'dfce8149-b595-4686-8778-e93d1b82d1e5',
+            })
+            .toJson(),
+        ],
+      },
+    })
+    .addCollapsiblePanel({
+      id: nanoid(),
+      propertyName: "pnlStyle",
+      parentId: "root",
+      label: "Style",
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: "header",
+      content: {
+        id: '64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad',
+        components: [
+          ...new DesignerToolbarSettings()
+            .addCodeEditor({
+              id: nanoid(),
+              propertyName: "subTextStyle",
+              label: "Sub Text Style",
+              parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
+              mode: "dialog",
+            })
+            .addColorPicker({
+              id: nanoid(),
+              propertyName: "subTextColor",
+              label: "Sub Text Color",
+              title: "Sub Text Color",
+              allowClear: true,
+              showText: true,
+              parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
+            })
+            .addSlider({
+              id: nanoid(),
+              propertyName: "subTextFontSize",
+              label: "Sub Text Size",
+              defaultValue: "12",
+              min: "1",
+              max: "100",
+              parentId: "64cf99eb-5b1d-4fae-9ad6-015b7bd5bcad",
+            })
             .toJson(),
         ],
       },

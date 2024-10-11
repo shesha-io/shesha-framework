@@ -17,6 +17,7 @@ export interface IQuickSearchComponentProps extends IConfigurableFormComponent {
 
 const QuickSearchComponent: IToolboxComponent<IQuickSearchComponentProps> = {
   type: 'datatable.quickSearch',
+  isInput: false,
   name: 'Quick Search',
   icon: <SearchOutlined />,
   Factory: ({ model: { block, hidden } }) => {

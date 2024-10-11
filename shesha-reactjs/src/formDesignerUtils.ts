@@ -1,8 +1,6 @@
 export {
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
-  convertActions,
-  convertSectionsToList,
   evaluateComplexString,
   evaluateString,
   evaluateValue,

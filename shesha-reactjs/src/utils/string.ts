@@ -177,3 +177,7 @@ export const trimPrefix = (s: string, w: string) => {
     ? s.slice(w.length)
     : s;
 };
+
+export const isEmptyString = (value: any): boolean => {
+  return typeof(value) === 'string' && value.trim() === '';
+};

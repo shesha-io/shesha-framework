@@ -500,7 +500,13 @@ export const entityPickerSettings = new DesignerToolbarSettings()
             templateSettings: {
               functionName: "onChange"
             },
-            availableConstantsExpression: "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            availableConstantsExpression: async ({ metadataBuilder }) => {
+              return metadataBuilder.object('constants')
+                .addAllStandard(["shesha:selectedRow"])
+                .addString("value", "Component current value")
+                .addObject("event", "Event callback when user input", undefined)
+                .build();
+            },
           }
         )
         .toJson()

@@ -5,8 +5,9 @@ import axios, { AxiosRequestConfig } from "axios";
 
 export class AxiosHttpClient implements HttpClientApi {
     #axiosConfig: AxiosRequestConfig;
-    get<T = any, R = HttpResponse<T>>(url: string): Promise<R> {
-        return axios.get(url, this.#axiosConfig);
+    get<T = any, R = HttpResponse<T>>(url: string, headers?: Record<string, string>): Promise<R> {
+        const httpHeaders = { ...this.#axiosConfig?.headers, ...headers };
+        return axios.get(url, { ...this.#axiosConfig, headers: httpHeaders });
     }
     delete<T = any, R = HttpResponse<T>>(url: string): Promise<R> {
         return axios.delete(url, this.#axiosConfig);

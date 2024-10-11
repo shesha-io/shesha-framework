@@ -14,6 +14,7 @@ import { ISwitchComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -56,6 +57,14 @@ const SwitchComponent: IToolboxComponent<ISwitchComponentProps> = {
     .add<ISwitchComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ISwitchComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<ISwitchComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<ISwitchComponentProps>(6, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        style: prev.style
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
 };
 

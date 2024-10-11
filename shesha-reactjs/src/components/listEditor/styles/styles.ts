@@ -41,9 +41,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                 margin-bottom: 4px;
 
                 &.${listItemSelected}{
-                    border: #61affe 1px dashed;
+                    border: ${token.colorPrimary} 1px dashed;
                     border-radius: 4px;
-                    background-color: #ebf3fb;
+                    background-color: ${token.colorPrimaryBg}80;
                 }
 
                 .${listInsertPlaceholder} {

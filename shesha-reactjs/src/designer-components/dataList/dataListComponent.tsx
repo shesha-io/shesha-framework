@@ -13,6 +13,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
+  isInput: true,
   name: 'DataList',
   icon: <UnorderedListOutlined />,
   Factory: ({ model }) => {

@@ -1,6 +1,6 @@
 import { IPropertyMetadata, SourceFile, TypeDefinition, isPropertiesArray } from "@/interfaces/metadata";
 import { DataTypes } from "@/interfaces";
-import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { SettingConfigurationDto } from "./models";
 import { SettingsManager } from "./manager";
 import { HttpClientApi } from "../http/api";
@@ -164,6 +164,6 @@ const fetchSettingsApiTypeDefinition = (httpClient: HttpClientApi): Promise<Type
  * @param {HttpClientApi} httpClient - The HttpClientApi used to make the API request.
  * @return {MetadataBuilder} The MetadataBuilder with the settings API properties set.
  */
-export const getSettingsApiProperties = (builder: MetadataBuilder, httpClient: HttpClientApi): MetadataBuilder => builder
+export const getSettingsApiProperties = (builder: IObjectMetadataBuilder, httpClient: HttpClientApi): IObjectMetadataBuilder => builder
     .setPropertiesLoader(() => fetchSettingsApiAsMetadataProperties(httpClient))
     .setTypeDefinition(() => fetchSettingsApiTypeDefinition(httpClient));

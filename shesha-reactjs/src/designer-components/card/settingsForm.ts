@@ -24,6 +24,7 @@ export const getSettings = (data: any) =>
               validate: {
                 required: true,
               },
+              jsSetting: false
             })
             .addTextField({
               id: nanoid(),
@@ -47,6 +48,21 @@ export const getSettings = (data: any) =>
         ],
       },
     })
+    .addPropertyRouter({
+      id: nanoid(),
+      propertyName: 'propertyRouter1',
+      componentName: 'propertyRouter1',
+      label: 'Property router1',
+      labelAlign: 'right',
+      parentId: 'root',
+      hidden: false,
+      propertyRouteName: {
+        _mode: "code",
+        _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        _value: ""
+      },
+      components: [
+        ...new DesignerToolbarSettings()
     .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'pnlStyle',
@@ -102,7 +118,7 @@ export const getSettings = (data: any) =>
             .toJson(),
         ],
       },
-    })
+    }).toJson()]})
     .addCollapsiblePanel({
       id: nanoid(),
       propertyName: 'pnlVisibility',

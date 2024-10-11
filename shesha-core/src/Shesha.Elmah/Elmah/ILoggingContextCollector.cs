@@ -25,5 +25,12 @@ namespace Shesha.Elmah
         /// <param name="initAction"></param>
         /// <returns></returns>
         IDisposable BeginScope(Action<LoggingContextState> initAction = null);
+
+        /// <summary>
+        /// Specify location scope, is used to collect user-friendly locations of unhandled exceptions
+        /// </summary>
+        /// <param name="location"></param>
+        /// <returns></returns>
+        IDisposable SetLocationScope(string location);
     }
 }

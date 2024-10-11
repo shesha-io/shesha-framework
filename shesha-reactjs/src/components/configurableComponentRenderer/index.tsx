@@ -88,7 +88,7 @@ export const ConfigurableComponentRenderer = <TSettings extends any>({
         setEditorIsVisible(false);
       })
       .catch(e => {
-        console.log(e);
+        console.error(e);
       });
   };
 

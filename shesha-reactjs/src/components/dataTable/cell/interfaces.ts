@@ -51,4 +51,5 @@ export interface ICrudOptions {
   canDoubleWidth?: boolean;
   canTripleWidth?: boolean;
   canDivideByThreeWidth?: boolean;
+  columnsChanged?: boolean;
 }

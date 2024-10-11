@@ -5,8 +5,11 @@ import { Button } from 'antd';
 import { useStyles } from './styles/styles';
 import { isEqual } from 'lodash';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
-import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import camelcase from 'camelcase';
+import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
+import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
+import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
+import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 
 export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement;
 
@@ -17,7 +20,9 @@ export interface ISettingsControlProps {
   mode: PropertySettingMode;
   onChange?: (value: IPropertySetting) => void;
   readonly children?: SettingsControlChildrenType;
-  exposedVariables?: ICodeExposedVariable[];
+  availableConstantsExpression?: string | GetAvailableConstantsFunc;
+  resultTypeExpression?: string | GetResultTypeFunc;
+  useAsyncEvaluation?: boolean;
 }
 
 const defaultExposedVariables: ICodeExposedVariable[] = [
@@ -37,8 +42,9 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
 export const SettingsControl: FC<ISettingsControlProps> = (props) => {
 
   const { styles } = useStyles();
-
-  const availableConstants = useAvailableStandardConstantsMetadata();
+  
+  const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
+  const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue(props.value);
   const { _mode: mode, _code: code } = setting;
@@ -68,7 +74,27 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
   };
 
   const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
-  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;  
+  const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
+
+  const codeEditorProps: ICodeEditorProps = {
+    readOnly: props.readOnly,
+    value: setting._code,
+    onChange: codeOnChange,
+    mode: 'dialog',
+    language: 'typescript',
+    propertyName: props.propertyName + 'Code',
+    fileName: props.propertyName,
+    wrapInTemplate: true,
+    templateSettings: { 
+      functionName: functionName,
+      useAsyncDeclaration: props.useAsyncEvaluation,
+    },
+    exposedVariables: defaultExposedVariables
+  };
+
+  const editor = constantsEvaluator
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType}/>
+    : <CodeEditorWithStandardConstants {...codeEditorProps}  resultType={resultType}/>;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
@@ -85,24 +111,7 @@ export const SettingsControl: FC<ISettingsControlProps> = (props) => {
         {mode === 'code' ? 'Value' : 'JS'}
       </Button>
       <div className={styles.jsContent}>
-        {mode === 'code' &&
-          <CodeEditor
-            readOnly={props.readOnly}
-            value={setting._code}
-            onChange={codeOnChange}
-            mode='dialog'
-            language='typescript'
-            propertyName={props.propertyName + 'Code'}
-
-            fileName={props.propertyName}
-            wrapInTemplate={true}
-            templateSettings={{
-              functionName: functionName
-            }}
-            availableConstants={availableConstants}
-            exposedVariables={props.exposedVariables !== undefined ? props.exposedVariables : defaultExposedVariables}
-          />
-        }
+        {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}
       </div>
     </div>

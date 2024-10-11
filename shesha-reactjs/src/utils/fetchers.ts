@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
-import qs from 'qs';
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
 import { requestHeaders } from './requestHeaders';
+import { buildUrl } from './url';
 
 export function constructUrl<TQueryParams>(base: string, path: string, queryParams?: TQueryParams) {
   let normalizedBase = Boolean(base) ? base : '';
@@ -12,7 +12,7 @@ export function constructUrl<TQueryParams>(base: string, path: string, queryPara
   trimmedPath = trimmedPath.startsWith('/') ? trimmedPath.slice(1) : trimmedPath;
 
   const encodedPathWithParams = Object.keys(queryParams || {}).length
-    ? `${trimmedPath}?${qs.stringify(queryParams)}`
+    ? buildUrl(trimmedPath, queryParams)
     : trimmedPath;
 
   const composed = normalizedBase + encodedPathWithParams;
