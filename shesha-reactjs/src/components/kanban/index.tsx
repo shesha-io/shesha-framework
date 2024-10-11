@@ -81,11 +81,11 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
 
   useEffect(() => {
     if (selectedItem) {
-      form.setFieldsValue(selectedItem);
+      editForm.setFieldsValue(selectedItem);
     } else {
-      form.resetFields();
+      editForm.resetFields();
     }
-  }, [selectedItem, form]);
+  }, [selectedItem, editForm]);
 
   const onEnd = useCallback(
     (evt: any, column: any): Promise<boolean> => {
@@ -248,9 +248,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       {items.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex
-          style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}
-        >
+        <Flex style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
           {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
@@ -280,19 +278,14 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       >
         {selectedItem ? (
           <ConfigurableForm
-            key={selectedItem ? selectedItem : 'new-item'}
+            key={selectedItem}
             initialValues={selectedItem || {}}
             form={editForm}
             formId={editFormId}
             mode="edit"
           />
         ) : (
-          <ConfigurableForm
-            key={selectedItem ? selectedItem : 'new-item'}
-            form={form}
-            formId={createFormId}
-            mode="edit"
-          />
+          <ConfigurableForm key={'new-item'} form={form} formId={createFormId} mode="edit" />
         )}
       </Modal>
     </>
