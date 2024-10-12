@@ -194,28 +194,6 @@ namespace Shesha.ConfigurationItems
         }
 
         /// <summary>
-        /// Publish All forms
-        /// </summary>
-        /// <returns></returns>
-        [HttpPut]
-        public async Task PublishAllForms()
-        {
-            // todo: check rights
-           
-            //get all items that are on Draft or Ready
-            var items = await _itemsRepository.GetAll().Where(x=>x.VersionStatus == ConfigurationItemVersionStatus.Draft || x.VersionStatus == ConfigurationItemVersionStatus.Ready).ToListAsync();
-
-            foreach (var item in items)
-            {
-                var manager = GetSingleManager(item);
-
-                await manager.UpdateStatusAsync(item, ConfigurationItemVersionStatus.Live);
-            }
-
-            await UnitOfWorkManager.Current.SaveChangesAsync();
-        }
-
-        /// <summary>
         /// Copy configuration item
         /// </summary>
         [HttpPost]
