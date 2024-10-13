@@ -50,7 +50,9 @@ namespace Shesha.Otp
                     RecipientType = input.RecipientType,
                     SentOn = input.SentOn,
                     SendStatus = input.SendStatus,
-                    ErrorMessage = input.ErrorMessage
+                    ErrorMessage = input.ErrorMessage,
+                    ModuleName = input.ModuleName,
+                    SourceEntityId = input.SourceEntityId
                 };
                 if (isNew) // note we generate Id manually
                     await _otpAuditRepository.InsertAsync(item);
@@ -94,7 +96,65 @@ namespace Shesha.Otp
                     RecipientType = item.RecipientType,
                     SentOn = item.SentOn,
                     SendStatus = item.SendStatus,
-                    ErrorMessage = item.ErrorMessage
+                    ErrorMessage = item.ErrorMessage,
+                    ModuleName = item.ModuleName,
+                    SourceEntityId = item.SourceEntityId,
+                };
+            }
+        }
+
+        public async Task<OtpDto> GetAsync(Guid sourceEntityId, string moduleName, string actionType)
+        {
+            using (var uow = _uowManager.Begin(TransactionScopeOption.Suppress))
+            {
+                var item = await _otpAuditRepository.FirstOrDefaultAsync(i => i.Id == sourceEntityId && i.ModuleName == moduleName && i.ActionType == actionType);
+                if (item == null)
+                    return null;
+                return new OtpDto
+                {
+                    OperationId = item.Id,
+                    Pin = item.Otp,
+
+                    ExpiresOn = item.ExpiresOn,
+                    ActionType = item.ActionType,
+                    SendType = item.SendType,
+                    SendTo = item.SendTo,
+                    RecipientId = item.RecipientId,
+                    RecipientType = item.RecipientType,
+                    SentOn = item.SentOn,
+                    SendStatus = item.SendStatus,
+                    ErrorMessage = item.ErrorMessage,
+                    ModuleName = item.ModuleName,
+                    SourceEntityId = item.SourceEntityId,
+                };
+            }
+        }
+
+        public async Task<OtpDto> GetAsync(string moduleName, string actionType, string sourceEntityId)
+        {
+            using (var uow = _uowManager.Begin(TransactionScopeOption.Suppress))
+            {
+                var item = await _otpAuditRepository.FirstOrDefaultAsync(i => i.ModuleName == moduleName &&
+                                                                                    i.ActionType == actionType && 
+                                                                                    i.SourceEntityId == Guid.Parse(sourceEntityId));
+                if (item == null)
+                    return null;
+                return new OtpDto
+                {
+                    OperationId = item.Id,
+                    Pin = item.Otp,
+
+                    ExpiresOn = item.ExpiresOn,
+                    ActionType = item.ActionType,
+                    SendType = item.SendType,
+                    SendTo = item.SendTo,
+                    RecipientId = item.RecipientId,
+                    RecipientType = item.RecipientType,
+                    SentOn = item.SentOn,
+                    SendStatus = item.SendStatus,
+                    ErrorMessage = item.ErrorMessage,
+                    ModuleName = item.ModuleName,
+                    SourceEntityId = item.SourceEntityId,
                 };
             }
         }

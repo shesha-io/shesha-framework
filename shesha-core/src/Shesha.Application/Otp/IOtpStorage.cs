@@ -30,5 +30,13 @@ namespace Shesha.Otp
         /// <param name="operationId"></param>
         /// <returns></returns>
         Task<OtpDto> GetAsync(Guid operationId);
+        /// <summary>
+        /// Get OTP Overload
+        /// </summary>
+        /// <param name="moduleName"></param>
+        /// <param name="ActionType"></param>
+        /// <param name="sourceEntityId"></param>
+        /// <returns></returns>
+        Task<OtpDto> GetAsync(string moduleName, string ActionType, string sourceEntityId);
     }
 }
