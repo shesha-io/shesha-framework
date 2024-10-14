@@ -93,7 +93,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
           data-column-id={column.id}
         >
           <Flex
-            justify={props.kanbanReadonly || props.readonly ? 'center' : 'space-between'}
+            justify={props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible)? 'center' : 'space-between'}
             align="center"
             className={styles.combinedHeaderStyle}
             style={{ ...(getStyle(props.headerStyles, formData) || {}) }}
@@ -110,7 +110,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
             </h3>
 
             {/* Render collapsible icon if in readonly mode and collapsible is true */}
-            {props.kanbanReadonly || props.readonly ? null : (
+            {props.kanbanReadonly || props.readonly || !(props.allowNewRecord || props.collapsible) ? null : (
               <Dropdown trigger={['click']} menu={{ items: columnDropdownItems }} placement="bottomRight">
                 <Button
                   type="text"
@@ -176,7 +176,7 @@ const RenderColumn: React.FC<KanbanColumnProps> = ({
                         mode={'readonly'}
                         className={styles.taskContainer}
                       />
-                      {props.kanbanReadonly || props.readonly ? null : (
+                      {props.kanbanReadonly || props.readonly || !( props.allowDelete || props.allowEdit) ? null : (
                         <Dropdown trigger={['click']} menu={{ items: taskDropdownItems }} placement="bottomRight">
                           <Button type="text" className={`${styles.threeDots} three-dots`} icon={<MoreOutlined />} />
                         </Dropdown>
