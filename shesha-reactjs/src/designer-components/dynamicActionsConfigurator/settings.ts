@@ -37,4 +37,13 @@ export const configurableActionsConfiguratorSettingsForm = new DesignerToolbarSe
     parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
     label: 'Hidden',
   })
+  .addPermissionAutocomplete({
+    id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
+    propertyName: 'permissions',
+    label: 'Permissions',
+    labelAlign: 'right',
+    parentId: 'root',
+    hidden: false,
+    validate: {},
+  })
   .toJson();

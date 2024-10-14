@@ -8,6 +8,7 @@ import ChildEntitiesTagGroupControl from './control';
 import { IChildEntitiesTagGroupProps } from './models';
 import { ChildEntitiesTagGroupSettingsForm } from './settings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
   type: 'childEntitiesTagGroup',
@@ -18,7 +19,7 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.array,
   Factory: ({ model }) => {
     if (model.hidden) return null;
-
+    
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) =>
@@ -32,6 +33,10 @@ const ChildEntitiesTagGroup: IToolboxComponent<IChildEntitiesTagGroupProps> = {
     .add<IChildEntitiesTagGroupProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IChildEntitiesTagGroupProps>(1, (prev) => migrateVisibility(prev))
     .add<IChildEntitiesTagGroupProps>(2, (prev) => migrateReadOnly(prev))
+    .add<IChildEntitiesTagGroupProps>(3, (prev) => ({
+      ...migrateFormApi.eventsAndProperties(prev),
+      labelFormat: migrateFormApi.withoutFormData(prev?.defaultValue),
+    }))
   ,
 };
 

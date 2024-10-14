@@ -11,9 +11,11 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { useFormData, useGlobalState } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const DrawerComponent: IToolboxComponent<IDrawerProps> = {
   type: 'drawer',
+  isInput: false,
   name: 'Drawer',
   icon: <SwapOutlined />,
   Factory: ({ model }) => {
@@ -29,7 +31,9 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       ...prev, 
       onOkAction: migrateNavigateAction(prev.onOkAction),
       onCancelAction: migrateNavigateAction(prev.onCancelAction),
-    })),
+    }))
+    .add<IDrawerProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
+  ,
   initModel: (model) => {
     const customProps: IDrawerProps = {
       ...model,

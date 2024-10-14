@@ -1,4 +1,4 @@
-import { DataTypes } from "@/index";
+import { DataTypes } from "@/interfaces";
 import { IModelMetadata } from "@/interfaces/metadata";
 import { DataContextType, IDataContextProviderActionsContext } from "../dataContextProvider/contexts";
 
@@ -18,6 +18,9 @@ export interface IDataContextDictionary {
 export interface IRegisterDataContextPayload extends IDataContextDescriptor {
   initialData?: any;
 }
+
+export const SHESHA_ROOT_DATA_CONTEXT_MANAGER = 'SHESHA_ROOT_DATA_CONTEXT_MANAGER';
+
 
 export enum SheshaCommonContexts {
   ApplicationContext = 'application',

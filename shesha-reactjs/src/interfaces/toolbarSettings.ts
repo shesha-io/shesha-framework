@@ -15,7 +15,6 @@ import { ICheckboxComponentProps } from '@/designer-components/checkbox/interfac
 import { ICollapsiblePanelComponentProps } from '@/designer-components/collapsiblePanel/interfaces';
 import { IConfigurableActionConfiguratorComponentProps } from '@/designer-components/configurableActionsConfigurator/interfaces';
 import { IContainerComponentProps } from '@/designer-components/container/interfaces';
-import { ICustomFilterComponentProps } from '@/designer-components/dataTable/filter/interfaces';
 import { IColumnsEditorComponentProps } from '@/designer-components/dataTable/table/columnsEditor/interfaces';
 import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
 import { INumberFieldComponentProps } from '@/designer-components/numberField/interfaces';
@@ -28,6 +27,10 @@ import { ITextAreaComponentProps } from '@/designer-components/textArea/interfac
 import { IRadioProps } from '@/designer-components/radio/utils';
 import { IReadOnlyModeSelectorProps } from '@/components/editModeSelector/index';
 import { IStyleBoxComponentProps } from '@/designer-components/styleBox/interfaces';
+import { IPermissionAutocompleteComponentProps } from '@/designer-components/permissions/permissionAutocomplete';
+import { ISliderComponentProps } from '@/designer-components/slider/interfaces';
+import { IDividerProps } from '@/designer-components/_legacyComponents/divider';
+import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -73,16 +76,16 @@ type ContainerType = ToolbarSettingsProp & Omit<IContainerComponentProps, 'hidde
 
 type ButtonGroupType = ToolbarSettingsProp & Omit<IButtonsProps, 'hidden' | 'type'>;
 
-type CustomFilterType = ToolbarSettingsProp & Omit<ICustomFilterComponentProps, 'hidden' | 'type'>;
-
 type ConfigurableActionConfiguratorType = ToolbarSettingsProp &
   Omit<IConfigurableActionConfiguratorComponentProps, 'hidden' | 'type'>;
 
 type EditableTagGroupType = ToolbarSettingsProp & Omit<IEditableTagGroupComponentProps, 'hidden' | 'type'>;
 
+type PermissionAutocompleteType = ToolbarSettingsProp & Omit<IPermissionAutocompleteComponentProps, 'hidden' | 'type'>;
+
 type ColorPickerType = ToolbarSettingsProp & Omit<IColorPickerComponentProps, 'hidden' | 'type'>;
 
-type EntityPickerColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
+type ColumnsEditorType = ToolbarSettingsProp & Omit<IColumnsEditorComponentProps, 'hidden' | 'type'>;
 
 type ICollapsiblePanelPropsEditorType = ToolbarSettingsProp & Omit<ICollapsiblePanelComponentProps, 'hidden' | 'type'>;
 
@@ -93,6 +96,10 @@ type RadioType = ToolbarSettingsProp & Omit<IRadioProps, 'hidden' | 'type'>;
 type ReadOnlyModeType = ToolbarSettingsProp & Omit<IReadOnlyModeSelectorProps, 'hidden' | 'type'>;
 
 type StyleBoxType = ToolbarSettingsProp & Omit<IStyleBoxComponentProps, 'hidden' | 'type'>;
+
+type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
+
+type PropertyRouterType = ToolbarSettingsProp & Omit<IPropertyRouterProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -123,10 +130,8 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'dropdown');
   }
 
-  public addEntityPickerColumnsEditor(
-    props: EntityPickerColumnsEditorType | ((data: T) => EntityPickerColumnsEditorType)
-  ) {
-    return this.addProperty(props, 'entityPickerColumnsEditorComponent');
+  public addColumnsEditor(props: ColumnsEditorType | ((data: T) => ColumnsEditorType)) {
+    return this.addProperty(props, 'columnsEditorComponent');
   }
 
   public addSectionSeparator(props: SectionSeparatorType | ((data: T) => SectionSeparatorType)) {
@@ -203,10 +208,6 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'queryBuilder');
   }
 
-  public addCustomFilter(props: CustomFilterType | ((data: T) => CustomFilterType)) {
-    return this.addProperty(props, 'filter');
-  }
-
   public addRadio(props: RadioType | ((data: T) => RadioType)) {
     return this.addProperty(props, 'radio');
   }
@@ -221,12 +222,28 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'editableTagGroup');
   }
 
+  public addPermissionAutocomplete(props: PermissionAutocompleteType | ((data: T) => PermissionAutocompleteType)) {
+    return this.addProperty(props, 'permissionAutocomplete');
+  }
+
   public addEditMode(props: ReadOnlyModeType | ((data: T) => ReadOnlyModeType)) {
     return this.addProperty(props, 'editModeSelector');
   }
 
   public addStyleBox(props: StyleBoxType | ((data: T) => StyleBoxType)) {
     return this.addProperty(props, 'styleBox');
+  }
+
+  public addSlider(props: SliderType | ((data: T) => SliderType)) {
+    return this.addProperty(props, 'slider');
+  }
+
+  public addDivider(props: IDividerProps | ((data: T) => IDividerProps)) {
+    return this.addProperty(props, 'divider');
+  }
+
+  public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)) {
+    return this.addProperty(props, 'propertyRouter');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {

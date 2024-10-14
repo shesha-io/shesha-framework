@@ -1,12 +1,12 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Divider, Form, Radio, Space, Tooltip } from 'antd';
-import React, { FC, Fragment, useCallback } from 'react';
+import { Divider, Form, Radio, Space, Tooltip, InputNumber } from 'antd';
+import React, { FC, useCallback } from 'react';
 import { SectionSeparator, Show } from '@/components';
 import { ColorPicker } from '@/components/colorPicker';
-import { useTheme } from '@/providers';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { humanizeString } from '@/utils/string';
 import { BACKGROUND_PRESET_COLORS, PRESET_COLORS, TEXT_PRESET_COLORS } from './presetColors';
+import { formItemLayout } from './form';
 
 interface IThemeConfig {
   name: string;
@@ -14,8 +14,18 @@ interface IThemeConfig {
   hint?: string;
 }
 
-const ThemeParameters: FC = () => {
-  const { theme, changeTheme } = useTheme();
+export interface ThemeParametersProps { 
+  value?: IConfigurableTheme;
+  onChange?: (theme: IConfigurableTheme) => void;
+  readonly?: boolean;
+}
+
+const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly }) => {
+  //const { theme, changeTheme } = useTheme();
+
+  const changeThemeInternal = (theme: IConfigurableTheme) => {
+    if (onChange) onChange(theme);
+  };
 
   const mergeThemeSection = (
     section: keyof IConfigurableTheme,
@@ -28,7 +38,7 @@ const ThemeParameters: FC = () => {
     section: keyof IConfigurableTheme,
     update: Partial<IConfigurableTheme[keyof IConfigurableTheme]>
   ) => {
-    changeTheme({
+    changeThemeInternal({
       ...theme,
       [section]: mergeThemeSection(section, update),
     });
@@ -50,6 +60,7 @@ const ThemeParameters: FC = () => {
             presets={[{ label: "Presets", defaultOpen: true, colors: presetColors ?? PRESET_COLORS }]}
             value={initialColor}
             onChange={onChange}
+            readOnly={readonly}
           />
           <span>{humanizeString(colorName)} </span>
           <Show when={Boolean(hint)}>
@@ -79,7 +90,7 @@ const ThemeParameters: FC = () => {
   ];
 
   return (
-    <Fragment>
+    <div style={{ marginTop: '10px' }}>
       <SectionSeparator title="Theme" />
 
       <Space direction="vertical" align="start">
@@ -94,12 +105,10 @@ const ThemeParameters: FC = () => {
           'layoutBackground',
           'layoutBackground',
           theme?.layoutBackground,
-          (hex) => changeTheme({ ...theme, layoutBackground: hex }),
+          (hex) => changeThemeInternal({ ...theme, layoutBackground: hex }),
           BACKGROUND_PRESET_COLORS
         )}
       </Space>
-
-      <Divider />
 
       <SectionSeparator title="Text" />
 
@@ -116,8 +125,6 @@ const ThemeParameters: FC = () => {
         )}
       </Space>
 
-      <Divider />
-
       <SectionSeparator title="Sidebar" />
 
       <Form>
@@ -126,18 +133,60 @@ const ThemeParameters: FC = () => {
             name="sidebarTheme"
             value={theme?.sidebar}
             onChange={(e) => {
-              changeTheme({
+              changeThemeInternal({
                 ...theme,
                 sidebar: e.target.value,
               });
             }}
+            disabled={readonly}
           >
             <Radio value="dark">Dark</Radio>
             <Radio value="light">Light</Radio>
           </Radio.Group>
         </Form.Item>
       </Form>
-    </Fragment>
+
+      <SectionSeparator title="Form Span Settings" />
+      <Form {...formItemLayout} fields={[
+        {
+          name: ["label"],
+          value: theme?.labelSpan,
+        },
+        {
+          name: ["component"],
+          value: theme?.componentSpan
+        }
+      ]}
+      >
+
+        <Form.Item label="Label" name={"label"}>
+          <InputNumber placeholder="Label Span"
+            style={{ width: "100%" }}
+            onChange={(value: number) => {
+              changeThemeInternal({
+                ...theme,
+                labelSpan: value,
+              });
+            }}
+            readOnly={readonly}
+          />
+        </Form.Item>
+
+        <Form.Item label="Component" name={"component"}>
+          <InputNumber placeholder="Component Span"
+            style={{ width: "100%" }}
+            onChange={(value: number) => {
+              changeThemeInternal({
+                ...theme,
+                componentSpan: value,
+              });
+            }}
+            readOnly={readonly}
+          />
+        </Form.Item>
+      </Form>
+
+    </div>
   );
 };
 

@@ -11,7 +11,7 @@ import ColorPickerComponent from '@/designer-components/colorPicker';
 import Columns from '@/designer-components/columns/columns';
 import DataList from '@/designer-components/dataList/dataListComponent';
 import DataSource from '@/designer-components/dataSource/dataSourceComponent';
-import Divider from '@/designer-components/divider';
+import Divider from '@/designer-components/_legacyComponents/divider';
 import Drawer from '@/designer-components/drawer';
 import DynamicView from '@/designer-components/dynamicView';
 import EditableTagGroup from '@/designer-components/editableTagGroup';
@@ -21,6 +21,7 @@ import FormAutocompleteComponent from '@/designer-components/formAutocomplete';
 import IconPicker from '@/designer-components/iconPicker';
 import Image from '@/designer-components/image';
 import ImageAnnotationComponent from '@/designer-components/imageAnnotation';
+import KeyInformationBarComponent from '@/designer-components/keyInformationBar';
 import Paragraph from '@/designer-components/_legacyComponents/paragraph';
 import Title from '@/designer-components/_legacyComponents/title';
 import Link from '@/designer-components/link';
@@ -46,6 +47,7 @@ import Statistic from '@/designer-components/statistic';
 import StatusTag from '@/designer-components/statusTag';
 import StyleBox from '@/designer-components/styleBox';
 import SubForm from '@/designer-components/subForm';
+import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
 import Tabs from '@/designer-components/tabs';
 import Text from '@/designer-components/text';
@@ -63,14 +65,11 @@ import ContainerComponent from '@/designer-components/container/containerCompone
 import ContextPropertyAutocompleteComponent from '@/designer-components/contextPropertyAutocomplete';
 import DataContextComponent from '@/designer-components/dataContextComponent';
 import DataContextSelector from '@/designer-components/dataContextSelector';
-import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
 import ChildTable from '@/designer-components/dataTable/childTable';
-import Filter from '@/designer-components/dataTable/filter/filterComponent';
 import Pager from '@/designer-components/dataTable/pager/pagerComponent';
 import QuickSearch from '@/designer-components/dataTable/quickSearch/quickSearchComponent';
 import SelectColumnsButton from '@/designer-components/dataTable/selectColumnsButton/selectColumnsButtonComponent';
-import ColumnsEditor from '@/designer-components/dataTable/table/columnsEditor';
-import EntityPickerColumnsEditor from '@/designer-components/dataTable/table/entityPickerColumnsEditor';
+import { ColumnsEditorComponent } from '@/designer-components/dataTable/table/columnsEditor';
 import DataTable from '@/designer-components/dataTable/table/tableComponent';
 import TableTemplate from '@/designer-components/dataTable/table/tableTemplateComponent';
 import TableContext from '@/designer-components/dataTable/tableContext/tableContextComponent';
@@ -94,8 +93,23 @@ import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
+import EditModeToggler from '@/designer-components/editModeToggler';
+import ProfileDropdown from '@/designer-components/profileDropdown';
+import { IFormPersisterStateContext } from '@/providers/formPersisterProvider/contexts';
+import { HEADER_CONFIGURATION, HEADER_PUB_PORTAL_CONFIGURATION } from '@/components/mainLayout/constant';
+import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilterButton/advancedFilterButtonComponent';
+import { getToolboxComponentsVisibility } from '@/utils';
+import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
+import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
+import PropertyRouterComponent from '@/designer-components/propertyRouter';
+import ChevronComponent from '@/designer-components/chevron/chevron';
+import KanbanComponent from '@/designer-components/kanban';
+import ChartComponent from '@/designer-components/charts';
 
-export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[] => {
+export const getToolboxComponents = (
+  devMode: boolean,
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>
+): IToolboxComponentGroup[] => {
   return [
     {
       name: 'Data entry',
@@ -110,6 +124,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         Checkbox,
         CheckboxGroup,
         Radio,
+        Slider,
         Switch,
         DateField,
         TimeFieldComponent,
@@ -119,7 +134,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent],
     },
     {
       name: 'Advanced',
@@ -140,6 +155,8 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         Progress,
         RefListStatusComponent,
         StatusTag,
+        ChevronComponent,
+        KanbanComponent
       ],
     },
     {
@@ -186,6 +203,7 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         ContainerComponent,
         Divider,
         Drawer,
+        KeyInformationBarComponent,
         SectionSeprator,
         SizableColumnsComponent,
         Space,
@@ -203,9 +221,11 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
       visible: devMode,
       name: 'Dev',
       components: [
+        PropertyRouterComponent,
+        ThemeEditorComponent,
+        MainMenuEditorComponent,
         PermissionAutocompleteComponent,
-        EntityPickerColumnsEditor,
-        ColumnsEditor, // Hidden
+        ColumnsEditorComponent, // Hidden
         ReferenceListAutocompleteComponent,
         PropertyAutocompleteComponent,
         SortingEditorComponent,
@@ -225,14 +245,19 @@ export const getToolboxComponents = (devMode: boolean): IToolboxComponentGroup[]
         CodeEditor,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,
-        Filter,
         FormAutocompleteComponent,
         PermissionTagGroup,
         QueryBuilderComponent,
         ScheduledJobExecutionLog,
       ],
     },
+    {
+      name: 'Header Components',
+      visible: getToolboxComponentsVisibility(formMetadata?.formProps, [
+        HEADER_CONFIGURATION,
+        HEADER_PUB_PORTAL_CONFIGURATION,
+      ]),
+      components: [EditModeToggler, ProfileDropdown],
+    },
   ];
 };
-
-export default getToolboxComponents;

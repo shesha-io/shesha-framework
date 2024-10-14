@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { ValidateErrorEntity } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -36,19 +36,14 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
   formId: FormIdentifier;
 
   /**
-   * Url to be used to fetch form data
-   */
-  fetchUrl?: string;
-
-  /**
-   * What http verb to use when submitting the form. Used in conjunction with `showModalFooter`
-   */
-  submitHttpVerb?: 'POST' | 'PUT';
-
-  /**
    * Mode of the form: "designer" | "edit" | "readonly"
    */
   mode?: FormMode;
+
+  /**
+   * Form argurments
+   */
+  formArguments?: any;
 
   /**
    * Initial values of the modal
@@ -56,16 +51,6 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
   initialValues?: any;
 
   parentFormValues?: any;
-
-  /**
-   * If specified, the form data will not be fetched, even if the GET Url has query parameters that can be used to fetch the data.
-   * This is useful in cases whereby one form is used both for create and edit mode
-   */
-  skipFetchData?: boolean;
-
-  submitLocally?: boolean;
-
-  modalConfirmDialogMessage?: string;
 
   /**
    * Whether the modal footer should be shown. The modal footer shows default buttons Submit and Cancel.
@@ -78,41 +63,28 @@ export interface IModalWithConfigurableFormProps extends IModalBaseProps {
   showModalFooter?: boolean;
 
   /**
-   * If passed and the form has `getUrl` defined, you can use this function to prepare `fetchedData` for as `initialValues`
-   * If you want to use only `initialValues` without combining them with `fetchedData` and then ignore `fetchedData`
-   *
-   * If not passed, `fetchedData` will be used as `initialValues`
-   *
-   * Whenever the form has a getUrl and that url has queryParams, buy default, the `dynamicModal` will fetch the form and, subsequently, the data
-   * for that form
-   */
-  prepareInitialValues?: (fetchedData: any) => any;
-
-  /**
    * A callback to execute when the form has been submitted
    */
   onSubmitted?: (values?: any) => void;
 
   onFailed?: (errorInfo: ValidateErrorEntity<any>) => void;
 
-  /**
-   * If passed, the user will be redirected to this url on success
-   */
-  onSuccessRedirectUrl?: string;
-
   footerButtons?: ModalFooterButtons;
 
   buttons?: ButtonGroupItemProps[];
+
+  wrapper?: (props: PropsWithChildren) => React.ReactNode;
 }
 
 export interface IModalWithContentProps extends IModalBaseProps {
   footer?: ReactNode;
   content: ReactNode;
+  onClose?: (positive?: boolean, result?: any) => void;
 }
 /**
  * Dynamic Modal properties
  */
-export interface IModalProps extends IModalWithConfigurableFormProps{
+export interface IModalProps extends IModalWithConfigurableFormProps {
   onClose?: (positive?: boolean, result?: any) => void;
 };
 export type ICommonModalProps = IModalWithContentProps | IModalWithConfigurableFormProps;

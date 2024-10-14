@@ -201,7 +201,6 @@
           "type": "sectionSeparator",
           "propertyName": "subscriptions",
           "label": "Subscriptions",
-          "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
           "settingsValidationErrors": []

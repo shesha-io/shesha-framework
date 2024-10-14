@@ -3,13 +3,15 @@ import { ColProps } from 'antd/lib/col';
 import { FormInstance, FormProps } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
-import { FormMode, Store, IConfigurableFormBaseProps, IFormActions, IFormSections } from '@/providers/form/models';
+import { FormMode, Store, HasFormIdOrMarkup, IFormActions, IFormSections, FormIdentifier } from '@/providers/form/models';
 import { IConfigurableFormComponent, ValidateErrorEntity } from '@/interfaces';
-import { StandardEntityActions } from '@/interfaces/metadata';
+import { IShaFormInstance, ProcessingState } from '@/providers/form/store/interfaces';
 
-type BaseFormProps = Pick<FormProps, 'size'>;
+type SizeType = FormProps['size'];
 
-export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> extends BaseFormProps {
+export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> {
+  //shaForm?: IShaFormInstance;
+  size?: SizeType;
   labelCol?: ColProps;
   wrapperCol?: ColProps;
   layout?: FormLayout;
@@ -45,33 +47,10 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
    */
   onSubmitted?: (values: Values, response?: any, options?: object) => void;
 
-  /**
-   * If passed and the form has `getUrl` defined, you can use this function to prepare `fetchedData` for as `initialValues`
-   * If you want to use only `initialValues` without combining them with `fetchedData` and then ignore `fetchedData`
-   *
-   * If not passed, `fetchedData` will be used as `initialValues` and, thus override initial values
-   *
-   * Whenever the form has a getUrl and that url has queryParams, buy default, the `dynamicModal` will fetch the form and, subsequently, the data
-   * for that form
-   */
-  prepareInitialValues?: (fetchedData: any) => any;
-
   form?: FormInstance<any>;
   actions?: IFormActions;
   sections?: IFormSections;
-  context?: any; // todo: make generic
-
-  httpVerb?: 'POST' | 'PUT' | 'DELETE';
-  /**
-   * Submit action. By default it's `create`
-   */
-  submitAction?: StandardEntityActions.create | StandardEntityActions.update | StandardEntityActions.delete;
-
-  /**
-   * By default, if the GET Url has parameters, the form configurator will proceed to fetch the entity
-   * Pass this this is you wanna bypass that
-   */
-  skipFetchData?: boolean;
+  context?: any; // TODO: make generic
 
   /**
    * External data fetcher, is used to refresh form data from the back-end.
@@ -81,22 +60,119 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
   /**
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
-   refetcher?: () => void;
+  refetcher?: () => void;
+
+  /**  
+   * Triggered when the form is submitted successfully but the response is not successful
+   **/
+  onSubmittedFailed?: () => void;
+
 }
 
-export interface IConfigurableFormProps<Values = any, FieldData = any>
-  extends IConfigurableFormRendererProps<Values, FieldData>,
-  IConfigurableFormBaseProps {
+export type IConfigurableFormRuntimeProps<Values = any> = {
+  shaForm?: IShaFormInstance<Values>;
+
+  formName?: string;
+
+  form?: FormInstance<any>;
+  /**
+   * Trigger after submitting the form and verifying data successfully. Note: this parameter overrides default behavoiur of the form.
+   *
+   * @param values form data
+   */
+  onFinish?: (values: Values, options?: object) => void;
+  /**
+   * Trigger after submitting the form and verifying data failed
+   */
+  onFinishFailed?: (errorInfo: ValidateErrorEntity<Values>) => void;
+  
+  /**
+   * Form argurments
+   */
+  formArguments?: any;
+
+  /**
+   * Form initial values
+   */
+  initialValues?: Store;
+  /**
+   * Parent form values. Note: is used for backward compatibility only
+   */
+  parentFormValues?: Store;
+  labelCol?: ColProps;
+  wrapperCol?: ColProps;
+  onValuesChange?: (changedValues: any, values: Values) => void;
+  /**
+   * If specified, the form will only be submitted if this function return true
+   * Note: doesn't work when the `onFinish` is specified
+   */
+  beforeSubmit?: (values: Values) => Promise<boolean>;
+  
+  /**
+   * Returns the form data and the response data as well, only if an API was made and came back successful
+   * Note: doesn't work when the `onFinish` is specified
+   *
+   * @param values form data before being submitted
+   * @param response response data
+   */
+  onSubmitted?: (values: Values, response?: any, options?: object) => void;
+
+  /**
+   * Fires after loading of the form markup. Can be used for additional initialization purposes.
+   * @returns Promise<void>
+   */
+  onMarkupLoaded?: (shaForm: IShaFormInstance<Values>) => Promise<void>;
+
+  layout?: FormLayout;
+  size?: SizeType;
+  /**
+   * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
+   */
+  refetcher?: () => void;
+
+  /**  
+   * Triggered when the form is submitted successfully but the response is not successful
+   **/
+  onSubmittedFailed?: () => void;
+
+  /**/
+
   mode: FormMode;
   formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
-  switchToReadOnlyOnSuccess?: boolean;
   className?: string;
   isActionsOwner?: boolean;
-  needDebug?: boolean;
-  isSettings?: boolean;
   propertyFilter?: (name: string) => boolean;
-}
+};
+
+export type MarkupLoadingErrorRenderProps = {
+  formId: FormIdentifier;
+  markupLoadingState: ProcessingState;
+};
+export type IConfigurableFormRenderingProps = {
+  markupLoadingError?: (args: MarkupLoadingErrorRenderProps) => React.ReactNode;  
+};
+
+export type IConfigurableFormProps<Values = any> = HasFormIdOrMarkup & IConfigurableFormRuntimeProps<Values> & IConfigurableFormRenderingProps & {
+  logEnabled?: boolean;
+  /**
+   * Show/hide form information is the block overlay (is visible in edit mode). Default value = true
+   */
+  showFormInfoOverlay?: boolean;
+  /**
+   * Show/hide data loading indicator. Default value = true
+   */
+  showDataLoadingIndicator?: boolean;
+  /**
+   * Show/hide markup loading indicator. Default value = true
+   */
+  showMarkupLoadingIndicator?: boolean;
+};
 
 export interface IDataSourceComponent extends IConfigurableFormComponent {
   dataSource: 'api' | 'form';
 }
+
+export type SheshaFormProps = {
+  actions?: IFormActions;
+  sections?: IFormSections;
+};

@@ -40,6 +40,11 @@ namespace Shesha.Settings
         public bool IsClientSpecific { get; set; }
 
         /// <summary>
+        /// If true, indicates that this setting should be specific to each of the logged in user
+        /// </summary>
+        public bool IsUserSpecific { get; set; }
+
+        /// <summary>
         /// Edit form
         /// </summary>
         [CanBeNull]

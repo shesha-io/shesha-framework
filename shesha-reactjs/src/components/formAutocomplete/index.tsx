@@ -6,7 +6,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { GENERIC_ENTITIES_ENDPOINT, LEGACY_FORMS_MODULE_NAME } from '@/shesha-constants';
 import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { FormFullName, FormIdentifier } from '@/providers/form/models';
-import { asFormFullName, asFormRawId } from '@/providers/form/utils';
+import { isFormFullName, isFormRawId } from '@/providers/form/utils';
 import HelpTextPopover from '@/components/helpTextPopover';
 
 export interface IFormAutocompleteRuntimeProps {
@@ -50,6 +50,7 @@ const getFilter = (term: string) => {
 };
 const FORM_CONFIG_ENTITY_TYPE = 'Shesha.Core.FormConfiguration';
 const FORM_CONFIG_PROPERTIES = 'id name module { id name } label description versionNo';
+
 const getListFetcherQueryParams = (term: string, maxResultCount): IGenericGetAllPayload => {
     return {
         skipCount: 0,
@@ -65,17 +66,14 @@ const getSelectedValueQueryParams = (value?: FormIdentifier): IGenericGetAllPayl
     if (!value)
         return null;
 
-    const rawId = asFormRawId(value);
-    const fullName = asFormFullName(value);
-
-    const expression = rawId
-        ? { '==': [{ var: 'id' }, rawId] }
-        : fullName
+    const expression = isFormRawId(value)
+        ? { '==': [{ var: 'id' }, value] }
+        : isFormFullName(value)
             ? {
                 and: [
                     ...baseItemFilter,
-                    { '==': [{ 'var': 'name' }, fullName.name] },
-                    { '==': [{ 'var': 'module.name' }, fullName.module] },
+                    { '==': [{ 'var': 'name' }, value.name] },
+                    { '==': [{ 'var': 'module.name' }, value.module] },
                 ]
             }
             : null;

@@ -1,4 +1,5 @@
 ﻿using Abp.ObjectComparators.StringComparators;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace Shesha.Domain
     /// </summary>
     public abstract class ConfigurationItemIdentifier: IEquatable<ConfigurationItemIdentifier>
     {
+        [BindNever]
         [JsonIgnore]
         public abstract string ItemType { get; }
 
@@ -56,6 +58,7 @@ namespace Shesha.Domain
 
         public static bool operator !=(ConfigurationItemIdentifier l, ConfigurationItemIdentifier r) => !(l == r);
 
+        [BindNever]
         [Bindable(false)]
         [JsonIgnore]
         public string NormalizedFullName => $"{ItemType}:{Module}/{Name}".ToLower();

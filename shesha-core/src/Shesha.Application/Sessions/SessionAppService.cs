@@ -1,7 +1,10 @@
 ﻿using Abp.Auditing;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
+using Shesha.Authorization.Roles;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Sessions.Dto;
@@ -64,18 +67,49 @@ namespace Shesha.Sessions
             return output;
         }
 
-        private async Task<List<string>> GetGrantedPermissions()
+        private async Task<List<GrantedPermissionDto>> GetGrantedPermissions()
         {
-            var grantedPermissions = new List<string>();
+            var grantedPermissions = new List<GrantedPermissionDto>();
 
             if (AbpSession.UserId.HasValue)
             {
+                var currentUser = await GetCurrentPersonAsync();
+                if (currentUser == null)
+                    return grantedPermissions;
+
+                var roles = await _roleAppointmentRepository.GetAll().Where(a => a.Person == currentUser).ToListAsync();
                 var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
 
                 foreach (var permissionName in allPermissionNames)
                 {
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
-                        grantedPermissions.Add(permissionName);
+                    {
+                        var permissionRoles = roles.Where(x => x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
+                        grantedPermissions.Add(new GrantedPermissionDto
+                        {
+                            Permission = permissionName,
+                            PermissionedEntity = permissionRoles.Any(x => !x.PermissionedEntities.Any())
+                                ? new List<EntityReferenceDto<string>>()
+                                : permissionRoles.SelectMany(x => x.PermissionedEntities).Distinct()
+                                    .Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
+                                    .ToList()
+                        }); ;
+                    }
+                }
+
+                foreach(var role in roles)
+                {
+                    if (!role.Role.Permissions.Any())
+                        continue;
+
+                    foreach (var permission in role.Role.Permissions.Where(x => x.IsGranted))
+                    {
+                        var grantedPermission = new GrantedPermissionDto
+                        {
+                            Permission = permission.Permission,
+                            PermissionedEntity = role.PermissionedEntities.Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className)).ToList(),
+                        };
+                    }
                 }
             }
 

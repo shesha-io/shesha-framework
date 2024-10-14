@@ -9,9 +9,11 @@ import { IDataListComponentProps } from './model';
 import DataListControl, { NotConfiguredWarning } from './dataListControl';
 import { useDataTableStore } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
+  isInput: true,
   name: 'DataList',
   icon: <UnorderedListOutlined />,
   Factory: ({ model }) => {
@@ -22,35 +24,17 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
-  
+      
     return dataSource
       ? <DataListControl {...model} dataSourceInstance={dataSource}/>
       : <NotConfiguredWarning />;
   },
   migrator: m => m
-    .add<IDataListComponentProps>(0, prev => {
-      return {
-        ...prev,
-        formSelectionMode: 'name',
-        selectionMode: 'none',
-        items: [],
-      };
-    })
-    .add<IDataListComponentProps>(1, prev => {
-      return {
-        ...prev,
-        orientation: 'vertical',
-        listItemWidth: 1
-      };
-    })
+    .add<IDataListComponentProps>(0, prev => ({...prev, formSelectionMode: 'name', selectionMode: 'none', items: []}))
+    .add<IDataListComponentProps>(1, prev => ({...prev, orientation: 'vertical', listItemWidth: 1 }))
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDataListComponentProps>(3, (prev) => migrateVisibility(prev))
-    .add<IDataListComponentProps>(4, prev => {
-      return {
-        ...prev,
-        collapsible: true
-      };
-    })
+    .add<IDataListComponentProps>(4, prev => ({...prev, collapsible: true}))
     .add<IDataListComponentProps>(5, prev => {
       return {
         ...prev,
@@ -64,8 +48,14 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       };
     })
     .add<IDataListComponentProps>(6, prev => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))
-  ,
+    .add<IDataListComponentProps>(7, (prev: IDataListComponentProps) => ({
+      ...migrateFormApi.properties(prev),
+      onNewListItemInitialize: migrateFormApi.full(prev.onNewListItemInitialize),
+      onListItemSave: migrateFormApi.full(prev.onListItemSave)
+    }))
+,
   settingsFormFactory: (props) => (<DataListSettingsForm {...props} />),
 };
 
 export default DataListComponent;
+

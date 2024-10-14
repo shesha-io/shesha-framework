@@ -7,6 +7,7 @@ import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/form
 import { FormMarkup } from '@/providers/form/models';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import settingsFormJson from './settingsForm.json';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface ISpaceProps extends IConfigurableFormComponent {
   align?: 'start' | 'end' | 'center' | 'baseline';
@@ -22,6 +23,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   type: 'space',
+  isInput: false,
   name: 'Space',
   icon: <ArrowsAltOutlined />,
   isHidden: true,
@@ -56,6 +58,7 @@ const SpaceComponent: IToolboxComponent<ISpaceProps> = {
   }),
   migrator: (m) => m
     .add<ISpaceProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<ISpaceProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
 };
 

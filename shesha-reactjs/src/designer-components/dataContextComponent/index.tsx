@@ -9,6 +9,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 import { DEFAULT_CONTEXT_METADATA } from '@/providers/dataContextManager/models';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IDataContextComponentProps extends IConfigurableFormComponent {
   items: IPropertyMetadata[];
@@ -18,21 +19,20 @@ export interface IDataContextComponentProps extends IConfigurableFormComponent {
 
 const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     type: 'dataContext',
-    isInput: true,
-    isOutput: true,
+    isInput: false,
     name: 'DataContext ',
     icon: <CodeOutlined />,
     dataTypeSupported: () => false,
     Factory: ({ model }) => {
 
-      const allData = useAvailableConstantsData(model.id);
+      const allData = useAvailableConstantsData({ topContextId: model.id });
 
       const metadata: Promise<IModelMetadata> = useMemo(() => {
         return Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name: model.componentName, properties: model.items ?? []} as IModelMetadata);
       }, [model.id, model.componentName, model.items]);
 
       const initialData: Promise<any> = useMemo(() => {
-        return allData.formMode === 'designer' ? null : executeScript(model.initialDataCode, allData);
+        return allData.form?.formMode === 'designer' ? null : executeScript(model.initialDataCode, allData);
       }, [model.initialDataCode]);
 
       return (
@@ -40,7 +40,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
           {...model}
           name={model.componentName} 
           metadata={metadata}
-          initialData={allData.formMode === 'designer' ? null : initialData}
+          initialData={allData.form?.formMode === 'designer' ? null : initialData}
           type='control'
         >
             <ComponentsContainer containerId={model.id} />
@@ -53,7 +53,12 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     linkToModelMetadata: (model): IDataContextComponentProps => ({...model}),
     migrator: (m) => m
       .add<IDataContextComponentProps>(0, prev => ({ ...prev, description: prev.description ?? prev.componentName, items: [], initialDataCode: null }))
-      .add<IDataContextComponentProps>(1, prev => ({ ...prev, onChangeAction: migrateNavigateAction(prev.onChangeAction) })),
+      .add<IDataContextComponentProps>(1, prev => ({ ...prev, onChangeAction: migrateNavigateAction(prev.onChangeAction) }))
+      .add<IDataContextComponentProps>(2, (prev) => ({
+        ...migrateFormApi.properties(prev),
+        initialDataCode: migrateFormApi.withoutFormData(prev?.initialDataCode),        
+      }))
+  ,
   };
   
   export default DataContextComponent;

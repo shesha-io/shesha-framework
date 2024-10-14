@@ -35,25 +35,30 @@ namespace Shesha.Metadata
 
         public MetadataProvider(
             IEntityConfigurationStore entityConfigurationStore,
-            IActionDescriptorCollectionProvider actionDescriptorCollectionProvider,
             ISpecificationsFinder specificationsFinder,
             IModelConfigurationManager modelConfigurationProvider,
             IHardcodeMetadataProvider hardcodeMetadataProvider,
-            IObjectMapper mapper
+            IObjectMapper mapper,
+            IIocResolver iocResolver
         )
         {
             _entityConfigurationStore = entityConfigurationStore;
-            _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
             _specificationsFinder = specificationsFinder;
             _modelConfigurationProvider = modelConfigurationProvider;
             _hardcodeMetadataProvider = hardcodeMetadataProvider;
             _mapper = mapper;
+
+            _actionDescriptorCollectionProvider = iocResolver.IsRegistered<IActionDescriptorCollectionProvider>()
+                ? iocResolver.Resolve<IActionDescriptorCollectionProvider>()
+                : null;
         }
 
         // ToDo: support Dynamic entities
         public async Task<MetadataDto> GetAsync(Type containerType, string containerName)
         {
             var isEntity = containerType.IsEntityType();
+            var isJsonEntity = containerType.IsJsonEntityType();
+
             var moduleInfo = containerType.GetConfigurableModuleInfo();
 
             var (changeTime, properties) = await GetPropertiesInternalAsync(containerType, containerName);
@@ -63,7 +68,7 @@ namespace Shesha.Metadata
                 DataType = isEntity ? DataTypes.EntityReference : DataTypes.Object,// todo: check other types
                 Properties = properties,
                 Specifications = await GetSpecificationsAsync(containerType),
-                ApiEndpoints = await GetApiEndpoints(containerType),
+                ApiEndpoints = await GetApiEndpointsAsync(containerType),
                 ClassName = containerType.FullName,
 
                 ChangeTime = changeTime,
@@ -71,24 +76,27 @@ namespace Shesha.Metadata
 
             UpdateMd5(dto);
 
-            if (isEntity)
+            if (isEntity || isJsonEntity)
             {
                 dto.TypeAccessor = containerType.GetTypeAccessor();
                 dto.Module = moduleInfo?.Name;
                 dto.ModuleAccessor = moduleInfo?.GetModuleAccessor();
 
-                var entityConfig = _entityConfigurationStore.Get(containerType);
-                if (entityConfig.HasTypeShortAlias && entityConfig.TypeShortAliasIsValid)
-                    dto.Aliases.Add(entityConfig.TypeShortAlias);
+                if (isEntity) 
+                {
+                    var entityConfig = _entityConfigurationStore.Get(containerType);
+                    if (entityConfig.HasTypeShortAlias && entityConfig.TypeShortAliasIsValid)
+                        dto.Aliases.Add(entityConfig.TypeShortAlias);
+                }
             }
 
             return dto;
         }
 
-        public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpoints(Type containerType)
+        public Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type containerType)
         {
             var result = new Dictionary<string, ApiEndpointDto>();
-            if (containerType == null || !containerType.IsEntityType())
+            if (_actionDescriptorCollectionProvider == null || containerType == null || !containerType.IsEntityType())
                 return Task.FromResult(result);
 
             var entityConfig = _entityConfigurationStore.Get(containerType);

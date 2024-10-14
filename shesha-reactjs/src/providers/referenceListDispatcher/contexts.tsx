@@ -1,7 +1,7 @@
-import { createContext } from 'react';
 import { IReferenceList, IReferenceListItem } from '@/interfaces/referenceList';
 import { PromisedValue } from '@/utils/promises';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { createNamedContext } from '@/utils/react';
 
 export interface IReferenceListDispatcherStateContext {
   activeProvider?: string;
@@ -19,8 +19,9 @@ export interface IReferenceListDispatcherActionsContext {
 /** initial state */
 export const REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE: IReferenceListDispatcherStateContext = {};
 
-export const ReferenceListDispatcherStateContext = createContext<IReferenceListDispatcherStateContext>(
-  REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE
+export const ReferenceListDispatcherStateContext = createNamedContext<IReferenceListDispatcherStateContext>(
+  REFERENCELIST_DISPATCHER_CONTEXT_INITIAL_STATE,
+  "ReferenceListDispatcherStateContext"
 );
 
-export const ReferenceListDispatcherActionsContext = createContext<IReferenceListDispatcherActionsContext>(undefined);
+export const ReferenceListDispatcherActionsContext = createNamedContext<IReferenceListDispatcherActionsContext>(undefined, "ReferenceListDispatcherActionsContext");

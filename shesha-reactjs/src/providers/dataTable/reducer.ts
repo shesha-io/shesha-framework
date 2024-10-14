@@ -342,6 +342,22 @@ const reducer = handleActions<IDataTableStateContext, any>(
       };
     },
 
+    [DataTableActionEnums.RemoveColumnFilter]: (
+      state: IDataTableStateContext,
+      action: ReduxActions.Action<string>
+    ) => {
+      const { payload: columnIdToRemove } = action;
+
+      const currentFilter = getDirtyFilter(state);
+      const filter = currentFilter.filter((f) => f.columnId !== columnIdToRemove);
+
+      return {
+        ...state,
+        tableFilter: filter,
+        tableFilterDirty: filter,
+      };
+    },
+
     [DataTableActionEnums.ToggleColumnVisibility]: (
       state: IDataTableStateContext,
       action: ReduxActions.Action<string>

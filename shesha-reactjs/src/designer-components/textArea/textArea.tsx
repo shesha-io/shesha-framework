@@ -5,7 +5,7 @@ import { Input, message } from 'antd';
 import { TextAreaProps } from 'antd/lib/input';
 import settingsFormJson from './settingsForm.json';
 import React, { CSSProperties } from 'react';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { axiosHttp } from '@/utils/fetchers';
@@ -16,6 +16,11 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { customEventHandler } from '@/components/formDesigner/components/utils';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { toSizeCssProp } from '@/utils/form';
+import { removeUndefinedProps } from '@/utils/object';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -40,13 +45,30 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
   icon: <FontColorsOutlined />,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
-  Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
+  Factory: ({ model }) => {
+    const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
 
-    const getTextAreaStyle = (style: CSSProperties = {}) => ({ ...style, marginBottom: model?.showCount ? '16px' : 0 });
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+    const additionalStyles: CSSProperties = removeUndefinedProps({
+      height: toSizeCssProp(model.height),
+      width: toSizeCssProp(model.width),
+      borderWidth: model.hideBorder ? 0 : model.borderSize,
+      borderRadius: model.borderRadius,
+      borderStyle: model.borderType,
+      borderColor: model.borderColor,
+      backgroundColor: model.backgroundColor,
+      color: model.fontColor,
+      fontWeight: model.fontWeight,
+      fontSize: model.fontSize,
+      ...stylingBoxAsCSS,
+    });
+    const jsStyle = getStyle(model.style, formData);
+    const finalStyle = removeUndefinedProps({...jsStyle, ...additionalStyles});
 
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
@@ -57,19 +79,17 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       allowClear: model.allowClear,
       variant: model.hideBorder ? 'borderless' : undefined,
       size: model?.size,
-      style: getTextAreaStyle(getStyle(model?.style, formData)),
+      style: { ...finalStyle, marginBottom: model?.showCount ? '16px' : 0 },
     };
 
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
 
@@ -78,7 +98,7 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
         model={model}
         initialValue={
           (model?.passEmptyStringByDefault && '') ||
-          evaluateString(model?.initialValue, { formData, formMode, globalState })
+          (model.initialValue ? evaluateString(model?.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
         }
       >
         {(value, onChange) => {
@@ -124,6 +144,24 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       .add<ITextAreaComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<ITextAreaComponentProps>(2, (prev) => migrateReadOnly(prev))
+      .add<ITextAreaComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+      .add<ITextAreaComponentProps>(4, (prev) => {
+        const styles: IInputStyles = {
+          size: prev.size,
+          width: prev.width,
+          height: prev.height,
+          hideBorder: prev.hideBorder,
+          borderSize: prev.borderSize,
+          borderRadius: prev.borderRadius,
+          borderColor: prev.borderColor,
+          fontSize: prev.fontSize,
+          fontColor: prev.fontColor,
+          backgroundColor: prev.backgroundColor,
+          stylingBox: prev.stylingBox,
+          style: prev.style,
+        };
+        return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      })
     ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

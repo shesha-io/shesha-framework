@@ -3,6 +3,7 @@ import { TemplateEvaluator } from "./client-side/utils";
 import { CodeLanguages } from "@/designer-components/codeEditor/types";
 import { IObjectMetadata } from "@/interfaces";
 import { CSSProperties } from "react";
+import { IEntityMetadata, IMetadata } from "@/interfaces/metadata";
 
 export interface IHasCodeTemplate {
     template: TemplateEvaluator;
@@ -20,6 +21,16 @@ export interface CodeTemplateSettings {
     functionName?: string;
 }
 
+export type ResultType = IMetadata | IObjectMetadata;
+
+export const isObjectType = (value: ResultType): value is IObjectMetadata => {
+    return value && value.dataType === "object";
+};
+
+export const isEntityType = (value: ResultType): value is IEntityMetadata => {
+    return value && value.dataType === "entity";
+};
+
 export interface ICodeEditorProps {
     value?: string;
     onChange?: (newValue: string) => void;
@@ -33,6 +44,7 @@ export interface ICodeEditorProps {
     wrapInTemplate?: boolean;
     templateSettings?: CodeTemplateSettings;
     availableConstants?: IObjectMetadata;
+    resultType?: ResultType;
 }
 
 export const CODE_TEMPLATE_DEFAULTS: CodeTemplateSettings = {

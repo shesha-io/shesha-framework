@@ -3,8 +3,10 @@ import {
   SidebarMenu,
   useConfigurableActionDispatcher,
   IConfigurableActionConfiguration,
-  useApplicationContext,
   useSidebarMenu,
+  useShaRouting,
+  evaluateString,
+  useAvailableConstantsData,
 } from "@shesha-io/reactjs";
 import { Button, Menu } from "antd";
 import React, { FC, useState } from "react";
@@ -20,8 +22,10 @@ export const LayoutMenu: FC<IProps> = () => {
   const onClick = () => setState((s) => ({ ...s, open: true }));
   const onClose = () => setState((s) => ({ ...s, open: false }));
 
+  const { getUrlFromNavigationRequest } = useShaRouting();
+
   const { executeAction } = useConfigurableActionDispatcher();
-  const executionContext = useApplicationContext();
+  const {executionContext, evaluationContext} = useAvailableConstantsData();
   const { getItems, isItemVisible } = useSidebarMenu();
   const items = getItems();
 
@@ -41,11 +45,29 @@ export const LayoutMenu: FC<IProps> = () => {
       isItemVisible,
       onButtonClick,
       isRootItem: true,
+      getFormUrl: (args) => {
+        const url = getUrlFromNavigationRequest(args?.actionArguments);
+        const href = evaluateString(decodeURIComponent(url), evaluationContext);
+        return href;
+      },
+      getUrl: (url) => {
+        const href = evaluateString(decodeURIComponent(url), evaluationContext);
+        return href;
+      },
     })
   );
 
-  return menuItems.length <= 30 ? (
-    <Menu className={styles.shaMenu} mode="horizontal" items={menuItems} />
+  return menuItems.length <= 20 ? (
+    <Menu
+      className={styles.shaMenu}
+      mode="horizontal"
+      items={menuItems}
+      overflowedIndicator={
+        <span className={styles.shaHamburgerItem}>
+          <MenuOutlined /> Menu
+        </span>
+      }
+    />
   ) : (
     <>
       <Button type="link" icon={<MenuOutlined />} onClick={onClick} />

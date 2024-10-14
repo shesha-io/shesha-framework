@@ -1,4 +1,4 @@
-import { IPasswordValidation } from '@/models';
+import { IPasswordValidation } from "@/models";
 
 /**
  * Check if the password is valid and strong.
@@ -11,7 +11,9 @@ import { IPasswordValidation } from '@/models';
  * @param password - the password to validate
  */
 export const isStrongPassword = (password: string) => {
-  const passwordRegex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})');
+  const passwordRegex = new RegExp(
+    "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+  );
 
   return passwordRegex.test(password);
 };
@@ -20,14 +22,16 @@ export const isStrongPassword = (password: string) => {
  *
  * @param password
  */
-export const getPasswordValidations = (password: string): IPasswordValidation => {
+export const getPasswordValidations = (
+  password: string
+): IPasswordValidation => {
   if (!password) return {};
 
   return {
-    hasLowerCaseChar: new RegExp('^.*[a-z]').test(password),
-    hasUpperCaseChar: new RegExp('^.*[A-Z]').test(password),
-    hasNumericChar: new RegExp('^.*[0-9]').test(password),
-    hasSpecialChar: new RegExp('^.*[!@#$%^&*]').test(password),
+    hasLowerCaseChar: new RegExp("^.*[a-z]").test(password),
+    hasUpperCaseChar: new RegExp("^.*[A-Z]").test(password),
+    hasNumericChar: new RegExp("^.*[0-9]").test(password),
+    hasSpecialChar: new RegExp("^.*[!@#$%^&*]").test(password),
     hasEightChars: password.length >= 8,
   };
 };

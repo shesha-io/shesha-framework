@@ -4,7 +4,7 @@ import { CSSProperties, ReactNode } from 'react';
 import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier } from '@/providers/form/models';
-import { ITableViewProps } from '@/providers/tableViewSelectorConfigurator/models';
+import { ITableViewProps } from '@/providers/dataTable/filters/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { ButtonGroupItemProps } from '@/index';
 
@@ -25,8 +25,6 @@ export interface IAddNewRecordProps {
   modalTitle?: string;
   showModalFooter?: boolean;
   footerButtons?: ModalFooterButtons;
-  submitHttpVerb?: 'POST' | 'PUT';
-  onSuccessRedirectUrl?: string;
   modalWidth?: number | string;
   buttons?: ButtonGroupItemProps[];
 }

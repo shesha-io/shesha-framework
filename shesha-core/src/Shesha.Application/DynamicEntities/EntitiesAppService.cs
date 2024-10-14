@@ -12,6 +12,7 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
 using Shesha.Metadata.Dtos;
+using Shesha.Permissions;
 using Shesha.Reflection;
 using Shesha.Specifications;
 using Shesha.Utilities;
@@ -48,7 +49,7 @@ namespace Shesha.DynamicEntities
 
         protected async Task CheckPermissionAsync(EntityConfiguration entityConfig, string method)
         {
-            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, method, AbpSession.UserId != null);
+            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.FullName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
         }
 
         [HttpGet]

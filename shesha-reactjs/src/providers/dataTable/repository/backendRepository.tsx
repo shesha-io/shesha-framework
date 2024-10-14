@@ -10,7 +10,7 @@ import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBack
 import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs, SupportsGroupingArgs } from "./interfaces";
 import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
 import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { IMetadataDispatcherActionsContext } from "@/providers/metadataDispatcher/contexts";
+import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
 import { IApiEndpoint, isEntityReferencePropertyMetadata, StandardEntityActions } from "@/interfaces/metadata";
 import { IUseMutateResponse, useMutate } from "@/hooks/useMutate";
@@ -47,7 +47,7 @@ export interface IBackendRepository extends IRepository<ICreateOptions, IUpdateO
 interface ICreateBackendRepositoryArgs extends IWithBackendRepositoryArgs {
     backendUrl: string;
     httpHeaders: IHttpHeadersDictionary;
-    metadataDispatcher: IMetadataDispatcherActionsContext;
+    metadataDispatcher: IMetadataDispatcher;
     apiHelper: IEntityEndpointsEvaluator;
     mutator: IUseMutateResponse<any>;
 }
@@ -178,15 +178,15 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
                             referenceListName: propMeta.referenceListName,
                             referenceListModule: propMeta.referenceListModule,
                             entityReferenceTypeShortAlias: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityType : undefined,
-                            allowInherited: false, // todo: add to metadata
-                            isFilterable: true, // todo: add to metadata
-                            isSortable: true, // todo: add to metadata
+                            allowInherited: false, // TODO: add to metadata
+                            isFilterable: true, // TODO: add to metadata
+                            isSortable: true, // TODO: add to metadata
                             metadata: propMeta,
                         }
                         : baseProps;
                 });
             }).catch(e => {
-                // todo: return error and handle on the upper level
+                // TODO: return error and handle on the upper level
                 console.error('Failed to fetch table columns', e);
                 return [];
             });

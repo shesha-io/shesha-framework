@@ -5,25 +5,31 @@ import settingsFormJson from './settingsForm.json';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import PermissionedObjectsTree from '@/components/permissionedObjectsTree';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { IConfigurableActionConfiguration } from '@/index';
 
 export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFormComponent { 
   objectsType?: string;
+  height?: string;
 
   /**
    * A callback for when the value of this component changes
    */
    onChange?: any;
+
+   onSelectAction?: IConfigurableActionConfiguration;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
 
 const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTreeComponentProps> = {
   type: 'permissionedObjectsTree',
+  isInput: false,
   name: 'Permissioned objects tree',
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {
     return (
-      <PermissionedObjectsTree {...model}/>
+      <PermissionedObjectsTree {...model} formComponentId={model.id} formComponentName={model.componentName}/>
     );
   },
   initModel: (model: IPermissionedObjectsTreeComponentProps) => {
@@ -38,6 +44,9 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
       ...model,
     };
   },
+  migrator: (m) => m
+    .add<IPermissionedObjectsTreeComponentProps>(0, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+  ,
 };
 
 export default PermissionedObjectsTreeComponent;

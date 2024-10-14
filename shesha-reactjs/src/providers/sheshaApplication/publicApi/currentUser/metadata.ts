@@ -1,52 +1,18 @@
 import { TypeDefinition, TypeDefinitionLoader } from "@/interfaces/metadata";
-import { MetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
+import { userApiSourceCode } from "@/publicJsApis";
 
 const getUserApiTypeDefinition: TypeDefinitionLoader = (): Promise<TypeDefinition> => {
-    var userSource = [
-        "/**",
-        " * Current logged in User API",
-        " */",
-        "export interface UserApi {",
-        "    /**",
-        "     * Is user logged in",
-        "     */",
-        "    isLoggedIn: boolean;",
-        "    /**",
-        "     * Internal Id",
-        "     */",
-        "    id: string;",
-        "    /**",
-        "     * User Name",
-        "     */",
-        "    userName: string;",
-        "    /**",
-        "     * First Name",
-        "     */",
-        "    firstName: string;",
-        "    /**",
-        "     * Last Name",
-        "     */",
-        "    lastName: string;",
-        "    /**",
-        "     * Has role",
-        "     */",
-        "    hasRoleAsync: (role: string) => Promise<boolean>;",
-        "    /**",
-        "     * Has permission",
-        "     */",
-        "    hasPermissionAsync: (permission: string) => Promise<boolean>;",
-        "}",
-    ].join("\n");
     return Promise.resolve({
         typeName: "UserApi",
         files: [{
-            content: userSource,
+            content: userApiSourceCode,
             fileName: "apis/userApi.d.ts",
         }],        
     });
 };
 
-export const getUserApiProperties = (builder: MetadataBuilder): MetadataBuilder =>
+export const getUserApiProperties = (builder: IObjectMetadataBuilder): IObjectMetadataBuilder =>
     builder
         .addBoolean("isLoggedIn", "Is logged in")
         .addString("id", "Id")

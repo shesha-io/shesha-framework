@@ -1,12 +1,16 @@
 import { createStyles } from 'antd-style';
 import { sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, responsive, token }) => {
+interface IStyleProps {
+  block: boolean;
+}
+
+export const useStyles = createStyles(({ css, cx, responsive, token }, props: IStyleProps) => {
   const shaGlobalTableFilter = cx(
     'sha-global-table-filter',
     css`
       padding-right: ${sheshaStyles.paddingLG}px;
-      width: 350px;
+      width: ${props.block ? '100%' : '350px'};
 
       .ant-input-group-wrapper {
         .ant-input-wrapper {

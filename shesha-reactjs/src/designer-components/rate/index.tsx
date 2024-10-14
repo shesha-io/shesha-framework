@@ -24,6 +24,8 @@ import {
   ConfigurableFormItem,
   ShaIcon,
 } from '@/components';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
@@ -43,8 +45,8 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   icon: <LikeOutlined />,
   isInput: true,
   isOutput: true,
-  Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
+  Factory: ({ model }) => {
+    const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
@@ -53,14 +55,12 @@ const RateComponent: IToolboxComponent<IRateProps> = {
 
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
 
@@ -101,6 +101,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))
     .add<IRateProps>(2, (prev) => migrateReadOnly(prev))
+    .add<IRateProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
 };
 

@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx }) => {
     const codeEditorModalBody = cx("sha-code-editor-modal-body", css`

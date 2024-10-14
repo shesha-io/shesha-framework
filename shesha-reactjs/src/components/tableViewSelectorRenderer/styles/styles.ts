@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 import { getTextHoverEffects, getWarningHoverEffects } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, iconPrefixCls, token }) => {

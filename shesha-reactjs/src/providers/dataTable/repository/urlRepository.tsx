@@ -17,7 +17,7 @@ import {
 import { IRepository, IHasRepository, RowsReorderPayload } from './interfaces';
 import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
-import { IMetadataDispatcherActionsContext } from '@/providers/metadataDispatcher/contexts';
+import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 import { IEntityEndpointsEvaluator, useModelApiHelper } from '@/components/configurableForm/useActionEndpoint';
 import { IUseMutateResponse, useMutate } from '@/hooks/useMutate';
 import { getUrlKeyParam } from '@/utils';
@@ -33,7 +33,7 @@ export interface IUrlRepository extends IRepository { }
 interface ICreateUrlRepositoryArgs extends IWithUrlRepositoryArgs {
   backendUrl: string;
   httpHeaders: IHttpHeadersDictionary;
-  metadataDispatcher: IMetadataDispatcherActionsContext;
+  metadataDispatcher: IMetadataDispatcher;
   apiHelper: IEntityEndpointsEvaluator;
   mutator: IUseMutateResponse<any>;
 }
@@ -121,7 +121,6 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     });
   };
 
-  // ToDo: have to be implemented
   const prepareColumns = (_: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
     return Promise.resolve([]);
   };

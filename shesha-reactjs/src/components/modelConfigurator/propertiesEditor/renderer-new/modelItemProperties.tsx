@@ -3,10 +3,11 @@ import React, {
   FC,
 } from 'react';
 import { ConfigurableForm } from '../../..';
-import { Empty, Form } from 'antd';
+import { Empty } from 'antd';
 import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { IModelItem } from '@/interfaces/modelConfigurator';
+import { sheshaStyles } from '@/styles';
 
 export interface IModelItemProperties {
   item?: IModelItem;
@@ -16,8 +17,6 @@ export interface IModelItemProperties {
 const formMarkup = propertySettingsJson as FormMarkup;
 
 export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }) => {
-  const [form] = Form.useForm();
-
   const debouncedSave = useDebouncedCallback(
     values => {
       onChange?.({ ...item, ...values });
@@ -35,9 +34,9 @@ export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }
         wrapperCol={{ span: 24 }}
         mode="edit"
         markup={formMarkup}
-        form={form}
         initialValues={item}
         onValuesChange={debouncedSave}
+        className={sheshaStyles.verticalSettingsClass}
       />
     )
     : (

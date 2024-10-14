@@ -1,20 +1,14 @@
-import appConfiguratorReducer from './reducer';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import DebugPanel from '@/components/debugPanel';
-import IRequestHeaders from '@/interfaces/requestHeaders';
-import React, { FC, PropsWithChildren, useContext, useReducer, useRef } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
 import { ConfigurationItemsLoaderProvider } from '@/providers/configurationItemsLoader';
 import { DataContextManager } from '@/providers/dataContextManager';
 import { DataSourcesProvider } from '@/providers/dataSourcesProvider';
-import { FRONT_END_APP_HEADER_NAME } from './models';
-import { IToolboxComponentGroup } from '@/interfaces';
 import { ReferenceListDispatcherProvider } from '@/providers/referenceListDispatcher';
 import { IRouter } from '@/providers/shaRouting';
 import { SettingsProvider } from '@/providers/settings';
-import { StackedNavigationProvider } from '@/generic-pages/dynamic/navigation/stakedNavigation';
-import { useDeepCompareEffect } from 'react-use';
 import {
   FormIdentifier,
   IAuthProviderRefProps,
@@ -26,145 +20,103 @@ import {
   ShaRoutingProvider,
   AppConfiguratorProvider,
   DynamicModalProvider,
-  UiProvider,
   CanvasProvider,
 } from '@/providers';
 import {
-  setBackendUrlAction,
-  setGlobalVariablesAction,
-  setHeadersAction,
-  updateToolboxComponentGroupsAction,
-} from './actions';
-import {
   DEFAULT_ACCESS_TOKEN_NAME,
-  DEFAULT_SHESHA_ROUTES,
-  ISheshaApplication,
-  ISheshaRutes,
-  SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
-  SheshaApplicationActionsContext,
-  SheshaApplicationStateContext,
+  ISheshaRoutes,
 } from './contexts';
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';
 import { GlobalPageStyles } from '@/components/page/styles/styles';
 import { ApplicationContextsProvider } from './context';
 import { DataContextProvider } from '../dataContextProvider';
-import { SheshaCommonContexts } from '../dataContextManager/models';
-import { useApplicationPlugin } from './context/applicationContext';
+import { SHESHA_ROOT_DATA_CONTEXT_MANAGER, SheshaCommonContexts } from '../dataContextManager/models';
+import { useApplicationPlugin, usePublicApplicationApi } from './context/applicationContext';
+import { FormManager } from '../formManager';
+import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
+import { EntityMetadataFetcherProvider } from '../metadataDispatcher/entities/provider';
+import { FormDataLoadersProvider } from '../form/loaders/formDataLoadersProvider';
+import { FormDataSubmittersProvider } from '../form/submitters/formDataSubmittersProvider';
+import { MainMenuProvider } from '../mainMenu';
+import { ISheshaApplicationInstance, SheshaApplicationInstanceContext, useSheshaApplicationInstance } from './application';
+import SheshaLoader from '@/components/sheshaLoader';
+import { Result } from 'antd';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
-  applicationName?: string;
-  accessTokenName?: string;
-  router?: IRouter;
-  toolboxComponentGroups?: IToolboxComponentGroup[];
-  unauthorizedRedirectUrl?: string;
-  themeProps?: ThemeProviderProps;
-  routes?: ISheshaRutes;
-  noAuth?: boolean;
-  homePageUrl?: string;
   /**
    * Unique identifier (key) of the front-end application, is used to separate some settings and application parts when use multiple front-ends
    */
   applicationKey?: string;
+  applicationName?: string;
+  accessTokenName?: string;
+
+  themeProps?: ThemeProviderProps;
+
+  router?: IRouter;
+  routes?: ISheshaRoutes;
+  homePageUrl?: string;
   getFormUrlFunc?: (formId: FormIdentifier) => string;
+
+  noAuth?: boolean;
+  unauthorizedRedirectUrl?: string;
 }
 
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {
   const {
     children,
-    backendUrl,
-    applicationName,
-    applicationKey,
     accessTokenName,
     homePageUrl,
     router,
-    toolboxComponentGroups = [],
     unauthorizedRedirectUrl,
     themeProps,
-    routes,
     getFormUrlFunc,
   } = props;
-  const initialHeaders = applicationKey ? { [FRONT_END_APP_HEADER_NAME]: applicationKey } : {};
-  const [state, dispatch] = useReducer(appConfiguratorReducer, {
-    ...SHESHA_APPLICATION_CONTEXT_INITIAL_STATE,
-    routes: routes ?? DEFAULT_SHESHA_ROUTES,
-    backendUrl,
-    applicationName,
-    toolboxComponentGroups,
-    applicationKey,
-    httpHeaders: initialHeaders,
-  });
 
   const authRef = useRef<IAuthProviderRefProps>();
+  const application = useSheshaApplicationInstance({ ...props, authorizer: authRef });
+  useEffect(() => {
+    application.init();
+  }, []);
 
-  const updateToolboxComponentGroups = (payload: IToolboxComponentGroup[]) => {
-    dispatch(updateToolboxComponentGroupsAction(payload));
-  };
-
-  useDeepCompareEffect(() => {
-    if (toolboxComponentGroups?.length !== 0) {
-      updateToolboxComponentGroups(toolboxComponentGroups);
-    }
-  }, [toolboxComponentGroups]);
-
-  const setRequestHeaders = (headers: IRequestHeaders) => {
-    dispatch(setHeadersAction(headers));
-  };
-
-  const changeBackendUrl = (newBackendUrl: string) => {
-    dispatch(setBackendUrlAction(newBackendUrl));
-  };
-
-  const anyOfPermissionsGranted = (permissions: string[]) => {
-    if (permissions?.length === 0) return true;
-
-    const authorizer = authRef?.current?.anyOfPermissionsGranted;
-    return authorizer && authorizer(permissions);
-  };
-
-  const setGlobalVariables = (values: { [x: string]: any }) => {
-    dispatch(setGlobalVariablesAction(values));
-  };
+  const { initializationState: { status, hint, error } } = application;
 
   return (
-    <SheshaApplicationStateContext.Provider value={state}>
-      <SheshaApplicationActionsContext.Provider
-        value={{
-          changeBackendUrl,
-          setRequestHeaders,
-          // This will always return false if you're not authorized
-          anyOfPermissionsGranted: anyOfPermissionsGranted, // NOTE: don't pass ref directly here, it leads to bugs because some of components use old reference even when authRef is updated
-          setGlobalVariables,
-        }}
-      >
-        <SettingsProvider>
+    <SheshaApplicationInstanceContext.Provider value={application}>
+      <SettingsProvider>
+        <ThemeProvider {...(themeProps || {})}>
           <ConfigurableActionDispatcherProvider>
-            <UiProvider>
-              <ShaRoutingProvider getFormUrlFunc={getFormUrlFunc} router={router}>
-                <DynamicActionsDispatcherProvider>
-                  <ConditionalWrap
-                    condition={!props.noAuth}
-                    wrap={(authChildren) => (
-                      <AuthProvider
-                        tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
-                        onSetRequestHeaders={setRequestHeaders}
-                        unauthorizedRedirectUrl={unauthorizedRedirectUrl}
-                        authRef={authRef}
-                        homePageUrl={homePageUrl}
-                      >
-                        {authChildren}
-                      </AuthProvider>
-                    )}
-                  >
-                    <ConfigurationItemsLoaderProvider>
-                      <ThemeProvider {...(themeProps || {})}>
-                        <GlobalSheshaStyles />
-                        <GlobalPageStyles />
+            <ShaRoutingProvider
+              getFormUrlFunc={getFormUrlFunc}
+              router={router}
+              getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
+            >
+              <DynamicActionsDispatcherProvider>
+                <ConditionalWrap
+                  condition={!props.noAuth}
+                  wrap={(authChildren) => (
+                    <AuthProvider
+                      tokenName={accessTokenName || DEFAULT_ACCESS_TOKEN_NAME}
+                      unauthorizedRedirectUrl={unauthorizedRedirectUrl}
+                      authRef={authRef}
+                      homePageUrl={homePageUrl}
+                    >
+                      {authChildren}
+                    </AuthProvider>
+                  )}
+                >
+                  <ConfigurationItemsLoaderProvider>
+                    <FormManager>
 
-                        <AppConfiguratorProvider>
-                          <ReferenceListDispatcherProvider>
+                      <GlobalSheshaStyles />
+                      <ShaFormStyles />
+                      <GlobalPageStyles />
+
+                      <AppConfiguratorProvider>
+                        <ReferenceListDispatcherProvider>
+                          <EntityMetadataFetcherProvider>
                             <MetadataDispatcherProvider>
-                              <DataContextManager>
+                              <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
                                 <ApplicationContextsProvider>
                                   <DataContextProvider
                                     id={SheshaCommonContexts.AppContext}
@@ -172,47 +124,66 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                                     description={'Application data store context'}
                                     type={'root'}
                                   >
-                                    <CanvasProvider>
-                                  <StackedNavigationProvider>
-                                    <DataSourcesProvider>
-                                      <DynamicModalProvider>
-                                        <DebugPanel>
-                                          <ApplicationActionsProcessor>
-                                              {children}
-                                          </ApplicationActionsProcessor>
-                                        </DebugPanel>
-                                      </DynamicModalProvider>
-                                    </DataSourcesProvider>
-                                  </StackedNavigationProvider>
-                                    </CanvasProvider>
+                                    <FormDataLoadersProvider>
+                                      <FormDataSubmittersProvider>
+                                        <CanvasProvider>
+                                          <DataSourcesProvider>
+                                            <DynamicModalProvider>
+                                              {(status === 'inprogress' || status === 'waiting') && <SheshaLoader message={hint || "Initializing..."} />}
+                                              {status === 'ready' &&
+                                                <DebugPanel>
+                                                  <ApplicationActionsProcessor>
+                                                    <MainMenuProvider>
+                                                      {children}
+                                                    </MainMenuProvider>
+                                                  </ApplicationActionsProcessor>
+                                                </DebugPanel>
+                                              }
+                                              {status === 'failed' &&
+                                                <Result
+                                                  status="500"
+                                                  title="500"
+                                                  subTitle={error?.message || "Sorry, something went wrong."}
+                                                //extra={<Button type="primary">Back Home</Button>}
+                                                />
+                                              }
+                                            </DynamicModalProvider>
+                                          </DataSourcesProvider>
+                                        </CanvasProvider>
+                                      </FormDataSubmittersProvider>
+                                    </FormDataLoadersProvider>
                                   </DataContextProvider>
                                 </ApplicationContextsProvider>
                               </DataContextManager>
                             </MetadataDispatcherProvider>
-                          </ReferenceListDispatcherProvider>
-                        </AppConfiguratorProvider>
-                      </ThemeProvider>
-                    </ConfigurationItemsLoaderProvider>
-                  </ConditionalWrap>
-                </DynamicActionsDispatcherProvider>
-              </ShaRoutingProvider>
-            </UiProvider>
+                          </EntityMetadataFetcherProvider>
+                        </ReferenceListDispatcherProvider>
+                      </AppConfiguratorProvider>
+                    </FormManager>
+                  </ConfigurationItemsLoaderProvider>
+                </ConditionalWrap>
+              </DynamicActionsDispatcherProvider>
+            </ShaRoutingProvider>
           </ConfigurableActionDispatcherProvider>
-        </SettingsProvider>
-      </SheshaApplicationActionsContext.Provider>
-    </SheshaApplicationStateContext.Provider>
+        </ThemeProvider>
+      </SettingsProvider>
+    </SheshaApplicationInstanceContext.Provider>
   );
 };
 
-const useSheshaApplication = (require: boolean = true): ISheshaApplication => {
-  const stateContext = useContext(SheshaApplicationStateContext);
-  const actionsContext = useContext(SheshaApplicationActionsContext);
+const useSheshaApplication = (require: boolean = true): ISheshaApplicationInstance => {
+  const context = useContext(SheshaApplicationInstanceContext);
 
-  if (require && (stateContext === undefined || actionsContext === undefined)) {
-    throw new Error('useSheshaApplication must be used within a SheshaApplicationStateContext');
+  if (require && context === undefined) {
+    throw new Error('useSheshaApplication must be used within a ShaApplicationProvider');
   }
 
-  return { ...stateContext, ...actionsContext };
+  return context;
 };
 
-export { ShaApplicationProvider, useSheshaApplication, useApplicationPlugin };
+/**
+ * @deprecated use useSheshaApplication instead
+ */
+const useSheshaApplicationState = useSheshaApplication;
+
+export { ShaApplicationProvider, useSheshaApplication, useSheshaApplicationState, useApplicationPlugin, usePublicApplicationApi };

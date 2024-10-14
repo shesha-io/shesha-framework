@@ -174,7 +174,13 @@ export const getSettings = (data: any) =>
             templateSettings: {
               functionName: 'onChange'              
             },
-            availableConstantsExpression: "return metadataBuilder.addAllStandard([\"shesha:selectedRow\"]).addObject(\"value\", \"Component current value\", undefined).build();"
+            availableConstantsExpression: async ({ metadataBuilder }) => {
+              return metadataBuilder
+                .object("constants")
+                .addAllStandard(["shesha:selectedRow"])
+                .addObject("value", "Component current value", undefined)
+                .build();
+            },
           }).toJson()
         ]
       }
@@ -201,9 +207,38 @@ export const getSettings = (data: any) =>
             templateSettings: {
               functionName: 'getStyle'
             },
-            availableConstantsExpression: 'return metadataBuilder.addStandard(["shesha:formData", "shesha:globalState"]).build();',
+            availableConstantsExpression: async ({ metadataBuilder }) => {
+              return metadataBuilder
+                .object("constants")
+                .addStandard(["shesha:formData", "shesha:globalState"])
+                .build();
+            },
           }).toJson()
         ]
       }
     })
+    .addCollapsiblePanel({
+      id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
+      propertyName: 'pnlSecurity',
+      parentId: 'root',
+      label: 'Security',
+      labelAlign: "left",
+      expandIconPosition: "start",
+      ghost: true,
+      collapsible: 'header',
+      content: {
+        id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+        components: [...new DesignerToolbarSettings() 
+          .addPermissionAutocomplete({
+            id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
+            propertyName: 'permissions',
+            label: 'Permissions',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            validate: {},
+          }).toJson()
+        ]
+  }
+  })
     .toJson();

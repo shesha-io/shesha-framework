@@ -9,7 +9,7 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 4,
+      "version": 6,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -30,7 +30,8 @@
             "label": "Property name",
             "validate": {
               "required": true
-            }
+            },
+            "version": 0
           },
           {
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
@@ -38,8 +39,11 @@
             "propertyName": "label",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Label",
-            "version": 3,
-            "textType": "text"
+            "version": 5,
+            "textType": "text",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "57a40a33-7e08-4ce4-9f08-a34d24a83338",
@@ -60,7 +64,7 @@
               }
             ],
             "dataSourceType": "values",
-            "version": 5,
+            "version": 6,
             "useRawValues": false,
             "referenceListId": null,
             "valueFormat": "listItem"
@@ -71,8 +75,11 @@
             "propertyName": "placeholder",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Placeholder",
-            "version": 3,
-            "textType": "text"
+            "version": 5,
+            "textType": "text",
+            "desktop": {},
+            "tablet": {},
+            "mobile": {}
           },
           {
             "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
@@ -80,7 +87,7 @@
             "propertyName": "description",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Description",
-            "version": 2
+            "version": 3
           },
           {
             "id": "ZEAbHFGIsJsmRblAqm4O8",
@@ -111,7 +118,7 @@
               }
             ],
             "settingsValidationErrors": [],
-            "version": 5,
+            "version": 6,
             "useRawValues": false,
             "referenceListId": null,
             "valueFormat": "listItem"
@@ -122,7 +129,7 @@
             "propertyName": "hidden",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Hidden",
-            "version": 2
+            "version": 3
           },
           {
             "id": "c6885251-96a6-40ce-99b2-4b5209a9e01c",
@@ -130,7 +137,7 @@
             "propertyName": "hideLabel",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "label": "Hide Label",
-            "version": 2
+            "version": 3
           },
           {
             "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -152,7 +159,7 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 5,
+      "version": 6,
       "dataSourceType": "values",
       "useRawValues": false,
       "referenceListId": null,
@@ -193,7 +200,7 @@
         "_value": false
       },
       "isDynamic": false,
-      "version": 4,
+      "version": 6,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -212,7 +219,7 @@
             "propertyName": "wrapInTemplate",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8111",
             "label": "Use function wrapper",
-            "version": 2,
+            "version": 3,
             "settingsValidationErrors": [],
             "description": "If true, a code will be wrapped in a standard function wrapper template",
             "validate": {}
@@ -231,7 +238,7 @@
               "_value": false
             },
             "isDynamic": false,
-            "version": 2,
+            "version": 4,
             "direction": "vertical",
             "justifyContent": "left",
             "flexWrap": "wrap",
@@ -242,7 +249,7 @@
                 "propertyName": "templateSettings.useAsyncDeclaration",
                 "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
                 "label": "Async declaration",
-                "version": 2,
+                "version": 3,
                 "settingsValidationErrors": [],
                 "description": "",
                 "hidden": {
@@ -263,7 +270,7 @@
                 "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
                 "hidden": false,
                 "isDynamic": false,
-                "version": 3,
+                "version": 5,
                 "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
@@ -275,7 +282,10 @@
                   "maxLength": "",
                   "message": ""
                 },
-                "context": null
+                "context": null,
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
               },
               {
                 "id": "9bwTOXitpfb7rb0DhhQIecgxfkvAZh",
@@ -288,16 +298,44 @@
                 "hidden": false,
                 "isDynamic": false,
                 "mode": "dialog",
-                "version": 2,
+                "version": 3,
                 "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
                 "templateSettings": {
-                  "functionName": "getAvailableConstants",
+                  "functionName": "getResultType",
                   "useAsyncDeclaration": true
                 },
                 "validate": {},
-                "wrapInTemplate": true
+                "wrapInTemplate": true,
+                "language": "typescript",
+                "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\n        .addAllStandard()\n        .addStandard(\"shesha:metadataBuilder\")\n        .build();",
+                "resultTypeExpression": "    return metadataBuilder.metadata();"
+              },
+              {
+                "id": "wyBAGG_zgniuhrUFhVawlX6H5NUqZ2",
+                "type": "codeEditor",
+                "propertyName": "resultTypeExpression",
+                "componentName": "resultTypeExpression",
+                "label": "Result type",
+                "labelAlign": "right",
+                "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
+                "hidden": false,
+                "isDynamic": false,
+                "mode": "dialog",
+                "version": 3,
+                "settingsValidationErrors": [],
+                "placeholder": "",
+                "description": "",
+                "templateSettings": {
+                  "functionName": "getResultType",
+                  "useAsyncDeclaration": true
+                },
+                "validate": {},
+                "wrapInTemplate": true,
+                "language": "typescript",
+                "availableConstantsExpression": "    return metadataBuilder.object()\r\n        .addStandard([\"shesha:metadataBuilder\", \"shesha:form\", \"shesha:formData\"])\r\n        .build();",
+                "resultTypeExpression": "    return metadataBuilder.metadata();"
               }
             ],
             "settingsValidationErrors": [],
@@ -318,7 +356,7 @@
       "parentId": "root",
       "hidden": false,
       "isDynamic": false,
-      "version": 4,
+      "version": 6,
       "expandIconPosition": "start",
       "collapsible": "header",
       "ghost": true,
@@ -337,26 +375,44 @@
             "propertyName": "validate.required",
             "parentId": "whQTbtwSdXgO8Aeff_-9d7KozYxIAD",
             "label": "Required",
-            "version": 2
+            "version": 3
           }
         ]
       },
-      "components": [
-        {
-          "id": "whQTbtwSdXgO8Aeff_-9d7KozYxIAD",
-          "components": [
-            {
-              "id": "iZjk8kOw4fqcHG0ztIc_DN-wrjCcKG",
-              "type": "checkbox",
-              "propertyName": "validate.required",
-              "parentId": "whQTbtwSdXgO8Aeff_-9d7KozYxIAD",
-              "label": "Required",
-              "version": 2
-            }
-          ],
-          "parentId": "EdDq7GYOJy2O2TIOads9rczqkjh6t6"
-        }
-      ]
+      "components": []
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 6,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {
@@ -373,6 +429,30 @@
       "description": "Default form settings",
       "displayName": "DEFAULT_FORM_SETTINGS",
       "props": {}
+    },
+    "access": null,
+    "permissions": null,
+    "version": 6,
+    "dataLoaderType": "none",
+    "dataSubmitterType": "none",
+    "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
+    "onAfterDataLoad": null,
+    "onPrepareSubmitData": null,
+    "onBeforeSubmit": null,
+    "onSubmitSuccess": null,
+    "onSubmitFailed": null,
+    "dataSubmittersSettings": {
+      "gql": {
+        "endpointType": "default",
+        "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
+      }
+    },
+    "dataLoadersSettings": {
+      "gql": {
+        "endpointType": "default",
+        "staticEndpoint": {}
+      },
+      "custom": {}
     }
   }
 }

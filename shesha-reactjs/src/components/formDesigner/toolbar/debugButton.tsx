@@ -1,14 +1,15 @@
 import React, { FC } from 'react';
 import { BugOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState, useFormDesignerActions } from '@/providers/formDesigner';
 
 export interface IDebugButtonProps {
 
 }
 
 export const DebugButton: FC<IDebugButtonProps> = () => {
-  const { setDebugMode, isDebug } = useFormDesigner();
+  const { isDebug } = useFormDesignerState();
+  const { setDebugMode } = useFormDesignerActions();  
 
   return (
     <Button

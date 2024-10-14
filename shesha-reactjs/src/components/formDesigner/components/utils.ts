@@ -1,48 +1,42 @@
-import { FormInstance } from 'antd';
 import { MessageInstance } from 'antd/es/message/interface';
 import { AxiosInstance } from 'axios';
 import { DOMAttributes } from 'react';
 import { IAnyObject, IConfigurableFormComponent } from '@/interfaces';
 import { IGooglePlacesAutocompleteProps } from '@/components';
-import { ISetFormDataPayload } from '@/providers/form/contexts';
-import { FormMode } from '@/providers/form/models';
 import { ISetStatePayload } from '@/providers/globalState/contexts';
 import { CustomLabeledValue } from '@/components/autocomplete';
 import { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { IOpenCageResponse } from '../../googlePlacesAutocomplete/models';
+import { FormApi } from '@/providers/form/formApi';
 
-type SetFormDataFunc = (payload: ISetFormDataPayload) => void;
 type SetGlobalStateFunc = (payload: ISetStatePayload) => void;
 
 export interface ICustomEventHandler {
   model: IConfigurableFormComponent;
-  form: FormInstance;
+  form: FormApi;
   formData: any;
-  formMode: FormMode;
   globalState: IAnyObject;
   http: AxiosInstance;
   message: MessageInstance;
   moment: object;
-  setFormData: (payload: ISetFormDataPayload) => void;
   setGlobalState: (payload: ISetStatePayload) => void;
-}
+};
 
 export interface ICustomAddressEventHandler extends ICustomEventHandler {
   onChange: Function;
   onSelect: (selected: IAddressAndCoords) => Promise<IOpenCageResponse | IAddressAndCoords>;
-}
+};
 
 export const onCustomEventsHandler = <FormCustomEvent = any>(
   event: FormCustomEvent,
   customEventAction: string,
-  form: FormInstance,
+  form: FormApi,
   formData: any,
-  formMode: FormMode,
   globalState: IAnyObject,
   http: AxiosInstance,
   message: MessageInstance,
   moment: object,
-  setFormData: SetFormDataFunc,
+  value: any,
   setGlobalState: SetGlobalStateFunc
 ) => {
   /* tslint:disable:function-constructor */
@@ -50,17 +44,15 @@ export const onCustomEventsHandler = <FormCustomEvent = any>(
     'data',
     'event',
     'form',
-    'formMode',
     'globalState',
     'http',
     'message',
     'moment',
-    'setFormData',
+    'value',
     'setGlobalState',
     customEventAction
   );
-
-  return eventFunc(formData, event, form, formMode, globalState, http, message, moment, setFormData, setGlobalState);
+  return eventFunc(formData, event, form, globalState, http, message, moment, value, setGlobalState);
 };
 
 type EventHandlerAttributes<T = any> = Pick<DOMAttributes<T>, 'onBlur' | 'onChange' | 'onFocus' | 'onClick'>;
@@ -69,30 +61,31 @@ export const customEventHandler = <T = any>({
   model,
   form,
   formData,
-  formMode,
   globalState,
   http,
   message,
   moment,
-  setFormData,
   setGlobalState,
 }: ICustomEventHandler): EventHandlerAttributes<T> => {
-  const onCustomEvent = (event: any, key: string) =>
-    onCustomEventsHandler(
+  const onCustomEvent = (event: any, key: string) => {
+    return onCustomEventsHandler(
       event,
       model?.[key],
       form,
       formData,
-      formMode,
       globalState,
       http,
       message,
       moment,
-      setFormData,
+      event?.currentTarget.value,
       setGlobalState
     );
 
+  };
+
+
   return {
+
     onBlur: (event) => onCustomEvent(event, 'onBlurCustom'),
     onChange: (event) => onCustomEvent(event, 'onChangeCustom'),
     onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
@@ -106,30 +99,26 @@ export const customDateEventHandler = ({
   model,
   form,
   formData,
-  formMode,
   globalState,
   http,
   message,
   moment,
-  setFormData,
   setGlobalState,
 }: ICustomEventHandler) => ({
   onChange: (value: any | null, dateString: string | [string, string]) => {
     const eventFunc = new Function(
-      'data, dateString, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState',
+      'data, dateString, form, globalState, http, message, moment, value, setGlobalState',
       model?.onChangeCustom
     );
     return eventFunc(
       formData,
       dateString,
       form,
-      formMode,
       globalState,
       http,
       message,
       moment,
       value,
-      setFormData,
       setGlobalState
     );
   },
@@ -139,30 +128,26 @@ export const customTimeEventHandler = ({
   model,
   form,
   formData,
-  formMode,
   globalState,
   http,
   message,
   moment,
-  setFormData,
   setGlobalState,
 }: ICustomEventHandler) => ({
   onChange: (value: any | null, timeString: string | [string, string]) => {
     const eventFunc = new Function(
-      'data, timeString, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState',
+      'data, timeString, form, globalState, http, message, moment, value, setGlobalState',
       model?.onChangeCustom
     );
     return eventFunc(
       formData,
       timeString,
       form,
-      formMode,
       globalState,
       http,
       message,
       moment,
       value,
-      setFormData,
       setGlobalState
     );
   },
@@ -172,31 +157,27 @@ export const customDropDownEventHandler = <T = any>({
   model,
   form,
   formData,
-  formMode,
   globalState,
   http,
   message,
   moment,
-  setFormData,
   setGlobalState,
 }: ICustomEventHandler) => ({
   onChange: (value: CustomLabeledValue<T>, option: any) => {
     const eventFunc = new Function(
-      'data, form, formMode, globalState, http, message, moment, option, value, setFormData, setGlobalState',
+      'data, form, globalState, http, message, moment, option, value, setGlobalState',
       model?.onChangeCustom
     );
 
     return eventFunc(
       formData,
       form,
-      formMode,
       globalState,
       http,
       message,
       moment,
       option,
       value,
-      setFormData,
       setGlobalState
     );
   },
@@ -207,12 +188,10 @@ export const customInputNumberEventHandler = (
     model,
     form,
     formData,
-    formMode,
     globalState,
     http,
     message,
     moment,
-    setFormData,
     setGlobalState,
   }: ICustomEventHandler,
   changeEvent: Function
@@ -221,11 +200,11 @@ export const customInputNumberEventHandler = (
     changeEvent(value);
 
     const eventFunc = new Function(
-      'data, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState',
+      'data, form, globalState, http, message, moment, value, setGlobalState',
       model?.onChangeCustom
     );
 
-    return eventFunc(formData, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState);
+    return eventFunc(formData, form, globalState, http, message, moment, value, setGlobalState);
   },
 });
 
@@ -233,21 +212,19 @@ export const customRateEventHandler = ({
   model,
   form,
   formData,
-  formMode,
   globalState,
   http,
   message,
   moment,
-  setFormData,
   setGlobalState,
 }: ICustomEventHandler) => ({
   onChange: (value: number) => {
     const eventFunc = new Function(
-      'data, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState',
+      'data, form, globalState, http, message, moment, value, setGlobalState',
       model?.onChangeCustom
     );
 
-    return eventFunc(formData, form, formMode, globalState, http, message, moment, value, setFormData, setGlobalState);
+    return eventFunc(formData, form, globalState, http, message, moment, value, setGlobalState);
   },
 });
 
@@ -255,12 +232,10 @@ export const customAddressEventHandler = ({
   model,
   form,
   formData,
-  formMode,
   globalState,
   http,
   message,
   moment,
-  setFormData,
   setGlobalState,
   onChange: onChangeCustom,
   onSelect,
@@ -271,12 +246,11 @@ export const customAddressEventHandler = ({
       model?.[key],
       form,
       formData,
-      formMode,
       globalState,
       http,
       message,
       moment,
-      setFormData,
+      event?.currentTarget?.value,
       setGlobalState
     );
 
@@ -294,7 +268,7 @@ export const customAddressEventHandler = ({
   };
 };
 export const isValidGuid = (input: string): boolean => {
-  if(!input) return false;
+  if (!input) return false;
   const guidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return guidRegex.test(input);
 };

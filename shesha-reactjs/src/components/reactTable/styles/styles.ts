@@ -209,7 +209,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trBodyGhost} {
-            border: 1px dashed #4099ff;
+            border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
             opacity: 0.7;
           }
@@ -224,6 +224,21 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
             background: ${token.colorPrimary};
             color: white;
+
+            .ant-form-item-control-input-content, button, a {
+                    color: white;
+              }
+
+            .sha-form-cell{
+              .ant-form-item-control-input-content, a, button {
+                  color: inherit;
+              }
+            
+              .sha-stored-files-renderer, .ant-upload-list {
+                  color: white;
+              }
+
+            }
           }
 
           .${prefixCls}-form-item {

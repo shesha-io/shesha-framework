@@ -1,34 +1,29 @@
 # Release Notes
 ## Enhancements
-- Introduction of a Quick Edit form builder, now opening in a large dialog box instead of a new tab.
-- Allowing users to define the width of the datalist create dialog.
-- Updating to the latest versions of Ant Design (antD) and Next.js.
+- **Ehanced Form Settings**: Introduced configurable form lifecycle management, providing more flexibility in form handling.
+  - **Appearance**: Contains all settings related to form view (layout, size etc).
+  - **Data**: Contains settings related to data processing and form lifecylce.
+  - **Security**: Security related settings.
+- **Enhanced App Settings Page**: Expanded the App Settings page to manage front-end specific settings in addition to general settings, including Default URL, Theme, and Main Menu configurations.
+  - **Default URL**: This is the url the user should be redirected to if the user is not authenticated and does not specify a specific page.
+  - **Main Menu Settings**: Here you can configure the sidebar menu items by adjusting their settings and ordering.
+  - **Theme Settings**: Here you customise the theme color of the application.
+- **Enhanced Button Component**: Added additional styling properties to the Button Component for improved customization.
+- **Exposed getAnonymousForms Endpoint**: Made the getAnonymousForms endpoint accessible for easier integration.
+- **Improved JavaScript Settings Component**: Updated the JS settings component for better performance and user experience.
+- **Configurable User Profile**: Allowed additional configurations to be configured below the user logged information.
+- Added `addDelayedUpdateData` variable which is required for files when using a script method.
+- **Style Section Hidden in Table**: The style section is now hidden for Textfield and Autocomplete components when rendered within a table.
+- **Font Weight on Table Column Names**: Increased the font weight to 600 for table column names to enhance visibility and readability.
+- **Reset Wizard State Action**: Exposed an action on Wizard actions that allows resetting the wizard state.
 
 ## Bug Fixes
-- Resolving issues with the time picker range and hour properties.
-- Setting specific widths for CRUD operations column and action column.
-- Addressing the problem where the same form is displayed for creating and listing when using view type on datalist.
-- Fixing rendering issues related to custom hidden state and edit mode with if statements.
-- Correcting the edit mode behavior on the subform.
-- Resolving the issue where the ChildEntitiesTagGroup component sends null values.
-- Ensuring datalist becomes editable when rendering the component within a layout component.
-- Fixing the failure to prepopulate relevant additional fields for components requiring them upon selection.
-- Rectifying the problem where subform data comes empty when rendered on the datalist.
-- Fixing the Entity Picker component failing to update the value when rendered on the datalist.
-- Addressing the datalist form selection mode expression hiding the create form field.
-
-## UX Changes
-- Addition of a new styling component on layout components.
-- Displaying the delete button only on the selected widget.
-
-## Configuration Changes
-- Removed the label field from new forms.
-- Added tooltips to key fields.
-- Adjustments to the template dropdown on new forms.
-- Moved the entity field after the template.
-- Adjustments to the Entity dropdown on new forms.
-- Default Form to currently edited module.
-- Updated the label and component span
-
-## Breaking Changes
-- Due to recent changes, some old forms may not render as expected, requiring reconfiguration.
+- **Component Label Issue**: Fixed an issue where components (Address, Entity Reference, Subform, ChildEntitiesTag Group) did not append the label by default when a property name was selected.
+- **Base64 Image Rendering**: Resolved a problem with Base64 images not rendering in the Image component and container background property.
+- **CRUD Operations Column Expansion**: Corrected the unexpected expansion of CRUD operations columns when using the toogle columns selector option.
+- **Table View Component Issue**: Fixed the "add item" modal in the newly created Table view component, which was not closeable by default.
+- **Permission Configurations Import**: Addressed a bug causing the application to break when importing permission configurations with ConfigMigrations.
+- **setFormData Initialization**: Resolved an issue where setFormData used on Initialization did not append values to the specified field in forms.
+- **Backend Endpoint Management**: Fixed the issue where the backend did not properly remove or reinstate endpoints when disabled or enabled.
+- **Duplicate Records from Button Clicks**: Fixed a bug causing duplicate records due to multiple clicks on the default, custom buttons and datalist during network delays.
+- **Notes Component Overflow Issue**: Fixed an issue where clicking 'More' on long notes caused them to overlap outside the line section on the Notes component.

@@ -12,7 +12,7 @@ namespace Shesha.Metadata
     {
         Task<MetadataDto> GetAsync(Type containerType, string containerName);
 
-        Task<Dictionary<string, ApiEndpointDto>> GetApiEndpoints(Type containerType);
+        Task<Dictionary<string, ApiEndpointDto>> GetApiEndpointsAsync(Type containerType);
 
         /// <summary>
         /// Get specifications available for the specified entityType

@@ -10,6 +10,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { IEditableTagGroupComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -32,6 +33,7 @@ const EditableTagGroupComponent: IToolboxComponent<IEditableTagGroupComponentPro
     .add<IEditableTagGroupComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IEditableTagGroupComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IEditableTagGroupComponentProps>(2, (prev) => migrateReadOnly(prev))
+    .add<IEditableTagGroupComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
 };

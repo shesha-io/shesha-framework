@@ -11,7 +11,7 @@ import { FormIdentifier, useSheshaApplication } from '@/providers';
 import { MakePromiseWithState, PromisedValue } from '@/utils/promises';
 import { ConfigurationItemsViewMode, IComponentSettings } from '../appConfigurator/models';
 import { FormFullName, FormMarkupWithSettings, IFormDto } from '../form/models';
-import { asFormFullName, asFormRawId } from '../form/utils';
+import { isFormFullName, isFormRawId } from '../form/utils';
 import { isValidRefListId } from '../referenceListDispatcher/utils';
 import {
   CONFIGURATION_ITEMS_LOADER_CONTEXT_INITIAL_STATE,
@@ -27,7 +27,9 @@ import {
 } from './contexts';
 import { IComponentsDictionary, IFormsDictionary, IReferenceListsDictionary } from './models';
 import metadataReducer from './reducer';
-import { getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
+import { getFormForbiddenMessage, getFormNotFoundMessage, getReferenceListNotFoundMessage } from './utils';
+import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
+import { SheshaHttpHeaders } from '@/shesha-constants/httpHeaders';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
 type StoragesDictionary = IDictionary<LocalForage>;
@@ -38,7 +40,7 @@ enum ItemTypes {
   Component = 'components',
 }
 
-export interface IConfigurationItemsLoaderProviderProps {}
+export interface IConfigurationItemsLoaderProviderProps { }
 
 const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItemsLoaderProviderProps>> = ({
   children,
@@ -77,25 +79,6 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     return addMode(`${refListId.module}/${refListId.name}`);
   };
 
-  const makeFormLoadingKey = (payload: IGetFormPayload): string => {
-    const { formId, configurationItemMode } = payload;
-
-    const addMode = (key: string): string => {
-      return `${key}:${configurationItemMode}`;
-    };
-
-    const rawId = asFormRawId(formId);
-    if (rawId) {
-      return addMode(rawId);
-    }
-
-    const fullName = asFormFullName(formId);
-    if (fullName) {
-      return addMode(`${fullName.module}/${fullName.name}`);
-    }
-    return null;
-  };
-
   const getMarkupFromResponse = (data: FormConfigurationDto): FormMarkupWithSettings => {
     const markupJson = data.markup;
     return markupJson ? (JSON.parse(markupJson) as FormMarkupWithSettings) : null;
@@ -112,9 +95,9 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     const cacheStorage = getStorage(itemType);
     return key
       ? cacheStorage.getItem<TDto>(key).catch((e) => {
-          console.warn(`Failed to get from cache, key=${key}`, e);
-          return null;
-        })
+        console.warn(`Failed to get from cache, key=${key}`, e);
+        return null;
+      })
       : Promise.resolve(null);
   };
 
@@ -145,8 +128,13 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
       isLastVersion: dto.isLastVersion,
 
       markup: markupWithSettings?.components,
-      settings: markupWithSettings?.formSettings,
+      settings: {
+        ...markupWithSettings?.formSettings,
+       access: dto.access,
+       permissions: dto.permissions,
+      }
     };
+
     return result;
   };
 
@@ -155,13 +143,11 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
   };
 
   const getFormCacheKey = (formId: FormIdentifier, configurationItemMode?: ConfigurationItemsViewMode): string => {
-    const rawId = asFormRawId(formId);
-    const fullName = asFormFullName(formId);
-    return fullName
-      ? getCacheKeyByFullName(configModeOrDefault(configurationItemMode), fullName.module, fullName.name)
-      : rawId
-      ? getCacheKeyByRawId(configModeOrDefault(configurationItemMode), rawId)
-      : null;
+    return isFormFullName(formId)
+      ? getCacheKeyByFullName(configModeOrDefault(configurationItemMode), formId.module, formId.name)
+      : isFormRawId(formId)
+        ? getCacheKeyByRawId(configModeOrDefault(configurationItemMode), formId)
+        : null;
   };
 
   const getRefListCacheKey = (
@@ -177,7 +163,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
     if (!payload.skipCache) {
       const loadedRefList = referenceLists.current[key];
-      if (loadedRefList) return loadedRefList; // todo: check for rejection
+      if (loadedRefList) return loadedRefList; // TODO: check for rejection
     }
 
     const { refListId, configurationItemMode } = payload;
@@ -195,7 +181,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
         promise
           .then((response) => {
-            // todo: handle not changed
+            // TODO: handle not changed
             if (response.success) {
               const responseData = response.result;
               if (!responseData) throw 'Failed to fetch reference list. Response is empty';
@@ -241,50 +227,60 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     return promiseWithState;
   };
 
-  const getForm = (payload: IGetFormPayload): Promise<IFormDto> => {
+  const getCachedForm = (payload: IGetFormPayload): Promise<IFormDto> => {
     // create a key
-    const key = makeFormLoadingKey(payload);
+    const key = getFormCacheKey(payload.formId, payload.configurationItemMode);
 
     if (!payload.skipCache) {
       const loadedForm = forms.current[key];
-      if (loadedForm) return loadedForm; // todo: check for rejection
+      if (loadedForm) return loadedForm; // TODO: check for rejection
+    }
+    return null;
+  };
+
+  const getForm = (payload: IGetFormPayload): Promise<IFormDto> => {
+    // create a key
+    const key = getFormCacheKey(payload.formId, payload.configurationItemMode);
+
+    if (!payload.skipCache) {
+      const loadedForm = forms.current[key];
+      if (loadedForm) return loadedForm; // TODO: check for rejection
     }
 
     const { formId, configurationItemMode } = payload;
-    const rawId = asFormRawId(formId);
-    const fullName = asFormFullName(formId);
 
     const formPromise = new Promise<IFormDto>((resolve, reject) => {
-      if (!rawId && !fullName) reject('Form identifier must be specified');
+      if (!isFormRawId(formId) && !isFormFullName(formId)) reject('Form identifier must be specified');
 
       const cacheKey = getFormCacheKey(formId, configurationItemMode);
+      const headers = {...httpHeaders, [SheshaHttpHeaders.ConfigItemsMode]: configurationItemMode };      
 
       getFromCache<FormConfigurationDto>(ItemTypes.Form, cacheKey).then((cachedDto) => {
-        const promise = Boolean(fullName)
+        const promise = isFormFullName(formId)
           ? formConfigurationGetByName(
-              {
-                name: fullName.name,
-                module: fullName.module,
-                version: fullName.version,
-                md5: cachedDto?.cacheMd5,
-              },
-              { base: backendUrl, headers: httpHeaders /*, responseConverter*/ }
+            {
+              name: formId.name,
+              module: formId.module,
+              version: formId.version,
+              md5: cachedDto?.cacheMd5,
+            },
+            { base: backendUrl, headers: headers }
+          )
+          : isFormRawId(formId)
+            ? formConfigurationGet(
+              { id: formId, md5: cachedDto?.cacheMd5 },
+              { base: backendUrl, headers: headers }
             )
-          : Boolean(rawId)
-          ? formConfigurationGet(
-              { id: rawId, md5: cachedDto?.cacheMd5 },
-              { base: backendUrl, headers: httpHeaders /*, responseConverter*/ }
-            )
-          : Promise.reject('Form identifier must be specified');
+            : Promise.reject('Form identifier must be specified');
 
         promise
           .then((response) => {
-            // todo: handle not changed
+            // TODO: handle not changed
             if (response.success) {
               const responseData = response.result;
               if (!responseData) throw 'Failed to fetch form. Response is empty';
 
-              const dto = convertFormConfigurationDto2FormDto(responseData);
+              const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(responseData));
               addToCache(ItemTypes.Form, cacheKey, responseData);
 
               resolve(dto);
@@ -292,14 +288,18 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
               const rawResponse = response as Response;
               if (rawResponse && rawResponse.status === 304) {
                 // code 304 indicates that the content ws not modified - use cached value
-                const dto = convertFormConfigurationDto2FormDto(cachedDto);
+                const dto = migrateFormSettings(convertFormConfigurationDto2FormDto(cachedDto));
                 resolve(dto);
               } else {
                 const httpResponse = response as Response;
 
                 const error = response.error ?? {
                   code: httpResponse?.status,
-                  message: httpResponse?.status === 404 ? getFormNotFoundMessage(formId) : httpResponse?.statusText,
+                  message: httpResponse?.status === 404
+                    ? getFormNotFoundMessage(formId) 
+                    : httpResponse?.status === 401 || httpResponse?.status === 403
+                      ? getFormForbiddenMessage(formId)
+                      : httpResponse?.statusText,
                 };
 
                 reject(error);
@@ -337,7 +337,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
     if (!payload.skipCache) {
       const loadedComponent = components.current[key];
-      if (loadedComponent) return loadedComponent; // todo: check for rejection
+      if (loadedComponent) return loadedComponent; // TODO: check for rejection
     }
 
     const { name, isApplicationSpecific } = payload;
@@ -352,7 +352,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
 
         promise
           .then((response) => {
-            // todo: handle not changed
+            // TODO: handle not changed
             if (response.success) {
               const responseData = response.result;
               if (!responseData) throw 'Failed to fetch component. Response is empty';
@@ -431,6 +431,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
   };
 
   const loaderActions: IConfigurationItemsLoaderActionsContext = {
+    getCachedForm,
     getForm,
     getRefList,
     getComponent,

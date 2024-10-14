@@ -59,10 +59,11 @@ namespace Shesha.Permissions
         /// Get protected object by name
         /// </summary>
         /// <param name="objectName"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        public async Task<PermissionedObjectDto> GetByObjectNameAsync(string objectName)
+        public async Task<PermissionedObjectDto> GetByObjectNameAsync(string objectName, string type)
         {
-            return await _permissionedObjectManager.GetAsync(objectName);
+            return await _permissionedObjectManager.GetOrDefaultAsync(objectName, type);
         }
 
         /// <summary>
@@ -86,15 +87,17 @@ namespace Shesha.Permissions
         public async Task<PermissionedObjectDto> GetApiPermissionsAsync(string serviceName, string actionName)
         {
             var action = string.IsNullOrEmpty(actionName) ? "" : "@" + actionName;
-            return await _permissionedObjectManager.GetAsync($"{serviceName}{action}");
+            var type = string.IsNullOrEmpty(actionName) 
+                ? ShaPermissionedObjectsTypes.WebApi 
+                : ShaPermissionedObjectsTypes.WebApiAction;
+            return await _permissionedObjectManager.GetOrDefaultAsync($"{serviceName}{action}", type);
         }
 
         public override async Task<PermissionedObjectDto> GetAsync(EntityDto<Guid> input)
         {
             if (input.Id == Guid.Empty)
                 return null;
-            var obj = await base.GetAsync(input);
-            return await _permissionedObjectManager.GetAsync(obj.Object);
+            return await _permissionedObjectManager.GetAsync(input.Id);
         }
 
         /// <summary>
@@ -119,15 +122,6 @@ namespace Shesha.Permissions
         {
             var action = string.IsNullOrEmpty(actionName) ? "" : "@" + actionName;
             return await _permissionedObjectManager.SetPermissionsAsync($"{serviceName}{action}", access, permissions);
-        }
-
-        /// <summary>
-        /// Clear protected objects cache
-        /// </summary>
-        /// <returns></returns>
-        public async Task ClearCacheAsync()
-        {
-            await _permissionedObjectManager.ClearCacheAsync();
         }
     }
 }

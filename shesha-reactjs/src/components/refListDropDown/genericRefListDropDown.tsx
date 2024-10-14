@@ -12,8 +12,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
     referenceListId,
     showArrow = true,
     value,
-    includeFilters = false,
-    filters = [],
+    filters,
+    disabledValues,
     width,
     base,
     mode,
@@ -31,13 +31,13 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
 
   const filter = ({ itemValue }: ReferenceListItemDto) => {
-    if (!filters?.length) {
+    if (!filters?.length ) {
       return true;
     }
 
     const filtered = filters?.includes(itemValue);
 
-    return includeFilters ? filtered : !filtered;
+    return !filtered;
   };
 
   const wrapValue = (localValue: TValue | TValue[], allOptions: ISelectOption<TValue>[]): CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[] => {
@@ -50,6 +50,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
         : [getLabeledValue(localValue as TValue, allOptions)];
     } else return getLabeledValue(localValue as TValue, allOptions);
   };
+
+  const disableValue = (item => ({...item, disabled: disabledValues.includes(item.value)}));
 
   const options = useMemo<ISelectOption<TValue>[]>(() => {
     const fetchedData = (refList?.items || []).filter(filter);
@@ -72,8 +74,10 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       : [];
 
     const result = [...fetchedItems, ...selectedItems];
-    return result;
-  }, [refList, getLabeledValue, getOptionFromFetchedItem, incomeValueFunc, outcomeValueFunc]);
+
+    return disabledValues ? result.map(disableValue): result;
+
+  }, [refList, getLabeledValue, getOptionFromFetchedItem, incomeValueFunc, outcomeValueFunc, disabledValues]);
 
   const handleChange = (_: CustomLabeledValue<TValue>, option: any) => {
     if (!Boolean(onChange)) return;
@@ -133,8 +137,8 @@ export const GenericRefListDropDown = <TValue,>(props: IGenericRefListDropDownPr
       value={wrapValue(value, options)}
       mode={mode}
     >
-      {options?.map(({ value: localValue, label, data }, index) => (
-        <Select.Option value={localValue} key={index} data={data}>
+      {options?.map(({ value: localValue, label, data, disabled }, index) => (
+        <Select.Option value={localValue} key={index} data={data} disabled={disabled}>
           {label}
         </Select.Option>
       ))}

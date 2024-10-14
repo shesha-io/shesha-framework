@@ -10,21 +10,15 @@ import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { useForm } from '@/providers/form';
-import { useSheshaApplication } from '@/providers';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
+  isInput: false,
   name: 'Button Group',
   icon: <GroupOutlined />,
   Factory: ({ model ,form}) => {
-    const { formMode } = useForm();
-    const { anyOfPermissionsGranted } = useSheshaApplication();
-    const granted = anyOfPermissionsGranted(model?.permissions || []);
-
-    if ((model.hidden || !granted) && formMode !== 'designer') return null;
-
-    return <ButtonGroup {...model} disabled={model.readOnly} form={form} />;
+    return model.hidden ? null : <ButtonGroup {...model} disabled={model.readOnly} form={form} />;
   },
   migrator: (m) => m
     .add<IButtonGroupComponentProps>(0, (prev) => {
@@ -58,7 +52,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
 
         return { ...item };
       };
-
+      
       newModel.items = prev.items?.map(updateItemDefaults);
       return newModel;
     })
@@ -76,6 +70,20 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
 
       newModel.items = newModel.items.map(updateItems);
       return newModel ;
+    })
+    .add<IButtonGroupComponentProps>(9, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IButtonGroupComponentProps>(10, (prev) => {
+      const setDownIcon = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
+        if (isGroup(item)) {
+          item.downIcon = !item.downIcon ? "DownOutlined" : item.downIcon;
+          item.childItems = (item.childItems ?? []).map(setDownIcon);
+        }
+        return item;
+      };
+      return {
+        ...prev,
+        items: prev.items.map(setDownIcon),
+      };
     })
   ,
   settingsFormFactory: (props) => (<ButtonGroupSettingsForm {...props} />),

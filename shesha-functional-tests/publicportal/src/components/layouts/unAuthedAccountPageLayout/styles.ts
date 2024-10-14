@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const UnAuthedLayoutContainer = styled.div`
   display: flex;

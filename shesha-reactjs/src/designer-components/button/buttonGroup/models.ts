@@ -4,7 +4,6 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { FormInstance } from 'antd';
 
 export interface IButtonGroupComponentProps extends IConfigurableFormComponent, IBaseButtonGroupProps {
-  permissions?: string[];
 }
 
 export interface IButtonGroupProps extends IBaseButtonGroupProps {

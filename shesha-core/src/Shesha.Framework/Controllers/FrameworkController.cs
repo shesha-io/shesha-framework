@@ -28,7 +28,7 @@ namespace Shesha.Controllers
         public IIocManager IocManager { get; set; }
 
         [HttpPost]
-        public async Task<string> BootstrapReferenceLists()
+        public async Task<string> BootstrapReferenceListsAsync()
         {
             var bootstrapper = StaticContext.IocManager.Resolve<ReferenceListBootstrapper>();
             await bootstrapper.ProcessAsync();
@@ -36,7 +36,7 @@ namespace Shesha.Controllers
         }
 
         [HttpPost]
-        public async Task<string> BootstrapSettings()
+        public async Task<string> BootstrapSettingsAsync()
         {
             var bootstrapper = StaticContext.IocManager.Resolve<SettingsBootstrapper>();
             await bootstrapper.ProcessAsync();
@@ -70,13 +70,18 @@ namespace Shesha.Controllers
                     a.Modules.First().GetPEKind(out var pekind, out var machine);
                     architecture = machine.ToString();
                 }
+                var descriptionAttribute = a
+                    .GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false)
+                    .OfType<AssemblyDescriptionAttribute>()
+                    .FirstOrDefault();
 
                 return new AssemblyInfoDto
                 {
                     FullName = a.GetName().Name,
                     Location = a.Location,
                     Version = a.GetName().Version.ToString(),
-                    Architecture = architecture
+                    Architecture = architecture,
+                    Description = descriptionAttribute?.Description,
                 };
             })
                 .ToList();

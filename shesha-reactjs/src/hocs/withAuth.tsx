@@ -1,7 +1,7 @@
 import React, { ComponentType, FC, Fragment, useEffect } from 'react';
-import { /*IdleTimerRenderer,*/ OverlayLoader } from '@/components';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
+import SheshaLoader from '@/components/sheshaLoader';
 
 export interface IComponentWithAuthProps {
   unauthorizedRedirectUrl: string;
@@ -10,29 +10,24 @@ export interface IComponentWithAuthProps {
 }
 export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   const { landingPage, unauthorizedRedirectUrl } = props;
-  const { isCheckingAuth, loginInfo, checkAuth, getAccessToken, isLoggedIn } = useAuth();
+  const { state: authState, isLoggedIn, checkAuthAsync: checkAuth } = useAuth();
+  const [, forceUpdate] = React.useState({});
 
-  const { goingToRoute, router } = useShaRouting();
+  const { router } = useShaRouting();
 
   const loginUrl = useLoginUrl({ homePageUrl: landingPage, unauthorizedRedirectUrl });
 
   useEffect(() => {
-    const token = getAccessToken();
-
-    if (!loginInfo) {
-      if (token) {
-        checkAuth();
-      } else {
-        goingToRoute(loginUrl);
-      }
+    if (!isLoggedIn) {      
+      checkAuth(loginUrl).then(() => {
+        forceUpdate({});
+      });
     }
-  }, [isCheckingAuth]);
+  }, [checkAuth, loginUrl, isLoggedIn]);
 
-  return isLoggedIn ? (
-    <Fragment>{props.children(router?.query)}</Fragment>
-  ) : (
-    <OverlayLoader loading={true} loadingText="Initializing..." />
-  );
+  return isLoggedIn
+    ? <Fragment>{props.children(router?.query)}</Fragment> 
+    : <SheshaLoader message={authState.hint || "Initializing..."} />;
 };
 
 /**
@@ -40,16 +35,16 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
  */
 export const withAuth =
   <P extends object>(Component: ComponentType<P>, unauthorizedRedirectUrl = '/login', landingPage = '/'): FC<P> =>
-  (props) => {
-    const propsObj = Array.isArray(props) ? props[0] : props;
+    (props) => {
+      const propsObj = Array.isArray(props) ? props[0] : props;
 
-    return (
-      <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
-        {(query) => (
-          // <IdleTimerRenderer>
-          <Component {...propsObj} id={query?.id} />
-          // </IdleTimerRenderer>
-        )}
-      </ComponentWithAuth>
-    );
-  };
+      return (
+        <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
+          {(query) => (
+            // <IdleTimerRenderer>
+            <Component {...propsObj} id={query?.id} />
+            // </IdleTimerRenderer>
+          )}
+        </ComponentWithAuth>
+      );
+    };

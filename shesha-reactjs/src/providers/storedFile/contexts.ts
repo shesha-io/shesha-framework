@@ -1,7 +1,7 @@
 import { UploadFile } from 'antd/lib/upload/interface';
-import { createContext } from 'react';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { StoredFileGetQueryParams } from '@/apis/storedFile';
+import { createNamedContext } from '@/utils/react';
 
 export type IFlagProgressFlags =
   | 'downloadFile'
@@ -56,7 +56,6 @@ export interface IDownloadFilePayload {
 export interface IStoredFileStateContext
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
   fileInfo?: IStoredFile;
-  fileId?: string;
 }
 
 export interface IStoredFileActionsContext
@@ -81,6 +80,6 @@ export const STORED_FILE_CONTEXT_INITIAL_STATE: IStoredFileStateContext = {
   actioned: {},
 };
 
-export const StoredFileStateContext = createContext<IStoredFileStateContext>(STORED_FILE_CONTEXT_INITIAL_STATE);
+export const StoredFileStateContext = createNamedContext<IStoredFileStateContext>(STORED_FILE_CONTEXT_INITIAL_STATE, "StoredFileStateContext");
 
-export const StoredFileActionsContext = createContext<IStoredFileActionsContext>(undefined);
+export const StoredFileActionsContext = createNamedContext<IStoredFileActionsContext>(undefined, "StoredFileActionsContext");

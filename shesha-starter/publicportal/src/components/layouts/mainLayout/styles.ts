@@ -27,6 +27,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
       .${prefixCls}-layout-content {
         padding: 50px 15%;
+        overflow: hidden;
       }
     `
   );

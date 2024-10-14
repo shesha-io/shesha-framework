@@ -19,10 +19,10 @@ namespace Shesha.Services
             }
         }
 
-        public static async Task<Stream> CompressFiles(Dictionary<string, StoredFile> files)
+        public static async Task<Stream> CompressFilesAsync(Dictionary<string, StoredFile> files)
         {
             var ms = new MemoryStream();
-            await CompressFilesToStream(files, ms);
+            await CompressFilesToStreamAsync(files, ms);
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
         }
@@ -51,7 +51,7 @@ namespace Shesha.Services
             }
         }
 
-        public static async Task CompressFilesToStream(Dictionary<string, StoredFile> files, Stream stream)
+        public static async Task CompressFilesToStreamAsync(Dictionary<string, StoredFile> files, Stream stream)
         {
             var fileService = StaticContext.IocManager.Resolve<IStoredFileService>();
 

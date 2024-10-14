@@ -29,10 +29,11 @@ namespace Shesha.Sms
         [HttpGet, Route("api/Sms/Settings"), ApiVersion("1")]
         public async Task<SmsSettingsDto> GetSettings()
         {
+            var smsSettings = await _settings.SmsSettings.GetValueAsync();
             var settings = new SmsSettingsDto
             {
-                Gateway = await _settings.SmsGateway.GetValueAsync(),
-                RedirectAllMessagesTo = await _settings.RedirectAllMessagesTo.GetValueAsync(),
+                Gateway = smsSettings.SmsGateway,
+                RedirectAllMessagesTo = smsSettings.RedirectAllMessagesTo,
             };
             
             return settings;
@@ -41,19 +42,23 @@ namespace Shesha.Sms
         [HttpPut, Route("api/Sms/Settings"), ApiVersion("1")]
         public async Task UpdateSettings(SmsSettingsDto input)
         {
-            await _settings.SmsGateway.SetValueAsync(input.Gateway);
-            await _settings.RedirectAllMessagesTo.SetValueAsync(input.RedirectAllMessagesTo);
+            await _settings.SmsSettings.SetValueAsync(new SmsSettings
+            {
+                SmsGateway = input.Gateway,
+                RedirectAllMessagesTo = input.RedirectAllMessagesTo,
+            });
         }
 
         [HttpGet, Route("api/v{version:apiVersion}/Sms/Settings"), ApiVersion("2")]
         public async Task<SmsSettingsV2Dto> GetSettingsV2()
         {
             var currentGatewayType = await GetCurrentGatewayType();
+            var smsSettings  = await _settings.SmsSettings.GetValueAsync();
 
             var settings = new SmsSettingsV2Dto
             {
                 Gateway = currentGatewayType != null ? SmsUtils.GetGatewayAlias(currentGatewayType) : null,
-                RedirectAllMessagesTo = await _settings.RedirectAllMessagesTo.GetValueAsync(),
+                RedirectAllMessagesTo = smsSettings.RedirectAllMessagesTo,
             };
             var gatewayTypes = _typeFinder.Find(t => !t.IsAbstract && typeof(ISmsGateway).IsAssignableFrom(t));
             foreach (var gatewayType in gatewayTypes) 
@@ -79,8 +84,11 @@ namespace Shesha.Sms
 
             var gatewayUid = gatewayType?.GetClassUid();
 
-            await _settings.SmsGateway.SetValueAsync(gatewayUid);
-            await _settings.RedirectAllMessagesTo.SetValueAsync(input.RedirectAllMessagesTo);
+            await _settings.SmsSettings.SetValueAsync(new SmsSettings
+            {
+                SmsGateway = gatewayUid,
+                RedirectAllMessagesTo = input.RedirectAllMessagesTo,
+            });
             
             var gateway = gatewayType != null
                 ? IocManager.Resolve(gatewayType) as ISmsGateway
@@ -99,10 +107,10 @@ namespace Shesha.Sms
 
         private async Task<Type> GetCurrentGatewayType() 
         {
-            var gatewayUid = await _settings.SmsGateway.GetValueAsync();
+            var settings = await _settings.SmsSettings.GetValueAsync();
 
-            var gatewayType = !string.IsNullOrWhiteSpace(gatewayUid)
-                ? _typeFinder.Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.GetClassUid() == gatewayUid).FirstOrDefault()
+            var gatewayType = !string.IsNullOrWhiteSpace(settings.SmsGateway)
+                ? _typeFinder.Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.GetClassUid() == settings.SmsGateway).FirstOrDefault()
                 : null;
             return gatewayType;
         }

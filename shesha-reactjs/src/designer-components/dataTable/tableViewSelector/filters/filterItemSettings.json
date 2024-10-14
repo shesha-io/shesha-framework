@@ -1,0 +1,60 @@
+{
+  "components": [
+    {
+      "id": "5d4d56fb-d7f8-4835-a529-c4fa93f3596d",
+      "type": "textField",
+      "propertyName": "name",
+      "label": "Title",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {
+        "required": true
+      },
+      "version": 3,
+      "textType": "text"
+    },
+    {
+      "id": "9b671866-072e-4688-8b48-ddf5e12d70d4",
+      "type": "textArea",
+      "propertyName": "tooltip",
+      "label": "Tooltip",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "autoSize": false,
+      "showCount": false,
+      "allowClear": false,
+      "validate": {},
+      "version": 2
+    },
+    {
+      "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+      "type": "permissionAutocomplete",
+      "propertyName": "permissions",
+      "parentId": "root",
+      "label": "Permissions",
+      "validate": {},
+      "version": 1
+    }
+  ],
+  "formSettings": {
+    "layout": "vertical",
+    "colon": true,
+    "labelCol": {
+      "span": 8
+    },
+    "wrapperCol": {
+      "span": 16
+    },
+    "displayName": "DEFAULT_FORM_SETTINGS",
+    "__docgenInfo": {
+      "description": "Default form settings",
+      "displayName": "DEFAULT_FORM_SETTINGS",
+      "props": {}
+    }
+  }
+}

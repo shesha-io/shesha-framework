@@ -1,7 +1,7 @@
 <p align="center">
-<a href="https://www.shesha.io?utm_source=github&utm_medium=organic&utm_campaign=readme">
-  <img src="https://github.com/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="500">
-</a>
+  <a href="https://www.shesha.io?utm_source=github&utm_medium=organic&utm_campaign=readme">
+    <img src="https://github.com/shesha-io/shesha-framework/blob/main/static/Shesha_Horizontal.png" alt="Shesha Logo" width="500">
+  </a>
 </p>
 
 # What is Shesha?
@@ -52,7 +52,7 @@ Shesha comes with a range of features that massively reduce the effort required 
 Shesha takes a Domain-driven approach to application development, the starting point is therefore to implement your domain. This is done by implementing `Entity` classes as you would do for any business application. You can extend standard entities that come as part of the base Shesha model (e.g. `Person`, `Organisation`, `Site`, etc...) or by creating your own.
 
 <p align="center">
-<img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.gif" />
+  <img alt="Create your domain" src="https://github.com/shesha-io/shesha-framework/blob/main/static/domain-entity.gif" />
 </p>
 
 ### 2. Expose your APIs
@@ -62,7 +62,7 @@ All it takes to expose your domain and data through dynamically generated CRUD A
 You will immediately get full CRUD support as well as GraphQL endpoints for flexible and efficient data retrieval.
 
 <p align="center">
-<img alt="Expose your APIs" src="https://github.com/shesha-io/shesha-framework/blob/main/static/generate-api.gif" />
+  <img alt="Expose your APIs" src="https://github.com/shesha-io/shesha-framework/blob/main/static/generate-api.gif" />
 </p>
 
 Where the dynamically generated APIs are insufficient, you still have the full power of Visual Studio and ASP.NET Core to create custom APIs the way you are used to.
@@ -72,7 +72,7 @@ Where the dynamically generated APIs are insufficient, you still have the full p
 Once you have exposed your domain and APIs, you can build your UI through our drag-and-drop form builder. There are over 40 different components including tables, lists, forms, sub-forms, modals, and many more allowing you to build sophisticated and scalable enterprise applications without a line of front-end code.
 
 <p align="center">
-<img alt="Expose your APIs" src="https://github.com/shesha-io/shesha-framework/blob/main/static/form-configuration.gif" />
+  <img alt="Expose your APIs" src="https://github.com/shesha-io/shesha-framework/blob/main/static/form-configuration.gif" />
 </p>
 
 Where the configuration-only approach is too limiting, you can add Javascript snippets to implement more advanced behavior or build custom components or entire pages using React.

@@ -1,6 +1,6 @@
 import FormInfo from '../configurableForm/formInfo';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { ComponentsContainer, Show, ValidationErrors } from '@/components';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
@@ -29,14 +29,23 @@ const CreateModal: FC<ICreateModalProps> = ({
 }) => {
 
   const { performCreate, switchMode, saveError } = useDataListCrud();
+  const [isloading, setLoading] = useState(loading);
+
+  const { buttonLoading, buttonDisabled } = {
+    buttonLoading: isloading,
+    buttonDisabled: readOnly || isloading
+  };
+
 
   const onOk = async () => {
     try {
+      setLoading(true);
       await performCreate();
       switchMode('read');
       onToggle(false);
     } catch (error) {
-      console.log('Update failed: ', error);
+      setLoading(false);
+      console.error('Update failed: ', error);
     }
 
   };
@@ -52,8 +61,7 @@ const CreateModal: FC<ICreateModalProps> = ({
       onCancel={onCancel}
       title='Add new item'
       width={width}
-      okButtonProps={{ disabled: readOnly }}
-    >
+      okButtonProps={{ disabled: buttonDisabled, loading: buttonLoading }}>
       <Skeleton loading={loading}>
         <Show when={!!formInfo}>
           <FormInfo formProps={formInfo} />
@@ -106,7 +114,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
           mode='create'
           allowChangeMode={false}
           autoSave={false}
-          flatComponents={flatComponents}
+          formFlatMarkup={flatComponents}
           formSettings={formSettings}
         >
           <CreateModal

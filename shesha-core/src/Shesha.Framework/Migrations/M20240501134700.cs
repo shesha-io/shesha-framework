@@ -8,7 +8,7 @@ namespace Shesha.Migrations
     {
         public override void Up()
         {
-            Execute.Sql(@"
+            IfDatabase("SqlServer").Execute.Sql(@"
 insert into Frwk_ConfigurationItems (Id, Description, Name, VersionNo, VersionStatusLkp, ModuleId, ItemType, IsLast, Label, OriginId,
 	CreationTime, CreatorUserId, LastModificationTime, LastModifierUserId, IsDeleted, DeletionTime, DeleterUserId)
 select Id, Description, Name, 1, 3, (select id from Frwk_Modules where Name = 'Shesha'), 'permission-definition', 1, DisplayName, Id,
@@ -51,6 +51,33 @@ GO
 
 ALTER TABLE [dbo].[Frwk_PermissionDefinitions] CHECK CONSTRAINT [FK_Frwk_PermissionDefinitions_Frwk_ConfigurationItems]
 GO
+");
+
+            IfDatabase("PostgreSql").Execute.Sql(@"
+insert into ""Frwk_ConfigurationItems"" (""Id"", ""Description"", ""Name"", ""VersionNo"", ""VersionStatusLkp"", ""ModuleId"",
+   ""ItemType"", ""IsLast"", ""Label"", ""OriginId"", ""CreationTime"", ""CreatorUserId"", ""LastModificationTime"", ""LastModifierUserId"",
+   ""IsDeleted"", ""DeletionTime"", ""DeleterUserId"")
+select ""Id"", ""Description"", ""Name"", 1, 3, (select ""Id"" from ""Frwk_Modules"" where ""Name"" = 'Shesha'), 'permission-definition',
+	true, ""DisplayName"", ""Id"", ""CreationTime"", ""CreatorUserId"", ""LastModificationTime"", ""LastModifierUserId"", ""IsDeleted"",
+	""DeletionTime"", ""DeleterUserId""
+from ""Frwk_PermissionDefinitions"";
+
+ALTER TABLE ""Frwk_PermissionDefinitions"" DROP CONSTRAINT ""FK_Frwk_PermissionDefinitions_CreatorUserId_AbpUsers_Id"";
+ALTER TABLE ""Frwk_PermissionDefinitions"" DROP CONSTRAINT ""FK_Frwk_PermissionDefinitions_DeleterUserId_AbpUsers_Id"";
+ALTER TABLE ""Frwk_PermissionDefinitions"" DROP CONSTRAINT ""FK_Frwk_PermissionDefinitions_LastModifierUserId_AbpUsers_Id"";
+ALTER TABLE ""Frwk_PermissionDefinitions"" DROP CONSTRAINT ""FK_Frwk_PermissionDefinitions_TenantId_AbpTenants_Id"";
+
+alter table ""Frwk_PermissionDefinitions"" drop column ""CreationTime"";
+alter table ""Frwk_PermissionDefinitions"" drop column ""CreatorUserId"";
+alter table ""Frwk_PermissionDefinitions"" drop column ""LastModificationTime"";
+alter table ""Frwk_PermissionDefinitions"" drop column ""LastModifierUserId"";
+alter table ""Frwk_PermissionDefinitions"" drop column ""IsDeleted"";
+alter table ""Frwk_PermissionDefinitions"" drop column ""DeleterUserId"";
+alter table ""Frwk_PermissionDefinitions"" drop column ""DeletionTime"";
+alter table ""Frwk_PermissionDefinitions"" drop column ""TenantId"";
+
+ALTER TABLE ""Frwk_PermissionDefinitions"" ADD CONSTRAINT ""FK_Frwk_PermissionDefinitions_Frwk_ConfigurationItems"" FOREIGN KEY(""Id"")
+REFERENCES ""Frwk_ConfigurationItems"" (""Id"");
 ");
         }
     }

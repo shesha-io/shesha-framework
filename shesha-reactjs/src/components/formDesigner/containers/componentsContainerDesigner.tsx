@@ -1,15 +1,16 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import ConfigurableFormComponent from '../configurableFormComponent';
+import { ConfigurableFormComponent } from '../configurableFormComponent';
 import React, { FC, PropsWithChildren, useMemo } from 'react';
 import { getAlignmentStyle } from './util';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
-import { useForm } from '@/providers/form';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { ShaForm } from '@/providers/form';
+import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from '../styles/styles';
 import { useParent } from '@/providers/parentProvider';
+import _ from 'lodash';
 
 export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
     const {
@@ -25,13 +26,12 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     } = props;
 
     const { styles } = useStyles();
-    const { getChildComponentIds } = useForm();
     const parent = useParent();
 
-    const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging, readOnly, hasDragged } =
-        useFormDesigner();
+    const { readOnly, hasDragged } = useFormDesignerState();
+    const { updateChildComponents, addComponent, addDataProperty, startDragging, endDragging } = useFormDesignerActions();
 
-    const childIds = getChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+    const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
 
     const componentsMapped = useMemo<ItemInterface[]>(() => {
         return childIds.map<ItemInterface>((id) => ({
@@ -49,52 +49,47 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
         const chosen = newState.some((item) => item.chosen === true);
         if (chosen) return;
 
-        // temporary commented out, the behavoiur of the sortablejs differs sometimes
-        const listChanged = true; //!newState.some(item => item.chosen !== null && item.chosen !== undefined);
+        const newDataItemIndex = newState.findIndex((item) => item['type'] === TOOLBOX_DATA_ITEM_DROPPABLE_KEY);
+        if (newDataItemIndex > -1) {
+            // dropped data item
+            const draggedItem = newState[newDataItemIndex];
 
-        if (listChanged) {
-            const newDataItemIndex = newState.findIndex((item) => item['type'] === TOOLBOX_DATA_ITEM_DROPPABLE_KEY);
-            if (newDataItemIndex > -1) {
-                // dropped data item
-                const draggedItem = newState[newDataItemIndex];
+            addDataProperty({
+                propertyMetadata: draggedItem.metadata,
+                containerId,
+                index: newDataItemIndex,
+            });
+        } else {
+            const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
+            if (newComponentIndex > -1) {
+                // add new component
+                const toolboxComponent = newState[newComponentIndex];
 
-                addDataProperty({
-                    propertyMetadata: draggedItem.metadata,
+                addComponent({
                     containerId,
-                    index: newDataItemIndex,
+                    componentType: toolboxComponent.id.toString(),
+                    index: newComponentIndex,
                 });
             } else {
-                const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
-                if (newComponentIndex > -1) {
-                    // add new component
-                    const toolboxComponent = newState[newComponentIndex];
+                // reorder existing components
+                let isModified = componentsMapped.length !== newState.length;
 
-                    addComponent({
-                        containerId,
-                        componentType: toolboxComponent.id.toString(),
-                        index: newComponentIndex,
-                    });
-                } else {
-                    // reorder existing components
-                    let isModified = componentsMapped.length !== newState.length;
-
-                    if (!isModified) {
-                        for (let i = 0; i < componentsMapped.length; i++) {
-                            if (componentsMapped[i].id !== newState[i].id) {
-                                isModified = true;
-                                break;
-                            }
+                if (!isModified) {
+                    for (let i = 0; i < componentsMapped.length; i++) {
+                        if (componentsMapped[i].id !== newState[i].id) {
+                            isModified = true;
+                            break;
                         }
                     }
+                }
 
-                    if (isModified) {
-                        const newIds = newState.map<string>((item) => item.id.toString());
-                        updateChildComponents({ containerId, componentIds: newIds });
-                    }
+                if (isModified) {
+                    const newIds = newState.map<string>((item) => item.id.toString());
+                    updateChildComponents({ containerId, componentIds: newIds });
                 }
             }
         }
-        return;
+
     };
 
     const onDragStart = () => {
@@ -106,8 +101,8 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     };
 
     const renderComponents = () => {
-        const renderedComponents = childIds.map((id, index) => (
-            <ConfigurableFormComponent id={id} index={index} key={id} />
+        const renderedComponents = childIds.map((id) => (
+            <ConfigurableFormComponent id={id} key={id} />
         ));
 
         return typeof render === 'function' ? render(renderedComponents) : renderedComponents;

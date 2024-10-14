@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Shesha.Authorization;
 using Shesha.Configuration;
+using Shesha.Configuration.Email;
+using Shesha.Configuration.Security;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution;
@@ -74,7 +76,7 @@ namespace Shesha
                 cfg => cfg.AddMaps(thisAssembly)
             );
 
-            IocManager.Register<IShaPermissionChecker, PermissionChecker>(DependencyLifeStyle.Transient);
+            IocManager.Register<IShaPermissionChecker, ShaPermissionChecker>(DependencyLifeStyle.Transient);
 
             IocManager.Register<ILockFactory, NamedLockFactory>(DependencyLifeStyle.Singleton);
 
@@ -118,19 +120,32 @@ namespace Shesha
 
             IocManager.RegisterAssemblyByConvention(thisAssembly);
 
-            IocManager.RegisterSettingAccessor<IAuthenticationSettings>(s => {
+            IocManager.RegisterSettingAccessor<ISecuritySettings>(s => {
                 s.UserLockOutEnabled.WithDefaultValue(true);
                 s.MaxFailedAccessAttemptsBeforeLockout.WithDefaultValue(5);
                 s.DefaultAccountLockoutSeconds.WithDefaultValue(300 /* 5 minutes */);
-
-                s.AutoLogoffTimeout.WithDefaultValue(0);
-                s.ResetPasswordViaSecurityQuestionsNumQuestionsAllowed.WithDefaultValue(3);
+                s.SecuritySettings.WithDefaultValue(new SecuritySettings
+                {
+                    AutoLogoffTimeout = 0,
+                    UseResetPasswordViaEmailLink = true,
+                    ResetPasswordEmailLinkLifetime = 60,
+                    UseResetPasswordViaSmsOtp = true,
+                    ResetPasswordSmsOtpLifetime = 60,
+                    MobileLoginPinLifetime = 60,
+                    UseResetPasswordViaSecurityQuestions = true,
+                    ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = 3
+                });
             });
+
             IocManager.RegisterSettingAccessor<IPasswordComplexitySettings>(s => {
                 s.RequiredLength.WithDefaultValue(3);
             });
             IocManager.RegisterSettingAccessor<ISheshaSettings>(s => {
                 s.UploadFolder.WithDefaultValue("~/App_Data/Upload");
+            });
+            IocManager.RegisterSettingAccessor<IFrontendSettings>(s => {
+                s.Theme.WithDefaultValue(ThemeSettings.Default);
+                s.MainMenu.WithDefaultValue(MainMenuSettings.Default);
             });
 
             IocManager.RegisterSettingAccessor<IEmailSettings>(s => {
@@ -152,6 +167,9 @@ namespace Shesha
 
             // register Shesha exception to error converter
             IocManager.Resolve<ErrorInfoBuilder>().AddExceptionConverter(IocManager.Resolve<ShaExceptionToErrorInfoConverter>());
+
+            // Enabled by default for Background Jobs
+            Configuration.EntityHistory.IsEnabledForAnonymousUsers = true;
         }
     }
 }

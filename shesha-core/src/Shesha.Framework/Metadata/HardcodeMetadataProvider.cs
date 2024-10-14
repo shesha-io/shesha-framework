@@ -169,25 +169,23 @@ namespace Shesha.Metadata
         {
             var isEntity = property.PropertyType.IsEntityType();
             var propType = property.PropertyType.StripCastleProxyType();
+            var isJsonEntity = propType.IsJsonEntityType();
 
             // todo: review and move handling of other types to separate methods
             propertyDto.EntityType = isEntity
                     ? _entityConfigurationStore.Get(propType)?.SafeTypeShortAlias ?? propType.FullName
-                    : propType.IsJsonEntityType()
+                    : isJsonEntity
                         ? propType.FullName
                         : dataType.DataType == DataTypes.Array
                             ? dataType.ObjectType
                             : null;
 
-            if (isEntity) 
+            if (isEntity || isJsonEntity)
             {
                 var moduleInfo = propType.GetConfigurableModuleInfo();
                 if (moduleInfo != null)
                 {
-                    propertyDto.EntityModule = isEntity
-                        ? moduleInfo.Name
-                        : null;
-
+                    propertyDto.EntityModule= moduleInfo.Name;
                     propertyDto.ModuleAccessor = moduleInfo.GetModuleAccessor();
                 }
                 propertyDto.TypeAccessor = propType.GetTypeAccessor();
@@ -304,6 +302,8 @@ namespace Shesha.Metadata
         {
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(propInfo.PropertyType);
 
+            var s = propType.FullName;
+
             return GetDataTypeByPropertyType(propType, propInfo) ?? throw new NotSupportedException($"Data type not supported: {propType.FullName}");
         }
 
@@ -387,7 +387,8 @@ namespace Shesha.Metadata
         {
             return type.ImplementsGenericInterface(typeof(IList<>)) ||
                 type.ImplementsGenericInterface(typeof(ICollection<>)) ||
-                type.ImplementsGenericInterface(typeof(IEnumerable<>));
+                type.ImplementsGenericInterface(typeof(IEnumerable<>)) ||
+                type.GetInterface(nameof(IEnumerable)) != null;
         }
    }
 }

@@ -9,13 +9,19 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Clickatell\forms\package20230411_1233.shaconfig" />
+    <None Remove="Clickatell\forms\package20240612_1014.shaconfig" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Clickatell\forms\package20230411_1233.shaconfig" />
+    <EmbeddedResource Include="Clickatell\forms\package20240612_1014.shaconfig" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Abp" Version="9.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

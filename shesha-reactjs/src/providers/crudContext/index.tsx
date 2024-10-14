@@ -4,8 +4,8 @@ import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { FormProvider } from '@/providers';
-import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
+import { FormProvider, ShaForm, useForm } from '@/providers';
+import { DEFAULT_FORM_SETTINGS, IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,
   deleteStartedAction,
@@ -30,6 +30,9 @@ import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
+import { ConfigurableFormInstance } from '../form/contexts';
+import { ShaFormProvider } from '../form/providers/shaFormProvider';
+import { useShaForm } from '../form/store/shaFormInstance';
 
 export type DataProcessor = (data: any) => Promise<any>;
 
@@ -50,9 +53,50 @@ export interface ICrudProviderProps {
   formSettings?: IFormSettings;
 }
 
+interface IInternalCrudProviderProps extends ICrudProviderProps {
+  context: ICrudContext;
+  onValuesChange: () => void;
+  setInitialValues: (values: object) => void;
+  setInitialValuesLoading: (loading: boolean) => void;
+  delayedUpdate: React.MutableRefObject<IDelayedUpdateGroup[]>;
+}
+
+const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = (props) => {
+  const {
+    data,
+    children,
+  } = props;
+
+  const form = useForm();
+
+  useEffect(() => {
+    if (typeof data === 'function') {
+      props.setInitialValuesLoading(true);
+      const dataResponse = data();
+
+      Promise.resolve(dataResponse).then((response) => {
+        props.setInitialValues(response);
+        form.form.setFieldsValue(response);
+      });
+    } else {
+      props.setInitialValues(data);
+
+      form.setFormData({ values: data, mergeValues: true });
+    }
+  }, [data]);
+
+  return (
+    <CrudContext.Provider value={props.context}>
+      <ParentProvider model={{ readOnly: props.context.mode === 'read' }} formMode={props.context.mode === 'read' ? 'readonly' : 'edit'}>
+          {children}
+      </ParentProvider>
+    </CrudContext.Provider>
+  );
+};
+
+
 const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const {
-    children,
     data,
     updater,
     creater,
@@ -64,7 +108,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     onSave,
     allowChangeMode,
     autoSave = false,
-    formSettings
+    formSettings = DEFAULT_FORM_SETTINGS
   } = props;
   const [state, dispatch] = useThunkReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
@@ -80,6 +124,8 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const toolboxComponents = useFormDesignerComponents();
   const delayedUpdate = useRef<IDelayedUpdateGroup[]>();
 
+  const formRef = useRef<ConfigurableFormInstance>(null);
+
   const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean) => {
     dispatch(switchModeAction({ mode, allowChangeMode }));
   };
@@ -94,7 +140,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   useEffect(() => {
     //to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one) 
-    const modeToUse = mode ==='read'?mode:allowChangeMode ? state.mode : mode;
+    const modeToUse = mode === 'read' ? mode : allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
@@ -109,21 +155,6 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   const setInitialValues = (values: object) => {
     dispatch(setInitialValuesAction(values));
   };
-
-  useEffect(() => {
-    if (typeof data === 'function') {
-      setInitialValuesLoading(true);
-      const dataResponse = data();
-
-      Promise.resolve(dataResponse).then((response) => {
-        setInitialValues(response);
-        form.setFieldsValue(response);
-      });
-    } else {
-      setInitialValues(data);
-      form.setFieldsValue(data);
-    }
-  }, [data]);
 
   //#region Allow Edit/Delete/Create
 
@@ -164,11 +195,11 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     return form
       .validateFields()
       .then((values) => {
-        // todo: call common data preparation code (check configurableFormRenderer)
+        // TODO: call common data preparation code (check configurableFormRenderer)
         const mergedData = { ...state.initialValues, ...values };
 
         const postData = filterDataByOutputComponents(
-          removeGhostKeys(mergedData), // ToDo: temporary use ghost keys for file upload components, form colums still not provide components structure
+          removeGhostKeys(mergedData), // TODO: temporary use ghost keys for file upload components, form colums still not provide components structure
           props.editorComponents.allComponents,
           toolboxComponents
         );
@@ -275,32 +306,47 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     getInitialData,
   };
 
-  const flatComponents = state.mode === 'read' ? props.displayComponents : props.editorComponents;
+  const flatMarkup = state.mode === 'read' ? props.displayComponents : props.editorComponents;
 
+  const [shaForm] = useShaForm({
+    antdForm: form,
+    form: undefined,
+    init: (form) => {
+      form.initByMarkup({
+        formFlatMarkup: flatMarkup,
+        formSettings: formSettings,
+      });
+    }
+  });
   return (
-    <CrudContext.Provider value={contextValue}>
-      {true && (
+    <ShaFormProvider shaForm={shaForm}>
+      <ShaForm.MarkupProvider markup={flatMarkup}>
         <FormProvider
           key={state.mode} /* important for re-rendering of the provider after mode change */
           form={form}
           name={''}
-          allComponents={flatComponents.allComponents}
-          componentRelations={flatComponents.componentRelations}
           formSettings={formSettings}
           mode={state.mode === 'read' ? 'readonly' : 'edit'}
           isActionsOwner={false}
+          formRef={formRef}
+          shaForm={shaForm}
         >
-          <ParentProvider model={{readOnly: state.mode === 'read'}} formMode={state.mode === 'read' ? 'readonly' : 'edit'}>
-            <FormWrapper 
-              form={form} initialValues={state.initialValues} onValuesChange={onValuesChange}
-              formSettings={formSettings} delayedUpdate={delayedUpdate}
-            >
-              {children}
-            </FormWrapper>
-          </ParentProvider>
+        <FormWrapper
+          form={form}
+          initialValues={contextValue.initialValues}
+          onValuesChange={onValuesChange}
+          formSettings={formSettings}
+          delayedUpdate={delayedUpdate}
+        >
+          <InternalCrudProvider {...props} context={contextValue} delayedUpdate={delayedUpdate}
+            onValuesChange={onValuesChange}
+            setInitialValues={setInitialValues}
+            setInitialValuesLoading={setInitialValuesLoading}
+          />
+        </FormWrapper>
         </FormProvider>
-      )}
-    </CrudContext.Provider>
+      </ShaForm.MarkupProvider>
+    </ShaFormProvider>
   );
 };
 

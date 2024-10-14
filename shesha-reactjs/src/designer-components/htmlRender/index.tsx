@@ -6,12 +6,14 @@ import React from 'react';
 import { IHtmlComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { ConfigurableFormItem } from '@/components';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const HtmlComponent: IToolboxComponent<IHtmlComponentProps> = {
   type: 'htmlRender',
   name: 'HTML Render',
   icon: <HighlightOutlined />,
-  isInput: true,
+  isInput: false,
+  isOutput: true,
   Factory: ({ model }) => {
     const  ctx = useAvailableConstantsData();    
     return <ConfigurableFormItem model={{...model, hideLabel: true}}>
@@ -24,6 +26,12 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps> = {
   },
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  migrator: (m) => m
+    .add<IHtmlComponentProps>(1, (prev: IHtmlComponentProps) => ({
+      ...migrateFormApi.properties(prev),
+      renderer: migrateFormApi.withoutFormData(prev.renderer),
+    }))
+  ,
 };
 
 export default HtmlComponent;

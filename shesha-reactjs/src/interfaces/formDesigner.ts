@@ -41,20 +41,18 @@ export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
   layoutSettings?: IFormLayoutSettings;
 }
 
-export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = (
-  props: ISettingsFormFactoryArgs<TModel>
-) => ReactNode;
+export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
 
-export interface ComponentFactoryArguements<T extends IConfigurableFormComponent = any> {
-  model: T;
+export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> {
+  model: TModel;
   componentRef: MutableRefObject<any>;
   form: FormInstance<any>;
   children?: JSX.Element;
 }
 
-export type FormFactory<T extends IConfigurableFormComponent = any> = FC<ComponentFactoryArguements<T>>;
+export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<ComponentFactoryArguments<TModel>>;
 
-export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
+export interface IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent /*, TSettingsContext = any*/> {
   /**
    * Type of the component. Must be unique in the project.
    */
@@ -62,7 +60,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
    */
-  isInput?: boolean;
+  isInput: boolean;
   /**
    * If true, indicates that the component has data bindings and can be used as an output.
    */
@@ -90,20 +88,20 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Component factory. Renders the component according to the passed model (props)
    */
-  Factory?: FormFactory<T>;
+  Factory?: FormFactory<TModel>;
   /**
    * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form
    */
-  initModel?: (model: T) => T;
+  initModel?: (model: TModel) => TModel;
   /**
    * Link component to a model metadata
    */
-  linkToModelMetadata?: (model: T, metadata: IPropertyMetadata) => T;
+  linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
   /**
    * Returns nested component containers. Is used in the complex components like tabs, panels etc.
    */
-  getContainers?: (model: T) => IFormComponentContainer[];
+  getContainers?: (model: TModel) => IFormComponentContainer[];
   /**
    * Name of the child component containers. Note: may be changed in the future releases
    */
@@ -111,7 +109,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Settings form factory. Renders the component settings form
    */
-  settingsFormFactory?: ISettingsFormFactory<T>;
+  settingsFormFactory?: ISettingsFormFactory<TModel>;
   /**
    * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
    */
@@ -119,7 +117,7 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Settings validator
    */
-  validateSettings?: (model: T) => Promise<any>;
+  validateSettings?: (model: TModel) => Promise<any>;
 
   /**
    * Return true to indicate that the data type is supported by the component
@@ -132,9 +130,17 @@ export interface IToolboxComponent<T extends IConfigurableFormComponent = any> {
   /**
    * Settings migrations. Returns last version of settings
    */
-  migrator?: SettingsMigrator<T>;
+  migrator?: SettingsMigrator<TModel>;
 
-  getFieldsToFetch?: (propertyName: string, rawModel: T, metadata: IModelMetadata) => string[];
+  /**
+   * Returns fields to fetch, used when it is necessary to get additional fields, and not just what is specified in the propertyName field
+   */
+  getFieldsToFetch?: (propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[];
+
+  /**
+   * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
+   */
+  validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
 }
 
 export interface SettingsMigrationContext {
@@ -154,7 +160,7 @@ export type SettingsMigrator<TSettings> = (
 export interface IToolboxComponentGroup {
   name: string;
   visible?: boolean;
-  components: IToolboxComponent[];
+  components: IToolboxComponent<any>[];
 }
 
 export interface IToolboxComponents {

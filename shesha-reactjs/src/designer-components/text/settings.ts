@@ -76,6 +76,32 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           ],
           dataSourceType: 'values',
         })
+        .addDropdown({
+          id: nanoid(),
+          propertyName: 'textAlign',
+          parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
+          label: 'Text Align',
+          allowClear: false,
+          defaultValue: 'start',
+          values: [
+            {
+              label: 'Left',
+              value: 'start',
+              id: '32ebcc5b-6775-4b34-b856-d7ed42f33c3b',
+            },
+            {
+              label: 'Center',
+              value: 'center',
+              id: 'f3622f5e-3dc3-452b-aa57-2273f65b9fdc',
+            },
+            {
+              label: 'Right',
+              value: 'end',
+              id: '3e6a5ac8-bf51-48fb-b5c1-33ba455a1246',
+            },
+          ],
+          dataSourceType: 'values',
+        })
         .addTextArea({
           id: 'b9857800-eb4d-4303-b1ac-6f9bc7f140ad',
           propertyName: 'content',
@@ -198,7 +224,7 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
           propertyName: 'contentType',
           parentId: '3pnl54bf6-f76d-4139-a850-c99bf06c8b69',
           label: 'Color',
-          defaultValue: [DEFAULT_CONTENT_TYPE],
+          defaultValue: DEFAULT_CONTENT_TYPE,
           values: [
             {
               label: 'Default',
@@ -418,4 +444,28 @@ export const settingsFormMarkup = new DesignerToolbarSettings()
       ]
     }
   })
+  .addCollapsiblePanel({
+    id: 'eb91c2f5-592e-4f60-ba1a-f1d2011a5290',
+    propertyName: 'pnlSecurity',
+    parentId: 'root',
+    label: 'Security',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    collapsible: 'header',
+    content: {
+      id:'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
+      components: [...new DesignerToolbarSettings() 
+        .addPermissionAutocomplete({
+          id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
+          propertyName: 'permissions',
+          label: 'Permissions',
+          labelAlign: 'right',
+          parentId: 'root',
+          hidden: false,
+          validate: {},
+        }).toJson()
+      ]
+}
+})
   .toJson();

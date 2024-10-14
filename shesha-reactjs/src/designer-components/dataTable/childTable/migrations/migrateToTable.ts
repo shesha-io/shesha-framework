@@ -55,7 +55,6 @@ export const migrateToTable = (
             componentName: 'quickSearch',
             parentId: headerId,
             version: 1,
-            visibilityFunc: () => true,
         });
     }
     if (props.showPagination !== false /*keep old behaviour*/) {
@@ -65,7 +64,6 @@ export const migrateToTable = (
             componentName: 'pager',
             parentId: headerId,
             version: 2,
-            visibilityFunc: () => true,
         });
     }
     headerComponents.push({
@@ -74,7 +72,6 @@ export const migrateToTable = (
         componentName: 'buttons',
         parentId: headerId,
         version: 6,
-        visibilityFunc: () => true,
         isInline: props.isInline,
         items: props.toolbarItems,
     });

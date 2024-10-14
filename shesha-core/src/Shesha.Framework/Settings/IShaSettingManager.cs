@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Settings
@@ -15,7 +16,27 @@ namespace Shesha.Settings
         /// <param name="name">Setting name</param>
         /// <param name="context"></param>
         /// <returns></returns>
+        Task<JObject> GetJObjectOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null);
+
+        /// <summary>
+        /// Get setting value
+        /// </summary>
+        /// <param name="module">Module name</param>
+        /// <param name="name">Setting name</param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         Task<object> GetOrNullAsync([NotNull] string module, [NotNull] string name, SettingManagementContext context = null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="module"></param>
+        /// <param name="name"></param>
+        /// <param name="dataType"></param>
+        /// <param name="defaultValue"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        Task<object> UserSpecificGetOrNullAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, TValue defaultValue, SettingManagementContext context = null);
 
         /// <summary>
         /// Get setting value or null
@@ -35,5 +56,17 @@ namespace Shesha.Settings
         /// <param name="context"></param>
         /// <returns></returns>
         Task SetAsync<TValue>([NotNull] string module, [NotNull] string name, [CanBeNull] TValue value, SettingManagementContext context = null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="module"></param>
+        /// <param name="name"></param>
+        /// <param name="dataType"></param>
+        /// <param name="value"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        Task UpdateUserSettingAsync<TValue>([NotNull] string module, [NotNull] string name, string dataType, [CanBeNull] TValue value, SettingManagementContext context = null);
     }
 }

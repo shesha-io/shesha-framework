@@ -74,6 +74,13 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
       : null;
   }, [actionName, actionOwner]);
 
+  const filteredActions = props?.allowedActions?.reduce((acc, key) => {
+      if (actions[key]) {
+        acc[key] = actions[key];
+      }
+      return acc;
+  }, {});
+
   return (
     <div
       style={props.level > 1 ? { paddingLeft: 10 } : {}} className="sha-action-props"
@@ -88,7 +95,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         initialValues={formValues}
       >
         <Form.Item name="actionFullName" label={label} tooltip={description}>
-          <ActionSelect actions={actions} readOnly={readOnly}></ActionSelect>
+          <ActionSelect actions={props.allowedActions && props.allowedActions.length > 0 ? filteredActions : actions} readOnly={readOnly}></ActionSelect>
         </Form.Item>
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
@@ -148,6 +155,7 @@ interface IConfigurableActionConfiguratorProps {
   level: number;
   readOnly?: boolean;
   exposedVariables?: ICodeExposedVariable[];
+  allowedActions?: string[];
 }
 
 interface IActionFormModel extends Omit<IConfigurableActionConfiguration, 'actionOwner' | 'actionName'> {

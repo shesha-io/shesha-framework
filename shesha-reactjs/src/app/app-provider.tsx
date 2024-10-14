@@ -6,11 +6,10 @@ import {
     ShaApplicationProvider,
     StoredFilesProvider,
 } from '@/providers';
-import { AppProgressBar } from 'next-nprogress-bar';
-import { useTheme } from 'antd-style';
 import { useNextRouter } from '@/hooks/useNextRouter';
 import { EntityCrudActions } from '@/providers/dynamicActions/implementations/entityCrudActions';
 import { StandardApis } from '@/providers/dynamicActions/implementations/standardApis';
+import { ProgressBar } from './progressBar';
 
 export interface IAppProviderProps {
     backendUrl: string;
@@ -19,20 +18,14 @@ export interface IAppProviderProps {
 export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl }) => {
     const nextRouter = useNextRouter();
 
-    const theme = useTheme();
-
     return (
         <GlobalStateProvider>
-            <AppProgressBar
-                height="4px"
-                color={theme.colorPrimary}
-                shallowRouting
-            />
             <ShaApplicationProvider
                 backendUrl={backendUrl}
                 router={nextRouter}
                 noAuth={nextRouter.path?.includes('/no-auth')}
             >
+                <ProgressBar />
                 <EntityCrudActions>
                     <StandardApis>
                         <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>

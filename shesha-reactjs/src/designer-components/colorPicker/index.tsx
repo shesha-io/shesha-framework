@@ -8,6 +8,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ColorPicker } from '@/components';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
   type: 'colorPicker',
@@ -38,6 +39,7 @@ const ColorPickerComponent: IToolboxComponent<IColorPickerComponentProps> = {
     .add<IColorPickerComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IColorPickerComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IColorPickerComponentProps>(2, (prev) => ({ ...prev, allowClear: false, showText: false }))
+    .add<IColorPickerComponentProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
   validateSettings: model => validateConfigurableComponentSettings(iconPickerFormSettings, model),
 };

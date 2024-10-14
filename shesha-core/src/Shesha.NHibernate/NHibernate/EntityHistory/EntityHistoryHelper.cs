@@ -14,8 +14,12 @@ using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Intercept;
 using NHibernate.Proxy;
+using Nito.AsyncEx.Synchronous;
+using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.DynamicEntities;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityHistory;
 using Shesha.NHibernate.Session;
 using Shesha.NHibernate.UoW;
@@ -40,6 +44,7 @@ namespace Shesha.NHibernate.EntityHistory
         private readonly NHibernateEntityHistoryStore _historyStore;
         private readonly IRepository<EntityHistoryEvent, Guid> _historyEventRepository;
         private readonly IIocResolver _iocResolver;
+        private readonly IModelConfigurationManager _modelConfigurationManager;
 
         [DebuggerStepThrough]
         public EntityHistoryHelper(
@@ -49,6 +54,7 @@ namespace Shesha.NHibernate.EntityHistory
             IReferenceListHelper refListHelper,
             NHibernateEntityHistoryStore historyStore,
             IRepository<EntityHistoryEvent, Guid> historyEventRepository,
+            IModelConfigurationManager modelConfigurationManager,
             IIocResolver iocResolver)
             : base(configuration, unitOfWorkManager)
         {
@@ -61,6 +67,7 @@ namespace Shesha.NHibernate.EntityHistory
             _historyStore = historyStore;
             _historyEventRepository = historyEventRepository;
             _iocResolver = iocResolver;
+            _modelConfigurationManager = modelConfigurationManager;
         }
 
         public Guid Id { get; set; }
@@ -105,6 +112,10 @@ namespace Shesha.NHibernate.EntityHistory
                 return null;
             }
 
+            var entityConfig = _modelConfigurationManager
+                .GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name)
+                .WaitAndUnwrapException();
+
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
 
@@ -115,7 +126,8 @@ namespace Shesha.NHibernate.EntityHistory
             {
                 if (!typeOfEntity.GetProperties()
                     .Any(p =>
-                        (IsAuditedPropertyInfo(p) ?? false)
+                        (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == p.Name.ToCamelCase())?.Audited ?? false)
+                        || (IsAuditedPropertyInfo(p) ?? false)
                         || (IsAditedBooleanPropertyInfo(p) ?? false)
                         || (IsAditedAsEventPropertyInfo(p) ?? false)))
                 {
@@ -171,7 +183,7 @@ namespace Shesha.NHibernate.EntityHistory
             if (changeType != EntityChangeType.Created)
             {
                 propertyChanges.AddRange(GetPropertyChanges((isAudited ?? false) || (isTracked ?? false), entityChange,
-                    typeOfEntity, entity, dirtyProps));
+                    typeOfEntity, entity, entityConfig, dirtyProps));
                 if (propertyChanges.Count == 0 && //changeType != EntityChangeType.Created &&
                     EntityHistoryEvents.All(x => x.EntityChange != entityChange))
                 {
@@ -183,7 +195,7 @@ namespace Shesha.NHibernate.EntityHistory
             return entityChange;
         }
 
-        protected override bool? IsAuditedPropertyInfo(PropertyInfo propertyInfo)
+        protected bool? IsAuditedProperty(PropertyInfo propertyInfo)
         {
             // do not save properties of audition
             return
@@ -204,7 +216,7 @@ namespace Shesha.NHibernate.EntityHistory
         /// Gets the property changes for this entry.
         /// </summary>
         private ICollection<EntityPropertyChange> GetPropertyChanges(bool fullAudited, EntityChange entityChange, Type unproxiedEntityType, object entity,
-            IList<SessionExtensions.DirtyPropertyInfo> dirtyProps)
+            ModelConfigurationDto entityConfig, IList<SessionExtensions.DirtyPropertyInfo> dirtyProps)
         {
             var propertyChanges = new List<EntityPropertyChange>();
 
@@ -219,9 +231,11 @@ namespace Shesha.NHibernate.EntityHistory
                     continue;
                 }
 
+                var configuredAudit = (entityConfig.Properties.FirstOrDefault(x => x.Name.ToCamelCase() == propInfo.Name.ToCamelCase())?.Audited ?? false);
                 var isAuditedProp = IsAuditedPropertyInfo(propInfo);
                 var shouldSaveProperty =
                     fullAudited && (isAuditedProp == null || isAuditedProp.Value)
+                    || configuredAudit
                     || (isAuditedProp != null && isAuditedProp.Value)
                     || (IsAditedBooleanPropertyInfo(propInfo) ?? false)
                     || (IsAditedAsEventPropertyInfo(propInfo) ?? false)

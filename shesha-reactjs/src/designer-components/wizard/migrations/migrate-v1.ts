@@ -2,7 +2,6 @@ import { StepProps } from 'antd';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, SettingsMigrationContext } from '@/interfaces/formDesigner';
 import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/models';
-import { IConfigurableItemBase } from '@/providers/itemListConfigurator/contexts';
 import { getDispatchEventReplacement } from '@/components/formDesigner/components/_common-migrations/migrate-events';
 import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
 import { IWizardSequence, IWizardStepProps } from '../models';
@@ -45,7 +44,7 @@ const getActionConfig = (
 
 export type ButtonActionTypeV0 = 'executeScript' | 'dispatchAnEvent';
 
-export interface IWizardTabPropsV0 extends IConfigurableItemBase {
+export interface IWizardTabPropsV0 {
   id: string;
   icon?: string;
   key: string;
@@ -103,7 +102,7 @@ export interface IWizardComponentPropsV0 extends IConfigurableFormComponent {
   defaultActiveStep?: string;
 }
 
-export interface IWizardStepPropsV1 extends IConfigurableItemBase {
+export interface IWizardStepPropsV1 {
   id: string;
   icon?: string;
   key: string;
@@ -228,7 +227,6 @@ export const migrateV0toV1 = (
     return step;
   });
 
-  // TODO: Fix tslint issue caused by incompatible size property
   // @ts-ignore
   return { ...restProps, steps: steps ?? [] };
 };

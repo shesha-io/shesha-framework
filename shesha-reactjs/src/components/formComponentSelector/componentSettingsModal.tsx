@@ -3,7 +3,7 @@ import { ISettingsFormInstance, IToolboxComponent } from '@/interfaces';
 import React, { useRef } from 'react';
 import { useMedia } from 'react-use';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { ComponentPropertiesEditor } from '@/components/formDesigner/componentPropertiesPanel/componentPropertiesPanel';
+import { ComponentPropertiesEditor } from '@/components/formDesigner/componentPropertiesPanel/componentPropertiesEditor';
 
 export interface IProps<T extends IConfigurableFormComponent> {
   model: T;
@@ -25,7 +25,7 @@ function ComponentSettingsModal<T extends IConfigurableFormComponent>({
   propertyFilter,
 }: IProps<T>) {
   const isSmall = useMedia('(max-width: 480px)');
-  const formRef = useRef<ISettingsFormInstance>();  
+  const formRef = useRef<ISettingsFormInstance>();
 
   if (!formComponent)
     return null;

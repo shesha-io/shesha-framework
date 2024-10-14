@@ -15,7 +15,7 @@ export const useCache = (name: string) => {
             const newStorage = localForage.createInstance({ name: name });
             setStorage(newStorage);
         }
-    }, [name]);
+    }, [name, storage.INDEXEDDB]);
 
     return storage;
 };

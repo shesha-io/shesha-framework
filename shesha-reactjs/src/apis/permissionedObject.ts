@@ -5,6 +5,7 @@ export interface PermissionedObjectDto {
   id?: string;
   object?: string | null;
   category?: string | null;
+  moduleName?: string | null;
   module?: string | null;
   type?: string | null;
   name?: string | null;
@@ -13,9 +14,10 @@ export interface PermissionedObjectDto {
   actualPermissions?: string[] | null;
   inherited?: boolean;
   access?: number | null;
+  actualAccess?: number | null;
   parent?: string | null;
   dependency?: string | null;
-  child?: PermissionedObjectDto[] | null;
+  children?: PermissionedObjectDto[] | null;
   hidden?: boolean;
 }
 

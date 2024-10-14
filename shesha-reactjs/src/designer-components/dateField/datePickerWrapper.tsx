@@ -1,19 +1,16 @@
 import { DatePicker } from '@/components/antd';
 import moment, { isMoment } from 'moment';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadata } from '@/providers';
 import { getStyle } from '@/providers/form/utils';
-import { getMoment } from '@/utils/date';
+import { getMoment, getRangeMoment } from '@/utils/date';
 import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
 import {
     DATE_TIME_FORMATS,
     disabledDate,
-    getDatePickerValue,
-    getDefaultFormat,
     getFormat,
-    getRangePickerValues,
 } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
 
@@ -34,7 +31,6 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         value,
         showTime,
         showNow,
-        showToday,
         onChange,
         picker = 'date',
         defaultValue,
@@ -44,26 +40,39 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         readOnly,
         style,
         defaultToMidnight,
+        resolveToUTC,
         ...rest
     } = props;
 
     const dateFormat = props?.dateFormat || getDataProperty(properties, name) || DATE_TIME_FORMATS.date;
     const timeFormat = props?.timeFormat || DATE_TIME_FORMATS.time;
 
-    const defaultFormat = getDefaultFormat(props);
-
     const { formData } = useForm();
 
     const pickerFormat = getFormat(props, properties);
-    const formattedValue = getMoment(value, pickerFormat);
+
+    const convertValue = (localValue: any) => {
+      const newValue = isMoment(localValue) ? localValue : getMoment(localValue, pickerFormat);
+      const val = picker === 'week'
+        ? newValue.startOf('week')
+        : picker === 'month'
+          ? newValue.startOf('month')
+          : picker === 'quarter'
+            ? newValue.startOf('quarter')
+            : picker === 'year'
+              ? newValue.startOf('year')
+              : !showTime
+                ? newValue.startOf('day')
+                : newValue;
+      return !resolveToUTC ? val.utc(true) : val.local(true);
+    };
 
     const handleDatePickerChange = (localValue: any | null, dateString: string) => {
         if (!dateString?.trim()) {
             (onChange as TimePickerChangeEvent)(null, '');
             return;
         }
-
-        const newValue = isMoment(localValue) ? localValue.format(defaultFormat) : localValue;
+        const newValue = convertValue(localValue);
 
         (onChange as TimePickerChangeEvent)(newValue, dateString);
     };
@@ -73,32 +82,16 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
             (onChange as RangePickerChangeEvent)(null, null);
             return;
         }
-
-        const dates = (values as []).map((val: any) => {
-            if (isMoment(val)) return val.format(defaultFormat);
-
-            return val;
-        });
+        const dates = (values as []).map((val: any) => convertValue(val));
 
         (onChange as RangePickerChangeEvent)(dates, formatString);
     };
 
-    if (readOnly) {
-        const format = showTime
-            ? `${dateFormat} ${timeFormat}`
-            : dateFormat;
+    const evaluatedStyle = { width: '100%', ...getStyle(style, formData, globalState) };
 
-        return (
-            <ReadOnlyDisplayFormItem
-                value={formattedValue?.toISOString()}
-                type="datetime"
-                dateFormat={format}
-                timeFormat={timeFormat}
-            />
-        );
-    }
-
-    const evaluatedStyle = {width: '100%', ...getStyle(style, formData, globalState)};
+    const momentValue = useMemo(() => getMoment(value, pickerFormat), [value, pickerFormat]);
+    const rangeMomentValue = useMemo(() => getRangeMoment(value, pickerFormat), [value, pickerFormat]);
+    const defaultMomentValue = useMemo(() => getRangeMoment(defaultValue, pickerFormat), [defaultValue, pickerFormat]);
 
     if (range) {
         return (
@@ -107,12 +100,11 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
                 disabledDate={(e) => disabledDate(props, e, formData, globalState)}
                 onChange={handleRangePicker}
                 format={pickerFormat}
-                value={getRangePickerValues(value, pickerFormat)}
-                defaultValue={getRangePickerValues(defaultValue, pickerFormat)}
+                value={rangeMomentValue}
+                defaultValue={defaultMomentValue}
                 {...rest}
                 picker={picker}
                 showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
-                showSecond
                 disabled={readOnly}
                 style={evaluatedStyle}
                 allowClear
@@ -121,22 +113,31 @@ export const DatePickerWrapper: FC<IDateFieldProps> = (props) => {
         );
     }
 
+    if (readOnly) {
+      const format = showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
+      return (
+        <ReadOnlyDisplayFormItem
+          value={momentValue}
+          type="datetime"
+          dateFormat={format}
+          timeFormat={timeFormat}
+        />
+      );
+    }
+
     return (
         <DatePicker
             className="sha-date-picker"
             disabledDate={(e) => disabledDate(props, e, formData, globalState)}
-            //disabled={disabled}
             onChange={handleDatePickerChange}
             variant={hideBorder ? 'borderless' : undefined}
             showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
             showNow={showNow}
-            showToday={showToday}
-            showSecond={true}
             picker={picker}
             format={pickerFormat}
             style={evaluatedStyle}
             {...rest}
-            {...getDatePickerValue(props, pickerFormat)}
+            value={momentValue}
             allowClear
         />
     );

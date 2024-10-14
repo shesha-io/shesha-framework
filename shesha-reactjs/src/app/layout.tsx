@@ -15,13 +15,13 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <Suspense>
-                    <AntdRegistry>
+                <AntdRegistry>
+                    <Suspense>
                         <AppProvider backendUrl={backendUrl}>
                             {children}
                         </AppProvider>
-                    </AntdRegistry>
-                </Suspense>
+                    </Suspense>
+                </AntdRegistry>
             </body>
         </html>
     );

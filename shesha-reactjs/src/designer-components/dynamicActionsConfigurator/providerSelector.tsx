@@ -23,15 +23,13 @@ export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, 
     const treeData = useMemo<ITreeItem[]>(() => {
         const result: ITreeItem[] = [];
     
-        //console.log('build actions', actions)
-    
         for (const owner in providers) {
           if (!providers.hasOwnProperty(owner))
             continue;
           const provider = providers[owner];
           const ownerNodes: ITreeItem[] = [];
     
-          /* todo: evaluate dynamically
+          /* TODO: evaluate dynamically
           ownerActions.actions.forEach(action => {
             const displayName = action.label ?? action.name;
     

@@ -1,18 +1,24 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { FormIdentifier, useSheshaApplication } from '..';
-import { IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
-import getDefaultToolboxComponents from './defaults/toolboxComponents';
+import { IToolboxComponent, IToolboxComponentGroup, IToolboxComponents } from '@/interfaces';
+import { getToolboxComponents } from './defaults/toolboxComponents';
 import { useLocalStorage } from '@/hooks';
+import { useFormPersister } from '../formPersisterProvider';
 
 export const useFormDesignerComponentGroups = () => {
   const app = useSheshaApplication(false);
-  const [ isDevmode ] = useLocalStorage('application.isDevMode', false);
-  const defaultToolboxComponents = getDefaultToolboxComponents(isDevmode);
-  const appComponentGroups = app?.toolboxComponentGroups;
+  const [isDevmode] = useLocalStorage('application.isDevMode', false);
+  const formPersister = useFormPersister(false);
+
+  const { formId, formProps } = formPersister || {};
 
   const toolboxComponentGroups = useMemo(() => {
+    const defaultToolboxComponents = getToolboxComponents(isDevmode, { formId, formProps });
+    const appComponentGroups = app?.formDesignerComponentGroups;
+
     return [...(defaultToolboxComponents || []), ...(appComponentGroups || [])];
-  }, [defaultToolboxComponents, appComponentGroups]);
+  }, [formId, formProps, isDevmode, app?.formDesignerComponentGroups]);
+
   return toolboxComponentGroups;
 };
 
@@ -35,6 +41,17 @@ export const useFormDesignerComponents = (): IToolboxComponents => {
 
   const toolboxComponents = useMemo(() => toolbarGroupsToComponents(componentGroups), [componentGroups]);
   return toolboxComponents;
+};
+
+export type FormDesignerComponentGetter = (type: string) => IToolboxComponent;
+
+export const useFormDesignerComponentGetter = (): FormDesignerComponentGetter => {
+  const components = useFormDesignerComponents();
+  const getter = useCallback((type: string) => {
+    return components?.[type];
+  }, [components]);
+
+  return getter;
 };
 
 const getDesignerUrl = (designerUrl: string, fId: FormIdentifier) => {

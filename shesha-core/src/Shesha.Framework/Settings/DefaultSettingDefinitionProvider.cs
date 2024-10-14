@@ -17,7 +17,7 @@ namespace Shesha.Settings
     /// <summary>
     /// Default settings definition provider. Defines all settings registered using <see cref="IocManagerExtensions.RegisterSettingAccessor"/>
     /// </summary>
-    public class DefaultSettingDefinitionProvider : ISettingDefinitionProvider, ITransientDependency
+    public class DefaultSettingDefinitionProvider : IOrderedSettingDefinitionProvider, ITransientDependency
     {
         private readonly IIocManager _iocManager;
 
@@ -25,6 +25,8 @@ namespace Shesha.Settings
         {
             _iocManager = iocManager;
         }
+
+        public int OrderIndex => 1;
 
         public void Define(ISettingDefinitionContext context)
         {
@@ -83,6 +85,8 @@ namespace Shesha.Settings
 
             definition.Description = ReflectionHelper.GetDescription(property);
             definition.IsClientSpecific = settingAttribute?.IsClientSpecific ?? false;
+
+            definition.IsUserSpecific = settingAttribute?.IsUserSpecific ?? false;
 
             definition.ModuleName = moduleInfo.Name;
             definition.ModuleAccessor = moduleInfo.GetModuleAccessor();

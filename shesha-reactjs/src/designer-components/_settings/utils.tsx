@@ -7,7 +7,7 @@ import { IComponentsDictionary, IConfigurableFormComponent, IPropertySetting, IT
  * @param {any} data - The data to be checked
  * @return {boolean} Indicates whether the data is an instance of IPropertySetting
  */
-export const isPropertySettings = (data: any): data is IPropertySetting => {
+export const isPropertySettings = <Value = any>(data: any): data is IPropertySetting<Value> => {
     if (!data || typeof data !== 'object')
         return false;
     
@@ -31,7 +31,7 @@ export const getPropertySettingsFromData = (data: any, propName: string): IPrope
         return { _mode: 'value', _code: undefined, _value: val };
 };
 
-export const updateSettingsFromVlues = <T,>(model: T, values: T): T => {
+export const updateSettingsFromValues = <T,>(model: T, values: T): T => {
     const copy = { ...model };
     Object.keys(values).forEach(k => {
       if (isPropertySettings(copy[k]) && !isPropertySettings(values[k]))
@@ -96,18 +96,18 @@ export const updateSettingsComponents = (
             
                 // Add source component as a child of Setting component
                 if (Array.isArray(oldComponent['components']) && oldComponent['components'].length > 0) {
-                    newComponent['sourceComponent'] = {
+                    newComponent['components'] = [{
                         ...oldComponent,
                         components: oldComponent['components'].map(c => {
                             return processComponent(c);
                         }),
                         parentId: newComponent.id
-                    } as IContainerComponentProps;
+                    } as IContainerComponentProps];
                 } else {
-                    newComponent['sourceComponent'] = {
+                    newComponent['components'] = [{
                         ...oldComponent,
                         parentId: newComponent.id
-                    } as IConfigurableFormComponent;
+                    } as IConfigurableFormComponent];
                 }
                 return newComponent;
             } else {

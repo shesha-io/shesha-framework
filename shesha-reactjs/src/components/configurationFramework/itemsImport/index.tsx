@@ -211,11 +211,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
                     headers: httpHeaders,
                 }
             )
-            .then((response: any) => {
-                const responseData = response.data.result;
-
-                console.log('import response', responseData);
-
+            .then(() => {
                 setIsImporting(false);
             })
             .catch(e => {

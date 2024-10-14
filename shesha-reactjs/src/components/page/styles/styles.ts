@@ -1,4 +1,4 @@
-import { createGlobalStyle, css } from "antd-style";
+import { createGlobalStyle, css } from "@/styles";
 import { sheshaStyles } from '@/styles';
 
 const flexCenterAlignedSpaceBetween = css`
@@ -9,7 +9,7 @@ align-items: center;
 
 export const GlobalPageStyles = createGlobalStyle`
 .sha-page {
-    min-height: 100vh;
+    min-height: calc(100vh - ${sheshaStyles.layoutHeaderHeight});
   
     .sha-page-breadcrumb {
       margin-left: ${sheshaStyles.paddingLG}px;

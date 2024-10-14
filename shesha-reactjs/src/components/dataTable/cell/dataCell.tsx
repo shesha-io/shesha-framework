@@ -18,6 +18,7 @@ import { ReferenceListCell } from './default/referenceListCell';
 import { useCrud } from '@/providers/crudContext';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
+import { editorAdapters, updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
 
 export const DefaultDataDisplayCell = <D extends object = {}, V = number>(props: IDataCellProps<D, V>) => {
   const { columnConfig } = props;
@@ -93,12 +94,17 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
       readOnly: actualModel.readOnly === undefined ? props.readOnly : actualModel.readOnly,
     };
 
-    if (component.linkToModelMetadata && propertyMeta) {
-      editorModel = component.linkToModelMetadata(editorModel, propertyMeta);
+    const adapter = editorAdapters[customComponent.type];
+
+    if (component.linkToModelMetadata && propertyMeta && adapter?.propertiesFilter) {
+      editorModel = updateModelExcludeFiltered(editorModel, component.linkToModelMetadata({
+        type: editorModel.type,
+        id: editorModel.id,
+      }, propertyMeta), adapter.propertiesFilter);
     }
 
     return editorModel;
-  }, [customComponent.settings, allData.contexts.lastUpdate, allData.data, allData.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
+  }, [customComponent.settings, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow, propertyMeta, injectables]);
 
   const componentRef = useRef();
 
@@ -111,7 +117,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
       <component.Factory
         model={componentModel}
         componentRef={componentRef}
-        form={allData.form?.form}
+        form={allData.form?.formInstance}
       />
     </CustomErrorBoundary>
   );

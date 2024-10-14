@@ -1,119 +1,71 @@
 import { FormInstance } from 'antd';
-import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useMemo, useRef } from 'react';
-import { useDebouncedCallback } from 'use-debounce';
-import useThunkReducer from '@/hooks/thunkReducer';
+import React, { useCallback, FC, MutableRefObject, PropsWithChildren, useContext, useRef, useMemo } from 'react';
 import {
-  IComponentRelations,
-  IComponentsDictionary,
   IConfigurableFormComponent,
-  IFormValidationErrors,
-  IDictionary,
 } from '@/interfaces';
-import { DelayedUpdateProvider, useDelayedUpdate } from '@/providers/delayedUpdateProvider';
-import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { getFlagSetters } from '../utils/flagsSetters';
-import {
-  registerComponentActionsAction,
-  setEnabledComponentsAction,
-  setFormControlsDataAction,
-  setFormDataAction,
-  setFormModeAction,
-  setSettingsAction,
-  setValidationErrorsAction,
-  setVisibleComponentsAction,
-} from './actions';
 import {
   ConfigurableFormInstance,
-  FORM_CONTEXT_INITIAL_STATE,
   FormActionsContext,
   FormStateContext,
   IFormActionsContext,
-  IFormStateInternalContext,
-  ISetEnabledComponentsPayload,
-  ISetFormControlsDataPayload,
+  IFormStateContext,
   ISetFormDataPayload,
-  ISetVisibleComponentsPayload,
 } from './contexts';
-import { useFormDesignerComponents } from './hooks';
-import { FormMode, FormRawMarkup, IFormActions, IFormSections, IFormSettings, ISubmitActionArguments, Store } from './models';
-import formReducer from './reducer';
-import { convertActions, convertSectionsToList, evaluateKeyValuesToObjectMatchedData, executeScript, getComponentNames, getEnabledComponentIds, getFilteredComponentIds, getSheshaFormUtils, getVisibleComponentIds, useFormProviderContext } from './utils';
-import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { FormMode, IFormActions, IFormSections, IFormSettings } from './models';
+import { getFilteredComponentIds } from './utils';
 import { useDeepCompareMemo } from '@/index';
-import cleanDeep from 'clean-deep';
-import { useDataContextManager } from '@/providers/dataContextManager/index';
-import { SheshaCommonContexts } from '../dataContextManager/models';
-import { addFormFieldsList, removeGhostKeys } from '@/utils/form';
-import { filterDataByOutputComponents } from './api';
-import { IDataSourceComponent } from '@/components/configurableForm/models';
+import { FormFlatMarkupProvider, useChildComponentIds, useChildComponents, useComponentModel, useFormMarkup } from './providers/formMarkupProvider';
+import { useFormDesignerActions } from '../formDesigner';
+import { IShaFormInstance } from './store/interfaces';
+import { useShaFormActions } from './configurableActions';
+import { ConfigurableFormActionsProvider } from './actions';
+import { ConfigurableFormSectionsProvider } from './sections';
+
+type ShaFormCompoundedComponent = {
+  useMarkup: typeof useFormMarkup;
+  useComponentModel: typeof useComponentModel;
+  useChildComponents: typeof useChildComponents;
+  useChildComponentIds: typeof useChildComponentIds;
+  MarkupProvider: typeof FormFlatMarkupProvider;
+};
+const ShaForm: ShaFormCompoundedComponent = {
+  useMarkup: useFormMarkup,
+  useComponentModel: useComponentModel,
+  useChildComponents: useChildComponents,
+  useChildComponentIds: useChildComponentIds,
+  MarkupProvider: FormFlatMarkupProvider,
+};
 
 export interface IFormProviderProps {
-  needDebug?: boolean;
   name: string;
-  allComponents: IComponentsDictionary;
-  componentRelations: IComponentRelations;
-
   formSettings: IFormSettings;
-  formMarkup?: FormRawMarkup;
   mode: FormMode;
   form?: FormInstance<any>;
   actions?: IFormActions;
   sections?: IFormSections;
-  context?: any; // todo: make generic
   formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
-  onValuesChange?: (changedValues: any, values: any /*Values*/) => void;
-  /**
-   * External data fetcher, is used to refresh form data from the back-end.
-   */
-  refetchData?: () => Promise<any>;
   /**
    * If true, form should register configurable actions. Should be enabled for main forms only
    */
   isActionsOwner: boolean;
 
   propertyFilter?: (name: string) => boolean;
-  initialValues?: Store;
-  parentFormValues?: Store;
+  shaForm: IShaFormInstance;
 }
 
 const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
   name,
   children,
-  allComponents,
-  componentRelations,
-  mode = 'readonly',
   form,
   actions,
   sections,
-  context,
   formRef,
   formSettings,
-  formMarkup,
-  refetchData,
   isActionsOwner,
   propertyFilter,
-  needDebug,
   ...props
 }) => {
-
-  const initial: IFormStateInternalContext = {
-    ...FORM_CONTEXT_INITIAL_STATE,
-    name: name,
-    formMode: mode,
-    form,
-    actions: convertActions(null, actions),
-    sections: convertSectionsToList(null, sections),
-    context,
-    formSettings: formSettings,
-    formMarkup: formMarkup,
-  };
-
-  const [state, dispatch] = useThunkReducer(formReducer, initial);
-
-  const toolboxComponents = useFormDesignerComponents();
-
-  const formProviderContext = useFormProviderContext();
+  const { allComponents } = ShaForm.useMarkup();
 
   const filteredComponents = useRef<string[]>();
 
@@ -124,514 +76,67 @@ const FormProvider: FC<PropsWithChildren<IFormProviderProps>> = ({
     );
   }, [allComponents, propertyFilter]);
 
-  const isComponentFiltered = (component: IConfigurableFormComponent): boolean => {
+  const isComponentFiltered = useCallback((component: IConfigurableFormComponent): boolean => {
     return filteredComponents.current?.includes(component.id);
-  };
+  }, [filteredComponents.current]);
 
-  const getToolboxComponent = useCallback((type: string) => toolboxComponents[type], [toolboxComponents]);
+  const setFormMode = useCallback((formMode: FormMode) => {
+    props.shaForm.setFormMode(formMode);
+  }, [props.shaForm]);
 
-  //#region data fetcher
+  useShaFormActions({ isActionsOwner, name, shaForm: props.shaForm });
 
-  const fetchData = (): Promise<any> => {
-    return refetchData ? refetchData() : Promise.reject('fetcher not specified');
-  };
+  const setFormData = useCallback((payload: ISetFormDataPayload) => {
+    props.shaForm.setFormData(payload);
+  }, [props.shaForm]);
 
-  //#endregion
-
-  const setFormMode = (formMode: FormMode) => {
-    dispatch(setFormModeAction(formMode));
-  };
-
-  const setSettings = (settings: IFormSettings) => {
-    dispatch(setSettingsAction(settings));
-  };
-
-  useEffect(() => {
-    if (formSettings !== state.formSettings) {
-      setSettings(formSettings);
-    }
-  }, [formSettings]);
-
-  useEffect(() => {
-    if (mode !== state.formMode) {
-      setFormMode(mode);
-    }
-  }, [mode]);
-
-  const getComponentModel = (componentId) => {
-    return allComponents[componentId];
-  };
-
-  const isComponentReadOnly = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>): boolean => {
-    const disabledByCondition = model.isDynamic !== true && state.enabledComponentIds && !state.enabledComponentIds.includes(model.id);
-
-    return state.formMode !== 'designer' && disabledByCondition;
-  };
-
-  const isComponentHidden = (model: Pick<IConfigurableFormComponent, 'id' | 'isDynamic'>): boolean => {
-    const hiddenByCondition = model.isDynamic !== true && state.visibleComponentIds && !state.visibleComponentIds.includes(model.id);
-
-    return state.formMode !== 'designer' && hiddenByCondition;
-  };
-
-  const getChildComponents = (componentId: string) => {
-    const childIds = componentRelations[componentId];
-    if (!childIds) return [];
-    const components = childIds.map((childId) => {
-      return allComponents[childId];
-    });
-    return components;
-  };
-
-  const getChildComponentIds = (containerId: string): string[] => {
-    const childIds = componentRelations[containerId];
-    return childIds ?? [];
-  };
-
-  //#region Set visible components
-  const setVisibleComponents = (payload: ISetVisibleComponentsPayload) => {
-    dispatch(setVisibleComponentsAction(payload));
-  };
-
-  //#region configurable actions
-
-  const actionsOwnerUid = isActionsOwner ? SheshaActionOwners.Form : null;
-  const actionDependencies = [actionsOwnerUid];
-
-  useConfigurableAction(
-    {
-      name: 'Start Edit',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: () => {
-        setFormMode('edit');
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Cancel Edit',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: () => {
-        setFormMode('readonly');
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Submit',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      //argumentsFormMarkup: SubmitActionArgumentsMarkup,
-      executer: async (args: ISubmitActionArguments, actionContext) => {
-        var formInstance = (actionContext?.form?.form ?? form) as FormInstance<any>;
-        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
-        if (args?.validateFields === true || fieldsToValidate?.length > 0) {
-          await formInstance.validateFields(fieldsToValidate);
-        }
-        formInstance.submit();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Reset',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: (_, actionContext) => {
-        var formInstance = actionContext?.form?.form ?? form;
-        formInstance.resetFields();
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Refresh',
-      description: 'Refresh the form data by fetching it from the back-end',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: () => {
-        return fetchData();
-      },
-    },
-    actionDependencies
-  );
-
-  useConfigurableAction(
-    {
-      name: 'Validate',
-      description: 'Validate the form data and show validation errors if any',
-      owner: name,
-      ownerUid: actionsOwnerUid,
-      hasArguments: false,
-      executer: async(_, actionContext) => {
-        var formInstance = actionContext?.form?.form ?? form;
-        var fieldsToValidate = actionContext?.fieldsToValidate ?? null;
-        await formInstance.validateFields(fieldsToValidate);
-        return Promise.resolve();
-      },
-    },
-    actionDependencies
-  );
-
-  //#endregion
-
-  const updateVisibleComponents = (formContext: IFormStateInternalContext) => {
-    /*const comps = updateSettingsComponentsDict(
-      toolboxComponents,
-      allComponents
-    );*/
-
-    const visibleComponents = getVisibleComponentIds(
-      allComponents,
-      {
-        ...formProviderContext,
-        data: formContext.formData,
-        formMode: formContext.formMode
-      },
-      filteredComponents.current
-    );
-    setVisibleComponents({ componentIds: visibleComponents });
-  };
-
-  const debouncedUpdateVisibleComponents = useDebouncedCallback<(context: IFormStateInternalContext) => void>(
-    (formContext) => {
-      updateVisibleComponents(formContext);
-    },
-    // delay in ms
-    200
-  );
-
-  //#endregion
-
-  //#region Set enabled components
-  const setEnabledComponents = (payload: ISetEnabledComponentsPayload) => {
-    dispatch(setEnabledComponentsAction(payload));
-  };
-
-  const updateEnabledComponents = (formContext: IFormStateInternalContext) => {
-    const enabledComponents = getEnabledComponentIds(
-      allComponents,
-      {
-        ...formProviderContext,
-        data: formContext.formData,
-        formMode: formContext.formMode
-      }
-    );
-
-    setEnabledComponents({ componentIds: enabledComponents });
-  };
-
-  const debouncedUpdateEnabledComponents = useDebouncedCallback<(context: IFormStateInternalContext) => void>(
-    (formContext) => {
-      updateEnabledComponents(formContext);
-    },
-    // delay in ms
-    200
-  );
-  //#endregion
-
-  useDeepCompareEffect(() => {
-    dispatch((_, getState) => {
-      const newState = getState();
-
-      // Here there's always visibleComponentIds and enabledComponentIds
-      debouncedUpdateVisibleComponents(newState);
-      debouncedUpdateEnabledComponents(newState);
-    });
-  }, [state.formMode, formProviderContext.globalState, formProviderContext.contexts.lastUpdate]);
-
-  useDeepCompareEffect(() => {
-    dispatch((_, getState) => {
-      const newState = getState();
-
-      // Here there's always visibleComponentIds and enabledComponentIds
-      updateVisibleComponents(newState);
-      updateEnabledComponents(newState);
-    });
-  }, [allComponents, componentRelations]);
-
-  useEffect(() => {
-    // initialise state.formData if Antd form has values
-    // ToDo: Review on next version of Antd
-    const values = form?.getFieldValue([]);
-    if (!state.formData && !!values) {
-      dispatch(setFormDataAction({values, mergeValues: true}));
-    }
-  }, []);
-
-  const setFormControlsData = (payload: ISetFormControlsDataPayload) => {
-    dispatch(setFormControlsDataAction(payload));
-  };
-
-  const updateStateFormData = (payload: ISetFormDataPayload) => {
-    dispatch((dispatchThunk, getState) => {
-      dispatchThunk(setFormDataAction(payload));
-      const newState = getState();
-
-      if (typeof props.onValuesChange === 'function')
-        props.onValuesChange(payload.values, newState.formData);
-
-      // Update visible components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
-
-      if (!newState.visibleComponentIds || newState.visibleComponentIds.length === 0) {
-        updateVisibleComponents(newState);
-      } else {
-        debouncedUpdateVisibleComponents(newState);
-      }
-      // Update enabled components. Note: debounced version is used to improve performance and prevent unneeded re-rendering
-      if (!newState.enabledComponentIds || newState.enabledComponentIds.length === 0) {
-        updateEnabledComponents(newState);
-      } else {
-        debouncedUpdateEnabledComponents(newState);
-      }
-    });
-  };
-
-  const setFormData = (payload: ISetFormDataPayload) => {
-    updateStateFormData(payload);
-
-    if (payload?.mergeValues) {
-      form?.setFieldsValue(payload?.values);
-    } else {
-      form?.resetFields();
-      form?.setFieldsValue(payload?.values);
-    }
-  };
-
-  const setValidationErrors = (payload: IFormValidationErrors) => {
-    dispatch(setValidationErrorsAction(payload));
-  };
-
-  //#region form actions
-  const registerActions = (ownerId: string, actionsToRegister: IFormActions) => {
-    dispatch(registerComponentActionsAction({ id: ownerId, actions: actionsToRegister }));
-  };
-
-  const getAction = (componentId: string, name: string) => {
-    // search requested action in all parents and fallback to form
-    let currentId = componentId;
-    do {
-      const component = allComponents[currentId];
-
-      const action = state.actions.find((a) => a.owner === (component?.parentId ?? null) && a.name === name);
-      if (action) return (data, parameters) => action.body(data, parameters);
-
-      currentId = component?.parentId;
-    } while (currentId);
-
-    return null;
-  };
-  //#endregion
-
-  const getSection = (componentId: string, name: string) => {
-    // search requested section in all parents and fallback to form
-    let currentId = componentId;
-
-    do {
-      const component = allComponents[currentId];
-
-      const section = state.sections.find((a) => a.owner === (component?.parentId ?? null) && a.name === name);
-      if (section) return (data) => section.body(data);
-
-      currentId = component?.parentId;
-    } while (currentId);
-
-    return null;
-  };
-
-  const hasVisibleChilds = (id: string): boolean => {
-    const childs = getChildComponents(id);
-    const visibleChildIndex = childs.findIndex((component) => !isComponentHidden(component));
-
-    return visibleChildIndex !== -1;
-  };
-
-  const dcm = useDataContextManager(false);
-
-  const executeExpression = <TResult = any>(
-    expression: string,
-    exposedData = null
-  ): Promise<TResult> => {
-    if (!expression) {
-      return null;
-    }
-
-    const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
-    const pageContext = dcm.getPageContext();
-
-    const callArguments: IDictionary<any> = {
-      application: application?.getData(),
-      contexts: { ...dcm?.getDataContextsData(), lastUpdate: dcm?.lastUpdate },
-      data: exposedData || state.formData,
-      form: { ...state, allComponents, componentRelations },
-      formMode: state.formMode,
-      globalState: formProviderContext.globalState,
-      http: formProviderContext.http,
-      initialValues: props.initialValues,
-      message: formProviderContext.message,
-      moment: formProviderContext.moment,
-      pageContext: pageContext?.getFull(),
-      parentFormValues: props.parentFormValues,
-      setFormData: setFormData,
-      setGlobalState: formProviderContext.setGlobalState,
-      shesha: getSheshaFormUtils(formProviderContext.http),
-    };
-
-    return executeScript<TResult>(expression, callArguments);
-  };
-
-  const getInitialValuesFromFormSettings = () => {
-    const initialValuesFromFormSettings = state.formSettings?.initialValues;
-
-    const values = evaluateKeyValuesToObjectMatchedData(initialValuesFromFormSettings, [
-      { match: 'data', data: state.formData },
-      { match: 'parentFormValues', data: props.parentFormValues },
-      { match: 'globalState', data: formProviderContext.globalState },
-    ]);
-
-    return cleanDeep(values, {
-      // cleanKeys: [], // Don't Remove specific keys, ie: ['foo', 'bar', ' ']
-      // cleanValues: [], // Don't Remove specific values, ie: ['foo', 'bar', ' ']
-      // emptyArrays: false, // Don't Remove empty arrays, ie: []
-      // emptyObjects: false, // Don't Remove empty objects, ie: {}
-      // emptyStrings: false, // Don't Remove empty strings, ie: ''
-      // NaNValues: true, // Remove NaN values, ie: NaN
-      // nullValues: true, // Remove null values, ie: null
-      undefinedValues: true, // Remove undefined values, ie: undefined
-    });
-  };
-
-  const getDynamicPreparedValues = (): Promise<object> => {
-    const { preparedValues } = state.formSettings ?? {};
-
-    return Promise.resolve(preparedValues ? executeExpression(preparedValues) : {});
-  };
-
-  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
-
-  const prepareDataForSubmit = (): Promise<object> => {
-    const initialValuesFromFormSettings = getInitialValuesFromFormSettings();
-    const { formData } = state;
-
-    return getDynamicPreparedValues()
-      .then((dynamicValues) => {
-        const initialValues = getInitialValuesFromFormSettings();
-        const nonFormValues = { ...dynamicValues, ...initialValues };
-        const { excludeFormFieldsInPayload } = state.formSettings ?? {};
-
-        let postData = excludeFormFieldsInPayload
-          ? removeGhostKeys({ ...formData, ...nonFormValues })
-          : removeGhostKeys(addFormFieldsList(formData, nonFormValues, form));
-
-        postData = filterDataByOutputComponents(postData, allComponents, toolboxComponents);
-
-        const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
-        if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate;
-
-        const subFormNamesToIgnore = getComponentNames(
-          allComponents,
-          (component: IDataSourceComponent) =>
-            (component?.type === 'list' || component?.type === 'subForm') && component.dataSource === 'api'
-        );
-
-        if (subFormNamesToIgnore?.length) {
-          subFormNamesToIgnore.forEach((key) => {
-            if (Object.hasOwn(postData, key)) {
-              delete postData[key];
-            }
-          });
-          const isEqualOrStartsWith = (input: string) =>
-            subFormNamesToIgnore?.some((x) => x === input || input.startsWith(`${x}.`));
-
-          postData._formFields = postData._formFields?.filter((x) => !isEqualOrStartsWith(x));
-        }
-
-        if (excludeFormFieldsInPayload) {
-          delete postData._formFields;
-        } else {
-          if (initialValuesFromFormSettings) {
-            postData._formFields = Array.from(
-              new Set<string>([...(postData._formFields || []), ...Object.keys(initialValuesFromFormSettings)])
-            );
-          }
-        }
-
-        return postData;
-      })
-      .catch((error) => console.error(error));
-  };  
-
+  // TODO: memoize after review handling of form data
   const configurableFormActions: IFormActionsContext = {
-    ...getFlagSetters(dispatch),
-    getComponentModel,
-    isComponentReadOnly,
-    isComponentHidden,
-    getChildComponents,
-    getChildComponentIds,
     setFormMode,
-    setVisibleComponents,
-    updateStateFormData,
-    setFormControlsData,
-    setValidationErrors,
-    registerActions,
-    getAction,
-    getSection,
-    getToolboxComponent,
     setFormData,
-    hasVisibleChilds,
     isComponentFiltered,
-    prepareDataForSubmit,
-    executeExpression,
   };
+  if (formRef)
+    formRef.current = { ...configurableFormActions };
 
-  if (formRef) formRef.current = { ...configurableFormActions, ...state, allComponents, componentRelations };
+  const realState: Required<IFormStateContext> = {
+    formSettings: props.shaForm.settings,
+    modelMetadata: props.shaForm.modelMetadata,
+    shaForm: props.shaForm,
 
+    name: name,
+    formMode: props.shaForm.formMode,
+    form: props.shaForm.antdForm,
+    formData: props.shaForm.formData,
 
-  useDeepCompareEffect(() => {
-    // set main form if empty
-    if (needDebug)
-      formProviderContext.contextManager?.updatePageFormInstance({...state, ...configurableFormActions} as ConfigurableFormInstance);
-  }, [state]);
-
+    // TODO: AS - review and remove
+    initialValues: undefined
+  };
+  
   return (
-    <FormStateContext.Provider value={{ ...state, allComponents, componentRelations }}>
+    <FormStateContext.Provider value={realState}>
       <FormActionsContext.Provider value={configurableFormActions}>
-        <DelayedUpdateProvider>{children}</DelayedUpdateProvider>
+        <ConfigurableFormActionsProvider actions={actions}>
+          <ConfigurableFormSectionsProvider sections={sections}>
+            {children}
+          </ConfigurableFormSectionsProvider>
+        </ConfigurableFormActionsProvider>
       </FormActionsContext.Provider>
     </FormStateContext.Provider>
   );
 };
 
-function useFormState(require: boolean = true) {
+const useFormState = (required: boolean = true): IFormStateContext => {
   const context = useContext(FormStateContext);
 
-  if (require && context === undefined) {
+  if (required && context === undefined) {
     throw new Error('useFormState must be used within a FormProvider');
   }
 
   return context;
-}
+};
 
-function useFormActions(require: boolean = true) {
+const useFormActions = (require: boolean = true): IFormActionsContext => {
   const context = useContext(FormActionsContext);
 
   if (require && context === undefined) {
@@ -639,9 +144,9 @@ function useFormActions(require: boolean = true) {
   }
 
   return context;
-}
+};
 
-function useForm(require: boolean = true): ConfigurableFormInstance {
+const useForm = (require: boolean = true): ConfigurableFormInstance => {
   const actionsContext = useFormActions(require);
   const stateContext = useFormState(require);
 
@@ -651,16 +156,23 @@ function useForm(require: boolean = true): ConfigurableFormInstance {
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
-}
-
-/** Returns component model by component id  */
-export const useComponentModel = (id: string): IConfigurableFormComponent => {
-  const form = useForm();
-
-  return useMemo(() => {
-    const componentModel = form.getComponentModel(id);
-    return componentModel;
-  }, [id, form]);
 };
 
-export { FormProvider, useForm, useFormActions, useFormState };
+const useIsDrawingForm = (): boolean => {
+  const { formMode } = useForm();
+  const designer = useFormDesignerActions(false);
+
+  const isDrawing = useMemo(() => {
+    return formMode === 'designer' && Boolean(designer);
+  }, [formMode, designer]);
+  return isDrawing;
+};
+
+export {
+  ShaForm,
+  FormProvider,
+  useForm,
+  useFormActions,
+  useFormState,
+  useIsDrawingForm,
+};

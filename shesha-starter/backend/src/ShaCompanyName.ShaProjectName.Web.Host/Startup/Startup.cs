@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using ShaCompanyName.ShaProjectName.Hangfire;
+using Shesha;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;

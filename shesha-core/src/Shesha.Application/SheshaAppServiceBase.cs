@@ -18,6 +18,7 @@ using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.Mapper;
+using Shesha.Elmah;
 using Shesha.Extensions;
 using Shesha.MultiTenancy;
 using Shesha.Services;
@@ -43,6 +44,7 @@ namespace Shesha
 
         public IAsyncQueryableExecuter AsyncQueryableExecuter { get; set; }
         public IObjectValidatorManager ValidatorManager { get; set; }
+        public ILoggingContextCollector LoggingScope { get; set; }
 
         /// <summary>
         /// Reference to the IoC manager.
@@ -237,7 +239,7 @@ namespace Shesha
             await FluentValidationsOnEntityAsync(entity, validationResults);
             var result = !validationResults.Any();
             if (ValidatorManager != null)
-                result = result && await ValidatorManager.ValidateObject(entity, validationResults);
+                result = result && await ValidatorManager.ValidateObjectAsync(entity, validationResults);
             return result && Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
         }
 
@@ -283,6 +285,17 @@ namespace Shesha
 		protected async Task<DynamicDto<TEntity, TPrimaryKey>> MapToDynamicDtoAsync<TEntity, TPrimaryKey>(TEntity entity, IDynamicMappingSettings settings = null) where TEntity : class, IEntity<TPrimaryKey>
         {
             return await MapToCustomDynamicDtoAsync<DynamicDto<TEntity, TPrimaryKey>, TEntity, TPrimaryKey>(entity, settings);
+        }
+
+        protected async Task<List<DynamicDto<TEntity, TPrimaryKey>>> MapToDynamicDtoListAsync<TEntity, TPrimaryKey>(IEnumerable<TEntity> entities) where TEntity : class, IEntity<TPrimaryKey>
+        {
+            var dtoList = await Task.WhenAll(
+                entities.Select(async entity =>
+                {
+                    return await MapToDynamicDtoAsync<TEntity, TPrimaryKey>(entity);
+                }));
+
+            return dtoList.ToList();
         }
 
         /// <summary>

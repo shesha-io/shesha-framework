@@ -1,25 +1,26 @@
-import qs from 'qs';
 import React, {
   FC,
   PropsWithChildren,
   useContext,
   useReducer
 } from 'react';
-import { asFormFullName } from '../form/utils';
+import { isFormFullName } from '../form/utils';
 import { FormIdentifier } from '@/interfaces';
 import { getFlagSetters } from '../utils/flagsSetters';
-import { getQueryParams, getUrlWithoutQueryParams } from '@/utils/url';
+import { buildUrl } from '@/utils/url';
 import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { mapKeyValueToDictionary } from '@/utils/dictionary';
 import { navigateArgumentsForm } from './actions/navigate-arguments';
-import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
+import { SHA_ROUTING_CONTEXT_INITIAL_STATE, ShaRouting, ShaRoutingActionsContext, ShaRoutingStateContext } from './contexts';
 import { shaRoutingReducer } from './reducer';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 
 export type NavigationType = 'url' | 'form';
 
 const NAVIGATE_ACTION_NAME = 'Navigate';
+const LOGGED_IN_DYNAMIC_PAGE = 'dynamic';
+const ANONYMOUS_DYNAMIC_PAGE = 'no-auth';
 
 interface IRouter {
   push(href: string): void;
@@ -42,14 +43,14 @@ export interface INavigateActoinArguments {
 
 interface ShaRoutingProviderProps {
   router: IRouter;
-  getFormUrlFunc?: (formId: FormIdentifier) => string;
+  getFormUrlFunc?: (formId: FormIdentifier, isLoggedIn: boolean) => string;
+  getIsLoggedIn: () => boolean;
 }
 
-const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc }) => {
+const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ children, router, getFormUrlFunc, getIsLoggedIn }) => {
   const [state, dispatch] = useReducer(shaRoutingReducer, {
     ...SHA_ROUTING_CONTEXT_INITIAL_STATE,
     router,
-    getFormUrlFunc,
   });
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
@@ -58,10 +59,17 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
   };
 
   const getFormUrl = (formId: FormIdentifier) => {
-    if (state.getFormUrlFunc) return state.getFormUrlFunc(formId);
+    const isLoggedIn = getIsLoggedIn();
+    if (getFormUrlFunc) 
+      return getFormUrlFunc(formId, isLoggedIn);
 
-    var form = asFormFullName(formId);
-    return form ? `/dynamic${form.module ? `/${form.module}` : ''}/${form.name}` : '';
+    const dynamicPage = isLoggedIn
+      ? LOGGED_IN_DYNAMIC_PAGE
+      : ANONYMOUS_DYNAMIC_PAGE;
+
+    return isFormFullName(formId)
+      ? `/${dynamicPage}${formId.module ? `/${formId.module}` : ''}/${formId.name}`
+      : '';
   };
 
   const navigateToRawUrl = (url: string): Promise<boolean> => {
@@ -78,17 +86,8 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
   };
 
   const prepareUrl = (url: string, queryParameters?: IKeyValue[]) => {
-    const urlWithoutQuery = getUrlWithoutQueryParams(url);
-    const urlQueryPatams = getQueryParams(url);
-
     const queryParams = mapKeyValueToDictionary(queryParameters);
-    const queryStringData = { ...urlQueryPatams, ...queryParams };
-
-    const queryString = qs.stringify(queryStringData);
-    const preparedUrl = queryString
-      ? `${urlWithoutQuery}?${queryString}`
-      : urlWithoutQuery;
-    return preparedUrl;
+    return buildUrl(url, queryParams);    
   };
 
   const getUrlFromNavigationRequest = (request: INavigateActoinArguments): string => {
@@ -159,7 +158,7 @@ function useShaRoutingActions(require: boolean = true) {
   return context;
 }
 
-function useShaRouting(require: boolean = true) {
+const useShaRouting = (require: boolean = true): ShaRouting => {
   const actionsContext = useShaRoutingActions(require);
   const stateContext = useShaRoutingState(require);
 
@@ -169,7 +168,7 @@ function useShaRouting(require: boolean = true) {
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
-}
+};
 
 const isNavigationActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<INavigateActoinArguments> => {
   return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === NAVIGATE_ACTION_NAME;

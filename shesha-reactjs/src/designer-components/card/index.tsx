@@ -10,15 +10,21 @@ import { Card } from 'antd';
 import React from 'react';
 import { ICardComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import classNames from 'classnames';
+import { useStyles } from './styles';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
   type: 'card',
+  isInput: false,
   name: 'Card',
   icon: <CodeSandboxSquareFilled />,
   Factory: ({ model }) => {
     const { data } = useFormData();
-    const { formMode, hasVisibleChilds } = useForm();
+    const { formMode } = useForm();
     const { globalState } = useGlobalState();
+    const { styles } = useStyles();
 
     const title = model.hideHeading ? null : model.label;
 
@@ -35,15 +41,10 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
 
     if (model.hidden) return null;
 
-    if (model.hideWhenEmpty && formMode !== 'designer') {
-      const childsVisible = hasVisibleChilds(model.content.id);
-      if (!childsVisible) return null;
-    }
-
     return (
       <ParentProvider model={model}>
         <Card
-          className={model.className}
+          className={classNames(model.className, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}
           extra={extra}
           style={getLayoutStyle(model, { data, globalState })}
@@ -60,10 +61,14 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     ...model,
     header: { id: nanoid(), components: [] },
     content: { id: nanoid(), components: [] },
+    stylingBox: "{\"marginBottom\":\"5\"}"
   }),
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
   customContainerNames: ['header', 'content'],
+  migrator: (m) => m
+    .add<ICardComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
+    .add<ICardComponentProps>(2, (prev) => removeComponents(prev))
 };
 
 export default CardComponent;

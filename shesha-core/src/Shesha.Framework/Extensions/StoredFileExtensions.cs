@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using Abp.Dependency;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Shesha.Domain;
 using Shesha.Services;
 using Shesha.Services.Urls;
+using System;
 
 namespace Shesha.Extensions
 {
@@ -15,7 +13,7 @@ namespace Shesha.Extensions
         public static StoredFileVersion LastVersion(this StoredFile file)
         {
             var repository = StaticContext.IocManager.Resolve<IRepository<StoredFileVersion, Guid>>();
-            return repository.GetAll().Where(v => v.File == file).OrderByDescending(v => v.VersionNo).ThenByDescending(v => v.CreationTime).FirstOrDefault();
+            return repository.FirstOrDefault(v => v.File == file && v.IsLast);
         }
 
         public static string GetContentType(this string fileName)
@@ -48,12 +46,16 @@ namespace Shesha.Extensions
             var linkGeneratorContext = StaticContext.IocManager.Resolve<ILinkGeneratorContext>();
             var linkGenerator = StaticContext.IocManager.Resolve<LinkGenerator>();
 
+            var port = linkGeneratorContext.State.Port;
+
             return linkGenerator.GetUriByAction(
                 action, 
                 controller, 
                 values,
                 linkGeneratorContext.State.Scheme,
-                new HostString(linkGeneratorContext.State.Host, linkGeneratorContext.State.Port),
+                port > 0 
+                    ? new HostString(linkGeneratorContext.State.Host, port)
+                    : new HostString(linkGeneratorContext.State.Host),
                 linkGeneratorContext.State.PathBase
             );
         }

@@ -7,6 +7,8 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { PermissionsTree, PermissionsTreeMode } from '@/components/permissionsTree';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
+import { IConfigurableActionConfiguration } from '@/index';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
   value?: string[];
@@ -21,7 +23,9 @@ export interface IPermissionsTreeComponentProps extends IConfigurableFormCompone
    */
   readOnly?: boolean;
   height?: number;
-  mode: PermissionsTreeMode;  
+  mode: PermissionsTreeMode;
+
+  onSelectAction?: IConfigurableActionConfiguration;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -30,12 +34,15 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   type: 'permissionsTree',
   name: 'Permissions tree',
   icon: <ApartmentOutlined />,
+  isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
     if (model.mode === 'Edit') {
       return (
-        <PermissionsTree 
+        <PermissionsTree
+          onSelectAction={model.onSelectAction}
           formComponentId={model?.id}
-          formComponentName={model.propertyName}
+          formComponentName={model.componentName}
           value={model?.value} 
           updateKey={model?.updateKey}
           onChange={model?.onChange}
@@ -49,8 +56,9 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
         <ConfigurableFormItem model={model}>
           {(value, onChange) =>
             <PermissionsTree 
+              onSelectAction={model.onSelectAction}
               formComponentId={model?.id}
-              formComponentName={model.propertyName}
+              formComponentName={model.componentName}
               value={value} 
               updateKey={model?.updateKey}
               onChange={onChange}
@@ -78,6 +86,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   migrator: (m) => m
     .add<IPermissionsTreeComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IPermissionsTreeComponentProps)
     .add<IPermissionsTreeComponentProps>(1, (prev) => migrateReadOnly(prev))
+    .add<IPermissionsTreeComponentProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
 };
 

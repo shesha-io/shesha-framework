@@ -1,29 +1,21 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using FluentMigrator.Runner.Versioning;
-using NetTopologySuite.Index.HPRtree;
+using Abp.Runtime.Caching;
 using Newtonsoft.Json;
-using NUglify.JavaScript.Syntax;
-using NUglify;
+using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
-using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Distribution.Dto;
-using Shesha.Extensions;
-using Shesha.Services.ReferenceLists;
+using Shesha.DynamicEntities.Dtos;
+using Shesha.Permissions;
+using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Shesha.Services.ConfigurationItems;
-using Shesha.Permissions;
 using System.Linq;
-using Shesha.Configuration.Runtime;
-using Abp.Runtime.Caching;
-using Shesha.DynamicEntities.Dtos;
+using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities.Distribution
 {
@@ -91,7 +83,7 @@ namespace Shesha.DynamicEntities.Distribution
                 // ToDo: Tempjrary update the current version.
                 // Need to update the rest of the other code to work with versioning EntityConfigs first
 
-                await MapEntityConfigAync(item, dbItem, context);
+                await MapEntityConfigAsync(item, dbItem, context);
                 await _entityConfigRepo.UpdateAsync(dbItem);
 
                 await MapPropertiesAsync(dbItem, item.Properties);
@@ -142,7 +134,7 @@ namespace Shesha.DynamicEntities.Distribution
             else
             {
                 var newItem = new EntityConfig();
-                await MapEntityConfigAync(item, newItem, context);
+                await MapEntityConfigAsync(item, newItem, context);
 
                 // fill audit?
                 newItem.VersionNo = 1;
@@ -162,7 +154,7 @@ namespace Shesha.DynamicEntities.Distribution
             }
         }
 
-        protected async Task<EntityConfig> MapEntityConfigAync(DistributedEntityConfig item, EntityConfig dbItem, IConfigurationItemsImportContext context)
+        protected async Task<EntityConfig> MapEntityConfigAsync(DistributedEntityConfig item, EntityConfig dbItem, IConfigurationItemsImportContext context)
         {
             dbItem.Name = item.Name;
             dbItem.Module = await GetModuleAsync(item.ModuleName, context);
@@ -192,17 +184,33 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.HardcodedPropertiesMD5 = item.PropertiesMD5;
 
             dbItem.ViewConfigurations = item.ViewConfigurations.ToList();
-            
+
             if (item.Permission != null)
+            {
+                // fix Type for old configurations
+                item.Permission.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.Permission);
+            }
             if (item.PermissionGet != null)
+            {
+                item.PermissionGet.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.PermissionGet);
+            }
             if (item.PermissionCreate != null)
+            {
+                item.PermissionCreate.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.PermissionCreate);
+            }
             if (item.PermissionUpdate != null)
+            {
+                item.PermissionUpdate.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.PermissionUpdate);
+            }
             if (item.PermissionDelete != null)
+            {
+                item.PermissionDelete.Type = ShaPermissionedObjectsTypes.Entity;
                 await _permissionedObjectManager.SetAsync(item.PermissionDelete);
+            }
 
             return dbItem;
         }
@@ -243,7 +251,7 @@ namespace Shesha.DynamicEntities.Distribution
                 dbItem.CascadeUpdate = src.CascadeUpdate;
                 dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
-                _propertyConfigRepo.InsertOrUpdate(dbItem);
+                await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
             }
         }
 

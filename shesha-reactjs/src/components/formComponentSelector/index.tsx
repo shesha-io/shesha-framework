@@ -34,7 +34,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     const result: IToolboxComponent[] = [];
     for (const key in allComponents) {
       if (allComponents.hasOwnProperty(key)) {
-        if (!editorAdapters[key]) continue; // skip components without adapters, will be changed later after review of the all components
+        if (!editorAdapters[key]) continue; // skip components without adapters
         const component = allComponents[key];
 
         if (
@@ -73,8 +73,6 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
       type: toolboxComponent.type,
       propertyName: 'editor',
       hidden: false,
-      visibilityFunc: (_data) => true,
-      enabledFunc: (_data) => true,
       isDynamic: false,
     };
     if (toolboxComponent.initModel) componentModel = toolboxComponent.initModel(componentModel);
@@ -102,18 +100,6 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
   const onClear = () => {
     if (onChange) onChange(null);
   };
-
-  // this part is required only for old forms to call the linkToModelMetadata
-  const modalData = useMemo(() => {
-    if (!value?.settings)
-      return undefined;
-
-    const component = value && value.type ? allComponents[value.type] : null;
-    if (!component || !component.linkToModelMetadata || !propertyMeta)
-      return value?.settings;
-
-    return component.linkToModelMetadata(value.settings, propertyMeta);
-  }, [value?.type, value?.settings, componentType, propertyMeta]);
 
   const onConfigureClick = () => {
     setIsSettingsVisible(true);
@@ -158,7 +144,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
         readOnly={readOnly}
         formComponent={formComponent}
         isVisible={isSettingsVisible}
-        model={modalData}
+        model={value?.settings}//modalData}
         onSave={onSettingsSaveClick}
         onCancel={onCancelConfigureClick}
         propertyFilter={propertyFilter}

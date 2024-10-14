@@ -27,7 +27,9 @@ export const Dropdown: FC<IDropdownProps> = ({
     referenceListId,
     mode,
     defaultValue: defaultVal,
+    disableItemValue = false,
     ignoredValues = [],
+    disabledValues = [],
     placeholder,
     readOnly,
     style,
@@ -116,14 +118,13 @@ export const Dropdown: FC<IDropdownProps> = ({
                 variant={hideBorder ? 'borderless' : undefined}
                 defaultValue={defaultValue}
                 mode={selectedMode}
+                disabledValues={disableItemValue? disabledValues : [] }
                 filters={ignoredValues}
-                includeFilters={false}
                 placeholder={placeholder}
                 readOnly={readOnly}
                 size={size}
                 style={style}
                 allowClear={allowClear} 
-                
                 getLabeledValue={getLabeledValue}
                 getOptionFromFetchedItem={getOptionFromFetchedItem}
 
@@ -138,7 +139,8 @@ export const Dropdown: FC<IDropdownProps> = ({
     const selectedValue = options.length > 0 ? value || defaultValue : null;
 
     const getSelectValue = () => {
-        return options?.find(({ value: currentValue }) => currentValue === selectedValue)?.label;
+      const selectedValues = Array.isArray(selectedValue) ? selectedValue : [selectedValue];
+        return options?.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1)?.map(x => x.label)?.join(', ');
     };
 
     if (readOnly) {

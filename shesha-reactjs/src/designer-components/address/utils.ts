@@ -96,3 +96,19 @@ export const getSearchOptions = (model: IAddressCompomentProps): PropTypes['sear
 
   return result;
 };
+
+export const loadGooglePlaces = (googleMapsApiKey: string, callback: Function) => {
+    const existingScript = document.getElementById("googlePlacesScript");
+    if (!existingScript) {
+        const script = document.createElement("script");
+        script.src =
+            `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
+        script.async = true;
+        script.id = "googleMaps";
+        document.body.appendChild(script);
+        script.onload = () => {
+            if (callback) callback(true);
+        };
+    }
+    if (existingScript && callback) callback(true);
+  };

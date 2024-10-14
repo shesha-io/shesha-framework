@@ -16,6 +16,7 @@ import { ShaIconTypes } from '@/components/iconPicker';
 import { ColumnsConfig } from './columnsEditor/columnsConfig';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 interface ITypedOption<T = string> {
   label: React.ReactNode;
@@ -162,7 +163,9 @@ export interface IProps {
   onValuesChange?: (changedValues: any, values: ITableComponentProps) => void;
 }
 
-const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ readOnly }) => {
+const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = (props) => {
+  const { readOnly } = props;
+  
   const { model } = useSettingsForm<ITableComponentProps>();
 
   const crudConstants = useAvailableConstantsMetadata({ 
@@ -175,13 +178,13 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ rea
   const onNewRowInitializeConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true,
     standardConstants: [
-      SheshaConstants.globalState, { uid: SheshaConstants.formData, name: "formData" }, SheshaConstants.moment, SheshaConstants.http
+      SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ]
   });
   const onRowSaveConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true,
     standardConstants: [
-      SheshaConstants.globalState, { uid: SheshaConstants.formData, name: "formData" }, SheshaConstants.moment, SheshaConstants.http
+      SheshaConstants.globalState, SheshaConstants.form, SheshaConstants.moment, SheshaConstants.http
     ],
     onBuild: (builder) => {
       builder.addObject("data", "Current row data", undefined);
@@ -201,8 +204,8 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ rea
         <Input readOnly={readOnly} />
       </SettingsFormItem>
 
-      <SettingsFormItem name="items" label="Customize columns" jsSetting>
-        <ColumnsConfig readonly={readOnly} />
+      <SettingsFormItem name="items" label={readOnly ? "View columns" : "Customize columns"} jsSetting>
+        <ColumnsConfig readOnly={readOnly} />
       </SettingsFormItem>
 
       <SettingsFormItem name="useMultiselect" label="Use Multi-select" valuePropName="checked" jsSetting>
@@ -270,7 +273,7 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ rea
         <SettingsFormItem name="newRowInsertPosition" label="New row insert position" /*hidden={canAddInline === 'no'}*/ hidden={true} /* note: hidden until review of rows drag&drop */>
           <Select disabled={readOnly} options={rowCapturePositions} />
         </SettingsFormItem>
-        <SettingsFormItem name="customCreateUrl" label="Custom create url" hidden={model.canEditInline === 'no'}>
+        <SettingsFormItem name="customCreateUrl" label="Custom create url" hidden={model.canAddInline === 'no'}>
           <Input readOnly={readOnly} />
         </SettingsFormItem>
         <SettingsFormItem
@@ -401,8 +404,20 @@ const TableSettings: FC<ISettingsFormFactoryArgs<ITableComponentProps>> = ({ rea
 
         <SettingsFormItem name="noDataIcon" label="Icon" jsSetting>
           {(value, onChange) =>
-            <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} defaultValue={"RightOutlined"} />
+            <IconPicker label='Icon Picker' value={value} onIconChange={(_icon: ReactNode, iconName: ShaIconTypes) => onChange(iconName)} />
           }
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

@@ -1,32 +1,48 @@
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent } from '@/providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
-import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useForm } from '@/providers';
+import { getSettings } from './settingsForm';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useFormData } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent {
+  className?: string;
 }
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentProps> = {
   type: 'validationErrors',
+  isInput: false,
   name: 'Validation Errors',
   icon: <WarningOutlined />,
-  Factory: () => {
-    const { validationErrors, formMode } = useForm();
+  Factory: ({ model }) => {
+    const { validationErrors, formMode } = useShaFormInstance();
+    const { data: formData } = useFormData();
+
     if (formMode === 'designer')
       return (
-        <ValidationErrors error="Validation Errors (visible in the runtime only)"/>
+        <ValidationErrors
+          className={model?.className}
+          style={getStyle(model?.style, formData)}
+          error="Validation Errors (visible in the runtime only)"
+        />
       );
 
-    return <ValidationErrors error={validationErrors}/>;
+    return (
+      <ValidationErrors
+        className={model?.className}
+        style={getStyle(model?.style, formData)}
+        error={validationErrors}
+      />
+    );
   },
-  settingsFormMarkup: settingsForm,
-  validateSettings: model => validateConfigurableComponentSettings(settingsForm, model),
+  /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: (data) => getSettings(data),
+  migrator: (m) => m.add<IValidationErrorsComponentProps>(0, (prev) => ({ ...migrateFormApi.properties(prev) })),
 };
 
 export default ValidationErrorsComponent;

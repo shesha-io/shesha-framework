@@ -7,6 +7,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { SelectColumnsButton } from './selectColumnsButton';
 import { SlidersOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 export interface ISelectColumnsButtonComponentProps extends IConfigurableFormComponent { }
 
@@ -14,6 +15,7 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 const SelectColumnsButtonComponent: IToolboxComponent<ISelectColumnsButtonComponentProps> = {
   type: 'datatable.selectColumnsButton',
+  isInput: false,
   name: 'Table Select Columns Button',
   icon: <SlidersOutlined />,
   Factory: ({ }) => {
@@ -28,6 +30,7 @@ const SelectColumnsButtonComponent: IToolboxComponent<ISelectColumnsButtonCompon
   migrator: m => m
     .add(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ISelectColumnsButtonComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<ISelectColumnsButtonComponentProps>(2, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

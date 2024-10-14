@@ -1,14 +1,15 @@
-import React, { FC, PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { SheshaCommonContexts } from '../../dataContextManager/models';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
 import { ApplicationApi, IApplicationApi } from '../publicApi/applicationApi';
 import { useApplicationContextMetadata } from '../publicApi/metadata';
 import { useHttpClient } from '../publicApi/http/hooks';
-import { useAuthState } from '@/providers';
+import { useAuthState, useShaRouting } from '@/providers';
 import { IUserProfileInfo } from '../publicApi/currentUser/api';
 import { useCacheProvider } from '@/hooks/useCache';
-import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/useEntityMetadataFetcher';
-import { MetadataBuilder } from '@/utils/metadata/metadataBuilder';
+import { useEntityMetadataFetcher } from '@/providers/metadataDispatcher/entities/provider';
+import { IMetadataBuilder, IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
+import { createNamedContext } from '@/utils/react';
 
 export interface IApplicationDataProviderProps {
 
@@ -16,7 +17,7 @@ export interface IApplicationDataProviderProps {
 
 export interface ApplicationPluginRegistration {
   name: string;
-  buildMetadata: (builder: MetadataBuilder) => void;
+  buildMetadata: (apiBuilder: IObjectMetadataBuilder, metadataBuilder: IMetadataBuilder) => void;
   data: any;
 }
 
@@ -25,16 +26,18 @@ export interface IApplicationActionsContext {
   unregisterPlugin: (pluginName: string) => void;
   getPlugin: (pluginName: string) => ApplicationPluginRegistration;
 }
-export const ApplicationActionsContext = createContext<IApplicationActionsContext>(undefined);
+export const ApplicationActionsContext = createNamedContext<IApplicationActionsContext>(undefined, "ApplicationActionsContext");
+export const ApplicationPublicApiContext = createNamedContext<IApplicationApi>(undefined, "ApplicationPublicApiContext");
 
 export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProviderProps>> = ({ children }) => {
   const [plugins, setPlugins] = useState<ApplicationPluginRegistration[]>([]);
   const httpClient = useHttpClient();
   const cacheProvider = useCacheProvider();
   const metadataFetcher = useEntityMetadataFetcher();
+  const shaRouter = useShaRouting();
 
   // inject fields from plugins
-  const [contextData] = useState<IApplicationApi>(() => new ApplicationApi(httpClient, cacheProvider, metadataFetcher));
+  const [contextData] = useState<IApplicationApi>(() => new ApplicationApi(httpClient, cacheProvider, metadataFetcher, shaRouter));
 
   const { loginInfo } = useAuthState(false) ?? {};
   useEffect(() => {
@@ -68,17 +71,19 @@ export const ApplicationDataProvider: FC<PropsWithChildren<IApplicationDataProvi
 
   return (
     <ApplicationActionsContext.Provider value={{ registerPlugin, unregisterPlugin, getPlugin }}>
-      <DataContextBinder
-        id={SheshaCommonContexts.ApplicationContext}
-        name={SheshaCommonContexts.ApplicationContext}
-        description={'Application context'}
-        type={'root'}
+      <ApplicationPublicApiContext.Provider value={contextData}>
+        <DataContextBinder
+          id={SheshaCommonContexts.ApplicationContext}
+          name={SheshaCommonContexts.ApplicationContext}
+          description={'Application context'}
+          type={'root'}
 
-        metadata={contextMetadata}
-        data={contextData}
-      >
-        {children}
-      </DataContextBinder>
+          metadata={contextMetadata}
+          data={contextData}
+        >
+          {children}
+        </DataContextBinder>
+      </ApplicationPublicApiContext.Provider>
     </ApplicationActionsContext.Provider>
   );
 };
@@ -102,4 +107,12 @@ export const useApplicationPlugin = (plugin: ApplicationPluginRegistration) => {
       unregisterPlugin(plugin.name);
     };
   }, [registerPlugin, unregisterPlugin, plugin.name]);
+};
+
+export const usePublicApplicationApi = (): IApplicationApi => {
+  var context = useContext(ApplicationPublicApiContext);
+  if (context === undefined) {
+    throw new Error('usePublicApplicationApi must be used within a ApplicationDataProvider');
+  }
+  return context;
 };

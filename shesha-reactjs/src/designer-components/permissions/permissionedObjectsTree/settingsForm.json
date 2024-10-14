@@ -4,35 +4,48 @@
     "type": "sectionSeparator",
     "propertyName": "separator1",
     "label": "Settings",
-    "labelAlign": "right",
     "parentId": "root",
     "hidden": false,
     "isDynamic": false,
     "description": "",
     "settingsValidationErrors": []
-  }, {
+  },
+  {
+    "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+    "type": "textField",
+    "propertyName": "componentName",
+    "parentId": "root",
+    "label": "Component name",
+    "jsSetting": false
+  },
+  {
     "textType": "text",
     "id": "j4y44LJNbfCstHIIJ9fwY",
     "type": "textField",
     "propertyName": "objectsType",
     "label": "Type of permissioned objects",
     "labelAlign": "right",
-    "parentId": "root",
+    "parentId": "root"
+  },
+  {
+    "id": "F3B46A95-703F-4465-96CA-A58496A5F78C",
+    "type": "configurableActionConfigurator",
+    "propertyName": "onSelectAction",
+    "label": "On select action",
     "hidden": false,
-    "isDynamic": false,
-    "placeholder": "",
-    "description": "",
-    "prefix": "",
-    "suffix": "",
-    "initialValue": "",
-    "validate": {
-      "minLength": "",
-      "maxLength": "",
-      "message": ""
-    },
-    "quickviewWidth": "",
-    "settingsValidationErrors": []
-  }],
+    "validate": {},
+    "settingsValidationErrors": [],
+    "parentId": "root",
+    "version": 1
+  },
+  {
+    "id": "12307439-4c18-468c-89e1-60c002ce96c5",
+    "type": "textField",
+    "propertyName": "height",
+    "parentId": "root",
+    "label": "Height"
+  }
+  ],
   "formSettings": {
     "layout": "horizontal",
     "colon": true,

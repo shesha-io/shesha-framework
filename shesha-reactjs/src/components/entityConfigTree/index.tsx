@@ -20,10 +20,11 @@ import {
 import { EntityConfigDto, EntityConfigDtoPagedResultDto, useEntityConfigGetMainDataList } from '@/apis/entityConfig';
 import { EntityConfigType, MetadataSourceType } from '@/interfaces/metadata';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
-import { useForm } from '@/providers';
 import { useLocalStorage } from '@/hooks';
-import { SectionSeparator } from '..';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
+import { useStyles } from './styles/styles';
+import SectionSeparator from '../sectionSeparator';
+import { useConfigurableFormActions } from '@/providers/form/actions';
 
 type MenuItem = MenuProps['items'][number];
 
@@ -63,19 +64,16 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
   const [objectId, setObjectId] = useState(null);
   const [refershId, setRefreshId] = useState(props.defaultSelected);
 
-  const form = useForm(false);
+  const { onChangeId } = useConfigurableFormActions(false) ?? {};
+
+  const {styles} = useStyles();
 
   useEffect(() => {
     if (props.defaultSelected && props.defaultSelected !== objectId) setObjectId(props.defaultSelected);
   }, [props.defaultSelected]);
 
   useEffect(() => {
-    if (Boolean(form?.getAction)) {
-      const action = form?.getAction(null, 'onChangeId');
-      if (Boolean(action)) {
-        action(objectId);
-      }
-    }
+    onChangeId?.(objectId);
   }, [objectId]);
 
   useEffect(() => {
@@ -211,8 +209,8 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
       tip={'Fetching data...'}
       indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
     >
-      <div className="sha-page-heading">
-        <div className="sha-page-heading-left">
+      <div className="sha-page-heading sha-paging-height">
+        <div className="sha-page-heading-left" style={{width: 'calc(100% - 60px)'}}>
           <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />
         </div>
         <div className="sha-page-heading-right">
@@ -223,7 +221,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           </Dropdown>
         </div>
       </div>
-      <div style={{ height: '90vh', overflowY: 'scroll' }}>
+      <div className={styles.shaTreeMain}>
         <GrouppedObjectsTree<EntityConfigDto>
           items={items}
           openedKeys={openedKeys}
@@ -259,7 +257,7 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
           }}
           onRenterItem={(item) => {
             const versionStatus = ConfigurationItemVersionStatusMap[item.versionStatus];
-            return <>
+            return <div className={styles.shaComponentParent}>
               {item.suppress
                 ? <EyeInvisibleOutlined />
                 : item.source === MetadataSourceType.UserDefined
@@ -269,10 +267,10 @@ export const EntityConfigTree: FC<IEntityConfigTreeProps> = (props) => {
                     : item.entityConfigType === EntityConfigType.Interface
                       ? <InterfaceOutlined />
                       : <ClassOutlined />
-              }<span>  </span>
+              }<span style={{paddingRight: '5px'}}> </span>
               <Tag color={versionStatus.color}>{versionStatus.text}</Tag>
-              <span className='sha-component-title'> {item.className}</span>
-            </>;
+              <span className={styles.shaComponentTitle}> {item.className} </span>
+            </div>;
           }}
         />
       </div>

@@ -1,6 +1,5 @@
 import { CSSProperties } from 'react';
 import { RadioChangeEvent, SpaceProps } from 'antd';
-import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
@@ -20,8 +19,8 @@ export interface ICheckboxGroupProps extends Omit<IConfigurableFormComponent, 's
   referenceListId?: IReferenceListIdentifier;
   dataSourceType: DataSourceType;
   direction?: SpaceProps['direction'];
-  value?: CheckboxValueType[] | any;
-  onChange?: (checkedValue: Array<CheckboxValueType> | RadioChangeEvent) => void;
+  value?: any[];
+  onChange?: (checkedValue: Array<any> | RadioChangeEvent) => void;
   style?: CSSProperties;
   dataSourceUrl?: string;
   reducerFunc?: string;

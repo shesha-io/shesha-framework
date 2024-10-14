@@ -47,13 +47,13 @@ namespace Shesha.Scheduler
             return Task.CompletedTask;
         }
 
-        public override Task OnSuccess()
+        public override Task OnSuccessAsync()
         {
             Log.Info("TestJob.OnSuccess executed.");
             return Task.CompletedTask;
         }
 
-        public override Task OnFail(Exception ex)
+        public override Task OnFailAsync(Exception ex)
         {
             Log.Info("TestJob.OnFail executed");
             return Task.CompletedTask;

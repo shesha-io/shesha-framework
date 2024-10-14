@@ -16,7 +16,7 @@ export interface PropertySelectorSingleProps {
 }
 export interface PropertySelectorMultipleProps {
     value?: string[][];
-    onChange?: (value: string[][]) => void;
+    onChange?: (value: string[]) => void;
     multiple?: true;
 }
 
@@ -116,7 +116,7 @@ const properties2options = (properties: IPropertyMetadata[]): Option[] => {
 };
 
 export const PropertyCascader: React.FC<IPropertyCascaderProps> = (props) => {
-    const { value, style, meta, multiple } = props;
+    const { /*value,*/ style, meta, multiple } = props;
 
     const [options, setOptions] = useState<Option[]>(() => {
         const initialProperties = asPropertiesArray(meta?.properties, []);
@@ -138,7 +138,7 @@ export const PropertyCascader: React.FC<IPropertyCascaderProps> = (props) => {
         props.onChange(value);
     };
 
-    const onMultipleChange = (value: string[][], _selectedOptions: Option[][]) => {
+    const onMultipleChange = (value: string[], _selectedOptions: Option[]) => {
         if (!isMultiple(props))
             return;
 
@@ -153,12 +153,11 @@ export const PropertyCascader: React.FC<IPropertyCascaderProps> = (props) => {
                     setOptions([...options]);
             });
     };
-
     return (
         <>
             <Cascader<Option>
                 style={style}
-                value={value}
+                //value={value}
                 options={options}
                 onChange={(value, selectedOptions) => {
                     if (multiple)

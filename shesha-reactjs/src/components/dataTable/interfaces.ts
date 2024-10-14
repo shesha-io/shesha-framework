@@ -6,6 +6,7 @@ import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { DataTableFullInstance } from '@/providers/dataTable/contexts';
 import { CellStyleFunc, IAnchoredDirection, IDataTableInstance, ITableColumn } from '@/providers/dataTable/interfaces';
 import { InlineEditMode, InlineSaveMode, ITableRowDragProps, NewRowCapturePosition } from '../reactTable/interfaces';
+import { FormApi } from '@/providers/form/formApi';
 
 export interface ITableActionColumns {
   icon?: ReactNode;
@@ -51,15 +52,15 @@ export type YesNoInheritJs = 'yes' | 'no' | 'inherit' | 'js';
 
 export interface IShaDataTableInlineEditableProps {
   canDeleteInline?: YesNoInheritJs;
-  canDeleteInlineExpression?: string; // todo: replace with new dynamic JS properties
+  canDeleteInlineExpression?: string; // TODO: replace with new dynamic JS properties
   customDeleteUrl?: string;
   canEditInline?: YesNoInheritJs;
-  canEditInlineExpression?: string; // todo: replace with new dynamic JS properties
+  canEditInlineExpression?: string; // TODO: replace with new dynamic JS properties
   inlineEditMode?: InlineEditMode;
   inlineSaveMode?: InlineSaveMode;
   customUpdateUrl?: string;
   canAddInline?: YesNoInheritJs;
-  canAddInlineExpression?: string; // todo: replace with new dynamic JS properties
+  canAddInlineExpression?: string; // TODO: replace with new dynamic JS properties
   newRowCapturePosition?: NewRowCapturePosition;
   newRowInsertPosition?: NewRowCapturePosition;
   customCreateUrl?: string;
@@ -112,11 +113,10 @@ export interface ITableCustomTypesRender<D extends object, V = any> {
   render: (cellProps: CellProps<D, V>, router: any) => JSX.Element;
 }
 
-export type OnSaveHandler = (data: object, formData: object, globalState: object) => Promise<object>;
+export type OnSaveHandler = (data: object, formApi: FormApi, globalState: object) => Promise<object>;
 export type OnSaveSuccessHandler = (
   data: object,
-  formData: object,
+  formApi: FormApi,
   globalState: object,
-  setGlobalState: Function,
-  setFormData: Function
+  setGlobalState: Function
 ) => void;

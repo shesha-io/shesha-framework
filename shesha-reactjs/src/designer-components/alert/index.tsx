@@ -9,9 +9,11 @@ import ShaIcon from '@/components/shaIcon';
 import { IAlertComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   type: 'alert',
+  isInput: false,
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
   Factory: ({ model }) => {
@@ -24,7 +26,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
     const evaluatedDescription = evaluateString(description, formData);
 
     if (model.hidden) return null;
-
+    
     return (
       <Alert
         className="sha-alert"
@@ -45,6 +47,7 @@ const AlertComponent: IToolboxComponent<IAlertComponentProps> = {
   migrator: (m) => m
     .add<IAlertComponentProps>(0, (prev: IAlertComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IAlertComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<IAlertComponentProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
   ,
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),

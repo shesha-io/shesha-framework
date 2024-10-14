@@ -11,11 +11,26 @@ namespace Shesha.Settings
         public string Name { get; set; }
         public bool IsClientSpecific { get; set; }
         public string EditorFormName { get; set; }
-        public SettingAttribute(string name, bool isClientSpecific = false, string editorFormName = null)
+        public bool IsUserSpecific { get; set; }
+
+        public SettingAttribute(string name) : this(name, false, null, false) 
+        { 
+        }
+
+        public SettingAttribute(string name, bool isClientSpecific) : this(name, isClientSpecific, null, false) 
+        {
+        }
+
+        public SettingAttribute(string name, bool isClientSpecific, string editorFormName) : this(name, isClientSpecific, editorFormName, false)
+        { 
+        }
+
+        public SettingAttribute(string name, bool isClientSpecific = false, string editorFormName = null, bool isUserSpecific = false)
         {
             Name = name;
             IsClientSpecific = isClientSpecific;
             EditorFormName = editorFormName;
+            IsUserSpecific = isUserSpecific;
         }
     }
 }

@@ -165,16 +165,6 @@
             "propertyName": "editMode",
             "parentId": "VmAusRlLZo3cYRFk88xnf",
             "label": "Edit mode"
-          },
-          {
-            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "VmAusRlLZo3cYRFk88xnf",
-            "hidden": false,
-            "validate": {},
-            "version": 2
           }
         ]
       },
@@ -269,6 +259,22 @@
       "settingsValidationErrors": []
     },
     {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+    {
       "id": "gCBUNeJjyMzcs1G2RRAK8",
       "type": "collapsiblePanel",
       "propertyName": "pnlStyle",
@@ -286,6 +292,16 @@
       "content": {
         "id": "Fd2QdtLi2FOTaZJZvFz3Q",
         "components": [
+          {
+            "id": "c67b7404-d980-437a-a544-74e4e816f6cd",
+            "type": "checkbox",
+            "propertyName": "hideBorder",
+            "label": "Hide border",
+            "parentId": "Fd2QdtLi2FOTaZJZvFz3Q",
+            "hidden": false,
+            "validate": {},
+            "version": 2
+          },
           {
             "id": "06ab0599-914d-4d2d-875c-765a495472f8",
             "type": "codeEditor",
@@ -314,7 +330,7 @@
             "templateSettings": {
               "functionName": "getStyle"
             },
-            "availableConstantsExpression": "    return metadataBuilder.addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\").addStandard([\"shesha:formData\", \"shesha:globalState\"]).build();"
           },
           {
             "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -351,7 +367,7 @@
       "ghost": true,
       "hideWhenEmpty": true,
       "settingsValidationErrors": []
-    },
+    }]},
     {
       "id": "kE28pclZaV8tpOab8iJyl",
       "type": "collapsiblePanel",
@@ -399,16 +415,7 @@
             "type": "checkbox",
             "propertyName": "showNow",
             "parentId": "nU7UhIr28XCaiEFbzhB0n",
-            "label": "Show Now",
-            "defaultValue": false,
-            "version": 2
-          },
-          {
-            "id": "640a5ce5-7ca9-4ea8-b960-be74faf65ba1",
-            "type": "checkbox",
-            "propertyName": "showToday",
-            "parentId": "nU7UhIr28XCaiEFbzhB0n",
-            "label": "Show Today",
+            "label": "Show Today/Now",
             "defaultValue": false,
             "version": 2
           },
@@ -493,12 +500,12 @@
             "settingsValidationErrors": [],
             "exposedVariables": [
               {
-                "propertyName": "current",
+                "name": "current",
                 "description": "Component current value",
                 "type": "FormInstance"
               },
               {
-                "propertyName": "moment",
+                "name": "moment",
                 "description": "Instance of moment.js",
                 "type": "object"
               }
@@ -510,7 +517,7 @@
             "templateSettings": {
               "functionName": "isDateDisabled"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addDate(\"value\", \"Component current value\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addDate(\"current\", \"Component current value\")\r\n        .addStandard([\"shesha:moment\"])\r\n        .build();\r\n    "
           }
         ]
       },
@@ -590,7 +597,7 @@
                 "type": "object"
               },
               {
-                "name": "value",
+                "name": "current",
                 "description": "Component current value",
                 "type": "object"
               },
@@ -612,7 +619,7 @@
             "templateSettings": {
               "functionName": "onChange"
             },
-            "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addDate(\"value\", \"Component current value\")\r\n        .build();"
           }
         ]
       },
@@ -669,6 +676,39 @@
           "parentId": "UgwgMBSPX2eKVlZKWGtcc"
         }
       ]
+    },
+    {
+      "id": "6Vw9iiDw9d0MD_Rh5cbIn",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlSecurity",
+      "label": "Security",
+      "labelAlign": "right",
+      "parentId": "root",
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "mbzE03mJnv_89oUvkmjPs",
+        "components": []
+      },
+      "content": {
+        "id": "SsWPpiJfTbgl4iHlFA_or",
+        "components": [
+          {
+            "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
+            "type": "permissionAutocomplete",
+            "propertyName": "permissions",
+            "parentId": "SsWPpiJfTbgl4iHlFA_or",
+            "label": "Permissions",
+            "validate": {},
+            "version": 1
+          }
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
     }
   ],
   "formSettings": {

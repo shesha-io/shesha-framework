@@ -18,10 +18,10 @@ namespace Shesha.Permissions
             _assembleFinder = assembleFinder;
         }
 
-        protected string GetName(Type service)
+        protected string GetName(Type service, string defaultName = null)
         {
             var name = service.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
-            return string.IsNullOrEmpty(name) ? service.Name : name;
+            return string.IsNullOrEmpty(name) ? defaultName ?? service.Name : name;
         }
 
         protected string GetDescription(Type service)
@@ -40,10 +40,10 @@ namespace Shesha.Permissions
             return description;
         }
 
-        protected string GetName(MethodInfo method)
+        protected string GetName(MethodInfo method, string defaultName = null)
         {
             var name = method.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
-            return string.IsNullOrEmpty(name) ? method.Name : name;
+            return string.IsNullOrEmpty(name) ? defaultName ?? method.Name : name;
         }
 
         protected string GetDescription(MethodInfo method)

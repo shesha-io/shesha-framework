@@ -1,14 +1,16 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { RedoOutlined, UndoOutlined } from '@ant-design/icons';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerActions, useFormDesignerUndoableState } from '@/providers/formDesigner';
 
 export interface IUndoRedoButtonsProps {
 
 }
 
 export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = () => {
-    const { undo, redo, canUndo, canRedo } = useFormDesigner();
+    const { canUndo, canRedo } = useFormDesignerUndoableState();
+    const { undo, redo } = useFormDesignerActions();
+    
     return (
         <>
             <Button key="undo" shape="circle" onClick={undo} disabled={!canUndo} title="Undo">

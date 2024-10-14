@@ -1,8 +1,6 @@
 export {
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
-  convertActions,
-  convertSectionsToList,
   evaluateComplexString,
   evaluateString,
   evaluateValue,
@@ -10,8 +8,6 @@ export {
   getComponentsAndSettings,
   getFieldNameFromExpression,
   getValidationRules,
-  getVisibilityFunc2,
-  getVisibleComponentIds,
   replaceTags,
   validateConfigurableComponentSettings,
 } from './providers/form/utils';

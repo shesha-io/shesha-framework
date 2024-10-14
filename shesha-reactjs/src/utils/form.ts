@@ -1,6 +1,9 @@
 import { FormInstance } from 'antd';
 import { YesNoInherit } from '@/interfaces/formDesigner';
-import { FormMode } from '@/providers/form/models';
+import { FormIdentifier, FormMode } from '@/providers/form/models';
+import { isFormFullName, isFormRawId } from '@/providers/form/utils';
+import { ConfigurationItemsViewMode } from '@/providers/appConfigurator/models';
+import { isNumeric } from './string';
 
 interface IDataWithFields {
   _formFields: string[];
@@ -124,4 +127,27 @@ export const evaluateYesNo = (
       return formMode === 'edit';
   }
   return false;
+};
+
+export const getFormCacheKey = (formId: FormIdentifier, configurationItemMode: ConfigurationItemsViewMode): string => {
+  const formKey = isFormRawId(formId)
+    ? formId
+    : isFormFullName(formId)
+      ? `${formId.module}/${formId.name}`
+      : undefined;
+      
+  return formKey
+    ? `${formKey}:${configurationItemMode}`
+    : undefined;
+};
+
+/**
+ * Convert size value (numeric or string) to a valid css property value. Numeric values are converted to pixels, string values remain as is.
+ */
+export const toSizeCssProp = (value: string | number): string | undefined => {
+  return typeof(value) === 'string' && isNumeric(value) || typeof(value) === 'number'
+    ? `${value}px`
+    : Boolean(value)
+      ? value
+      : undefined;
 };

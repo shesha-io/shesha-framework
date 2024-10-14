@@ -11,6 +11,6 @@ namespace Shesha.Services
         /// <summary>
         /// Get real type of entity
         /// </summary>
-        Type GetEntityType<TEntity, TId>(TEntity entity) where TEntity: IEntity<TId>;
+        Type GetEntityType<TId>(IEntity<TId> entity);
     }
 }

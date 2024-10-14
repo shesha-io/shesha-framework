@@ -56,7 +56,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const openEditorDialog = () => setShowDialog(true);
 
   const onDialogCancel = () => {
-    if (!readOnly && value !== internalValue) {
+    if (!readOnly && (value ?? "").trim() !== (internalValue ?? "").trim()) {
       modal.confirm({
         title: 'Close code editor?',
         icon: <ExclamationCircleFilled />,
@@ -82,21 +82,22 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
   const renderCodeEditor = () => (
-    <BaseCodeEditor
-      value={effectiveValue}
-      onChange={onChange}
-      readOnly={readOnly}
-      placeholder={props.placeholder}
-      language={language}
-
-      path={src?.path}
-      wrapInTemplate={props.wrapInTemplate}
-      templateSettings={props.templateSettings}
-      fileName={props.fileName ?? props.propertyName}
-      availableConstants={props.availableConstants}
-      style={mode === 'dialog' ? { height: "100%" } : undefined}
-    />
-  );
+      <BaseCodeEditor
+        value={effectiveValue}
+        onChange={onChange}
+        readOnly={readOnly}
+        placeholder={props.placeholder}
+        language={language}
+  
+        path={src?.path}
+        wrapInTemplate={props.wrapInTemplate}
+        templateSettings={props.templateSettings}
+        fileName={props.fileName ?? props.propertyName}
+        availableConstants={props.availableConstants}
+        resultType={props.resultType}
+        style={mode === 'dialog' ? { height: "100%" } : undefined}
+      />
+    );
 
   const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 
@@ -134,29 +135,31 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           </Button>
         </Show>
       </Space>
-      <Modal
-        open={showDialog}
-        onCancel={onDialogCancel}
-        onOk={onDialogSave}
-        title={props.label}
-        okButtonProps={{ hidden: readOnly }}
-        cancelText={readOnly ? 'Close' : undefined}
-        destroyOnClose={true}
-        classNames={{ body: styles.codeEditorModalBody }}
-        className={ styles.codeEditorModal }
-        width={null}
-      >
-        <Show when={Boolean(props?.description)}>
-          <Alert message={props?.description} />
-          <br />
-        </Show>
+      {showDialog && (
+        <Modal
+          open={showDialog}
+          onCancel={onDialogCancel}
+          onOk={onDialogSave}
+          title={props.label}
+          okButtonProps={{ hidden: readOnly }}
+          cancelText={readOnly ? 'Close' : undefined}
+          destroyOnClose={true}
+          classNames={{ body: styles.codeEditorModalBody }}
+          className={styles.codeEditorModal}
+          width={null}
+        >
+          <Show when={Boolean(props?.description)}>
+            <Alert message={props?.description} />
+            <br />
+          </Show>
 
-        {tabItems ? (
-          <Tabs items={tabItems} />
-        ) : (
-          <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
-        )}
-      </Modal >
+          {tabItems ? (
+            <Tabs items={tabItems} />
+          ) : (
+            <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
+          )}
+        </Modal>
+      )}
     </>
   );
 };

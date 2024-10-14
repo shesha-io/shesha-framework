@@ -13,13 +13,15 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   type: 'configurableActionConfigurator',
   name: 'Configurable Action Configurator',
   icon: <ThunderboltOutlined />,
+  isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
 
     if (model.hidden) return null;
 
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
+        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label} description={model.description} />
       </Form.Item>
     );
   },

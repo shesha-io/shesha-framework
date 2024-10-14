@@ -11,6 +11,8 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
   type: 'dynamicItemsConfigurator',
   name: 'Dynamic Items Configurator',
   icon: <ThunderboltOutlined />,
+  isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
 
     if (model.hidden) return null;
@@ -18,7 +20,7 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
     return (
       <ConfigurableFormItem model={model}>
         {(value, onChange) => (
-          <DynamicActionsConfigurator editorConfig={model} readOnly={model.readOnly} value={value} onChange={onChange}/>
+          <DynamicActionsConfigurator editorConfig={model} readOnly={model.readOnly} value={value} onChange={onChange} />
         )}
       </ConfigurableFormItem>
     );

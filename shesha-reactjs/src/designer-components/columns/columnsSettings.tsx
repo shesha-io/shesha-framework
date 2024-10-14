@@ -9,8 +9,12 @@ import { Checkbox, Input, InputNumber } from 'antd';
 import { EXPOSED_VARIABLES } from './exposedVariables';
 import { IColumnsComponentProps } from './interfaces';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
+import SettingsCollapsiblePanel from '../_settings/settingsCollapsiblePanel';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
-const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({ readOnly }) => {
+const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = (props) => {
+  const { readOnly } = props;
+
   return (
     <>
       <SettingsFormItem name="componentName" label="Component Name" required>
@@ -49,6 +53,18 @@ const ColumnsSettings: FC<ISettingsFormFactoryArgs<IColumnsComponentProps>> = ({
       <SettingsFormItem name="stylingBox">
         <StyleBox />
       </SettingsFormItem>
+
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={props.model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
     </>
   );
 };

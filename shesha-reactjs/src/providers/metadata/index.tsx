@@ -31,7 +31,7 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, m
   const [state, dispatch] = useThunkReducer(metadataReducer, initial);
 
   // register provider in the dispatcher if exists
-  const { registerProvider, getMetadata } = useMetadataDispatcher();
+  const { getMetadata } = useMetadataDispatcher();
 
   useEffect(() => {
     if (modelType) {
@@ -58,7 +58,6 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id, m
   };
 
   const contextValue: IMetadataContext = { ...state, ...metadataActions };
-  registerProvider({ id, modelType, contextValue });
 
   return <MetadataContext.Provider value={contextValue}>{children}</MetadataContext.Provider>;
 };
@@ -94,4 +93,18 @@ const useMetaProperties = (dataTypes: ProperyDataType[]): IPropertyMetadata[] =>
   return properties;
 };
 
-export { MetadataProvider, useMetaProperties, useMetadata };
+const ConditionalMetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = (props) => {
+  return props.modelType
+    ? (
+      <MetadataProvider {...props}>
+        {props.children}
+      </MetadataProvider>
+    )
+    : (
+      <>
+        {props.children}
+      </>
+    );
+};
+
+export { MetadataProvider, ConditionalMetadataProvider, useMetaProperties, useMetadata };

@@ -5,12 +5,12 @@ import { PermissionsTree } from '@/components/permissionsTree';
 export interface IPropertyAutocompleteProps {
   onChange?: (value: string[]) => void;
   value?: string[];
-
+  readOnly?: boolean;
 }
 
 const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
 
-  const { onChange, value } = props;
+  const { onChange, value, readOnly } = props;
 
   const [searchText, setSearchText] = useState('');
 
@@ -28,6 +28,7 @@ const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
       allowClear
       onSearch={setSearchText}
       searchValue={searchText}
+      disabled={readOnly}
 
       dropdownStyle={{ maxHeight: '50%', overflow: 'auto' }}
       dropdownRender={_ => (
@@ -37,6 +38,7 @@ const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
           formComponentName={''} 
           mode={'Select'}
           hideSearch
+          readOnly={readOnly}
 
           searchText={searchText}
           onChange={internalOnChange}

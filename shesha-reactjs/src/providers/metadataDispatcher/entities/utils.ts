@@ -89,18 +89,16 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
                 const promises: Promise<any>[] = [];
                 const data = response.data.result;
 
-                //console.groupCollapsed('Sync entities to cache');
                 const metadataCache = context.cacheProvider.getCache(CACHE.ENTITIES);
                 data.modules.forEach(m => {
                     m.entities.forEach(e => {
                         const key = getEntityMetadataCacheKey({ module: m.accessor, name: e.accessor });
-                        //console.log(`  ${key}: ${e.status}`);
 
                         if (isEntityOutOfDateResponse(e)) {
                             const meta = {
                                 ...e.metadata,
-                                entityType: e.metadata.className, // todo: remove after refactoring
-                                name: e.metadata.className, // todo: remove after refactoring
+                                entityType: e.metadata.className, // TODO: remove after refactoring
+                                name: e.metadata.className, // TODO: remove after refactoring
                             };                            
 
                             promises.push(metadataCache.setItem(key, meta));

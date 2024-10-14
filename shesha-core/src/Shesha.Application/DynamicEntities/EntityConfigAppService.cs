@@ -1,7 +1,10 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Reflection;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
+using Remotion.Linq.Clauses.ResultOperators;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
@@ -221,6 +224,15 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                             Status = SyncStatus.Unknown,
                         });
                     }
+                }
+                var missingEntities = backendModule.Entities.Where(be => !module.Entities.Any(ce => ce.Accessor == be.Accessor)).ToList();
+                foreach (var entity in missingEntities) {
+                    responseModule.Entities.Add(new OutOfDateEntitySyncResponse
+                    {
+                        Accessor = entity.Accessor,
+                        Status = SyncStatus.OutOfDate,
+                        Metadata = entity.Metadata,
+                    });
                 }
             } else
                 responseModule.Status = SyncStatus.Unknown;

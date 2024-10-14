@@ -73,14 +73,19 @@ namespace Shesha
             #region SMS Gateways
 
             IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
-                s.SmsGateway.WithDefaultValue(NullSmsGateway.Uid);
+                s.SmsSettings.WithDefaultValue(new SmsSettings
+                {
+                    SmsGateway = NullSmsGateway.Uid
+                });
             });
+
             IocManager.Register<NullSmsGateway, NullSmsGateway>(DependencyLifeStyle.Transient);
+
             IocManager.IocContainer.Register(
                 Component.For<ISmsGateway>().UsingFactoryMethod(f =>
                 {
                     var settings = f.Resolve<ISmsSettings>();
-                    var gatewayUid = settings.SmsGateway.GetValue();
+                    var gatewayUid = settings.SmsSettings.GetValue().SmsGateway;
 
                     var gatewayType = !string.IsNullOrWhiteSpace(gatewayUid)
                         ? f.Resolve<ITypeFinder>().Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.GetClassUid() == gatewayUid).FirstOrDefault()
@@ -105,14 +110,17 @@ namespace Shesha
         public override void Initialize()
         {
             IocManager.RegisterSettingAccessor<IOtpSettings>(s => {
-                s.PasswordLength.WithDefaultValue(OtpDefaults.DefaultPasswordLength);
-                s.Alphabet.WithDefaultValue(OtpDefaults.DefaultAlphabet);
-                s.DefaultLifetime.WithDefaultValue(OtpDefaults.DefaultLifetime);
-                s.DefaultSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultSubjectTemplate);
-                s.DefaultBodyTemplate.WithDefaultValue(OtpDefaults.DefaultBodyTemplate);
+                s.OneTimePins.WithDefaultValue(new OtpSettings
+                {
+                    Alphabet = OtpDefaults.DefaultAlphabet,
+                    PasswordLength = OtpDefaults.DefaultPasswordLength,
+                    DefaultLifetime = OtpDefaults.DefaultLifetime,
+                    DefaultSubjectTemplate = OtpDefaults.DefaultSubjectTemplate,
+                    DefaultBodyTemplate = OtpDefaults.DefaultBodyTemplate,
+                    DefaultEmailSubjectTemplate = OtpDefaults.DefaultEmailSubjectTemplate,
+                    DefaultEmailBodyTemplate = OtpDefaults.DefaultEmailBodyTemplate
 
-                s.DefaultEmailSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultEmailSubjectTemplate);
-                s.DefaultEmailSubjectTemplate.WithDefaultValue(OtpDefaults.DefaultEmailBodyTemplate);
+                });
             });
 
             IocManager.Register<ISheshaAuthorizationHelper, ApiAuthorizationHelper>(DependencyLifeStyle.Transient);

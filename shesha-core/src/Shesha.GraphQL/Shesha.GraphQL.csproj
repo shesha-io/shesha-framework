@@ -21,6 +21,10 @@
     <PackageReference Include="GraphQL.MicrosoftDI" Version="5.3.0" />
     <PackageReference Include="GraphQL.NewtonsoftJson" Version="5.3.0" />
     <PackageReference Include="GraphQL.SystemTextJson" Version="5.3.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

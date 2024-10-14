@@ -57,6 +57,7 @@ import {
   setDraggingRowAction,
   setStandardSortingAction,
   onGroupAction,
+  removeColumFilterAction,
 } from './actions';
 import {
   DATA_TABLE_CONTEXT_INITIAL_STATE,
@@ -350,7 +351,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const debouncedFetchInternal = useDebouncedCallback(
     (payload: IGetListDataPayload) => {
-      // todo: check payload and skip fetching if the filters (or other required things) are not calculated
+      // TODO: check payload and skip fetching if the filters (or other required things) are not calculated
       const canFetch = true;
       if (canFetch) {
         repository
@@ -359,7 +360,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
             dispatch(fetchTableDataSuccessAction(response));
           })
           .catch((e) => {
-            console.log(e);
+            console.error(e);
             dispatch(fetchTableDataErrorAction());
           });
       } else {
@@ -414,7 +415,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
     setUserConfig(settings);
   };
-    
+
   const fetchTableData = (providedState: IDataTableStateContext) => {
     // save user settings before fetch
     saveUserSettings(providedState);
@@ -476,7 +477,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       if (userColumn)
         userColumn.width = wc.width;
     });
-    setUserConfig(userConfig);    
+    setUserConfig(userConfig);
   };
 
   const setCurrentPage = (val: number) => {
@@ -535,6 +536,10 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     } else {
       clearFilters();
     }
+  };
+
+  const removeColumnFilter = (columnId: string) => {
+    dispatch(removeColumFilterAction(columnId));
   };
 
   const changeActionedRow = (val: any) => {
@@ -645,7 +650,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       ownerUid: actionOwnerId,
       hasArguments: false,
       executer: () => {
-        refreshTable(); // todo: return correct promise
+        refreshTable(); // TODO: return correct promise
         return Promise.resolve();
       },
     },
@@ -696,7 +701,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   //#endregion
 
-  // todo: pass row index
+  // TODO: pass row index
   const setRowData = (rowIndex: number, rowData: any) => {
     dispatch(setRowDataAction({ rowIndex, rowData: rowData }));
   };
@@ -730,6 +735,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     changePageSize,
     toggleColumnVisibility,
     toggleColumnFilter,
+    removeColumnFilter,
     changeFilterOption,
     changeFilter,
     applyFilters,

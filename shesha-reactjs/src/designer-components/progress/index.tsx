@@ -9,6 +9,7 @@ import { ProgressProps } from 'antd';
 import { ProgressType } from 'antd/lib/progress/progress';
 import { ProgressWrapper } from './progressWrapper';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 interface IProgressProps
   extends Omit<ProgressProps, 'style' | 'type' | 'size' | 'format' | 'success' | 'strokeColor'>,
@@ -26,6 +27,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   name: 'Progress',
   icon: <LineOutlined />,
   isInput: true,
+  isOutput: true,
   Factory: ({ model }) => {
     const {
       progressType,
@@ -109,6 +111,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
   validateSettings: model => validateConfigurableComponentSettings(progressSettingsForm, model),
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IProgressProps>(1, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
 };
 

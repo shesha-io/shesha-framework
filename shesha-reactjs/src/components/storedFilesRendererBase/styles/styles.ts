@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
     const uploadListMaxHeight = "80px"; // @sha-upload-list-max-height
@@ -58,4 +58,4 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }) => {
         storedFilesRendererNoFiles,
         antUploadDragIcon
     };
-});
+  });

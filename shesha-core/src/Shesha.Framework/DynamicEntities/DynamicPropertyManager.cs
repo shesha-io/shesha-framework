@@ -66,7 +66,10 @@ namespace Shesha.DynamicEntities
 
             if (createNewVersion || prop == null)
             {
-                prop = new EntityPropertyValue() { Value = value, EntityProperty = _entityPropertyRepository.Get(property.Id) };
+                prop = new EntityPropertyValue() { 
+                    Value = value, 
+                    EntityProperty = await _entityPropertyRepository.GetAsync(property.Id) 
+                };
                 prop.SetOwner(entity);
             }
             else

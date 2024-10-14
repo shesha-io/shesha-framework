@@ -1,6 +1,6 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, Fragment, MutableRefObject, useEffect, useMemo, useState } from 'react';
 import { Column, ColumnInstance, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import { ValidationErrors } from '..';
@@ -44,7 +44,7 @@ import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { executeScriptSync, useApplicationContextData } from '@/providers/form/utils';
 import moment from 'moment';
 import { axiosHttp } from '@/utils/fetchers';
-import { IAnyObject } from '@/interfaces';
+import { ConfigurableFormInstance, IAnyObject } from '@/interfaces';
 import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandler, YesNoInheritJs } from './interfaces';
 import { ValueRenderer } from '../valueRenderer/index';
 import { isEqual } from 'lodash';
@@ -54,6 +54,7 @@ import { useStyles } from './styles/styles';
 import { adjustWidth, getCruadActionConditions } from './cell/utils';
 import { getCellStyleAccessor } from './utils';
 import { isPropertiesArray } from '@/interfaces/metadata';
+import { getFormApi } from '@/providers/form/formApi';
 
 export interface IIndexTableOptions {
   omitClick?: boolean;
@@ -104,8 +105,11 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   ...props
 }) => {
   const store = useDataTableStore();
-  const { formMode, formData, setFormData } = useForm(false) ?? { formMode: 'readonly', formData: {} };
+  const form = useForm(false);
+  const formApi = getFormApi(form ?? { formMode: 'readonly', formData: {} } as ConfigurableFormInstance);
+  const { formMode, data: formData } = formApi;
   const { globalState, setState: setGlobalState } = useGlobalState();
+  const [visibleColumns, setVisibleColumns] = useState<number>(0);
   const appContextData = useApplicationContextData();
 
   if (tableRef) tableRef.current = store;
@@ -212,21 +216,21 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
   const onNewRowInitializeExecuter = useMemo<Function>(() => {
     return props.onNewRowInitialize
-      ? new Function('formData, globalState, http, moment, application', props.onNewRowInitialize)
+      ? new Function('form, globalState, http, moment, application', props.onNewRowInitialize)
       : null;
   }, [props.onNewRowInitialize]);
 
   const onNewRowInitialize = useMemo<RowDataInitializer>(() => {
     const result: RowDataInitializer = props.onNewRowInitialize
       ? () => {
-          // todo: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
-          //return onNewRowInitializeExecuter(formData, globalState);
-          const result = onNewRowInitializeExecuter(formData ?? {}, globalState, axiosHttp(backendUrl), moment, appContextData);
-          return Promise.resolve(result);
-        }
+        // TODO: replace formData and globalState with accessors (e.g. refs) and remove hooks to prevent unneeded re-rendering
+        //return onNewRowInitializeExecuter(formData, globalState);
+        const result = onNewRowInitializeExecuter(formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
+        return Promise.resolve(result);
+      }
       : () => {
-          return Promise.resolve({});
-        };
+        return Promise.resolve({});
+      };
 
     return result;
   }, [onNewRowInitializeExecuter, formData, globalState]);
@@ -299,7 +303,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       inlineEditMode,
       formMode,
       canAdd: evaluateYesNoInheritJs(props.canAddInline, props.canAddInlineExpression, formMode, formData, globalState),
-      onNewRowInitialize,
+      onNewRowInitialize
     };
     return {
       ...result,
@@ -312,6 +316,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [crudOptions, prevCrudOptions]);
 
   const preparedColumns = useMemo<Column<any>[]>(() => {
+    setVisibleColumns(columns?.filter((c) => c.show).length);
     const localPreparedColumns = columns
       .map((column) => {
         if (column.columnType === 'crud-operations') {
@@ -325,6 +330,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
               canDoubleWidth: widthOptions.canDoubleWidth,
               canDivideByThreeWidth: widthOptions.canDivideByThreeWidth,
               canTripleWidth: widthOptions.canTripleWidth,
+              columnsChanged: visibleColumns !== columns?.filter((c) => c.show).length && !!visibleColumns
             }
           );
           column.minWidth = minWidth;
@@ -361,8 +367,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         };
         return removeUndefinedProperties(column) as DataTableColumn<any>;
       });
-
     return localPreparedColumns;
+
   }, [
     columns,
     crudOptions.enabled,
@@ -377,13 +383,13 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const defaultSorting =
     sortMode === 'standard' ? userSorting?.map<SortingRule<string>>((c) => ({ id: c.id, desc: c.desc })) : undefined;
 
-  // http, moment, setFormData
+  // http, moment
   const performOnRowSave = useMemo<OnSaveHandler>(() => {
     if (!onRowSave) return (data) => Promise.resolve(data);
 
-    const executer = new Function('data, formData, globalState, http, moment, application', onRowSave);
-    return (data, formData, globalState) => {
-      const preparedData = executer(data, formData, globalState, axiosHttp(backendUrl), moment, appContextData);
+    const executer = new Function('data, form, globalState, http, moment, application', onRowSave);
+    return (data, formApi, globalState) => {
+      const preparedData = executer(data, formApi, globalState, axiosHttp(backendUrl), moment, appContextData);
       return Promise.resolve(preparedData);
     };
   }, [onRowSave, backendUrl]);
@@ -395,13 +401,12 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
         /*nop*/
       };
 
-    return (data, formData, globalState, setGlobalState, setFormData) => {
+    return (data, formApi, globalState, setGlobalState) => {
       const evaluationContext = {
         data,
-        formData,
+        formApi,
         globalState,
         setGlobalState,
-        setFormData,
         http: axiosHttp(backendUrl),
         moment,
       };
@@ -417,7 +422,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, formData ?? {}, globalState).then((preparedData) => {
+    return performOnRowSave(rowData, formApi, globalState).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customUpdateUrl } as IUpdateOptions)
@@ -425,7 +430,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performUpdate(rowIndex, preparedData, options).then((response) => {
         setRowData(rowIndex, preparedData /*, response*/);
-        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormData);
+        performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
         return response;
       });
     });
@@ -435,7 +440,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const repository = store.getRepository();
     if (!repository) return Promise.reject('Repository is not specified');
 
-    return performOnRowSave(rowData, formData ?? {}, globalState).then((preparedData) => {
+    return performOnRowSave(rowData, formApi, globalState).then((preparedData) => {
       const options =
         repository.repositoryType === BackendRepositoryType
           ? ({ customUrl: customCreateUrl } as ICreateOptions)
@@ -443,7 +448,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
       return repository.performCreate(0, preparedData, options).then(() => {
         store.refreshTable();
-        performOnRowSaveSuccess(preparedData, formData ?? {}, globalState, setGlobalState, setFormData);
+        performOnRowSaveSuccess(preparedData, formApi, globalState, setGlobalState);
       });
     });
   };
@@ -505,10 +510,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           if (component.linkToModelMetadata && propertyMeta) {
             model = component.linkToModelMetadata(model, propertyMeta);
           }
-
-          // ToDo: AS - use hidden and disable in JS mode
-          //model.visibilityFunc = getCustomVisibilityFunc(model);
-          //model.enabledFunc = getCustomEnabledFunc(model);
 
           result.allComponents[model.id] = model;
           componentIds.push(model.id);
@@ -709,8 +710,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
       <div className={styles.shaChildTableErrorContainer}>
         {exportToExcelError && <ValidationErrors error={'Error occurred while exporting to excel'} />}
       </div>
-      
-      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps}  />}
+
+      {tableProps.columns && tableProps.columns.length > 0 && <ReactTable {...tableProps} />}
     </Fragment>
   );
 };

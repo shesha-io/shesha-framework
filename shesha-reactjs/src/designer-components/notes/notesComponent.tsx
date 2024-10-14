@@ -9,6 +9,7 @@ import React from 'react';
 import NotesProvider from '@/providers/notes';
 import { migrateCustomFunctions, migrateFunctionToProp, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -17,12 +18,14 @@ export interface INotesProps extends IConfigurableFormComponent {
   ownerTypeExpression: string;
   savePlacement?: 'left' | 'right';
   autoSize?: boolean;
+  allowDelete?: boolean;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
 
 const NotesComponent: IToolboxComponent<INotesProps> = {
   type: 'notes',
+  isInput: false,
   name: 'Notes',
   icon: <FormOutlined />,
   Factory: ({ model }) => {
@@ -39,6 +42,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
           showCommentBox={!model.readOnly}
           buttonPostion={model?.savePlacement}
           autoSize={model?.autoSize}
+          allowDelete={model.allowDelete}
         />
       </NotesProvider>
     );
@@ -63,6 +67,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
         )) as INotesProps)
     .add<INotesProps>(1, (prev) => migrateVisibility(prev))
     .add<INotesProps>(2, (prev) => migrateReadOnly(prev))
+    .add<INotesProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
 };
 

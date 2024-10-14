@@ -40,7 +40,7 @@ export const DebugDataTreeProp: FC<IDebugDataTreeItemProps> = (props) => {
                                 props.onChange(e.target.value);
                         }}
                     />
-            : null
+            : props.value?.toString()
             }
         </Col>
     </Row>;

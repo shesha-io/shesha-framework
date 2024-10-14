@@ -11,6 +11,7 @@ using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.Configuration.Startup;
+using Shesha.Elmah;
 using Shesha.Import;
 using Shesha.Sms.Clickatell;
 using Shesha.Web.FormsDesigner;
@@ -30,6 +31,7 @@ namespace Boxfusion.SheshaFunctionalTests
         typeof(SheshaImportModule),
         typeof(SheshaClickatellModule),
         typeof(SheshaFunctionalTestsCommonModule),
+        typeof(SheshaElmahModule),
         typeof(SheshaFunctionalTestsCommonApplicationModule)
      )]
     public class SheshaFunctionalTestsWebCoreModule : AbpModule

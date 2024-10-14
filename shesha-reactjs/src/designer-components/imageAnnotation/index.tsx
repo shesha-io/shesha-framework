@@ -10,6 +10,7 @@ import ImageAnnotationControl from './control';
 import { Alert } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 
 const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
   type: 'imageAnnotation',
@@ -42,6 +43,7 @@ const ImageAnnotationComponent: IToolboxComponent<IImageProps> = {
     .add<IImageProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as IImageProps)
     .add<IImageProps>(1, (prev) => migrateVisibility(prev))
     .add<IImageProps>(2, (prev) => migrateReadOnly(prev))
+    .add<IImageProps>(3, (prev) => ({...migrateFormApi.properties(prev)}))
   ,
   initModel: model => {
     const customModel: IImageProps = {

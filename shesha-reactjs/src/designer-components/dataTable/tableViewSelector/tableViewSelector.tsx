@@ -11,7 +11,8 @@ import {
     useDataTableStore,
     useForm,
     useGlobalState,
-    useNestedPropertyMetadatAccessor
+    useNestedPropertyMetadatAccessor,
+    useSheshaApplication
 } from '@/providers';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
@@ -35,6 +36,8 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
         changePersistedFiltersToggle,
         modelType,
     } = useDataTableStore();
+
+    const application = useSheshaApplication();
     const { globalState } = useGlobalState();
     const { formData, formMode } = useForm();
     const dataContextManager = useDataContextManager(false);
@@ -56,19 +59,21 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
         const match = [
             { match: 'data', data: formData },
             { match: 'globalState', data: globalState },
-            { match: 'pageContext', data: {...pageContext?.getFull()} ?? {} },
+            { match: 'pageContext', data: {...pageContext?.getFull()} },
         ];
 
         if (dataContextManager)
             match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id) });
 
+        const permissionedFilters = filters.filter(f => !f.permissions || f.permissions && application.anyOfPermissionsGranted(f.permissions));
+
         evaluateDynamicFilters(
-            filters,
-            match,
-            propertyMetadataAccessor
+          permissionedFilters,
+          match,
+          propertyMetadataAccessor
         ).then((evaluatedFilters) => {
-            dataFetchDep.ready();
-            setPredefinedFilters(evaluatedFilters);
+          dataFetchDep.ready();
+          setPredefinedFilters(evaluatedFilters);
         });
     };
 

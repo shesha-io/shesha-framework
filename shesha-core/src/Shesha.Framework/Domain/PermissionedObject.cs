@@ -2,6 +2,7 @@
 using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
 
 namespace Shesha.Domain
@@ -24,7 +25,7 @@ namespace Shesha.Domain
         /// Shesha Module of the permissioned object
         /// </summary>
         [NotNull]
-        public virtual string Module { get; set; }
+        public virtual Module Module { get; set; }
 
         /// <summary>
         /// Type of the permissioned object
@@ -63,11 +64,8 @@ namespace Shesha.Domain
         /// </summary>
         public virtual string Parent { get; set; }
 
-        /// <summary>
-        /// Dependence on another permissioned object (for example, CRUD API on an entity)
-        /// </summary>
-        public virtual string Dependency { get; set; }
-
         public virtual bool Hidden { get; set; }
+
+        public virtual string Md5 { get; set; }
     }
 }

@@ -1,55 +1,81 @@
-export const formApiDefinition = `/** Form mode */
+export const formApiDefinition = `import { IEntityEndpoints } from 'entities/interfaces';
+
+/** Form mode */
 export type FormMode = 'readonly' | 'edit' | 'designer';
+
+export interface ISetFormDataPayload {
+  /** form field values */
+  values: any;
+
+  /** if true, previous data will be merged with current values */
+  mergeValues: boolean;
+}
+
+export interface FormFullName {
+  readonly name: string;
+  readonly module?: string | null;
+}
+export type FormUid = string;
+export type FormIdentifier = FormFullName | FormUid;
 
 export interface IFormSettings {
   modelType?: string;
+};
 
-  postUrl?: string;
-  putUrl?: string;
-  deleteUrl?: string;
-  getUrl?: string;
-
-  layout: FormLayout;
-  colon: boolean;
-  //labelCol: ColProps;
-  //wrapperCol: ColProps;
-  preparedValues?: string;
-  size?: SizeType;
-  formKeysToPersist?: string[];
-  fieldsToFetch?: string[];
-  excludeFormFieldsInPayload?: string;
-  uniqueFormId?: string;
-  onDataLoaded?: string;
-  onInitialized?: string;
-  onUpdate?: string;
-  //initialValues?: IKeyValue[];
-
-  /** if true then need to update components structure for using Setting component */
-  isSettingsForm?: boolean;
+export interface FormInstance<Values> {
+  
 }
 
 /**
-* Form instance API
-*/
+ * Form instance API
+ */
 export interface FormApi<Values = any> {
-   /**
-    * Set field value
-    * @param name field name
-    * @param value field value
-    */
-   setFieldValue: (name: string, value: any) => void;
-   /**
-    * Set fields value
-    * @param values 
-    */
-   setFieldsValue: (values: Values) => void;
-   /**
-    * Submit form
-    */
-   submit: () => void;
+  /**
+   * Add deferred update data to 'data' object 
+   * @param data model data object for updating
+   * @returns The deferred update data
+   */
+  addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
+  /**
+   * Set field value
+   * @param name field name
+   * @param value field value
+   */
+  setFieldValue: (name: string, value: any) => void;
+  /**
+   * Set fields value
+   * @param values 
+   */
+  setFieldsValue: (values: Values) => void;
+  /**
+   * Clear fields value
+   */
+  clearFieldsValue: () => void;
+  /**
+   * Submit form
+   */
+  submit: () => void;
 
-   /**
-    * Configurable form settings)
-    */
-   formSettings: IFormSettings;
-}`;
+  /**
+   * Set form data
+   * @deprecated The method should not be used
+   * @param payload data payload
+   */
+  setFormData: (payload: ISetFormDataPayload) => void;
+
+  /** antd form instance */
+  formInstance?: FormInstance<Values>;
+  /** Configurable form settings */
+  formSettings: IFormSettings;
+  /** Form mode */
+  formMode: FormMode;
+  /** Form data */
+  data: Values;
+  
+  /** Form arguments passed by caller */
+  formArguments?: any;
+
+  /** Default API endpoints (create, read, update, delete). Note: available only when model type is entity */
+  defaultApiEndpoints: IEntityEndpoints;
+};
+`;

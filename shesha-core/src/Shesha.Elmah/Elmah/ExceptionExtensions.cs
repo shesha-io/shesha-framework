@@ -7,6 +7,7 @@ namespace Shesha.Elmah
     /// </summary>
     public static class ExceptionExtensions
     {
+        public const string ExceptionIdKey = "ExceptionId";
         public const string ExceptionLoggedKey = "ExceptionLogged";
 
         /// <summary>
@@ -30,5 +31,19 @@ namespace Shesha.Elmah
             ex.Data[ExceptionLoggedKey] = true;
         }
 
+        /// <summary>
+        /// Set exception identifier
+        /// </summary>
+        public static void SetExceptionId(this Exception ex, Guid id)
+        {
+            ex.Data[ExceptionIdKey] = id;
+        }
+
+        public static Guid? GetExceptionId(this Exception ex)
+        {
+            return ex.Data[ExceptionIdKey] != null && ex.Data[ExceptionIdKey] is Guid
+                ? (Guid)ex.Data[ExceptionIdKey]
+                : (Guid?)null;
+        }
     }
 }

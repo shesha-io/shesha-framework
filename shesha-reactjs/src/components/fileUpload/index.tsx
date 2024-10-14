@@ -157,7 +157,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
       return  <Dragger disabled><DraggerStub /></Dragger>;
     }
 
-    return <div className={classes}></div>;
+    return <div className={classes}>{uploadButton}</div>;
   };
 
   const renderUploader = () => {

@@ -2,20 +2,25 @@ import { CodeOutlined } from '@ant-design/icons';
 import { Input, message } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import moment from 'moment';
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { customEventHandler } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { FormMarkup } from '@/providers/form/models';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
-import { ITextFieldComponentProps, TextType } from './interfaces';
+import { ITextFieldComponentProps, IInputStyles, TextType } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
+import { getFormApi } from '@/providers/form/formApi';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IconType, ShaIcon } from '@/components';
+import { toSizeCssProp } from '@/utils/form';
+import { removeUndefinedProps } from '@/utils/object';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -41,37 +46,54 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
-  Factory: ({ model, form }) => {
-    const { formMode, setFormData } = useForm();
+  Factory: ({ model }) => {
+    const form = useForm();
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
+
+    const styling = JSON.parse(model.stylingBox || '{}');
+    const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+    const additionalStyles: CSSProperties = removeUndefinedProps({
+      height: toSizeCssProp(model.height),
+      width: toSizeCssProp(model.width),
+      borderWidth: model.hideBorder ? 0 : model.borderSize,
+      borderRadius: model.borderRadius,
+      borderStyle: model.borderType,
+      borderColor: model.borderColor,
+      backgroundColor: model.backgroundColor,
+      color: model.fontColor,
+      fontWeight: model.fontWeight,
+      fontSize: model.fontSize,
+      ...stylingBoxAsCSS,
+    });
+    const jsStyle = getStyle(model.style, formData);
+    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
 
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
       className: 'sha-input',
       placeholder: model.placeholder,
-      prefix: model.prefix,
-      suffix: model.suffix,
+      prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
+      suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       variant: model.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: getStyle(model?.style, formData),
+      style: finalStyle,
     };
 
     const eventProps = {
       model,
-      form,
+      form: getFormApi(form),
       formData,
-      formMode,
       globalState,
       http: axiosHttp(backendUrl),
       message,
       moment,
-      setFormData,
       setGlobalState,
     };
 
@@ -79,19 +101,19 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       <ConfigurableFormItem
         model={model}
         initialValue={
-          (model?.passEmptyStringByDefault && '') ||
-          evaluateString(model?.initialValue, { formData, formMode, globalState })
+          (model.passEmptyStringByDefault && '') ||
+          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
         }
       >
         {(value, onChange) => {
-          const customEvent =  customEventHandler(eventProps);
+          const customEvent = customEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
-            if (typeof onChange === 'function') 
+            if (typeof onChange === 'function')
               onChange(...args);
           };
           return inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value.length, '•') : value} disabled={model.readOnly} />
+            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} disabled={model.readOnly} />
             : <InputComponentType {...inputProps} {...customEvent} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
         }}
       </ConfigurableFormItem>
@@ -108,6 +130,25 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev))
+    .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<ITextFieldComponentProps>(5, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        width: prev.width,
+        height: prev.height,
+        hideBorder: prev.hideBorder,
+        borderSize: prev.borderSize,
+        borderRadius: prev.borderRadius,
+        borderColor: prev.borderColor,
+        fontSize: prev.fontSize,
+        fontColor: prev.fontColor,
+        backgroundColor: prev.backgroundColor,
+        stylingBox: prev.stylingBox,
+        style: prev.style,
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => {
     return {

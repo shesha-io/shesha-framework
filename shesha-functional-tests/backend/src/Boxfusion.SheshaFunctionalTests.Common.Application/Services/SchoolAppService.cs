@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 {
-    public class SchoolsAppService: SheshaAppServiceBase
+    public class SchoolsAppService : SheshaAppServiceBase
     {
         private readonly IRepository<School, Guid> _schoolRepo;
         private readonly IRepository<Subject, Guid> _subjectRepo;
@@ -24,7 +24,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
         /// <param name="input"></param>
         /// <returns></returns>
         /// <exception cref="AbpValidationException"></exception>
-        public async Task<DynamicDto<School, Guid>> CreateSchoolCustom (DynamicDto<School, Guid> input)
+        public async Task<DynamicDto<School, Guid>> CreateSchoolCustom(DynamicDto<School, Guid> input)
         {
             var school = await SaveOrUpdateEntityAsync<School>(null, async item =>
             {
@@ -35,7 +35,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             });
             return await MapToDynamicDtoAsync<School, Guid>(school);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>

@@ -1,10 +1,12 @@
-﻿using Abp.Events.Bus.Entities;
+﻿using Abp.Dependency;
+using Abp.Events.Bus.Entities;
 using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Shesha.Domain;
+using Shesha.Permissions;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -12,7 +14,9 @@ namespace Shesha.Swagger
 {
     public class CachingSwaggerProvider : ISwaggerProvider,
         IEventHandler<EntityChangedEventData<EntityProperty>>,
-        IEventHandler<EntityChangedEventData<EntityConfig>>
+        IEventHandler<EntityChangedEventData<EntityConfig>>,
+        IEventHandler<EntityChangedEventData<PermissionedObject>>,
+        ITransientDependency
     {
         private readonly ICacheManager _cacheManager;
 
@@ -25,11 +29,14 @@ namespace Shesha.Swagger
 
         public CachingSwaggerProvider(
             IOptions<SwaggerGeneratorOptions> optionsAccessor,
-            IApiDescriptionGroupCollectionProvider apiDescriptionsProvider,
             ISchemaGenerator schemaGenerator,
-            ICacheManager cacheManager)
+            ICacheManager cacheManager,
+            IIocResolver iocResolver)
         {
             _cacheManager = cacheManager;
+
+            var apiDescriptionsProvider = iocResolver.Resolve<IApiDescriptionGroupCollectionProvider>();
+
             _swaggerGenerator = new SwaggerGenerator(optionsAccessor.Value, apiDescriptionsProvider, schemaGenerator);
         }
 
@@ -51,6 +58,15 @@ namespace Shesha.Swagger
         public void HandleEvent(EntityChangedEventData<EntityConfig> eventData)
         {
             ClearCache();
+        }
+
+        public void HandleEvent(EntityChangedEventData<PermissionedObject> eventData)
+        {
+            if (eventData.Entity.Type == ShaPermissionedObjectsTypes.EntityAction
+                || eventData.Entity.Type == ShaPermissionedObjectsTypes.Entity
+                || eventData.Entity.Type == ShaPermissionedObjectsTypes.WebApiAction
+                || eventData.Entity.Type == ShaPermissionedObjectsTypes.WebApi)
+                ClearCache();
         }
     }
 }

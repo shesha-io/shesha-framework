@@ -10,15 +10,16 @@ import { ContextPropertyAutocomplete } from '@/designer-components/contextProper
 import { IChildEntitiesTagGroupProps } from './models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { useForm } from '@/providers';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerState } from '@/providers/formDesigner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/useAvailableConstants';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
 
 const { Option } = Select;
 
 const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesTagGroupProps>> = ({ readOnly }) => {
   const { model, onValuesChange } = useSettingsForm<IChildEntitiesTagGroupProps>();
 
-  const designerModelType = useFormDesigner(false)?.formSettings?.modelType;
+  const designerModelType = useFormDesignerState(false)?.formSettings?.modelType;
   const { formSettings } = useForm();
   const labelFormatConstants = useAvailableConstantsMetadata({ 
     addGlobalConstants: true, 
@@ -115,6 +116,18 @@ const ChildEntitiesTagGroupSettings: FC<ISettingsFormFactoryArgs<IChildEntitiesT
             }}
             availableConstants={labelFormatConstants}
           />
+        </SettingsFormItem>
+      </SettingsCollapsiblePanel>
+      
+      <SettingsCollapsiblePanel header="Security">
+        <SettingsFormItem
+          jsSetting
+          label="Permissions"
+          name="permissions"
+          initialValue={model.permissions}
+          tooltip="Enter a list of permissions that should be associated with this component"
+        >
+          <PermissionAutocomplete readOnly={readOnly} />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
     </>

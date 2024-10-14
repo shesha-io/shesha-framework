@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext } from 'react';
+import React, { FC, PropsWithChildren, useContext, useMemo } from 'react';
 import { ISourcesFolderContext, SourcesFolderContext } from './contexts';
 
 export interface ISourceFilesFolderProviderProps {
@@ -41,9 +41,14 @@ export const useSourceFullPath = (fileOrFolderName: string): string => {
  */
 export const SourceFilesFolderProvider: FC<PropsWithChildren<ISourceFilesFolderProviderProps>> = ({ folder, children }) => {
     const fullPath = useSourceFullPath(folder);
+    
+    const value = useMemo<ISourcesFolderContext>(() => {
+        return { folder: folder, path: fullPath };
+    }, [folder, fullPath]);
+
     return (
         <SourcesFolderContext.Provider
-            value={{ folder: folder, path: fullPath }}
+            value={value}
         >
             {children}
         </SourcesFolderContext.Provider>

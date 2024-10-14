@@ -1,7 +1,6 @@
 import { Switch, Tag } from 'antd';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { ValueRenderer } from '@/components/valueRenderer/index';
-import moment from 'moment';
 import React, { FC } from 'react';
 import { getMoment } from '@/utils/date';
 import { IDtoType, ISelectOption } from '@/components/autocomplete';
@@ -90,11 +89,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = ({
         return <ValueRenderer value={value} meta={{ dataType: 'time', dataFormat: timeFormat }}/>;
       }
       case 'datetime': {
-        if (typeof value === 'string') {
-          return moment(value).format(dateFormat);
-        }
-
-        return getMoment(value, dateFormat)?.toISOString() || '';
+        return getMoment(value, dateFormat)?.format(dateFormat) || '';
       }
       case 'checkbox': {
         return <Checkbox checked={checked} defaultChecked={defaultChecked} disabled />;

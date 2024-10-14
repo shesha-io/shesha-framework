@@ -1,9 +1,7 @@
 import React, { FC, MutableRefObject, PropsWithChildren, useState } from 'react';
-import { useForm } from '@/providers/form';
-import { useMetadata } from '@/providers';
+import { ShaForm } from '@/providers/form';
 import { Button, Tooltip } from 'antd';
-import { useFormDesigner } from '@/providers/formDesigner';
-import { useDataContext } from '@/providers/dataContextProvider/contexts';
+import { useFormDesignerState, useFormDesignerActions } from '@/providers/formDesigner';
 import { DeleteFilled, FunctionOutlined } from '@ant-design/icons';
 import { useStyles } from '../styles/styles';
 
@@ -15,14 +13,12 @@ interface IDragWrapperProps {
 
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
   const { styles } = useStyles();
-  const { getComponentModel } = useForm();
-  const { selectedComponentId, setSelectedComponent, isDebug, deleteComponent } = useFormDesigner();
+  
+  const { selectedComponentId, isDebug } = useFormDesignerState();
+  const { setSelectedComponent, deleteComponent } = useFormDesignerActions();
   const [isOpen, setIsOpen] = useState(false);
 
-  const metadata = useMetadata(false);
-  const dataContext = useDataContext(false);
-
-  const componentModel = getComponentModel(props.componentId);
+  const componentModel = ShaForm.useComponentModel(props.componentId);
 
   const tooltip = (
     <div>
@@ -49,22 +45,21 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
 
   const onClick = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
+
     if (selectedComponentId !== props.componentId)
       setSelectedComponent(
         props.componentId,
-        metadata?.id,
-        dataContext,
         props.componentRef
       );
   };
 
-  const onMouseOver = (e) => {
-    e.stopPropagation();
+  const onMouseOver = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     setIsOpen(true);
   };
 
-  const onMouseOut = (e) => {
-    e.stopPropagation();
+  const onMouseOut = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     setIsOpen(false);
   };
   const onDeleteClick = () => {

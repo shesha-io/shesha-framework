@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import { IFlagsSetters, IFlagsState } from '@/interfaces';
+import { createNamedContext } from '@/utils/react';
 import { UploadFile } from 'antd/lib/upload/interface';
 
 export type IFlagProgressFlags =
@@ -60,19 +60,10 @@ export interface IStoredFilesStateContext
 
 export interface IStoredFilesActionsContext
   extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  // downloadFileRequest: () => void
-  // downloadFileSuccess: () => void
-  // downloadFileError: () => void
   uploadFile: (payload: IUploadFilePayload) => void;
   deleteFile: (fileIdToDelete: string) => void;
-  // dowloadZipFiles: () => void
-  // dowloadZipSuccess: () => void
-  // dowloadZipError: () => void
-  // fetchFileListRequest: () => void
-  // fetchFileListError: () => void
   downloadZipFile: (payload?: IDownloadZipPayload) => void;
   downloadFile: (payload: IDownloadFilePayload) => void;
-  /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }
 
 export const STORED_FILES_CONTEXT_INITIAL_STATE: IStoredFilesStateContext = {
@@ -83,6 +74,6 @@ export const STORED_FILES_CONTEXT_INITIAL_STATE: IStoredFilesStateContext = {
   fileList: [],
 };
 
-export const StoredFilesStateContext = createContext<IStoredFilesStateContext>(STORED_FILES_CONTEXT_INITIAL_STATE);
+export const StoredFilesStateContext = createNamedContext<IStoredFilesStateContext>(STORED_FILES_CONTEXT_INITIAL_STATE, "StoredFilesStateContext");
 
-export const StoredFilesActionsContext = createContext<IStoredFilesActionsContext>(undefined);
+export const StoredFilesActionsContext = createNamedContext<IStoredFilesActionsContext>(undefined, "StoredFilesActionsContext");

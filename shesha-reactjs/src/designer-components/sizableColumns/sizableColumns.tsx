@@ -10,9 +10,12 @@ import { SizableColumnsSettingsForm } from './sizableColumnsSettings';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import ParentProvider from '@/providers/parentProvider/index';
 import { SizableColumns } from '@/components/sizableColumns';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { removeComponents } from '../_common-migrations/removeComponents';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
   type: 'sizableColumns',
+  isInput: false,
   name: 'SizableColumns',
   icon: <BorderHorizontalOutlined />,
   Factory: ({ model }) => {
@@ -25,7 +28,7 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
 
     return (
       <ParentProvider model={model}>
-        <SizableColumns cursor="col-resize" style={style}>
+        <SizableColumns cursor="col-resize" style={style} sizes={columns.map((col) => col.size)}>
           {columns &&
             columns.map((col) => (
               <Fragment key={col.id}>
@@ -49,16 +52,17 @@ const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> =
         { id: nanoid(), size: 50, components: [] },
         { id: nanoid(), size: 50, components: [] },
       ],
+      stylingBox: "{\"marginBottom\":\"5\"}"
     };
 
     return tabsModel;
   },
   settingsFormFactory: (props) => <SizableColumnsSettingsForm {...props} />,
-  migrator: (m) =>
-    m.add<ISizableColumnComponentProps>(
-      0,
-      (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps
-    ),
+  migrator: (m) => m
+    .add<ISizableColumnComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)) as ISizableColumnComponentProps)
+    .add<ISizableColumnComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
+    .add<ISizableColumnComponentProps>(2, (prev) => removeComponents(prev))
+  ,
   customContainerNames: ['columns'],
 };
 

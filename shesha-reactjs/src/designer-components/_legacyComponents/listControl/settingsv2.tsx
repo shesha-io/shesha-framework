@@ -7,7 +7,7 @@ import FormAutocomplete from '@/components/formAutocomplete';
 import PropertyAutocomplete from '../../../components/propertyAutocomplete/propertyAutocomplete';
 import SectionSeparator from '@/components/sectionSeparator';
 import Show from '@/components/show';
-import ButtonGroupSettingsModal from '@/designer-components/button/buttonGroup/buttonGroupSettingsModal';
+import { ButtonGroupConfigurator } from '@/components/buttonGroupConfigurator';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { IListItemsProps } from './models';
 
@@ -94,7 +94,7 @@ export const ListControlSettings: FC<IListControlSettingsProps> = ({ readOnly, o
       <SectionSeparator title="Buttons" />
 
       <FormItem name="buttons" label="Buttons">
-        <ButtonGroupSettingsModal readOnly={readOnly} />
+        <ButtonGroupConfigurator readOnly={readOnly} />
       </FormItem>
 
       <Form.Item

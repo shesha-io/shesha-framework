@@ -1,11 +1,11 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-    const shaWizardContainer = "sha-wizard-container";
-    const shaStepsContent = "sha-steps-content";
-    const shaStepsButtonsContainer = "sha-steps-buttons-container";
-    const shaStepsButtons = "sha-steps-buttons";
-    const shaWizard = cx("sha-wizard", css`
+  const shaWizardContainer = "sha-wizard-container";
+  const shaStepsContent = "sha-steps-content";
+  const shaStepsButtonsContainer = "sha-steps-buttons-container";
+  const shaStepsButtons = "sha-steps-buttons";
+  const shaWizard = cx("sha-wizard", css`
         .${shaWizardContainer} {
           margin: unset;
       
@@ -45,11 +45,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           }
         }
   `);
-    return {
-        shaWizard,
-        shaWizardContainer,
-        shaStepsContent,
-        shaStepsButtonsContainer,
-        shaStepsButtons,
-    };
+  return {
+    shaWizard,
+    shaWizardContainer,
+    shaStepsContent,
+    shaStepsButtonsContainer,
+    shaStepsButtons,
+  };
 });

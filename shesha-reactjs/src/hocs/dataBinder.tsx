@@ -1,25 +1,21 @@
 import React, { FC } from 'react';
-import { useBinding } from '@/providers/bindingProvider';
 import { IConfigurableFormItemChildFunc } from '@/components/formDesigner/components/formItem';
 
-export interface IDataBinderProps  {
-    propertyName?: string;
-    valuePropName?: string;
+export interface IDataBinderProps {
     value?: any;
-    onChange?:  (...args: any[]) => void;
-    getFieldValue?: (propertyName: string) => object[];
-    useBinding?: boolean;
+    onChange?: (...args: any[]) => void;
     children: IConfigurableFormItemChildFunc;
+    valuePropName?: string;
 }
 
 const DataBinder: FC<IDataBinderProps> = (props) => {
-    const { useBinding: ub = false, valuePropName = 'value' } = props;
-    const binding = useBinding(false);
-
-    const value = binding && ub ? binding.value : props[valuePropName];
-    const onChange = binding && ub ? binding.onChange : props.onChange;
+    const { onChange, valuePropName, value } = props;
     
-    return <>{props.children(value, onChange, props.propertyName, props.getFieldValue)}</>;
+    // value may be passed by the Form.Item in a different property
+    const effectiveValue = valuePropName ? props[valuePropName] : value;
+
+    return (<>{props.children(effectiveValue, onChange)}</>);
 };
 
-export { DataBinder };
+const DataBinderMemoized = React.memo(DataBinder);
+export { DataBinderMemoized as DataBinder };

@@ -1,4 +1,4 @@
-import { createStyles } from "antd-style";
+import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
     const containerImage = "container-image";
@@ -78,4 +78,4 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         listItem,
         numbering,
     };
-});
+  });

@@ -24,10 +24,10 @@ namespace Shesha.Web.FormsDesigner.Services
     public class ConfigurableComponentAppService : SheshaCrudServiceBase<ConfigurableComponent, ConfigurableComponentDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateConfigurableComponentDto, UpdateConfigurableComponentDto, GetConfigurableComponentByIdInput>, IConfigurableComponentAppService
     {
         private readonly IRepository<Module, Guid> _moduleRepository;
-        private readonly IRepository<FrontEndApp, Guid> _frontEndAppRepository;        
+        private readonly IRepository<FrontEndApp, Guid> _frontEndAppRepository;
         private readonly IConfigurationFrameworkRuntime _cfRuntime;
         private readonly IConfigurationItemClientSideCache _clientSideCache;
-        
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -50,7 +50,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <returns></returns>
         /// <exception cref="ConfigurableComponentNotFoundException"></exception>
         [HttpGet]
-        public async Task<ConfigurableComponentDto> GetByNameAsync(GetConfigurableComponentByNameInput input) 
+        public async Task<ConfigurableComponentDto> GetByNameAsync(GetConfigurableComponentByNameInput input)
         {
             var mode = _cfRuntime.ViewMode;
 
@@ -63,9 +63,15 @@ namespace Shesha.Web.FormsDesigner.Services
                 if (input.Md5 == cachedMd5)
                     throw new ContentNotModifiedException("Component not changed");
             }
-            
-            var component = await GetComponentAsync(new GetComponentInput { Module = input.Module, Name = input.Name, FrontEndApplication = appKey });
-            
+
+            var component = await GetComponentAsync(new GetComponentInput
+            {
+                Module = input.Module,
+                Name = input.Name,
+                FrontEndApplication = appKey,
+                IsApplicationSpecific = input.IsApplicationSpecific
+            });
+
             if (component == null)
                 throw new ConfigurableComponentNotFoundException(appKey, input.Module, input.Name);
 
@@ -82,12 +88,19 @@ namespace Shesha.Web.FormsDesigner.Services
         public async Task UpdateSettingsAsync(ConfigurableComponentUpdateSettingsInput input)
         {
             var appKey = input.IsApplicationSpecific ? _cfRuntime.FrontEndApplication : null;
-            var component = await GetComponentAsync(new GetComponentInput { Module = input.Module, Name = input.Name, FrontEndApplication = appKey });
-
-            if (component == null) 
+            var component = await GetComponentAsync(new GetComponentInput
             {
-                component = new ConfigurableComponent {
-                    
+                Module = input.Module,
+                Name = input.Name,
+                FrontEndApplication = appKey,
+                IsApplicationSpecific = input.IsApplicationSpecific
+            });
+
+            if (component == null)
+            {
+                component = new ConfigurableComponent
+                {
+
                 };
                 component.Name = input.Name;
                 component.Module = await GetModuleAsync(input.Module);
@@ -96,11 +109,12 @@ namespace Shesha.Web.FormsDesigner.Services
                 component.VersionStatus = ConfigurationItemVersionStatus.Live;
                 component.Origin = component;
 
-                if (input.IsApplicationSpecific && !string.IsNullOrWhiteSpace(_cfRuntime.FrontEndApplication)) {
+                if (input.IsApplicationSpecific && !string.IsNullOrWhiteSpace(_cfRuntime.FrontEndApplication))
+                {
                     var application = await GetFrontEndAppAsync(_cfRuntime.FrontEndApplication);
                     if (application == null)
                         throw new FrontEndApplicationNotFoundException(_cfRuntime.FrontEndApplication);
-                    
+
                     component.Application = application;
                 }
 
@@ -127,8 +141,9 @@ namespace Shesha.Web.FormsDesigner.Services
             var query = Repository.GetAll().Where(f => f.Module == moduleEntity &&
                 f.Name == input.Name);
 
-            if (!string.IsNullOrWhiteSpace(input.FrontEndApplication)) 
-                query = query.Where(c => c.Application.AppKey == input.FrontEndApplication);
+            query = !input.IsApplicationSpecific || string.IsNullOrWhiteSpace(input.FrontEndApplication)
+                ? query.Where(c => c.Application == null)
+                : query.Where(c => c.Application != null && c.Application.AppKey == input.FrontEndApplication);
 
             switch (mode)
             {
@@ -188,7 +203,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
         #endregion
 
-        public class GetComponentInput 
+        public class GetComponentInput
         {
             /// <summary>
             /// Module name
@@ -204,6 +219,11 @@ namespace Shesha.Web.FormsDesigner.Services
             /// Application key
             /// </summary>
             public string FrontEndApplication { get; set; }
+
+            /// <summary>
+            /// If true, indicates that component is application specific
+            /// </summary>
+            public bool IsApplicationSpecific { get; set; }
         }
     }
 }

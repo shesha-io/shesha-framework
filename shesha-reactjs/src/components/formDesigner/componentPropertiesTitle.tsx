@@ -1,13 +1,14 @@
 import React, { FC } from 'react';
 import { Button } from 'antd';
 import { CopyOutlined, DeleteFilled } from '@ant-design/icons';
-import { useFormDesigner } from '@/providers/formDesigner';
+import { useFormDesignerActions, useFormDesignerState } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
 
 export interface IProps {}
 
 export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
-  const { deleteComponent, duplicateComponent, selectedComponentId, readOnly } = useFormDesigner();
+  const { selectedComponentId, readOnly } = useFormDesignerState();
+  const { deleteComponent, duplicateComponent } = useFormDesignerActions();
   const { styles } = useStyles();
 
   const onDeleteClick = () => {
@@ -42,5 +43,3 @@ export const ComponentPropertiesTitle: FC<IProps> = ({}) => {
     </div>
   );
 };
-
-export default ComponentPropertiesTitle;

@@ -21,6 +21,7 @@ export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IPrope
             referenceListName: property.referenceListName,
             referenceListModule: property.referenceListModule,
             allowInherited: true,
+            propertyMetadata: property,
         },
     };
 

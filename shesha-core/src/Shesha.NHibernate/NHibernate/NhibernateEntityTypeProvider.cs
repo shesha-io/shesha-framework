@@ -11,7 +11,7 @@ namespace Shesha.NHibernate
     /// </summary>
     public class NhibernateEntityTypeProvider : IEntityTypeProvider, ITransientDependency
     {
-        public Type GetEntityType<TEntity, TId>(TEntity entity) where TEntity : IEntity<TId>
+        public Type GetEntityType<TId>(IEntity<TId> entity)
         {
             return NHibernateUtil.GetClass(entity);
         }

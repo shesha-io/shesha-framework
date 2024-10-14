@@ -1,7 +1,8 @@
 import { createAction } from 'redux-actions';
 import { IErrorInfo } from '@/interfaces/errorInfo';
-import { IFlatComponentsStructure, IFormSettings, IPersistedFormProps } from '../form/models';
+import { IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { ILoadRequestPayload } from './contexts';
+import { UpToDateForm } from '../formManager/interfaces';
 
 export enum FormPersisterActionEnums {
   SaveRequest = 'SAVE_REQUEST',
@@ -20,7 +21,7 @@ export const loadRequestAction = createAction<ILoadRequestPayload, ILoadRequestP
   FormPersisterActionEnums.LoadRequest,
   (p) => p
 );
-export const loadSuccessAction = createAction<IPersistedFormProps, IPersistedFormProps>(
+export const loadSuccessAction = createAction<UpToDateForm, UpToDateForm>(
   FormPersisterActionEnums.LoadSuccess,
   (p) => p
 );

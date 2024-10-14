@@ -17,13 +17,14 @@ const StandardApisItems: ButtonGroupItemProps[] = [
 
 const useStandardApis: DynamicItemsEvaluationHook = (args) => {
     const { metadata } = useMetadata(false) ?? {};
+    const { item } = args;
     
     const operations = useMemo<ButtonGroupItemProps[]>(() => {
         // if (!isEntityMetadata(metadata))
         //     return [];
 
         return StandardApisItems;
-    }, [args.item, metadata]);
+    }, [item, metadata]);
 
     return operations;
 };

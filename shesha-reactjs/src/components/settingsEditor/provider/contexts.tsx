@@ -1,11 +1,14 @@
-import { createContext } from 'react';
 import { FormMode } from '@/providers';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, LoadingState, SettingValue } from './models';
+import { createNamedContext } from '@/utils/react';
 
 export interface IEditorBridge {
     save: () => Promise<void>;
+    cancel: () => void;
     //startEdit: () => void,
 }
+
+export type SaveStatus = 'none' | 'saving' | 'success' | 'error' | 'canceled';
 
 export interface ISettingsEditorStateContext {
     configsLoadingState: LoadingState;
@@ -20,19 +23,24 @@ export interface ISettingsEditorStateContext {
 
     editorMode: FormMode;
     editorBridge?: IEditorBridge;
+
+    selectedApplication?: IFrontEndApplication;
+
+    saveStatus?: SaveStatus;
 }
 
 export interface ISettingsEditorActionsContext {
-    selectSetting: (setting: ISettingConfiguration, app?: IFrontEndApplication) => void;
+  selectApplication: (app?: IFrontEndApplication) => void;
+  selectSetting: (setting: ISettingConfiguration, app?: IFrontEndApplication) => void;
 
-    saveSetting: () => Promise<void>;
-    startEditSetting: () => void;
-    cancelEditSetting: () => void;
+  saveSetting: () => Promise<void>;
+  startEditSetting: () => void;
+  cancelEditSetting: () => void;
 
-    fetchSettingValue: (settingId: ISettingIdentifier) => Promise<SettingValue>;
-    saveSettingValue: (settingId: ISettingIdentifier, value: SettingValue) => Promise<void>;
+  fetchSettingValue: (settingId: ISettingIdentifier) => Promise<SettingValue>;
+  saveSettingValue: (settingId: ISettingIdentifier, value: SettingValue) => Promise<void>;
 
-    setEditor: (editorBridge: IEditorBridge) => void;
+  setEditor: (editorBridge: IEditorBridge) => void;
 }
 
 export interface ISettingsEditorContext extends ISettingsEditorStateContext, ISettingsEditorActionsContext {
@@ -54,7 +62,7 @@ export interface IFetchApplicationsErrorPayload {
 }
 
 export interface ISettingSelection {
-    setting: ISettingConfiguration;
+    setting?: ISettingConfiguration;
     app?: IFrontEndApplication;
 }
 
@@ -71,4 +79,4 @@ export const SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE: ISettingsEditorStateCo
     editorMode: 'edit',
 };
 
-export const SettingsEditorContext = createContext<ISettingsEditorContext>(undefined);
+export const SettingsEditorContext = createNamedContext<ISettingsEditorContext>(undefined, "SettingsEditorContext");

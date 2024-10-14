@@ -2,7 +2,7 @@ import { ICacheProvider } from "@/providers/metadataDispatcher/entities/models";
 import { HttpClientApi } from "../http/api";
 import { EntitiesManager } from "./manager";
 import { IEntitiesModuleAccessor, EntitiesModuleAccessor } from "./moduleAccessor";
-import { IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/useEntityMetadataFetcher";
+import { IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";
 
 export interface IEntitiesApi {
 

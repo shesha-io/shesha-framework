@@ -1,18 +1,14 @@
-﻿using Abp.Domain.Entities;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
-using Shesha.EntityReferences;
 using Shesha.Permissions;
-using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using static Shesha.Tests.JsonEntity.JsonEntity_Tests;
 
 namespace Shesha.Tests.Permissions
 {
@@ -34,18 +30,18 @@ namespace Shesha.Tests.Permissions
         }
 
         [Fact]
-        public async Task GetAllApi_Test()
+        public async Task GetAllApi_TestAsync()
         {
-            var api = await _permissionedObjectManager.GetAllTreeAsync();
+            var api = await Task.Run(() => _permissionedObjectManager.GetAllTreeAsync());
         }
 
-        private Task Get(int i)
+        private Task GetAsync(int i)
         {
             return Task.Run(() =>
             {
                 Debug.WriteLine($"Start item {i}");
                 var s = DateTime.Now;
-                var t = _permissionedObjectManager.Get($"shurik@{i}");
+                var t = _permissionedObjectManager.Get($"shurik@{i}", "");
                 Debug.WriteLine($"Executed item {i}");
                 var e = DateTime.Now;
                 var d = e - s;
@@ -68,7 +64,7 @@ namespace Shesha.Tests.Permissions
 
                 for(var i = 0; i < 1; i++)
                 {
-                    l.Add(Get(i));
+                    l.Add(GetAsync(i));
                 }
 
                 while (l.Any(x => !x.IsCompleted))

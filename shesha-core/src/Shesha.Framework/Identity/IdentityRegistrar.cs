@@ -25,7 +25,7 @@ namespace Shesha.Identity
                 .AddAbpSignInManager<SignInManager>()
                 .AddAbpSecurityStampValidator<SecurityStampValidator>()
                 .AddAbpUserClaimsPrincipalFactory<UserClaimsPrincipalFactory>()
-                .AddPermissionChecker<PermissionChecker>()
+                .AddPermissionChecker<ShaPermissionChecker>()
                 .AddDefaultTokenProviders();
         }
     }

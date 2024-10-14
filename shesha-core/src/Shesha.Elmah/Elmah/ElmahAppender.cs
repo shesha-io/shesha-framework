@@ -16,7 +16,8 @@ namespace Shesha.Elmah
             if (exception == null || loggingEvent.ExceptionObject.IsExceptionLogged())
                 return;
 
-            ElmahExtensions.RaiseError(exception);
+            loggingEvent.ExceptionObject.MarkExceptionAsLogged();
+            ElmahExtensions.RaiseError(exception);            
         }
 	}
 }

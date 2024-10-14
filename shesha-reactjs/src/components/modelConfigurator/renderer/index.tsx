@@ -1,20 +1,22 @@
-import ConfigurableForm from '@/components/configurableForm';
+import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
 import React, { FC } from 'react';
 import { CustomErrorBoundary } from '@/components';
 import { FormMarkup } from '@/providers/form/models';
-import { message } from 'antd';
-import { ModelConfiguratorToolbar } from '../toolbar';
+import { App } from 'antd';
 import { PermissionEditorComponent } from '../permissionEditor';
 import { PropertiesEditorComponent } from '../propertiesEditor';
 import { useModelConfigurator } from '@/providers';
 import { ViewsEditorComponent } from '../viewsEditor';
 import { useStyles } from '../styles/styles';
 
-export interface IModelConfiguratorRendererProps {}
+export interface IModelConfiguratorRendererProps { }
+
+const markup = modelSettingsMarkup as FormMarkup;
 
 export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = () => {
   const { styles } = useStyles();
+  const { message } = App.useApp();
   const { modelConfiguration, form, save, id } = useModelConfigurator();
 
   const onSettingsSave = values => {
@@ -26,14 +28,14 @@ export const ModelConfiguratorRenderer: FC<IModelConfiguratorRendererProps> = ()
 
   return (
     <div className={styles.shaModelConfigurator}>
-      {false && <ModelConfiguratorToolbar />}
       <CustomErrorBoundary>
         <ConfigurableForm
+          className={styles.shaModelConfiguratorForm}
           layout="horizontal"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
           mode="edit"
-          markup={modelSettingsMarkup as FormMarkup}
+          markup={markup}
           onFinish={onSettingsSave}
           form={form}
           initialValues={modelConfiguration}
