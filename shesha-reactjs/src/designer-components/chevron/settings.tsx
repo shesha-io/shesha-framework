@@ -69,7 +69,7 @@ const ChevronSettings: FC<ISettingsFormFactoryArgs<IChevronProps>> = () => {
       </SettingsCollapsiblePanel>
 
       <SettingsCollapsiblePanel header='Styles'>
-        <SettingsFormItem name="colorSource" label="Color Source" jsSetting>
+        <SettingsFormItem name="colorSource" label="Color Source" jsSetting tooltip='Hex and RGB colors are supported'>
           <Select disabled={values.readOnly}>
             <Option value="primary">Primary Color</Option>
             <Option value="custom">Custom Color</Option>
