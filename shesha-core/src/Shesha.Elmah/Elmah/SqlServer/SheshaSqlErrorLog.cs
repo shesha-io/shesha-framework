@@ -361,7 +361,7 @@ VALUES (@error_id, @application, @host, @type, @source, @message, @user, @status
                 command.Parameters.Add(new SqlParameter("status_code", statusCode));
                 command.Parameters.Add(new SqlParameter("time_utc", time.ToUniversalTime()));
                 command.Parameters.Add(new SqlParameter("all_xml", xml));
-                command.Parameters.Add(new SqlParameter("location", location));
+                command.Parameters.Add(new SqlParameter("location", location ?? ""));
 
                 return command;
             }
