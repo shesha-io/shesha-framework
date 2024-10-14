@@ -148,7 +148,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       const canUpdate = await onEnd(
         {
           to: { dataset: { columnId: column.id, actionConfiguration: column.actionConfiguration } },
-          dragged: { dataset: { id: newTasks[0]?.id, value: newTasks[0]?.appointmentType } },
+          dragged: { dataset: { id: newTasks[0]?.id, value: newTasks[0]?.[groupingProperty] } },
         },
         column
       );
