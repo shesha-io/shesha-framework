@@ -21,7 +21,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const state = useChartDataStateContext();
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
-  const { setData, setIsFilterVisible, setIsLoaded, setRefLists, setFilterdData, setChartFilters, setControlProps } = useChartDataActionsContext();
+  const { setData, setIsFilterVisible, setIsLoaded, setRefLists, setFilterdData, setChartFilters, setControlProps, setRefListProperties } = useChartDataActionsContext();
 
   const { styles, cx } = useStyles();
 
@@ -52,6 +52,8 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           const strLabel = p.label + '';
           return strLabel?.toLowerCase() === valueProperty?.toLowerCase() || strLabel?.toLowerCase() === legendProperty?.toLowerCase() || strLabel?.toLowerCase() === axisProperty?.toLowerCase();
         });
+
+        setRefListProperties(refListPropertiesFiltered);
 
         refListPropertiesFiltered?.forEach((refListProperty: IRefListPropertyMetadata) => {
           getReferenceList({ refListId: { module: refListProperty?.referenceListModule, name: refListProperty?.referenceListName } })

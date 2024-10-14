@@ -29,6 +29,7 @@ export interface IChartDataContext {
 
   data?: object[];
   items?: object[];
+  refListProperties?: object[];
   refLists?: {
     [key: string]: IRefListPropertyMetadata[];
   };
@@ -46,6 +47,7 @@ export interface IChartDataAtionsContext {
   setRefLists?: (refLists: object) => void;
   setFilterdData?: (data: object[]) => void;
   setChartFilters?: (filters: IFilter[]) => void;
+  setRefListProperties?: (refListProperties: object[]) => void;
   onFilter?: () => void;
 
   setIsLoaded?: (isLoaded: boolean) => void;
@@ -77,6 +79,7 @@ export const INITIAL_STATE: IChartDataContext = {
 
   data: [],
   items: [],
+  refListProperties: [],
   refLists: {},
 
   isLoaded: false,

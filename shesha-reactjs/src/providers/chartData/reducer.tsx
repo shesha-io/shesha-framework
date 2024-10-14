@@ -33,6 +33,10 @@ export const chartDataReducer = handleActions(
       ...state,
       ...action.payload,
     }),
+    [ChartDataActionsEnum.SetRefListProperties]: (state, action) => ({
+      ...state,
+      ...action.payload,
+    }),
   },
   INITIAL_STATE,
 );

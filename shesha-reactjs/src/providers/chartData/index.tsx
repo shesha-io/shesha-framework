@@ -1,7 +1,7 @@
 import React, { useContext, useReducer, PropsWithChildren, FC } from "react";
 import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
-import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction, SetRefListsAction } from "./actions";
+import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction, SetRefListPropertiesAction, SetRefListsAction } from "./actions";
 import { IChartData, IChartsProps, IFilter } from "@/designer-components/charts/model";
 import { IRefListPropertyMetadata } from "@/interfaces/metadata";
 
@@ -36,6 +36,10 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     dispatch(SetControlPropsAction(controlProps));
   };
 
+  const setRefListProperties = (refListProperties: object[]) => {
+    dispatch(SetRefListPropertiesAction(refListProperties));
+  };
+
   return (
     <ChartDataStateContext.Provider value={state}>
       <ChartDataActionsContext.Provider value={{
@@ -45,7 +49,8 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
         setChartFilters,
         setIsLoaded,
         setIsFilterVisible,
-        setControlProps
+        setControlProps,
+        setRefListProperties,
       }}>
         {children}
       </ChartDataActionsContext.Provider>

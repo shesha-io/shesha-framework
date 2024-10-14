@@ -9,6 +9,7 @@ export enum ChartDataActionsEnum {
     SetIsLoaded = "SET_IS_LOADED",
     SetIsFilterVisible = "SET_IS_FILTER_VISIBLE",
     SetControlProps = "SET_CONTROL_PROPS",
+    SetRefListProperties = "SET_REF_LIST_PROPERTIES"
 }
 
 export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: IChartData[]) => ({ data, items: data }));
@@ -24,3 +25,5 @@ export const SetIsLoadedAction = createAction(ChartDataActionsEnum.SetIsLoaded, 
 export const SetIsFilterVisibleAction = createAction(ChartDataActionsEnum.SetIsFilterVisible, (isFilterVisible: boolean) => ({ isFilterVisible }));
 
 export const SetControlPropsAction = createAction(ChartDataActionsEnum.SetControlProps, (controlProps: object) => ({ ...controlProps }));
+
+export const SetRefListPropertiesAction = createAction(ChartDataActionsEnum.SetRefListProperties, (refListProperties: object[]) => ({ refListProperties }));
