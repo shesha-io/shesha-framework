@@ -3,7 +3,6 @@ import { createAction } from "redux-actions";
 
 export enum ChartDataActionsEnum {
     SetData = "SET_DATA",
-    SetRefLists = "SET_REF_LISTS",
     SetFilterdData = "SET_FILTERED_DATA",
     SetChartFilters = "SET_CHART_FILTERS",
     SetIsLoaded = "SET_IS_LOADED",
@@ -12,8 +11,6 @@ export enum ChartDataActionsEnum {
 }
 
 export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: IChartData[]) => ({ data, items: data }));
-
-export const SetRefListsAction = createAction(ChartDataActionsEnum.SetRefLists, (refLists: { [key: string]: any[] }) => ({ refLists }));
 
 export const SetFilterdDataAction = createAction(ChartDataActionsEnum.SetFilterdData, (filteredData: object[]) => ({ filteredData }));
 

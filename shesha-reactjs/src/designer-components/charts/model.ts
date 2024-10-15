@@ -1,4 +1,3 @@
-import { IRefListPropertyMetadata } from "@/interfaces/metadata";
 import { IConfigurableFormComponent } from "@/providers";
 
 /**
@@ -10,15 +9,15 @@ export interface IChartData {
 }
 
 export interface IChartProps extends IConfigurableFormComponent {
-    chartType?: 'polarArea' | 'bar' | 'line' | 'pie';
+    chartType?: TChartType;
     showTitle?: boolean;
     title?: string;
     showLegend?: boolean;
-    showXAxisLabel?: boolean;
+    showXAxisScale?: boolean;
     showXAxisLabelTitle?: boolean;
-    showYAxisLabel?: boolean;
+    showYAxisScale?: boolean;
     showYAxisLabelTitle?: boolean;
-    legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+    legendPosition?: TLegendPosition;
     entityType?: string;
     filters?: string[];
     valueProperty?: string;
@@ -28,22 +27,23 @@ export interface IChartProps extends IConfigurableFormComponent {
     yProperty?: string;
     tension?: number;
     strokeColor?: string;
-    aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
+    aggregationMethod?: TAggregationMethod;
 }
 
 export interface IChartsProps {
-    chartType?: 'polarArea' | 'bar' | 'line' | 'pie';
+    chartType?: TChartType;
     showTitle?: boolean;
     title?: string;
     name?: string;
     description?: string;
     showLegend?: boolean;
-    legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+    legendPosition?: TLegendPosition;
     entityType?: string;
     filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
     legendProperty?: string;
+    allowFilter?: boolean;
     filterProperties?: string[];
     xProperty?: string;
     yProperty?: string;
@@ -52,22 +52,25 @@ export interface IChartsProps {
     simpleOrPivot?: 'simple' | 'pivot';
     showName?: boolean;
     showDescription?: boolean;
-    showXAxisLabel?: boolean;
+    showXAxisScale?: boolean;
     showXAxisLabelTitle?: boolean;
-    showYAxisLabel?: boolean;
+    showYAxisScale?: boolean;
     showYAxisLabelTitle?: boolean;
     stacked?: boolean;
-    aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
+    aggregationMethod?: TAggregationMethod;
 }
 
 export interface IChartDataProps extends IChartsProps {
     labels?: string[];
     chartData?: number[];
     data?: IChartData;
-    refLists?: {
-        [key: string]: IRefListPropertyMetadata[];
-    };
 }
+
+export type TChartType = 'polarArea' | 'bar' | 'line' | 'pie';
+
+export type TAggregationMethod = 'count' | 'sum' | 'average' | 'min' | 'max';
+
+export type TLegendPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';
 
 /**
  * To be used in the filter component
