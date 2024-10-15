@@ -95,7 +95,7 @@ const EntityPickerEditable = (props: IEntityPickerProps) => {
     throw SheshaError.throwPropertyError('entityType');
 
   const handleMultiChange = (selectedValues: string[]) => {
-    const newValues = value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {})));
+    const newValues = Array.isArray(value) ? value.filter(x => selectedValues.find(y => y === incomeValueFunc(x, {}))) : null;
     if (onChange) onChange(newValues, null);
   };
 
