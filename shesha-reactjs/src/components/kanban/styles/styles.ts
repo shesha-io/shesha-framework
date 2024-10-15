@@ -4,7 +4,7 @@ import { createStyles } from '@/styles';
 export const useStyles = createStyles(
   (
     { css, cx, prefixCls },
-    { columnBackgroundColor, fontSize, fontColor, headerBackgroundColor, height, minHeight, maxHeight, isCollapsed }
+    { columnBackgroundColor, fontSize, fontColor, headerBackgroundColor, height, minHeight, maxHeight, isCollapsed, width, minWidth, maxWidth }
   ) => {
     const combinedColumnStyle = cx(
       `${prefixCls}-combined-Column-style`,
@@ -22,9 +22,9 @@ export const useStyles = createStyles(
         max-height: ${addPx(maxHeight) || '500px'};
 
         /* Conditional styles based on isCollapsed */
-        min-width: ${isCollapsed ? '40px' : '300px'};
-        width: ${isCollapsed ? '40px' : '300px'};
-        max-width: ${isCollapsed ? '40px' : '300px'};
+        min-width: ${isCollapsed ? '40px' : addPx(minWidth) || '300px'};
+        width: ${isCollapsed ? '40px' : addPx(width) || '300px'};
+        max-width: ${isCollapsed ? '40px' : addPx(maxWidth) || '300px'};
       `
     );
 
@@ -49,6 +49,7 @@ export const useStyles = createStyles(
                 text-align: center; 
                 white-space: nowrap; 
                 overflow: hidden;
+                padding: '10px 0'
             `
           : `
                 transform: rotate(360deg);

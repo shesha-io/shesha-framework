@@ -16,6 +16,7 @@ import { PasswordCombo } from './passwordCombo';
 import { useForm } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -53,6 +54,15 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
     .add<IPasswordComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPasswordComponentProps>(1, (prev) => migrateReadOnly(prev))
     .add<IPasswordComponentProps>(2, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+    .add<IPasswordComponentProps>(6, (prev) => {
+      const styles: IInputStyles = {
+        size: prev.size,
+        hideBorder: prev.hideBorder,
+        style: prev.style
+      };
+
+      return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+    })
   ,
 };
 

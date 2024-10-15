@@ -20,6 +20,7 @@ import { getFormApi } from '@/providers/form/formApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { toSizeCssProp } from '@/utils/form';
 import { removeUndefinedProps } from '@/utils/object';
+import { IInputStyles } from '../textField/interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -144,6 +145,23 @@ const TextAreaComponent: IToolboxComponent<ITextAreaComponentProps> = {
       .add<ITextAreaComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<ITextAreaComponentProps>(2, (prev) => migrateReadOnly(prev))
       .add<ITextAreaComponentProps>(3, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
+      .add<ITextAreaComponentProps>(4, (prev) => {
+        const styles: IInputStyles = {
+          size: prev.size,
+          width: prev.width,
+          height: prev.height,
+          hideBorder: prev.hideBorder,
+          borderSize: prev.borderSize,
+          borderRadius: prev.borderRadius,
+          borderColor: prev.borderColor,
+          fontSize: prev.fontSize,
+          fontColor: prev.fontColor,
+          backgroundColor: prev.backgroundColor,
+          stylingBox: prev.stylingBox,
+          style: prev.style,
+        };
+        return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+      })
     ,
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),

@@ -18,7 +18,7 @@ import { useRefListItemGroupConfigurator } from '@/providers/refList/provider';
 import { addPx } from '../keyInformationBar/utils';
 
 const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId } = props;
+  const { gap, groupingProperty, entityType, createFormId, items, componentName, editFormId, maxResultCount } = props;
 
   const [columns, setColumns] = useState([]);
   const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
@@ -43,7 +43,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       getMetadata({ modelType: entityType.id, dataType: DataTypes.entityReference }).then((resp: any) => {
         const endpoints = resp?.apiEndpoints;
         setUrls({ updateUrl: endpoints.update.url, deleteUrl: endpoints.delete.url, postUrl: endpoints.create.url });
-        refetch({ path: `${resp?.apiEndpoints.list.url}?maxResultCount=1000` })
+        refetch({ path: `${resp?.apiEndpoints.list.url}?maxResultCount=${maxResultCount || 100}` })
           .then((resp) => {
             setTasks(resp.result.items.filter((x: any) => x[`${groupingProperty}`] !== null));
           })
@@ -81,11 +81,11 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
 
   useEffect(() => {
     if (selectedItem) {
-      form.setFieldsValue(selectedItem);
+      editForm.setFieldsValue(selectedItem);
     } else {
-      form.resetFields();
+      editForm.resetFields();
     }
-  }, [selectedItem, form]);
+  }, [selectedItem, editForm]);
 
   const onEnd = useCallback(
     (evt: any, column: any): Promise<boolean> => {
@@ -248,9 +248,7 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       {items.length === 0 ? (
         <KanbanPlaceholder />
       ) : (
-        <Flex
-          style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}
-        >
+        <Flex style={{ overflowX: 'auto', overflowY: 'hidden', display: 'flex', gap: addPx(gap) }}>
           {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
@@ -280,19 +278,14 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       >
         {selectedItem ? (
           <ConfigurableForm
-            key={selectedItem ? selectedItem : 'new-item'}
+            key={selectedItem}
             initialValues={selectedItem || {}}
             form={editForm}
             formId={editFormId}
             mode="edit"
           />
         ) : (
-          <ConfigurableForm
-            key={selectedItem ? selectedItem : 'new-item'}
-            form={form}
-            formId={createFormId}
-            mode="edit"
-          />
+          <ConfigurableForm key={'new-item'} form={form} formId={createFormId} mode="edit" />
         )}
       </Modal>
     </>
