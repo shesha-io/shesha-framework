@@ -297,12 +297,6 @@ export const getSettings = (data: any) =>
               description:
                 'The CSS justify-items property defines the default justify-self for all items of the box, giving them all a default way of justifying each box along the appropriate axis.',
             })
-            .addCheckbox({
-              id: nanoid(),
-              propertyName: 'allowShadow',
-              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
-              label: 'Show Box Shadow',
-            })
             .addDropdown({
               id: nanoid(),
               propertyName: 'shadowStyle',
@@ -310,12 +304,12 @@ export const getSettings = (data: any) =>
               labelAlign: 'right',
               parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
               dataSourceType: 'values',
-              hidden: {
-                _code: "return  !getSettingValue(data?.allowShadow);",
-                _mode: 'code',
-                _value: false,
-              } as any,
               values: [
+                {
+                  label: "None",
+                  value: "none",
+                  id: nanoid()
+                },
                 {
                   label: "Above",
                   value: "above",
@@ -330,7 +324,7 @@ export const getSettings = (data: any) =>
               ],
               validate: {},
               description:
-                'Determines the position of our box shadow.',
+                'Determines visibility and position of the box shadow.',
             })
             .toJson(),
         ],

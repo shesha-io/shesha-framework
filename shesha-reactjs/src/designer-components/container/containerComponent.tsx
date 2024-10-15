@@ -101,7 +101,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
       boxShadow: "0px -2px 4px 0px rgba(0,0,0,.15)"
     };
 
-    const renderShadow = model?.allowShadow === true ? model?.shadowStyle === 'below' ? basicShadow : invertedShadow : '';
+    const renderShadow = model?.shadowStyle !== 'none' ? model?.shadowStyle === 'below' ? basicShadow : invertedShadow : '';
 
     return (
       <ParentProvider model={model}>
@@ -158,8 +158,10 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             maxHeight: prev.maxHeight,
             maxWidth: prev.maxWidth
           };
-    
           return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+        })
+        .add<IContainerComponentProps>(6, (prev) => {
+          return {...prev, shadowStyle: 'none'};
         })
   ,
 };

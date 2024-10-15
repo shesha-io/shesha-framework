@@ -164,7 +164,6 @@ export interface ICommonContainerProps {
   borderStyle?: string;
   borderRadius?: string | number;
   overflow?: string;
-  allowShadow?: boolean;
   shadowStyle?: string;
 }
 
