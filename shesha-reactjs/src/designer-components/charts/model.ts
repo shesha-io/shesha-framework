@@ -64,7 +64,6 @@ export interface IChartDataProps extends IChartsProps {
     labels?: string[];
     chartData?: number[];
     data?: IChartData;
-    refLists?: any;
 }
 
 export type TChartType = 'polarArea' | 'bar' | 'line' | 'pie';

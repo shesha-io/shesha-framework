@@ -11,10 +11,6 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     dispatch(SetDataAction(data));
   };
 
-  const setRefLists = (refLists?: object[]) => {
-    dispatch(SetRefListsAction(refLists));
-  };
-
   const setFilterdData = (filteredData: object[]) => {
     dispatch(SetFilterdDataAction(filteredData));
   };
@@ -35,21 +31,15 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     dispatch(SetControlPropsAction(controlProps));
   };
 
-  const setRefListProperties = (refListProperties: object[]) => {
-    dispatch(SetRefListPropertiesAction(refListProperties));
-  };
-
   return (
     <ChartDataStateContext.Provider value={state}>
       <ChartDataActionsContext.Provider value={{
         setData,
-        setRefLists,
         setFilterdData,
         setChartFilters,
         setIsLoaded,
         setIsFilterVisible,
         setControlProps,
-        setRefListProperties,
       }}>
         {children}
       </ChartDataActionsContext.Provider>
