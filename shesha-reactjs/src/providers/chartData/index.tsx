@@ -1,6 +1,6 @@
 import { IChartData, IChartsProps, IFilter } from "@/designer-components/charts/model";
 import React, { FC, PropsWithChildren, useContext, useReducer } from "react";
-import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction, SetRefListPropertiesAction, SetRefListsAction } from "./actions";
+import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction } from "./actions";
 import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
 
