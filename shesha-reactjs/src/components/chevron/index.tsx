@@ -42,6 +42,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
             width: addPx(width) ?? '150px',
             height: addPx(height) ?? '35px',
             fontSize: addPx(fontSize) ?? '14px',
+            borderRadius: '0px'
         };
 
         return !props.hidden && (
