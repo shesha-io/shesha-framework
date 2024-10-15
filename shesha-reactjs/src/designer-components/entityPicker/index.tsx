@@ -18,7 +18,7 @@ import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { customEventHandler } from '@/components/formDesigner/components/utils';
+import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import moment from 'moment';
 import { getFormApi } from '@/providers/form/formApi';
@@ -116,7 +116,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       <ConfigurableFormItem model={model} initialValue={model.defaultValue}>
         {(value, onChange) => {
 
-          const customEvent = customEventHandler(eventProps);
+          const customEvent = customOnChangeValueEventHandler(eventProps);
           const onChangeInternal = (...args: any[]) => {
             customEvent.onChange(args[0]);
             if (typeof onChange === 'function')
