@@ -1,9 +1,8 @@
-import React, { useContext, useReducer, PropsWithChildren, FC } from "react";
+import { IChartData, IChartsProps, IFilter } from "@/designer-components/charts/model";
+import React, { FC, PropsWithChildren, useContext, useReducer } from "react";
+import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction, SetRefListPropertiesAction, SetRefListsAction } from "./actions";
 import { ChartDataActionsContext, ChartDataStateContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
-import { SetChartFiltersAction, SetControlPropsAction, SetDataAction, SetFilterdDataAction, SetIsFilterVisibleAction, SetIsLoadedAction, SetRefListPropertiesAction, SetRefListsAction } from "./actions";
-import { IChartData, IChartsProps, IFilter } from "@/designer-components/charts/model";
-import { IRefListPropertyMetadata } from "@/interfaces/metadata";
 
 const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChildren<{}>) => {
   const [state, dispatch] = useReducer(chartDataReducer, INITIAL_STATE);
@@ -12,7 +11,7 @@ const ChartDataProvider: FC<PropsWithChildren<{}>> = ({ children }: PropsWithChi
     dispatch(SetDataAction(data));
   };
 
-  const setRefLists = (refLists?: { [key: string]: IRefListPropertyMetadata[] }) => {
+  const setRefLists = (refLists?: object[]) => {
     dispatch(SetRefListsAction(refLists));
   };
 

@@ -14,7 +14,7 @@ export enum ChartDataActionsEnum {
 
 export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: IChartData[]) => ({ data, items: data }));
 
-export const SetRefListsAction = createAction(ChartDataActionsEnum.SetRefLists, (refLists: { [key: string]: any[] }) => ({ refLists }));
+export const SetRefListsAction = createAction(ChartDataActionsEnum.SetRefLists, (refLists: object[]) => ({ refLists }));
 
 export const SetFilterdDataAction = createAction(ChartDataActionsEnum.SetFilterdData, (filteredData: object[]) => ({ filteredData }));
 

@@ -1,4 +1,19 @@
-import { IChartData, IFilter, TOperator } from "./model";
+import { IChartData, IFilter, TAggregationMethod, TChartType, TOperator } from "./model";
+
+/**
+ * @param str the enjoined properties string to remove duplicates from
+ * @returns the string without duplicates
+ */
+function removePropertyDuplicates(str) {
+  // Split the string into an array by commas
+  const arr = str.split(',');
+
+  // Use a Set to remove duplicates and convert it back to an array
+  const uniqueArr = [...new Set(arr)];
+
+  // Join the array back into a string
+  return uniqueArr.join(',');
+}
 
 /**
  * Function to get the chart data from the API
@@ -7,16 +22,17 @@ import { IChartData, IFilter, TOperator } from "./model";
  * @param filters filters to apply to the data before returning
  * @param legendProperty legend property to use for the chart
  * @param axisProperty axis property to use for the chart
+ * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: (dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}'),
-      maxResultCount: 100,
+      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : '') + (filterProperties ? ',' + filterProperties.join(',') : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')),
       filter: Boolean(filters) ? JSON.stringify(filters) : undefined,
+      maxResultCount: -1
     },
   };
 };
@@ -265,7 +281,7 @@ function getPredictableColor(input: string | number): string {
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared line chart data
  */
-export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod = 'sum'): IChartData => {
+export const prepareLineChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod = 'sum'): IChartData => {
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
@@ -291,7 +307,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared bar chart data
  */
-export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod = 'sum'): IChartData => {
+export const prepareBarChartData = (data: object[], xProperty: string, yProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod = 'sum'): IChartData => {
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
@@ -316,7 +332,7 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared pie chart data
  */
-export const preparePieChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: string): IChartData => {
+export const preparePieChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod): IChartData => {
   const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
   const datasets = [{
@@ -352,7 +368,7 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
  * @param aggregationMethod aggregation method (sum, average, count, min, max)
  * @returns prepared polar area chart data
  */
-export const preparePolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: string): IChartData => {
+export const preparePolarAreaChartData = (data: object[], legendProperty: string, valueProperty: string, strokeColor: string, aggregationMethod: TAggregationMethod): IChartData => {
   const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
   const datasets = [{
@@ -386,7 +402,7 @@ export const preparePolarAreaChartData = (data: object[], legendProperty: string
  * @param valueProperty the property to aggregate
  * @returns the aggregated value
  */
-function aggregateValues(items: object[], aggregationMethod: string, valueProperty: string): number {
+function aggregateValues(items: object[], aggregationMethod: TAggregationMethod, valueProperty: string): number {
   const values: number[] = items.map((item: { [key: string]: any }) => item[valueProperty]);
   switch (aggregationMethod) {
     case 'sum':
@@ -421,18 +437,18 @@ export const preparePivotChartData = (
   legendProperty: string,
   valueProperty: string,
   strokeColor: string,
-  aggregationMethod: string,
-  chartType: string,
-  refLists?: { [key: string]: any[] }
+  aggregationMethod: TAggregationMethod,
+  chartType: TChartType,
 ): IChartData => {
   const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
-  const legendItems = [...new Set(data?.map((item: { [key: string]: any }) => item[legendProperty]))];
+  const legendItems = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
   const datasets = legendItems.map(legend => {
     const strLegend = typeof legend === 'string' ? legend : legend + '';
     const barBackgroundColor = getPredictableColor(strLegend);
     let colors: string[] = [];
-    const legendDisplayValue = refLists?.[legendProperty]?.find((it: { itemValue: any }) => it.itemValue === legend)?.item;
+    // const legendDisplayValue = refLists?.[legendProperty]?.find((it: { itemValue: any }) => it.itemValue === legend)?.item;
+    const legendDisplayValue = legend;
     return {
       label: legendDisplayValue,
       data: labels?.map(label => {

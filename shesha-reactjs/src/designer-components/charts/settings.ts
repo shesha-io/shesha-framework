@@ -1,11 +1,33 @@
-import { DesignerToolbarSettings } from "../../interfaces";
 import { nanoid } from "@/utils/uuid";
+import { DesignerToolbarSettings } from "../../interfaces";
 
 const chartGeneralId = nanoid();
 const chartSettingsId = nanoid();
 const dataSettingsId = nanoid();
 
 export const settingsForm = new DesignerToolbarSettings()
+  .addCollapsiblePanel({
+    id: chartGeneralId,
+    propertyName: 'chartGeneral',
+    parentId: 'root',
+    label: 'General',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    collapsible: 'header',
+    content: {
+      id: nanoid(),
+      components:
+        [...new DesignerToolbarSettings()
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'hidden',
+            label: 'Hidden',
+            parentId: 'root',
+          }).toJson()
+        ]
+    }
+  })
   .addCollapsiblePanel({
     id: dataSettingsId,
     propertyName: 'dataSettings',
@@ -80,6 +102,13 @@ export const settingsForm = new DesignerToolbarSettings()
             autoFillProps: false,
             settingsValidationErrors: [],
           })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'allowFilter',
+            label: 'Allow Filter',
+            parentId: 'root',
+            defaultValue: true,
+          })
           .addPropertyAutocomplete({
             id: nanoid(),
             propertyName: 'filterProperties',
@@ -92,6 +121,11 @@ export const settingsForm = new DesignerToolbarSettings()
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
+            hidden: {
+              _code: "return !(getSettingValue(data?.allowFilter)",
+              _mode: "code",
+              _value: true
+            },
           })
           .addDropdown({
             id: nanoid(),
@@ -123,28 +157,6 @@ export const settingsForm = new DesignerToolbarSettings()
             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
           })
           .toJson()
-        ]
-    }
-  })
-  .addCollapsiblePanel({
-    id: chartGeneralId,
-    propertyName: 'chartGeneral',
-    parentId: 'root',
-    label: 'General',
-    labelAlign: "left",
-    expandIconPosition: "start",
-    ghost: true,
-    collapsible: 'header',
-    content: {
-      id: nanoid(),
-      components:
-        [...new DesignerToolbarSettings()
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'hidden',
-            label: 'Hidden',
-            parentId: 'root',
-          }).toJson()
         ]
     }
   })
@@ -227,18 +239,14 @@ export const settingsForm = new DesignerToolbarSettings()
             id: nanoid(),
             propertyName: 'showLegend',
             label: 'Show Legend',
+            description: 'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
             parentId: 'root',
-            hidden: {
-              _code: "return getSettingValue(data?.simpleOrPivot) === `simple`",
-              _mode: "code",
-              _value: false
-            },
             defaultValue: false,
           })
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showXAxisLabel',
-            label: 'Show X Axis Label',
+            label: 'Show X Axis Scale',
             parentId: 'root',
           })
           .addCheckbox({
@@ -250,7 +258,7 @@ export const settingsForm = new DesignerToolbarSettings()
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showYAxisLabel',
-            label: 'Show Y Axis Label',
+            label: 'Show Y Axis Scale',
             parentId: 'root',
           })
           .addCheckbox({
