@@ -12,7 +12,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         justify-content: flex-end;
         top: 0px;
         right: 1px;
-        z-index: 2;
+        z-index: 1;
     `);
 
   const hidelLabelIcon = cx("", css`

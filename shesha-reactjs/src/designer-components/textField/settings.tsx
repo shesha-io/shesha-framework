@@ -5,14 +5,14 @@ import { ITextFieldComponentProps } from './interfaces';
 import ReadOnlyModeSelector from '@/components/editModeSelector/index';
 import PermissionAutocomplete from '@/components/permissionAutocomplete';
 import StyleGroupComponent from '../_settings/components/styleGroup/styleGroup';
-import SearchableTabs from '../_settings/components/tabs/searchableTabsComponent';
-import { SettingInput } from '../_settings/components/utils';
+import SearchableTabsComponent from '../_settings/components/tabs/searchableTabsComponent';
 import LabelConfiguratorComponent from '../styleLabel/labelConfigurator';
 import FormItem from '../_settings/components/formItem';
 import PrefixSuffixComponent from '../stylePrefixSuffix/prefixSuffixComponent';
 import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
 import { useFormDesignerState } from '@/providers/formDesigner';
 import { useForm } from '@/providers';
+import { SettingInput } from '../_settings/components/settingsInput';
 
 const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> = (props) => {
     const readOnly = props.readOnly || false;
@@ -42,15 +42,15 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                         value={model.textType}
                         property='textType'
                         readOnly={readOnly}
-                        type='dropdown'
+                        inputType='dropdown'
                         jsSetting={true}
                         dropdownOptions={['text', 'password'].map(value => ({ label: value, value }))}
                     />
                     <SettingInput label="Placeholder" value={model.placeholder} property='placeholder' readOnly={readOnly} jsSetting={true} />
-                    <SettingInput label="Description" value={model.description} property='description' readOnly={readOnly} type='textarea' jsSetting={true} />
+                    <SettingInput label="Description" value={model.description} property='description' readOnly={readOnly} inputType='textarea' jsSetting={true} />
                     <PrefixSuffixComponent readOnly={readOnly} />
                     <SettingInput label="Initial Value" value={model.initialValue} property='initialValue' readOnly={readOnly} jsSetting={true} />
-                    <SettingInput label="Hidden" value={model.hidden} property='hidden' readOnly={readOnly} type='switch' jsSetting={true} layout='horizontal'/>
+                    <SettingInput label="Hidden" value={model.hidden} property='hidden' readOnly={readOnly} inputType='switch' jsSetting={true} layout='horizontal' />
                     <SettingInput label="Edit Mode" property='editMode' readOnly={readOnly} jsSetting={true}>
                         <ReadOnlyModeSelector readOnly={readOnly} value={model.editMode} />
                     </SettingInput>
@@ -62,11 +62,11 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Events",
             children: (
                 <>
-                    <SettingInput label="On Change" value={model.onChangeCustom} property='onChangeCustom' readOnly={readOnly} type='codeEditor' description="Enter custom eventhandler on changing of event. (form, event) are exposed"
+                    <SettingInput label="On Change" value={model.onChangeCustom} property='onChangeCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on changing of event. (form, event) are exposed"
                         jsSetting={true} />
-                    <SettingInput label="On Blur" value={model.onBlurCustom} property='onBlurCustom' readOnly={readOnly} type='codeEditor' description="Enter custom eventhandler on blur of event. (form, event) are exposed"
+                    <SettingInput label="On Blur" value={model.onBlurCustom} property='onBlurCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on blur of event. (form, event) are exposed"
                         jsSetting={true} />
-                    <SettingInput label="On Focus" value={model.onFocusCustom} property='onFocusCustom' readOnly={readOnly} type='codeEditor' description="Enter custom eventhandler on focus of event. (form, event) are exposed"
+                    <SettingInput label="On Focus" value={model.onFocusCustom} property='onFocusCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on focus of event. (form, event) are exposed"
                         jsSetting={true} />
                 </>
             )
@@ -76,13 +76,13 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Validation",
             children:
                 <>
-                    <SettingInput label="Required" value={model.validate?.required} property='validate.required' readOnly={readOnly} type='switch' layout='horizontal'
+                    <SettingInput label="Required" value={model.validate?.required} property='validate.required' readOnly={readOnly} inputType='switch' layout='horizontal'
                         jsSetting={true} />
-                    <SettingInput label="Min Length" value={model.validate?.minLength} property='validate.minLength' readOnly={readOnly} type='number'
+                    <SettingInput label="Min Length" value={model.validate?.minLength} property='validate.minLength' readOnly={readOnly} inputType='number'
                         jsSetting={true} />
-                    <SettingInput label="Max Length" value={model.validate?.maxLength} property='validate.maxLength' readOnly={readOnly} type='number'
+                    <SettingInput label="Max Length" value={model.validate?.maxLength} property='validate.maxLength' readOnly={readOnly} inputType='number'
                         jsSetting={true} />
-                    <SettingInput label="Validator" value={model.validate?.validator} property='validate.validator' readOnly={readOnly} type='codeEditor' description="Enter custom validator logic for form.item rules. Returns a Promise"
+                    <SettingInput label="Validator" value={model.validate?.validator} property='validate.validator' readOnly={readOnly} inputType='codeEditor' description="Enter custom validator logic for form.item rules. Returns a Promise"
                         jsSetting={true} />
                     <SettingInput label="Validation Message" value={model.validate?.message} property='validate.message' readOnly={readOnly}
                         jsSetting={true} />
@@ -107,7 +107,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
     ];
 
     return (
-        <SearchableTabs
+        <SearchableTabsComponent
             model={{
                 tabs: tabs,
                 tabType: "card",

@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
-import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
+import { InputRow } from '@/designer-components/_settings/components/utils';
 import { overflowOptions } from './utils';
 import { IDimensionsType } from './interfaces';
+import { SettingInput } from '../_settings/components/settingsInput';
 
 const SizeComponent: FC<IDimensionsType> = (props) => {
 
@@ -23,7 +24,7 @@ const SizeComponent: FC<IDimensionsType> = (props) => {
                 { label: 'Max W', property: 'styles.dimensions.maxWidth', ...commonProps },
                 { label: 'Max H', property: 'styles.dimensions.maxHeight', ...commonProps }
             ]} />
-            {!noOverflow && <SettingInput label='Overflow' property='styles.dimensions.overflow' type='radio' readOnly={readOnly} value={value} buttonGroupOptions={overflowOptions} />}
+            {!noOverflow && <SettingInput label='Overflow' property='styles.dimensions.overflow' inputType='radio' readOnly={readOnly} value={value} buttonGroupOptions={overflowOptions} />}
         </>
     );
 };

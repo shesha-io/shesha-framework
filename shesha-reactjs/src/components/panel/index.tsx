@@ -34,7 +34,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
  * 
  */
 
-const StyledCollapse: any = styled(Collapse)<
+const StyledCollapse: any = styled(Collapse) <
   Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
 >`
   .ant-collapse-header {

@@ -40,7 +40,8 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
                 validate: { required },
                 hidden,
                 layout,
-                size: 'small'
+                size: 'small',
+                
             }}
 
             className='sha-js-label'

@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import { IBackgroundValue } from './interfaces';
 import { repeatOptions } from './utils';
-import { IDropdownOption, SettingInput } from '@/designer-components/_settings/components/utils';
+import { IDropdownOption } from '@/designer-components/_settings/components/utils';
+import { SettingInput } from '../_settings/components/settingsInput';
 
 type SizeAndRepeatProps = {
     backgroundSize: IBackgroundValue['size'];

@@ -1,15 +1,16 @@
 import { Button, Input, Row, Tag } from 'antd';
 import { Autocomplete } from '@/components/autocomplete';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import SizeAndRepeat from './sizeAndRepeat';
 import FormItem from '@/designer-components/_settings/components/formItem';
-import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
+import { InputRow } from '@/designer-components/_settings/components/utils';
 import { backgroundTypeOptions, gradientDirectionOptions } from './utils';
 import { PlusOutlined } from '@ant-design/icons';
 import { IBackgroundValue } from './interfaces';
 import { useTheme } from '@/index';
 import { removeNullUndefined } from '@/providers/utils';
 import { nanoid } from '@/utils/uuid';
+import { SettingInput } from '../_settings/components/settingsInput';
 interface IBackgroundProps {
     value?: any;
     readOnly?: boolean;
@@ -17,16 +18,18 @@ interface IBackgroundProps {
 }
 
 const BackgroundComponent: FC<IBackgroundProps> = (props) => {
-    const { value = {}, readOnly, onChange } = props;
+    const { value, readOnly, onChange } = props;
     const { theme } = useTheme();
-    const [colors, setColors] = React.useState<{}>(value?.background?.gradient?.colors || {});
+    const [colors, setColors] = useState<{}>(value?.background?.gradient?.colors || {});
+
+    console.log("VALUE:::", value, 'colors::', colors);
+
     useEffect(() => {
-        if (!value?.background?.gradient?.colors) {
+        if (value?.background?.gradient?.colors) {
             setColors({ 1: theme.application.primaryColor, 2: '#fff' });
             onChange({ ...value, background: { ...value?.background, gradient: { ...value?.background?.gradient, colors: { 1: theme.application.primaryColor, 2: '#fff' } } } });
         }
     }, []);
-
 
     const background = value || { gradient: { colors: [] } };
     const { gradient } = background;
@@ -41,12 +44,13 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                             property='styles.background.gradient.direction'
                             readOnly={readOnly}
                             label="Direction"
-                            type='dropdown'
+                            inputType='dropdown'
                             dropdownOptions={gradientDirectionOptions}
                         />
 
                         <Row>
                             {Object.entries(colors).map(([id, color]) => {
+                                console.log("COLOR:::", color);
                                 return (
                                     <Tag
                                         key={id}
@@ -60,7 +64,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                         }}
                                         style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', width: 'max-content' }}
                                     >
-                                        <SettingInput value={color} property={`styles.background.gradient.colors.${id}`} label='color' hideLabel={true} readOnly={readOnly} type='color' />
+                                        <SettingInput value={color} property={`styles.background.gradient.colors.${id}`} label='color' hideLabel={true} readOnly={readOnly} inputType='color' />
                                     </Tag>
                                 );
                             })}
@@ -92,7 +96,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                 );
             case 'upload':
                 return (
-                    <SettingInput property={'styles.background.file'} label="File" readOnly={readOnly} type='imageUploader' />
+                    <SettingInput property={'styles.background.file'} label="File" readOnly={readOnly} inputType='imageUploader' />
                 );
             case 'storedFile':
                 return (
@@ -112,20 +116,8 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                 value={background?.storedFile?.ownerType}
                             />
                         </FormItem>
-                        <FormItem name="styles.background.storedFile.ownerId" label="Owner Id" jsSetting>
-                            <Input
-                                style={{ width: '100%' }}
-                                readOnly={readOnly}
-                                value={background?.storedFile?.ownerId}
-                            />
-                        </FormItem>
-                        <FormItem name="stylebackground.storedFile.fileCatergory" label="File Catergory" jsSetting>
-                            <Input
-                                style={{ width: '100%' }}
-                                readOnly={readOnly}
-                                value={background?.storedFile?.fileCatergory}
-                            />
-                        </FormItem>
+                        <SettingInput property="styles.background.storedFile.ownerId" label="Owner Id" readOnly={readOnly} />
+                        <SettingInput property="styles.background.storedFile.fileCatergory" label="File Catergory" readOnly={readOnly} />
                     </>
                 );
             default:
@@ -135,7 +127,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                         property='styles.background.color'
                         readOnly={readOnly}
                         label='Color'
-                        type='color'
+                        inputType='color'
                     />
                 );
         }
@@ -143,7 +135,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
 
     return (
         <>
-            <SettingInput buttonGroupOptions={backgroundTypeOptions} value={background?.type} property='styles.background.type' readOnly={readOnly} type='radio' label='Type' />
+            <SettingInput buttonGroupOptions={backgroundTypeOptions} value={background?.type} property='styles.background.type' readOnly={readOnly} inputType='radio' label='Type' />
             {renderBackgroundInput(background?.type)}
             <SizeAndRepeat readOnly={readOnly} backgroundSize={background?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
         </>

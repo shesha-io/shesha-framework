@@ -5,21 +5,20 @@ import { ITabsComponentProps } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { TabSettingsForm } from './settings';
-import SearchableTabs from './searchableTabsComponent';
+import SearchableTabsComponent from './searchableTabsComponent';
 import { ConfigurableFormItem } from '@/components';
 
 
-const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
+const SearchableTabs: IToolboxComponent<ITabsComponentProps> = {
   type: 'searchableTabs',
   isInput: false,
-  isOutput: true,
-  name: 'Searchable Tabs',
+  name: 'SearchableTabs',
   icon: <FolderOutlined />,
   Factory: ({ model }) => {
 
     return model.hidden ? null : (
       <ConfigurableFormItem model={model} className='sha-js-label'>
-        {(value, onChange) => <SearchableTabs model={model} onChange={onChange} value={value} />}
+        {(value, onChange) => <SearchableTabsComponent model={model} onChange={onChange} value={value} />}
       </ConfigurableFormItem>
     );
   },
@@ -38,4 +37,4 @@ const SettingsTabs: IToolboxComponent<ITabsComponentProps> = {
   },
 };
 
-export default SettingsTabs;
+export default SearchableTabs;

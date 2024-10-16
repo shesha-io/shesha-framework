@@ -109,9 +109,10 @@ import ShadowConfigurator from '@/designer-components/styleShadow';
 import LabelConfigurator from '@/designer-components/styleLabel';
 import PrefixSuffixConfigurator from '@/designer-components/stylePrefixSuffix';
 import StyleGroup from '@/designer-components/_settings/components/styleGroup';
-import SettingsTabs from '@/designer-components/_settings/components/tabs';
+import SearchableTabs from '@/designer-components/_settings/components/tabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
+import SettingsInput from '@/designer-components/_settings/components/settingsInput';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -256,7 +257,8 @@ export const getToolboxComponents = (
         LabelConfigurator,
         PrefixSuffixConfigurator,
         StyleGroup,
-        SettingsTabs,
+        SearchableTabs,
+        SettingsInput,
         CodeEditor,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,

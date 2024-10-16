@@ -3,7 +3,7 @@ import { ConfigProvider, CollapseProps } from 'antd';
 import BorderComponent from '../../../styleBorder/borderComponent';
 import BackgroundComponent from '../../../styleBackground/background';
 import StyleBox from '../../../styleBox/components/box';
-import { IDropdownOption, SettingInput } from '../utils';
+import { IDropdownOption, removeEmptyComponent } from '../utils';
 import { IBorderValue } from '@/designer-components/styleBorder/interfaces';
 import { IBackgroundValue } from '@/designer-components/styleBackground/interfaces';
 import { IDimensionsValue } from '@/designer-components/styleDimensions/interfaces';
@@ -13,6 +13,8 @@ import SizeComponent from '@/designer-components/styleDimensions/sizeComponent';
 import ShadowComponent from '@/designer-components/styleShadow/shadowComponent';
 import { IFontValue } from '@/designer-components/styleFont/interfaces';
 import { CollapsiblePanel } from '@/components';
+import { useStyles } from './styles/styles';
+import { SettingInput } from '../settingsInput';
 
 export type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
 
@@ -33,7 +35,7 @@ export interface IStyleGroupType {
 }
 
 const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value, readOnly }) => {
-
+    const { styles } = useStyles();
     const fontValue: IFontValue = useMemo(() => value?.font, [value?.font]);
 
     const dimensionsValue: IDimensionsValue = useMemo(() => value?.dimensions, [value?.dimensions]);
@@ -54,7 +56,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
         {
             key: '1',
             label: 'Font',
-            children: <FontComponent value={fontValue} onChange={onChange} />
+            children: <FontComponent value={fontValue} />
         },
         {
             key: '2',
@@ -69,50 +71,46 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
         {
             key: '4',
             label: 'Background',
-            children: <BackgroundComponent value={backgroundValue} onChange={onChange} />
+            children: (<BackgroundComponent value={backgroundValue} onChange={onChange} />)
         },
         {
             key: '5',
             label: 'Shadow',
-            children: <ShadowComponent value={shadowValue} onChange={onChange} />
+            children: (<ShadowComponent value={shadowValue} onChange={onChange} />)
         },
         {
             key: '6',
             label: 'Styling',
             children: (
-                <>
-                    <SettingInput label="Size" property='size' readOnly={false} type='dropdown' description="The size of the element" dropdownOptions={sizeOptions} />
-                    <SettingInput label="Style" property='style' readOnly={false} type='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
-                    <SettingInput property="stylingBox" jsSetting={false} label="margin padding" hideLabel readOnly={readOnly}>
-                        <StyleBox />
-                    </SettingInput>
-                </>
-
+                (
+                    <>
+                        <SettingInput label="Size" property='size' readOnly={false} inputType='dropdown' description="The size of the element" dropdownOptions={sizeOptions} />
+                        <SettingInput label="Style" property='style' readOnly={false} inputType='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
+                        <SettingInput property="stylingBox" jsSetting={false} label="margin padding" hideLabel readOnly={readOnly}>
+                            <StyleBox />
+                        </SettingInput>
+                    </>)
             )
         }
     ].filter(item => {
         return !omitted.map(omit => omit.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase());
-    }
-    ).map((item, index) => ({ ...item, key: index.toString(), label: <span style={{ fontWeight: 700 }}>{item.label}</span> }));
+    }).map((item, index) => ({ ...item, key: index.toString(), label: <span style={{ fontWeight: 700 }}>{item.label}</span> }));
 
     return (
         <ConfigProvider
             theme={{
                 components: {
-                    Collapse: {
-                        contentBg: 'white',
-                        contentPadding: 0,
-                        colorBgBase: 'white',
-                        colorBorder: 'white',
-                        headerPadding: 0,
-                    },
                     Tag: {
                         padding: 0,
+                        margin: 0,
                     }
-                },
+                }
             }}
         >
-            {items.map(item => <CollapsiblePanel ghost={true} hideWhenEmpty={true} key={item.key} header={item.label}>{item.children}</CollapsiblePanel>)}
+            {items.map(item => {
+                console.log('item', item);
+                return item.children === null ? null : <CollapsiblePanel className={styles.collapseHeader} ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>{item.children}</CollapsiblePanel>
+            })}
         </ConfigProvider>
     );
 };

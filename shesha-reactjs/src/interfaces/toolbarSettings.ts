@@ -40,6 +40,7 @@ import { IStyleGroupType } from '@/designer-components/_settings/components/styl
 import { IDimensionsType } from '@/designer-components/styleDimensions/interfaces';
 import { IPrefixSuffixType } from '@/designer-components/stylePrefixSuffix/prefixSuffixComponent';
 import { IShadowType } from '@/designer-components/styleShadow/shadowComponent';
+import { ISettingsInputProps } from '@/designer-components/_settings/components/settingsInput';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
   hidden?: boolean | IPropertySetting;
@@ -126,6 +127,8 @@ type LabelType = ToolbarSettingsProp & Omit<ILabelProps, 'hidden' | 'type'>;
 type StyleGroupType = ToolbarSettingsProp & Omit<IStyleGroupType, 'hidden' | 'type'>;
 
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
+
+type SettingInputType = ToolbarSettingsProp & Omit<ISettingsInputProps, 'hidden' | 'type'>;
 
 export class DesignerToolbarSettings<T> {
   protected readonly form: IConfigurableFormComponent[];
@@ -307,6 +310,10 @@ export class DesignerToolbarSettings<T> {
 
   public addDivider(props: IDividerProps | ((data: T) => IDividerProps)) {
     return this.addProperty(props, 'divider');
+  }
+
+  public addSettingInput(props: SettingInputType | ((data: T) => SettingInputType)) {
+    return this.addProperty(props, 'settingInput');
   }
 
   private addProperty(props: ToolbarSettingsProp | ((data: T) => ToolbarSettingsProp), type: string) {

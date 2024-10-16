@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
 
-import { InputRow, SettingInput } from '@/designer-components/_settings/components/utils';
+import { InputRow } from '@/designer-components/_settings/components/utils';
 import { IShadowValue } from './interfaces';
+import { SettingInput } from '../_settings/components/settingsInput';
+import { useSearchQuery } from '../_settings/components/tabs/context';
 
 
 export interface IShadowType {
@@ -26,7 +28,7 @@ const ShadowComponent: FC<IShadowType> = ({ value: shadowVal = initialShadowValu
         <>
             <InputRow inputs={[{ label: 'Offset X', property: `styles.shadow.offsetX`, value: value.offsetX, readOnly }, { label: 'Offset Y', property: `styles.shadow.offsetY`, value: value.offsetY, readOnly }]} />
             <InputRow inputs={[{ label: 'Blur', property: `styles.shadow.blurRadius`, readOnly, value: value.blurRadius }, { label: 'Spread', property: `styles.shadow.spreadRadius`, readOnly, value: value.spreadRadius }]} />
-            <SettingInput type='color' label='Color' property={`styles.shadow.color`} readOnly={readOnly} value={value.color} />
+            <SettingInput inputType='color' label='Color' property={`styles.shadow.color`} readOnly={readOnly} value={value.color} />
         </>
     );
 };

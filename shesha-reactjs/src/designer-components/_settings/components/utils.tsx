@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { Input, InputNumber, Radio, Select, Switch } from "antd";
-import FormItem from "./formItem";
 import { CodeEditor, ColorPicker, IconPicker } from '@/components';
 import { useSearchQuery } from './tabs/context';
 import CustomDropdown from './CustomDropdown';
@@ -8,6 +7,12 @@ import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import ImageUploader from '@/designer-components/styleBackground/imageUploader';
 import { useStyles } from '../styles/styles';
+import { SettingInput } from './settingsInput';
+import { CodeTemplateSettings, ResultType } from '@/components/codeEditor/models';
+import { CodeLanguages } from '@/designer-components/codeEditor/types';
+import { IObjectMetadata } from '@/interfaces/metadata';
+import { IComponentLabelProps } from '@/index';
+import EditModeSelector from '@/components/editModeSelector';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -21,10 +26,10 @@ export interface IDropdownOption {
     value: string;
 }
 
-interface IInputProps {
+export interface IInputProps extends IComponentLabelProps {
     label: string;
     property: any;
-    type?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'codeEditor' | 'iconPicker' | 'imageUploader';
+    inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'codeEditor' | 'iconPicker' | 'imageUploader' | 'editModeSelector';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -38,6 +43,14 @@ interface IInputProps {
     size?: SizeType;
     hideLabel?: boolean;
     layout?: 'horizontal' | 'vertical';
+    language?: CodeLanguages;
+    style?: string;
+    fileName?: string;
+    wrapInTemplate?: boolean;
+    templateSettings?: CodeTemplateSettings;
+    availableConstants?: IObjectMetadata;
+    resultType?: ResultType;
+    exposedVariables?: string[];
 }
 
 const { Option } = Select;
@@ -62,7 +75,11 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
     );
 };
 
-const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly }) => {
+export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly, ...rest }) => {
+
+    const { availableConstants, templateSettings, wrapInTemplate } = rest;
+
+    if (type == 'color') console.log("VALUE:::color:", value);
 
     switch (type) {
         case 'color':
@@ -89,7 +106,7 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
         case 'textarea':
             return <TextArea readOnly={readOnly} size={size} value={value} />;
         case 'codeEditor':
-            return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} />;
+            return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} availableConstants={availableConstants} templateSettings={templateSettings} wrapInTemplate={wrapInTemplate} language="typescript" />;
         case 'iconPicker':
             return <IconPicker value={value} selectBtnSize='small' readOnly={readOnly} onIconChange={onChange} />;
         case 'imageUploader':
@@ -98,6 +115,8 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
                 readOnly={readOnly}
                 onChange={onChange}
             />;
+        case 'editModeSelector':
+            return <EditModeSelector value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         default:
             return <Input
                 size={size}
@@ -110,22 +129,6 @@ const InputComponent: FC<IInputProps> = ({ size, value, type, dropdownOptions, b
     }
 };
 
-export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, type, buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting = true, description, value }) => {
-    const { searchQuery } = useSearchQuery();
-
-    if (label.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return (
-            <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
-                <FormItem name={`${property}`} hideLabel={hideLabel} label={label} jsSetting={jsSetting} readOnly={readOnly} layout={type === 'switch' ? 'horizontal' : 'vertical'}>
-                    {children ? children : <InputComponent size='small' label={label} type={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} value={value} />}
-                </FormItem>
-            </div>
-        );
-    }
-
-    return null;
-
-};
 
 interface InputRowProps {
     inputs: Array<IInputProps>;
@@ -133,14 +136,16 @@ interface InputRowProps {
 
 export const InputRow: React.FC<InputRowProps> = ({ inputs }) => {
     const { searchQuery } = useSearchQuery();
+
     const filteredInputs = inputs.filter(input => input.label.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    return filteredInputs.length > 0 ? (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px' }}>
-            {inputs.map((props) => (
-                <SettingInput key={props.label} {...props} />
-            ))}
-        </div>) : null;
+    console.log("FILTERED INPUTS:::", filteredInputs);
+
+    return filteredInputs.length === 0 ? null : <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px' }}>
+        {filteredInputs.map((props, i) => (
+            <SettingInput key={i + props.label} {...props} />
+        ))}
+    </div>;
 };
 
 export const searchFormItems = (children: React.ReactNode, searchQuery: string): React.ReactNode => {
@@ -167,19 +172,19 @@ export const searchFormItems = (children: React.ReactNode, searchQuery: string):
 };
 
 export const filterDynamicComponents = (components, query) => {
+
     const filterResult = components.map(c => {
-        if (!c.label && !c.components) return c;
+
+        if (!c.label && !c.components && c.type === 'settingsInput') return c;
 
         let filteredComponent = { ...c };
 
-        // If the component has child components, filter them recursively
         if (c.components) {
             filteredComponent.components = filterDynamicComponents(c.components, query);
         }
 
-        // Determine if this component should be hidden
         const shouldHideComponent =
-            (c.label && !c.label.toLowerCase().includes(query.toLowerCase())) ||
+            (c.label && !c.label.toLowerCase().includes(query.toLowerCase()) || c?.label?.props?.children[0].toLowerCase().includes(query.toLowerCase())) ||
             (filteredComponent.components && filteredComponent.components.length === 0);
 
         filteredComponent.hidden = shouldHideComponent;
@@ -194,3 +199,11 @@ export const filterDynamicComponents = (components, query) => {
         (!c.hidden || (c.components && c.components.length > 0))
     );
 };
+
+export function removeEmptyComponent(Node: React.JSX.Element): React.ReactNode {
+    if (Node.props.inputs === null || Node.props.children === undefined) {
+        return null;
+    }
+
+    return Node;
+}

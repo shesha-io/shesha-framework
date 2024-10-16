@@ -169,7 +169,10 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
+  // settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+  // settingsFormMarkup: settingFormMarkup,
+  // validateSettings: (model) => validateConfigurableComponentSettings(settingFormMarkup, model),
   initModel: (model) => ({
     textType: 'text',
     background: { type: 'color' },

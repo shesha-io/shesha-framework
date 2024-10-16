@@ -4,6 +4,7 @@ import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
 import { SearchQueryProvider } from './context';
 import { filterDynamicComponents, searchFormItems } from '../utils';
+import { useStyles } from './style';
 
 interface SearchableTabsProps {
     model: any;
@@ -16,6 +17,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     const { tabs } = model;
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredTabs, setFilteredTabs] = useState(tabs);
+    const { styles } = useStyles();
 
     useEffect(() => {
         const newFilteredTabs = tabs
@@ -45,16 +47,29 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
             })
             .filter(tab => !tab.hidden);
         setFilteredTabs(newFilteredTabs);
+
+        console.log('filteredTabs:::;', filteredTabs);
     }, [searchQuery, tabs]);
 
     return (
         <SearchQueryProvider searchQuery={searchQuery} onChange={onChange}>
-            <Input
-                placeholder="Search properties..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ marginBottom: 16 }}
-            />
+            <div
+                className={styles.searchField}
+                style={{
+                    position: 'sticky',
+                    top: -15,
+                    zIndex: 2,
+                    width: '100%',
+                    background: '#fff',
+                    padding: '8px 16px'
+                }}
+            >
+                <Input
+                    placeholder="Search properties..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
             <Tabs
                 defaultActiveKey={'1'}
                 size={model.size}
