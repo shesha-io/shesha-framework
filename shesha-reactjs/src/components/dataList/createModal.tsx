@@ -1,7 +1,7 @@
 import FormInfo from '../configurableForm/formInfo';
 import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, useState } from 'react';
-import { ComponentsContainer, Show, ValidationErrors } from '@/components';
+import { ComponentsContainer, ValidationErrors } from '@/components';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';
@@ -62,19 +62,16 @@ const CreateModal: FC<ICreateModalProps> = ({
       title='Add new item'
       width={width}
       okButtonProps={{ disabled: buttonDisabled, loading: buttonLoading }}>
-      <Skeleton loading={loading}>
-        <Show when={!!formInfo}>
-          <FormInfo formProps={formInfo} />
-        </Show>
-
-        <ValidationErrors error={saveError} />
-
-        <ParentProvider model={{}} formMode='edit'>
-          <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
-            <ComponentsContainer containerId={'root'} />
-          </ComponentsContainerProvider>
-        </ParentProvider>
-      </Skeleton>
+      <FormInfo formProps={formInfo} visible={!!formInfo}>
+        <Skeleton loading={loading}>
+          <ValidationErrors error={saveError} />
+          <ParentProvider model={{}} formMode='edit'>
+            <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
+              <ComponentsContainer containerId={'root'} />
+            </ComponentsContainerProvider>
+          </ParentProvider>
+        </Skeleton>
+      </FormInfo>
     </Modal>
   );
 };

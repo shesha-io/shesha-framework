@@ -19,21 +19,27 @@ export interface FormInfoProps {
    * Is used for update of the form markup. If value of this handler is not defined - the form is read-only
    */
   onMarkupUpdated?: () => void;
+  /**
+   * The form component (or any component) that this will wrap
+   */
+  children?: React.ReactNode;
 }
 
-export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visible }) => {
+export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visible, children }) => {
   const { id, versionNo, versionStatus, name, module } = formProps;
   const { toggleShowInfoBlock, formInfoBlockVisible } = useAppConfigurator();
   const { styles } = useStyles();
 
   const [open, setOpen] = useState(false);
-  const [panelShowing, setPanelShowing] = useState<boolean>(true);
+  const [panelShowing, setPanelShowing] = useState<boolean>(formInfoBlockVisible);
   const [allowHidePanel, setAllowHidePanel] = useState<boolean>(false);
+  const displayEditMode = formInfoBlockVisible && formProps?.id;
 
   const onModalOpen = () => setOpen(true);
   const onUpdated = () => {
-    if (onMarkupUpdated)
+    if (onMarkupUpdated) {
       onMarkupUpdated();
+    }
     setOpen(false);
   };
 
@@ -58,45 +64,86 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
     toggleFormPanel();
   }, [visible]);
 
+  useEffect(()=>{
+    if(Boolean(displayEditMode)) setTimeout(()=>{
+      setPanelShowing(false);
+    }, 3000);
+  },[formInfoBlockVisible]);
+
   return (
     <div
-      className={`${styles.shaFormInfoCard}`}
+      onMouseEnter={(event) => {
+        event.stopPropagation();
+        if(Boolean(displayEditMode)) setPanelShowing(true);
+      }}
+      onMouseLeave={(event) => {
+        event.stopPropagation();
+        if(Boolean(displayEditMode)) setPanelShowing(false);
+      }}
       style={{
-        top: panelShowing ? '-2px' : '-22px',
-        opacity: panelShowing ? '1' : '0',
-
+        border: Boolean(displayEditMode) ? '1px #10239e solid' : 'none',
+        position: 'relative',
+        transition: '.1s',
+        overflow: 'hidden',
+        padding: '3px',
       }}
     >
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        transform: 'skew(30deg)'
-      }}>
+      <div
+        className={`${styles.shaFormInfoCard}`}
+        style={{
+          top: panelShowing && formProps.id ? '-2px' : '-22px',
+          opacity: panelShowing ? '1' : '0',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            transform: 'skew(30deg)',
+          }}
+        >
+          {id && (
+            <Button type="link" onClick={onModalOpen} style={{ padding: 0 }}>
+              <EditOutlined
+                style={{ color: '#FFFFFF' }}
+                title="Click to open this form in the designer"
+              />
+            </Button>
+          )}
 
-        {id && (
-          <Button type="link" onClick={onModalOpen} style={{ padding: 0 }}>
-            <EditOutlined style={{ color: "#FFFFFF" }} title="Click to open this form in the designer" />
-          </Button>
-        )}
+          <p
+            title={`${getFormFullName(module, name)} v${versionNo}`}
+            className={styles.shaFormInfoCardTitle}>
+            {getFormFullName(module, name)} v{versionNo}
+          </p>
 
-        <p title={`${getFormFullName(module, name)} v${versionNo}`} className={styles.shaFormInfoCardTitle}>
-          {getFormFullName(module, name)} v{versionNo}
-        </p>
+          <div style={{ display: 'flex', alignItems: 'center', paddingRight: 5 }}>
+            <StatusTag
+              value={versionStatus}
+              mappings={CONFIGURATION_ITEM_STATUS_MAPPING}
+              color={null}
+              style={{ marginRight: '5px' }}
+            />
+            <CloseOutlined
+              onClick={() => toggleShowInfoBlock(false)}
+              title="Click to hide form info"
+              style={{ color: '#FFFFFF' }}
+            />
+          </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', paddingRight: 5 }}>
-          <StatusTag value={versionStatus} mappings={CONFIGURATION_ITEM_STATUS_MAPPING} color={null} style={{ marginRight: '5px' }} />
-          <CloseOutlined onClick={() => toggleShowInfoBlock(false)} title="Click to hide form info" style={{ color: '#FFFFFF' }} />
+          {id && open && (
+            <QuickEditDialog
+              formId={id}
+              open={open}
+              onCancel={() => setOpen(false)}
+              onUpdated={onUpdated}
+            />
+          )}
         </div>
-
-        {id && open && (
-          <QuickEditDialog
-            formId={id}
-            open={open}
-            onCancel={() => setOpen(false)}
-            onUpdated={onUpdated}
-          />
-        )}
+      </div>
+      <div>
+        {children}
       </div>
     </div>
   );

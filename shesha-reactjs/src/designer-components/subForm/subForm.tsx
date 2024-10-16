@@ -1,9 +1,8 @@
-import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useMemo } from 'react';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
 import { FormItemProvider, ROOT_COMPONENT_KEY, useAppConfigurator, useForm, useSheshaApplication } from '@/providers';
-import Show from '@/components/show';
 import FormInfo from '@/components/configurableForm/formInfo';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
 import { IPersistedFormProps } from '@/providers/form/models';
@@ -38,15 +37,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     allComponents
   } = useSubForm();
 
-  const [formInfoPanelShowing, setFormInfoPanelShowing] = useState<boolean>(true);
-
   const form = useForm();
-
-  useEffect(()=>{
-    setTimeout(()=>{
-      setFormInfoPanelShowing(false);
-    }, 3000);
-  },[]);
 
   const validator = useValidator(false);
   if (validator && id && allComponents)
@@ -61,9 +52,9 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
               if (component.propertyName && !component.context)
                 properties.push([...propertyName.split("."), ...component.propertyName.split(".")]);
             }
-        
+
           if (properties.length > 0)
-            return form.form.validateFields(properties, {recursive: false})
+            return form.form.validateFields(properties, { recursive: false })
               .catch(e => {
                 if (e.errorFields?.length > 0)
                   throw e;
@@ -84,7 +75,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
 
   const persistedFormProps: IPersistedFormProps = { id, module, versionNo, description, versionStatus, name };
 
-  if (formSettings?.access === 4 &&  !anyOfPermissionsGranted(formSettings?.permissions || [])) {
+  if (formSettings?.access === 4 && !anyOfPermissionsGranted(formSettings?.permissions || [])) {
     return (
       <Result
         status="403"
@@ -103,34 +94,25 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   }
 
   return (
-    <ShaSpin spinning={isLoading}>
-      <div style={{ border: Boolean(showFormInfo) ? '1px #10239e dashed' : 'none', position: 'relative', transition: '.1s', overflow: 'hidden' }} onMouseLeave={(event) => {
-        event.stopPropagation(); setFormInfoPanelShowing(false);
-      }} onMouseEnter={(event) => {
-        event.stopPropagation(); setFormInfoPanelShowing(true);
-      }}
-      >
-        <Show when={Boolean(showFormInfo)}>
-          <FormInfo visible={formInfoPanelShowing} formProps={persistedFormProps} />
-        </Show>
 
+    <ShaSpin spinning={isLoading}>
+      <FormInfo visible={showFormInfo} formProps={persistedFormProps}>
         <div style={{ flex: 1 }} data-name={propertyName}>
           {Object.keys(errors).map((error, index) => (
             <ValidationErrors key={index} error={errors[error]} />
           ))}
-
           <div>
             <ComponentsContainerProvider
-              ContainerComponent={ComponentsContainerSubForm}
-            >
+              ContainerComponent={ComponentsContainerSubForm}>
               <FormItemProvider namePrefix={propertyName} labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
                 <ComponentsContainer containerId={ROOT_COMPONENT_KEY} readOnly={readOnly} />
               </FormItemProvider>
             </ComponentsContainerProvider>
           </div>
         </div>
-      </div>
+      </FormInfo>
     </ShaSpin>
+
   );
 };
 
