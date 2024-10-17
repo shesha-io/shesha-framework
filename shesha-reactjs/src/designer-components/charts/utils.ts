@@ -65,6 +65,71 @@ export function getLastPartOfProperty(property: string) {
 }
 
 /**
+ * Function to check if a value is an ISO string  
+ * - An ISO string is a string that matches the ISO 8601 format
+ * - Example: '2021-08-25T12:00:00.000Z'
+ * - The format is 'YYYY-MM-DDTHH:MM:SS.sssZ'
+ * - The milliseconds and Z are optional
+ * @param value the value to check
+ * @returns true if the value is an ISO string, false otherwise
+ */
+function isIsoString(value) {
+  // Check if value is a string and matches the ISO 8601 format (with optional milliseconds)
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?/.test(value);
+}
+
+/**
+ * Function to format the date based on the time unit
+ * @param data the data to format
+ * @param timeUnit the time unit to format the date to
+ * @param properties the properties to format
+ * @returns the formatted data
+ */
+export function formatDate(data, timeUnit: T, properties: string[]) {
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+  return data.map(item => {
+    let modifiedItem = { ...item };
+
+    properties.forEach(property => {
+      if (item[property] && isIsoString(item[property])) {
+        const date = new Date(item[property]);
+
+        let formattedDate;
+        switch (timeUnit) {
+          case 'day':
+            formattedDate = date.getDate();
+            break;
+          case 'month':
+            formattedDate = monthNames[date.getMonth()]; // Month name
+            break;
+          case 'year':
+            formattedDate = date.getFullYear();
+            break;
+          case 'day-month':
+            formattedDate = `${date.getDate()} ${monthNames[date.getMonth()]}`; // Day + Month name
+            break;
+          case 'day-month-year':
+            formattedDate = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`; // Day + Month name + Year
+            break;
+          case 'month-year':
+            formattedDate = `${monthNames[date.getMonth()]} ${date.getFullYear()}`; // Month name + Year
+            break;
+          default:
+            formattedDate = date.toISOString();
+            break;
+        }
+          // day, month, year, day-month, day-month-year, month-year
+        modifiedItem[property] = formattedDate;
+      }
+    });
+
+    return modifiedItem;
+  });
+}
+
+/**
  * Function to group and aggregate data
  * @param data - The data to be aggregated
  * @param xProperty - The property to group by on the x-axis
@@ -253,8 +318,11 @@ function getPredictableColorHSL(value: string): string {
   const saturation = 60 + (hash % 30);  // Varies between 60% and 90% for some saturation variation
   const lightness = 57 + (hash % 20);  // Varies between 50% and 70% for lightness variation
 
-  // Construct the HSL color string
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  // Set a fixed alpha for transparency
+  const alpha = 0.75;  // 25% transparency
+
+  // Construct the HSLA color string
+  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
 }
 
 /**
@@ -294,6 +362,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
         backgroundColor: getPredictableColor(yProperty),
         fill: false,
         pointRadius: 5,
+        borderWidth: 0.5,
       }
     ]
   };

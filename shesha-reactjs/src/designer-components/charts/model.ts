@@ -22,6 +22,8 @@ export interface IChartProps extends IConfigurableFormComponent {
     filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
+    isAxisTimeSeries?: boolean;
+    timeSeriesFormat?: TTimeSeriesFormat;
     legendProperty?: string;
     xProperty?: string;
     yProperty?: string;
@@ -42,6 +44,8 @@ export interface IChartsProps {
     filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
+    isAxisTimeSeries?: boolean;
+    timeSeriesFormat?: TTimeSeriesFormat;
     legendProperty?: string;
     allowFilter?: boolean;
     filterProperties?: string[];
@@ -71,6 +75,8 @@ export type TChartType = 'polarArea' | 'bar' | 'line' | 'pie';
 export type TAggregationMethod = 'count' | 'sum' | 'average' | 'min' | 'max';
 
 export type TLegendPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';
+
+export type TTimeSeriesFormat = 'day' | 'month' | 'year' | 'day-month' | 'day-month-year' | 'month-year';
 
 /**
  * To be used in the filter component

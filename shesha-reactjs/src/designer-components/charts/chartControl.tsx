@@ -14,13 +14,13 @@ import PieChart from './components/pie';
 import PolarAreaChart from './components/polarArea';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { applyFilters, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData, preparePolarAreaChartData } from './utils';
+import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData, preparePolarAreaChartData } from './utils';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod,
     axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisLabelTitle,
     showYAxisScale, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked, tension, strokeColor,
-    allowFilter
+    allowFilter, isAxisTimeSeries, timeSeriesFormat
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
@@ -33,15 +33,27 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   useEffect(() => {
     setControlProps({
       valueProperty, legendProperty, aggregationMethod,
-      axisProperty, showLegend, showTitle,
-      title, legendPosition, showXAxisScale,
-      showXAxisLabelTitle, showYAxisScale, showYAxisLabelTitle,
-      simpleOrPivot, filterProperties, stacked, tension, strokeColor
+      axisProperty, showLegend, showTitle, title, legendPosition,
+      showXAxisScale, showXAxisLabelTitle, showYAxisScale, showYAxisLabelTitle,
+      simpleOrPivot, filterProperties, stacked, tension, strokeColor,
+      allowFilter, isAxisTimeSeries, timeSeriesFormat
     });
   }, []);
 
   useEffect(() => {
     refetch(getChartDataRefetchParams(entityType, valueProperty, filters, legendProperty, axisProperty, filterProperties))
+      .then((data) => {
+        if (isAxisTimeSeries) {
+          data.result.items = data.result.items.sort((a, b) => new Date(a[axisProperty]).getTime() - new Date(b[axisProperty]).getTime());
+        } else {
+          data.result.items = data.result.items.sort((a, b) => a[axisProperty] - b[axisProperty]);
+        }
+        return data;
+      })
+      .then((data) => {
+        data.result.items = formatDate(data.result.items, timeSeriesFormat, [axisProperty]);
+        return data;
+      })
       .then((data) => {
         getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
 
@@ -69,7 +81,9 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       })
       .then(() => setIsLoaded(true))
       .catch((err: any) => console.error('err data', err));
-  }, [chartType]);
+  }, [chartType, entityType, valueProperty, filters, legendProperty, axisProperty, filterProperties, isAxisTimeSeries,
+    timeSeriesFormat, aggregationMethod, showTitle, showLegend, legendPosition, showXAxisScale, showXAxisLabelTitle,
+    showYAxisScale, showYAxisLabelTitle, stacked, tension, strokeColor]);
 
   useEffect(() => {
     if (state.data) {

@@ -1,4 +1,4 @@
-import { IChartsProps, IFilter } from "@/designer-components/charts/model";
+import { IChartsProps, IFilter, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
 export interface IChartDataContext {
@@ -13,6 +13,8 @@ export interface IChartDataContext {
   };
   valueProperty?: string;
   axisProperty?: string;
+  isAxisTimeSeries?: boolean;
+  timeSeriesFormat?: TTimeSeriesFormat;
   legendProperty?: string;
   filterProperties?: string[];
   xProperty?: string;
@@ -55,11 +57,11 @@ export const INITIAL_STATE: IChartDataContext = {
   showLegend: true,
   legendPosition: 'top',
   entityType: 'entity',
-  filters: {
-
-  },
+  filters: {},
   valueProperty: 'value',
   axisProperty: 'axis',
+  isAxisTimeSeries: false,
+  timeSeriesFormat: 'day-month-year',
   legendProperty: 'legend',
   xProperty: 'x',
   yProperty: 'y',

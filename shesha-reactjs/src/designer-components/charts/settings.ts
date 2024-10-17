@@ -70,6 +70,38 @@ export const settingsForm = new DesignerToolbarSettings()
             autoFillProps: false,
             settingsValidationErrors: [],
           })
+          // is axis time series
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'isAxisTimeSeries',
+            label: 'Is Axis Property Time Series?',
+            description: 'If the axis is a time series, check this box.',
+            parentId: 'root',
+            defaultValue: false,
+            validate: { required: true },
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'timeSeriesFormat',
+            parentId: 'root',
+            label: 'Time Series Format',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'Day', value: 'day' },
+              { id: nanoid(), label: 'Month', value: 'month' },
+              { id: nanoid(), label: 'Year', value: 'year' },
+              { id: nanoid(), label: 'Day-Month', value: 'day-month' },
+              { id: nanoid(), label: 'Day-Month-Year', value: 'day-month-year' },
+              { id: nanoid(), label: 'Month-Year', value: 'month-year' },
+            ],
+            validate: { required: true },
+            defaultValue: 'day-month-year',
+            hidden: {
+              _code: "return getSettingValue(data?.isAxisTimeSeries) !== true",
+              _mode: "code",
+              _value: true
+            },
+          })
           .addPropertyAutocomplete({
             id: nanoid(),
             propertyName: 'valueProperty',
