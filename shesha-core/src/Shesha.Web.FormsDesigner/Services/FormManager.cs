@@ -107,6 +107,11 @@ namespace Shesha.Web.FormsDesigner.Services
             await Repository.UpdateAsync(form);
         }
 
+        public async Task<List<FormConfiguration>> GetAllAsync()
+        {
+            return await Repository.GetAllListAsync();
+        }
+
         /// inheritedDoc
         public async Task DeleteAllVersionsAsync(Guid id)
         {

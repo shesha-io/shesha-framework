@@ -297,7 +297,7 @@ namespace Shesha.Web.FormsDesigner.Services
         public async Task UpdateStatusAsync(UpdateConfigurationStatusInput input)
         {
             // todo: check rights
-            
+
             var validationResults = new List<ValidationResult>();
             if (string.IsNullOrWhiteSpace(input.Filter))
                 validationResults.Add(new ValidationResult("Filter is mandatory", new string[] { nameof(input.Filter) }));
@@ -309,6 +309,28 @@ namespace Shesha.Web.FormsDesigner.Services
             foreach (var form in forms)
             {
                 await _formManager.UpdateStatusAsync(form, input.Status);
+            }
+        }
+
+        /// <summary>
+        /// Publish All forms
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task PublishAllAsync()
+        {
+            CheckCreatePermission();
+
+            var forms = await _formManager.GetAllAsync();
+
+            var draftOrReadyForms = forms
+                .Where(x => x.VersionStatus == ConfigurationItemVersionStatus.Draft || x.VersionStatus == ConfigurationItemVersionStatus.Ready)
+                .ToList();
+
+            // Update the status of each form to Live
+            foreach (var form in draftOrReadyForms)
+            {
+                await _formManager.UpdateStatusAsync(form, ConfigurationItemVersionStatus.Live);
             }
         }
 
