@@ -104,7 +104,7 @@ namespace Shesha.NHibernate.UserTypes
             else
             {
                 if (value is IJsonEntityProxy proxy)
-                    parameter.Value = JsonEntityProxy.GetJson(proxy).ToJsonString();
+                    parameter.Value = JsonEntityProxy.GetJson(proxy).ToString();
                 else
                     parameter.Value = JsonConvert.SerializeObject(value, new JsonSerializerSettings
                     {
