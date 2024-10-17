@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using Abp.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Shesha.ConfigurationItems.Models;
@@ -37,10 +38,13 @@ namespace Shesha.ConfigurationItems
             {
                 using (_cfRuntime.BeginScope(a => 
                 {
+
                     a.ViewMode = configItemMode.HasValue
                         ? configItemMode.Value
                         : ConfigurationItemViewMode.Live;
-                    a.FrontEndApplication = frontEndApp;
+                    a.FrontEndApplication = frontEndApp.IsNullOrWhiteSpace() 
+                        ? FrontEndAppKeyConsts.SheshaDefaultFrontend 
+                        : frontEndApp;
                 }))
                 {
                     await next(context);
