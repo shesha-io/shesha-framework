@@ -44,6 +44,7 @@ export const RefListItemProperties: FC<IRefListItemPropertiesProps> = () => {
 
     return (
       <ConfigurableForm
+        key={selectedItemId}
         formRef={formRef}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
