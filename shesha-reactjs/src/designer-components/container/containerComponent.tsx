@@ -12,6 +12,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { CSSProperties } from 'styled-components';
 import { toSizeCssProp } from '@/utils/form';
+import { useTheme } from 'antd-style';
 
 const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
   type: 'container',
@@ -23,6 +24,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     const { globalState } = useGlobalState();
     const { backendUrl, httpHeaders } = useSheshaApplication();
     const [ fileUrl, setFileUrl] = useState(null);
+    const theme = useTheme();
 
     useEffect(() => {
       if (model.backgroundDataSource === 'storedFileId' && model.backgroundStoredFileId) {
@@ -73,9 +75,9 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
     };
 
     const borderStyles: CSSProperties = {
-      borderWidth: toSizeCssProp(model.borderWidth),
-      borderColor: model.borderColor,
-      borderStyle: model.borderStyle,
+      borderWidth: toSizeCssProp(model.borderWidth) || 0,
+      borderColor: model.borderColor || theme.colorBorder,
+      borderStyle: model.borderStyle || 'solid',
       borderRadius: toSizeCssProp(model.borderRadius),
     };
 
@@ -93,6 +95,16 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
         ? { background: model?.backgroundColor }
         : {};
 
+    const basicShadow: CSSProperties = {
+      boxShadow: "0px 2px 4px 0px rgba(0,0,0,.15)"
+    };
+
+    const invertedShadow: CSSProperties = {
+      boxShadow: "0px -2px 4px 0px rgba(0,0,0,.15)"
+    };
+
+    const renderShadow = model?.shadowStyle !== 'none' ? model?.shadowStyle === 'below' ? basicShadow : invertedShadow : '';
+
     return (
       <ParentProvider model={model}>
         <ComponentsContainer
@@ -104,6 +116,7 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             ...heightStyles,
             ...borderStyles,
             ...backgroundStyles,
+            ...renderShadow,
             ...getStyle(model?.style, formData)
           }}
           dynamicComponents={model?.isDynamic ? model?.components : []}
@@ -147,8 +160,10 @@ const ContainerComponent: IToolboxComponent<IContainerComponentProps> = {
             maxHeight: prev.maxHeight,
             maxWidth: prev.maxWidth
           };
-    
           return { ...prev, desktop: {...styles}, tablet: {...styles}, mobile: {...styles} };
+        })
+        .add<IContainerComponentProps>(6, (prev) => {
+          return {...prev, shadowStyle: 'none'};
         })
   ,
 };

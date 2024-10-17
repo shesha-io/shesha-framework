@@ -1,6 +1,7 @@
 import { createStyles } from '@/styles';
+import { addPx } from '../sectionSeparator/utils';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, {height}) => {
     const chevronButton = cx(`${prefixCls}-chevron-btn`, css`
         &:hover {
             background-color: #f0f0f0;
@@ -62,7 +63,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         font-size: 20px;
         color: #666;
         border-radius: 0;
-        height: 35px;
+        height: ${addPx(height) || '35px'};
 
         &:hover {
           background-color: #e0e0e0;

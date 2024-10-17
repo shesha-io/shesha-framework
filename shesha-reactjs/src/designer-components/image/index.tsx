@@ -15,6 +15,7 @@ import { ImageField, ImageSourceType } from './image';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
+import { useTheme } from 'antd-style';
 
 
 export interface IImageStyleProps {
@@ -58,6 +59,7 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
     const { globalState } = useGlobalState();
     const { backendUrl } = useSheshaApplication();
     const ownerId = evaluateValue(model.ownerId, { data, globalState });
+    const theme = useTheme();
 
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
@@ -66,10 +68,10 @@ const ImageComponent: IToolboxComponent<IImageProps> = {
       objectFit: model.objectFit,
       objectPosition: model.objectPosition,
       filter: model.filter,
-      borderWidth: model.borderSize,
+      borderWidth: model.borderSize || 0,
       borderRadius: model.borderRadius,
-      borderStyle: model.borderType,
-      borderColor: model.borderColor,
+      borderStyle: model.borderType || 'solid',
+      borderColor: model.borderColor || theme.colorBorder,
       opacity: model.opacity,
       ...stylingBoxAsCSS
     });
