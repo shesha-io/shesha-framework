@@ -11,7 +11,7 @@ import { addPx } from "@/designer-components/button/util";
 
 export const ChevronControl: FC<IChevronControlProps> = (props) => {
     const { value, activeColor, fontColor, showIcons, colorSource, items, width, height, fontSize } = props;
-    const { styles } = useStyles();
+    const { styles } = useStyles({height});
     const [ form ] = Form.useForm();
     const { theme } = useTheme();
     const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -42,6 +42,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
             width: addPx(width) ?? '150px',
             height: addPx(height) ?? '35px',
             fontSize: addPx(fontSize) ?? '14px',
+            borderRadius: '0px'
         };
 
         return !props.hidden && (
