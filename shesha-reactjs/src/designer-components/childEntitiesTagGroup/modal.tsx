@@ -4,7 +4,6 @@ import React, { FC } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { IFormMarkupResponse } from '@/providers/form/api';
 import { ConfigurationItemVersionStatusMap } from '@/utils/configurationFramework/models';
-import Show from '@/components/show';
 import ValidationErrors from '@/components/validationErrors';
 import SubForm from '../subForm/subForm';
 import { IChildEntitiesTagGroupProps } from './models';
@@ -54,15 +53,12 @@ const ChildEntitiesTagGroupModal: FC<IProps> = ({
       width={width}
       okButtonProps={{ disabled: readOnly }}
     >
-      <Skeleton loading={loading}>
-        <Show when={showFormInfo}>
-          <FormInfo formProps={formInfo} />
-        </Show>
-
-        <ValidationErrors error={error} />
-
-        <SubForm readOnly={readOnly} />
-      </Skeleton>
+      <FormInfo visible={showFormInfo} formProps={formInfo}>
+        <Skeleton loading={loading}>
+          <ValidationErrors error={error} />
+          <SubForm readOnly={readOnly} />
+        </Skeleton>
+      </FormInfo>
     </Modal>
   );
 };
