@@ -10,8 +10,8 @@ import { IShaFormInstance, ProcessingState } from '@/providers/form/store/interf
 type SizeType = FormProps['size'];
 
 export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> {
-  //shaForm?: IShaFormInstance;
   size?: SizeType;
+  showDataSubmitIndicator?: boolean;
   labelCol?: ColProps;
   wrapperCol?: ColProps;
   layout?: FormLayout;
@@ -125,6 +125,7 @@ export type IConfigurableFormRuntimeProps<Values = any> = {
 
   layout?: FormLayout;
   size?: SizeType;
+  
   /**
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
@@ -162,6 +163,10 @@ export type IConfigurableFormProps<Values = any> = HasFormIdOrMarkup & IConfigur
    * Show/hide data loading indicator. Default value = true
    */
   showDataLoadingIndicator?: boolean;
+  /**
+   * Show/hide data submit indicator. Default value = true
+   */
+  showDataSubmitIndicator?: boolean;
   /**
    * Show/hide markup loading indicator. Default value = true
    */
