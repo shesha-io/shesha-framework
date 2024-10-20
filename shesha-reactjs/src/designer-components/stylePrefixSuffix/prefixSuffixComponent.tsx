@@ -9,8 +9,8 @@ const PrefixSuffixComponent: FC<IPrefixSuffixType> = ({ readOnly }) => {
 
     return (
         <Col className="gutter-row" span={24} >
-            <InputRow inputs={[{ label: 'Prefix', property: 'prefix', readOnly: readOnly }, { inputType: 'iconPicker', property: 'prefixIcon', label: 'Prefix Icon', readOnly }]} />
-            <InputRow inputs={[{ label: 'Suffix', property: 'suffix', readOnly: readOnly }, { inputType: 'iconPicker', property: 'suffixIcon', label: 'Suffix Icon', readOnly }]} />
+            <InputRow inputs={[{ label: 'Prefix', propertyName: 'prefix', readOnly: readOnly }, { inputType: 'iconPicker', propertyName: 'prefixIcon', label: 'Prefix Icon', readOnly }]} />
+            <InputRow inputs={[{ label: 'Suffix', propertyName: 'suffix', readOnly: readOnly }, { inputType: 'iconPicker', propertyName: 'suffixIcon', label: 'Suffix Icon', readOnly }]} />
         </Col>
     );
 };

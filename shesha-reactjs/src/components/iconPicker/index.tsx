@@ -36,7 +36,7 @@ const ICON_MODE_GROUPS = {
 
 export interface IIconPickerProps extends IconBaseProps {
   /** The icon name */
-  value?: any;
+  value?: ShaIconTypes;
 
   /** A callback for when the icon changes */
   onIconChange?: (icon: ReactNode, iconName: ShaIconTypes) => void;
@@ -68,7 +68,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   defaultValue,
   ...props
 }) => {
-
+ 
   const { styles } = useStyles();
   const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes>(defaultValue);
   const [showModal, setShowModal] = useState(false);
@@ -79,7 +79,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   });
 
   useEffect(() => {
-    setLocalSelectedIcon(typeof value === 'object' ? value?.props?.iconName || null : value || defaultValue);
+      setLocalSelectedIcon(value || defaultValue);
   }, [defaultValue, value]);
 
 
@@ -142,7 +142,7 @@ const IconPicker: FC<IIconPickerProps> = ({
           >
             <ShaIcon
               iconName={localSelectedIcon}
-              style={{ fontSize: 24, color: value?.props?.style?.color || 'rgba(0,0,0,.45)' }}
+              style={{ fontSize: 24 }}
               {...props}
               name={localSelectedIcon}
               title={localSelectedIcon}
@@ -179,7 +179,7 @@ const IconPicker: FC<IIconPickerProps> = ({
             onChange={changeIconModes}
             optionType="button"
           />
-          <ColorPicker value={value?.style?.color} allowClear onChange={(color) => onIconChange(<ShaIcon iconName={localSelectedIcon} style={{ fontSize: 30, color: color?.toString() || 'rgba(0,0,0,.45)' }} {...props} />, localSelectedIcon)} />
+
           <div className={styles.shaIconPickerSearchInputContainer}>
             <Input.Search allowClear onChange={onSearchChange} value={searchQuery} />
           </div>

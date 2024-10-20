@@ -1,18 +1,24 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import { Input, InputNumber, Radio, Select, Switch } from "antd";
 import { CodeEditor, ColorPicker, IconPicker } from '@/components';
-import { useSearchQuery } from './tabs/context';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import ImageUploader from '@/designer-components/styleBackground/imageUploader';
 import { useStyles } from '../styles/styles';
 import { SettingInput } from './settingsInput';
-import { CodeTemplateSettings, ResultType } from '@/components/codeEditor/models';
+import { ResultType } from '@/components/codeEditor/models';
 import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { IObjectMetadata } from '@/interfaces/metadata';
-import { IComponentLabelProps } from '@/index';
-import EditModeSelector from '@/components/editModeSelector';
+import { executeScript, IComponentLabelProps, useAvailableConstantsData, useFormData } from '@/index';
+import PermissionAutocomplete from '@/components/permissionAutocomplete';
+import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
+import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
+import camelcase from 'camelcase';
+import { defaultExposedVariables } from '../settingsControl';
+import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
+import { BlockOutlined, EyeOutlined, FormOutlined } from '@ant-design/icons';
+import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -21,6 +27,12 @@ interface IRadioOption {
     title?: string;
 }
 
+export const sizeOptions: IDropdownOption[] = [
+    { label: 'Small', value: 'small' },
+    { label: 'Medium', value: 'medium' },
+    { label: 'Large', value: 'large' },
+];
+
 export interface IDropdownOption {
     label: string;
     value: string;
@@ -28,8 +40,8 @@ export interface IDropdownOption {
 
 export interface IInputProps extends IComponentLabelProps {
     label: string;
-    property: any;
-    inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textarea' | 'codeEditor' | 'iconPicker' | 'imageUploader' | 'editModeSelector';
+    propertyName: string;
+    inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'imageUploader' | 'editModeSelector' | 'permisions';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -46,9 +58,7 @@ export interface IInputProps extends IComponentLabelProps {
     language?: CodeLanguages;
     style?: string;
     fileName?: string;
-    wrapInTemplate?: boolean;
-    templateSettings?: CodeTemplateSettings;
-    availableConstants?: IObjectMetadata;
+    availableConstantsExpression?: string;
     resultType?: ResultType;
     exposedVariables?: string[];
 }
@@ -75,11 +85,38 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
     );
 };
 
-export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, property, description, onChange, readOnly, ...rest }) => {
+export const InputComponent: FC<IInputProps> = ({ size = 'small', value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, description, onChange, readOnly, label, ...rest }) => {
+    const metadataBuilderFactory = useMetadataBuilderFactory();
+    const { data: formData } = useFormData();
+    const { availableConstantsExpression } = rest;
+    const allData = useAvailableConstantsData();
 
-    const { availableConstants, templateSettings, wrapInTemplate } = rest;
+    const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
+        if (!availableConstantsExpression?.trim())
+            return Promise.reject("AvailableConstantsExpression is mandatory");
 
-    if (type == 'color') console.log("VALUE:::color:", value);
+        const metadataBuilder = metadataBuilderFactory();
+
+        return executeScript<IObjectMetadata>(availableConstantsExpression, { data: formData, metadataBuilder });
+    }, [availableConstantsExpression, metadataBuilderFactory, formData]);
+
+    const functionName = `get${camelcase(propertyName, { pascalCase: true })}`;
+
+    const codeEditorProps: ICodeEditorProps = {
+        readOnly: readOnly,
+        description: description,
+        mode: 'dialog',
+        language: 'typescript',
+        fileName: propertyName,
+        label: label ?? propertyName,
+        wrapInTemplate: true,
+        templateSettings: { functionName: functionName },
+        exposedVariables: defaultExposedVariables
+    };
+
+    const editor = availableConstantsExpression?.trim()
+        ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
+        : <CodeEditorWithStandardConstants {...codeEditorProps} />;
 
     switch (type) {
         case 'color':
@@ -103,12 +140,12 @@ export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, 
             return <InputNumber min={0} max={100} readOnly={readOnly} size={size} value={value} />;
         case 'customDropdown':
             return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
-        case 'textarea':
+        case 'textArea':
             return <TextArea readOnly={readOnly} size={size} value={value} />;
         case 'codeEditor':
-            return <CodeEditor mode="dialog" readOnly={readOnly} description={description} size={size} value={value} availableConstants={availableConstants} templateSettings={templateSettings} wrapInTemplate={wrapInTemplate} language="typescript" />;
+            return editor;
         case 'iconPicker':
-            return <IconPicker value={value} selectBtnSize='small' readOnly={readOnly} onIconChange={onChange} />;
+            return <IconPickerWrapper value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
             return <ImageUploader
                 backgroundImage={value}
@@ -116,7 +153,18 @@ export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, 
                 onChange={onChange}
             />;
         case 'editModeSelector':
-            return <EditModeSelector value={value} readOnly={readOnly} onChange={onChange} size={size} />;
+            const editModes = [
+                { value: 'editable', icon: <FormOutlined />, title: 'Editable' },
+                { value: 'readOnly', icon: <EyeOutlined />, title: 'Read only' },
+                { value: 'inherit', icon: <BlockOutlined />, title: 'Inherit' }
+            ];
+            return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
+                {editModes.map(({ value, icon, title }) => (
+                    <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                ))}
+            </Radio.Group>;;
+        case 'permisions':
+            return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size='small' />;
         default:
             return <Input
                 size={size}
@@ -124,7 +172,7 @@ export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, 
                 readOnly={readOnly}
                 defaultValue={''}
                 value={hasUnits ? value?.value : value}
-                addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={property} value={value} /> : null}
+                addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={propertyName} value={value} /> : null}
             />;
     }
 };
@@ -135,14 +183,9 @@ interface InputRowProps {
 }
 
 export const InputRow: React.FC<InputRowProps> = ({ inputs }) => {
-    const { searchQuery } = useSearchQuery();
 
-    const filteredInputs = inputs.filter(input => input.label.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    console.log("FILTERED INPUTS:::", filteredInputs);
-
-    return filteredInputs.length === 0 ? null : <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px' }}>
-        {filteredInputs.map((props, i) => (
+    return <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px' }}>
+        {inputs.map((props, i) => (
             <SettingInput key={i + props.label} {...props} />
         ))}
     </div>;
@@ -175,7 +218,7 @@ export const filterDynamicComponents = (components, query) => {
 
     const filterResult = components.map(c => {
 
-        if (!c.label && !c.components && c.type === 'settingsInput') return c;
+        if (!c.label && !c.components && (c.type === 'settingsInput' || c.type === 'styleGroup')) return c;
 
         let filteredComponent = { ...c };
 
@@ -193,17 +236,15 @@ export const filterDynamicComponents = (components, query) => {
         return filteredComponent;
     });
 
-    // Remove null components and hidden components without children
     return filterResult.filter(c =>
         c !== null &&
         (!c.hidden || (c.components && c.components.length > 0))
     );
 };
 
-export function removeEmptyComponent(Node: React.JSX.Element): React.ReactNode {
-    if (Node.props.inputs === null || Node.props.children === undefined) {
-        return null;
+export const isHidden = (ref, value?: number) => {
+    if (ref.current) {
+        return ref?.current === null ? false : ref?.current.offsetWidth < value || ref?.current.offsetHeight < value;
     }
-
-    return Node;
+    return false;
 }

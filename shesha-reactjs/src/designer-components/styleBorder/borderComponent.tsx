@@ -21,20 +21,20 @@ const BorderComponent: FC<IBorderProps> = (props) => {
 
     return (
         <>
-            <SettingInput label='Hide Border' property='styles.border.hideBorder' value={value} readOnly={readOnly} inputType='switch' />
+            <SettingInput label='Hide Border' propertyName='styles.border.hideBorder' value={value} readOnly={readOnly} inputType='switch' />
             {!hideBorder && <>
                 <SettingInput
                     buttonGroupOptions={radiusOptions}
                     value={activeRadius}
                     inputType='radio'
-                    property='styles.border.activeRadius'
+                    propertyName='styles.border.activeRadius'
                     label='Corner'
                     readOnly={readOnly}
                 />
-                <SettingInput label='Radius' property={`styles.border.radius.${activeRadius}`} readOnly={readOnly} />
-                <SettingInput label='Side' property={`styles.border.activeBorder`} readOnly={readOnly} value={activeBorder} inputType='radio' buttonGroupOptions={borderOptions} />
-                <InputRow inputs={[{ label: 'Color', property: `styles.border.border.${activeBorder}.color`, readOnly, value: value, inputType: 'color' }, { label: 'Width', property: `styles.border.border.${activeBorder}.width`, readOnly, value: value }]} />
-                <SettingInput label='Style' property={`styles.border.border.${activeBorder}.style`} readOnly={readOnly} value={value} inputType='radio' buttonGroupOptions={styleOptions} />
+                <SettingInput label='Radius' propertyName={`styles.border.radius.${activeRadius}`} readOnly={readOnly} />
+                <SettingInput label='Side' propertyName={`styles.border.activeBorder`} readOnly={readOnly} value={activeBorder} inputType='radio' buttonGroupOptions={borderOptions} />
+                <InputRow inputs={[{ label: 'Color', propertyName: `styles.border.border.${activeBorder}.color`, readOnly, value: value, inputType: 'color' }, { label: 'Width', propertyName: `styles.border.border.${activeBorder}.width`, readOnly, value: value }]} />
+                <SettingInput label='Style' propertyName={`styles.border.border.${activeBorder}.style`} readOnly={readOnly} value={value} inputType='radio' buttonGroupOptions={styleOptions} />
             </>}
         </>
     );

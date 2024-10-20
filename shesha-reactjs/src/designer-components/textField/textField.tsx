@@ -22,7 +22,6 @@ import { getSizeStyle } from '../styleDimensions/utils';
 import { getBorderStyle } from '../styleBorder/utils';
 import { getBackgroundStyle } from '../styleBackground/utils';
 import settingsFormJson from './settingsForm.json';
-import { useStyles } from './styles/styles';
 import { getShadowStyle } from '../styleShadow/utils';
 import { getFontStyle } from '../styleFont/utils';
 import { splitValueAndUnit } from '../_settings/utils';
@@ -53,7 +52,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
     const form = useForm();
-    const { styles } = useStyles();
 
     const { data: formData } = useFormData();
     const { globalState, setState: setGlobalState } = useGlobalState();
@@ -111,7 +109,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
-      className: `sha-input ${styles.textFieldInput}`,
+      className: 'sha-input',
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,

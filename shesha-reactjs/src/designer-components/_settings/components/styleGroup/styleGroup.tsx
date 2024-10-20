@@ -3,7 +3,7 @@ import { ConfigProvider, CollapseProps } from 'antd';
 import BorderComponent from '../../../styleBorder/borderComponent';
 import BackgroundComponent from '../../../styleBackground/background';
 import StyleBox from '../../../styleBox/components/box';
-import { IDropdownOption, removeEmptyComponent } from '../utils';
+import { IDropdownOption } from '../utils';
 import { IBorderValue } from '@/designer-components/styleBorder/interfaces';
 import { IBackgroundValue } from '@/designer-components/styleBackground/interfaces';
 import { IDimensionsValue } from '@/designer-components/styleDimensions/interfaces';
@@ -46,12 +46,6 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
 
     const shadowValue: IShadowValue = useMemo(() => value?.shadow, [value?.shadow]);
 
-    const sizeOptions: IDropdownOption[] = [
-        { label: 'Small', value: 'small' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Large', value: 'large' },
-    ];
-
     const items: CollapseProps['items'] = [
         {
             key: '1',
@@ -60,7 +54,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
         },
         {
             key: '2',
-            label: 'Size',
+            label: 'Dimensions',
             children: <SizeComponent noOverflow value={dimensionsValue} onChange={onChange} />
         },
         {
@@ -84,9 +78,8 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             children: (
                 (
                     <>
-                        <SettingInput label="Size" property='size' readOnly={false} inputType='dropdown' description="The size of the element" dropdownOptions={sizeOptions} />
-                        <SettingInput label="Style" property='style' readOnly={false} inputType='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
-                        <SettingInput property="stylingBox" jsSetting={false} label="margin padding" hideLabel readOnly={readOnly}>
+                        <SettingInput label="Style" propertyName='style' readOnly={false} inputType='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
+                        <SettingInput propertyName="stylingBox" jsSetting={false} label="margin padding" hideLabel readOnly={readOnly}>
                             <StyleBox />
                         </SettingInput>
                     </>)
@@ -108,7 +101,6 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             }}
         >
             {items.map(item => {
-                console.log('item', item);
                 return item.children === null ? null : <CollapsiblePanel className={styles.collapseHeader} ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>{item.children}</CollapsiblePanel>
             })}
         </ConfigProvider>

@@ -40,18 +40,18 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
                     <SettingInput
                         label="Text Type"
                         value={model.textType}
-                        property='textType'
+                        propertyName='textType'
                         readOnly={readOnly}
                         inputType='dropdown'
                         jsSetting={true}
                         dropdownOptions={['text', 'password'].map(value => ({ label: value, value }))}
                     />
-                    <SettingInput label="Placeholder" value={model.placeholder} property='placeholder' readOnly={readOnly} jsSetting={true} />
-                    <SettingInput label="Description" value={model.description} property='description' readOnly={readOnly} inputType='textarea' jsSetting={true} />
+                    <SettingInput label="Placeholder" value={model.placeholder} propertyName='placeholder' readOnly={readOnly} jsSetting={true} />
+                    <SettingInput label="Description" value={model.description} propertyName='description' readOnly={readOnly} inputType='textArea' jsSetting={true} />
                     <PrefixSuffixComponent readOnly={readOnly} />
-                    <SettingInput label="Initial Value" value={model.initialValue} property='initialValue' readOnly={readOnly} jsSetting={true} />
-                    <SettingInput label="Hidden" value={model.hidden} property='hidden' readOnly={readOnly} inputType='switch' jsSetting={true} layout='horizontal' />
-                    <SettingInput label="Edit Mode" property='editMode' readOnly={readOnly} jsSetting={true}>
+                    <SettingInput label="Initial Value" value={model.initialValue} propertyName='initialValue' readOnly={readOnly} jsSetting={true} />
+                    <SettingInput label="Hidden" value={model.hidden} propertyName='hidden' readOnly={readOnly} inputType='switch' jsSetting={true} layout='horizontal' />
+                    <SettingInput label="Edit Mode" propertyName='editMode' readOnly={readOnly} jsSetting={true}>
                         <ReadOnlyModeSelector readOnly={readOnly} value={model.editMode} />
                     </SettingInput>
                 </>
@@ -62,11 +62,11 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Events",
             children: (
                 <>
-                    <SettingInput label="On Change" value={model.onChangeCustom} property='onChangeCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on changing of event. (form, event) are exposed"
+                    <SettingInput label="On Change" value={model.onChangeCustom} propertyName='onChangeCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on changing of event. (form, event) are exposed"
                         jsSetting={true} />
-                    <SettingInput label="On Blur" value={model.onBlurCustom} property='onBlurCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on blur of event. (form, event) are exposed"
+                    <SettingInput label="On Blur" value={model.onBlurCustom} propertyName='onBlurCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on blur of event. (form, event) are exposed"
                         jsSetting={true} />
-                    <SettingInput label="On Focus" value={model.onFocusCustom} property='onFocusCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on focus of event. (form, event) are exposed"
+                    <SettingInput label="On Focus" value={model.onFocusCustom} propertyName='onFocusCustom' readOnly={readOnly} inputType='codeEditor' description="Enter custom eventhandler on focus of event. (form, event) are exposed"
                         jsSetting={true} />
                 </>
             )
@@ -76,15 +76,15 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             label: "Validation",
             children:
                 <>
-                    <SettingInput label="Required" value={model.validate?.required} property='validate.required' readOnly={readOnly} inputType='switch' layout='horizontal'
+                    <SettingInput label="Required" value={model.validate?.required} propertyName='validate.required' readOnly={readOnly} inputType='switch' layout='horizontal'
                         jsSetting={true} />
-                    <SettingInput label="Min Length" value={model.validate?.minLength} property='validate.minLength' readOnly={readOnly} inputType='number'
+                    <SettingInput label="Min Length" value={model.validate?.minLength} propertyName='validate.minLength' readOnly={readOnly} inputType='number'
                         jsSetting={true} />
-                    <SettingInput label="Max Length" value={model.validate?.maxLength} property='validate.maxLength' readOnly={readOnly} inputType='number'
+                    <SettingInput label="Max Length" value={model.validate?.maxLength} propertyName='validate.maxLength' readOnly={readOnly} inputType='number'
                         jsSetting={true} />
-                    <SettingInput label="Validator" value={model.validate?.validator} property='validate.validator' readOnly={readOnly} inputType='codeEditor' description="Enter custom validator logic for form.item rules. Returns a Promise"
+                    <SettingInput label="Validator" value={model.validate?.validator} propertyName='validate.validator' readOnly={readOnly} inputType='codeEditor' description="Enter custom validator logic for form.item rules. Returns a Promise"
                         jsSetting={true} />
-                    <SettingInput label="Validation Message" value={model.validate?.message} property='validate.message' readOnly={readOnly}
+                    <SettingInput label="Validation Message" value={model.validate?.message} propertyName='validate.message' readOnly={readOnly}
                         jsSetting={true} />
                 </>
         },
@@ -99,7 +99,7 @@ const TextFieldSettings: FC<ISettingsFormFactoryArgs<ITextFieldComponentProps>> 
             key: "security",
             label: "Security",
             children: (
-                <SettingInput label='Permissions' value={model.permissions} property='permissions' readOnly={readOnly}>
+                <SettingInput label='Permissions' value={model.permissions} propertyName='permissions' readOnly={readOnly}>
                     <PermissionAutocomplete readOnly={readOnly} />
                 </SettingInput>
             )

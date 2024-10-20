@@ -8,6 +8,10 @@ export const useStyles = createStyles(({ css, cx }) => {
        min-height: 0px !important;
        height: 15px !important;
        }
+
+       .ant-collapse-expand-icon {
+        align-items: end;
+       }
     `);
 
     return {

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Tabs, Input } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Tabs, Input, Empty } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
 import { SearchQueryProvider } from './context';
-import { filterDynamicComponents, searchFormItems } from '../utils';
+import { filterDynamicComponents, isHidden, searchFormItems } from '../utils';
 import { useStyles } from './style';
+import { SearchOutlined } from '@ant-design/icons';
 
 interface SearchableTabsProps {
     model: any;
@@ -18,6 +19,8 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredTabs, setFilteredTabs] = useState(tabs);
     const { styles } = useStyles();
+
+    const ref = useRef(null);
 
     useEffect(() => {
         const newFilteredTabs = tabs
@@ -47,8 +50,6 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
             })
             .filter(tab => !tab.hidden);
         setFilteredTabs(newFilteredTabs);
-
-        console.log('filteredTabs:::;', filteredTabs);
     }, [searchQuery, tabs]);
 
     return (
@@ -57,26 +58,35 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                 className={styles.searchField}
                 style={{
                     position: 'sticky',
-                    top: -15,
+                    top: -16,
                     zIndex: 2,
-                    width: '100%',
-                    background: '#fff',
-                    padding: '8px 16px'
+                    padding: '8px 0'
                 }}
             >
                 <Input
+                    type="search"
+                    size='small'
+                    allowClear
                     placeholder="Search properties..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    suffix={
+                        <SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                    }
                 />
             </div>
-            <Tabs
-                defaultActiveKey={'1'}
-                size={model.size}
-                type={model.tabType || 'card'}
-                tabPosition={model.position || 'top'}
-                items={filteredTabs}
-            />
+            {isHidden(ref, 100) && searchQuery ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
+                :
+                <div ref={ref}>
+                    <Tabs
+                        defaultActiveKey={'1'}
+                        size={model.size}
+                        type={model.tabType || 'card'}
+                        tabPosition={model.position || 'top'}
+                        items={filteredTabs}
+                    />
+                </div>
+            }
         </SearchQueryProvider>
     );
 };

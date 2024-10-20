@@ -15,7 +15,7 @@
         {
           "key": "1",
           "id": "s4gmBg31azZC0UjZjpfTm",
-          "label": "Display",
+          "label": "Primary",
           "jsSettings": true,
           "parentId": "W_m7doMyCpCYwAYDfRh6I",
           "components": [
@@ -24,7 +24,7 @@
               "type": "contextPropertyAutocomplete",
               "propertyName": "propertyName",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Property name",
+              "label": "Property Name",
               "size": "small",
               "validate": {
                 "required": true
@@ -37,6 +37,37 @@
               "propertyName": "hideLabel",
               "label": "label",
               "hideLabel": true
+            },
+            {
+              "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+              "type": "settingsInput",
+              "propertyName": "placeholder",
+              "parentId": "s4gmBg31azZC0UjZjpfTm",
+              "label": "Placeholder",
+              "version": 3,
+              "textType": "text",
+              "size": "small",
+              "jsSettings": true
+            },
+            {
+              "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
+              "type": "settingsInput",
+              "inputType": "textArea",
+              "propertyName": "description",
+              "parentId": "s4gmBg31azZC0UjZjpfTm",
+              "label": "Tooltip",
+              "version": 2,
+              "jsSettings": true
+            },
+            {
+              "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
+              "inputType": "editModeSelector",
+              "type": "settingsInput",
+              "propertyName": "editMode",
+              "parentId": "s4gmBg31azZC0UjZjpfTm",
+              "label": "Edit mode",
+              "size": "small",
+              "jsSettings": true
             },
             {
               "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -61,24 +92,13 @@
               ]
             },
             {
-              "id": "fbdb6bb1-5994-4205-86b4-236ca61ae54e",
+              "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
               "type": "settingsInput",
-              "propertyName": "placeholder",
+              "propertyName": "initialValue",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Placeholder",
-              "version": 3,
+              "label": "Default Value",
+              "description": "Enter default value of component. (formData, formMode, globalState) are exposed",
               "textType": "text",
-              "size": "small",
-              "jsSettings": true
-            },
-            {
-              "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
-              "type": "settingsInput",
-              "inputType": "textArea",
-              "propertyName": "description",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Description",
-              "version": 2,
               "jsSettings": true
             },
             {
@@ -90,16 +110,6 @@
               "propertyName": "prefixSuffix"
             },
             {
-              "id": "fbdb6bb1-5994-4205-86b4-236ca62ae54e",
-              "type": "settingsInput",
-              "propertyName": "initialValue",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Default Value",
-              "description": "Enter default value of component. (formData, formMode, globalState) are exposed",
-              "textType": "text",
-              "jsSettings": true
-            },
-            {
               "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
               "type": "settingsInput",
               "inputType": "switch",
@@ -108,16 +118,6 @@
               "label": "Hidden",
               "jsSettings": true,
               "layout": "horizontal"
-            },
-            {
-              "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-              "inputType": "editModeSelector",
-              "type": "settingsInput",
-              "propertyName": "editMode",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Edit mode",
-              "size": "small",
-              "jsSettings": true
             }
           ]
         },
@@ -133,206 +133,33 @@
               "propertyName": "onChangeCustom",
               "label": "On Change",
               "labelAlign": "right",
-              "parentId": "Cc47W08MWrKdhoGqFKMI2",
+              "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
-              "jsSetting": false,
               "description": "Enter custom eventhandler on changing of event. (form, event) are exposed",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "name": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                },
-                {
-                  "name": "event",
-                  "description": "Event callback when user input",
-                  "type": "object"
-                },
-                {
-                  "name": "form",
-                  "description": "Form instance",
-                  "type": "FormInstance"
-                },
-                {
-                  "name": "formMode",
-                  "description": "The form mode",
-                  "type": "'readonly' | 'edit' | 'designer'"
-                },
-                {
-                  "name": "globalState",
-                  "description": "The global state of the application",
-                  "type": "object"
-                },
-                {
-                  "name": "http",
-                  "description": "axios instance used to make http requests",
-                  "type": "object"
-                },
-                {
-                  "name": "message",
-                  "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
-                  "type": "object"
-                },
-                {
-                  "name": "moment",
-                  "description": "The moment.js object",
-                  "type": "object"
-                },
-                {
-                  "name": "setFormData",
-                  "description": "A function used to update the form data",
-                  "type": "({ values: object, mergeValues: boolean}) => void"
-                },
-                {
-                  "name": "setGlobalState",
-                  "description": "Setting the global state of the application",
-                  "type": "(payload: { key: string, data: any } ) => void"
-                }
-              ],
-              "version": 3,
-              "language": "typescript",
-              "placeholder": "",
-              "wrapInTemplate": true,
-              "templateSettings": {
-                "functionName": "onChange"
-              },
-              "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+              "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
             },
             {
               "id": "88c2d96c-b808-4316-8a36-701b09e5f6c7",
-              "type": "codeEditor",
+              "type": "settingsInput",
+              "inputType": "codeEditor",
               "propertyName": "onFocusCustom",
               "label": "On Focus",
               "labelAlign": "right",
-              "parentId": "Cc47W08MWrKdhoGqFKMI2",
+              "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
-              "description": "Enter custom eventhandler on focus of event. (form, event) are exposed",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "name": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                },
-                {
-                  "name": "event",
-                  "description": "Event callback when user input",
-                  "type": "object"
-                },
-                {
-                  "name": "form",
-                  "description": "Form instance",
-                  "type": "FormInstance"
-                },
-                {
-                  "name": "formMode",
-                  "description": "The form mode",
-                  "type": "'readonly' | 'edit' | 'designer'"
-                },
-                {
-                  "name": "globalState",
-                  "description": "The global state of the application",
-                  "type": "object"
-                },
-                {
-                  "name": "http",
-                  "description": "axios instance used to make http requests",
-                  "type": "object"
-                },
-                {
-                  "name": "message",
-                  "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
-                  "type": "object"
-                },
-                {
-                  "name": "moment",
-                  "description": "The moment.js object",
-                  "type": "object"
-                },
-                {
-                  "name": "setFormData",
-                  "description": "A function used to update the form data",
-                  "type": "({ values: object, mergeValues: boolean}) => void"
-                }
-              ],
-              "version": 3,
-              "language": "typescript",
-              "placeholder": "",
-              "wrapInTemplate": true,
-              "templateSettings": {
-                "functionName": "onFocus"
-              },
-              "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+              "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();",
+              "description": "Enter custom eventhandler on focus of event. (form, event) are exposed"
             },
             {
               "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
-              "type": "codeEditor",
+              "type": "settingsInput",
+              "inputType": "codeEditor",
               "propertyName": "onBlurCustom",
               "label": "On Blur",
               "labelAlign": "right",
-              "parentId": "Cc47W08MWrKdhoGqFKMI2",
+              "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
-              "description": "Enter custom eventhandler on blur of event. (form, event) are exposed",
-              "validate": {},
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "name": "data",
-                  "description": "Selected form values",
-                  "type": "object"
-                },
-                {
-                  "name": "event",
-                  "description": "Event callback when user input",
-                  "type": "object"
-                },
-                {
-                  "name": "form",
-                  "description": "Form instance",
-                  "type": "FormInstance"
-                },
-                {
-                  "name": "formMode",
-                  "description": "The form mode",
-                  "type": "'readonly' | 'edit' | 'designer'"
-                },
-                {
-                  "name": "globalState",
-                  "description": "The global state of the application",
-                  "type": "object"
-                },
-                {
-                  "name": "http",
-                  "description": "axios instance used to make http requests",
-                  "type": "object"
-                },
-                {
-                  "name": "message",
-                  "description": "This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header",
-                  "type": "object"
-                },
-                {
-                  "name": "moment",
-                  "description": "The moment.js object",
-                  "type": "object"
-                },
-                {
-                  "name": "setFormData",
-                  "description": "A function used to update the form data",
-                  "type": "({ values: object, mergeValues: boolean}) => void"
-                }
-              ],
-              "version": 3,
-              "language": "typescript",
-              "placeholder": "",
-              "wrapInTemplate": true,
-              "templateSettings": {
-                "functionName": "onBlur"
-              },
-              "availableConstantsExpression": "    return metadataBuilder\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+              "description": "Enter custom eventhandler on blur of event. (form, event) are exposed"
             }
           ]
         },
@@ -439,7 +266,6 @@
             {
               "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
               "type": "propertyRouter",
-              "propertyName": "propertyRouter1",
               "componentName": "propertyRouter1",
               "labelAlign": "right",
               "parentId": "root",

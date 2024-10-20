@@ -6,22 +6,22 @@ import { useSearchQuery } from "../tabs/context";
 import { IInputProps, InputComponent } from "../utils";
 import FormItem from "../formItem";
 
-export interface ISettingsInputProps extends IInputProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style'> {
+export interface ISettingsInputProps extends IInputProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
 }
 
-export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, property, inputType: type,
+export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, propertyName: property, inputType: type,
     buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description, value, hidden,
     size, ...rest }) => {
     const { searchQuery } = useSearchQuery();
 
     const group = property?.split(".")[1]?.trim();
-    const stringToFind = `${label.toLowerCase()} ${group}`?.trim();
+    const stringToFind = `${group ?? ''} ${label.toLowerCase()}`?.trim();
 
     if (stringToFind.includes(searchQuery.toLowerCase()?.trim())) {
         return (hidden ? null :
             <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
-                <FormItem tooltip={description} name={`${property}`} hideLabel={hideLabel} label={label} jsSetting={jsSetting} readOnly={readOnly} layout={type === 'switch' ? 'horizontal' : 'vertical'} wrapperCol={{ span: type === 'switch' ? 18 : 24 }} labelCol={{ span: type === 'switch' ? 6 : 24 }}>
-                    {children || <InputComponent size='small' label={label} inputType={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} value={value} {...rest} />}
+                <FormItem tooltip={description} name={`${property}`} hideLabel={hideLabel} label={label} jsSetting={type === 'codeEditor' ? false : jsSetting} readOnly={readOnly} layout={type === 'switch' ? 'horizontal' : 'vertical'} wrapperCol={{ span: type === 'switch' ? 18 : 24 }} labelCol={{ span: type === 'switch' ? 6 : 24 }}>
+                    {children || <InputComponent size='small' label={label} inputType={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} propertyName={property} description={description} readOnly={readOnly} value={value} {...rest} />}
                 </FormItem>
             </div>
         );
@@ -38,9 +38,9 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
     name: 'SettingsInput',
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
-        const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, property, description, readOnly, value } = model;
+        const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, description, readOnly, value } = model;
         return model.hidden ? null : (
-            <SettingInput size='small' label={label} inputType={inputType} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} property={property} description={description} readOnly={readOnly} value={value} jsSetting={model.jsSetting} layout={model.layout} />
+            <SettingInput size='small' label={label} inputType={inputType} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} propertyName={property} description={description} readOnly={readOnly} value={value} jsSetting={model.jsSetting} layout={model.layout} />
         );
     }
 };

@@ -24,7 +24,7 @@ export interface ISettingsControlProps {
   availableConstantsExpression?: string;
 }
 
-const defaultExposedVariables: ICodeExposedVariable[] = [
+export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "data", description: "Selected form values", type: "object" },
   { name: "pageContext", description: "Contexts data of current page", type: "object" },
   { name: "contexts", description: "Contexts data", type: "object" },
