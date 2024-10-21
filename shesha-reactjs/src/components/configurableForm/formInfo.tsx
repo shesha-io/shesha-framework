@@ -91,8 +91,8 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
       <div
         className={`${styles.shaFormInfoCard}`}
         style={{
-          top: panelShowing && formProps.id ? '-2px' : '-22px',
-          opacity: panelShowing ? '1' : '0',
+          top: panelShowing && formProps.id ? '-2px' : '-28px',
+          opacity: panelShowing && formProps.id ? '1' : '0',
         }}
       >
         <div
