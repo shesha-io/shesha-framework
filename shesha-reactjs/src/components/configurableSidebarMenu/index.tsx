@@ -68,12 +68,14 @@ export const ConfigurableSidebarMenu: FC<IConfigurableSidebarMenuProps> = props 
     >
       {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`} style={{position: "relative", width: "100%"}}>
-              <BlockOverlay>
-                <div>
+            <div className={`sidebar ${componentState.wrapperClassName}`} style={{position: "relative", background: 'red', width: "100%"}}>
+          
+                <div style={{position: 'absolute', bottom: 0, width: '100px', height: '100px'}}>
+                <BlockOverlay>
                 <EditOutlined style={{color: "#FFFFFF"}}/>
+                </BlockOverlay>
                 </div>
-              </BlockOverlay>
+
               <SidebarMenu theme={props.theme} />
             </div>
           );
