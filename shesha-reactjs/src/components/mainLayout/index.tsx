@@ -110,7 +110,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 
   const isFixedHeading = useMemo(() => {
     return fixHeading && ((Boolean(title) && showHeading) || Boolean(heading));
-  }, [heading, title, heading, showHeading, fixHeading]);
+  }, [heading, title, showHeading, fixHeading]);
 
   const onCollapse = (value: boolean) => {
     setGlobalVariables({ isSideBarExpanded: !value });
