@@ -75,7 +75,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                     }
                 />
             </div>
-            {isHidden(ref, 100) && searchQuery ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
+            {isHidden(ref, 75) && searchQuery ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
                 :
                 <div ref={ref}>
                     <Tabs

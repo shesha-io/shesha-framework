@@ -12,7 +12,6 @@ import SizeComponent from '@/designer-components/styleDimensions/sizeComponent';
 import ShadowComponent from '@/designer-components/styleShadow/shadowComponent';
 import { IFontValue } from '@/designer-components/styleFont/interfaces';
 import { CollapsiblePanel } from '@/components';
-import { useStyles } from './styles/styles';
 import { SettingInput } from '../settingsInput';
 
 export type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';
@@ -34,7 +33,6 @@ export interface IStyleGroupType {
 }
 
 const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value, readOnly }) => {
-    const { styles } = useStyles();
     const fontValue: IFontValue = useMemo(() => value?.font, [value?.font]);
 
     const dimensionsValue: IDimensionsValue = useMemo(() => value?.dimensions, [value?.dimensions]);
@@ -101,7 +99,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
         >
             {items.map(item => {
                 return item.children === null ? null :
-                    <CollapsiblePanel className={styles.collapseHeader} ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>
+                    <CollapsiblePanel ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>
                         {item.children}
                     </CollapsiblePanel>;
             })}
