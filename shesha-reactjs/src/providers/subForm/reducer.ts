@@ -69,6 +69,7 @@ export const subFormReducer = handleActions<ISubFormStateContext, any>(
       const { payload } = action;
       return {
         ...state,
+        fetchedEntityId: undefined,
         errors: { ...errors, getData: payload.error },
         loading: { ...loading, getData: false },
       };

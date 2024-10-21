@@ -1,6 +1,8 @@
 import { ICommonModalProps, IModalInstance } from './models';
 import { createNamedContext } from '@/utils/react';
 
+//#region modal provider
+
 export interface IDynamicModalStateContext {
   instances: { [index: string]: IModalInstance };
 }
@@ -20,6 +22,8 @@ export const DynamicModalStateContext = createNamedContext<IDynamicModalStateCon
 
 export const DynamicModalActionsContext = createNamedContext<IDynamicModalActionsContext>(undefined, "DynamicModalActionsContext");
 
+//#endregion
+
 //#region modal instance
 
 export interface IDynamicModalInstanceContext {
@@ -37,6 +41,29 @@ export const DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE: IDynamicModalInstance
 export const DynamicModalInstanceContext = createNamedContext<IDynamicModalInstanceContext>(
   DYNAMIC_MODAL_INSTANCE_CONTEXT_INITIAL_STATE,
   "DynamicModalInstanceContext"
+);
+
+//#endregion
+
+//#region modal renderer
+
+export interface IDynamicModalRendererContext {
+  registerChildren: (id: string) => void;
+  unregisterChildren: (id: string) => void;
+};
+
+export const DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE: IDynamicModalRendererContext = {
+  registerChildren: () => {
+    /*nop*/
+  },
+  unregisterChildren: () => {
+    /*nop*/
+  },
+};
+
+export const DynamicModalRendererContext = createNamedContext<IDynamicModalRendererContext>(
+  DYNAMIC_MODAL_RENDERER_CONTEXT_INITIAL_STATE,
+  "DynamicModalRendererContext"
 );
 
 //#endregion

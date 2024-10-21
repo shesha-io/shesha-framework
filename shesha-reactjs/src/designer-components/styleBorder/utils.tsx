@@ -18,7 +18,7 @@ import {
 } from "@ant-design/icons";
 
 export const getBorderStyle = (input: IBorderValue): React.CSSProperties => {
-    if (!input) return {};
+    if (!input || input.hideBorder) return {};
 
     const style: React.CSSProperties = {};
 

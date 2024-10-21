@@ -57,7 +57,6 @@ function codeAsText() {
         }
 
         if (stats.isFile()) {
-          console.log('PLUG: ', source + RAW_SUFFIX);
           return source + RAW_SUFFIX;
         }
 

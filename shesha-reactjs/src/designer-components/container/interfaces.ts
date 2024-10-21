@@ -164,6 +164,7 @@ export interface ICommonContainerProps {
   borderStyle?: string;
   borderRadius?: string | number;
   overflow?: string;
+  shadowStyle?: string;
 }
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, ICommonContainerProps {

@@ -5,7 +5,7 @@ import { IEntityReferenceDto, IErrorInfo, ILoginForm } from "@/interfaces";
 import { HttpClientApi } from "../sheshaApplication/publicApi";
 import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from "@/apis/tokenAuth";
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from "@/apis/session";
-import { isSameUrls } from "@/utils/url";
+import { getQueryParam, isSameUrls } from "@/utils/url";
 import { IRouter } from "../shaRouting";
 import React from "react";
 import { IAccessToken, IHttpHeaders } from "@/interfaces/accessToken";
@@ -13,12 +13,16 @@ import { getLocalizationOrDefault } from "@/utils/localization";
 import { getTenantId } from "@/utils/multitenancy";
 import { HttpResponse } from "../sheshaApplication/publicApi/http/api";
 import { ASPNET_CORE_CULTURE, AuthenticationState, AuthenticationStatus, DEFAULT_HOME_PAGE, ERROR_MESSAGES, IAuthenticator, LoginUserResponse, URLS } from "./models";
+import { ISettingsActionsContext } from "../settings/contexts";
 
 type RerenderTrigger = () => void;
+
+const RETURN_URL_KEY = 'returnUrl';
 
 export interface AuthenticatorArgs {
     httpClient: HttpClientApi;
     router: IRouter;
+    settings: ISettingsActionsContext;
     tokenName?: string;
     unauthorizedRedirectUrl?: string;
     homePageUrl?: string;
@@ -30,6 +34,7 @@ export interface AuthenticatorArgs {
 
 export class Authenticator implements IAuthenticator {
     #httpClient: HttpClientApi;
+    #settings: ISettingsActionsContext;
     #router: IRouter;
     #rerender: RerenderTrigger;
     #onSetRequestHeaders: (headers: IHttpHeaders) => void;
@@ -50,6 +55,7 @@ export class Authenticator implements IAuthenticator {
 
     constructor(args: AuthenticatorArgs, forceRootUpdate: RerenderTrigger) {
         this.#httpClient = args.httpClient;
+        this.#settings = args.settings;
         this.#router = args.router;
         this.#rerender = forceRootUpdate;
         this.state = { status: 'waiting' };
@@ -129,7 +135,7 @@ export class Authenticator implements IAuthenticator {
 
     #getRedirectUrl = (currentPath: string, userLogin: UserLoginInfoDto): string => {
         if (isSameUrls(currentPath, this.#unauthorizedRedirectUrl)) {
-            const returnUrl = this.#router.query['returnUrl']?.toString();
+            const returnUrl = this.#router.query[RETURN_URL_KEY]?.toString();
 
             const redirects: string[] = [returnUrl, userLogin.homeUrl, this.#homePageUrl, DEFAULT_HOME_PAGE];
             const redirectUrl = redirects.find((r) => Boolean(r?.trim())); // skip all null/undefined and empty strings
@@ -149,8 +155,6 @@ export class Authenticator implements IAuthenticator {
             throw error;
         }
 
-        // TODO: update headers
-
         this.#updateState('inprogress', 'User profile loading...');
         try {
             // fetch user profile
@@ -159,7 +163,7 @@ export class Authenticator implements IAuthenticator {
 
             this.#updateState('ready', null, null);
 
-            const redirectUrl = this.#getRedirectUrl(this.#router.path, userProfile.user);
+            const redirectUrl = this.#getRedirectUrl(this.#router.fullPath, userProfile.user);
             return {
                 userProfile: userProfile,
                 url: redirectUrl ?? this.#router.path
@@ -187,6 +191,23 @@ export class Authenticator implements IAuthenticator {
         if (this.loginInfo)
             return;
 
+        const getRedirectUrlAsync = async(): Promise<string> => {
+            const currentPath = this.#router.path;
+            const fullPath = this.#router.fullPath;            
+            if (currentPath === '/' || currentPath === ''){
+                const defaultUrl = await this.#settings.getSetting({ module: 'Shesha', name: 'Shesha.DefaultUrl' });
+                if (typeof(defaultUrl) === 'string' && Boolean(defaultUrl.trim()))
+                    return defaultUrl;
+            }       
+    
+            const existingReturnUrl = notAuthorizedRedirectUrl ? getQueryParam(RETURN_URL_KEY, notAuthorizedRedirectUrl) : undefined;
+            const redirectUrl = existingReturnUrl || isSameUrls(currentPath, this.#homePageUrl) || isSameUrls(currentPath, notAuthorizedRedirectUrl)
+                ? ''
+                : `/?${RETURN_URL_KEY}=${encodeURIComponent(fullPath)}`;
+    
+            return `${notAuthorizedRedirectUrl}${redirectUrl}`;
+        }; 
+
         const token = this.#getToken();
         if (token) {
             this.#updateState('inprogress', 'User profile loading...');
@@ -198,14 +219,14 @@ export class Authenticator implements IAuthenticator {
                     this.#updateState('ready', null, null);
                 } else {
                     this.#updateState('waiting', null, null);
-                    this.#router.push(notAuthorizedRedirectUrl);
+                    this.#router.push(await getRedirectUrlAsync());
                 }
             } catch (error) {
                 this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
-                this.#router.push(notAuthorizedRedirectUrl);
+                this.#router.push(await getRedirectUrlAsync());
             }
         } else
-            this.#router.push(notAuthorizedRedirectUrl);
+            this.#router.push(await getRedirectUrlAsync());
     };
 
     anyOfPermissionsGranted = (permissions: string[], permissionedEntities?: IEntityReferenceDto[]): boolean => {

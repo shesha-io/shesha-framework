@@ -65,7 +65,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const [backgroundStyles, setBackgroundStyles] = useState({});
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
 
-
     useEffect(() => {
 
       const fetchStyles = async () => {
@@ -119,8 +118,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       disabled: model.readOnly,
       readOnly: model.readOnly,
       style: { ...finalStyle },
-      count: { max: model.validate?.maxLength, },
-      autoComplete: model.textType === 'password' ? 'new-password' : undefined,
       defaultValue: model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
     };
 
@@ -138,6 +135,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     return (
       <ConfigurableFormItem
         model={model}
+        initialValue={
+          (model.initialValue ? evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState }) : undefined)
+        }
       >
         {(value, onChange) => {
           const customEvent = customEventHandler(eventProps);
@@ -167,14 +167,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  // settingsFormFactory: (props) => (<TextFieldSettingsForm {...props} />),
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
-  // settingsFormMarkup: settingFormMarkup,
-  // validateSettings: (model) => validateConfigurableComponentSettings(settingFormMarkup, model),
   initModel: (model) => ({
     textType: 'text',
     background: { type: 'color' },
-    border: { activeBorder: 'all', activeRadius: 'all' },
+    border: { selectedSide: 'all', selectedCorner: 'all' },
     ...model,
   }),
   migrator: (m) => m
@@ -195,7 +192,8 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
         fontSize: prev.fontSize,
         fontColor: prev.fontColor,
         backgroundColor: prev.backgroundColor,
-        stylingBox: prev.stylingBox
+        stylingBox: prev.stylingBox,
+        style: prev.style,
       };
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };

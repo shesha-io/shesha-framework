@@ -1,5 +1,6 @@
 import {
   IRefListItemGroupConfiguratorStateContext,
+  ISettingsUpdatePayload,
   IUpdateChildItemsPayload,
   IUpdateItemSettingsPayload,
   REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
@@ -20,7 +21,22 @@ const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorState
         items: payload,
       };
     },
-
+    [RefListItemGroupActionEnums.StoreSettings]: (
+      state: IRefListItemGroupConfiguratorStateContext,
+      action: ReduxActions.Action<ISettingsUpdatePayload>
+    ) => {
+      const { payload } = action;
+      return {
+        ...state,
+        userSettings: {
+          // Keep the existing settings
+          ...state.userSettings,
+          // Update only the specific columnId with its collapse state
+          [payload.columnId]: payload.isCollapsed,
+        },
+      };
+    },
+    
     [RefListItemGroupActionEnums.SelectItem]: (
       state: IRefListItemGroupConfiguratorStateContext,
       action: ReduxActions.Action<string>,

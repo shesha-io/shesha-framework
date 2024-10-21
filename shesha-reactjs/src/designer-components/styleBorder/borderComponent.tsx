@@ -16,8 +16,8 @@ const BorderComponent: FC<IBorderProps> = (props) => {
 
     const { value, readOnly } = props;
     const hideBorder = value?.hideBorder || false;
-    const activeBorder = useMemo(() => value?.activeBorder || 'all', [value?.activeBorder]);
-    const activeRadius = useMemo(() => value?.activeRadius || 'all', [value?.activeRadius]);
+    const selectedBorder = useMemo(() => value?.selectedSide || 'all', [value?.selectedSide]);
+    const selectedCorner = useMemo(() => value?.selectedCorner || 'all', [value?.selectedCorner]);
 
     return (
         <>
@@ -25,16 +25,16 @@ const BorderComponent: FC<IBorderProps> = (props) => {
             {!hideBorder && <>
                 <SettingInput
                     buttonGroupOptions={radiusOptions}
-                    value={activeRadius}
+                    value={selectedCorner}
                     inputType='radio'
-                    propertyName='styles.border.activeRadius'
-                    label='Corner'
+                    propertyName='styles.border.selectedCorner'
+                    label='Selected Corner Radius'
                     readOnly={readOnly}
                 />
-                <SettingInput label='Radius' propertyName={`styles.border.radius.${activeRadius}`} readOnly={readOnly} />
-                <SettingInput label='Side' propertyName={`styles.border.activeBorder`} readOnly={readOnly} value={activeBorder} inputType='radio' buttonGroupOptions={borderOptions} />
-                <InputRow inputs={[{ label: 'Color', propertyName: `styles.border.border.${activeBorder}.color`, readOnly, value: value, inputType: 'color' }, { label: 'Width', propertyName: `styles.border.border.${activeBorder}.width`, readOnly, value: value }]} />
-                <SettingInput label='Style' propertyName={`styles.border.border.${activeBorder}.style`} readOnly={readOnly} value={value} inputType='radio' buttonGroupOptions={styleOptions} />
+                <SettingInput label='Radius' propertyName={`styles.border.radius.${selectedCorner}`} readOnly={readOnly} />
+                <SettingInput label='Selected Border Side' propertyName={`styles.border.selectedSide`} readOnly={readOnly} value={selectedBorder} inputType='radio' buttonGroupOptions={borderOptions} />
+                <InputRow inputs={[{ label: 'Color', propertyName: `styles.border.border.${selectedBorder}.color`, readOnly, value: value, inputType: 'color' }, { label: 'Width', propertyName: `styles.border.border.${selectedBorder}.width`, readOnly, value: value }]} />
+                <SettingInput label='Style' propertyName={`styles.border.border.${selectedBorder}.style`} readOnly={readOnly} value={value} inputType='radio' buttonGroupOptions={styleOptions} />
             </>}
         </>
     );

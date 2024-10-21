@@ -99,6 +99,218 @@
             "version": 2
           },
           {
+            "id": "da34d70c-7419-4ea7-a715-d42699d26e6e",
+            "type": "editModeSelector",
+            "propertyName": "editMode",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Edit mode"
+          },
+          {
+            "id": "12cdda3f-f47e-48ae-b4c3-f5cc36e534d9",
+            "type": "checkbox",
+            "propertyName": "allowPreview",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Allow preview",
+            "version": 2
+          },
+          {
+            "id": "1119da3f-f47e-48ae-b4c3-f5cc36e534d9",
+            "type": "editableTagGroup",
+            "propertyName": "allowedFileTypes",
+            "label": "Allowed File Types",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ngb",
+            "description": "File types that can be accepted."
+          },
+          {
+            "id": "028b4eaf-8830-4dcd-b54f-422c73b25418",
+            "type": "dropdown",
+            "propertyName": "dataSource",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Image Source type",
+            "dataSourceType": "values",
+            "values": [
+              {
+                "label": "StoredFile",
+                "value": "storedFile",
+                "id": "1"
+              },
+              {
+                "label": "Url",
+                "value": "url",
+                "id": "2"
+              },
+              {
+                "label": "Base64",
+                "value": "base64",
+                "id": "3"
+              }
+            ],
+            "version": 5,
+            "useRawValues": false,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "06ab0599-914d-4d2d-875c-765a495482f8",
+            "type": "textField",
+            "propertyName": "url",
+            "label": "Url",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSource) !== 'url';",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 3
+          },
+          {
+            "id": "1ad43b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "textArea",
+            "propertyName": "base64",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "Base 64 content",
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSource) !== 'base64';",
+              "_mode": "code",
+              "_value": false
+            },
+            "version": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "111nm2re1eYM1M7pEEuf9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlStoredFile",
+      "label": "Stored File",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_code": "return getSettingValue(data?.dataSource) !== 'storedFile';",
+        "_mode": "code",
+        "_value": false
+      },
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "content": {
+        "id": "111nm2re1eYM1M7pEEuf9",
+        "components": [
+          {
+            "id": "222b0599-914d-4d2d-875c-765a495482f8",
+            "type": "textField",
+            "propertyName": "ownerId",
+            "label": "Owner Id",
+            "parentId": "111nm2re1eYM1M7pEEuf9",
+            "version": 3
+          },
+          {
+            "id": "333b0599-914d-4d2d-875c-765a495482f8",
+            "type": "autocomplete",
+            "propertyName": "ownerType",
+            "label": "Owner Type",
+            "parentId": "111nm2re1eYM1M7pEEuf9",
+            "labelAlign": "right",
+            "dataSourceType": "url",
+            "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+            "useRawValues": true
+          },
+          {
+            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "textField",
+            "propertyName": "storedFileId",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "StoredFile Id",
+            "version": 3
+          },
+          {
+            "id": "1c413b1a-04c5-4658-ac0f-cbcbae6b3bd4",
+            "type": "textField",
+            "propertyName": "fileCategory",
+            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
+            "label": "File category",
+            "version": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "aIMnm2re1eYM1M7pEEuf9",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlValidation",
+      "label": "Validation",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvoIozeq2cZMqAgbDLL",
+        "components": []
+      },
+      "content": {
+        "id": "aIMnm2re1eYM1M7pEEuf9",
+        "components": [
+          {
+            "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
+            "type": "checkbox",
+            "propertyName": "validate.required",
+            "parentId": "aIMnm2re1eYM1M7pEEuf9",
+            "label": "Required",
+            "version": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
+    {
+      "id": "aIMnm2re1exN1M7pEEur11",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlData",
+      "label": "Style",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "version": 4,
+      "expandIconPosition": "start",
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": [],
+      "header": {
+        "id": "FizvkIoyeq1cZMqAgbDCC",
+        "components": []
+      },
+      "content": {
+        "id": "aIMnm2re1exN1M7pEEur11",
+        "components": [
+          {
             "id": "417ee22e-a49d-44f2-a1c7-fef42ec87503",
             "type": "textField",
             "propertyName": "height",
@@ -319,202 +531,6 @@
             "showText": true
           },
           {
-            "id": "da34d70c-7419-4ea7-a715-d42699d26e6e",
-            "type": "editModeSelector",
-            "propertyName": "editMode",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Edit mode"
-          },
-          {
-            "id": "12cdda3f-f47e-48ae-b4c3-f5cc36e534d9",
-            "type": "checkbox",
-            "propertyName": "allowPreview",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Allow preview",
-            "version": 2
-          },
-          {
-            "id": "1119da3f-f47e-48ae-b4c3-f5cc36e534d9",
-            "type": "editableTagGroup",
-            "propertyName": "allowedFileTypes",
-            "label": "Allowed File Types",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ngb",
-            "description": "File types that can be accepted."
-          },
-          {
-            "id": "028b4eaf-8830-4dcd-b54f-422c73b25418",
-            "type": "dropdown",
-            "propertyName": "dataSource",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Image Source type",
-            "dataSourceType": "values",
-            "values": [
-              {
-                "label": "StoredFile",
-                "value": "storedFile",
-                "id": "1"
-              },
-              {
-                "label": "Url",
-                "value": "url",
-                "id": "2"
-              },
-              {
-                "label": "Base64",
-                "value": "base64",
-                "id": "3"
-              }
-            ],
-            "version": 5,
-            "useRawValues": false,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "06ab0599-914d-4d2d-875c-765a495482f8",
-            "type": "textField",
-            "propertyName": "url",
-            "label": "Url",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "hidden": {
-              "_code": "return getSettingValue(data?.dataSource) !== 'url';",
-              "_mode": "code",
-              "_value": false
-            },
-            "version": 3
-          },
-          {
-            "id": "1ad43b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-            "type": "textArea",
-            "propertyName": "base64",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "Base 64 content",
-            "hidden": {
-              "_code": "return getSettingValue(data?.dataSource) !== 'base64';",
-              "_mode": "code",
-              "_value": false
-            },
-            "version": 2
-          }
-        ]
-      }
-    },
-    {
-      "id": "111nm2re1eYM1M7pEEuf9",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlStoredFile",
-      "label": "Stored File",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": {
-        "_code": "return getSettingValue(data?.dataSource) !== 'storedFile';",
-        "_mode": "code",
-        "_value": false
-      },
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "content": {
-        "id": "111nm2re1eYM1M7pEEuf9",
-        "components": [
-          {
-            "id": "222b0599-914d-4d2d-875c-765a495482f8",
-            "type": "textField",
-            "propertyName": "ownerId",
-            "label": "Owner Id",
-            "parentId": "111nm2re1eYM1M7pEEuf9",
-            "version": 3
-          },
-          {
-            "id": "333b0599-914d-4d2d-875c-765a495482f8",
-            "type": "autocomplete",
-            "propertyName": "ownerType",
-            "label": "Owner Type",
-            "parentId": "111nm2re1eYM1M7pEEuf9",
-            "labelAlign": "right",
-            "dataSourceType": "url",
-            "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
-            "useRawValues": true
-          },
-          {
-            "id": "5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-            "type": "textField",
-            "propertyName": "storedFileId",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "StoredFile Id",
-            "version": 3
-          },
-          {
-            "id": "1c413b1a-04c5-4658-ac0f-cbcbae6b3bd4",
-            "type": "textField",
-            "propertyName": "fileCategory",
-            "parentId": "y9SNusmMM0Wd1Sc_YI1ng",
-            "label": "File category",
-            "version": 3
-          }
-        ]
-      }
-    },
-    {
-      "id": "aIMnm2re1eYM1M7pEEuf9",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlValidation",
-      "label": "Validation",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "header": {
-        "id": "FizvoIozeq2cZMqAgbDLL",
-        "components": []
-      },
-      "content": {
-        "id": "aIMnm2re1eYM1M7pEEuf9",
-        "components": [
-          {
-            "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-            "type": "checkbox",
-            "propertyName": "validate.required",
-            "parentId": "aIMnm2re1eYM1M7pEEuf9",
-            "label": "Required",
-            "version": 2
-          }
-        ]
-      }
-    },
-    {
-      "id": "aIMnm2re1exN1M7pEEur11",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlData",
-      "label": "Style",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 4,
-      "expandIconPosition": "start",
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
-      "header": {
-        "id": "FizvkIoyeq1cZMqAgbDCC",
-        "components": []
-      },
-      "content": {
-        "id": "aIMnm2re1exN1M7pEEur11",
-        "components": [
-          {
             "id": "06ab0588-914d-4d2d-875c-765a495472f8",
             "type": "codeEditor",
             "propertyName": "style",
@@ -550,7 +566,9 @@
               }
         ]
       }
-    },
+    }
+  ]
+  },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",

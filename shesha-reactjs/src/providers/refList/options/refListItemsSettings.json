@@ -13,7 +13,7 @@
       "type": "configurableActionConfigurator",
       "jsSetting": false,
       "propertyName": "actionConfiguration",
-      "label": "Action configuration",
+      "label": "onDrop Action configuration",
       "hidden": false,
       "validate": {},
       "settingsValidationErrors": [],

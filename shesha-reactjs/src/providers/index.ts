@@ -9,6 +9,7 @@ export * from './configurableComponent';
 export * from './configurationItemsLoader';
 export * from './dataTable';
 export * from './dynamicModal';
+export { DynamicModalRenderer } from './dynamicModal/renderer';
 export * from './form';
 export { useShaFormInstance } from './form/providers/shaFormProvider';
 export * from './formManager';
@@ -42,6 +43,7 @@ export * from './dynamicActionsDispatcher';
 export * from './dataContextManager';
 export * from './dataContextProvider';
 export * from './canvas';
-export * from './dataContextProvider';
+export * from './sourceFileManager/sourcesFolderProvider';
+export * from './chartData';
 
 export { useApplicationContextData, useApplicationContextMetadata };

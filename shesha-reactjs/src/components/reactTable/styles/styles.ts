@@ -209,7 +209,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           }
 
           &.${trBodyGhost} {
-            border: 1px dashed #4099ff;
+            border: 1px dashed ${token.colorPrimary};
             border-radius: 2px;
             opacity: 0.7;
           }

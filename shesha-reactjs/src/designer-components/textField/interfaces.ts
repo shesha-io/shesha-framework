@@ -6,6 +6,7 @@ import { IconType } from '@/components';
 import { IDimensionsValue } from '../styleDimensions/interfaces';
 import { IShadowValue } from '../styleShadow/interfaces';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { CSSProperties } from 'styled-components';
 
 export type TextType = 'text' | 'password';
 
@@ -20,7 +21,7 @@ export interface IStyleType {
 
 export interface IInputStyles {
   size?: SizeType;
-  borderSize?: number;
+  borderSize?: string | number;
   borderRadius?: number;
   borderType?: string;
   borderColor?: string;
@@ -28,11 +29,12 @@ export interface IInputStyles {
   fontWeight?: string | number;
   fontSize?: string | number;
   stylingBox?: string;
-  height?: string;
-  width?: string;
+  height?: string | number;
+  width?: string | number;
   backgroundColor?: string;
   hideBorder?: boolean;
   styles?: IStyleType;
+  style?: string | CSSProperties;
 }
 export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   placeholder?: string;
