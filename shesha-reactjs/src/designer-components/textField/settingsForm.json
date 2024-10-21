@@ -140,7 +140,6 @@
             {
               "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
               "type": "settingsInput",
-              "inputType": "number",
               "propertyName": "validate.minLength",
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Min Length",
@@ -151,7 +150,6 @@
             {
               "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
               "type": "settingsInput",
-              "inputType": "number",
               "propertyName": "validate.maxLength",
               "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
               "label": "Max Length",
