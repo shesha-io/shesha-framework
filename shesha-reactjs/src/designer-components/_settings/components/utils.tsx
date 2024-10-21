@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Input, InputNumber, Radio, Select, Switch } from "antd";
-import { CodeEditor, ColorPicker, IconPicker } from '@/components';
+import { CodeEditor, ColorPicker } from '@/components';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
@@ -17,7 +17,7 @@ import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import camelcase from 'camelcase';
 import { defaultExposedVariables } from '../settingsControl';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
-import { BlockOutlined, EyeOutlined, FormOutlined } from '@ant-design/icons';
+import { CopyOutlined, EditOutlined, StopOutlined } from '@ant-design/icons';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
@@ -85,7 +85,7 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
     );
 };
 
-export const InputComponent: FC<IInputProps> = ({ size = 'small', value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, description, onChange, readOnly, label, ...rest }) => {
+export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, description, onChange, readOnly, label, ...rest }) => {
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
     const { availableConstantsExpression } = rest;
@@ -137,7 +137,7 @@ export const InputComponent: FC<IInputProps> = ({ size = 'small', value, inputTy
         case 'switch':
             return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber min={0} max={100} readOnly={readOnly} size={size} value={value} />;
+            return <InputNumber readOnly={readOnly} size={size} value={value} />;
         case 'customDropdown':
             return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'textArea':
@@ -145,7 +145,7 @@ export const InputComponent: FC<IInputProps> = ({ size = 'small', value, inputTy
         case 'codeEditor':
             return editor;
         case 'iconPicker':
-            return <IconPickerWrapper value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
+            return <IconPickerWrapper iconSize={30} selectBtnSize={size} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
             return <ImageUploader
                 backgroundImage={value}
@@ -154,26 +154,30 @@ export const InputComponent: FC<IInputProps> = ({ size = 'small', value, inputTy
             />;
         case 'editModeSelector':
             const editModes = [
-                { value: 'editable', icon: <FormOutlined />, title: 'Editable' },
-                { value: 'readOnly', icon: <EyeOutlined />, title: 'Read only' },
-                { value: 'inherit', icon: <BlockOutlined />, title: 'Inherit' }
+                { value: 'editable', icon: <EditOutlined />, title: 'Editable' },
+                { value: 'readOnly', icon: <StopOutlined />, title: 'Read only' },
+                { value: 'inherit', icon: <CopyOutlined />, title: 'Inherit' }
             ];
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
                 {editModes.map(({ value, icon, title }) => (
                     <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
                 ))}
-            </Radio.Group>;;
+            </Radio.Group>;
         case 'permisions':
-            return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size='small' />;
+            return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         default:
-            return <Input
-                size={size}
-                onChange={(e) => onChange(hasUnits ? { ...value, value: e.target.value } : e.target.value)}
+            return hasUnits ? <InputNumber value={hasUnits ? value?.value : value}
                 readOnly={readOnly}
-                defaultValue={''}
-                value={hasUnits ? value?.value : value}
-                addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={propertyName} value={value} /> : null}
-            />;
+                onChange={(value) => onChange(hasUnits ? { ...value, value } : value)}
+                size={size}
+                addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={propertyName} value={value} /> : null} /> :
+                <Input
+                    size={size}
+                    onChange={(e) => onChange(hasUnits ? { ...value, value: e.target.value } : e.target.value)}
+                    readOnly={readOnly}
+                    defaultValue={''}
+                    value={value}
+                />;
     }
 };
 
@@ -247,4 +251,4 @@ export const isHidden = (ref, value?: number) => {
         return ref?.current === null ? false : ref?.current.offsetWidth < value || ref?.current.offsetHeight < value;
     }
     return false;
-}
+};

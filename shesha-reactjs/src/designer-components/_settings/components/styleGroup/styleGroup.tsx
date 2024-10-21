@@ -3,7 +3,6 @@ import { ConfigProvider, CollapseProps } from 'antd';
 import BorderComponent from '../../../styleBorder/borderComponent';
 import BackgroundComponent from '../../../styleBackground/background';
 import StyleBox from '../../../styleBox/components/box';
-import { IDropdownOption } from '../utils';
 import { IBorderValue } from '@/designer-components/styleBorder/interfaces';
 import { IBackgroundValue } from '@/designer-components/styleBackground/interfaces';
 import { IDimensionsValue } from '@/designer-components/styleDimensions/interfaces';
@@ -101,7 +100,10 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
             }}
         >
             {items.map(item => {
-                return item.children === null ? null : <CollapsiblePanel className={styles.collapseHeader} ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>{item.children}</CollapsiblePanel>
+                return item.children === null ? null :
+                    <CollapsiblePanel className={styles.collapseHeader} ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>
+                        {item.children}
+                    </CollapsiblePanel>;
             })}
         </ConfigProvider>
     );

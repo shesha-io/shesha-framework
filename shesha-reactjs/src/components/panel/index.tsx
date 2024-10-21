@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';

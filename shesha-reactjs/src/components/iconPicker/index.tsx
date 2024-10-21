@@ -9,9 +9,7 @@ import { OutlinedIconTypes, OUTLINED_ICON_GROUPS } from './iconNamesOutlined';
 import SectionSeparator from '@/components/sectionSeparator';
 import { TwoToneIconTypes, TWO_FACED_ICON_GROUPS } from './iconNamesTwoTone';
 import { humanizeString } from '@/utils/string';
-import classNames from 'classnames';
 import { useStyles } from './styles/styles';
-import { ColorPicker } from '../colorPicker';
 
 export type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
 type IconModes = 'outlined' | 'filled' | 'twoFaced';
@@ -50,6 +48,10 @@ export interface IIconPickerProps extends IconBaseProps {
   twoToneColor?: string;
 
   defaultValue?: ShaIconTypes;
+
+  fontSize?: number;
+
+  iconSize?: number;
 }
 
 interface IOption {
@@ -63,12 +65,15 @@ interface IOption {
 const IconPicker: FC<IIconPickerProps> = ({
   selectBtnSize = 'middle',
   value,
+  style,
+  fontSize,
   onIconChange,
   readOnly = false,
   defaultValue,
+  iconSize,
   ...props
 }) => {
- 
+
   const { styles } = useStyles();
   const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes>(defaultValue);
   const [showModal, setShowModal] = useState(false);
@@ -79,7 +84,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   });
 
   useEffect(() => {
-      setLocalSelectedIcon(value || defaultValue);
+    setLocalSelectedIcon(value || defaultValue);
   }, [defaultValue, value]);
 
 
@@ -101,7 +106,7 @@ const IconPicker: FC<IIconPickerProps> = ({
     toggleModalVisibility();
 
     if (onIconChange) {
-      onIconChange(<ShaIcon iconName={selected} style={{ fontSize: 30 }} {...props} />, selected);
+      onIconChange(<ShaIcon iconName={selected} style={{ fontSize: iconSize || 24 }} {...props} />, selected);
     }
   };
 
@@ -134,28 +139,24 @@ const IconPicker: FC<IIconPickerProps> = ({
 
   return (
     <div className={styles.shaIconPicker}>
-      <div>
-        {localSelectedIcon ? (
-          <span
-            onClick={toggleModalVisibility}
-            className={classNames(styles.shaIconPickerSelectedIcon, { "sha-readonly": readOnly })}
-          >
+      {
+        <Button size={selectBtnSize}
+          icon={localSelectedIcon ? <></> : <SelectOutlined size={iconSize || 24} />}
+          onClick={toggleModalVisibility}
+          type={localSelectedIcon ? "text" : "default"}
+          style={{ justifyContent: "center", display: "flex", alignItems: "center", fontSize: fontSize || 14, pointerEvents: readOnly ? "none" : "all", ...style }}
+          disabled={readOnly}>
+          {localSelectedIcon ? (
             <ShaIcon
+              className={styles.shaIconPicker}
               iconName={localSelectedIcon}
-              style={{ fontSize: 24 }}
               {...props}
+              style={{ marginLeft: -8, fontSize: iconSize || 24 }}
               name={localSelectedIcon}
               title={localSelectedIcon}
             />
-          </span>
-        ) : !readOnly ? (
-          <Button size={selectBtnSize} icon={<SelectOutlined />} onClick={toggleModalVisibility}>
-            Select Icon
-          </Button>
-        ) : (
-          <></>
-        )}
-      </div>
+          ) : "Select Icon"}
+        </Button>}
       <Modal
         onCancel={toggleModalVisibility}
         onOk={toggleModalVisibility}

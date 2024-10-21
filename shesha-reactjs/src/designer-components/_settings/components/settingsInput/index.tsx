@@ -20,8 +20,24 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
     if (stringToFind.includes(searchQuery.toLowerCase()?.trim())) {
         return (hidden ? null :
             <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
-                <FormItem tooltip={description} name={`${property}`} hideLabel={hideLabel} label={label} jsSetting={type === 'codeEditor' ? false : jsSetting} readOnly={readOnly} layout={type === 'switch' ? 'horizontal' : 'vertical'} wrapperCol={{ span: type === 'switch' ? 18 : 24 }} labelCol={{ span: type === 'switch' ? 6 : 24 }}>
-                    {children || <InputComponent size='small' label={label} inputType={type} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} propertyName={property} description={description} readOnly={readOnly} value={value} {...rest} />}
+                <FormItem tooltip={description}
+                    name={`${property}`}
+                    hideLabel={hideLabel}
+                    label={label}
+                    jsSetting={type === 'codeEditor' ? false : jsSetting}
+                    readOnly={readOnly}
+                    layout={type === 'switch' ? 'horizontal' : 'vertical'}
+                    wrapperCol={{ span: type === 'switch' ? 18 : 24 }}
+                    labelCol={{ span: type === 'switch' ? 6 : 24 }}>
+                    {children || <InputComponent size='small'
+                        label={label}
+                        inputType={type}
+                        dropdownOptions={dropdownOptions}
+                        buttonGroupOptions={buttonGroupOptions}
+                        hasUnits={hasUnits} propertyName={property}
+                        description={description}
+                        readOnly={readOnly}
+                        value={value} {...rest} />}
                 </FormItem>
             </div>
         );
@@ -40,7 +56,17 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
     Factory: ({ model }) => {
         const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, description, readOnly, value } = model;
         return model.hidden ? null : (
-            <SettingInput size='small' label={label} inputType={inputType} dropdownOptions={dropdownOptions} buttonGroupOptions={buttonGroupOptions} hasUnits={hasUnits} propertyName={property} description={description} readOnly={readOnly} value={value} jsSetting={model.jsSetting} layout={model.layout} />
+            <SettingInput size='small'
+                label={label}
+                inputType={inputType}
+                dropdownOptions={dropdownOptions}
+                buttonGroupOptions={buttonGroupOptions}
+                hasUnits={hasUnits} propertyName={property}
+                description={description}
+                readOnly={readOnly}
+                value={value}
+                jsSetting={model.jsSetting}
+                layout={model.layout} />
         );
     }
 };

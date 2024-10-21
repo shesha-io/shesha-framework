@@ -53,7 +53,6 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
     );
   }, [item]);
 
-  console.log("Properties: ", item);
   if (!Boolean(item)) {
     return (
       <div>

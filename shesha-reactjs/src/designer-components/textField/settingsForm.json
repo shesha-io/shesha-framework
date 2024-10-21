@@ -70,6 +70,16 @@
               "jsSettings": true
             },
             {
+              "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+              "type": "settingsInput",
+              "inputType": "switch",
+              "propertyName": "hidden",
+              "parentId": "s4gmBg31azZC0UjZjpfTm",
+              "label": "Hidden",
+              "jsSettings": true,
+              "layout": "horizontal"
+            },
+            {
               "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
               "inputType": "dropdown",
               "type": "settingsInput",
@@ -108,58 +118,6 @@
               "hideLabel": true,
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "propertyName": "prefixSuffix"
-            },
-            {
-              "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-              "type": "settingsInput",
-              "inputType": "switch",
-              "propertyName": "hidden",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Hidden",
-              "jsSettings": true,
-              "layout": "horizontal"
-            }
-          ]
-        },
-        {
-          "key": "2",
-          "id": "Cc47W08MWrKdhoGqFKMI2",
-          "label": "Events",
-          "components": [
-            {
-              "id": "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
-              "type": "settingsInput",
-              "inputType": "codeEditor",
-              "propertyName": "onChangeCustom",
-              "label": "On Change",
-              "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
-              "hidden": false,
-              "description": "Enter custom eventhandler on changing of event. (form, event) are exposed",
-              "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
-            },
-            {
-              "id": "88c2d96c-b808-4316-8a36-701b09e5f6c7",
-              "type": "settingsInput",
-              "inputType": "codeEditor",
-              "propertyName": "onFocusCustom",
-              "label": "On Focus",
-              "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
-              "hidden": false,
-              "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();",
-              "description": "Enter custom eventhandler on focus of event. (form, event) are exposed"
-            },
-            {
-              "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
-              "type": "settingsInput",
-              "inputType": "codeEditor",
-              "propertyName": "onBlurCustom",
-              "label": "On Blur",
-              "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
-              "hidden": false,
-              "description": "Enter custom eventhandler on blur of event. (form, event) are exposed"
             }
           ]
         },
@@ -261,7 +219,7 @@
         {
           "key": "4",
           "id": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
-          "label": "Styling",
+          "label": "Appearance",
           "components": [
             {
               "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
@@ -288,16 +246,60 @@
           ]
         },
         {
+          "key": "2",
+          "id": "Cc47W08MWrKdhoGqFKMI2",
+          "label": "Events",
+          "components": [
+            {
+              "id": "3cef348b-6bba-4176-93f6-f3a8b21e33c9",
+              "type": "settingsInput",
+              "inputType": "codeEditor",
+              "propertyName": "onChangeCustom",
+              "label": "On Change",
+              "labelAlign": "right",
+              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "hidden": false,
+              "description": "Enter custom eventhandler on changing of event. (form, event) are exposed",
+              "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            },
+            {
+              "id": "88c2d96c-b808-4316-8a36-701b09e5f6c7",
+              "type": "settingsInput",
+              "inputType": "codeEditor",
+              "propertyName": "onFocusCustom",
+              "label": "On Focus",
+              "labelAlign": "right",
+              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "hidden": false,
+              "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();",
+              "description": "Enter custom eventhandler on focus of event. (form, event) are exposed"
+            },
+            {
+              "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
+              "type": "settingsInput",
+              "inputType": "codeEditor",
+              "propertyName": "onBlurCustom",
+              "label": "On Blur",
+              "labelAlign": "right",
+              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "hidden": false,
+              "description": "Enter custom eventhandler on blur of event. (form, event) are exposed"
+            }
+          ]
+        },
+        {
           "key": "5",
           "id": "6Vw9iiDw9d0MD_Rh5cbIn",
           "label": "Security",
           "components": [
             {
               "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
-              "type": "permissionAutocomplete",
+              "type": "settingsInput",
+              "inputType": "persmissions",
               "propertyName": "permissions",
               "parentId": "SsWPpiJfTbgl4iHlFA_or",
               "label": "Permissions",
+              "size": "small",
               "validate": {},
               "version": 1
             }

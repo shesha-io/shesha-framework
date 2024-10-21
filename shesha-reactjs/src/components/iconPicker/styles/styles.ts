@@ -9,6 +9,7 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
             &:not(.sha-readonly) {
                 cursor: pointer;
             }
+
     
             .${iconPrefixCls} {
                 margin-right: ${sheshaStyles.paddingLG}px;
