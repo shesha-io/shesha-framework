@@ -126,6 +126,7 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
+
       "isDynamic": false,
       "version": 0,
       "description": "Enable this setting to hide a group automatically when it has no any visible items",
@@ -168,13 +169,13 @@
   ],
   "formSettings": {
     "isSettingsForm": true,
-    "layout": "vertical",
+    "layout": "horizontal",
     "colon": true,
     "labelCol": {
-      "span": 24
+      "span": 8
     },
     "wrapperCol": {
-      "span": 24
+      "span": 16
     },
     "displayName": "DEFAULT_FORM_SETTINGS",
     "__docgenInfo": {
