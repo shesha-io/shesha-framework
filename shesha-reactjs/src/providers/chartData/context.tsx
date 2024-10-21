@@ -1,5 +1,4 @@
 import { IChartsProps, IFilter } from "@/designer-components/charts/model";
-import { IRefListPropertyMetadata } from "@/interfaces/metadata";
 import { createContext } from "react";
 
 export interface IChartDataContext {
@@ -15,21 +14,21 @@ export interface IChartDataContext {
   valueProperty?: string;
   axisProperty?: string;
   legendProperty?: string;
+  filterProperties?: string[];
   xProperty?: string;
   yProperty?: string;
   simpleOrPivot?: 'simple' | 'pivot';
-  showXAxisLabel?: boolean;
+  showXAxisScale?: boolean;
   showXAxisLabelTitle?: boolean;
-  showYAxisLabel?: boolean;
+  showYAxisScale?: boolean;
   showYAxisLabelTitle?: boolean;
   stacked?: boolean;
   aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
+  tension?: number;
+  strokeColor?: string;
 
   data?: object[];
   items?: object[];
-  refLists?: {
-    [key: string]: IRefListPropertyMetadata[];
-  };
 
   isLoaded?: boolean;
 
@@ -41,7 +40,6 @@ export interface IChartDataContext {
 export interface IChartDataAtionsContext {
   setControlProps?: (controlProps: IChartsProps) => void;
   setData?: (data: object[]) => void;
-  setRefLists?: (refLists: object) => void;
   setFilterdData?: (data: object[]) => void;
   setChartFilters?: (filters: IFilter[]) => void;
   onFilter?: () => void;
@@ -66,15 +64,15 @@ export const INITIAL_STATE: IChartDataContext = {
   xProperty: 'x',
   yProperty: 'y',
   simpleOrPivot: 'simple',
-  showXAxisLabel: true,
+  showXAxisScale: true,
   showXAxisLabelTitle: true,
-  showYAxisLabel: true,
+  showYAxisScale: true,
   showYAxisLabelTitle: true,
   aggregationMethod: 'count',
+  tension: 0,
 
   data: [],
   items: [],
-  refLists: {},
 
   isLoaded: false,
 

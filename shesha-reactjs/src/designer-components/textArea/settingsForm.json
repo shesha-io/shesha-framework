@@ -232,6 +232,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -304,6 +309,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -316,7 +326,7 @@
             "templateSettings": {
               "functionName": "onFocus"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n  .addString(\"value\", \"Component current value\")\r\n       .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           },
           {
             "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
@@ -371,6 +381,11 @@
                 "type": "object"
               },
               {
+                "name": "value",
+                "description": "Component current value",
+                "type": "number | string | null"
+              },
+              {
                 "name": "setFormData",
                 "description": "A function used to update the form data",
                 "type": "({ values: object, mergeValues: boolean}) => void"
@@ -383,7 +398,7 @@
             "templateSettings": {
               "functionName": "onBlur"
             },
-            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
+            "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n     .addString(\"value\", \"Component current value\")\r\n     .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
           }
         ]
       }
@@ -489,6 +504,22 @@
         ]
       }
     },
+    {
+      "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+      "type": "propertyRouter",
+      "propertyName": "propertyRouter1",
+      "componentName": "propertyRouter1",
+      "label": "Property router1",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": false,
+      "isDynamic": false,
+      "propertyRouteName": {
+        "_mode": "code",
+        "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+        "_value": ""
+      },
+      "components": [
     {
       "id": "6befdd49-41aa-41d6-a29e-76fa00590b75",
       "type": "collapsiblePanel",
@@ -708,7 +739,9 @@
             }
         ]
       }
+    }]
     },
+
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIn",
       "type": "collapsiblePanel",

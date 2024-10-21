@@ -1,11 +1,12 @@
 import { createAction } from 'redux-actions';
-import { IUpdateChildItemsPayload, IUpdateItemSettingsPayload } from './contexts';
+import { ISettingsUpdatePayload, IUpdateChildItemsPayload, IUpdateItemSettingsPayload } from './contexts';
 
 export enum RefListItemGroupActionEnums {
   UpdateItem = 'UPDATE_ITEM',
   SelectItem = 'SELECT_ITEM',
   UpdateChildItems = 'UPDATE_CHILD_ITEMS',
   SetItems = 'SET_ITEMS',
+  StoreSettings = 'STORE_SETTINGS',
 }
 
 export const setItems = createAction<any[], any[]>(RefListItemGroupActionEnums.SetItems, (p) => p);
@@ -20,4 +21,8 @@ export const updateItemAction = createAction<IUpdateItemSettingsPayload, IUpdate
 export const updateChildItemsAction = createAction<IUpdateChildItemsPayload, IUpdateChildItemsPayload>(
   RefListItemGroupActionEnums.UpdateChildItems,
   (p) => p
+);
+
+export const storeSettingsAction = createAction<ISettingsUpdatePayload>(
+  RefListItemGroupActionEnums.StoreSettings
 );

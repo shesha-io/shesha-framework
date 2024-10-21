@@ -1,16 +1,41 @@
 import cleanDeep from "clean-deep";
 import { mergeWith } from "lodash";
+import moment from "moment";
 
 export const deepMergeValues = (target: any, source: any) => {
-  return mergeWith(
-    { ...target },
-    source,
-    (objValue, srcValue, key, obj) => {
-        if (srcValue === undefined)
-            obj[key] = undefined;
-        return Array.isArray(objValue) ? srcValue : undefined;
-    },
-  );
+  return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
+      // handle null
+      if (srcValue === null) {
+          // reset field to null
+          obj[key] = null;
+          return undefined;
+      }
+
+      // handle undefined
+      if (srcValue === undefined) {
+          // reset field to undefined
+          obj[key] = undefined;
+          return undefined;
+      }
+
+      // handle arrays
+      if (Array.isArray(objValue)) {
+          return srcValue;
+      }
+    
+      //handle moemnt objects
+      if (moment.isMoment(srcValue)) {
+          return srcValue;
+      }
+
+      // handle objects
+      if (typeof objValue === "object" && typeof srcValue === "object") {
+          // make a copy of merged objects
+          return deepMergeValues(objValue, srcValue);
+      }
+
+      return undefined;
+  });
 };
 
 export const getValueByPropertyName = (data: any, propertyName: string): any => {

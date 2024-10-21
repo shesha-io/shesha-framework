@@ -9,6 +9,7 @@ import {
 import {
   selectItemAction,
   setItems,
+  storeSettingsAction,
   updateChildItemsAction,
   updateItemAction,
 } from './actions';
@@ -16,6 +17,7 @@ import { RefListGroupItemProps } from './models';
 import { useGet } from '@/hooks';
 import RefListItemGroupReducer from './reducers';
 import { getItemById, getRefListItems } from './utils';
+
 
 export interface IRefListItemGroupConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -68,6 +70,14 @@ const RefListItemGroupConfiguratorProvider: FC<PropsWithChildren<IRefListItemGro
     if (!state.readOnly) dispatch(updateChildItemsAction(payload));
   };
 
+  const storeSettings = async (columnId: string, isCollapsed: boolean) => {
+  
+      dispatch(storeSettingsAction({ columnId: columnId, isCollapsed: isCollapsed }));
+
+  };
+  
+  
+
   return (
     <RefListItemGroupConfiguratorStateContext.Provider value={state}>
       <RefListItemGroupConfiguratorActionsContext.Provider
@@ -76,6 +86,7 @@ const RefListItemGroupConfiguratorProvider: FC<PropsWithChildren<IRefListItemGro
           updateItem,
           getItem,
           updateChildItems,
+          storeSettings,
         }}
       >
         {children}

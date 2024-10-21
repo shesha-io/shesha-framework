@@ -1,30 +1,56 @@
+import {
+  ArcElement, CategoryScale,
+  Chart as ChartJS,
+  ChartOptions,
+  Decimation,
+  DoughnutController,
+  Filler,
+  Legend,
+  LinearScale,
+  LineController, LineElement,
+  PieController,
+  PointElement,
+  RadialLinearScale,
+  Title, Tooltip,
+} from 'chart.js';
 import React from 'react';
 import { Pie } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Title,
-  ChartOptions,
-} from 'chart.js';
-import { IChartData, IChartDataProps } from '../../model';
 import { useChartDataStateContext } from '../../../../providers/chartData';
-
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+import { IChartData, IChartDataProps } from '../../model';
 
 interface IPieChartProps extends IChartDataProps {
   data: IChartData;
 }
 
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  DoughnutController,
+  PieController,
+  RadialLinearScale,
+  Decimation,
+  Filler,
+  ArcElement,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Legend,
+);
+
 const PieChart = ({ data }: IPieChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
 
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
       legend: {
-        display: showLegend,
+        display: showXAxisScale,
         position: legendPosition ?? 'top',
       },
       title: {

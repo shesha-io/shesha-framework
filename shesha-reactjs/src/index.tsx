@@ -22,3 +22,6 @@ export { EntityConfiguratorPage } from './generic-pages/entity-config/configurat
 export { FormsDesignerPage } from './generic-pages/forms-designer';
 export { SettingsPage } from './generic-pages/settings-editor';
 export { ConfigurableThemePage } from './generic-pages/settings/dynamic-theme';
+export { SettingsControl, type ISettingsControlProps } from './designer-components/_settings/settingsControl';
+export { useConstantsEvaluator } from './designer-components/codeEditor/hooks/useConstantsEvaluator';
+export { useResultTypeEvaluator } from './designer-components/codeEditor/hooks/useResultType';
