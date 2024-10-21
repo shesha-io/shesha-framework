@@ -83,14 +83,6 @@ export const ConfigurationItemViewModeToggler: FC<IAppEditModeTogglerProps> = ()
       dropdownRender={menu => (
         <div className={styles.appModesDropdown}>
           {menu}
-          {/*
-
-          Temporarily hidden
-
-          <Divider style={{ margin: 0 }} />
-          <Space style={{ padding: 8 }}>
-            <Switch checked={formInfoBlockVisible} onChange={checked => toggleShowInfoBlock(checked)} /> Show form info
-          </Space> */}
         </div>
       )}
     >
