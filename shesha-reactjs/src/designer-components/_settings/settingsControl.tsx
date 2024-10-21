@@ -44,7 +44,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
 
   const { styles } = useStyles();
 
-  
+
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
@@ -87,7 +87,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     propertyName: props.propertyName + 'Code',
     fileName: props.propertyName,
     wrapInTemplate: true,
-    templateSettings: { 
+    templateSettings: {
       functionName: functionName,
       useAsyncDeclaration: props.useAsyncEvaluation,
     },
@@ -95,9 +95,9 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   const editor = constantsEvaluator
-    
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType}/>
-    : <CodeEditorWithStandardConstants {...codeEditorProps}  resultType={resultType}/>;
+
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType} />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
@@ -106,7 +106,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
         className={`${styles.jsSwitch} inlineJS`}
         type='text'
         danger={mode === 'value' && !!code}
-        // ghost
+        ghost
         size='small'
         icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
         color='lightslategrey'

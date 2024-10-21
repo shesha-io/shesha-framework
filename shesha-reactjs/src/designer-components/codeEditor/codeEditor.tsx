@@ -82,22 +82,22 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
   const renderCodeEditor = () => (
-      <BaseCodeEditor
-        value={effectiveValue}
-        onChange={onChange}
-        readOnly={readOnly}
-        placeholder={props.placeholder}
-        language={language}
-  
-        path={src?.path}
-        wrapInTemplate={props.wrapInTemplate}
-        templateSettings={props.templateSettings}
-        fileName={props.fileName ?? props.propertyName}
-        availableConstants={props.availableConstants}
-        resultType={props.resultType}
-        style={mode === 'dialog' ? { height: "100%" } : undefined}
-      />
-    );
+    <BaseCodeEditor
+      value={effectiveValue}
+      onChange={onChange}
+      readOnly={readOnly}
+      placeholder={props.placeholder}
+      language={language}
+
+      path={src?.path}
+      wrapInTemplate={props.wrapInTemplate}
+      templateSettings={props.templateSettings}
+      fileName={props.fileName ?? props.propertyName}
+      availableConstants={props.availableConstants}
+      resultType={props.resultType}
+      style={mode === 'dialog' ? { height: "100%" } : undefined}
+    />
+  );
 
   const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
 
@@ -130,7 +130,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
           {readOnly ? 'View Code' : hasValue ? 'Edit Code' : 'Create Code'}
         </Button>
         <Show when={hasValue && !readOnly}>
-          <Button type="primary" ghost size="small" danger onClick={onClear} icon={<CloseOutlined />} />
+          <Button type="primary" size="small" danger onClick={onClear} icon={<CloseOutlined />} />
         </Show>
       </Space>
       {showDialog && (
