@@ -171,6 +171,8 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     setAutocompleteText(null);
   };
 
+  console.log("AC-BORDER WIDTH", style.borderWidth);
+
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       className="sha-dropdown"
@@ -190,7 +192,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       loading={loading}
       placeholder={selectPlaceholder}
       disabled={disabled}
-      variant={!bordered ? 'borderless' : undefined}
+      variant='borderless' // default to borderless view if no border width is passed in from the model
       onSelect={handleSelect}
       style={style}
       size={size}

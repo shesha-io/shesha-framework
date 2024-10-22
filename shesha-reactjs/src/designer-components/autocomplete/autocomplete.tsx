@@ -177,11 +177,11 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       height: toSizeCssProp(model.height),
       width: toSizeCssProp(model.width),
       fontWeight: model.fontWeight,
-      borderWidth: model?.borderSize || '0px', //this is handled in the entityAutcomplete.tsx
-      borderRadius: model.borderRadius,
+      borderWidth: model?.borderSize || '1px', //this is handled in the entityAutcomplete.tsx
+      borderRadius: model.borderRadius || '8px',
       borderStyle: model.hideBorder ? 'none' : (model.borderType || 'solid'),
       borderColor: model.borderColor || theme.colorBorder,
-      backgroundColor: model.backgroundColor,
+      backgroundColor: model.backgroundColor || '#ffffff',
       fontSize: model.fontSize,
       overflow: 'hidden', //this allows us to retain the borderRadius even when the component is active
       ...stylingBoxAsCSS,
