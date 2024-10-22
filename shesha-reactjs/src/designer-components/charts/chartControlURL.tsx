@@ -26,13 +26,13 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   useEffect(() => {
     setControlProps({
       valueProperty, legendProperty, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisLabelTitle,
-      showYAxisScale, showYAxisLabelTitle, simpleOrPivot, filterProperties, stacked, tension, strokeColor, allowFilter,
+      showYAxisScale, showYAxisLabelTitle, simpleOrPivot, stacked, tension, strokeColor, allowFilter,
       isAxisTimeSeries, timeSeriesFormat, url
     });
   }, []);
 
   useEffect(() => {
-    refetch(getURLChartDataRefetchParams(url, valueProperty, filters, legendProperty, axisProperty, filterProperties))
+    refetch(getURLChartDataRefetchParams(url, valueProperty, filters, legendProperty, axisProperty))
       .then((data) => {
         if (!data.result) {
           setIsLoaded(true);

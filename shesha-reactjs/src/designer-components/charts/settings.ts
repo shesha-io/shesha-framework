@@ -134,13 +134,6 @@ export const settingsForm = new DesignerToolbarSettings()
             description: 'The properties you want to use on the Legend',
             validate: { required: true },
           })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'allowFilter',
-            label: 'Allow Filter',
-            parentId: 'root',
-            defaultValue: true,
-          })
           .addDropdown({
             id: nanoid(),
             propertyName: 'aggregationMethod',

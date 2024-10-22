@@ -16,6 +16,37 @@ function removePropertyDuplicates(str) {
 }
 
 /**
+ * @param array array of nested properties
+ * @returns the array in object format
+ */
+function convertNestedPropertiesToObjectFormat(array) {
+  if (!array) return '';
+
+  return array.map(path => {
+    let parts = path.split('.');
+    let result = '';
+    let indentation = 0;
+
+    if (parts.length === 1) {
+      // If there's no nesting (no dots), return the part directly
+      return parts[0];
+    }
+
+    parts.forEach((part, index) => {
+      if (index === parts.length - 1) {
+        result += `${''.repeat(indentation)}${part}`;
+      } else {
+        result += `${''.repeat(indentation)}${part} {\n`;
+        indentation += 2;
+      }
+    });
+
+    result += `${''.repeat(indentation - 2)} }`.repeat(parts.length - 1); // closing brackets
+    return result;
+  }).join(', ');
+}
+
+/**
  * Function to get the chart data from the API
  * @param entityType entity type to get data from
  * @param dataProperty property to get data from
@@ -26,11 +57,12 @@ function removePropertyDuplicates(str) {
  * @returns getChartData mutate path and queryParams
  */
 export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
+  filterProperties = convertNestedPropertiesToObjectFormat(filterProperties);
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : '') + (filterProperties ? ',' + filterProperties.join(',') : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')),
+      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')) + ", " + filterProperties,
       filter: Boolean(filters) ? JSON.stringify(filters) : undefined,
       maxResultCount: -1
     },
@@ -38,13 +70,13 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
 };
 
 
-export const getURLChartDataRefetchParams = (url: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
+export const getURLChartDataRefetchParams = (url: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string) => {
   // if the url is not provided, return an empty object
   if (!url) return {};
   return {
     path: `${url}`,
     queryParams: {
-      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : '') + (filterProperties ? ',' + filterProperties.join(',') : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')),
+      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')),
       filter: Boolean(filters) ? JSON.stringify(filters) : undefined,
       maxResultCount: -1
     },
