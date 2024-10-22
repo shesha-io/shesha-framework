@@ -18,12 +18,12 @@ const SizeComponent: FC<IDimensionsType> = (props) => {
                 { label: 'Height', propertyName: 'styles.dimensions.height', ...commonProps }
             ]} />
             <InputRow inputs={[
-                { label: 'Min W', propertyName: 'styles.dimensions.minWidth', ...commonProps },
-                { label: 'Min H', propertyName: 'styles.dimensions.minHeight', ...commonProps }
+                { label: 'Min Width', propertyName: 'styles.dimensions.minWidth', ...commonProps },
+                { label: 'Min Height', propertyName: 'styles.dimensions.minHeight', ...commonProps }
             ]} />
             <InputRow inputs={[
-                { label: 'Max W', propertyName: 'styles.dimensions.maxWidth', ...commonProps },
-                { label: 'Max H', propertyName: 'styles.dimensions.maxHeight', ...commonProps }
+                { label: 'Max Width', propertyName: 'styles.dimensions.maxWidth', ...commonProps },
+                { label: 'Max Height', propertyName: 'styles.dimensions.maxHeight', ...commonProps }
             ]} />
             {!noOverflow && <SettingInput label='Overflow' propertyName='styles.dimensions.overflow' inputType='radio' readOnly={readOnly} value={value} buttonGroupOptions={overflowOptions} />}
         </>

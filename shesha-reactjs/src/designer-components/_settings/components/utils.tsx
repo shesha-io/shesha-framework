@@ -40,6 +40,7 @@ export interface IDropdownOption {
 
 export interface IInputProps extends IComponentLabelProps {
     label: string;
+    variant?: 'borderless' | 'outlined' | 'filled';
     propertyName: string;
     inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'imageUploader' | 'editModeSelector' | 'permisions';
     buttonGroupOptions?: IRadioOption[];
@@ -65,7 +66,7 @@ export interface IInputProps extends IComponentLabelProps {
 
 const { Option } = Select;
 
-const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, onChange }) => {
+const UnitSelector: FC<{ value: any; onChange }> = ({ value, onChange }) => {
     const { styles } = useStyles();
 
     return (
@@ -85,6 +86,7 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
     );
 };
 
+
 export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, description, onChange, readOnly, label, ...rest }) => {
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
@@ -93,7 +95,7 @@ export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, 
 
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
         if (!availableConstantsExpression?.trim())
-            return Promise.reject("AvailableConstantsExpression is mandatory");
+            return Promise.reject(new Error("AvailableConstantsExpression is mandatory"));
 
         const metadataBuilder = metadataBuilderFactory();
 
@@ -118,68 +120,75 @@ export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, 
         ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
         : <CodeEditorWithStandardConstants {...codeEditorProps} />;
 
+    const commonProps = {
+        size,
+        value,
+        readOnly,
+        variant: rest?.variant,
+        onChange,
+    };
+
     switch (type) {
         case 'color':
-            return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={onChange} />;
+            return <ColorPicker {...commonProps} allowClear />;
         case 'dropdown':
-            return <Select
-                size={size}
-                onChange={
-                    onChange}
-                options={dropdownOptions}
-            />;
+            return <Select {...commonProps} options={dropdownOptions} />;
         case 'radio':
-            return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
-                {buttonGroupOptions.map(({ value, icon, title }) => (
-                    <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
-                ))}
-            </Radio.Group>;
+            return (
+                <Radio.Group buttonStyle='solid' defaultValue={value} disabled={readOnly} size={size} onChange={onChange}>
+                    {buttonGroupOptions.map(({ value, icon, title }) => (
+                        <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                    ))}
+                </Radio.Group>
+            );
         case 'switch':
-            return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
+            return <Switch {...commonProps} size='small' />;
         case 'number':
-            return <InputNumber readOnly={readOnly} size={size} value={value} style={{ width: "100%" }} />;
+            return <InputNumber {...commonProps} style={{ width: "100%" }} />;
         case 'customDropdown':
-            return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
+            return <CustomDropdown {...commonProps} options={dropdownOptions} />;
         case 'textArea':
-            return <TextArea readOnly={readOnly} size={size} value={value} />;
+            return <TextArea {...commonProps} />;
         case 'codeEditor':
             return editor;
         case 'iconPicker':
-            return <IconPickerWrapper iconSize={30} selectBtnSize={size} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
+            return <IconPickerWrapper {...commonProps} iconSize={30} selectBtnSize={size} applicationContext={allData} />;
         case 'imageUploader':
-            return <ImageUploader
-                backgroundImage={value}
-                readOnly={readOnly}
-                onChange={onChange}
-            />;
-        case 'editModeSelector':
+            return <ImageUploader backgroundImage={value} readOnly={readOnly} onChange={onChange} />;
+        case 'editModeSelector': {
             const editModes = [
                 { value: 'editable', icon: <EditOutlined />, title: 'Editable' },
                 { value: 'readOnly', icon: <StopOutlined />, title: 'Read only' },
                 { value: 'inherit', icon: <CopyOutlined />, title: 'Inherit' }
             ];
-            return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
-                {editModes.map(({ value, icon, title }) => (
-                    <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
-                ))}
-            </Radio.Group>;
+            return (
+                <Radio.Group buttonStyle='solid' defaultValue={value} disabled={readOnly} size={size} onChange={onChange}>
+                    {editModes.map(({ value, icon, title }) => (
+                        <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
+                    ))}
+                </Radio.Group>
+            );
+        }
         case 'permisions':
-            return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
+            return <PermissionAutocomplete {...commonProps} />;
         default:
-            return hasUnits ? <InputNumber value={hasUnits ? value?.value : value}
-                readOnly={readOnly}
-                onChange={(value) => onChange(hasUnits ? { ...value, value } : value)}
-                size={size}
-                addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={propertyName} value={value} /> : null} /> :
+            return hasUnits ? (
+                <InputNumber
+                    {...commonProps}
+                    value={hasUnits ? value?.value : value}
+                    onChange={(value) => onChange(hasUnits ? { ...value, value } : value)}
+                    addonAfter={hasUnits ? <UnitSelector onChange={onChange} value={value} /> : null}
+                />
+            ) : (
                 <Input
-                    size={size}
-                    onChange={(e) => onChange(hasUnits ? { ...value, value: e.target.value } : e.target.value)}
-                    readOnly={readOnly}
+                    {...commonProps}
                     defaultValue={''}
-                    value={value}
-                />;
+                    onChange={(e) => onChange(hasUnits ? { ...value, value: e.target.value } : e.target.value)}
+                />
+            );
     }
 };
+
 
 
 interface InputRowProps {
