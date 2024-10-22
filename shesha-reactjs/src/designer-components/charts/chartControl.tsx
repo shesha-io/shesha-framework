@@ -105,7 +105,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     return (
       <Alert
         showIcon
-        message="Chart control properties not correctly!"
+        message="Chart control properties not set correctly!"
         description={descriptionMessage} // Dynamically constructed description
         type="warning"
       />
@@ -138,12 +138,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   return (
     <div className={cx(styles.chartControlContainer)}>
-      <h3>
-        {props.showName ? <p>{props.name}</p> : null}
-      </h3>
-      <div>
-        {props.showDescription ? <p>{props.description}</p> : null}
-      </div>
       {allowFilter && (
         <>
           <Flex justify='start' align='center' className={cx(styles.chartControlButtonContainer)}>
