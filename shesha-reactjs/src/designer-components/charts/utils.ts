@@ -37,6 +37,20 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
   };
 };
 
+
+export const getURLChartDataRefetchParams = (url: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
+  // if the url is not provided, return an empty object
+  if (!url) return {};
+  return {
+    path: `${url}`,
+    queryParams: {
+      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : '') + (filterProperties ? ',' + filterProperties.join(',') : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')),
+      filter: Boolean(filters) ? JSON.stringify(filters) : undefined,
+      maxResultCount: -1
+    },
+  };
+};
+
 /**
  * Used to get the property value of an entity no matter how deep the property is nested
  * @param obj the object to get the property value from
@@ -120,7 +134,6 @@ export function formatDate(data, timeUnit: T, properties: string[]) {
             formattedDate = date.toISOString();
             break;
         }
-          // day, month, year, day-month, day-month-year, month-year
         modifiedItem[property] = formattedDate;
       }
     });

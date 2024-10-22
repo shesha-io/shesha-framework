@@ -7,32 +7,12 @@ export interface IChartData {
     labels: (string | number | object)[];
     datasets: object[];
 }
-
-export interface IChartProps extends IConfigurableFormComponent {
-    chartType?: TChartType;
-    showTitle?: boolean;
-    title?: string;
-    showLegend?: boolean;
-    showXAxisScale?: boolean;
-    showXAxisLabelTitle?: boolean;
-    showYAxisScale?: boolean;
-    showYAxisLabelTitle?: boolean;
-    legendPosition?: TLegendPosition;
-    entityType?: string;
-    filters?: string[];
-    valueProperty?: string;
-    axisProperty?: string;
-    isAxisTimeSeries?: boolean;
-    timeSeriesFormat?: TTimeSeriesFormat;
-    legendProperty?: string;
-    xProperty?: string;
-    yProperty?: string;
-    tension?: number;
-    strokeColor?: string;
-    aggregationMethod?: TAggregationMethod;
-}
-
+/**
+ * Chart props, used in the chart component and some of its children
+ */
 export interface IChartsProps {
+    dataMode?: TDataMode;
+    url?: string;
     chartType?: TChartType;
     showTitle?: boolean;
     title?: string;
@@ -64,11 +44,18 @@ export interface IChartsProps {
     aggregationMethod?: TAggregationMethod;
 }
 
+/**
+ * Chart props, used in the Shesha tool box
+ */
+export interface IChartProps extends IConfigurableFormComponent, IChartsProps { }
+
 export interface IChartDataProps extends IChartsProps {
     labels?: string[];
     chartData?: number[];
     data?: IChartData;
 }
+
+export type TDataMode = 'url' | 'entityType';
 
 export type TChartType = 'polarArea' | 'bar' | 'line' | 'pie';
 

@@ -2,6 +2,7 @@ import { IChartsProps, IFilter, TTimeSeriesFormat } from "@/designer-components/
 import { createContext } from "react";
 
 export interface IChartDataContext {
+  url?: string;
   chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
   showTitle?: boolean;
   title?: string;
@@ -31,6 +32,7 @@ export interface IChartDataContext {
 
   data?: object[];
   items?: object[];
+  urlTypeData?: object;
 
   isLoaded?: boolean;
 
@@ -45,12 +47,15 @@ export interface IChartDataAtionsContext {
   setFilterdData?: (data: object[]) => void;
   setChartFilters?: (filters: IFilter[]) => void;
   onFilter?: () => void;
+  /** Sets the data that will be retrieved directly from the backend */
+  setUrlTypeData?: (data: object) => void;
 
   setIsLoaded?: (isLoaded: boolean) => void;
   setIsFilterVisible?: (isFilterVisible: boolean) => void;
 }
 
 export const INITIAL_STATE: IChartDataContext = {
+  url: '',
   chartType: 'pivot',
   showTitle: true,
   title: 'Chart Title',
@@ -75,6 +80,7 @@ export const INITIAL_STATE: IChartDataContext = {
 
   data: [],
   items: [],
+  urlTypeData: {},
 
   isLoaded: false,
 
