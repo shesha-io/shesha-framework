@@ -1,0 +1,17 @@
+{
+    "components": [
+        {
+            "key": "4",
+            "id": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+            "label": "Appearance",
+            "components": [
+                {
+                    "id": "try26voxhs-HxJ5k5ngYE",
+                    "type": "fontStyle",
+                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                    "propertyName": "font"
+                }
+            ]
+        }
+    ]
+}

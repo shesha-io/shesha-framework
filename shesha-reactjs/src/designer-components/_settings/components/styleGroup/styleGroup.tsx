@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ConfigProvider, CollapseProps } from 'antd';
+import { CollapseProps } from 'antd';
 import BorderComponent from '../../../styleBorder/borderComponent';
 import BackgroundComponent from '../../../styleBackground/background';
 import StyleBox from '../../../styleBox/components/box';
@@ -35,6 +35,7 @@ export interface IStyleGroupType {
 
 const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value, readOnly }) => {
     const { styles } = useStyles();
+
     const fontValue: IFontValue = useMemo(() => value?.font, [value?.font]);
 
     const dimensionsValue: IDimensionsValue = useMemo(() => value?.dimensions, [value?.dimensions]);
@@ -64,48 +65,36 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
         {
             key: '4',
             label: 'Background',
-            children: (<BackgroundComponent value={backgroundValue} onChange={onChange} />)
+            children: <BackgroundComponent value={backgroundValue} onChange={onChange} />
         },
         {
             key: '5',
             label: 'Shadow',
-            children: (<ShadowComponent value={shadowValue} onChange={onChange} />)
+            children: <ShadowComponent value={shadowValue} onChange={onChange} />
         },
         {
             key: '6',
             label: 'Styling',
-            children: (
-                (
-                    <>
-                        <SettingInput label="Style" propertyName='style' readOnly={false} inputType='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
-                        <SettingInput propertyName="stylingBox" jsSetting={false} label="margin padding" hideLabel readOnly={readOnly}>
-                            <StyleBox />
-                        </SettingInput>
-                    </>)
-            )
+            children: <>
+                <SettingInput label="Style" propertyName='style' readOnly={false} inputType='codeEditor' description="A script that returns the style of the element as an object. This should conform to CSSProperties" jsSetting={false} />
+                <SettingInput propertyName="stylingBox" jsSetting={false} label="margin padding" hideLabel readOnly={readOnly}>
+                    <StyleBox />
+                </SettingInput>
+            </>
+
         }
     ].filter(item => {
         return !omitted.map(omit => omit.toLocaleLowerCase())?.includes(item.label.toLocaleLowerCase());
     }).map((item, index) => ({ ...item, key: index.toString(), label: <span style={{ fontWeight: 700 }}>{item.label}</span> }));
 
     return (
-        <ConfigProvider
-            theme={{
-                components: {
-                    Tag: {
-                        padding: 0,
-                        margin: 0,
-                    }
-                }
-            }}
-        >
+        <>
             {items.map(item => {
-                return item.children === null ? null :
-                    <CollapsiblePanel className={styles.collapseHeader} ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>
-                        {item.children}
-                    </CollapsiblePanel>;
+                return <CollapsiblePanel className={styles.collapseHeader} ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>
+                    {item.children}
+                </CollapsiblePanel>;
             })}
-        </ConfigProvider>
+        </>
     );
 };
 

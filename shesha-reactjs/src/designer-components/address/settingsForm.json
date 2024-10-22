@@ -1,0 +1,306 @@
+{
+    "components": [
+        {
+            "id": "addressSettingsTabs",
+            "type": "searchableTabs",
+            "propertyName": "settingsTabs",
+            "labelAlign": "right",
+            "hidden": false,
+            "jsSettings": true,
+            "size": "small",
+            "parentId": "root",
+            "isDynamic": false,
+            "version": 4,
+            "tabs": [
+                {
+                    "key": "1",
+                    "id": "displayTab",
+                    "label": "Display",
+                    "jsSettings": true,
+                    "parentId": "addressSettingsTabs",
+                    "components": [
+                        {
+                            "id": "contextPropertyAutocomplete",
+                            "type": "contextPropertyAutocomplete",
+                            "propertyName": "propertyName",
+                            "parentId": "displayTab",
+                            "label": "Property Name",
+                            "size": "small",
+                            "validate": {
+                                "required": true
+                            }
+                        },
+                        {
+                            "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
+                            "type": "labelConfigurator",
+                            "parentId": "s4gmBg31azZC0UjZjpfTm",
+                            "propertyName": "hideLabel",
+                            "label": "label",
+                            "hideLabel": true
+                        },
+                        {
+                            "id": "placeholderInput",
+                            "type": "settingsInput",
+                            "propertyName": "placeholder",
+                            "parentId": "displayTab",
+                            "label": "Placeholder",
+                            "textType": "text",
+                            "size": "small",
+                            "jsSettings": true
+                        },
+                        {
+                            "id": "descriptionTextArea",
+                            "type": "settingsInput",
+                            "inputType": "textArea",
+                            "propertyName": "description",
+                            "parentId": "displayTab",
+                            "label": "Description",
+                            "jsSettings": true
+                        },
+                        {
+                            "id": "hideLabelSwitch",
+                            "type": "settingsInput",
+                            "inputType": "switch",
+                            "propertyName": "hideLabel",
+                            "parentId": "displayTab",
+                            "label": "Hide Label",
+                            "jsSettings": true,
+                            "layout": "horizontal"
+                        },
+                        {
+                            "id": "hiddenSwitch",
+                            "type": "settingsInput",
+                            "inputType": "switch",
+                            "propertyName": "hidden",
+                            "parentId": "displayTab",
+                            "label": "Hidden",
+                            "jsSettings": true,
+                            "layout": "horizontal"
+                        },
+                        {
+                            "id": "editModeSelector",
+                            "type": "settingsInput",
+                            "inputType": "editModeSelector",
+                            "propertyName": "editMode",
+                            "parentId": "displayTab",
+                            "label": "Edit Mode",
+                            "size": "small",
+                            "jsSettings": true
+                        }
+                    ]
+                },
+                {
+                    "key": "2",
+                    "id": "configurationTab",
+                    "label": "Configuration",
+                    "components": [
+                        {
+                            "id": "minCharactersSearchInput",
+                            "type": "settingsInput",
+                            "propertyName": "minCharactersSearch",
+                            "parentId": "configurationTab",
+                            "label": "Min Characters Before Search",
+                            "jsSettings": true,
+                            "size": "small"
+                        },
+                        {
+                            "id": "debounceInput",
+                            "type": "settingsInput",
+                            "propertyName": "debounce",
+                            "parentId": "configurationTab",
+                            "label": "Debounce (MS)",
+                            "jsSettings": true,
+                            "size": "small"
+                        },
+                        {
+                            "id": "googleMapsApiKeyInput",
+                            "type": "settingsInput",
+                            "propertyName": "googleMapsApiKey",
+                            "parentId": "configurationTab",
+                            "label": "Google Maps Key",
+                            "jsSettings": true,
+                            "size": "small"
+                        },
+                        {
+                            "id": "openCageApiKeyInput",
+                            "type": "settingsInput",
+                            "propertyName": "openCageApiKey",
+                            "parentId": "configurationTab",
+                            "label": "OpenCage Key",
+                            "jsSettings": true,
+                            "size": "small"
+                        },
+                        {
+                            "id": "countryRestrictionSelect",
+                            "type": "settingsInput",
+                            "inputType": "dropdown",
+                            "propertyName": "countryRestriction",
+                            "parentId": "configurationTab",
+                            "label": "Country Restriction",
+                            "jsSettings": true,
+                            "dropdownOptions": "COUNTRY_CODES",
+                            "dropdownMode": "multiple",
+                            "allowClear": true,
+                            "filterOption": {
+                                "_value": false,
+                                "_code": "return (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());",
+                                "_mode": "code"
+                            }
+                        },
+                        {
+                            "id": "prefixInput",
+                            "type": "settingsInput",
+                            "propertyName": "prefix",
+                            "parentId": "configurationTab",
+                            "label": "Prefix (Area Restriction)",
+                            "jsSettings": true,
+                            "size": "small"
+                        },
+                        {
+                            "id": "showPriorityBoundsSwitch",
+                            "type": "settingsInput",
+                            "inputType": "switch",
+                            "propertyName": "showPriorityBounds",
+                            "parentId": "configurationTab",
+                            "label": "Priority Bounds (Advanced)",
+                            "jsSettings": true,
+                            "layout": "horizontal"
+                        }
+                    ]
+                },
+                {
+                    "key": "3",
+                    "id": "validationTab",
+                    "label": "Validation",
+                    "components": [
+                        {
+                            "id": "requiredSwitch",
+                            "type": "settingsInput",
+                            "inputType": "switch",
+                            "propertyName": "validate.required",
+                            "parentId": "validationTab",
+                            "label": "Required",
+                            "jsSettings": true,
+                            "layout": "horizontal"
+                        }
+                    ]
+                },
+                {
+                    "key": "4",
+                    "id": "eventsTab",
+                    "label": "Events",
+                    "components": [
+                        {
+                            "id": "onChangeCustomCodeEditor",
+                            "type": "settingsInput",
+                            "inputType": "codeEditor",
+                            "propertyName": "onChangeCustom",
+                            "parentId": "eventsTab",
+                            "label": "On Change",
+                            "jsSettings": true
+                        },
+                        {
+                            "id": "onSelectCustomCodeEditor",
+                            "type": "settingsInput",
+                            "inputType": "codeEditor",
+                            "propertyName": "onSelectCustom",
+                            "parentId": "eventsTab",
+                            "label": "On Select",
+                            "jsSettings": true
+                        }
+                    ]
+                },
+                {
+                    "key": "5",
+                    "id": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                    "label": "Appearance",
+                    "components": [
+                        {
+                            "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+                            "type": "propertyRouter",
+                            "componentName": "propertyRouter1",
+                            "labelAlign": "right",
+                            "parentId": "root",
+                            "hidden": false,
+                            "isDynamic": false,
+                            "propertyRouteName": {
+                                "_mode": "code",
+                                "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                                "_value": ""
+                            },
+                            "components": [
+                                {
+                                    "id": "try26voxhs-HxJ5k5ngYE",
+                                    "type": "styleGroup",
+                                    "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
+                                    "propertyName": "styles"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "6",
+                    "id": "securityTab",
+                    "label": "Security",
+                    "components": [
+                        {
+                            "id": "permissionsInput",
+                            "type": "settingsInput",
+                            "inputType": "permissions",
+                            "propertyName": "permissions",
+                            "parentId": "securityTab",
+                            "label": "Permissions",
+                            "jsSettings": true,
+                            "size": "small"
+                        }
+                    ]
+                }
+            ],
+            "tabType": "card",
+            "defaultActiveKey": "1",
+            "hideWhenEmpty": true,
+            "settingsValidationErrors": []
+        }
+    ],
+    "formSettings": {
+        "layout": "vertical",
+        "size": "small",
+        "colon": false,
+        "labelCol": {
+            "span": 24
+        },
+        "wrapperCol": {
+            "span": 24
+        },
+        "displayName": "ADDRESS_SETTINGS_FORM",
+        "__docgenInfo": {
+            "description": "Address settings form",
+            "displayName": "ADDRESS_SETTINGS_FORM",
+            "props": {}
+        },
+        "access": null,
+        "permissions": null,
+        "version": 1,
+        "dataLoaderType": "gql",
+        "dataSubmitterType": "gql",
+        "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
+        "onAfterDataLoad": null,
+        "onPrepareSubmitData": null,
+        "onBeforeSubmit": null,
+        "onSubmitSuccess": null,
+        "onSubmitFailed": null,
+        "dataSubmittersSettings": {
+            "gql": {
+                "endpointType": "default",
+                "dynamicEndpoint": "    return data?.id ? form.defaultApiEndpoints.update : form.defaultApiEndpoints.create"
+            }
+        },
+        "dataLoadersSettings": {
+            "gql": {
+                "endpointType": "default"
+            },
+            "custom": {}
+        }
+    }
+}

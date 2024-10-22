@@ -10,7 +10,7 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { FormMarkup, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
-import { IInputStyles, IStyleType, ITextFieldComponentProps, TextType } from './interfaces';
+import { IInputStyles, ITextFieldComponentProps, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
@@ -25,6 +25,7 @@ import settingsFormJson from './settingsForm.json';
 import { getShadowStyle } from '../styleShadow/utils';
 import { getFontStyle } from '../styleFont/utils';
 import { splitValueAndUnit } from '../_settings/utils';
+import { IStyleType } from '../_settings/components/styleGroup/models';
 
 const settingsForm = settingsFormJson as FormMarkup;
 

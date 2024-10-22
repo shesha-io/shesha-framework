@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 
 interface SearchQueryContextType {
     searchQuery: string;
@@ -16,8 +16,10 @@ export const useSearchQuery = () => {
 };
 
 export const SearchQueryProvider: React.FC<SearchQueryContextType & { children: React.ReactNode }> = ({ searchQuery, children, onChange }) => {
+    const value = useMemo(() => ({ searchQuery, onChange }), [searchQuery, onChange]);
+
     return (
-        <SearchQueryContext.Provider value={{ searchQuery, onChange }}>
+        <SearchQueryContext.Provider value={value}>
             {children}
         </SearchQueryContext.Provider>
     );

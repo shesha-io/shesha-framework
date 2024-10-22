@@ -19,6 +19,7 @@ import { defaultExposedVariables } from '../settingsControl';
 import { CodeEditorWithStandardConstants } from '@/designer-components/codeEditor/codeEditorWithConstants';
 import { CopyOutlined, EditOutlined, StopOutlined } from '@ant-design/icons';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
+import { getValueFromString } from './settingsInput/utils';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -61,6 +62,8 @@ export interface IInputProps extends IComponentLabelProps {
     availableConstantsExpression?: string;
     resultType?: ResultType;
     exposedVariables?: string[];
+    dropdownMode?: 'multiple' | 'tags';
+    allowClear?: boolean;
 }
 
 const { Option } = Select;
@@ -85,15 +88,16 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
     );
 };
 
-export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, description, onChange, readOnly, label, ...rest }) => {
+export const InputComponent: FC<IInputProps> = (props) => {
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { availableConstantsExpression } = rest;
+    const { size, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, description, onChange, readOnly, label, availableConstantsExpression, allowClear, dropdownMode } = props;
     const allData = useAvailableConstantsData();
 
+    console.log("GGGGGGG:", props)
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
         if (!availableConstantsExpression?.trim())
-            return Promise.reject("AvailableConstantsExpression is mandatory");
+            return Promise.reject(new Error("AvailableConstantsExpression is mandatory"));
 
         const metadataBuilder = metadataBuilderFactory();
 
@@ -124,9 +128,11 @@ export const InputComponent: FC<IInputProps> = ({ size, value, inputType: type, 
         case 'dropdown':
             return <Select
                 size={size}
+                mode={dropdownMode}
+                allowClear={allowClear}
                 onChange={
                     onChange}
-                options={dropdownOptions}
+                options={typeof dropdownOptions === 'string' ? getValueFromString(dropdownOptions) : dropdownOptions}
             />;
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
@@ -218,11 +224,18 @@ export const searchFormItems = (children: React.ReactNode, searchQuery: string):
     });
 };
 
+const styleLabels = ['size', 'weight', 'color', 'type', 'align', 'overflow', 'family', 'width', 'height', 'minWidth', 'minHeight', 'maxHeight', 'maxWidth', 'hide border', 'selected corner radius', 'selected border side', 'radius', 'style', 'position', 'repeat', 'offset x', 'offset y', 'blur', 'spread', 'direction', 'url', 'file', 'file id', 'owner type', 'owner id', 'file catergory'];
 export const filterDynamicComponents = (components, query) => {
 
     const filterResult = components.map(c => {
 
-        if (!c.label && !c.components && (c.type === 'settingsInput' || c.type === 'styleGroup')) return c;
+        if (c.type === 'styleGroup') {
+            const shouldHide = !styleLabels.some(label => label.toLowerCase().includes(query.toLowerCase()));
+
+            return shouldHide ? { ...c, hidden: true } : c;
+        }
+
+        if (!c.label && !c.components && (c.type === 'settingsInput')) return c;
 
         let filteredComponent = { ...c };
 
@@ -247,8 +260,9 @@ export const filterDynamicComponents = (components, query) => {
 };
 
 export const isHidden = (ref, value?: number) => {
+
     if (ref.current) {
-        return ref?.current === null ? false : ref?.current.offsetWidth < value || ref?.current.offsetHeight < value;
+        return ref?.current.offsetHeight < value;
     }
     return false;
 };

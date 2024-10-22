@@ -66,7 +66,9 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
                 readOnly={readOnly}
                 value={value}
                 jsSetting={model.jsSetting}
-                layout={model.layout} />
+                layout={model.layout}
+                {...model} />
+
         );
     }
 };

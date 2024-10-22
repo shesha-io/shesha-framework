@@ -215,35 +215,6 @@
           ]
         },
         {
-          "key": "4",
-          "id": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
-          "label": "Appearance",
-          "components": [
-            {
-              "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
-              "type": "propertyRouter",
-              "componentName": "propertyRouter1",
-              "labelAlign": "right",
-              "parentId": "root",
-              "hidden": false,
-              "isDynamic": false,
-              "propertyRouteName": {
-                "_mode": "code",
-                "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                "_value": ""
-              },
-              "components": [
-                {
-                  "id": "try26voxhs-HxJ5k5ngYE",
-                  "type": "styleGroup",
-                  "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
-                  "propertyName": "styles"
-                }
-              ]
-            }
-          ]
-        },
-        {
           "key": "2",
           "id": "Cc47W08MWrKdhoGqFKMI2",
           "label": "Events",
@@ -282,6 +253,64 @@
               "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
               "description": "Enter custom eventhandler on blur of event. (form, event) are exposed"
+            }
+          ]
+        },
+        {
+          "key": "4",
+          "id": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+          "label": "Appearance",
+          "components": [
+            {
+              "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+              "type": "propertyRouter",
+              "componentName": "propertyRouter1",
+              "labelAlign": "right",
+              "parentId": "root",
+              "hidden": false,
+              "isDynamic": false,
+              "propertyRouteName": {
+                "_mode": "code",
+                "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                "_value": ""
+              },
+              "components": [
+                {
+                  "id": "try26voxhs-HxJ5k5ngYE",
+                  "type": "styleGroup",
+                  "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
+                  "propertyName": "styles"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "4",
+          "id": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+          "label": "Appearance",
+          "components": [
+            {
+              "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+              "type": "propertyRouter",
+              "componentName": "propertyRouter1",
+              "labelAlign": "right",
+              "parentId": "root",
+              "hidden": false,
+              "isDynamic": false,
+              "propertyRouteName": {
+                "_mode": "code",
+                "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                "_value": ""
+              },
+              "components": [
+                {
+                  "id": "try26voxhs-HxJ5k5ngYE",
+                  "type": "styleGroup",
+                  "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
+                  "propertyName": "styles"
+                }
+              ]
             }
           ]
         },

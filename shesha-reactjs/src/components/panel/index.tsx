@@ -76,32 +76,32 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
   return (
-    isHidden(ref, 5) ? null :
-      <StyledCollapse
-        defaultActiveKey={collapsedByDefault ? [] : ['1']}
-        onChange={onChange}
-        expandIconPosition={expandIconPosition}
-        className={classNames(shaCollapsiblePanelStyle, className, { [styles.noContentPadding]: noContentPadding, [styles.hideWhenEmpty]: hideWhenEmpty })}
-        style={style}
-        ghost={ghost}
-        bodyColor={bodyColor}
-        hideCollapseContent={hideCollapseContent}
+    // isHidden(ref, 32) ? null :
+    <StyledCollapse
+      ref={ref}
+      defaultActiveKey={collapsedByDefault ? [] : ['1']}
+      onChange={onChange}
+      expandIconPosition={expandIconPosition}
+      className={classNames(shaCollapsiblePanelStyle, className, { [styles.noContentPadding]: noContentPadding, [styles.hideWhenEmpty]: hideWhenEmpty })}
+      style={style}
+      ghost={ghost}
+      bodyColor={bodyColor}
+      hideCollapseContent={hideCollapseContent}
+    >
+      <Panel
+        key="1"
+        collapsible={collapsible}
+        showArrow={showArrow}
+        header={header || ' '}
+        extra={
+          <span onClick={onContainerClick} className={extraClassName}>
+            {extra}
+          </span>
+        }
       >
-        <Panel
-          ref={ref}
-          key="1"
-          collapsible={collapsible}
-          showArrow={showArrow}
-          header={header || ' '}
-          extra={
-            <span onClick={onContainerClick} className={extraClassName}>
-              {extra}
-            </span>
-          }
-        >
-          <Skeleton loading={loading}>{children}</Skeleton>
-        </Panel>
-      </StyledCollapse>
+        <Skeleton loading={loading}>{children}</Skeleton>
+      </Panel>
+    </StyledCollapse>
   );
 };
 
