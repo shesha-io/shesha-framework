@@ -4,6 +4,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.Web.FormsDesigner.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
@@ -55,5 +56,11 @@ namespace Shesha.Web.FormsDesigner.Services
         /// <param name="input"></param>
         /// <returns></returns>
         Task<FormConfiguration> CreateAsync(CreateFormConfigurationDto input);
+
+        /// <summary>
+        /// Get All forms
+        /// </summary>
+        /// <returns></returns>
+        Task<List<FormConfiguration>> GetAllAsync();
     }
 }
