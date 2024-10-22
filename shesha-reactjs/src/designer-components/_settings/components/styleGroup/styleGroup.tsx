@@ -33,7 +33,6 @@ export interface IStyleGroupType {
 }
 
 const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange, value, readOnly }) => {
-    const { styles } = useStyles();
 
     const fontValue: IFontValue = useMemo(() => value?.font, [value?.font]);
 
@@ -89,7 +88,7 @@ const StyleGroupComponent: React.FC<IStyleGroupType> = ({ omitted = [], onChange
     return (
         <>
             {items.map(item => {
-                return <CollapsiblePanel className={styles.collapseHeader} ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>
+                return <CollapsiblePanel ghost={true} accordion={true} hideWhenEmpty={true} key={item.key} header={item.label} expandIconPosition='start'>
                     {item.children}
                 </CollapsiblePanel>;
             })}
