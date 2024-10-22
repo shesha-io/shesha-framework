@@ -24,7 +24,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     //allowInherited,
     onChange,
     disabled,
-    bordered = true,
     style,
     size,
     mode,
@@ -43,7 +42,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   } = props;
 
 
-
+  
   const {
     data: fetchedData,
     loading,
@@ -170,8 +169,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   const onClear = () => {
     setAutocompleteText(null);
   };
-
-  console.log("AC-BORDER WIDTH", style.borderWidth);
 
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
