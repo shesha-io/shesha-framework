@@ -107,12 +107,12 @@ import FontConfigurator from '@/designer-components/styleFont';
 import BackgroundConfigurator from '@/designer-components/styleBackground';
 import ShadowConfigurator from '@/designer-components/styleShadow';
 import LabelConfigurator from '@/designer-components/styleLabel';
-import PrefixSuffixConfigurator from '@/designer-components/stylePrefixSuffix';
 import StyleGroup from '@/designer-components/_settings/components/styleGroup';
 import SearchableTabs from '@/designer-components/_settings/components/tabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
 import SettingsInput from '@/designer-components/_settings/components/settingsInput';
+import SettingsInputRow from '@/designer-components/_settings/components/settingsInputRow';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
 
@@ -258,10 +258,10 @@ export const getToolboxComponents = (
         SizeConfigurator,
         ShadowConfigurator,
         LabelConfigurator,
-        PrefixSuffixConfigurator,
         StyleGroup,
         SearchableTabs,
         SettingsInput,
+        SettingsInputRow,
         CodeEditor,
         ComponentSelectorComponent,
         EndpointsAutocompleteComponent,

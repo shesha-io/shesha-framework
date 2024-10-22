@@ -94,10 +94,9 @@ export const InputComponent: FC<IInputProps> = (props) => {
     const { size, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, description, onChange, readOnly, label, availableConstantsExpression, allowClear, dropdownMode } = props;
     const allData = useAvailableConstantsData();
 
-    console.log("GGGGGGG:", props)
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
         if (!availableConstantsExpression?.trim())
-            return Promise.reject(new Error("AvailableConstantsExpression is mandatory"));
+            return Promise.reject("AvailableConstantsExpression is mandatory");
 
         const metadataBuilder = metadataBuilderFactory();
 

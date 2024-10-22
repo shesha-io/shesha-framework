@@ -38,9 +38,9 @@ import { ILabelProps } from '@/designer-components/styleLabel/labelConfigurator'
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
 import { IStyleGroupType } from '@/designer-components/_settings/components/styleGroup/styleGroup';
 import { IDimensionsType } from '@/designer-components/styleDimensions/interfaces';
-import { IPrefixSuffixType } from '@/designer-components/stylePrefixSuffix/prefixSuffixComponent';
 import { IShadowType } from '@/designer-components/styleShadow/shadowComponent';
 import { ISettingsInputProps } from '@/designer-components/_settings/components/settingsInput';
+import { ISettingsInputRowProps } from '@/designer-components/_settings/components/settingsInputRow';
 import { IPropertyRouterProps } from '@/designer-components/propertyRouter/interfaces';
 
 interface ToolbarSettingsProp extends Omit<IConfigurableFormComponent, 'hidden' | 'type'> {
@@ -119,8 +119,6 @@ type DimensionStyleType = ToolbarSettingsProp & Omit<IDimensionsType, 'hidden' |
 
 type LabelStyleType = ToolbarSettingsProp & Omit<ILabelComponentProps, 'hidden' | 'type'>;
 
-type PrefixSuffixStyleType = ToolbarSettingsProp & Omit<IPrefixSuffixType, 'hidden' | 'type'>;
-
 type ShadowStyleType = ToolbarSettingsProp & Omit<IShadowType, 'hidden' | 'type'>;
 
 type LabelType = ToolbarSettingsProp & Omit<ILabelProps, 'hidden' | 'type'>;
@@ -130,6 +128,8 @@ type StyleGroupType = ToolbarSettingsProp & Omit<IStyleGroupType, 'hidden' | 'ty
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
 type SettingInputType = ToolbarSettingsProp & Omit<ISettingsInputProps, 'hidden' | 'type'>;
+
+type SettingInputRowType = ToolbarSettingsProp & Omit<ISettingsInputRowProps, 'hidden' | 'type'>;
 
 type PropertyRouterType = ToolbarSettingsProp & Omit<IPropertyRouterProps, 'hidden' | 'type'>;
 
@@ -291,10 +291,6 @@ export class DesignerToolbarSettings<T> {
     return this.addProperty(props, 'labelStyle');
   }
 
-  public addPrefixSuffixStyle(props: PrefixSuffixStyleType | ((data: T) => PrefixSuffixStyleType)) {
-    return this.addProperty(props, 'prefixSuffixStyle');
-  }
-
   public addShadowStyle(props: ShadowStyleType | ((data: T) => ShadowStyleType)) {
     return this.addProperty(props, 'shadowStyle');
   }
@@ -317,6 +313,10 @@ export class DesignerToolbarSettings<T> {
 
   public addSettingInput(props: SettingInputType | ((data: T) => SettingInputType)) {
     return this.addProperty(props, 'settingInput');
+  }
+
+  public addSettingInputRow(props: SettingInputRowType | ((data: T) => SettingInputRowType)) {
+    return this.addProperty(props, 'settingInputRow');
   }
 
   public addPropertyRouter(props: PropertyRouterType | ((data: T) => PropertyRouterType)) {

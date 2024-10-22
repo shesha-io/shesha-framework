@@ -89,12 +89,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps> = {
     .add<IDropdownComponentProps>(4, (prev) => migrateReadOnly(prev))
     .add<IDropdownComponentProps>(5, (prev, context) => ({
       ...prev,
-      valueFormat: prev.valueFormat ??
+      valueFormat: prev.valueFormat  ??
         context.isNew
-        ? 'simple'
-        : prev['useRawValue'] === true
           ? 'simple'
-          : 'listItem',
+          : prev['useRawValue'] === true 
+            ? 'simple' 
+            : 'listItem',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({...migrateFormApi.eventsAndProperties(prev)}))
     .add<IDropdownComponentProps>(7, (prev) => {

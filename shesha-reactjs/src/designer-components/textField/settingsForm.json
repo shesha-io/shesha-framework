@@ -113,11 +113,51 @@
             },
             {
               "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
-              "type": "prefixSuffixStyle",
-              "label": "Prefix/Suffix",
-              "hideLabel": true,
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "propertyName": "prefixSuffix"
+              "type": "settingsInputRow",
+              "inputs": [
+                {
+                  "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+                  "type": "settingsInput",
+                  "propertyName": "prefix",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Prefix",
+                  "jsSettings": true
+                },
+                {
+                  "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+                  "type": "settingsInput",
+                  "inputType": "iconPicker",
+                  "propertyName": "prefixIcon",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Prefix Icon",
+                  "jsSettings": true
+                }
+              ],
+              "parentId": "s4gmBg31azZC0UjZjpfTm"
+            },
+            {
+              "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+              "type": "settingsInputRow",
+              "inputs": [
+                {
+                  "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+                  "type": "settingsInput",
+                  "propertyName": "Suffix",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Suffix",
+                  "jsSettings": true
+                },
+                {
+                  "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+                  "type": "settingsInput",
+                  "inputType": "iconPicker",
+                  "propertyName": "suffixIcon",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Siffix Icon",
+                  "jsSettings": true
+                }
+              ],
+              "parentId": "s4gmBg31azZC0UjZjpfTm"
             }
           ]
         },
@@ -127,35 +167,60 @@
           "label": "Validation",
           "components": [
             {
-              "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
-              "type": "settingsInput",
-              "inputType": "switch",
-              "jsSettings": true,
-              "propertyName": "validate.required",
-              "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
-              "label": "Required",
-              "size": "small",
-              "layout": "horizontal"
+              "id": "Scip2BCqWk6HniFIJTgtA",
+              "type": "settingsInputRow",
+              "inputs": [
+                {
+                  "id": "3be9da3f-f47e-48ae-b4c3-f5cc36e534d9",
+                  "type": "settingsInput",
+                  "inputType": "switch",
+                  "jsSettings": true,
+                  "propertyName": "validate.required",
+                  "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+                  "label": "Required",
+                  "size": "small",
+                  "layout": "horizontal"
+                },
+                {
+                  "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
+                  "type": "settingsInput",
+                  "inputType": "codeEditor",
+                  "propertyName": "validate.validator",
+                  "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+                  "label": "Validator",
+                  "validate": {},
+                  "labelAlign": "right",
+                  "hidden": false,
+                  "jsSetting": false,
+                  "description": "Enter custom validator logic for form.item rules. Returns a Promise"
+                }
+              ]
             },
             {
-              "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
-              "type": "settingsInput",
-              "propertyName": "validate.minLength",
-              "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
-              "label": "Min Length",
-              "validate": {},
-              "version": 2,
-              "size": "small"
-            },
-            {
-              "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
-              "type": "settingsInput",
-              "propertyName": "validate.maxLength",
-              "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
-              "label": "Max Length",
-              "validate": {},
-              "version": 2,
-              "size": "small"
+              "id": "qOkkwAnHvKJ0vYXeXMLsd",
+              "type": "settingsInputRow",
+              "inputs": [
+                {
+                  "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
+                  "type": "settingsInput",
+                  "propertyName": "validate.minLength",
+                  "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+                  "label": "Min Length",
+                  "validate": {},
+                  "version": 2,
+                  "size": "small"
+                },
+                {
+                  "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
+                  "type": "settingsInput",
+                  "propertyName": "validate.maxLength",
+                  "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+                  "label": "Max Length",
+                  "validate": {},
+                  "version": 2,
+                  "size": "small"
+                }
+              ]
             },
             {
               "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
@@ -167,50 +232,6 @@
               "version": 3,
               "textType": "text",
               "size": "small"
-            },
-            {
-              "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
-              "type": "settingsInput",
-              "inputType": "codeEditor",
-              "propertyName": "validate.validator",
-              "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
-              "label": "Validator",
-              "validate": {},
-              "labelAlign": "right",
-              "hidden": false,
-              "jsSetting": false,
-              "description": "Enter custom validator logic for form.item rules. Returns a Promise",
-              "settingsValidationErrors": [],
-              "exposedVariables": [
-                {
-                  "name": "rules",
-                  "description": "Validate rules, only support customize validator",
-                  "type": "object"
-                },
-                {
-                  "name": "value",
-                  "description": "Component current value",
-                  "type": "object"
-                },
-                {
-                  "name": "callback",
-                  "description": "Callback called by component",
-                  "type": "function"
-                },
-                {
-                  "name": "data",
-                  "description": "Form values",
-                  "type": "object"
-                }
-              ],
-              "version": 3,
-              "language": "typescript",
-              "placeholder": "",
-              "wrapInTemplate": true,
-              "templateSettings": {
-                "functionName": "validator"
-              },
-              "availableConstantsExpression": "    return metadataBuilder\r\n        .addStandard([\"shesha:formData\"])\r\n        .addObject(\"rule\", \"Validate rules, only support customize validator\", undefined)\r\n        .addString(\"value\", \"Component current value\tobject\", undefined)\r\n        .addFunction(\"callback\", \"Callback called by component\", undefined)\r\n        .build();"
             }
           ]
         },

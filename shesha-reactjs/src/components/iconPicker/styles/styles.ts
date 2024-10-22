@@ -9,7 +9,6 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
             &:not(.sha-readonly) {
                 cursor: pointer;
             }
-
     
             .${iconPrefixCls} {
                 margin-right: ${sheshaStyles.paddingLG}px;
@@ -29,6 +28,7 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
         .${shaIconPickerSearch} {
             display: flex;
             margin-bottom: ${sheshaStyles.paddingLG}px;
+    
             .${shaIconPickerSearchInputContainer} {
                 margin-left: ${sheshaStyles.paddingLG}px;
                 flex: 1;
@@ -87,7 +87,7 @@ export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
         }
       }    
     `);
-
+    
 
     return {
         shaIconPicker,

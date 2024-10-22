@@ -15,7 +15,6 @@ import { getFieldNameFromExpression } from '@/index';
 export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps, 'model'> {
     name?: string;
     label?: string;
-    hideLabel?: boolean;
     jsSetting?: boolean;
     readOnly?: boolean;
     disabled?: boolean;
@@ -24,6 +23,7 @@ export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps,
     tooltip?: string;
     hidden?: boolean;
     layout?: 'horizontal' | 'vertical';
+    hideLabel?: boolean;
 }
 
 const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
@@ -53,7 +53,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
             </ConfigurableFormItem>;
         }
         return (
-            <Form.Item {...{ ...props, name: getFieldNameFromExpression(props.name) }} label={props.label} size='small' >
+            <Form.Item {...{ ...props, name: getFieldNameFromExpression(props.name) }} label={props.label} >
                 <SettingsControl propertyName={props.name} mode={mode}>
                     {(value, onChange, propertyName) => children(value, onChange, propertyName)}
                 </SettingsControl>
@@ -62,7 +62,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
     }
 
     if (!props.jsSetting) {
-        return <Form.Item {...props as FormItemProps<any>} size='small'>{props.children}</Form.Item>;
+        return <Form.Item {...props as FormItemProps<any>}>{props.children}</Form.Item>;
     }
 
     const valuePropName = props.valuePropName ?? 'value';
@@ -78,8 +78,7 @@ const SettingsFormComponent: FC<ISettingsFormItemProps> = (props) => {
                 id: '',
                 description: props.tooltip,
                 validate: { required: props.required },
-                hidden: props.hidden,
-                size: 'small',
+                hidden: props.hidden
             }}
             className='sha-js-label'
         >

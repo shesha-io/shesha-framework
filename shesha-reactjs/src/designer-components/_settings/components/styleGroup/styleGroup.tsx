@@ -12,7 +12,6 @@ import SizeComponent from '@/designer-components/styleDimensions/sizeComponent';
 import ShadowComponent from '@/designer-components/styleShadow/shadowComponent';
 import { IFontValue } from '@/designer-components/styleFont/interfaces';
 import { CollapsiblePanel } from '@/components';
-import { useStyles } from './styles/styles';
 import { SettingInput } from '../settingsInput';
 
 export type omittedStyleType = 'font' | 'dimensions' | 'border' | 'background' | 'shadow' | 'stylingBox' | 'style';

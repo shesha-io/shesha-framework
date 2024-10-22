@@ -43,7 +43,6 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
           markup={markup}
-          isSettingsForm={true}
           cacheKey={item.itemType}
           initialValues={item}
           onValuesChange={debouncedSave}
