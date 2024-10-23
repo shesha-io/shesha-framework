@@ -85,6 +85,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
         position: 'relative',
         transition: '.1s',
         padding: '3px',
+        overflowX: 'hidden'
       }}
     >
       <div
