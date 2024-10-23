@@ -15,8 +15,10 @@ namespace Shesha.DynamicEntities
                 return null;
 
             var dtoType = typeof(DynamicDto<,>).MakeGenericType(entityType, idType);
+            var createDtoType = typeof(CreateDynamicDto<,>).MakeGenericType(entityType, idType);
+            var updateDtoType = typeof(UpdateDynamicDto<,>).MakeGenericType(entityType, idType);
 
-            var appServiceType = typeof(DynamicCrudAppService<,,>).MakeGenericType(entityType, dtoType, idType);
+            var appServiceType = typeof(DynamicCrudAppService<,,,,>).MakeGenericType(entityType, dtoType, createDtoType, updateDtoType, idType);
 
             return appServiceType;
         }

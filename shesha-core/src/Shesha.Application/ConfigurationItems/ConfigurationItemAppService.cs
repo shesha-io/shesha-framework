@@ -188,7 +188,7 @@ namespace Shesha.ConfigurationItems
             await UnitOfWorkManager.Current.SaveChangesAsync();
         }
 
-        private IConfigurationItemManager GetSingleManager(ConfigurationItemBase item) 
+        private IConfigurationItemManager GetSingleManager(ConfigurationItemBase item)
         {
             return IocManager.GetItemManager(item) ?? throw new ConfigurationItemManagerNotFoundException(item.GetType().Name);
         }
