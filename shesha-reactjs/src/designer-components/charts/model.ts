@@ -37,9 +37,9 @@ export interface IChartsProps {
     showName?: boolean;
     showDescription?: boolean;
     showXAxisScale?: boolean;
-    showXAxisLabelTitle?: boolean;
+    showXAxisTitle?: boolean;
     showYAxisScale?: boolean;
-    showYAxisLabelTitle?: boolean;
+    showYAxisTitle?: boolean;
     stacked?: boolean;
     aggregationMethod?: TAggregationMethod;
 }
@@ -61,7 +61,7 @@ export type TChartType = 'polarArea' | 'bar' | 'line' | 'pie';
 
 export type TAggregationMethod = 'count' | 'sum' | 'average' | 'min' | 'max';
 
-export type TLegendPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';
+export type TLegendPosition = 'top' | 'bottom' | 'left' | 'right';
 
 export type TTimeSeriesFormat = 'day' | 'month' | 'year' | 'day-month' | 'day-month-year' | 'month-year';
 

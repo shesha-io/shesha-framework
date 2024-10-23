@@ -44,11 +44,11 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         }
       },
       legend: {
-        display: showXAxisScale,
+        display: showXAxisScale ? true : false,
         position: legendPosition ?? 'top',
       },
       title: {
-        display: showTitle,
+        display: showTitle ? true : false,
         text: title || `${yProperty} by ${xProperty} (${aggregationMethod})`,
       },
     },

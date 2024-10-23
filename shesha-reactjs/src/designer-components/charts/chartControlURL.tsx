@@ -14,7 +14,7 @@ import { getURLChartDataRefetchParams } from './utils';
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType, entityType, valueProperty, filters, legendProperty,
     axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale,
-    showXAxisLabelTitle, showYAxisScale, showYAxisLabelTitle, simpleOrPivot,
+    showXAxisTitle, showYAxisScale, showYAxisTitle, simpleOrPivot,
     filterProperties, stacked, tension, strokeColor, allowFilter, isAxisTimeSeries,
     timeSeriesFormat } = props;
   const { refetch } = useGet({ path: '', lazy: true });
@@ -25,14 +25,16 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
   useEffect(() => {
     setControlProps({
-      valueProperty, legendProperty, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisLabelTitle,
-      showYAxisScale, showYAxisLabelTitle, simpleOrPivot, stacked, tension, strokeColor, allowFilter,
+      valueProperty, legendProperty, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle,
+      showYAxisScale, showYAxisTitle, simpleOrPivot, stacked, tension, strokeColor, allowFilter,
       isAxisTimeSeries, timeSeriesFormat, url
     });
-  }, []);
+  }, [valueProperty, legendProperty, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle,
+    showYAxisScale, showYAxisTitle, simpleOrPivot, stacked, tension, strokeColor, allowFilter,
+    isAxisTimeSeries, timeSeriesFormat, url]);
 
   useEffect(() => {
-    refetch(getURLChartDataRefetchParams(url, valueProperty, filters, legendProperty, axisProperty))
+    refetch(getURLChartDataRefetchParams(url))
       .then((data) => {
         if (!data.result) {
           setIsLoaded(true);
@@ -50,15 +52,13 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
       })
       .catch((err: any) => console.error('err data', err));
   }, [chartType, entityType, valueProperty, filters, legendProperty, axisProperty, filterProperties, isAxisTimeSeries,
-    timeSeriesFormat, showTitle, showLegend, legendPosition, showXAxisScale, showXAxisLabelTitle, showYAxisScale, showYAxisLabelTitle,
+    timeSeriesFormat, showTitle, showLegend, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle,
     stacked, tension, strokeColor, url]);
 
-  if (!url || !chartType || !valueProperty || !axisProperty) {
+  if (!url || !chartType) {
     const missingProperties: string[] = [];
     if (!url) missingProperties.push("'url'");
     if (!chartType) missingProperties.push("'chartType'");
-    if (!valueProperty) missingProperties.push("'valueProperty'");
-    if (!axisProperty) missingProperties.push("'axisProperty'");
 
     const descriptionMessage = `Please make sure that you've specified the following properties: ${missingProperties.join(', ')}.`;
 

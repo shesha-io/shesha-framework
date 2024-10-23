@@ -22,9 +22,9 @@ export interface IChartDataContext {
   yProperty?: string;
   simpleOrPivot?: 'simple' | 'pivot';
   showXAxisScale?: boolean;
-  showXAxisLabelTitle?: boolean;
+  showXAxisTitle?: boolean;
   showYAxisScale?: boolean;
-  showYAxisLabelTitle?: boolean;
+  showYAxisTitle?: boolean;
   stacked?: boolean;
   aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
   tension?: number;
@@ -72,9 +72,9 @@ export const INITIAL_STATE: IChartDataContext = {
   yProperty: 'y',
   simpleOrPivot: 'simple',
   showXAxisScale: true,
-  showXAxisLabelTitle: true,
+  showXAxisTitle: true,
   showYAxisScale: true,
-  showYAxisLabelTitle: true,
+  showYAxisTitle: true,
   aggregationMethod: 'count',
   tension: 0,
 

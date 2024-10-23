@@ -43,7 +43,6 @@ export const settingsForm = new DesignerToolbarSettings()
         ]
     }
   })
-  // show data settings that include URL, axis, value, legend, filter if data mode is URL within the same collapsible panel
   .addCollapsiblePanel({
     id: dataSettingsForUrlId,
     propertyName: 'dataSettingsForUrl',
@@ -76,92 +75,24 @@ export const settingsForm = new DesignerToolbarSettings()
           .addTextField({
             id: nanoid(),
             propertyName: 'axisProperty',
-            label: 'Axis property',
-            labelAlign: 'right',
-            parentId: 'root',
-            hidden: false,
-            description: 'The property to be used on the axis',
-            validate: { required: false },
-          })
-          .addCheckbox({
-            id: nanoid(),
-            propertyName: 'isAxisTimeSeries',
-            label: 'Is Axis Property Time Series?',
-            description: 'If the axis is a time series, check this box.',
-            parentId: 'root',
-            defaultValue: false,
-            validate: { required: true },
-          })
-          .addDropdown({
-            id: nanoid(),
-            propertyName: 'timeSeriesFormat',
-            parentId: 'root',
-            label: 'Time Series Format',
-            dataSourceType: 'values',
-            values: [
-              { id: nanoid(), label: 'Day', value: 'day' },
-              { id: nanoid(), label: 'Month', value: 'month' },
-              { id: nanoid(), label: 'Year', value: 'year' },
-              { id: nanoid(), label: 'Day-Month', value: 'day-month' },
-              { id: nanoid(), label: 'Day-Month-Year', value: 'day-month-year' },
-              { id: nanoid(), label: 'Month-Year', value: 'month-year' },
-            ],
-            validate: { required: true },
-            defaultValue: 'day-month-year',
-            hidden: {
-              _code: "return getSettingValue(data?.isAxisTimeSeries) !== true",
-              _mode: "code",
-              _value: true
-            },
-          })
-          .addTextField({
-            id: nanoid(),
-            propertyName: 'valueProperty',
-            label: 'Value property',
-            labelAlign: 'right',
-            parentId: 'root',
-            hidden: false,
-            description: 'This is the property that will be used to calculate the data and hence show on the depenedent axis',
-            validate: { required: true },
-          })
-          .addTextField({
-            id: nanoid(),
-            propertyName: 'legendProperty',
-            label: 'Legend Property',
-            labelAlign: 'right',
-            parentId: 'root',
-            hidden: false,
-            description: 'The properties you want to use on the Legend',
-            validate: { required: true },
-          })
-          .addDropdown({
-            id: nanoid(),
-            propertyName: 'aggregationMethod',
-            parentId: 'root',
-            label: 'Aggregation Method',
-            dataSourceType: 'values',
-            values: [
-              { id: nanoid(), label: 'Sum', value: 'sum' },
-              { id: nanoid(), label: 'Count', value: 'count' },
-              { id: nanoid(), label: 'Average', value: 'average' },
-              { id: nanoid(), label: 'Min', value: 'min' },
-              { id: nanoid(), label: 'Max', value: 'max' },
-            ],
-            validate: { required: true },
-            defaultValue: 'count',
-          })
-          // a query builder for filters, using normal graphql query builder but it does not depend on entityType because the data is coming from URL
-          .addQueryBuilder({
-            id: 'n4enebtmhFgvkP5ukQK1f',
-            propertyName: 'filters',
-            label: 'Entity filter',
+            label: 'Axis label',
             labelAlign: 'right',
             parentId: 'root',
             hidden: false,
             isDynamic: false,
-            validate: {},
-            settingsValidationErrors: [],
-            fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
+            description: 'Label for the axis property',
+            validate: { required: false },
+          })
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'valueProperty',
+            label: 'Value axis label',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            isDynamic: false,
+            description: 'Label for the value property',
+            validate: { required: false },
           })
           .toJson()
         ]
@@ -421,34 +352,45 @@ export const settingsForm = new DesignerToolbarSettings()
           })
           .addCheckbox({
             id: nanoid(),
-            propertyName: 'showXAxisLabel',
+            propertyName: 'showXAxisScale',
             label: 'Show X Axis Scale',
             parentId: 'root',
           })
           .addCheckbox({
             id: nanoid(),
-            propertyName: 'showXAxisLabelTitle',
-            label: 'Show X Axis Label Title',
+            propertyName: 'showXAxisTitle',
+            label: 'Show X Axis Title',
             parentId: 'root',
+            // hidden if scale is not shown
+            hidden: {
+              _code: "return getSettingValue(data?.showXAxisScale) !== true",
+              _mode: "code",
+              _value: true
+            },
           })
           .addCheckbox({
             id: nanoid(),
-            propertyName: 'showYAxisLabel',
+            propertyName: 'showYAxisScale',
             label: 'Show Y Axis Scale',
             parentId: 'root',
           })
           .addCheckbox({
             id: nanoid(),
-            propertyName: 'showYAxisLabelTitle',
-            label: 'Show Y Axis Label Title',
+            propertyName: 'showYAxisTitle',
+            label: 'Show Y Axis Title',
             parentId: 'root',
+            hidden: {
+              _code: "return getSettingValue(data?.showYAxisScale) !== true",
+              _mode: "code",
+              _value: true
+            }
           })
           .addDropdown({
             id: nanoid(),
             propertyName: 'legendPosition',
             parentId: 'root',
             hidden: {
-              _code: "return getSettingValue(data?.showLegend) !== true",
+              _code: "return getSettingValue(data?.showLegend) !== true && getSettingValue(data?.dataMode) === `url`",
               _mode: "code",
               _value: false
             },
@@ -459,7 +401,6 @@ export const settingsForm = new DesignerToolbarSettings()
               { id: nanoid(), label: 'Left', value: 'left' },
               { id: nanoid(), label: 'Bottom', value: 'bottom' },
               { id: nanoid(), label: 'Right', value: 'right' },
-              { id: nanoid(), label: 'Center', value: 'center' },
             ],
             validate: { required: true },
             defaultValue: 'top',

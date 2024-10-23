@@ -1,4 +1,4 @@
-import { IChartData, IFilter, TAggregationMethod, TChartType, TOperator } from "./model";
+import { IChartData, IFilter, TAggregationMethod, TChartType, TOperator, TTimeSeriesFormat } from "./model";
 
 /**
  * @param str the enjoined properties string to remove duplicates from
@@ -56,28 +56,26 @@ function convertNestedPropertiesToObjectFormat(array) {
  * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
   filterProperties = convertNestedPropertiesToObjectFormat(filterProperties);
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
       properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')) + ", " + filterProperties,
-      filter: Boolean(filters) ? JSON.stringify(filters) : undefined,
+      filter: filters,
       maxResultCount: -1
     },
   };
 };
 
 
-export const getURLChartDataRefetchParams = (url: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string) => {
+export const getURLChartDataRefetchParams = (url: string) => {
   // if the url is not provided, return an empty object
   if (!url) return {};
   return {
     path: `${url}`,
     queryParams: {
-      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')),
-      filter: Boolean(filters) ? JSON.stringify(filters) : undefined,
       maxResultCount: -1
     },
   };
@@ -131,7 +129,7 @@ function isIsoString(value) {
  * @param properties the properties to format
  * @returns the formatted data
  */
-export function formatDate(data, timeUnit: T, properties: string[]) {
+export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string[]) {
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
