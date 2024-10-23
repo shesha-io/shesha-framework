@@ -8,6 +8,7 @@ import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
+import { CodeFilled, CodeOutlined, FormOutlined } from '@ant-design/icons';
 import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 
@@ -25,7 +26,7 @@ export interface ISettingsControlProps<Value = any> {
   useAsyncEvaluation?: boolean;
 }
 
-const defaultExposedVariables: ICodeExposedVariable[] = [
+export const defaultExposedVariables: ICodeExposedVariable[] = [
   { name: "data", description: "Selected form values", type: "object" },
   { name: "pageContext", description: "Contexts data of current page", type: "object" },
   { name: "contexts", description: "Contexts data", type: "object" },
@@ -42,7 +43,8 @@ const defaultExposedVariables: ICodeExposedVariable[] = [
 export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>) => {
 
   const { styles } = useStyles();
-  
+
+
   const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
@@ -85,7 +87,7 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
     propertyName: props.propertyName + 'Code',
     fileName: props.propertyName,
     wrapInTemplate: true,
-    templateSettings: { 
+    templateSettings: {
       functionName: functionName,
       useAsyncDeclaration: props.useAsyncEvaluation,
     },
@@ -93,23 +95,23 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
   };
 
   const editor = constantsEvaluator
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType}/>
-    : <CodeEditorWithStandardConstants {...codeEditorProps}  resultType={resultType}/>;
+
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType} />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} />;
 
   return (
     <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
       <Button
         hidden={props.readOnly}
-        shape="round"
-        className={styles.jsSwitch}
-        type='primary'
+        className={`${styles.jsSwitch} inlineJS`}
+        type='text'
         danger={mode === 'value' && !!code}
         ghost
         size='small'
+        icon={mode === 'code' ? <FormOutlined /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+        color='lightslategrey'
         onClick={onSwitchMode}
-      >
-        {mode === 'code' ? 'Value' : 'JS'}
-      </Button>
+      />
       <div className={styles.jsContent}>
         {mode === 'code' && editor}
         {mode === 'value' && props.children(setting?._value, valueOnChange, propertyName)}

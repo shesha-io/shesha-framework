@@ -99,6 +99,7 @@ const SettingsForm = <TModel,>(props: PropsWithChildren<SettingsFormProps<TModel
             {...layoutSettings}
             onValuesChange={settingsChange}
             initialValues={model}
+            size='small'
           >
             {props.children}
           </Form>

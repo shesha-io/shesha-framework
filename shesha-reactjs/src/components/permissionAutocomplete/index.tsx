@@ -6,11 +6,12 @@ export interface IPropertyAutocompleteProps {
   onChange?: (value: string[]) => void;
   value?: string[];
   readOnly?: boolean;
+  size?: 'large' | 'middle' | 'small';
 }
 
 const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
 
-  const { onChange, value, readOnly } = props;
+  const { onChange, value, readOnly, size } = props;
 
   const [searchText, setSearchText] = useState('');
 
@@ -23,19 +24,19 @@ const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
 
   return (
     <Select
-      style={{width: '100%'}}
+      style={{ width: '100%' }}
       mode="multiple"
       allowClear
       onSearch={setSearchText}
       searchValue={searchText}
       disabled={readOnly}
-
+      size={size}
       dropdownStyle={{ maxHeight: '50%', overflow: 'auto' }}
       dropdownRender={_ => (
 
-        <PermissionsTree 
-          formComponentId={''} 
-          formComponentName={''} 
+        <PermissionsTree
+          formComponentId={''}
+          formComponentName={''}
           mode={'Select'}
           hideSearch
           readOnly={readOnly}
