@@ -18,6 +18,7 @@ using Shesha.Elmah;
 using Shesha.Languages;
 using Shesha.NHibernate;
 using Shesha.Scheduler;
+using Shesha.Sms.Clickatell;
 using System;
 using System.Text;
 
@@ -32,7 +33,8 @@ namespace Shesha
         typeof(AbpAutoMapperModule),
         typeof(SheshaElmahModule),
         typeof(SheshaSchedulerModule),
-        typeof(SheshaApplicationModule)
+        typeof(SheshaApplicationModule),
+        typeof(SheshaClickatellModule)
      )]
     public class SheshaWebCoreModule : AbpModule
     {

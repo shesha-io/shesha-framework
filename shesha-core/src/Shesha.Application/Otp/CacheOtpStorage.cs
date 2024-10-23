@@ -43,5 +43,10 @@ namespace Shesha.Otp
         {
             return await InternalCache.GetOrDefaultAsync(operationId);
         }
+
+        public Task<OtpDto> GetAsync(string moduleName, string ActionType, string sourceEntityId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
