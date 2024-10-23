@@ -100,7 +100,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
           }
         })()
       }
-    </div >
+    </div>
   );
 };
 

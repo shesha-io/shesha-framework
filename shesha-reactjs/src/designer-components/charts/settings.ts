@@ -413,6 +413,7 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: chartSettingsId,
             label: 'Tension',
             defaultValue: 0,
+            stepNumeric: 0.1,
             hidden: {
               _code: "return getSettingValue(data?.chartType) !== `line`",
               _mode: "code",
@@ -424,7 +425,7 @@ export const settingsForm = new DesignerToolbarSettings()
             propertyName: 'strokeColor',
             parentId: 'root',
             label: 'Stroke Color',
-            defaultValue: 'rgba(255, 255, 255, 0.1)',
+            defaultValue: '#000000',
           })
           .toJson()
         ]
