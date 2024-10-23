@@ -34,6 +34,208 @@
       "referenceListId": null
     },
     {
+      "id": "a7qbgROr9WUeMWUO-CQ56",
+      "type": "collapsiblePanel",
+      "propertyName": "pnlData",
+      "label": "Data",
+      "labelAlign": "right",
+      "parentId": "root",
+      "hidden": {
+        "_value": false,
+        "_code": "return getSettingValue(data?.itemSubType) !== 'dynamic';",
+        "_mode": "code"
+      },
+      "isDynamic": false,
+      "version": 6,
+      "expandIconPosition": "start",
+      "header": {
+        "id": "R9BipBqjVuZ5HY4vdteSp",
+        "components": []
+      },
+      "content": {
+        "id": "f9pNv-hqF5ukaDytb7xwq",
+        "components": [
+          {
+            "id": "028b4eaf-8830-4dcd-b54f-422c72b25418",
+            "type": "dropdown",
+            "propertyName": "dataSourceType",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "label": "Data Source type",
+            "dataSourceType": "values",
+            "values": [
+              {
+                "label": "Entities List",
+                "value": "entitiesList",
+                "id": "58bd1839-b215-4b7b-b7c7-acf67b52f7af"
+              },
+              {
+                "label": "Url",
+                "value": "url",
+                "id": "e71e4e52-2886-4569-94b4-f47d58602bc2"
+              }
+            ],
+            "version": 6,
+            "referenceListId": null,
+            "valueFormat": "listItem"
+          },
+          {
+            "id": "Xp6zDosEy-IrSeDfHHwh-",
+            "type": "container",
+            "propertyName": "container1",
+            "label": "Container1",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "hidden": {
+              "_code": "return  getSettingValue(data?.dataSourceType) !== 'url';",
+              "_mode": "code",
+              "_value": false
+            },
+            "isDynamic": false,
+            "direction": "vertical",
+            "justifyContent": "left",
+            "className": "",
+            "settingsValidationErrors": [],
+            "components": [
+              {
+                "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
+                "type": "textField",
+                "propertyName": "dataSourceUrl",
+                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
+                "label": "Data Source Url",
+                "settingsValidationErrors": [],
+                "version": 5,
+                "textType": "text",
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
+              },
+              {
+                "id": "4c6133f1-8886-4527-aa6c-ae0606506a8a",
+                "type": "textField",
+                "propertyName": "keyPropName",
+                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
+                "label": "Key Prop Name",
+                "version": 5,
+                "textType": "text",
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
+              },
+              {
+                "id": "007e5859-9299-4434-84d9-9f7b0f7228af",
+                "type": "textField",
+                "propertyName": "valuePropName",
+                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
+                "label": "Value Prop Name",
+                "version": 5,
+                "textType": "text",
+                "desktop": {},
+                "tablet": {},
+                "mobile": {}
+              },
+              {
+                "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
+                "type": "labelValueEditor",
+                "propertyName": "queryParams",
+                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
+                "label": "Query Param",
+                "labelTitle": "Param",
+                "labelName": "param",
+                "valueTitle": "Value",
+                "valueName": "value",
+                "ignorePrefixesOnNewItems": true,
+                "validate": {},
+                "description": "",
+                "settingsValidationErrors": [],
+                "version": 3,
+                "mode": "dialog"
+              }
+            ],
+            "version": 4,
+            "flexWrap": "wrap"
+          },
+          {
+            "id": "uEFBpy19tApJMiBuFyj9s",
+            "type": "container",
+            "propertyName": "container2",
+            "label": "Container2",
+            "labelAlign": "right",
+            "parentId": "f9pNv-hqF5ukaDytb7xwq",
+            "hidden": {
+              "_code": "return getSettingValue(data?.dataSourceType) !== 'entitiesList';",
+              "_mode": "code",
+              "_value": false
+            },
+            "isDynamic": false,
+            "direction": "vertical",
+            "justifyContent": "left",
+            "className": "",
+            "settingsValidationErrors": [],
+            "components": [
+              {
+                "id": "c1ffda30-8eea-4621-aae7-0af583143df6",
+                "type": "autocomplete",
+                "propertyName": "entityTypeShortAlias",
+                "label": "Entity Type",
+                "labelAlign": "right",
+                "parentId": "uEFBpy19tApJMiBuFyj9s",
+                "hidden": false,
+                "dataSourceType": "url",
+                "validate": {},
+                "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
+                "entityTypeShortAlias": "",
+                "useRawValues": true,
+                "version": 5
+              },
+              {
+                "id": "hpm6rN_aj-L_KaG5MLIZt",
+                "type": "propertyAutocomplete",
+                "propertyName": "entityDisplayProperty",
+                "label": "Display Property",
+                "labelAlign": "right",
+                "parentId": "uEFBpy19tApJMiBuFyj9s",
+                "hidden": {
+                  "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
+                  "_mode": "code",
+                  "_value": false
+                },
+                "isDynamic": false,
+                "placeholder": "",
+                "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
+                "validate": {},
+                "modelType": "{{data.entityTypeShortAlias}}",
+                "autoFillProps": false,
+                "settingsValidationErrors": [],
+                "version": 2
+              },
+              {
+                "id": "n4enebtmhFgvkP5ukQK1f",
+                "type": "queryBuilder",
+                "propertyName": "filter",
+                "label": "Entity Filter",
+                "labelAlign": "right",
+                "parentId": "uEFBpy19tApJMiBuFyj9s",
+                "hidden": false,
+                "isDynamic": false,
+                "validate": {},
+                "settingsValidationErrors": [],
+                "modelType": "{{data.entityTypeShortAlias}}",
+                "fieldsUnavailableHint": "Please select `Entity Type` to be able to configure this filter.",
+                "version": 2
+              }
+            ],
+            "version": 4,
+            "flexWrap": "wrap"
+          }
+        
+        ]
+      },
+      "collapsible": "header",
+      "ghost": true,
+      "hideWhenEmpty": true,
+      "settingsValidationErrors": []
+    },
+    {
       "id": "345c2181-fb9f-48ed-9631-864ac357807b",
       "type": "container",
       "propertyName": "cntButton",
@@ -55,6 +257,11 @@
           "label": "Name",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+          "hidden": {
+            "_value": false,
+            "_code": "return getSettingValue(data?.itemSubType) === 'dynamic';",
+            "_mode": "code"
+          },
           "jsSetting": false,
           "validate": {
             "required": true
@@ -67,7 +274,12 @@
           "type": "textField",
           "propertyName": "label",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "label": "Label"
+          "label": "Label",
+          "hidden": {
+            "_value": false,
+            "_code": "return getSettingValue(data?.itemSubType) === 'dynamic';",
+            "_mode": "code"
+          }
         },
         {
           "id": "po1qeQwn48ykEB4EI9J8y",
@@ -76,11 +288,15 @@
           "label": "Tooltip",
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-          "hidden": false,
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
-          "validate": {}
+          "validate": {},
+          "hidden": {
+            "_value": false,
+            "_code": "return getSettingValue(data?.itemSubType) === 'dynamic';",
+            "_mode": "code"
+          }
         },
         {
           "id": "91b404a6-4021-4b0a-b9ef-007167a93075",
@@ -377,214 +593,6 @@
       "version": 1,
       "flexWrap": "wrap",
       "componentName": "cntButton",
-      "settingsValidationErrors": []
-    },
-    {
-      "id": "a7qbgROr9WUeMWUO-CQ56",
-      "type": "collapsiblePanel",
-      "propertyName": "pnlData",
-      "label": "Data",
-      "labelAlign": "right",
-      "parentId": "root",
-      "hidden": false,
-      "isDynamic": false,
-      "version": 6,
-      "expandIconPosition": "start",
-      "header": {
-        "id": "R9BipBqjVuZ5HY4vdteSp",
-        "components": []
-      },
-      "content": {
-        "id": "f9pNv-hqF5ukaDytb7xwq",
-        "components": [
-          {
-            "id": "028b4eaf-8830-4dcd-b54f-422c72b25418",
-            "type": "dropdown",
-            "propertyName": "dataSourceType",
-            "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "label": "Data Source type",
-            "dataSourceType": "values",
-            "values": [
-              {
-                "label": "Entities List",
-                "value": "entitiesList",
-                "id": "58bd1839-b215-4b7b-b7c7-acf67b52f7af"
-              },
-              {
-                "label": "Url",
-                "value": "url",
-                "id": "e71e4e52-2886-4569-94b4-f47d58602bc2"
-              }
-            ],
-            "version": 6,
-            "referenceListId": null,
-            "valueFormat": "listItem"
-          },
-          {
-            "id": "Xp6zDosEy-IrSeDfHHwh-",
-            "type": "container",
-            "propertyName": "container1",
-            "label": "Container1",
-            "labelAlign": "right",
-            "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "hidden": {
-              "_code": "return  getSettingValue(data?.dataSourceType) !== 'url';",
-              "_mode": "code",
-              "_value": false
-            },
-            "isDynamic": false,
-            "direction": "vertical",
-            "justifyContent": "left",
-            "className": "",
-            "settingsValidationErrors": [],
-            "components": [
-              {
-                "id": "33557039-48e8-4082-9ac7-510388d4dc6e",
-                "type": "textField",
-                "propertyName": "dataSourceUrl",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Data Source Url",
-                "settingsValidationErrors": [],
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
-              },
-              {
-                "id": "4c6133f1-8886-4527-aa6c-ae0606506a8a",
-                "type": "textField",
-                "propertyName": "keyPropName",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Key Prop Name",
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
-              },
-              {
-                "id": "007e5859-9299-4434-84d9-9f7b0f7228af",
-                "type": "textField",
-                "propertyName": "valuePropName",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Value Prop Name",
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
-              },
-              {
-                "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",
-                "type": "labelValueEditor",
-                "propertyName": "queryParams",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Query Param",
-                "labelTitle": "Param",
-                "labelName": "param",
-                "valueTitle": "Value",
-                "valueName": "value",
-                "ignorePrefixesOnNewItems": true,
-                "validate": {},
-                "description": "",
-                "settingsValidationErrors": [],
-                "version": 3,
-                "mode": "dialog"
-              }
-            ],
-            "version": 4,
-            "flexWrap": "wrap"
-          },
-          {
-            "id": "uEFBpy19tApJMiBuFyj9s",
-            "type": "container",
-            "propertyName": "container2",
-            "label": "Container2",
-            "labelAlign": "right",
-            "parentId": "f9pNv-hqF5ukaDytb7xwq",
-            "hidden": {
-              "_code": "return getSettingValue(data?.dataSourceType) !== 'entitiesList';",
-              "_mode": "code",
-              "_value": false
-            },
-            "isDynamic": false,
-            "direction": "vertical",
-            "justifyContent": "left",
-            "className": "",
-            "settingsValidationErrors": [],
-            "components": [
-              {
-                "id": "c1ffda30-8eea-4621-aae7-0af583143df6",
-                "type": "autocomplete",
-                "propertyName": "entityTypeShortAlias",
-                "label": "Entity Type",
-                "labelAlign": "right",
-                "parentId": "uEFBpy19tApJMiBuFyj9s",
-                "hidden": false,
-                "dataSourceType": "url",
-                "validate": {},
-                "dataSourceUrl": "/api/services/app/Metadata/EntityTypeAutocomplete",
-                "entityTypeShortAlias": "",
-                "useRawValues": true,
-                "version": 5
-              },
-              {
-                "id": "hpm6rN_aj-L_KaG5MLIZt",
-                "type": "propertyAutocomplete",
-                "propertyName": "entityDisplayProperty",
-                "label": "Display Property",
-                "labelAlign": "right",
-                "parentId": "uEFBpy19tApJMiBuFyj9s",
-                "hidden": {
-                  "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
-                  "_mode": "code",
-                  "_value": false
-                },
-                "isDynamic": false,
-                "placeholder": "",
-                "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
-                "validate": {},
-                "modelType": "{{data.entityTypeShortAlias}}",
-                "autoFillProps": false,
-                "settingsValidationErrors": [],
-                "version": 2
-              },
-              {
-                "id": "n4enebtmhFgvkP5ukQK1f",
-                "type": "queryBuilder",
-                "propertyName": "filter",
-                "label": "Entity Filter",
-                "labelAlign": "right",
-                "parentId": "uEFBpy19tApJMiBuFyj9s",
-                "hidden": false,
-                "isDynamic": false,
-                "validate": {},
-                "settingsValidationErrors": [],
-                "modelType": "{{data.entityTypeShortAlias}}",
-                "fieldsUnavailableHint": "Please select `Entity Type` to be able to configure this filter.",
-                "version": 2
-              }
-            ],
-            "version": 4,
-            "flexWrap": "wrap"
-          },
-          {
-            "id": "F3B46A95-703F-4465-96CA-A58496A5F78B",
-            "type": "configurableActionConfigurator",
-            "propertyName": "actionConfigurationn",
-            "label": "Action configuration",
-            "hidden": false,
-            "validate": {},
-            "settingsValidationErrors": [],
-            "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
-            "version": 0
-          }
-        ]
-      },
-      "collapsible": "header",
-      "ghost": true,
-      "hideWhenEmpty": true,
       "settingsValidationErrors": []
     },
     {

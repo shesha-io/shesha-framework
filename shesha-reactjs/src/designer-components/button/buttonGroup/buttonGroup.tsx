@@ -67,6 +67,7 @@ const renderButton = (props: ButtonGroupItemProps, uuid: string, appContext: IAp
             readOnly={props.readOnly}
             buttonType={buttonType}
             form={form}
+            
         />
     );
 };
@@ -166,6 +167,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const {fetchTemplateState} = useTemplateActions();  
     const [combinedItems, setCombinedItems] = useState([]);
 
+    console.log('ButtonGroupInner', items); 
     // Fetch templates for dynamic items and update state
     useEffect(() => {
         const fetchData = async () => {
@@ -181,12 +183,13 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                             itemSubType: "button",
                             sortOrder: 0,
                             actionConfiguration: item.actionConfiguration || null,
-                            buttonType: 'link',
+                            buttonType: item.buttonType || 'link',
                             editMode: 'inherited',
                             permissions: [],
                             hidden: false,
                             readOnly: false,
-                        }));
+                            icon: item.icon,
+                            }));
                     } else if (isGroup(item)) {
                         const childItems = await Promise.all(
                             item?.childItems?.map(async (childItem) => {
@@ -200,11 +203,12 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                                         itemSubType: "button",
                                         sortOrder: 0,
                                         actionConfiguration: childItem.actionConfiguration || null,
-                                        buttonType: 'link',
+                                        buttonType: item.buttonType || 'link',
                                         editMode: 'inherited',
                                         permissions: [],
                                         hidden: false,
                                         readOnly: false,
+                                        icon: item.icon,
                                     }));
                                 }
                                 return childItem;
