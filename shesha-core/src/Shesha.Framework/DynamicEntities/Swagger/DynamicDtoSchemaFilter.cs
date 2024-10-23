@@ -32,15 +32,18 @@ namespace Shesha.DynamicEntities.Swagger
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
         {
             var isProxy = typeof(IDynamicDtoProxy).IsAssignableFrom(context.Type);
+            var isGeneric = context.Type.IsGenericType;
 
             if (!context.Type.IsDynamicDto() || isProxy)
                 return;
 
-            var isCreateDto = context.Type.GetGenericTypeDefinition().IsAssignableTo(typeof(CreateDynamicDto<,>));
-            var isUpdateDto = context.Type.GetGenericTypeDefinition().IsAssignableTo(typeof(UpdateDynamicDto<,>));
+            var modelType = isGeneric ? context.Type : context.Type.FindBaseGenericType(typeof(DynamicDto<,>));
 
-            var srcType = context.Type.GetGenericArguments()[0];
-            var srcProperties = context.Type.IsGenericType ? srcType?.GetProperties().ToList(): null;
+            var isCreateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(CreateDynamicDto<,>));
+            var isUpdateDto = modelType.GetGenericTypeDefinition().IsAssignableTo(typeof(UpdateDynamicDto<,>));
+
+            var srcType = modelType.GetGenericArguments()[0];
+            var srcProperties = srcType?.GetProperties().ToList();
             var entityReferenceProperties = srcProperties?.Where(x => x.PropertyType.IsEntityType()).Select(x => x.Name).ToList();
 
             var propertiesConfigs = srcType != null 
@@ -50,7 +53,7 @@ namespace Shesha.DynamicEntities.Swagger
             var dtoBuilder = StaticContext.IocManager.Resolve<IDynamicDtoTypeBuilder>();
             var builderContext = new DynamicDtoTypeBuildingContext
             {
-                ModelType = context.Type
+                ModelType = modelType
             };
             var dtoType = AsyncHelper.RunSync(async () => await dtoBuilder.BuildDtoFullProxyTypeAsync(builderContext.ModelType, builderContext));
 
