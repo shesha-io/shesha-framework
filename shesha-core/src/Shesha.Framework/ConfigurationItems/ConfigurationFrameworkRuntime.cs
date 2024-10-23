@@ -10,8 +10,6 @@ namespace Shesha.ConfigurationItems
     /// </summary>
     public class ConfigurationFrameworkRuntime : IConfigurationFrameworkRuntime, ITransientDependency
     {
-        public const string SheshaSwaggerFrontend = "shesha-swagger-app";
-
         private const string ScopeKey = "sha-configuration-framework-runtime";
         private readonly IAmbientScopeProvider<ConfigurationFrameworkRuntimeState> _scopeProvider;
 
@@ -22,7 +20,7 @@ namespace Shesha.ConfigurationItems
 
         private ConfigurationFrameworkRuntimeState _defaultState = new ConfigurationFrameworkRuntimeState {
             ViewMode = ConfigurationItemViewMode.Live,
-            FrontEndApplication = SheshaSwaggerFrontend,
+            FrontEndApplication = FrontEndAppKeyConsts.SheshaSwaggerFrontend,
         };
 
         private ConfigurationFrameworkRuntimeState State 
