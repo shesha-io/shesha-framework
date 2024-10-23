@@ -7,30 +7,12 @@ export interface IChartData {
     labels: (string | number | object)[];
     datasets: object[];
 }
-
-export interface IChartProps extends IConfigurableFormComponent {
-    chartType?: TChartType;
-    showTitle?: boolean;
-    title?: string;
-    showLegend?: boolean;
-    showXAxisScale?: boolean;
-    showXAxisLabelTitle?: boolean;
-    showYAxisScale?: boolean;
-    showYAxisLabelTitle?: boolean;
-    legendPosition?: TLegendPosition;
-    entityType?: string;
-    filters?: string[];
-    valueProperty?: string;
-    axisProperty?: string;
-    legendProperty?: string;
-    xProperty?: string;
-    yProperty?: string;
-    tension?: number;
-    strokeColor?: string;
-    aggregationMethod?: TAggregationMethod;
-}
-
+/**
+ * Chart props, used in the chart component and some of its children
+ */
 export interface IChartsProps {
+    dataMode?: TDataMode;
+    url?: string;
     chartType?: TChartType;
     showTitle?: boolean;
     title?: string;
@@ -42,6 +24,8 @@ export interface IChartsProps {
     filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
+    isAxisTimeSeries?: boolean;
+    timeSeriesFormat?: TTimeSeriesFormat;
     legendProperty?: string;
     allowFilter?: boolean;
     filterProperties?: string[];
@@ -53,12 +37,17 @@ export interface IChartsProps {
     showName?: boolean;
     showDescription?: boolean;
     showXAxisScale?: boolean;
-    showXAxisLabelTitle?: boolean;
+    showXAxisTitle?: boolean;
     showYAxisScale?: boolean;
-    showYAxisLabelTitle?: boolean;
+    showYAxisTitle?: boolean;
     stacked?: boolean;
     aggregationMethod?: TAggregationMethod;
 }
+
+/**
+ * Chart props, used in the Shesha tool box
+ */
+export interface IChartProps extends IConfigurableFormComponent, IChartsProps { }
 
 export interface IChartDataProps extends IChartsProps {
     labels?: string[];
@@ -66,11 +55,15 @@ export interface IChartDataProps extends IChartsProps {
     data?: IChartData;
 }
 
+export type TDataMode = 'url' | 'entityType';
+
 export type TChartType = 'polarArea' | 'bar' | 'line' | 'pie';
 
 export type TAggregationMethod = 'count' | 'sum' | 'average' | 'min' | 'max';
 
-export type TLegendPosition = 'top' | 'bottom' | 'left' | 'right' | 'center';
+export type TLegendPosition = 'top' | 'bottom' | 'left' | 'right';
+
+export type TTimeSeriesFormat = 'day' | 'month' | 'year' | 'day-month' | 'day-month-year' | 'month-year';
 
 /**
  * To be used in the filter component

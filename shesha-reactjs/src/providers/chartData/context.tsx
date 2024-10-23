@@ -1,7 +1,8 @@
-import { IChartsProps, IFilter } from "@/designer-components/charts/model";
+import { IChartsProps, IFilter, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
 export interface IChartDataContext {
+  url?: string;
   chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
   showTitle?: boolean;
   title?: string;
@@ -13,15 +14,17 @@ export interface IChartDataContext {
   };
   valueProperty?: string;
   axisProperty?: string;
+  isAxisTimeSeries?: boolean;
+  timeSeriesFormat?: TTimeSeriesFormat;
   legendProperty?: string;
   filterProperties?: string[];
   xProperty?: string;
   yProperty?: string;
   simpleOrPivot?: 'simple' | 'pivot';
   showXAxisScale?: boolean;
-  showXAxisLabelTitle?: boolean;
+  showXAxisTitle?: boolean;
   showYAxisScale?: boolean;
-  showYAxisLabelTitle?: boolean;
+  showYAxisTitle?: boolean;
   stacked?: boolean;
   aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
   tension?: number;
@@ -29,6 +32,7 @@ export interface IChartDataContext {
 
   data?: object[];
   items?: object[];
+  urlTypeData?: object;
 
   isLoaded?: boolean;
 
@@ -43,36 +47,40 @@ export interface IChartDataAtionsContext {
   setFilterdData?: (data: object[]) => void;
   setChartFilters?: (filters: IFilter[]) => void;
   onFilter?: () => void;
+  /** Sets the data that will be retrieved directly from the backend */
+  setUrlTypeData?: (data: object) => void;
 
   setIsLoaded?: (isLoaded: boolean) => void;
   setIsFilterVisible?: (isFilterVisible: boolean) => void;
 }
 
 export const INITIAL_STATE: IChartDataContext = {
+  url: '',
   chartType: 'pivot',
   showTitle: true,
   title: 'Chart Title',
   showLegend: true,
   legendPosition: 'top',
   entityType: 'entity',
-  filters: {
-
-  },
+  filters: {},
   valueProperty: 'value',
   axisProperty: 'axis',
+  isAxisTimeSeries: false,
+  timeSeriesFormat: 'day-month-year',
   legendProperty: 'legend',
   xProperty: 'x',
   yProperty: 'y',
   simpleOrPivot: 'simple',
   showXAxisScale: true,
-  showXAxisLabelTitle: true,
+  showXAxisTitle: true,
   showYAxisScale: true,
-  showYAxisLabelTitle: true,
+  showYAxisTitle: true,
   aggregationMethod: 'count',
   tension: 0,
 
   data: [],
   items: [],
+  urlTypeData: {},
 
   isLoaded: false,
 

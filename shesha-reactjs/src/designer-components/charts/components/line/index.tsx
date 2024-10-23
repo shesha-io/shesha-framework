@@ -27,39 +27,42 @@ ChartJS.register(
 );
 
 const LineChart: React.FC<ILineChartProps> = ({ data }) => {
-    const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisLabelTitle, showYAxisScale, showYAxisLabelTitle, tension, legendProperty } = useChartDataStateContext();
+    const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle, tension, legendProperty } = useChartDataStateContext();
 
-    data.datasets.forEach((dataset: any) => {
+    data.datasets.map((dataset: any) => {
+        dataset.borderWidth = 2;
         dataset.tension = tension;
+        dataset.pointRadius = 5;
+        return dataset;
     });
 
     const options: any = {
         responsive: true,
         plugins: {
             legend: {
-                display: showLegend,
+                display: showLegend ? true : false,
                 position: legendPosition ?? 'top',
             },
             title: {
-                display: showTitle,
+                display: showTitle ? true : false,
                 text: title?.trim() || `${yProperty} vs ${xProperty} (${aggregationMethod})${legendProperty ? `, grouped by ${legendProperty}` : ''}`,
             }
         },
         scales: {
             x: {
                 title: {
-                    display: showXAxisLabelTitle,
+                    display: showXAxisTitle ? true : false,
                     text: xProperty, // X-axis title
                 },
-                display: showXAxisScale,
+                display: showXAxisScale ? true : false,
                 offset: true, // Ensure the x-axis does not coincide with the y-axis
             },
             y: {
                 title: {
-                    display: showYAxisLabelTitle,
+                    display: showYAxisTitle ? true : false,
                     text: `${yProperty} (${aggregationMethod})`, // Y-axis title
                 },
-                display: showYAxisScale,
+                display: showYAxisScale ? true : false,
                 beginAtZero: true
             }
         }

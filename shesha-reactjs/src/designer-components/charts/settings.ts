@@ -4,6 +4,7 @@ import { DesignerToolbarSettings } from "../../interfaces";
 const chartGeneralId = nanoid();
 const chartSettingsId = nanoid();
 const dataSettingsId = nanoid();
+const dataSettingsForUrlId = nanoid();
 
 export const settingsForm = new DesignerToolbarSettings()
   .addCollapsiblePanel({
@@ -24,7 +25,76 @@ export const settingsForm = new DesignerToolbarSettings()
             propertyName: 'hidden',
             label: 'Hidden',
             parentId: 'root',
-          }).toJson()
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'dataMode',
+            parentId: 'root',
+            label: 'Data Mode',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'URL', value: 'url' },
+              { id: nanoid(), label: 'Entity Type', value: 'entityType' }
+            ],
+            validate: { required: true },
+            defaultValue: 'entityType',
+          })
+          .toJson()
+        ]
+    }
+  })
+  .addCollapsiblePanel({
+    id: dataSettingsForUrlId,
+    propertyName: 'dataSettingsForUrl',
+    parentId: 'root',
+    label: 'Data Settings (URL)',
+    labelAlign: "left",
+    expandIconPosition: "start",
+    ghost: true,
+    collapsible: 'header',
+    hidden: {
+      _code: "return getSettingValue(data?.dataMode) !== `url`",
+      _mode: "code",
+      _value: true
+    },
+    content: {
+      id: nanoid(),
+      // each propery is a text field beacuse they are not dynamic
+      components:
+        [...new DesignerToolbarSettings()
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'url',
+            label: 'URL',
+            description: 'The URL you want to use for the chart',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            validate: { required: true },
+          })
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'axisProperty',
+            label: 'Axis label',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            isDynamic: false,
+            description: 'Label for the axis property',
+            validate: { required: false },
+          })
+          .addTextField({
+            id: nanoid(),
+            propertyName: 'valueProperty',
+            label: 'Value axis label',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            isDynamic: false,
+            description: 'Label for the value property',
+            validate: { required: false },
+          })
+          .toJson()
         ]
     }
   })
@@ -37,6 +107,11 @@ export const settingsForm = new DesignerToolbarSettings()
     expandIconPosition: "start",
     ghost: true,
     collapsible: 'header',
+    hidden: {
+      _code: "return getSettingValue(data?.dataMode) === `url`",
+      _mode: "code",
+      _value: false
+    },
     content: {
       id: nanoid(),
       components:
@@ -69,6 +144,37 @@ export const settingsForm = new DesignerToolbarSettings()
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
+          })
+          .addCheckbox({
+            id: nanoid(),
+            propertyName: 'isAxisTimeSeries',
+            label: 'Is Axis Property Time Series?',
+            description: 'If the axis is a time series, check this box.',
+            parentId: 'root',
+            defaultValue: false,
+            validate: { required: true },
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'timeSeriesFormat',
+            parentId: 'root',
+            label: 'Time Series Format',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'Day', value: 'day' },
+              { id: nanoid(), label: 'Month', value: 'month' },
+              { id: nanoid(), label: 'Year', value: 'year' },
+              { id: nanoid(), label: 'Day-Month', value: 'day-month' },
+              { id: nanoid(), label: 'Day-Month-Year', value: 'day-month-year' },
+              { id: nanoid(), label: 'Month-Year', value: 'month-year' },
+            ],
+            validate: { required: true },
+            defaultValue: 'day-month-year',
+            hidden: {
+              _code: "return getSettingValue(data?.isAxisTimeSeries) !== true",
+              _mode: "code",
+              _value: true
+            },
           })
           .addPropertyAutocomplete({
             id: nanoid(),
@@ -241,38 +347,52 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Show Legend',
             description: 'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
             parentId: 'root',
-            defaultValue: false,
+            defaultValue: true,
           })
           .addCheckbox({
             id: nanoid(),
-            propertyName: 'showXAxisLabel',
+            propertyName: 'showXAxisScale',
             label: 'Show X Axis Scale',
             parentId: 'root',
+            defaultValue: true,
           })
           .addCheckbox({
             id: nanoid(),
-            propertyName: 'showXAxisLabelTitle',
-            label: 'Show X Axis Label Title',
+            propertyName: 'showXAxisTitle',
+            label: 'Show X Axis Title',
             parentId: 'root',
+            defaultValue: true,
+            hidden: {
+              _code: "return getSettingValue(data?.showXAxisScale) !== true",
+              _mode: "code",
+              _value: true
+            },
           })
           .addCheckbox({
             id: nanoid(),
-            propertyName: 'showYAxisLabel',
+            propertyName: 'showYAxisScale',
             label: 'Show Y Axis Scale',
             parentId: 'root',
+            defaultValue: true,
           })
           .addCheckbox({
             id: nanoid(),
-            propertyName: 'showYAxisLabelTitle',
-            label: 'Show Y Axis Label Title',
+            propertyName: 'showYAxisTitle',
+            label: 'Show Y Axis Title',
             parentId: 'root',
+            defaultValue: true,
+            hidden: {
+              _code: "return getSettingValue(data?.showYAxisScale) !== true",
+              _mode: "code",
+              _value: true
+            }
           })
           .addDropdown({
             id: nanoid(),
             propertyName: 'legendPosition',
             parentId: 'root',
             hidden: {
-              _code: "return getSettingValue(data?.showLegend) !== true",
+              _code: "return getSettingValue(data?.showLegend) !== true && getSettingValue(data?.dataMode) === `url`",
               _mode: "code",
               _value: false
             },
@@ -283,7 +403,6 @@ export const settingsForm = new DesignerToolbarSettings()
               { id: nanoid(), label: 'Left', value: 'left' },
               { id: nanoid(), label: 'Bottom', value: 'bottom' },
               { id: nanoid(), label: 'Right', value: 'right' },
-              { id: nanoid(), label: 'Center', value: 'center' },
             ],
             validate: { required: true },
             defaultValue: 'top',
@@ -294,6 +413,7 @@ export const settingsForm = new DesignerToolbarSettings()
             parentId: chartSettingsId,
             label: 'Tension',
             defaultValue: 0,
+            stepNumeric: 0.1,
             hidden: {
               _code: "return getSettingValue(data?.chartType) !== `line`",
               _mode: "code",
@@ -305,7 +425,7 @@ export const settingsForm = new DesignerToolbarSettings()
             propertyName: 'strokeColor',
             parentId: 'root',
             label: 'Stroke Color',
-            defaultValue: '#000',
+            defaultValue: '#000000',
           })
           .toJson()
         ]
