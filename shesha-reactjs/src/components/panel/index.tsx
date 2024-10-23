@@ -23,6 +23,7 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   isSimpleDesign?: boolean;
   hideCollapseContent?: boolean;
   hideWhenEmpty?: boolean;
+  dynamicBorderRadius?: number;
 }
 
 /**
@@ -67,10 +68,11 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   isSimpleDesign,
   hideCollapseContent,
   hideWhenEmpty = false,
+  dynamicBorderRadius
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
-  const { styles } = useStyles();
+  const { styles } = useStyles({borderRadius: dynamicBorderRadius});
 
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
@@ -80,7 +82,7 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
       onChange={onChange}
       expandIconPosition={expandIconPosition}
       className={classNames(shaCollapsiblePanelStyle, className, { [styles.noContentPadding]: noContentPadding, [styles.hideWhenEmpty]: hideWhenEmpty })}
-      style={style}
+      style={{...style, borderTopLeftRadius: dynamicBorderRadius, borderTopRightRadius: dynamicBorderRadius}}
       ghost={ghost}
       bodyColor={bodyColor}
       hideCollapseContent={hideCollapseContent}
