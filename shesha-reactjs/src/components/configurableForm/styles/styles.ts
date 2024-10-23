@@ -7,6 +7,7 @@ const formClassNames = {
     shaFormInfoCard: 'sha-form-info-card',
     shaFormInfoCardTitle: 'sha-form-info-card-title',
     shaError: 'sha-error',
+    shaFormInfoCardParent: 'sha-form-info-card-parent',
 };
 
 const hookResponse = {
@@ -48,6 +49,14 @@ export const ShaFormStyles = createGlobalStyle`
                 }
             }
         }
+    }
+
+    .${formClassNames.shaFormInfoCardParent} {
+        width: 100%;
+        position: absolute;
+        top: 0px;
+        left: -2px;
+        overflow-x: hidden;
     }
 
     .${formClassNames.shaFormInfoCard} {       
