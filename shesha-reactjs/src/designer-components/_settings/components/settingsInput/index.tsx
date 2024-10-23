@@ -10,20 +10,21 @@ export interface ISettingsInputProps extends IInputProps, Omit<IConfigurableForm
 }
 
 export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel, propertyName: property, inputType: type,
-    buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, description, value, hidden,
+    buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden,
     size, ...rest }) => {
     const { searchQuery } = useSearchQuery();
 
-    const group = property?.split(".")[1]?.trim();
+    const group = property?.split(".")[0]?.trim();
     const stringToFind = `${group ?? ''} ${label.toLowerCase()}`?.trim();
 
     if (stringToFind.includes(searchQuery.toLowerCase()?.trim())) {
         return (hidden ? null :
             <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
-                <FormItem tooltip={description}
+                <FormItem
                     name={`${property}`}
                     hideLabel={hideLabel}
                     label={label}
+                    tooltip={tooltip}
                     jsSetting={type === 'codeEditor' ? false : jsSetting}
                     readOnly={readOnly}
                     layout={type === 'switch' ? 'horizontal' : 'vertical'}
@@ -35,9 +36,10 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
                         dropdownOptions={dropdownOptions}
                         buttonGroupOptions={buttonGroupOptions}
                         hasUnits={hasUnits} propertyName={property}
-                        description={description}
+                        tooltip={tooltip}
                         readOnly={readOnly}
-                        value={value} {...rest} />}
+                        {...rest} />
+                    }
                 </FormItem>
             </div>
         );
@@ -54,7 +56,7 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
     name: 'SettingsInput',
     icon: <SettingOutlined />,
     Factory: ({ model }) => {
-        const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, description, readOnly, value } = model;
+        const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, tooltip: description, readOnly } = model;
         return model.hidden ? null : (
             <SettingInput size='small'
                 label={label}
@@ -62,9 +64,8 @@ const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
                 dropdownOptions={dropdownOptions}
                 buttonGroupOptions={buttonGroupOptions}
                 hasUnits={hasUnits} propertyName={property}
-                description={description}
+                tooltip={description}
                 readOnly={readOnly}
-                value={value}
                 jsSetting={model.jsSetting}
                 layout={model.layout}
                 {...model} />

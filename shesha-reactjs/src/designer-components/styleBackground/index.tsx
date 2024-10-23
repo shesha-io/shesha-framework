@@ -1,7 +1,7 @@
 
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { StrikethroughOutlined } from '@ant-design/icons';
+import { BlockOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
@@ -11,10 +11,9 @@ import { IBackgroundProps } from './interfaces';
 const BackgroundConfigurator: IToolboxComponent<IBackgroundProps> = {
     type: 'backgroundStyle',
     name: 'Background Configurator',
-    isInput: true,
+    isInput: false,
     isOutput: true,
-    canBeJsSetting: true,
-    icon: <StrikethroughOutlined />,
+    icon: <BlockOutlined />,
     dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
     Factory: ({ model: passedModel }) => {
         const { size, ...model } = passedModel;

@@ -25,6 +25,7 @@
               "propertyName": "propertyName",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Property Name",
+              "styledLabel": true,
               "size": "small",
               "validate": {
                 "required": true
@@ -53,31 +54,38 @@
               "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
               "type": "settingsInput",
               "inputType": "textArea",
-              "propertyName": "description",
+              "propertyName": "Tooltip",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Tooltip",
               "version": 2,
               "jsSettings": true
             },
             {
-              "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
-              "inputType": "editModeSelector",
-              "type": "settingsInput",
-              "propertyName": "editMode",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Edit mode",
-              "size": "small",
-              "jsSettings": true
-            },
-            {
-              "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
-              "type": "settingsInput",
-              "inputType": "switch",
-              "propertyName": "hidden",
-              "parentId": "s4gmBg31azZC0UjZjpfTm",
-              "label": "Hidden",
-              "jsSettings": true,
-              "layout": "horizontal"
+              "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+              "type": "settingsInputRow",
+              "inputs": [
+                {
+                  "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
+                  "inputType": "editModeSelector",
+                  "type": "settingsInput",
+                  "propertyName": "readonly",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Readonly",
+                  "size": "small",
+                  "jsSettings": true
+                },
+                {
+                  "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
+                  "type": "settingsInput",
+                  "inputType": "switch",
+                  "propertyName": "hidden",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "label": "Hidden",
+                  "jsSettings": true,
+                  "layout": "horizontal"
+                }
+              ],
+              "parentId": "s4gmBg31azZC0UjZjpfTm"
             },
             {
               "id": "8615d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -107,28 +115,28 @@
               "propertyName": "initialValue",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Default Value",
-              "description": "Enter default value of component. (formData, formMode, globalState) are exposed",
+              "tooltip": "Enter default value of component. (formData, formMode, globalState) are exposed",
               "textType": "text",
               "jsSettings": true
             },
             {
-              "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+              "id": "prefix-s4gmBg31azZC0UjZjpfTm",
               "type": "settingsInputRow",
               "inputs": [
                 {
-                  "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+                  "id": "prefix-s4gmBg31azZC0UjZjpfTm",
                   "type": "settingsInput",
                   "propertyName": "prefix",
-                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "parentId": "prefix-s4gmBg31azZC0UjZjpfTm",
                   "label": "Prefix",
                   "jsSettings": true
                 },
                 {
-                  "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+                  "id": "prefix-icon-s4gmBg31azZC0UjZjpfTm",
                   "type": "settingsInput",
                   "inputType": "iconPicker",
                   "propertyName": "prefixIcon",
-                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "parentId": "prefix-s4gmBg31azZC0UjZjpfTm",
                   "label": "Prefix Icon",
                   "jsSettings": true
                 }
@@ -136,24 +144,24 @@
               "parentId": "s4gmBg31azZC0UjZjpfTm"
             },
             {
-              "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+              "id": "suffix-s4gmBg31azZC0UjZjpfTm",
               "type": "settingsInputRow",
               "inputs": [
                 {
-                  "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+                  "id": "suffix-s4gmBg31azZC0UjZjpfTm",
                   "type": "settingsInput",
                   "propertyName": "Suffix",
-                  "parentId": "s4gmBg31azZC0UjZjpfTm",
+                  "parentId": "suffix-s4gmBg31azZC0UjZjpfTm",
                   "label": "Suffix",
                   "jsSettings": true
                 },
                 {
-                  "id": "12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6",
+                  "id": "suffix-icon-s4gmBg31azZC0UjZjpfTm",
                   "type": "settingsInput",
                   "inputType": "iconPicker",
                   "propertyName": "suffixIcon",
-                  "parentId": "s4gmBg31azZC0UjZjpfTm",
-                  "label": "Siffix Icon",
+                  "parentId": "suffix-s4gmBg31azZC0UjZjpfTm",
+                  "label": "Suffix Icon",
                   "jsSettings": true
                 }
               ],
@@ -192,7 +200,7 @@
                   "labelAlign": "right",
                   "hidden": false,
                   "jsSetting": false,
-                  "description": "Enter custom validator logic for form.item rules. Returns a Promise"
+                  "tooltip": "Enter custom validator logic for form.item rules. Returns a Promise"
                 }
               ]
             },
@@ -249,7 +257,7 @@
               "labelAlign": "right",
               "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
-              "description": "Enter custom eventhandler on changing of event. (form, event) are exposed",
+              "tooltip": "Enter custom eventhandler on changing of event. (form, event) are exposed",
               "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
             },
             {
@@ -262,7 +270,7 @@
               "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
               "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();",
-              "description": "Enter custom eventhandler on focus of event. (form, event) are exposed"
+              "tooltip": "Enter custom eventhandler on focus of event. (form, event) are exposed"
             },
             {
               "id": "4a2b7329-1a89-45d1-a5b0-f66db21744b0",
@@ -273,7 +281,7 @@
               "labelAlign": "right",
               "parentId": "Scip2BCqWk6HniFIJTgtA",
               "hidden": false,
-              "description": "Enter custom eventhandler on blur of event. (form, event) are exposed"
+              "tooltip": "Enter custom eventhandler on blur of event. (form, event) are exposed"
             }
           ]
         },
@@ -283,55 +291,195 @@
           "label": "Appearance",
           "components": [
             {
-              "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
-              "type": "propertyRouter",
-              "componentName": "propertyRouter1",
+              "id": "fontStyleCollapsiblePanel",
+              "type": "collapsiblePanel",
+              "label": "Font",
               "labelAlign": "right",
               "parentId": "root",
               "hidden": false,
               "isDynamic": false,
-              "propertyRouteName": {
-                "_mode": "code",
-                "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                "_value": ""
+              "version": 6,
+              "expandIconPosition": "start",
+              "collapsible": "header",
+              "ghost": true,
+              "hideWhenEmpty": true,
+              "settingsValidationErrors": [],
+              "header": {
+                "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
+                "components": []
               },
-              "components": [
-                {
-                  "id": "try26voxhs-HxJ5k5ngYE",
-                  "type": "styleGroup",
-                  "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
-                  "propertyName": "styles"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "key": "4",
-          "id": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
-          "label": "Appearance",
-          "components": [
+              "content": {
+                "id": "fontStylePnl",
+                "components": [
+                  {
+                    "id": "try26voxhs-HxJ5k5ngYE",
+                    "type": "fontStyle",
+                    "parentId": "fontStylePnl"
+                  }
+                ]
+              }
+            },
             {
-              "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
-              "type": "propertyRouter",
-              "componentName": "propertyRouter1",
+              "id": "dimensionsStyleCollapsiblePanel",
+              "type": "collapsiblePanel",
+              "label": "Dimension",
               "labelAlign": "right",
               "parentId": "root",
               "hidden": false,
               "isDynamic": false,
-              "propertyRouteName": {
-                "_mode": "code",
-                "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                "_value": ""
+              "version": 6,
+              "expandIconPosition": "start",
+              "collapsible": "header",
+              "ghost": true,
+              "hideWhenEmpty": true,
+              "settingsValidationErrors": [],
+              "header": {
+                "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
+                "components": []
               },
-              "components": [
-                {
-                  "id": "try26voxhs-HxJ5k5ngYE",
-                  "type": "styleGroup",
-                  "parentId": "rZf26voxh-f15e-437b-98b6-84d6a1fbf801",
-                  "propertyName": "styles"
-                }
-              ]
+              "content": {
+                "id": "dimensionsStylePnl",
+                "components": [
+                  {
+                    "id": "dimesnsionsStyle",
+                    "type": "dimensionsStyle",
+                    "parentId": "dimensionsStylePnl"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "borderStyleCollapsiblePanel",
+              "type": "collapsiblePanel",
+              "label": "Border",
+              "labelAlign": "right",
+              "parentId": "root",
+              "hidden": false,
+              "isDynamic": false,
+              "version": 6,
+              "expandIconPosition": "start",
+              "collapsible": "header",
+              "ghost": true,
+              "hideWhenEmpty": true,
+              "settingsValidationErrors": [],
+              "header": {
+                "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
+                "components": []
+              },
+              "content": {
+                "id": "borderStylePnl",
+                "components": [
+                  {
+                    "id": "borderStyle",
+                    "type": "borderStyle",
+                    "parentId": "BorderStylePnl"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "backgroundStyleCollapsiblePanel",
+              "type": "collapsiblePanel",
+              "label": "Background",
+              "labelAlign": "right",
+              "parentId": "root",
+              "hidden": false,
+              "isDynamic": false,
+              "version": 6,
+              "expandIconPosition": "start",
+              "collapsible": "header",
+              "ghost": true,
+              "hideWhenEmpty": true,
+              "settingsValidationErrors": [],
+              "header": {
+                "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
+                "components": []
+              },
+              "content": {
+                "id": "backgroundStylePnl",
+                "components": [
+                  {
+                    "id": "backgroundStyle",
+                    "type": "backgroundStyle",
+                    "parentId": "backgroundStylePnl",
+                    "propertyName": "background"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "shadowStyleCollapsiblePanel",
+              "type": "collapsiblePanel",
+              "label": "Shadow",
+              "labelAlign": "right",
+              "parentId": "root",
+              "hidden": false,
+              "isDynamic": false,
+              "version": 6,
+              "expandIconPosition": "start",
+              "collapsible": "header",
+              "ghost": true,
+              "hideWhenEmpty": true,
+              "settingsValidationErrors": [],
+              "header": {
+                "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
+                "components": []
+              },
+              "content": {
+                "id": "shadowStylePnl",
+                "components": [
+                  {
+                    "id": "shadowStyle",
+                    "type": "shadowStyle",
+                    "parentId": "shadowStylePnl"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "styleCollapsiblePanel",
+              "type": "collapsiblePanel",
+              "label": "Styles",
+              "labelAlign": "right",
+              "parentId": "root",
+              "hidden": false,
+              "isDynamic": false,
+              "version": 6,
+              "expandIconPosition": "start",
+              "collapsible": "header",
+              "ghost": true,
+              "hideWhenEmpty": true,
+              "settingsValidationErrors": [],
+              "header": {
+                "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
+                "components": []
+              },
+              "content": {
+                "id": "stylePnl",
+                "components": [
+                  {
+                    "id": "styleCodeEditorPnl",
+                    "type": "settingsInput",
+                    "inputType": "codeEditor",
+                    "propertyName": "style",
+                    "label": "Style",
+                    "parentId": "stylePnl",
+                    "validate": {},
+                    "tooltip": "A script that returns the style of the element as an object. This should conform to CSSProperties"
+                  },
+                  {
+                    "id": "styleBoxPnl",
+                    "type": "styleBox",
+                    "propertyName": "stylingBox",
+                    "parentId": "stylePnl",
+                    "validate": {},
+                    "label": "Margin Padding",
+                    "hideLabel": true,
+                    "jsSetting": false,
+                    "version": 2
+                  }
+                ]
+              }
             }
           ]
         },

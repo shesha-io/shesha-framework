@@ -10,6 +10,7 @@ export const fontTypes = [
     { value: 'Verdana', label: 'Verdana' },
     { value: 'Georgia', label: 'Georgia' },
     { value: 'Palatino', label: 'Palatino' },
+    { value: 'monospace', label: 'Monospace' },
     { value: 'Garamond', label: 'Garamond' },
     { value: 'Comic Sans MS', label: 'Comic Sans MS' },
     { value: 'Trebuchet MS', label: 'Trebuchet MS' },

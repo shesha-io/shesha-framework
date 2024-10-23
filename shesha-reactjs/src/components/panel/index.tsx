@@ -1,10 +1,9 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
 import styled from 'styled-components';
 import { useStyles } from './styles/styles';
-import { isHidden } from '@/designer-components/_settings/components/utils';
 
 const { Panel } = Collapse;
 
@@ -72,11 +71,18 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
   const { styles } = useStyles();
+  const [isHidden, setIsHidden] = useState(false);
   const ref = React.useRef(null);
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
-  return (
-    // isHidden(ref, 32) ? null :
+  useEffect(() => {
+    if (ref.current) {
+      console.log("Ref::", header, " ", ref.current.offsetHeight);
+      setIsHidden(ref?.current.offsetHeight < 100);
+    }
+  }, [ref?.current?.offsetHeight])
+
+  return hideWhenEmpty && isHidden ? null : (
     <StyledCollapse
       ref={ref}
       defaultActiveKey={collapsedByDefault ? [] : ['1']}

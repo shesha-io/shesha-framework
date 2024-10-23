@@ -47,24 +47,29 @@ export interface IInputProps extends IComponentLabelProps {
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
     onChange?: (value: any) => void;
-    value?: any;
     hasUnits?: boolean;
     hidden?: boolean;
     jsSetting?: boolean;
     children?: React.ReactNode;
-    description?: string;
+    tooltip?: string;
     size?: SizeType;
     hideLabel?: boolean;
     layout?: 'horizontal' | 'vertical';
     language?: CodeLanguages;
     style?: string;
+    wrapperCol?: { span: number };
     fileName?: string;
     availableConstantsExpression?: string;
     resultType?: ResultType;
     exposedVariables?: string[];
     dropdownMode?: 'multiple' | 'tags';
     allowClear?: boolean;
+    className?: string;
 }
+
+interface IInputComponentProps extends IInputProps {
+    value?: any;
+};
 
 const { Option } = Select;
 
@@ -88,10 +93,10 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
     );
 };
 
-export const InputComponent: FC<IInputProps> = (props) => {
+export const InputComponent: FC<IInputComponentProps> = (props) => {
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, description, onChange, readOnly, label, availableConstantsExpression, allowClear, dropdownMode } = props;
+    const { size, className, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, allowClear, dropdownMode } = props;
     const allData = useAvailableConstantsData();
 
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
@@ -142,7 +147,7 @@ export const InputComponent: FC<IInputProps> = (props) => {
         case 'switch':
             return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
         case 'number':
-            return <InputNumber readOnly={readOnly} size={size} value={value} style={{ width: "100%" }} />;
+            return <InputNumber readOnly={readOnly} size={size} value={value} className={className} />;
         case 'customDropdown':
             return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'textArea':
@@ -200,36 +205,25 @@ export const InputRow: React.FC<InputRowProps> = ({ inputs }) => {
     </div>;
 };
 
-export const searchFormItems = (children: React.ReactNode, searchQuery: string): React.ReactNode => {
-    if (!searchQuery) return children;
+const styleLabels = ['size', 'weight', 'color', 'type', 'align', 'overflow', 'family', 'width',
+    'height', 'minWidth', 'minHeight', 'maxHeight', 'maxWidth', 'hide border', 'selected corner radius',
+    'selected border side', 'radius', 'style', 'position', 'repeat', 'offset x', 'offset y', 'blur',
+    'spread', 'direction', 'url', 'file', 'file id', 'owner type', 'owner id', 'file catergory'];
 
-    return React.Children.map(children, (child) => {
-        if (!React.isValidElement(child)) return null;
-
-        if (child.key === null && !child.props.children) return child;
-
-        if (child.type === 'div' || child.type === React.Fragment) {
-            const nestedChildren = searchFormItems(child.props.children, searchQuery);
-            return nestedChildren ? React.cloneElement(child, {}, nestedChildren) : null;
-        }
-
-        if (child.props.label && typeof child.props.label === 'string') {
-            if (child.props.label.toLowerCase().includes(searchQuery.toLowerCase())) {
-                return child;
-            }
-        }
-
-        return null;
-    });
-};
-
-const styleLabels = ['size', 'weight', 'color', 'type', 'align', 'overflow', 'family', 'width', 'height', 'minWidth', 'minHeight', 'maxHeight', 'maxWidth', 'hide border', 'selected corner radius', 'selected border side', 'radius', 'style', 'position', 'repeat', 'offset x', 'offset y', 'blur', 'spread', 'direction', 'url', 'file', 'file id', 'owner type', 'owner id', 'file catergory'];
 export const filterDynamicComponents = (components, query) => {
 
     const filterResult = components.map(c => {
 
-        if (c.type === 'styleGroup') {
-            const shouldHide = !styleLabels.some(label => label.toLowerCase().includes(query.toLowerCase()));
+        if (c.type === 'collapsiblePanel') {
+            const compsHaveLabels = c.content.components.some(comp => comp.label);
+            const shouldHide = !c.content.components.some(comp => comp?.label ? comp.label.toLowerCase().includes(query.toLowerCase()) : true);
+            const shouldHidePanel = !styleLabels.some(label => label.toLowerCase().includes(query.toLowerCase()));
+
+            return !compsHaveLabels ? { ...c, hidden: shouldHidePanel } : { ...c, hidden: shouldHide };
+        }
+
+        if (c.type === 'settingsInputRow') {
+            const shouldHide = !c.inputs.map(input => input.label).some(label => label.toLowerCase().includes(query.toLowerCase()));
 
             return shouldHide ? { ...c, hidden: true } : c;
         }
@@ -258,10 +252,3 @@ export const filterDynamicComponents = (components, query) => {
     );
 };
 
-export const isHidden = (ref, value?: number) => {
-
-    if (ref.current) {
-        return ref?.current.offsetHeight < value;
-    }
-    return false;
-};

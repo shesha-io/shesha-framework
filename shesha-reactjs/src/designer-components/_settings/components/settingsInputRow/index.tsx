@@ -17,8 +17,8 @@ const SettingsInputRow: IToolboxComponent<ISettingsInputRowProps> = {
     Factory: ({ model }) => {
         return model.hidden ? null : (
             <InputRow inputs={model.inputs.map(input => {
-                const { label, propertyName, inputType, readOnly, value } = input;
-                return { label, propertyName, readOnly, value, inputType };
+                const { label, propertyName, inputType, readOnly } = input;
+                return { label, propertyName, readOnly, inputType };
             })} />
         );
     }

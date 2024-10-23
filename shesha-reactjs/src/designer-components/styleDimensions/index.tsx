@@ -5,10 +5,10 @@ import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
 import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';
-import SizeComponent from './sizeComponent';
+import DimensionsComponent from './sizeComponent';
 import { IDimensionsProps } from './interfaces';
 
-const SizeConfigurator: IToolboxComponent<IDimensionsProps> = {
+const DimensionsStyle: IToolboxComponent<IDimensionsProps> = {
     type: 'dimensionsStyle',
     name: 'Dimensions',
     isInput: true,
@@ -20,11 +20,11 @@ const SizeConfigurator: IToolboxComponent<IDimensionsProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                {() => <SizeComponent model={model} readOnly={model.readOnly} />}
+                {() => <DimensionsComponent readOnly={model.readOnly} />}
             </ConfigurableFormItem>
         );
     },
     settingsFormMarkup: getSettings(),
 };
 
-export default SizeConfigurator;
+export default DimensionsStyle;

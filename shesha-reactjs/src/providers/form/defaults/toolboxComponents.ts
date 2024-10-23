@@ -47,7 +47,7 @@ import Statistic from '@/designer-components/statistic';
 import StatusTag from '@/designer-components/statusTag';
 import StyleBox from '@/designer-components/styleBox';
 import BorderConfigurator from '@/designer-components/styleBorder';
-import SizeConfigurator from '@/designer-components/styleDimensions';
+import DimensionsStyle from '@/designer-components/styleDimensions';
 import SubForm from '@/designer-components/subForm';
 import Slider from '@/designer-components/slider';
 import Switch from '@/designer-components/switch/switch';
@@ -107,7 +107,6 @@ import FontConfigurator from '@/designer-components/styleFont';
 import BackgroundConfigurator from '@/designer-components/styleBackground';
 import ShadowConfigurator from '@/designer-components/styleShadow';
 import LabelConfigurator from '@/designer-components/styleLabel';
-import StyleGroup from '@/designer-components/_settings/components/styleGroup';
 import SearchableTabs from '@/designer-components/_settings/components/tabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
@@ -255,10 +254,9 @@ export const getToolboxComponents = (
         FontConfigurator,
         BorderConfigurator,
         BackgroundConfigurator,
-        SizeConfigurator,
+        DimensionsStyle,
         ShadowConfigurator,
         LabelConfigurator,
-        StyleGroup,
         SearchableTabs,
         SettingsInput,
         SettingsInputRow,

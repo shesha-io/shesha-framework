@@ -21,9 +21,6 @@ export interface IDimensionsValue {
 }
 
 export interface IDimensionsType {
-    onChange?: (value) => void;
-    value?: IDimensionsValue;
     readOnly?: boolean;
-    model?: any;
     noOverflow?: boolean;
 }

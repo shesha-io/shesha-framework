@@ -36,7 +36,6 @@ import { IBorderProps } from '@/designer-components/styleBorder/interfaces';
 import { ILabelComponentProps } from '@/designer-components/styleLabel/interfaces';
 import { ILabelProps } from '@/designer-components/styleLabel/labelConfigurator';
 import { ITabsComponentProps } from '@/designer-components/tabs/models';
-import { IStyleGroupType } from '@/designer-components/_settings/components/styleGroup/styleGroup';
 import { IDimensionsType } from '@/designer-components/styleDimensions/interfaces';
 import { IShadowType } from '@/designer-components/styleShadow/shadowComponent';
 import { ISettingsInputProps } from '@/designer-components/_settings/components/settingsInput';
@@ -122,8 +121,6 @@ type LabelStyleType = ToolbarSettingsProp & Omit<ILabelComponentProps, 'hidden' 
 type ShadowStyleType = ToolbarSettingsProp & Omit<IShadowType, 'hidden' | 'type'>;
 
 type LabelType = ToolbarSettingsProp & Omit<ILabelProps, 'hidden' | 'type'>;
-
-type StyleGroupType = ToolbarSettingsProp & Omit<IStyleGroupType, 'hidden' | 'type'>;
 
 type SliderType = ToolbarSettingsProp & Omit<ISliderComponentProps, 'hidden' | 'type'>;
 
@@ -297,10 +294,6 @@ export class DesignerToolbarSettings<T> {
 
   public addLabel(props: LabelType | ((data: T) => LabelType)) {
     return this.addProperty(props, 'labelConfigurator');
-  }
-
-  public addStyleGroup(props: StyleGroupType | ((data: T) => StyleGroupType)) {
-    return this.addProperty(props, 'styleGroup');
   }
 
   public addSlider(props: SliderType | ((data: T) => SliderType)) {

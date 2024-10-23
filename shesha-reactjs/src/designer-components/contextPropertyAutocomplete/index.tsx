@@ -27,6 +27,7 @@ export interface IContextPropertyAutocompleteComponentProps extends IConfigurabl
 export interface IContextPropertyAutocompleteProps extends Omit<IContextPropertyAutocompleteComponentProps, 'type' | 'propertyName'> {
   defaultModelType: string;
   formData: any;
+  styledLabel?: boolean;
   onValuesChange?: (changedValues: any) => void;
 }
 
@@ -68,9 +69,11 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 
   const context = !!state?.context && mode === 'context' ? state?.context : undefined;
 
-  const contextlabel = <label>Context</label>;
-  const componentlabel = <label>Component name</label>;
-  const propertylabel = <label>Property name</label>;
+  const styledLabel = (label: string) => <span style={{ fontWeight: 500, color: 'darkslategrey' }}>{label}</span>;
+  ;
+  const contextlabel = model.styledLabel ? styledLabel("Context") : <label>Context</label>;
+  const componentlabel = model.styledLabel ? styledLabel("Component Name") : <label>Component name</label>;
+  const propertylabel = model.styledLabel ? styledLabel("Property Name") : <label>Property name</label>;
 
   const modelType = !context || mode === 'formData' ? defaultModelType : context;
   const dataType: MetadataType = !context || mode === 'formData' ? 'entity' : 'context';
@@ -78,24 +81,24 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
   return (
     <>
       <Form.Item {...{ label: componentlabel, readOnly }} hidden={mode === 'formData'} >
-        <Input 
-          readOnly={readOnly} 
-          value={formData.componentName} 
+        <Input
+          readOnly={readOnly}
+          value={formData.componentName}
           onChange={(e) => {
             setState(prev => ({ ...prev, componentName: e.target.value }));
             onValuesChange({ componentName: e.target.value });
-          }} 
+          }}
         />
       </Form.Item>
       <Form.Item {...{ label: contextlabel, readOnly }} hidden={mode === 'formData'} >
-        <DataContextSelector 
-          {...model} 
-          readOnly={readOnly} 
-          value={formData?.context} 
+        <DataContextSelector
+          {...model}
+          readOnly={readOnly}
+          value={formData?.context}
           onChange={(value) => {
             onValuesChange({ context: value });
             setState({ ...state, context: value });
-          }} 
+          }}
         />
       </Form.Item>
       <ConditionalWrap

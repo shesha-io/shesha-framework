@@ -2,7 +2,12 @@ import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IconType } from '@/components';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { CSSProperties } from 'styled-components';
-import { IStyleType } from '../_settings/components/styleGroup/models';
+import { IFontValue } from '../styleFont/interfaces';
+import { IBorderValue } from '../styleBorder/interfaces';
+import { IBackgroundValue } from '../styleBackground/interfaces';
+import { IShadowValue } from '../styleShadow/interfaces';
+import { IDimensionsValue } from '../styleDimensions/interfaces';
+import { IStyleType } from '../_settings/components/models';
 
 export type TextType = 'text' | 'password';
 
@@ -31,7 +36,11 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   prefixIcon?: IconType;
   initialValue?: string;
   textType?: TextType;
-  styles?: IStyleType;
+  border?: IBorderValue;
+  background?: IBackgroundValue;
+  font?: IFontValue;
+  shadow?: IShadowValue;
+  dimensions?: IDimensionsValue;
   width?: string;
   height?: string;
   hideBorder?: boolean;

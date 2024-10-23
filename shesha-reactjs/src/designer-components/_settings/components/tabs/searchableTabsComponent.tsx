@@ -3,7 +3,7 @@ import { Tabs, Input, Empty } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
 import { ComponentsContainer } from '@/components';
 import { SearchQueryProvider } from './context';
-import { filterDynamicComponents, searchFormItems } from '../utils';
+import { filterDynamicComponents } from '../utils';
 import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -23,22 +23,18 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
     useEffect(() => {
         const newFilteredTabs = tabs
             .map((tab: any) => {
-                const filteredComponents = tab.components
-                    ? filterDynamicComponents(tab.components, searchQuery)
-                    : searchFormItems(tab.children, searchQuery);
+                const filteredComponents = filterDynamicComponents(tab.components, searchQuery);
 
-                console.log('filteredComponents', filteredComponents);
 
                 const hasVisibleComponents = Array.isArray(filteredComponents)
                     ? filteredComponents.some(comp => !comp.hidden)
                     : !!filteredComponents;
+
                 return {
                     ...tab,
-                    label: <div style={{ display: 'flex', gap: '5px', verticalAlign: 'middle', flexDirection: 'row-reverse', alignItems: 'baseline' }}>
-                        {tab.label || tab.title}
-                    </div>,
+                    label: tab.label || tab.title,
                     children: tab.components
-                        ? <ParentProvider model={model}>
+                        ? tab.components.length === 0 ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" /> : <ParentProvider model={model}>
                             <ComponentsContainer
                                 containerId={tab.id + tab.key}
                                 dynamicComponents={filteredComponents} />
@@ -81,7 +77,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model, onChange }) => {
                     }
                 />
             </div>
-            {filteredTabs.length === 0 && searchQuery ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
+            {filteredTabs.length === 0 && searchQuery ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
                 :
                 <Tabs
                     defaultActiveKey={'1'}

@@ -1,29 +1,27 @@
 import React, { FC } from 'react';
-import { IFontValue } from './interfaces';
 import { alignOptions, fontTypes, fontWeights } from './utils';
 import { InputRow } from '@/designer-components/_settings/components/utils';
 
 export interface IFontType {
-    value?: IFontValue;
     readOnly?: boolean;
 }
 
 const inputConfigurations = [
     [
-        { label: 'Size', propertyName: 'styles.font.size', valueKey: 'size' },
-        { label: 'Weight', propertyName: 'styles.font.weight', inputType: 'dropdown', dropdownOptions: fontWeights, valueKey: 'weight' }
+        { label: 'Size', propertyName: 'font.size', valueKey: 'size' },
+        { label: 'Weight', propertyName: 'font.weight', inputType: 'dropdown', dropdownOptions: fontWeights, valueKey: 'weight', tooltip: 'Controls text thickness (light, normal, bold, etc.)' }
     ],
     [
-        { label: 'Color', propertyName: 'styles.font.color', inputType: 'color', valueKey: 'color' },
-        { label: 'Family', propertyName: 'styles.font.type', inputType: 'dropdown', dropdownOptions: fontTypes, valueKey: 'type' }
+        { label: 'Color', propertyName: 'font.color', inputType: 'color', valueKey: 'color' },
+        { label: 'Family', propertyName: 'font.type', inputType: 'dropdown', dropdownOptions: fontTypes, valueKey: 'type' }
     ],
     [
-        { label: 'Align', propertyName: 'styles.font.align', inputType: 'radio', buttonGroupOptions: alignOptions, valueKey: 'align' }
+        { label: 'Align', propertyName: 'font.align', inputType: 'radio', buttonGroupOptions: alignOptions, valueKey: 'align' }
     ]
 ];
 
 const FontComponent: FC<IFontType> = (props) => {
-    const { value, readOnly } = props;
+    const { readOnly } = props;
 
     return <>
         {inputConfigurations.map((config, index) => (
@@ -31,8 +29,7 @@ const FontComponent: FC<IFontType> = (props) => {
                 key={index}
                 inputs={config.map(input => ({
                     ...input,
-                    readOnly,
-                    value: value?.[input.valueKey]
+                    readOnly
                 }))}
             />
         ))}
