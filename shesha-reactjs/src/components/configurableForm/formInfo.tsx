@@ -84,7 +84,6 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
         border: Boolean(displayEditMode) ? '1px #10239e solid' : 'none',
         position: 'relative',
         transition: '.1s',
-        overflow: 'hidden',
         padding: '3px',
       }}
     >
