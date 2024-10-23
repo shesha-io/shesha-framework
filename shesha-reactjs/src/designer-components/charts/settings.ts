@@ -30,7 +30,8 @@ export const settingsForm = new DesignerToolbarSettings()
             id: nanoid(),
             propertyName: 'dataMode',
             parentId: 'root',
-            label: 'Data Mode',
+            label: 'Data Source Type',
+            description: 'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
             dataSourceType: 'values',
             values: [
               { id: nanoid(), label: 'URL', value: 'url' },
