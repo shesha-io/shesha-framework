@@ -53,10 +53,12 @@ export interface IButtonGroupItemBase {
   borderColor?: string;
   borderStyle?: 'dotted' | 'solid' | 'dashed';
   borderRadius?: string;
+  entityTypeShortAlias?: any;
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase {
   itemSubType: ToolbarItemSubType;
+  entityTypeShortAlias?: string;
 }
 
 export interface IButtonItem extends IButtonGroupItem {
@@ -84,6 +86,8 @@ export const isGroup = (item: IButtonGroupItemBase): item is IButtonGroup => {
 
 export interface IDynamicItem extends IButtonGroupItem {
   dynamicItemsConfiguration: IDynamicActionsConfiguration;
+  actionConfiguration?: IConfigurableActionConfiguration;
+  dataSourceUrl?: string;
 }
 
 export const isDynamicItem = (item: IButtonGroupItemBase): item is IDynamicItem => {

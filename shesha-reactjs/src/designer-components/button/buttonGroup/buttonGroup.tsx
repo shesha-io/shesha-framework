@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import ShaIcon, { IconType } from '@/components/shaIcon/index';
 import {
     Alert,
@@ -12,6 +12,7 @@ import {
     ButtonGroupItemProps,
     IButtonGroup,
     IButtonGroupItem,
+    isDynamicItem,
     isGroup,
     isItem
 } from '@/providers/buttonGroupConfigurator/models';
@@ -23,7 +24,7 @@ import {
     IApplicationContext,
     useAvailableConstantsData
 } from '@/providers/form/utils';
-import { getButtonGroupMenuItem } from './utils';
+import { getButtonGroupMenuItem, useTemplateActions } from './utils';
 import { IButtonGroupProps } from './models';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useDeepCompareMemo } from '@/hooks';
@@ -57,7 +58,6 @@ const renderButton = (props: ButtonGroupItemProps, uuid: string, appContext: IAp
         borderStyle: borderStyle,
         borderRadius: addPx(borderRadius)
     };
-
     return (
         <ConfigurableButton
             key={uuid}
@@ -78,6 +78,7 @@ const createMenuItem = (
     prepareItem: PrepareItemFunc,
     form: FormInstance<any>
 ): MenuItem => {
+    
     const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
     const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
 
@@ -111,9 +112,9 @@ interface InlineItemProps extends InlineItemBaseProps {
 }
 const InlineItem: FC<InlineItemProps> = (props) => {
     const { item, uuid, getIsVisible, appContext, prepareItem, form } = props;
-
+  
     if (isGroup(item)) {
-        const menuItems = item.childItems.map(x => prepareItem(x, item.readOnly))
+        const menuItems = item?.childItems?.map(x => prepareItem(x, item.readOnly))
             .filter(item => (getIsVisible(item)))
             .map(childItem => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, prepareItem, form)));
         return (
@@ -121,6 +122,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
                 key={uuid}
                 menu={{ items: menuItems }}
                 disabled={item.readOnly}
+        
             >
                 <Button
                     icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
@@ -138,6 +140,7 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
     if (isItem(item)) {
         switch (item.itemSubType) {
+            case 'dynamic':
             case 'button':
                 return renderButton(item, uuid, appContext, form);
             case 'separator':
@@ -153,11 +156,78 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
 type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 
-export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize = 'middle', isInline, disabled, form }) => {
+
+
+export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
+    const { items, size, spaceSize = 'middle', isInline, disabled, form } = props;
     const { styles } = useStyles();
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
+    const {fetchTemplateState} = useTemplateActions();  
+    const [combinedItems, setCombinedItems] = useState([]);
 
+    // Fetch templates for dynamic items and update state
+    useEffect(() => {
+        const fetchData = async () => {
+            const updatedItems = await Promise.all(
+                items?.map(async (item) => {
+                    if (isDynamicItem(item)) {
+                        const templates = await fetchTemplateState(item?.dataSourceUrl);
+                        return templates?.map(template => ({
+                            id: template.id,
+                            name: template.name,
+                            label: template.name,
+                            itemType: "item",
+                            itemSubType: "button",
+                            sortOrder: 0,
+                            actionConfiguration: item.actionConfiguration || null,
+                            buttonType: 'link',
+                            editMode: 'inherited',
+                            permissions: [],
+                            hidden: false,
+                            readOnly: false,
+                        }));
+                    } else if (isGroup(item)) {
+                        const childItems = await Promise.all(
+                            item?.childItems?.map(async (childItem) => {
+                                if (isDynamicItem(childItem)) {
+                                    const templates = await fetchTemplateState(childItem?.dataSourceUrl);
+                                    return templates?.map(template => ({
+                                        id: template.id,
+                                        name: template.name,
+                                        label: template.name,
+                                        itemType: "item",
+                                        itemSubType: "button",
+                                        sortOrder: 0,
+                                        actionConfiguration: childItem.actionConfiguration || null,
+                                        buttonType: 'link',
+                                        editMode: 'inherited',
+                                        permissions: [],
+                                        hidden: false,
+                                        readOnly: false,
+                                    }));
+                                }
+                                return childItem;
+                            })
+                        );
+                        return {
+                            ...item,
+                            // Use flat to ensure all childItems are returned as a single array
+                            childItems: childItems.flat(),
+                        };
+                    }
+                    return item;
+                })
+            );
+    
+            // Flatten the entire updatedItems array
+            const flattenedItems = updatedItems.flat();
+            setCombinedItems(flattenedItems);
+        };
+    
+        fetchData();
+    }, [items]);
+    
     const isDesignMode = allData.form?.formMode === 'designer';
 
     const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
@@ -201,8 +271,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
     };
 
     const actualItems = useDeepCompareMemo(() =>
-        items?.map((item) => prepareItem(item, disabled))
-        , [items, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
+        combinedItems?.map((item) => prepareItem(item, disabled))
+        , [combinedItems, allData.contexts.lastUpdate, allData.data, allData.form?.formMode, allData.globalState, allData.selectedRow]);
 
     const filteredItems = actualItems?.filter(getIsVisible);
 
@@ -243,7 +313,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = ({ items, size, spaceSize
 export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
     return (
         <DynamicActionsEvaluator items={props.items}>
-            {(items) => (<ButtonGroupInner {...props} items={items} />)}
+            {() => (<ButtonGroupInner {...props} items={props.items} />)}
         </DynamicActionsEvaluator>
     );
 };
