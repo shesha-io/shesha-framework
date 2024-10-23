@@ -174,7 +174,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                     if (isDynamicItem(item)) {
                         const templates = await fetchTemplateState(item?.dataSourceUrl);
                         return templates?.map(template => ({
-                            ...item,  
+                            ...item, 
+                            data: template, 
                             id: template.id,
                             name: template.name,
                             label: template.name,
@@ -191,6 +192,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                                     const templates = await fetchTemplateState(childItem?.dataSourceUrl);
                                     return templates?.map(template => ({
                                         ...childItem,
+                                        data: template,
                                         key: template.id,
                                         id: template.id,
                                         name: template.name,

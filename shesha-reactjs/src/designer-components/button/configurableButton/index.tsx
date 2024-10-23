@@ -25,7 +25,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
-  const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const onButtonClick = async (event: React.MouseEvent<HTMLElement, MouseEvent>, props: any) => {
     event.preventDefault();
     try {
       if (actionConfiguration) {
@@ -35,11 +35,11 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
         setLoading(true);
         executeAction({
           actionConfiguration: { ...actionConfiguration },
-          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext },
+          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext,dynamicItem: props.data },
         })
           .finally(() => {
             setLoading(false);
-          });
+        });
       } else console.error('Action is not configured');
     } catch (error) {
       setLoading(false);
@@ -68,7 +68,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
       title={props.tooltip}
       block={props.block}
       loading={buttonLoading}
-      onClick={onButtonClick}
+      onClick={(event)=>onButtonClick(event, props)}
       type={props.buttonType}
       danger={props.danger}
       icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
