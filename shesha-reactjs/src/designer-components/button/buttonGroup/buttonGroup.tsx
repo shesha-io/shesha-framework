@@ -222,7 +222,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         };
     
         fetchData();
-    }, [items, fetchTemplateState]);
+    }, [items]);
     
     const isDesignMode = allData.form?.formMode === 'designer';
 
