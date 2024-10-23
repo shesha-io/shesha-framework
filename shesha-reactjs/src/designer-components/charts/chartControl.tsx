@@ -1,11 +1,12 @@
 import { useGet } from '@/hooks';
-import { useMetadataDispatcher } from '@/index';
+import { useFormData, useMetadataDispatcher, useNestedPropertyMetadatAccessor } from '@/index';
 import { IRefListPropertyMetadata } from '@/interfaces/metadata';
+import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Button, Flex, Result, Spin } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import BarChart from './components/bar';
 import FilterComponent from './components/filterComponent';
@@ -15,7 +16,6 @@ import PolarAreaChart from './components/polarArea';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, prepareBarChartData, prepareLineChartData, preparePieChartData, preparePivotChartData, preparePolarAreaChartData } from './utils';
-import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod,
@@ -28,6 +28,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
   const { getReferenceList } = useReferenceListDispatcher();
   const { setData, setIsFilterVisible, setIsLoaded, setFilterdData, setChartFilters, setControlProps } = useChartDataActionsContext();
+  const { data: formData } = useFormData();
 
   const { styles, cx } = useStyles();
 
@@ -43,16 +44,19 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     axisProperty, showLegend, showTitle, title, legendPosition,
     showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle,
     simpleOrPivot, filterProperties, stacked, tension, strokeColor,
-    allowFilter, isAxisTimeSeries, timeSeriesFormat]);
+    allowFilter, isAxisTimeSeries, timeSeriesFormat, filters, formData]);
 
-  const evaluatedFilters = useFormEvaluatedFilter({ filter: filters });
+  const memoFilters = useMemo(() => filters, [filters, formData]);
+
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
+  const evaluatedFilters = useFormEvaluatedFilter({ filter: memoFilters, metadataAccessor: propertyMetadataAccessor });
   useEffect(() => {
     refetch(getChartDataRefetchParams(entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, filterProperties))
       .then((data) => {
         if (isAxisTimeSeries) {
-          data.result.items = data.result.items.sort((a: { [key: string]: any }, b: { [key: string]: any }) => new Date(a[axisProperty]).getTime() - new Date(b[axisProperty]).getTime());
+          data.result.items = data?.result?.items?.sort((a: { [key: string]: any }, b: { [key: string]: any }) => new Date(a[axisProperty]).getTime() - new Date(b[axisProperty]).getTime());
         } else {
-          data.result.items = data.result.items.sort((a: { [key: string]: any }, b: { [key: string]: any }) => a[axisProperty] - b[axisProperty]);
+          data.result.items = data?.result?.items?.sort((a: { [key: string]: any }, b: { [key: string]: any }) => a[axisProperty] - b[axisProperty]);
         }
         return data;
       })
@@ -62,7 +66,6 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       })
       .then((data) => {
         getMetadata({ modelType: entityType, dataType: 'entity' }).then((metaData) => {
-
           for (const metaItem of metaData.properties as Array<IRefListPropertyMetadata>) {
             if (metaItem.dataType === 'reference-list-item') {
               let fieldName = toCamelCase(metaItem.path); // Field to transform in the data
@@ -80,16 +83,16 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
                   }
                   return item;
                 }));
-              }).catch((err: any) => console.error('err metadata', err));
+              }).catch((err: any) => console.error('getReferenceList, err metadata', err));
             }
           }
         });
       })
       .then(() => setIsLoaded(true))
-      .catch((err: any) => console.error('err data', err));
-  }, [chartType, entityType, valueProperty, filters, legendProperty, axisProperty, filterProperties, isAxisTimeSeries,
+      .catch((err: any) => console.error('getChartDataRefetchParams, err data', err));
+  }, [chartType, entityType, valueProperty, memoFilters, legendProperty, axisProperty, filterProperties, isAxisTimeSeries,
     timeSeriesFormat, aggregationMethod, showTitle, showLegend, legendPosition, showXAxisScale, showXAxisTitle,
-    showYAxisScale, showYAxisTitle, stacked, tension, strokeColor]);
+    showYAxisScale, showYAxisTitle, stacked, tension, strokeColor, formData, evaluatedFilters]);
 
   useEffect(() => {
     if (state.data) {

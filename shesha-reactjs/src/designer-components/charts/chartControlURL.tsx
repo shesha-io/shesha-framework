@@ -1,4 +1,5 @@
 import { useGet } from '@/hooks';
+import { useFormData } from '@/index';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Alert, Flex, Result, Spin } from 'antd';
 import React, { useEffect } from 'react';
@@ -20,6 +21,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
   const { setIsLoaded, setControlProps, setUrlTypeData } = useChartDataActionsContext();
+  const { data: formData } = useFormData();
 
   const { styles, cx } = useStyles();
 
@@ -31,7 +33,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     });
   }, [valueProperty, legendProperty, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle,
     showYAxisScale, showYAxisTitle, simpleOrPivot, stacked, tension, strokeColor, allowFilter,
-    isAxisTimeSeries, timeSeriesFormat, url]);
+    isAxisTimeSeries, timeSeriesFormat, url, formData]);
 
   useEffect(() => {
     refetch(getURLChartDataRefetchParams(url))
@@ -50,10 +52,10 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
         setUrlTypeData(data.result);
         setIsLoaded(true);
       })
-      .catch((err: any) => console.error('err data', err));
+      .catch((err: any) => console.error('refetch getURLChartDataRefetchParams, err data', err));
   }, [chartType, entityType, valueProperty, filters, legendProperty, axisProperty, filterProperties, isAxisTimeSeries,
     timeSeriesFormat, showTitle, showLegend, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle,
-    stacked, tension, strokeColor, url]);
+    stacked, tension, strokeColor, url, formData]);
 
   if (!url || !chartType) {
     const missingProperties: string[] = [];

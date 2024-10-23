@@ -228,11 +228,11 @@ const aggregateData = (data: object[], xProperty: string, yProperty: string, agg
  */
 export function filterData(preFilteredData: object[], property: string, operator: TOperator, value: string | number): object[] {
   if (!property || !operator || value === undefined) {
-    console.error('Invalid filter: property, operator, and value are required');
+    console.error('filterData, Invalid filter: property, operator, and value are required');
     return preFilteredData;
   }
   if (!Array.isArray(preFilteredData) || preFilteredData?.length === 0) {
-    console.error('Invalid data: preFilteredData must be a non-empty array');
+    console.error('filterData, Invalid data: preFilteredData must be a non-empty array');
     return [];
   }
 
@@ -244,7 +244,7 @@ export function filterData(preFilteredData: object[], property: string, operator
       try {
         value = parseInt(value as string, 10);
       } catch (e) {
-        console.error('Invalid value: Value must be a number');
+        console.error('filterData, Invalid value: Value must be a number');
         return false;
       }
     }
@@ -294,7 +294,7 @@ export function filterData(preFilteredData: object[], property: string, operator
         return itemValue !== value;
 
       default:
-        console.error(`Invalid operator: '${operator}' is not recognized`);
+        console.error(`filterData, Invalid operator: '${operator}' is not recognized`);
         return false;
     }
   });
@@ -401,7 +401,7 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
       {
         label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
         data: aggregatedData.map(item => item.y),
-        borderColor: strokeColor || 'white',
+        borderColor: strokeColor || 'fff',
         backgroundColor: getPredictableColor(yProperty),
         fill: false,
         pointRadius: 5,
@@ -429,7 +429,7 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
         label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
         data: aggregatedData.map(item => item.y),
         backgroundColor: aggregatedData.map(item => getPredictableColor(item.x.toString())),
-        borderColor: strokeColor || 'white',
+        borderColor: strokeColor || 'fff',
         borderWidth: 1,
       }
     ]
@@ -462,7 +462,7 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
       return 0;
     }),
     backgroundColor: labels.map((label: string) => getPredictableColor(label)),
-    borderColor: strokeColor || 'white',
+    borderColor: strokeColor || 'fff',
   }];
 
   return {
@@ -498,7 +498,7 @@ export const preparePolarAreaChartData = (data: object[], legendProperty: string
       return 0;
     }),
     backgroundColor: labels.map((label: string) => getPredictableColor(label)),
-    borderColor: strokeColor || 'white',
+    borderColor: strokeColor || 'fff',
   }];
 
   return {
@@ -580,7 +580,7 @@ export const preparePivotChartData = (
         return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
       }),
       fill: false,
-      borderColor: strokeColor || 'white',
+      borderColor: strokeColor || 'fff',
       backgroundColor: colors,
       pointRadius: 5,
     };

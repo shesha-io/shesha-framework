@@ -145,7 +145,6 @@ export const settingsForm = new DesignerToolbarSettings()
             autoFillProps: false,
             settingsValidationErrors: [],
           })
-          // is axis time series
           .addCheckbox({
             id: nanoid(),
             propertyName: 'isAxisTimeSeries',
@@ -348,20 +347,21 @@ export const settingsForm = new DesignerToolbarSettings()
             label: 'Show Legend',
             description: 'Show the legend of the chart. Legend is the area that shows the color and what it represents.',
             parentId: 'root',
-            defaultValue: false,
+            defaultValue: true,
           })
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showXAxisScale',
             label: 'Show X Axis Scale',
             parentId: 'root',
+            defaultValue: true,
           })
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showXAxisTitle',
             label: 'Show X Axis Title',
             parentId: 'root',
-            // hidden if scale is not shown
+            defaultValue: true,
             hidden: {
               _code: "return getSettingValue(data?.showXAxisScale) !== true",
               _mode: "code",
@@ -373,12 +373,14 @@ export const settingsForm = new DesignerToolbarSettings()
             propertyName: 'showYAxisScale',
             label: 'Show Y Axis Scale',
             parentId: 'root',
+            defaultValue: true,
           })
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showYAxisTitle',
             label: 'Show Y Axis Title',
             parentId: 'root',
+            defaultValue: true,
             hidden: {
               _code: "return getSettingValue(data?.showYAxisScale) !== true",
               _mode: "code",
@@ -422,7 +424,7 @@ export const settingsForm = new DesignerToolbarSettings()
             propertyName: 'strokeColor',
             parentId: 'root',
             label: 'Stroke Color',
-            defaultValue: '#000',
+            defaultValue: 'rgba(255, 255, 255, 0.1)',
           })
           .toJson()
         ]
