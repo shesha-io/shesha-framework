@@ -552,7 +552,7 @@ export const DataList: FC<Partial<IDataListProps>> = ({
           </Button>
         </Show>*/}
       </div>
-      <FormInfo formProps={{...(persistedFormProps as IPersistedFormProps)}}>
+      <FormInfo visible={formInfoBlockVisible} formProps={{...(persistedFormProps as IPersistedFormProps)}}>
       <ShaSpin spinning={isFetchingTableData} tip={isFetchingTableData ? 'Loading...' : 'Submitting...'}>
         <div
           key="spin_key"
