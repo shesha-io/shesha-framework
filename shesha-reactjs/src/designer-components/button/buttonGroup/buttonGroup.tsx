@@ -166,8 +166,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const {fetchTemplateState} = useTemplateActions();  
     const [combinedItems, setCombinedItems] = useState([]);
-
-    console.log('ButtonGroupInner', items); 
     // Fetch templates for dynamic items and update state
     useEffect(() => {
         const fetchData = async () => {
@@ -176,6 +174,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                     if (isDynamicItem(item)) {
                         const templates = await fetchTemplateState(item?.dataSourceUrl);
                         return templates?.map(template => ({
+                            ...item,  
                             id: template.id,
                             name: template.name,
                             label: template.name,
@@ -184,11 +183,6 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                             sortOrder: 0,
                             actionConfiguration: item.actionConfiguration || null,
                             buttonType: item.buttonType || 'link',
-                            editMode: 'inherited',
-                            permissions: [],
-                            hidden: false,
-                            readOnly: false,
-                            icon: item.icon,
                             }));
                     } else if (isGroup(item)) {
                         const childItems = await Promise.all(
@@ -196,6 +190,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                                 if (isDynamicItem(childItem)) {
                                     const templates = await fetchTemplateState(childItem?.dataSourceUrl);
                                     return templates?.map(template => ({
+                                        ...childItem,
+                                        key: template.id,
                                         id: template.id,
                                         name: template.name,
                                         label: template.name,
@@ -203,12 +199,8 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                                         itemSubType: "button",
                                         sortOrder: 0,
                                         actionConfiguration: childItem.actionConfiguration || null,
-                                        buttonType: item.buttonType || 'link',
-                                        editMode: 'inherited',
-                                        permissions: [],
-                                        hidden: false,
-                                        readOnly: false,
-                                        icon: item.icon,
+                                        buttonType: childItem.buttonType || 'link',
+
                                     }));
                                 }
                                 return childItem;
@@ -230,7 +222,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
         };
     
         fetchData();
-    }, [items]);
+    }, [items, fetchTemplateState]);
     
     const isDesignMode = allData.form?.formMode === 'designer';
 
