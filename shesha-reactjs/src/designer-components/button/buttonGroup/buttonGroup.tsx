@@ -172,13 +172,14 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
             const updatedItems = await Promise.all(
                 items?.map(async (item) => {
                     if (isDynamicItem(item)) {
-                        const templates = await fetchTemplateState(item?.dataSourceUrl);
+                        const templates = await fetchTemplateState(item?.dataSourceUrl,item?.queryParams );
                         return templates?.map(template => ({
                             ...item, 
                             data: template, 
                             id: template.id,
                             name: template.name,
-                            label: template.name,
+                            tooltip:template[`${item?.tooltipProperty}` || null],
+                            label: template[`${item?.labelProperty}` || 'name'],
                             itemType: "item",
                             itemSubType: "button",
                             sortOrder: 0,
@@ -189,14 +190,15 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
                         const childItems = await Promise.all(
                             item?.childItems?.map(async (childItem) => {
                                 if (isDynamicItem(childItem)) {
-                                    const templates = await fetchTemplateState(childItem?.dataSourceUrl);
+                                    const templates = await fetchTemplateState(childItem?.dataSourceUrl, childItem?.queryParams);
                                     return templates?.map(template => ({
                                         ...childItem,
                                         data: template,
                                         key: template.id,
                                         id: template.id,
                                         name: template.name,
-                                        label: template.name,
+                                        tooltip:template[`${childItem?.tooltipProperty}` || null],
+                                        label: template[`${childItem?.labelProperty}` || 'name'],
                                         itemType: "item",
                                         itemSubType: "button",
                                         sortOrder: 0,

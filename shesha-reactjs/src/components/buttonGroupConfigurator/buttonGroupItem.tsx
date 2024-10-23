@@ -66,7 +66,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
         </>
       )}
       {item.itemSubType === 'separator' && (<Text type="secondary">— separator —</Text>)}
-      {isDynamicItem(item) && <Text type="secondary">dynamic {item.label}</Text>}
+      {isDynamicItem(item) && <Text type="secondary">dynamic item</Text>}
     </>
   );
 };

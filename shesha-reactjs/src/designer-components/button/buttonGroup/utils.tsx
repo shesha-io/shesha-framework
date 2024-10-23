@@ -7,18 +7,22 @@ export const useTemplateActions = () => {
   const { mutate } = useMutate<any>();
 
 
-  const fetchTemplateState = async (url: string) => {
+  const fetchTemplateState = async (url: string, queryParams: any) => {
     try {
       const response = await mutate(
         {
           url: url ||  `/api/dynamic/Shesha/Organisation/Crud/GetAll`,
           httpVerb: 'GET',
         },
-  
+        queryParams
       );
 
       if (response?.success && response?.result !== undefined) {
-        return response.result.items;
+        if (typeof response.result === 'object') {
+          return response.result.items;
+        }else{
+          return response.result;
+        }
       }
     } catch (error) {
       console.error('Error fetching column state:', error);

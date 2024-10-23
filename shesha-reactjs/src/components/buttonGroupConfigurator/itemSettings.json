@@ -226,10 +226,32 @@
             ],
             "version": 4,
             "flexWrap": "wrap"
+          },
+          {
+            "id": "mwI8bhzkGyQOVpkttIKyb",
+            "type": "textField",
+            "propertyName": "labelProperty",
+            "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+            "label": "Label Property",
+            "hidden":false
+          },
+          {
+            "id": "po1qeQwn48ykEB4EI9J8b",
+            "type": "textArea",
+            "propertyName": "tooltipProperty",
+            "label": "Tooltip property",
+            "labelAlign": "right",
+            "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
+            "autoSize": false,
+            "showCount": false,
+            "allowClear": false,
+            "validate": {},
+            "hidden":false
           }
         
         ]
       },
+
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,

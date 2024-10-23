@@ -88,6 +88,9 @@ export interface IDynamicItem extends IButtonGroupItem {
   dynamicItemsConfiguration: IDynamicActionsConfiguration;
   actionConfiguration?: IConfigurableActionConfiguration;
   dataSourceUrl?: string;
+  labelProperty?: string;
+  tooltipProperty?: string;
+  queryParams?: any;
 }
 
 export const isDynamicItem = (item: IButtonGroupItemBase): item is IDynamicItem => {
