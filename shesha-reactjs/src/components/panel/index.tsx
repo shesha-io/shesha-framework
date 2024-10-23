@@ -77,10 +77,9 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
 
   useEffect(() => {
     if (ref.current) {
-      console.log("Ref::", header, " ", ref.current.offsetHeight);
       setIsHidden(ref?.current.offsetHeight < 100);
     }
-  }, [ref?.current?.offsetHeight])
+  }, [ref?.current?.offsetHeight]);
 
   return hideWhenEmpty && isHidden ? null : (
     <StyledCollapse

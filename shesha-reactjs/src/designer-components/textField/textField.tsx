@@ -60,8 +60,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
 
     const { dimensions, border, font, shadow, background } = model;
 
-    console.log("Style props:::", dimensions, border, font, shadow, background)
-
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
     const fontStyles = useMemo(() => getFontStyle(font), [font]);
@@ -135,7 +133,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       setGlobalState,
     };
 
-    console.log('model', model);
     return (
       <ConfigurableFormItem
         model={model}
