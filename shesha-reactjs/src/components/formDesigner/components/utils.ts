@@ -83,9 +83,7 @@ export const customEventHandler = <T = any>({
 
   };
 
-
   return {
-
     onBlur: (event) => onCustomEvent(event, 'onBlurCustom'),
     onChange: (event) => onCustomEvent(event, 'onChangeCustom'),
     onFocus: (event) => onCustomEvent(event, 'onFocusCustom'),
@@ -180,6 +178,28 @@ export const customDropDownEventHandler = <T = any>({
       value,
       setGlobalState
     );
+  },
+});
+
+export const customOnChangeValueEventHandler = (
+  {
+    model,
+    form,
+    formData,
+    globalState,
+    http,
+    message,
+    moment,
+    setGlobalState,
+  }: ICustomEventHandler
+) => ({
+  onChange: (value: any) => {
+    const eventFunc = new Function(
+      'data, form, globalState, http, message, moment, value, setGlobalState',
+      model?.onChangeCustom
+    );
+
+    return eventFunc(formData, form, globalState, http, message, moment, value, setGlobalState);
   },
 });
 

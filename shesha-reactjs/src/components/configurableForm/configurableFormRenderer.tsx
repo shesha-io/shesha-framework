@@ -29,6 +29,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   onFinish,
   onFinishFailed,
   onSubmittedFailed,
+  showDataSubmitIndicator = true,
   ...props
 }) => {
   const { getPayload: getDelayedUpdates } = useDelayedUpdate(false) ?? {};
@@ -99,7 +100,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
       <Spin
-        spinning={dataSubmitState?.status === 'loading'}
+        spinning={showDataSubmitIndicator && dataSubmitState?.status === 'loading'}
         tip="Saving data..."
         indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />}
       >

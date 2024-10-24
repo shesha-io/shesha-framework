@@ -1,4 +1,3 @@
-import { IRefListPropertyMetadata } from "@/interfaces/metadata";
 import { IConfigurableFormComponent } from "@/providers";
 
 /**
@@ -8,66 +7,64 @@ export interface IChartData {
     labels: (string | number | object)[];
     datasets: object[];
 }
-
-export interface IChartProps extends IConfigurableFormComponent {
-    chartType?: 'polarArea' | 'bar' | 'line' | 'pie';
-    showTitle?: boolean;
-    title?: string;
-    showLegend?: boolean;
-    showXAxisLabel?: boolean;
-    showXAxisLabelTitle?: boolean;
-    showYAxisLabel?: boolean;
-    showYAxisLabelTitle?: boolean;
-    legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'center';
-    entityType?: string;
-    filters?: string[];
-    valueProperty?: string;
-    axisProperty?: string;
-    legendProperty?: string;
-    xProperty?: string;
-    yProperty?: string;
-    tension?: number;
-    strokeColor?: string;
-    aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
-}
-
+/**
+ * Chart props, used in the chart component and some of its children
+ */
 export interface IChartsProps {
-    chartType?: 'polarArea' | 'bar' | 'line' | 'pie';
+    dataMode?: TDataMode;
+    url?: string;
+    chartType?: TChartType;
     showTitle?: boolean;
     title?: string;
     name?: string;
     description?: string;
     showLegend?: boolean;
-    legendPosition?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+    legendPosition?: TLegendPosition;
     entityType?: string;
     filters?: string[];
     valueProperty?: string;
     axisProperty?: string;
+    isAxisTimeSeries?: boolean;
+    timeSeriesFormat?: TTimeSeriesFormat;
     legendProperty?: string;
+    allowFilter?: boolean;
     filterProperties?: string[];
     xProperty?: string;
     yProperty?: string;
     tension?: number;
+    borderWidth?: number;
     strokeColor?: string;
     simpleOrPivot?: 'simple' | 'pivot';
     showName?: boolean;
     showDescription?: boolean;
-    showXAxisLabel?: boolean;
-    showXAxisLabelTitle?: boolean;
-    showYAxisLabel?: boolean;
-    showYAxisLabelTitle?: boolean;
+    showXAxisScale?: boolean;
+    showXAxisTitle?: boolean;
+    showYAxisScale?: boolean;
+    showYAxisTitle?: boolean;
     stacked?: boolean;
-    aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
+    aggregationMethod?: TAggregationMethod;
 }
+
+/**
+ * Chart props, used in the Shesha tool box
+ */
+export interface IChartProps extends IConfigurableFormComponent, IChartsProps { }
 
 export interface IChartDataProps extends IChartsProps {
     labels?: string[];
     chartData?: number[];
     data?: IChartData;
-    refLists?: {
-        [key: string]: IRefListPropertyMetadata[];
-    };
 }
+
+export type TDataMode = 'url' | 'entityType';
+
+export type TChartType = 'polarArea' | 'bar' | 'line' | 'pie';
+
+export type TAggregationMethod = 'count' | 'sum' | 'average' | 'min' | 'max';
+
+export type TLegendPosition = 'top' | 'bottom' | 'left' | 'right';
+
+export type TTimeSeriesFormat = 'day' | 'month' | 'year' | 'day-month' | 'day-month-year' | 'month-year';
 
 /**
  * To be used in the filter component

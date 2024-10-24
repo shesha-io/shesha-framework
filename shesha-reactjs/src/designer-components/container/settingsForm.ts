@@ -297,6 +297,35 @@ export const getSettings = (data: any) =>
               description:
                 'The CSS justify-items property defines the default justify-self for all items of the box, giving them all a default way of justifying each box along the appropriate axis.',
             })
+            .addDropdown({
+              id: nanoid(),
+              propertyName: 'shadowStyle',
+              label: 'Shadow Style',
+              labelAlign: 'right',
+              parentId: 'pnl64664-cbc9-4cef-babc-6fbea44cd0ca',
+              dataSourceType: 'values',
+              values: [
+                {
+                  label: "None",
+                  value: "none",
+                  id: nanoid()
+                },
+                {
+                  label: "Above",
+                  value: "above",
+                  id: nanoid()
+                },
+                {
+                  label: "Below",
+                  value: "below",
+                  id: nanoid()
+                }
+              
+              ],
+              validate: {},
+              description:
+                'Determines visibility and position of the box shadow.',
+            })
             .toJson(),
         ],
       },
@@ -326,7 +355,7 @@ export const getSettings = (data: any) =>
           .addDropdown({
             id: nanoid(),
             propertyName: 'borderStyle',
-            label: 'Border Style',
+            label: 'Border Type',
             labelAlign: 'right',
             dataSourceType: "values",
             values: [

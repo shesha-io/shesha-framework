@@ -11,4 +11,14 @@ namespace Shesha.DynamicEntities.Dtos
     {
         public virtual JObject _jObject { get; set; }
     }
+
+    [JsonConverter(typeof(DynamicDtoConverter))]
+    public class CreateDynamicDto<TEntity, TId> : DynamicDto<TEntity, TId> where TEntity : IEntity<TId>
+    {
+    }
+
+    [JsonConverter(typeof(DynamicDtoConverter))]
+    public class UpdateDynamicDto<TEntity, TId> : DynamicDto<TEntity, TId> where TEntity : IEntity<TId>
+    {
+    }
 }

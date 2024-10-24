@@ -150,10 +150,14 @@ namespace Shesha.Swagger
         {
             if (modelType.IsDynamicDto())
             {
-                var test = modelType.IsConstructedGenericType
-                    ? "DynamicDto" + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current)
-                    : "Proxy" + GetSchemaId(modelType.BaseType);
-                return test;
+                if (modelType.IsConstructedGenericType)
+                {
+                    var typeName = String.Concat(modelType.Name.TakeWhile(x => x != '`'));
+                    var test = typeName + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current);
+                    return test;
+                } 
+                else
+                    return "Proxy" + GetSchemaId(modelType.BaseType);
             }
 
             if (!modelType.IsConstructedGenericType) return modelType.Name.Replace("[]", "Array");

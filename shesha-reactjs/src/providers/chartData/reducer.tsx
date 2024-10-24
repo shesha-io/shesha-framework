@@ -25,11 +25,11 @@ export const chartDataReducer = handleActions(
       ...state,
       ...action.payload,
     }),
-    [ChartDataActionsEnum.SetRefLists]: (state, action) => ({
+    [ChartDataActionsEnum.SetControlProps]: (state, action) => ({
       ...state,
       ...action.payload,
     }),
-    [ChartDataActionsEnum.SetControlProps]: (state, action) => ({
+    [ChartDataActionsEnum.SetUrlTypeData]: (state, action) => ({
       ...state,
       ...action.payload,
     }),

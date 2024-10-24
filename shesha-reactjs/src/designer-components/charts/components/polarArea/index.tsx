@@ -1,12 +1,15 @@
-import React from 'react';
-import { PolarArea } from 'react-chartjs-2';
 import {
+  ArcElement,
   Chart as ChartJS,
   ChartOptions,
-  Title, Tooltip, Legend, ArcElement, RadialLinearScale,
+  Legend,
+  RadialLinearScale,
+  Title, Tooltip,
 } from 'chart.js';
-import { IChartData, IChartDataProps } from '../../model';
+import React from 'react';
+import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
+import { IChartData, IChartDataProps } from '../../model';
 
 interface IPolarAreaChartProps extends IChartDataProps {
   data: IChartData;
@@ -21,7 +24,15 @@ ChartJS.register(
 );
 
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
-  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisLabel, showTitle, title, legendPosition } = useChartDataStateContext();
+  const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
+
+  if (!data || !data.datasets || !data.labels) {
+    if (!data)
+      throw new Error('PolarAreaChart: No data to display. Please check the data source.');
+
+    if (!data.datasets || !data.labels)
+      throw new Error('PolarAreaChart: No datasets or labels to display. Please check the data source.');
+  }
 
   const options: ChartOptions<any> = {
     responsive: true,
@@ -41,11 +52,11 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         }
       },
       legend: {
-        display: showXAxisLabel,
+        display: showXAxisScale ? true : false,
         position: legendPosition ?? 'top',
       },
       title: {
-        display: showTitle,
+        display: showTitle ? true : false,
         text: title || `${yProperty} by ${xProperty} (${aggregationMethod})`,
       },
     },

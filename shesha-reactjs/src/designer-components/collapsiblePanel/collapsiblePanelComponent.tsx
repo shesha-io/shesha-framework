@@ -74,7 +74,8 @@ const CollapsiblePanelComponent: IToolboxComponent<ICollapsiblePanelComponentPro
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           showArrow={collapsible !== 'disabled' && expandIconPosition !== 'hide'}
           ghost={ghost}
-          style={getPanelStyle}
+          dynamicBorderRadius={model?.borderRadius}
+          style={{...getPanelStyle}}
           className={model.className}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
