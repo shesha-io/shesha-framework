@@ -1,0 +1,70 @@
+{
+  "name": "shesha-reactjs-starter",
+  "plugins": [
+    {
+      "name": "Ant Design",
+      "description": "A design system for enterprise-level products. Create an efficient and enjoyable work experience.",
+      "url": "https://ant.design/docs/react/introduce"
+    },
+    {
+      "name": "Styled Components",
+      "description": "Utilising tagged template literals (a recent addition to JavaScript) and the power of CSS, styled-components allows you to write actual CSS code to style your components.",
+      "url": "https://styled-components.com/docs"
+    },
+    {
+      "name": "Styled System",
+      "description": "Styled System is a collection of utility functions that add style props to your React components and allows you to control styles based on a global theme object with typographic scales, colors, and layout properties.",
+      "url": "https://styled-system.com/getting-started"
+    },
+    {
+      "name": "Fetch",
+      "description": "Next.js has a built-in polyfill for the fetch API. You don't need to worry about using it on either server or client side.",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"
+    },
+    {
+      "name": "Environment Variables",
+      "description": "Use environment variables in your next.js project for server side, client or both.",
+      "url": "https://github.com/vercel/next.js/tree/canary/examples/environment-variables"
+    },
+    {
+      "name": "Bundle Analyzer",
+      "description": "Use webpack-bundle-analyzer in your Next.js project. Visualize size of webpack output files with an interactive zoomable treemap.",
+      "url": "https://github.com/vercel/next.js/tree/canary/packages/next-bundle-analyzer"
+    },
+    {
+      "name": "react-use",
+      "description": "A Collection of useful React hooks.",
+      "url": "https://github.com/streamich/react-use"
+    },
+    {
+      "name": "next-translate",
+      "description": "Tiny and powerful i18n tools (Next plugin + API) to translate your Next.js pages.",
+      "url": "https://github.com/vinissimus/next-translate"
+    },
+    {
+      "name": "ESLint",
+      "description": "A pluggable and configurable linter tool for identifying and reporting on patterns in JavaScript. Maintain your code quality with ease.",
+      "url": "https://eslint.org/docs/user-guide/getting-started"
+    },
+    {
+      "name": "Prettier",
+      "description": "An opinionated code formatter; Supports many languages; Integrates with most editors.",
+      "url": "https://prettier.io/docs/en/index.html"
+    },
+    {
+      "name": "lint-staged",
+      "description": " The concept of lint-staged is to run configured linter (or other) tasks on files that are staged in git.",
+      "url": "https://github.com/okonet/lint-staged"
+    },
+    {
+      "name": "Testing Library",
+      "description": "The React Testing Library is a very light-weight solution for testing React components. It provides light utility functions on top of react-dom and react-dom/test-utils.",
+      "url": "https://testing-library.com/docs/"
+    },
+    {
+      "name": "Docker",
+      "description": "Docker simplifies and accelerates your workflow, while giving developers the freedom to innovate with their choice of tools, application stacks, and deployment environments for each project.",
+      "url": "https://www.docker.com/get-started"
+    }
+  ]
+}
