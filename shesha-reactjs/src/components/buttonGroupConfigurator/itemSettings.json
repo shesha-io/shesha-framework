@@ -102,36 +102,7 @@
                 "propertyName": "dataSourceUrl",
                 "parentId": "Xp6zDosEy-IrSeDfHHwh-",
                 "label": "Data Source Url",
-                "settingsValidationErrors": [],
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
-              },
-              {
-                "id": "4c6133f1-8886-4527-aa6c-ae0606506a8a",
-                "type": "textField",
-                "propertyName": "keyPropName",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Key Prop Name",
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
-              },
-              {
-                "id": "007e5859-9299-4434-84d9-9f7b0f7228af",
-                "type": "textField",
-                "propertyName": "valuePropName",
-                "parentId": "Xp6zDosEy-IrSeDfHHwh-",
-                "label": "Value Prop Name",
-                "version": 5,
-                "textType": "text",
-                "desktop": {},
-                "tablet": {},
-                "mobile": {}
+                "settingsValidationErrors": []
               },
               {
                 "id": "b395c0e9-dbc1-44f1-8fef-c18a49442871",

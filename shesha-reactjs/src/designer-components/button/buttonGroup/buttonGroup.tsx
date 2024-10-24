@@ -157,14 +157,12 @@ const InlineItem: FC<InlineItemProps> = (props) => {
 
 type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 
-
-
 export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const { items, size, spaceSize = 'middle', isInline, disabled, form } = props;
     const { styles } = useStyles();
     const allData = useAvailableConstantsData();
     const { anyOfPermissionsGranted } = useSheshaApplication();
-    const {fetchTemplateState} = useTemplateActions();  
+    const {handleDynamicItems} = useTemplateActions();  
     const [combinedItems, setCombinedItems] = useState([]);
     // Fetch templates for dynamic items and update state
     useEffect(() => {
@@ -172,47 +170,18 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
             const updatedItems = await Promise.all(
                 items?.map(async (item) => {
                     if (isDynamicItem(item)) {
-                        const templates = await fetchTemplateState(item?.dataSourceUrl,item?.queryParams );
-                        return templates?.map(template => ({
-                            ...item, 
-                            data: template, 
-                            id: template.id,
-                            name: template.name,
-                            tooltip:template[`${item?.tooltipProperty}` || null],
-                            label: template[`${item?.labelProperty}` || 'name'],
-                            itemType: "item",
-                            itemSubType: "button",
-                            sortOrder: 0,
-                            actionConfiguration: item.actionConfiguration || null,
-                            buttonType: item.buttonType || 'link',
-                            }));
+                        return handleDynamicItems(item);
                     } else if (isGroup(item)) {
                         const childItems = await Promise.all(
                             item?.childItems?.map(async (childItem) => {
                                 if (isDynamicItem(childItem)) {
-                                    const templates = await fetchTemplateState(childItem?.dataSourceUrl, childItem?.queryParams);
-                                    return templates?.map(template => ({
-                                        ...childItem,
-                                        data: template,
-                                        key: template.id,
-                                        id: template.id,
-                                        name: template.name,
-                                        tooltip:template[`${childItem?.tooltipProperty}` || null],
-                                        label: template[`${childItem?.labelProperty}` || 'name'],
-                                        itemType: "item",
-                                        itemSubType: "button",
-                                        sortOrder: 0,
-                                        actionConfiguration: childItem.actionConfiguration || null,
-                                        buttonType: childItem.buttonType || 'link',
-
-                                    }));
+                                    return handleDynamicItems(childItem);
                                 }
                                 return childItem;
                             })
                         );
                         return {
                             ...item,
-                            // Use flat to ensure all childItems are returned as a single array
                             childItems: childItems.flat(),
                         };
                     }
@@ -264,7 +233,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     };
 
     const prepareItem: PrepareItemFunc = (item, parentReadOnly) => {
-        if (item.editMode === undefined)
+        if (item?.editMode === undefined)
             item.editMode = 'inherited'; // prepare editMode property if not exist for updating inside getActualModel
         const result = getActualModel(item, allData, parentReadOnly);
         return { ...result };

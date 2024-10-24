@@ -91,6 +91,7 @@ export interface IDynamicItem extends IButtonGroupItem {
   labelProperty?: string;
   tooltipProperty?: string;
   queryParams?: any;
+  dataSourceType: string;
 }
 
 export const isDynamicItem = (item: IButtonGroupItemBase): item is IDynamicItem => {
