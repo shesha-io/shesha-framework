@@ -14,10 +14,11 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
     size, ...rest }) => {
     const { searchQuery } = useSearchQuery();
 
-    const group = property?.split(".")[0]?.trim();
+    const group = property?.split(".")[1]?.trim();
     const stringToFind = `${group ?? ''} ${label.toLowerCase()}`?.trim();
 
     if (stringToFind.includes(searchQuery.toLowerCase()?.trim())) {
+
         return (hidden ? null :
             <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
                 <FormItem

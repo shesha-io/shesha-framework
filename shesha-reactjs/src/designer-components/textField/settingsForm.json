@@ -68,7 +68,7 @@
                   "id": "1ceb3851-f15e-437b-98b6-84d6a1fbf801",
                   "inputType": "editModeSelector",
                   "type": "settingsInput",
-                  "propertyName": "readonly",
+                  "propertyName": "editMode",
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Readonly",
                   "size": "small",

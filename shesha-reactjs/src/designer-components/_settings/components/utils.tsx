@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Input, InputNumber, Radio, Select, Switch } from "antd";
-import { CodeEditor, ColorPicker } from '@/components';
+import { CodeEditor, ColorPicker, IconType, ShaIcon } from '@/components';
 import CustomDropdown from './CustomDropdown';
 import TextArea from 'antd/es/input/TextArea';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
@@ -94,6 +94,8 @@ const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, o
 };
 
 export const InputComponent: FC<IInputComponentProps> = (props) => {
+    const icons = require('@ant-design/icons');
+
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
     const { size, className, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, allowClear, dropdownMode } = props;
@@ -140,9 +142,11 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
             />;
         case 'radio':
             return <Radio.Group buttonStyle='solid' defaultValue={value} value={value} onChange={onChange} size={size} disabled={readOnly}>
-                {buttonGroupOptions.map(({ value, icon, title }) => (
-                    <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
-                ))}
+                {buttonGroupOptions.map(({ value, icon, title }) => {
+                    const iconElement = typeof icon === 'string' ? icons[icon] ? <ShaIcon iconName={icon as IconType} /> : icon : icon;
+
+                    return <Radio.Button key={value} value={value} title={title}>{iconElement}</Radio.Button>;
+                })}
             </Radio.Group>;
         case 'switch':
             return <Switch disabled={readOnly} size='small' onChange={onChange} value={value} />;
@@ -215,11 +219,7 @@ export const filterDynamicComponents = (components, query) => {
     const filterResult = components.map(c => {
 
         if (c.type === 'collapsiblePanel') {
-            const compsHaveLabels = c.content.components.some(comp => comp.label);
-            const shouldHide = !c.content.components.some(comp => comp?.label ? comp.label.toLowerCase().includes(query.toLowerCase()) : true);
-            const shouldHidePanel = !styleLabels.some(label => label.toLowerCase().includes(query.toLowerCase()));
-
-            return !compsHaveLabels ? { ...c, hidden: shouldHidePanel } : { ...c, hidden: shouldHide };
+            return c;
         }
 
         if (c.type === 'settingsInputRow') {

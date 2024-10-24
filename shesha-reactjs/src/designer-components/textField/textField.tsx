@@ -59,8 +59,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
     const { styles } = useStyles({ fontFamily: model?.inputStyles?.font?.type, fontWeight: model?.inputStyles?.font?.weight, textAlign: model?.inputStyles?.font?.align });
-
-    const { dimensions, border, font, shadow, background } = model?.inputStyles;
+    const dimensions = model?.inputStyles?.dimensions;
+    const border = model?.inputStyles?.border;
+    const font = model?.inputStyles?.font;
+    const shadow = model?.inputStyles?.shadow;
+    const background = model?.inputStyles?.background
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
@@ -177,7 +180,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     inputStyles: {
       background: { type: 'color' },
       border: { selectedSide: 'all', selectedCorner: 'all' },
-      dimensions: {},
     },
     ...model,
   }),

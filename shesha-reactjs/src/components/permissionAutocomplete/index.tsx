@@ -1,12 +1,13 @@
 import React, { FC, useState } from 'react';
 import { Select } from 'antd';
 import { PermissionsTree } from '@/components/permissionsTree';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IPropertyAutocompleteProps {
   onChange?: (value: string[]) => void;
   value?: string[];
   readOnly?: boolean;
-  size?: 'large' | 'middle' | 'small';
+  size?: SizeType;
 }
 
 const PermissionAutocomplete: FC<IPropertyAutocompleteProps> = (props) => {
