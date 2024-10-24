@@ -22,7 +22,7 @@ function removePropertyDuplicates(str) {
 function convertNestedPropertiesToObjectFormat(array) {
   if (!array) return '';
 
-  return array.map(path => {
+  return array?.map(path => {
     let parts = path.split('.');
     let result = '';
     let indentation = 0;
@@ -71,13 +71,8 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
 
 
 export const getURLChartDataRefetchParams = (url: string) => {
-  // if the url is not provided, return an empty object
-  if (!url) return {};
   return {
-    path: `${url}`,
-    queryParams: {
-      maxResultCount: -1
-    },
+    path: url ? `${url}` : '',
   };
 };
 
@@ -133,7 +128,7 @@ export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
 
-  return data.map(item => {
+  return data?.map(item => {
     let modifiedItem = { ...item };
 
     properties.forEach(property => {
@@ -193,7 +188,7 @@ const aggregateData = (data: object[], xProperty: string, yProperty: string, agg
   }, {});
 
   // Apply aggregation (sum, average, count, min, max)
-  const aggregatedData = Object.entries(groupedData).map(([key, values]: any) => {
+  const aggregatedData = Object.entries(groupedData)?.map(([key, values]: any) => {
     let aggregatedValue;
     switch (aggregationMethod) {
       case 'sum':
@@ -396,11 +391,11 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
-    labels: aggregatedData.map(item => item.x),
+    labels: aggregatedData?.map(item => item.x),
     datasets: [
       {
         label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
-        data: aggregatedData.map(item => item.y),
+        data: aggregatedData?.map(item => item.y),
         borderColor: strokeColor || 'fff',
         backgroundColor: getPredictableColor(yProperty),
         fill: false,
@@ -423,12 +418,12 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
   const aggregatedData = aggregateData(data, xProperty, yProperty, aggregationMethod);
 
   return {
-    labels: aggregatedData.map(item => item.x),
+    labels: aggregatedData?.map(item => item.x),
     datasets: [
       {
         label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
-        data: aggregatedData.map(item => item.y),
-        backgroundColor: aggregatedData.map(item => getPredictableColor(item.x.toString())),
+        data: aggregatedData?.map(item => item.y),
+        backgroundColor: aggregatedData?.map(item => getPredictableColor(item.x.toString())),
         borderColor: strokeColor || 'fff',
         borderWidth: 1,
       }
@@ -449,7 +444,7 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
 
   const datasets = [{
     label: `${valueProperty} (${aggregationMethod})`,
-    data: labels.map((label: string) => {
+    data: labels?.map((label: string) => {
       const filteredData = data?.filter((item: { [key: string]: any }) => getPropertyValue(item, legendProperty) === label);
       const values: number[] = filteredData?.map((item: { [key: string]: any }) => getPropertyValue(item, valueProperty) as number);
 
@@ -461,7 +456,7 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
       if (aggregationMethod === 'max') return Math.max(...values);
       return 0;
     }),
-    backgroundColor: labels.map((label: string) => getPredictableColor(label)),
+    backgroundColor: labels?.map((label: string) => getPredictableColor(label)),
     borderColor: strokeColor || 'fff',
   }];
 
@@ -485,7 +480,7 @@ export const preparePolarAreaChartData = (data: object[], legendProperty: string
 
   const datasets = [{
     label: `${valueProperty} (${aggregationMethod})`,
-    data: labels.map((label: string) => {
+    data: labels?.map((label: string) => {
       const filteredData = data?.filter((item: { [key: string]: any }) => getPropertyValue(item, legendProperty) === label);
       const values: number[] = filteredData?.map((item: { [key: string]: any }) => getPropertyValue(item, valueProperty) as number);
 
@@ -497,7 +492,7 @@ export const preparePolarAreaChartData = (data: object[], legendProperty: string
       if (aggregationMethod === 'max') return Math.max(...values);
       return 0;
     }),
-    backgroundColor: labels.map((label: string) => getPredictableColor(label)),
+    backgroundColor: labels?.map((label: string) => getPredictableColor(label)),
     borderColor: strokeColor || 'fff',
   }];
 
@@ -515,7 +510,7 @@ export const preparePolarAreaChartData = (data: object[], legendProperty: string
  * @returns the aggregated value
  */
 function aggregateValues(items: object[], aggregationMethod: TAggregationMethod, valueProperty: string): number {
-  const values: number[] = items.map((item: { [key: string]: any }) => item[valueProperty]);
+  const values: number[] = items?.map((item: { [key: string]: any }) => item[valueProperty]);
   switch (aggregationMethod) {
     case 'sum':
       return values.reduce((acc, val) => acc + (val || 0), 0);
@@ -555,7 +550,7 @@ export const preparePivotChartData = (
   const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
   const legendItems = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
-  const datasets = legendItems.map(legend => {
+  const datasets = legendItems?.map(legend => {
     const strLegend = typeof legend === 'string' ? legend : legend + '';
     const barBackgroundColor = getPredictableColor(strLegend);
     let colors: string[] = [];
