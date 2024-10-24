@@ -60,16 +60,13 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
           for (const metaItem of metaData.properties as Array<IRefListPropertyMetadata>) {
             if (metaItem.dataType === 'reference-list-item') {
               let fieldName = toCamelCase(metaItem.path); // Field to transform in the data
-              const refListName = metaItem.referenceListName; // Reference list name from metadata
-              const referenceListModule = metaItem.referenceListModule; // Module from metadata
 
               // Fetch the reference list values for this field
-              getReferenceList({ refListId: { module: referenceListModule, name: refListName } }).promise.then((refListItem) => {
+              getReferenceList({ refListId: { module: metaItem.referenceListModule, name: metaItem.referenceListName } }).promise.then((refListItem) => {
                 setData(data.result?.items?.map(item => {
                   if (item[`${fieldName}`] !== undefined) {
                     // Replace the numeric value with the corresponding reference list name
                     const referenceName = refListItem.items.find((x) => x.itemValue === item[`${fieldName}`])?.item; // Lookup by number
-
                     item[`${fieldName}`] = referenceName || item[`${fieldName}`]; // Fallback to original value if not found
                   }
                   return item;

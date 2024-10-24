@@ -550,21 +550,20 @@ export const preparePivotChartData = (
   chartType: TChartType,
   borderWidth?: number,
 ): IChartData => {
-  const labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
+  var labels = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, axisProperty)))];
   const legendItems = [...new Set(data?.map((item: { [key: string]: any }) => getPropertyValue(item, legendProperty)))];
 
-  const datasets = legendItems?.map(legend => {
+  var datasets = legendItems?.map(legend => {
     const strLegend = typeof legend === 'string' ? legend : legend + '';
     const barBackgroundColor = getPredictableColor(strLegend);
     let colors: string[] = [];
-    // const legendDisplayValue = refLists?.[legendProperty]?.find((it: { itemValue: any }) => it.itemValue === legend)?.item;
     const legendDisplayValue = legend;
     return {
       label: legendDisplayValue,
       data: labels?.map(label => {
-        const matchingItems = data.filter((item: { [key: string]: any }) =>
-          getPropertyValue(item, axisProperty) === label && item[legendProperty] === legend
-        );
+        const matchingItems = data.filter((item: { [key: string]: any }) => {
+          return getPropertyValue(item, axisProperty) === label && getPropertyValue(item, legendProperty) === legend;
+        });
         switch (chartType) {
           case 'bar':
           case 'line':
@@ -585,8 +584,16 @@ export const preparePivotChartData = (
     };
   });
 
+  // Ensure dataset labels and data labels are not null or undefined
+  datasets = datasets?.map((dataset) => ({
+    ...dataset,
+    label: dataset.label ?? 'null',
+  }));
+
+  labels = labels?.map((label) => label ?? 'null');
+
   return {
-    labels: labels,
-    datasets: datasets
+    labels,
+    datasets,
   };
 };

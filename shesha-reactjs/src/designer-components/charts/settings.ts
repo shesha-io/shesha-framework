@@ -223,13 +223,13 @@ export const settingsForm = new DesignerToolbarSettings()
             labelAlign: 'right',
             mode: "multiple",
             parentId: 'root',
-            isDynamic: false,
+            isDynamic: true,
             description: 'The properties you want users to filter by. Use the propeties that you have selected for axis, value (and legend).',
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
             hidden: {
-              _code: "return !(getSettingValue(data?.allowFilter)",
+              _code: "return !(getSettingValue(data?.allowFilter))",
               _mode: "code",
               _value: true
             },
