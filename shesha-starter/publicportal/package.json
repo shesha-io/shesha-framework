@@ -1,7 +1,7 @@
 {
   "name": "@shesha-io/starter-publicportal",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "postinstall": "next",
   "workspaces": [
     "packages/*"
