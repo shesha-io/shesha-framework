@@ -65,7 +65,7 @@ export const FormInfo: FC<FormInfoProps> = ({ formProps, onMarkupUpdated, visibl
   }, [visible]);
 
   useEffect(() => {
-    if (Boolean(displayEditMode)) setTimeout(() => {
+    setTimeout(() => {
       setPanelShowing(false);
     }, 3000);
   }, [formInfoBlockVisible]);
