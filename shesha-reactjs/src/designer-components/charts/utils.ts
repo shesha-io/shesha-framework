@@ -1,4 +1,4 @@
-import { IChartData, IFilter, TAggregationMethod, TChartType, TOperator } from "./model";
+import { IChartData, IFilter, TAggregationMethod, TChartType, TOperator, TTimeSeriesFormat } from "./model";
 
 /**
  * @param str the enjoined properties string to remove duplicates from
@@ -16,6 +16,37 @@ function removePropertyDuplicates(str) {
 }
 
 /**
+ * @param array array of nested properties
+ * @returns the array in object format
+ */
+function convertNestedPropertiesToObjectFormat(array) {
+  if (!array) return '';
+
+  return array.map(path => {
+    let parts = path.split('.');
+    let result = '';
+    let indentation = 0;
+
+    if (parts.length === 1) {
+      // If there's no nesting (no dots), return the part directly
+      return parts[0];
+    }
+
+    parts.forEach((part, index) => {
+      if (index === parts.length - 1) {
+        result += `${''.repeat(indentation)}${part}`;
+      } else {
+        result += `${''.repeat(indentation)}${part} {\n`;
+        indentation += 2;
+      }
+    });
+
+    result += `${''.repeat(indentation - 2)} }`.repeat(parts.length - 1); // closing brackets
+    return result;
+  }).join(', ');
+}
+
+/**
  * Function to get the chart data from the API
  * @param entityType entity type to get data from
  * @param dataProperty property to get data from
@@ -25,13 +56,26 @@ function removePropertyDuplicates(str) {
  * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string[], legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
+  filterProperties = convertNestedPropertiesToObjectFormat(filterProperties);
   return {
     path: `/api/services/app/Entities/GetAll`,
     queryParams: {
       entityType: entityType,
-      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : '') + (filterProperties ? ',' + filterProperties.join(',') : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')),
-      filter: Boolean(filters) ? JSON.stringify(filters) : undefined,
+      properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')) + ", " + filterProperties,
+      filter: filters,
+      maxResultCount: -1
+    },
+  };
+};
+
+
+export const getURLChartDataRefetchParams = (url: string) => {
+  // if the url is not provided, return an empty object
+  if (!url) return {};
+  return {
+    path: `${url}`,
+    queryParams: {
       maxResultCount: -1
     },
   };
@@ -62,6 +106,70 @@ export function getLastPartOfProperty(property: string) {
   // if there is no dot in the string, return the string
   if (property.indexOf('.') === -1) return property;
   return property.split('.').pop();
+}
+
+/**
+ * Function to check if a value is an ISO string  
+ * - An ISO string is a string that matches the ISO 8601 format
+ * - Example: '2021-08-25T12:00:00.000Z'
+ * - The format is 'YYYY-MM-DDTHH:MM:SS.sssZ'
+ * - The milliseconds and Z are optional
+ * @param value the value to check
+ * @returns true if the value is an ISO string, false otherwise
+ */
+function isIsoString(value) {
+  // Check if value is a string and matches the ISO 8601 format (with optional milliseconds)
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?/.test(value);
+}
+
+/**
+ * Function to format the date based on the time unit
+ * @param data the data to format
+ * @param timeUnit the time unit to format the date to
+ * @param properties the properties to format
+ * @returns the formatted data
+ */
+export function formatDate(data, timeUnit: TTimeSeriesFormat, properties: string[]) {
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+
+  return data.map(item => {
+    let modifiedItem = { ...item };
+
+    properties.forEach(property => {
+      if (item[property] && isIsoString(item[property])) {
+        const date = new Date(item[property]);
+
+        let formattedDate;
+        switch (timeUnit) {
+          case 'day':
+            formattedDate = date.getDate();
+            break;
+          case 'month':
+            formattedDate = monthNames[date.getMonth()]; // Month name
+            break;
+          case 'year':
+            formattedDate = date.getFullYear();
+            break;
+          case 'day-month':
+            formattedDate = `${date.getDate()} ${monthNames[date.getMonth()]}`; // Day + Month name
+            break;
+          case 'day-month-year':
+            formattedDate = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`; // Day + Month name + Year
+            break;
+          case 'month-year':
+            formattedDate = `${monthNames[date.getMonth()]} ${date.getFullYear()}`; // Month name + Year
+            break;
+          default:
+            formattedDate = date.toISOString();
+            break;
+        }
+        modifiedItem[property] = formattedDate;
+      }
+    });
+
+    return modifiedItem;
+  });
 }
 
 /**
@@ -120,11 +228,11 @@ const aggregateData = (data: object[], xProperty: string, yProperty: string, agg
  */
 export function filterData(preFilteredData: object[], property: string, operator: TOperator, value: string | number): object[] {
   if (!property || !operator || value === undefined) {
-    console.error('Invalid filter: property, operator, and value are required');
+    console.error('filterData, Invalid filter: property, operator, and value are required');
     return preFilteredData;
   }
   if (!Array.isArray(preFilteredData) || preFilteredData?.length === 0) {
-    console.error('Invalid data: preFilteredData must be a non-empty array');
+    console.error('filterData, Invalid data: preFilteredData must be a non-empty array');
     return [];
   }
 
@@ -136,7 +244,7 @@ export function filterData(preFilteredData: object[], property: string, operator
       try {
         value = parseInt(value as string, 10);
       } catch (e) {
-        console.error('Invalid value: Value must be a number');
+        console.error('filterData, Invalid value: Value must be a number');
         return false;
       }
     }
@@ -186,7 +294,7 @@ export function filterData(preFilteredData: object[], property: string, operator
         return itemValue !== value;
 
       default:
-        console.error(`Invalid operator: '${operator}' is not recognized`);
+        console.error(`filterData, Invalid operator: '${operator}' is not recognized`);
         return false;
     }
   });
@@ -253,8 +361,11 @@ function getPredictableColorHSL(value: string): string {
   const saturation = 60 + (hash % 30);  // Varies between 60% and 90% for some saturation variation
   const lightness = 57 + (hash % 20);  // Varies between 50% and 70% for lightness variation
 
-  // Construct the HSL color string
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  // Set a fixed alpha for transparency
+  const alpha = 0.75;  // 25% transparency
+
+  // Construct the HSLA color string
+  return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
 }
 
 /**
@@ -290,10 +401,11 @@ export const prepareLineChartData = (data: object[], xProperty: string, yPropert
       {
         label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
         data: aggregatedData.map(item => item.y),
-        borderColor: strokeColor || 'white',
+        borderColor: strokeColor || 'fff',
         backgroundColor: getPredictableColor(yProperty),
         fill: false,
         pointRadius: 5,
+        borderWidth: 0.5,
       }
     ]
   };
@@ -317,7 +429,7 @@ export const prepareBarChartData = (data: object[], xProperty: string, yProperty
         label: `${yProperty} (${aggregationMethod}) Over ${xProperty}`,
         data: aggregatedData.map(item => item.y),
         backgroundColor: aggregatedData.map(item => getPredictableColor(item.x.toString())),
-        borderColor: strokeColor || 'white',
+        borderColor: strokeColor || 'fff',
         borderWidth: 1,
       }
     ]
@@ -350,7 +462,7 @@ export const preparePieChartData = (data: object[], legendProperty: string, valu
       return 0;
     }),
     backgroundColor: labels.map((label: string) => getPredictableColor(label)),
-    borderColor: strokeColor || 'white',
+    borderColor: strokeColor || 'fff',
   }];
 
   return {
@@ -386,7 +498,7 @@ export const preparePolarAreaChartData = (data: object[], legendProperty: string
       return 0;
     }),
     backgroundColor: labels.map((label: string) => getPredictableColor(label)),
-    borderColor: strokeColor || 'white',
+    borderColor: strokeColor || 'fff',
   }];
 
   return {
@@ -468,7 +580,7 @@ export const preparePivotChartData = (
         return matchingItems.length > 0 ? aggregateValues(matchingItems, aggregationMethod, valueProperty) : 0;
       }),
       fill: false,
-      borderColor: strokeColor || 'white',
+      borderColor: strokeColor || 'fff',
       backgroundColor: colors,
       pointRadius: 5,
     };

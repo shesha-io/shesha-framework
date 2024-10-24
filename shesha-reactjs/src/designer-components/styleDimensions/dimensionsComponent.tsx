@@ -5,12 +5,12 @@ import { IDimensionsType } from './interfaces';
 import { SettingInput } from '../_settings/components/settingsInput';
 
 const dimensionInputs = [
-    [{ label: 'Width', propertyName: 'styles.dimensions.width' },
-    { label: 'Height', propertyName: 'styles.dimensions.height' }],
-    [{ label: 'Min Width', propertyName: 'styles.dimensions.minWidth' },
-    { label: 'Min Height', propertyName: 'styles.dimensions.minHeight' }],
-    [{ label: 'Max Width', propertyName: 'styles.dimensions.maxWidth' },
-    { label: 'Max Height', propertyName: 'styles.dimensions.maxHeight' }]
+    [{ label: 'Width', propertyName: 'inputStyles.dimensions.width' },
+    { label: 'Height', propertyName: 'inputStyles.dimensions.height' }],
+    [{ label: 'Min Width', propertyName: 'inputStyles.dimensions.minWidth' },
+    { label: 'Min Height', propertyName: 'inputStyles.dimensions.minHeight' }],
+    [{ label: 'Max Width', propertyName: 'inputStyles.dimensions.maxWidth' },
+    { label: 'Max Height', propertyName: 'inputStyles.dimensions.maxHeight' }]
 ];
 
 const DimensionsComponent: FC<IDimensionsType> = (props) => {
@@ -25,7 +25,7 @@ const DimensionsComponent: FC<IDimensionsType> = (props) => {
             {dimensionInputs.map((input, index) => (
                 <InputRow key={index} inputs={input.map(input => ({ ...input, ...commonProps }))} />
             ))}
-            {<SettingInput label='Overflow' propertyName='styles.dimensions.overflow' inputType='radio' readOnly={readOnly} buttonGroupOptions={overflowOptions} />}
+            {<SettingInput label='Overflow' propertyName='inputStyles.dimensions.overflow' inputType='radio' readOnly={readOnly} buttonGroupOptions={overflowOptions} />}
         </>
     );
 };

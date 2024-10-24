@@ -19,10 +19,12 @@ using System.Threading.Tasks;
 namespace Shesha
 {
     [DynamicControllerNameConvention]
-    public class DynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey> : SheshaCrudServiceBase<TEntity,
-        TDynamicDto, TPrimaryKey, PropsFilteredPagedAndSortedResultRequestDto, TDynamicDto, TDynamicDto, GetDynamicEntityInput<TPrimaryKey>>, IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>, ITransientDependency
+    public class DynamicCrudAppService<TEntity, TDynamicDto, TCreateDynamicDto, TUpdateDynamicDto, TPrimaryKey> : SheshaCrudServiceBase<TEntity,
+        TDynamicDto, TPrimaryKey, PropsFilteredPagedAndSortedResultRequestDto, TCreateDynamicDto, TUpdateDynamicDto, GetDynamicEntityInput<TPrimaryKey>>, IDynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey>, ITransientDependency
         where TEntity : class, IEntity<TPrimaryKey>
         where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+        where TCreateDynamicDto: class, TDynamicDto
+        where TUpdateDynamicDto : class, TDynamicDto
     {
 
         public DynamicCrudAppService(
@@ -74,7 +76,7 @@ namespace Shesha
         }
 
         [EntityAction(StandardEntityActions.Create)]
-        public override async Task<TDynamicDto> CreateAsync(TDynamicDto input)
+        public override async Task<TDynamicDto> CreateAsync(TCreateDynamicDto input)
         {
             CheckCreatePermission();
             var entity = await InternalCreateAsync(input);
@@ -85,7 +87,7 @@ namespace Shesha
         }
 
         [EntityAction(StandardEntityActions.Update)]
-        public override async Task<TDynamicDto> UpdateAsync(TDynamicDto input)
+        public override async Task<TDynamicDto> UpdateAsync(TUpdateDynamicDto input)
         {
             CheckUpdatePermission();
             var entity = await InternalUpdateAsync(input);
@@ -156,7 +158,7 @@ namespace Shesha
             return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
         }
 
-        private async Task<TEntity> InternalCreateAsync(TDynamicDto input)
+        private async Task<TEntity> InternalCreateAsync(TCreateDynamicDto input)
         {
             var entity = Activator.CreateInstance<TEntity>();
 
@@ -181,7 +183,7 @@ namespace Shesha
             }
             else
             {
-                await MapStaticPropertiesToEntityDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(input, entity);
+                await MapStaticPropertiesToEntityDtoAsync<TCreateDynamicDto, TEntity, TPrimaryKey>(input, entity);
 
                 var validationResults = new List<ValidationResult>();
 
@@ -233,11 +235,23 @@ namespace Shesha
         /// <returns></returns>
         /// <response code="200">NOTE: shape of the `result` depends on the `properties` argument. When `properties` argument is not specified - it returns top level properties of the entity, all referenced entities are presented as their Id values</response>
         [ApiExplorerSettings(IgnoreApi = true)]
-        public virtual async Task<GraphQLDataResult<TEntity>> CreateGqlAsync(string properties, TDynamicDto input)
+        public virtual async Task<GraphQLDataResult<TEntity>> CreateGqlAsync(string properties, TCreateDynamicDto input)
         {
             CheckUpdatePermission();
             var entity = await InternalCreateAsync(input);
             return await QueryAsync(new GetDynamicEntityInput<TPrimaryKey>() { Id = entity.Id, Properties = properties });
+        }
+    }
+
+    [DynamicControllerNameConvention]
+    public class DynamicCrudAppService<TEntity, TDynamicDto, TPrimaryKey> : DynamicCrudAppService<TEntity, TDynamicDto, TDynamicDto, TDynamicDto, TPrimaryKey>, ITransientDependency
+    where TEntity : class, IEntity<TPrimaryKey>
+    where TDynamicDto : class, IDynamicDto<TEntity, TPrimaryKey>
+    {
+        public DynamicCrudAppService(
+            IRepository<TEntity, TPrimaryKey> repository
+        ) : base(repository)
+        {
         }
     }
 }

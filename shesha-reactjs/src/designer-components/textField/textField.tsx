@@ -7,7 +7,7 @@ import ConfigurableFormItem from '@/components/formDesigner/components/formItem'
 import { customEventHandler, isValidGuid } from '@/components/formDesigner/components/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { FormMarkup, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { FormMarkup, IStyleType, useForm, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
 import { evaluateString, getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { axiosHttp } from '@/utils/fetchers';
 import { IInputStyles, ITextFieldComponentProps, TextType } from './interfaces';
@@ -25,7 +25,7 @@ import settingsFormJson from './settingsForm.json';
 import { getShadowStyle } from '../styleShadow/utils';
 import { getFontStyle } from '../styleFont/utils';
 import { splitValueAndUnit } from '../_settings/utils';
-import { IStyleType } from '../_settings/components/models';
+import { useStyles } from './styles';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -58,7 +58,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    const { dimensions, border, font, shadow, background } = model?.styles;
+    const { styles } = useStyles({ fontFamily: model?.inputStyles?.font?.type, fontWeight: model?.inputStyles?.font?.weight, textAlign: model?.inputStyles?.font?.align });
+
+    const { dimensions, border, font, shadow, background } = model?.inputStyles;
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
@@ -87,7 +89,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       fetchStyles();
     }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
-    if (model?.background?.type === 'storedFile' && model?.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
+    if (model?.inputStyles?.background?.type === 'storedFile' && model?.inputStyles?.background.storedFile?.id && !isValidGuid(model?.inputStyles?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
@@ -109,11 +111,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const InputComponentType = renderInput(model.textType);
 
     const inputProps: InputProps = {
-      className: 'sha-input',
+      className: `sha-input ${styles.textField}`,
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model?.border?.hideBorder ? 'borderless' : undefined,
+      variant: model?.inputStyles?.border?.hideBorder ? 'borderless' : undefined,
       maxLength: model.validate?.maxLength,
       size: model.size,
       disabled: model.readOnly,
@@ -133,7 +135,6 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       setGlobalState,
     };
 
-    console.log('model', model);
     return (
       <ConfigurableFormItem
         model={model}
@@ -153,9 +154,9 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
             theme={{
               components: {
                 Input: {
-                  fontFamily: model?.font?.type,
-                  fontSize: model?.font?.size || 14,
-                  fontWeightStrong: model?.font?.weight || 500,
+                  fontFamily: model?.inputStyles?.font?.type,
+                  fontSize: model?.inputStyles?.font?.size || 14,
+                  fontWeightStrong: model?.inputStyles?.font?.weight || 500,
                 },
               },
             }}
@@ -173,7 +174,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     textType: 'text',
-    styles: {
+    inputStyles: {
       background: { type: 'color' },
       border: { selectedSide: 'all', selectedCorner: 'all' },
       dimensions: {},

@@ -1,7 +1,7 @@
 import { createStyles } from 'antd-style';
 
 const useStyles = createStyles(({ }) => ({
-  chartControlContainer: { border: '1px solid #ddd', padding: 10, position: 'relative' },
+  chartControlContainer: { border: '1px solid #ddd', padding: 10, position: 'relative', minHeight: 300 },
   chartControlButtonContainer: { marginTop: 10, gap: 10 },
   chartControlSpinFontSize: { fontSize: 48 },
   filterComponentContainer: { marginTop: 10, padding: 10, display: 'block', border: '1px solid #ddd' },

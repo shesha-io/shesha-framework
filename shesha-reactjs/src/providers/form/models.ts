@@ -66,6 +66,14 @@ export interface IComponentValidationRules {
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 
+export interface IStyleType {
+  border?: IBorderValue;
+  background?: IBackgroundValue;
+  font?: IFontValue;
+  shadow?: IShadowValue;
+  dimensions?: IDimensionsValue;
+}
+
 export type ConfigurableFormComponentTypes =
   | 'alert'
   | 'address'
@@ -188,22 +196,6 @@ export interface IConfigurableFormComponent
   /** Default css style applied as string */
   stylingBox?: string;
 
-  /** Font style */
-  font?: IFontValue;
-
-  /** Background style */
-
-  background?: IBackgroundValue;
-
-  /** Border style */
-  border?: IBorderValue;
-
-  /** Shadow style */
-  shadow?: IShadowValue;
-
-  /** Dimension style */
-  dimension?: IDimensionsValue;
-
   noDataText?: string;
 
   noDataIcon?: string;
@@ -213,6 +205,8 @@ export interface IConfigurableFormComponent
   permissions?: string[];
 
   layout?: FormLayout;
+
+  inputStyles?: IStyleType;
 }
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {

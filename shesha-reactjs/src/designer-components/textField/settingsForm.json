@@ -78,9 +78,9 @@
                   "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
                   "type": "settingsInput",
                   "inputType": "switch",
-                  "propertyName": "hidden",
+                  "propertyName": "hide",
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
-                  "label": "Hidden",
+                  "label": "Hide",
                   "jsSettings": true,
                   "layout": "horizontal"
                 }
@@ -316,7 +316,7 @@
                     "id": "try26voxhs-HxJ5k5ngYE",
                     "type": "fontStyle",
                     "parentId": "root",
-                    "propertyName": "styles.font"
+                    "propertyName": "inputStyles.font"
                   }
                 ]
               }
@@ -346,7 +346,7 @@
                     "id": "dimesnsionsStyle",
                     "type": "dimensionsStyle",
                     "parentId": "dimensionsStylePnl",
-                    "propertyName": "styles.dimensions"
+                    "propertyName": "inputStyles.dimensions"
                   }
                 ]
               }
@@ -376,7 +376,7 @@
                     "id": "borderStyle",
                     "type": "borderStyle",
                     "parentId": "BorderStylePnl",
-                    "propertyName": "styles.border"
+                    "propertyName": "inputStyles.border"
                   }
                 ]
               }
@@ -406,7 +406,7 @@
                     "id": "backgroundStyle",
                     "type": "backgroundStyle",
                     "parentId": "backgroundStylePnl",
-                    "propertyName": "styles.background"
+                    "propertyName": "inputStyles.background"
                   }
                 ]
               }
@@ -436,7 +436,7 @@
                     "id": "shadowStyle",
                     "type": "shadowStyle",
                     "parentId": "shadowStylePnl",
-                    "propertyName": "styles.shadow"
+                    "propertyName": "inputStyles.shadow"
                   }
                 ]
               }

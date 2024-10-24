@@ -793,28 +793,13 @@
             "mobile": {}
           },
           {
-            "id": "7e4876d8-1ed4-4576-9f5b-46cfd77d8643",
-            "type": "checkbox",
-            "propertyName": "hideBorder",
-            "label": "Hide border",
-            "parentId": "G670M5i5T85_M0HrSligg",
-            "hidden": false,
-            "validate": {},
-            "version": 3
-          },
-          {
             "id": "295d003b-d261-4f5e-8de2-2a278f303c18",
             "type": "numberField",
             "propertyName": "borderSize",
             "label": "Border Width",
             "parentId": "G670M5i5T85_M0HrSligg",
             "description": "To see your changes, check 'Hide Border'.",
-            "version": 3,
-            "hidden": {
-              "_code": "return getSettingValue(data?.hideBorder) == true;",
-              "_mode": "code",
-              "_value": false
-            }
+            "version": 3
           },
           {
             "id": "89accb3c-29a6-4636-a186-42916c9b10cc",
@@ -822,7 +807,6 @@
             "propertyName": "borderRadius",
             "label": "Border Radius",
             "parentId": "G670M5i5T85_M0HrSligg",
-            "defaultValue": "8",
             "version": 3
           },
           {
@@ -832,11 +816,6 @@
             "parentId": "G670M5i5T85_M0HrSligg",
             "label": "Border Type",
             "dataSourceType": "values",
-            "hidden": {
-              "_code": "return getSettingValue(data?.hideBorder) == true;",
-              "_mode": "code",
-              "_value": false
-            },
             "values": [
               {
                 "label": "Solid",
@@ -873,12 +852,7 @@
             "title": "",
             "fontSize": "",
             "allowClear": true,
-            "showText": true,
-            "hidden": {
-              "_code": "return getSettingValue(data?.hideBorder) == true;",
-              "_mode": "code",
-              "_value": false
-            }
+            "showText": true
           },
           {
             "id": "edb5da32-d1c5-4167-bb05-37c89475601a",

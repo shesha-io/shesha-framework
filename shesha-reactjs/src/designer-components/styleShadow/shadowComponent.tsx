@@ -13,9 +13,9 @@ const ShadowComponent: FC<IShadowType> = ({ readOnly }) => {
 
     return (
         <>
-            <InputRow inputs={[{ label: 'Offset X', propertyName: `styles.shadow.offsetX`, readOnly }, { label: 'Offset Y', propertyName: `styles.shadow.offsetY`, readOnly }]} />
-            <InputRow inputs={[{ label: 'Blur', propertyName: `styles.shadow.blurRadius`, readOnly, }, { label: 'Spread', propertyName: `styles.shadow.spreadRadius`, readOnly }]} />
-            <SettingInput inputType='color' label='Color' propertyName={`styles.shadow.color`} readOnly={readOnly} />
+            <InputRow inputs={[{ label: 'Offset X', propertyName: `inputStyles.shadow.offsetX`, readOnly }, { label: 'Offset Y', propertyName: `inputStyles.shadow.offsetY`, readOnly }]} />
+            <InputRow inputs={[{ label: 'Blur', propertyName: `inputStyles.shadow.blurRadius`, readOnly, }, { label: 'Spread', propertyName: `inputStyles.shadow.spreadRadius`, readOnly }]} />
+            <SettingInput inputType='color' label='Color' propertyName={`inputStyles.shadow.color`} readOnly={readOnly} />
         </>
     );
 };
