@@ -30,7 +30,8 @@ export const settingsForm = new DesignerToolbarSettings()
             id: nanoid(),
             propertyName: 'dataMode',
             parentId: 'root',
-            label: 'Data Mode',
+            label: 'Data Source Type',
+            description: 'The type of data source you want to use for the chart. If you select `URL`, you will have to provide a URL endpoint to the data. If you select `Entity Type`, you will have to select an entity type from the list.',
             dataSourceType: 'values',
             values: [
               { id: nanoid(), label: 'URL', value: 'url' },
@@ -222,13 +223,13 @@ export const settingsForm = new DesignerToolbarSettings()
             labelAlign: 'right',
             mode: "multiple",
             parentId: 'root',
-            isDynamic: false,
+            isDynamic: true,
             description: 'The properties you want users to filter by. Use the propeties that you have selected for axis, value (and legend).',
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
             hidden: {
-              _code: "return !(getSettingValue(data?.allowFilter)",
+              _code: "return !(getSettingValue(data?.allowFilter))",
               _mode: "code",
               _value: true
             },
@@ -419,6 +420,14 @@ export const settingsForm = new DesignerToolbarSettings()
               _mode: "code",
               _value: true
             },
+          })
+          .addNumberField({
+            id: nanoid(),
+            propertyName: 'borderWidth',
+            parentId: chartSettingsId,
+            label: 'Border width',
+            defaultValue: 0.0,
+            stepNumeric: 0.1,
           })
           .addColorPicker({
             id: nanoid(),

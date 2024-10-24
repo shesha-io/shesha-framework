@@ -1,8 +1,9 @@
-import { IChartsProps, IFilter, TTimeSeriesFormat } from "@/designer-components/charts/model";
+import { IChartsProps, IFilter, TDataMode, TTimeSeriesFormat } from "@/designer-components/charts/model";
 import { createContext } from "react";
 
 export interface IChartDataContext {
   url?: string;
+  dataMode?: TDataMode;
   chartType?: 'pivot' | 'bar' | 'line' | 'pie' | 'timebased';
   showTitle?: boolean;
   title?: string;
@@ -28,6 +29,7 @@ export interface IChartDataContext {
   stacked?: boolean;
   aggregationMethod?: 'count' | 'sum' | 'average' | 'min' | 'max';
   tension?: number;
+  borderWidth?: number;
   strokeColor?: string;
 
   data?: object[];
@@ -56,6 +58,7 @@ export interface IChartDataAtionsContext {
 
 export const INITIAL_STATE: IChartDataContext = {
   url: '',
+  dataMode: 'entityType',
   chartType: 'pivot',
   showTitle: true,
   title: 'Chart Title',
@@ -77,6 +80,7 @@ export const INITIAL_STATE: IChartDataContext = {
   showYAxisTitle: true,
   aggregationMethod: 'count',
   tension: 0,
+  borderWidth: 0,
 
   data: [],
   items: [],
