@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { IButtonGroupItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
-import { Button, Tooltip, Typography } from 'antd';
+import { Alert, Button, Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import ShaIcon, { IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration } from '@/providers';
@@ -19,13 +19,35 @@ export interface IButtonGroupItemProps {
 }
 
 export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelContext, actionConfiguration }) => {
-
   const { styles } = useStyles();
-  const actualItem = useDeepCompareMemo(() => getActualModel({ ...item, actionConfiguration }, actualModelContext)
+  const actualItem = useDeepCompareMemo(
+    () => getActualModel({ ...item, actionConfiguration }, actualModelContext),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    , [{ ...item }, { ...actionConfiguration }, { ...actualModelContext }]);
+    [{ ...item }, { ...actionConfiguration }, { ...actualModelContext }]
+  );
 
-  const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius, height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth, readOnly, style: itemStyle, block, danger } = actualItem;
+  const {
+    icon,
+    label,
+    tooltip,
+    iconPosition,
+    size,
+    buttonType,
+    borderColor,
+    borderRadius,
+    height,
+    width,
+    backgroundColor,
+    fontSize,
+    fontWeight,
+    color,
+    borderStyle,
+    borderWidth,
+    readOnly,
+    style: itemStyle,
+    block,
+    danger,
+  } = actualItem;
 
   const newStyles = {
     width: addPx(width),
@@ -37,7 +59,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
     borderWidth: addPx(borderWidth),
     borderColor: borderColor,
     borderStyle: borderStyle,
-    borderRadius: addPx(borderRadius)
+    borderRadius: addPx(borderRadius),
   };
 
   return (
@@ -65,8 +87,18 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actualModelCo
           )}
         </>
       )}
-      {item.itemSubType === 'separator' && (<Text type="secondary">— separator —</Text>)}
-      {isDynamicItem(item) && <Text type="secondary">dynamic item</Text>}
+      {item.itemSubType === 'separator' && <Text type="secondary">— separator —</Text>}
+      {isDynamicItem(item) &&
+        (item.dataSourceType ? (
+          <Text type="secondary">dynamic item</Text>
+        ) : (
+          <Alert
+            showIcon
+            message="Data source not specified"
+            description="Please specify a data source for this dynamic item."
+            type="warning"
+          />
+        ))}
     </>
   );
 };

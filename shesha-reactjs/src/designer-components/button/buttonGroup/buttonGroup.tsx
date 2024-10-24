@@ -167,35 +167,42 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     // Fetch templates for dynamic items and update state
     useEffect(() => {
         const fetchData = async () => {
+          try {
             const updatedItems = await Promise.all(
-                items?.map(async (item) => {
-                    if (isDynamicItem(item)) {
-                        return handleDynamicItems(item);
-                    } else if (isGroup(item)) {
-                        const childItems = await Promise.all(
-                            item?.childItems?.map(async (childItem) => {
-                                if (isDynamicItem(childItem)) {
-                                    return handleDynamicItems(childItem);
-                                }
-                                return childItem;
-                            })
-                        );
-                        return {
-                            ...item,
-                            childItems: childItems.flat(),
-                        };
-                    }
-                    return item;
-                })
+              items?.map(async (item) => {
+                if (isDynamicItem(item)) {
+                  if (!item.dataSourceType) return item;
+                  const dynamicItems = await handleDynamicItems(item);
+                  return dynamicItems;
+                } else if (isGroup(item)) {
+                  const childItems = await Promise.all(
+                    item?.childItems?.map(async (childItem) => {
+                      if (isDynamicItem(childItem)) {
+                        if (!childItem.dataSourceType) return childItem;
+                        return handleDynamicItems(childItem);
+                      }
+                      return childItem;
+                    })
+                  );
+                  return {
+                    ...item,
+                    childItems: childItems.flat(),
+                  };
+                }
+                return item;
+              })
             );
-    
-            // Flatten the entire updatedItems array
+      
             const flattenedItems = updatedItems.flat();
             setCombinedItems(flattenedItems);
+          } catch (error) {
+            console.error('Error in fetchData:', error);
+            // Handle error appropriately - maybe set an error state
+          }
         };
-    
+      
         fetchData();
-    }, [items]);
+      }, [items]);
     
     const isDesignMode = allData.form?.formMode === 'designer';
 

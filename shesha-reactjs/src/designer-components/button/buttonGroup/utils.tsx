@@ -1,64 +1,66 @@
-import { evaluateString, useFormData, useMutate } from '@/index';
+import { evaluateString, useDataContextManager, useFormData, useGet, useGlobalState } from '@/index';
 import { IDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { buildUrl } from '@/utils/url';
 import { MenuProps } from 'antd';
 import React, { Key } from 'react';
 
 interface IQueryParams {
-  // tslint:disable-next-line:typedef-whitespace
   [name: string]: Key;
 }
 
 export const useTemplateActions = () => {
-  const { mutate } = useMutate<any>();
   const { data } = useFormData();
-
+  const { globalState } = useGlobalState();
+  const pageContext = useDataContextManager(false)?.getPageContext();
+  const { refetch } = useGet({ path: '', lazy: true });
   
   const getQueryParams = (item: any): IQueryParams => {
     const queryParamObj: IQueryParams = {};
-  
-    if (item.queryParams?.length) {
+    if (item.queryParams && item.queryParams?.length) {
       item.queryParams?.forEach(({ param, value }) => {
         const valueAsString = value as string;
         if (param?.length && valueAsString.length) {
-          queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data }) : value;
+          queryParamObj[param] = /{.*}/i.test(valueAsString)
+            ? evaluateString(valueAsString, { data, globalState, pageContext: { ...pageContext.getFull() } })
+            : value;
         }
       });
     }
-  
     return queryParamObj;
-  
   };
 
-  const fetchTemplateState = async (url: any) => {
-  
-    try {
-      const response = await mutate(
-        {
-          url:  url || '/api/services/app/ShaRole/GetAll',
-          httpVerb: 'GET',
-        }
-      );
-
-      if (response?.success && response?.result !== undefined) {
-        if (typeof response.result === 'object') {
-          return response.result.items;
-        }else{
-          return response.result;
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching column state:', error);
+  const getTemplateState = (items: any, customUrl: string) => {
+   
+    if (items.dataSourceType === 'url') {
+      return {
+        path: customUrl,
+      };
     }
+   
+    return {
+      path: `/api/services/app/Entities/GetAll`,
+      queryParams: {
+        entityType: items.entityTypeShortAlias,
+        maxResultCount: 100,
+      },
+    };
   };
-
-
-  const handleDynamicItems = async (
-    item: IDynamicItem,
-) => {
-    const path = buildUrl(item.dataSourceUrl, getQueryParams(item));
-    const templates = await fetchTemplateState(path);
-    return templates?.map((template: any) => ({
+  const handleDynamicItems = async (item: IDynamicItem) => {
+    try {
+      const path = buildUrl(item.dataSourceUrl, getQueryParams(item));
+      const response = await refetch(getTemplateState(item, path));
+      
+      if (!response?.success || response?.result === undefined) {
+        return [];
+      }
+  
+      const result = typeof response.result === 'object' 
+        ? response.result.items 
+        : response.result;
+  
+      if (!result) return [];
+  
+      return result.map((template: any) => ({
         ...item,
         data: template,
         id: template.id,
@@ -70,10 +72,15 @@ export const useTemplateActions = () => {
         sortOrder: 0,
         actionConfiguration: item.actionConfiguration || null,
         buttonType: item.buttonType || 'link',
-    }));
-};
+      }));
+    } catch (error) {
+      console.error('Error in handleDynamicItems:', error);
+      return [];
+    }
+  };
   
-  return { handleDynamicItems};
+
+  return { handleDynamicItems };
 };
 
 type MenuItem = MenuProps['items'][number];
@@ -91,4 +98,4 @@ export function getButtonGroupMenuItem(
     className: 'sha-button-menu',
     disabled,
   } as MenuItem;
-};
+}

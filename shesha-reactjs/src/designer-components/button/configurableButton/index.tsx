@@ -35,7 +35,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = props => {
         setLoading(true);
         executeAction({
           actionConfiguration: { ...actionConfiguration },
-          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext,dynamicItem: props.data },
+          argumentsEvaluationContext: { ...evaluationContext, ...dynamicContext, dynamicItem:{ ...props.data}},
         })
           .finally(() => {
             setLoading(false);
