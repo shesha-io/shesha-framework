@@ -8,15 +8,15 @@ export interface IFontType {
 
 const inputConfigurations = [
     [
-        { label: 'Size', propertyName: 'font.size', valueKey: 'size' },
-        { label: 'Weight', propertyName: 'font.weight', inputType: 'dropdown', dropdownOptions: fontWeights, valueKey: 'weight', tooltip: 'Controls text thickness (light, normal, bold, etc.)' }
+        { label: 'Size', propertyName: 'styles.font.size', valueKey: 'size' },
+        { label: 'Weight', propertyName: 'styles.font.weight', inputType: 'dropdown', dropdownOptions: fontWeights, valueKey: 'weight', tooltip: 'Controls text thickness (light, normal, bold, etc.)' }
     ],
     [
-        { label: 'Color', propertyName: 'font.color', inputType: 'color', valueKey: 'color' },
-        { label: 'Family', propertyName: 'font.type', inputType: 'dropdown', dropdownOptions: fontTypes, valueKey: 'type' }
+        { label: 'Color', propertyName: 'styles.font.color', inputType: 'color', valueKey: 'color' },
+        { label: 'Family', propertyName: 'styles.font.type', inputType: 'dropdown', dropdownOptions: fontTypes, valueKey: 'type' }
     ],
     [
-        { label: 'Align', propertyName: 'font.align', inputType: 'radio', buttonGroupOptions: alignOptions, valueKey: 'align' }
+        { label: 'Align', propertyName: 'styles.font.align', inputType: 'radio', buttonGroupOptions: alignOptions, valueKey: 'align' }
     ]
 ];
 

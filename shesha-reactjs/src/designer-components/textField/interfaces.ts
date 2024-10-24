@@ -36,11 +36,7 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent {
   prefixIcon?: IconType;
   initialValue?: string;
   textType?: TextType;
-  border?: IBorderValue;
-  background?: IBackgroundValue;
-  font?: IFontValue;
-  shadow?: IShadowValue;
-  dimensions?: IDimensionsValue;
+  styles?: IStyleType;
   width?: string;
   height?: string;
   hideBorder?: boolean;

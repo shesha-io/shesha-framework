@@ -184,7 +184,7 @@
                   "inputType": "switch",
                   "jsSettings": true,
                   "propertyName": "validate.required",
-                  "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+                  "parentId": "6eBJvoll3xtLJxdvOAlnB",
                   "label": "Required",
                   "size": "small",
                   "layout": "horizontal"
@@ -194,7 +194,7 @@
                   "type": "settingsInput",
                   "inputType": "codeEditor",
                   "propertyName": "validate.validator",
-                  "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+                  "parentId": "6eBJvoll3xtLJxdvOAlnB",
                   "label": "Validator",
                   "validate": {},
                   "labelAlign": "right",
@@ -212,7 +212,7 @@
                   "id": "b61a1580-0ff9-460e-8f13-43b9d80ceb6c",
                   "type": "settingsInput",
                   "propertyName": "validate.minLength",
-                  "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+                  "parentId": "6eBJvoll3xtLJxdvOAlnB",
                   "label": "Min Length",
                   "validate": {},
                   "version": 2,
@@ -222,7 +222,7 @@
                   "id": "cc0d5dc1-19e6-42c3-bd5e-e63946a7f53c",
                   "type": "settingsInput",
                   "propertyName": "validate.maxLength",
-                  "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+                  "parentId": "6eBJvoll3xtLJxdvOAlnB",
                   "label": "Max Length",
                   "validate": {},
                   "version": 2,
@@ -234,7 +234,7 @@
               "id": "9ee3a529-1f0c-4def-bd41-ee166a5dfcd7",
               "type": "settingsInput",
               "propertyName": "validate.message",
-              "parentId": "qOkkwAnHvKJ0vYXeXMLsd",
+              "parentId": "6eBJvoll3xtLJxdvOAlnB",
               "label": "Message",
               "validate": {},
               "version": 3,
@@ -255,7 +255,7 @@
               "propertyName": "onChangeCustom",
               "label": "On Change",
               "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "parentId": "Cc47W08MWrKdhoGqFKMI2",
               "hidden": false,
               "tooltip": "Enter custom eventhandler on changing of event. (form, event) are exposed",
               "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addString(\"value\", \"Component current value\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();"
@@ -267,9 +267,8 @@
               "propertyName": "onFocusCustom",
               "label": "On Focus",
               "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "parentId": "Cc47W08MWrKdhoGqFKMI2",
               "hidden": false,
-              "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\r\n        .addAllStandard(\"shesha:selectedRow\")\r\n        .addObject(\"event\", \"Event callback when user input\", undefined)\r\n        .build();",
               "tooltip": "Enter custom eventhandler on focus of event. (form, event) are exposed"
             },
             {
@@ -279,7 +278,7 @@
               "propertyName": "onBlurCustom",
               "label": "On Blur",
               "labelAlign": "right",
-              "parentId": "Scip2BCqWk6HniFIJTgtA",
+              "parentId": "Cc47W08MWrKdhoGqFKMI2",
               "hidden": false,
               "tooltip": "Enter custom eventhandler on blur of event. (form, event) are exposed"
             }
@@ -289,14 +288,16 @@
           "key": "4",
           "id": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
           "label": "Appearance",
+          "parentId": "W_m7doMyCpCYwAYDfRh6I",
           "components": [
             {
               "id": "fontStyleCollapsiblePanel",
               "type": "collapsiblePanel",
               "label": "Font",
               "labelAlign": "right",
-              "parentId": "root",
               "hidden": false,
+              "propertyName": "pnlFontStyle",
+              "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
               "isDynamic": false,
               "version": 6,
               "expandIconPosition": "start",
@@ -314,7 +315,8 @@
                   {
                     "id": "try26voxhs-HxJ5k5ngYE",
                     "type": "fontStyle",
-                    "parentId": "fontStylePnl"
+                    "parentId": "root",
+                    "propertyName": "styles.font"
                   }
                 ]
               }
@@ -343,7 +345,8 @@
                   {
                     "id": "dimesnsionsStyle",
                     "type": "dimensionsStyle",
-                    "parentId": "dimensionsStylePnl"
+                    "parentId": "dimensionsStylePnl",
+                    "propertyName": "styles.dimensions"
                   }
                 ]
               }
@@ -372,7 +375,8 @@
                   {
                     "id": "borderStyle",
                     "type": "borderStyle",
-                    "parentId": "BorderStylePnl"
+                    "parentId": "BorderStylePnl",
+                    "propertyName": "styles.border"
                   }
                 ]
               }
@@ -402,7 +406,7 @@
                     "id": "backgroundStyle",
                     "type": "backgroundStyle",
                     "parentId": "backgroundStylePnl",
-                    "propertyName": "background"
+                    "propertyName": "styles.background"
                   }
                 ]
               }
@@ -431,7 +435,8 @@
                   {
                     "id": "shadowStyle",
                     "type": "shadowStyle",
-                    "parentId": "shadowStylePnl"
+                    "parentId": "shadowStylePnl",
+                    "propertyName": "styles.shadow"
                   }
                 ]
               }

@@ -35,7 +35,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                 return (
                     <>
                         <SettingInput
-                            propertyName='background.gradient.direction'
+                            propertyName='styles.background.gradient.direction'
                             readOnly={readOnly}
                             label="Direction"
                             inputType='dropdown'
@@ -58,7 +58,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                         }}
                                         style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', width: 'max-content' }}
                                     >
-                                        <SettingInput propertyName={`background.gradient.colors.${id}`} label='color' hideLabel={true} readOnly={readOnly} inputType='color' />
+                                        <SettingInput propertyName={`styles.background.gradient.colors.${id}`} label='color' hideLabel={true} readOnly={readOnly} inputType='color' />
                                     </Tag>
                                 );
                             })}
@@ -83,24 +83,24 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
             case 'url':
                 return (
                     <SettingInput
-                        propertyName='background.url'
+                        propertyName='styles.background.url'
                         readOnly={readOnly}
                         label="URL"
                     />
                 );
             case 'upload':
                 return (
-                    <SettingInput propertyName={'background.file'} label="File" readOnly={readOnly} inputType='imageUploader' />
+                    <SettingInput propertyName={'styles.background.file'} label="File" readOnly={readOnly} inputType='imageUploader' />
                 );
             case 'storedFile':
                 return (
                     <>
                         <InputRow inputs={[{
                             label: 'File Id',
-                            propertyName: 'background.storedFile.id',
+                            propertyName: 'styles.background.storedFile.id',
                             readOnly: readOnly
                         }]} />
-                        <FormItem name="background.storedFile.ownerType" label="Owner Type" jsSetting>
+                        <FormItem name="styles.background.storedFile.ownerType" label="Owner Type" jsSetting>
                             <Autocomplete.Raw
                                 dataSourceType="url"
                                 dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
@@ -109,14 +109,14 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                 value={value?.storedFile?.ownerType}
                             />
                         </FormItem>
-                        <SettingInput propertyName="background.storedFile.ownerId" label="Owner Id" readOnly={readOnly} />
-                        <SettingInput propertyName="background.storedFile.fileCatergory" label="File Catergory" readOnly={readOnly} />
+                        <SettingInput propertyName="styles.background.storedFile.ownerId" label="Owner Id" readOnly={readOnly} />
+                        <SettingInput propertyName="styles.background.storedFile.fileCatergory" label="File Catergory" readOnly={readOnly} />
                     </>
                 );
             default:
                 return (
                     <SettingInput
-                        propertyName='background.color'
+                        propertyName='styles.background.color'
                         readOnly={readOnly}
                         label='Color'
                         inputType='color'
@@ -127,7 +127,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
 
     return (
         <>
-            <SettingInput buttonGroupOptions={backgroundTypeOptions} propertyName='background.type' readOnly={readOnly} inputType='radio' label='Type' />
+            <SettingInput buttonGroupOptions={backgroundTypeOptions} propertyName='styles.background.type' readOnly={readOnly} inputType='radio' label='Type' />
             {renderBackgroundInput(value?.type)}
             <SizeAndRepeat readOnly={readOnly} backgroundSize={value?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
         </>

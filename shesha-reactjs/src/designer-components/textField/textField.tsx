@@ -58,7 +58,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const { globalState, setState: setGlobalState } = useGlobalState();
     const { backendUrl, httpHeaders } = useSheshaApplication();
 
-    const { dimensions, border, font, shadow, background } = model;
+    const { dimensions, border, font, shadow, background } = model?.styles;
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
@@ -133,6 +133,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       setGlobalState,
     };
 
+    console.log('model', model);
     return (
       <ConfigurableFormItem
         model={model}
@@ -172,8 +173,11 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   initModel: (model) => ({
     textType: 'text',
-    background: { type: 'color' },
-    border: { selectedSide: 'all', selectedCorner: 'all' },
+    styles: {
+      background: { type: 'color' },
+      border: { selectedSide: 'all', selectedCorner: 'all' },
+      dimensions: {},
+    },
     ...model,
   }),
   migrator: (m) => m
