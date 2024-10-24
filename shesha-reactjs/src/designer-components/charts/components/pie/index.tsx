@@ -46,6 +46,15 @@ ChartJS.register(
 const PieChart = ({ data }: IPieChartProps) => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
 
+
+  if (!data || !data.datasets || !data.labels) {
+    if (!data)
+      throw new Error('PieChart: No data to display. Please check the data source');
+
+    if (!data.datasets || !data.labels)
+      throw new Error('PieChart: No datasets or labels to display. Please check the data source');
+  }
+
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {

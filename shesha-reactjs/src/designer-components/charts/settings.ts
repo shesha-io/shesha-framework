@@ -421,6 +421,14 @@ export const settingsForm = new DesignerToolbarSettings()
               _value: true
             },
           })
+          .addNumberField({
+            id: nanoid(),
+            propertyName: 'borderWidth',
+            parentId: chartSettingsId,
+            label: 'Border width',
+            defaultValue: 0.0,
+            stepNumeric: 0.1,
+          })
           .addColorPicker({
             id: nanoid(),
             propertyName: 'strokeColor',

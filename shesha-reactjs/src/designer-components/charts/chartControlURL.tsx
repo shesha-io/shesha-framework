@@ -13,11 +13,7 @@ import useStyles from './styles';
 import { getURLChartDataRefetchParams } from './utils';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
-  const { url, chartType, entityType, valueProperty, filters, legendProperty,
-    axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale,
-    showXAxisTitle, showYAxisScale, showYAxisTitle, simpleOrPivot,
-    filterProperties, stacked, tension, strokeColor, allowFilter, isAxisTimeSeries,
-    timeSeriesFormat } = props;
+  const { url, chartType } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
   const { setIsLoaded, setControlProps, setUrlTypeData } = useChartDataActionsContext();
@@ -27,35 +23,33 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
   useEffect(() => {
     setControlProps({
-      valueProperty, legendProperty, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle,
-      showYAxisScale, showYAxisTitle, simpleOrPivot, stacked, tension, strokeColor, allowFilter,
-      isAxisTimeSeries, timeSeriesFormat, url
+      ...props
     });
-  }, [valueProperty, legendProperty, axisProperty, showLegend, showTitle, title, legendPosition, showXAxisScale, showXAxisTitle,
-    showYAxisScale, showYAxisTitle, simpleOrPivot, stacked, tension, strokeColor, allowFilter,
-    isAxisTimeSeries, timeSeriesFormat, url, formData]);
+  }, [props, formData]);
 
   useEffect(() => {
     refetch(getURLChartDataRefetchParams(url))
       .then((data) => {
         if (!data.result) {
           setIsLoaded(true);
-          return;
+          throw new Error('No data returned from the server. Please check the URL and try again.');
         }
-        data.result?.datasets?.map((dataset: any) => {
-          dataset.borderColor = strokeColor || 'white';
-          dataset.fill = false;
-          dataset.pointRadius = 5;
-          dataset.borderWidth = 0.5;
-          return dataset;
-        });
+        if (!data.result.datasets || !data.result.labels) {
+          var errors: string[] = [];
+          if (!data.result.datasets) {
+            errors.push('No datasets returned from the server. Please check the URL and try again.');
+          }
+          if (!data.result.labels) {
+            errors.push('No labels returned from the server. Please check the URL and try again.');
+          }
+          throw new Error(errors.join(' '));
+        }
         setUrlTypeData(data.result);
         setIsLoaded(true);
       })
-      .catch((err: any) => console.error('refetch getURLChartDataRefetchParams, err data', err));
-  }, [chartType, entityType, valueProperty, filters, legendProperty, axisProperty, filterProperties, isAxisTimeSeries,
-    timeSeriesFormat, showTitle, showLegend, legendPosition, showXAxisScale, showXAxisTitle, showYAxisScale, showYAxisTitle,
-    stacked, tension, strokeColor, url, formData]);
+      .catch((err: any) => console.error('refetch getURLChartDataRefetchParams, err data', err))
+      .finally(() => setIsLoaded(true));
+  }, [props, formData]);
 
   if (!url || !chartType) {
     const missingProperties: string[] = [];
@@ -79,6 +73,16 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
       <Flex align="center" justify='center'>
         <Spin indicator={<LoadingOutlined className={cx(styles.chartControlSpinFontSize)} spin />} />
       </Flex>
+    );
+  }
+
+  if (!state.urlTypeData) {
+    return (
+      <Result
+        status="404"
+        title="404"
+        subTitle="Sorry, no data to display. Please check the URL and try again."
+      />
     );
   }
 
