@@ -1,9 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics;
 using Abp.Domain.Entities;
 using Abp.EntityHistory;
-using JetBrains.Annotations;
 
 namespace Shesha.Domain
 {

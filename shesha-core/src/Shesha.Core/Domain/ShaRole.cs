@@ -1,5 +1,4 @@
 ﻿using Abp.Auditing;
-using Abp.Domain.Entities;
 using Shesha.Domain.Attributes;
 using Shesha.EntityHistory;
 using System;

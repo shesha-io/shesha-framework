@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
 
 namespace Shesha.Domain
 {

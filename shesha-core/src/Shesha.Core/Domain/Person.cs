@@ -11,7 +11,6 @@ using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.EntityHistory;
-using Shesha.Extensions;
 
 namespace Shesha.Domain
 {

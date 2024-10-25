@@ -1,5 +1,4 @@
-﻿using Abp.Domain.Entities;
-using Shesha.Domain.Attributes;
+﻿using Shesha.Domain.Attributes;
 using System.Collections.Generic;
 
 namespace Shesha.Domain

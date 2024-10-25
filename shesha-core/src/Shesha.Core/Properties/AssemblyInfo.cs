@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
-using Shesha;
 using Shesha.Attributes;
 
 // General Information about an assembly is controlled through the following
