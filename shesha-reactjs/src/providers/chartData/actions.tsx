@@ -8,6 +8,7 @@ export enum ChartDataActionsEnum {
     SetIsLoaded = "SET_IS_LOADED",
     SetIsFilterVisible = "SET_IS_FILTER_VISIBLE",
     SetControlProps = "SET_CONTROL_PROPS",
+    SetUrlTypeData = "SET_URL_TYPE_DATA",
 }
 
 export const SetDataAction = createAction(ChartDataActionsEnum.SetData, (data: IChartData[]) => ({ data, items: data }));
@@ -21,3 +22,5 @@ export const SetIsLoadedAction = createAction(ChartDataActionsEnum.SetIsLoaded, 
 export const SetIsFilterVisibleAction = createAction(ChartDataActionsEnum.SetIsFilterVisible, (isFilterVisible: boolean) => ({ isFilterVisible }));
 
 export const SetControlPropsAction = createAction(ChartDataActionsEnum.SetControlProps, (controlProps: object) => ({ ...controlProps }));
+
+export const SetUrlTypeDataAction = createAction(ChartDataActionsEnum.SetUrlTypeData, (urlTypeData: object) => ({ urlTypeData }));

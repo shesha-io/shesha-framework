@@ -44,7 +44,7 @@ namespace Shesha.DynamicEntities
         public void Apply(ControllerModel controller)
         {
             if (controller.ControllerType.IsGenericType &&
-                controller.ControllerType.GetGenericTypeDefinition() == typeof(DynamicCrudAppService<,,>))
+                controller.ControllerType.GetGenericTypeDefinition() == typeof(DynamicCrudAppService<,,,,>))
             {
                 var entityType = controller.ControllerType.GenericTypeArguments[0];
 

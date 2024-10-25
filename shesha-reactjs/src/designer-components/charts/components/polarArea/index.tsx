@@ -26,6 +26,14 @@ ChartJS.register(
 const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
   const { axisProperty: xProperty, valueProperty: yProperty, aggregationMethod, showXAxisScale, showTitle, title, legendPosition } = useChartDataStateContext();
 
+  if (!data || !data.datasets || !data.labels) {
+    if (!data)
+      throw new Error('PolarAreaChart: No data to display. Please check the data source.');
+
+    if (!data.datasets || !data.labels)
+      throw new Error('PolarAreaChart: No datasets or labels to display. Please check the data source.');
+  }
+
   const options: ChartOptions<any> = {
     responsive: true,
     plugins: {
@@ -44,11 +52,11 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps) => {
         }
       },
       legend: {
-        display: showXAxisScale,
+        display: showXAxisScale ? true : false,
         position: legendPosition ?? 'top',
       },
       title: {
-        display: showTitle,
+        display: showTitle ? true : false,
         text: title || `${yProperty} by ${xProperty} (${aggregationMethod})`,
       },
     },

@@ -19,12 +19,14 @@ export const deepMergeValues = (target: any, source: any) => {
       }
 
       // handle arrays
-      if (Array.isArray(objValue)) {
+      if (Array.isArray(srcValue)) {
+          // save array as is without merging
           return srcValue;
       }
     
       //handle moemnt objects
       if (moment.isMoment(srcValue)) {
+          // save moment object without merging
           return srcValue;
       }
 

@@ -24,7 +24,6 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
     //allowInherited,
     onChange,
     disabled,
-    bordered = true,
     style,
     size,
     mode,
@@ -43,7 +42,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
   } = props;
 
 
-
+  
   const {
     data: fetchedData,
     loading,
@@ -190,7 +189,7 @@ export const EntityAutocomplete = <TValue,>(props: IEntityAutocompleteProps<TVal
       loading={loading}
       placeholder={selectPlaceholder}
       disabled={disabled}
-      variant={!bordered ? 'borderless' : undefined}
+      variant='borderless' // default to borderless view if no border width is passed in from the model
       onSelect={handleSelect}
       style={style}
       size={size}

@@ -61,7 +61,6 @@ namespace Shesha.ConfigurationItems
                     var dbModules = await _moduleRepo.GetAll().ToListAsync();
                     var moduleTypes = _typeFinder
                         .Find(type => type != null && type.IsPublic && !type.IsGenericType && !type.IsAbstract && type != typeof(SheshaModule) && typeof(SheshaModule).IsAssignableFrom(type))
-                        .Where(x => !_startupSession.AssemblyStaysUnchanged(x.Assembly))
                         .ToList();
                     foreach (var type in moduleTypes) 
                     {

@@ -6,6 +6,7 @@ import ChartControl from './chartControl';
 import ChartDataProvider from '../../providers/chartData';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import ChartControlURL from './chartControlURL';
 
 const ChartComponent: IToolboxComponent<IChartProps> = {
   type: 'chart',
@@ -14,6 +15,14 @@ const ChartComponent: IToolboxComponent<IChartProps> = {
   icon: <BarChartOutlined />,
   Factory: ({ model }) => {
     if (model.hidden) return null;
+
+    if (model.dataMode === 'url') {
+      return (
+        <ChartDataProvider>
+          <ChartControlURL {...model} />
+        </ChartDataProvider>
+      );
+    }
 
     return (
       <ChartDataProvider>

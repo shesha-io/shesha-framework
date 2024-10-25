@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.JsonEntities;
 using Shesha.Reflection;
 using Shesha.Services;
@@ -150,10 +151,16 @@ namespace Shesha.Swagger
         {
             if (modelType.IsDynamicDto())
             {
-                var test = modelType.IsConstructedGenericType
-                    ? "DynamicDto" + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current)
-                    : "Proxy" + GetSchemaId(modelType.BaseType);
-                return test;
+                if (modelType.IsConstructedGenericType)
+                {
+                    var typeName = String.Concat(modelType.Name.TakeWhile(x => x != '`'));
+                    var test = typeName + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current);
+                    return test;
+                } 
+                else if (modelType.HasInterface(typeof(IDynamicDtoProxy)))
+                    return "Proxy" + GetSchemaId(modelType.BaseType);
+                else
+                    return modelType.Name;
             }
 
             if (!modelType.IsConstructedGenericType) return modelType.Name.Replace("[]", "Array");
