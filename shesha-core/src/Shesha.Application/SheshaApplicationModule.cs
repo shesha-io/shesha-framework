@@ -66,7 +66,6 @@ namespace Shesha
 
             IocManager.IocContainer.Register(
                 Component.For<IEmailSender>().Forward<ISheshaEmailSender>().Forward<SheshaEmailSender>().ImplementedBy<SheshaEmailSender>().LifestyleTransient(),
-                Component.For<IOtpManager>().Forward<IOtpAppService>().Forward<OtpAppService>().ImplementedBy<OtpAppService>().LifestyleTransient(),
                 Component.For(typeof(IEntityReorderer<,,>)).ImplementedBy(typeof(EntityReorderer<,,>)).LifestyleTransient()
             );
 
