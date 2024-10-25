@@ -7,7 +7,7 @@ import React, { FC, useRef } from 'react';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components';
-import { DEFAULT_FORM_SETTINGS, useForm } from '@/providers';
+import { DEFAULT_FORM_SETTINGS, FormItemProvider, useForm } from '@/providers';
 import { getActualModel, upgradeComponent, useAvailableConstantsData } from '@/providers/form/utils';
 import { getInjectables } from './utils';
 import { IColumnEditorProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
@@ -114,11 +114,14 @@ const ComponentWrapper: FC<IComponentWrapperProps> = (props) => {
 
   return (
     <CustomErrorBoundary>
-      <component.Factory
-        model={componentModel}
-        componentRef={componentRef}
-        form={allData.form?.formInstance}
-      />
+      {/* set namePrefix = '' to reset subForm prefix */}
+      <FormItemProvider namePrefix=''> 
+        <component.Factory
+          model={componentModel}
+          componentRef={componentRef}
+          form={allData.form?.formInstance}
+        />
+      </FormItemProvider>
     </CustomErrorBoundary>
   );
 };
