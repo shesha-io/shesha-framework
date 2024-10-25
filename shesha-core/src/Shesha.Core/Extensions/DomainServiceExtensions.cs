@@ -9,7 +9,6 @@ using Shesha.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FluentValidationResult = FluentValidation.Results.ValidationResult;
 

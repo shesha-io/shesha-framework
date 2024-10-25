@@ -1,8 +1,5 @@
-﻿using Abp.Auditing;
-using Shesha.ConfigurationItems.Distribution;
-using Shesha.Domain;
+﻿using Shesha.ConfigurationItems.Distribution;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System;
 
 namespace Shesha.Roles.Distribution.Dto
