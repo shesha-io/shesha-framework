@@ -1,6 +1,5 @@
 using System.Linq;
 using AutoMapper;
-using Abp.Authorization;
 using Abp.Authorization.Roles;
 using Shesha.Authorization.Roles;
 

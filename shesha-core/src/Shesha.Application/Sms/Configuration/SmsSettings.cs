@@ -1,13 +1,4 @@
-﻿using Shesha.Configuration;
-using Shesha.Settings;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shesha.Sms.Configuration
+﻿namespace Shesha.Sms.Configuration
 {
     public class SmsSettings
     {

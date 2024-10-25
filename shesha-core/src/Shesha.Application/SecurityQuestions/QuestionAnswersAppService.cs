@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Shesha.Authorization.Users;
-using Shesha.Configuration;
 using Shesha.Configuration.Security;
 using Shesha.Domain;
 using Shesha.SecurityQuestions.Dto;

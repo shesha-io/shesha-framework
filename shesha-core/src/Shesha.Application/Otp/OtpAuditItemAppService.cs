@@ -5,7 +5,6 @@ using Abp.Runtime.Validation;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.GraphQL.Mvc;
-using Shesha.Otp.Dto;
 using System;
 using System.Threading.Tasks;
 

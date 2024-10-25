@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.Authorization.Users;
 
 namespace Shesha.Models.TokenAuth
 {

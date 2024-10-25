@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Shesha.DynamicEntities.Dtos
+﻿namespace Shesha.DynamicEntities.Dtos
 {
     /// <summary>
     /// Reordering item

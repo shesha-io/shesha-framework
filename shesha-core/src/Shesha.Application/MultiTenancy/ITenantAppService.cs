@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services;
-using Abp.Application.Services.Dto;
 using Shesha.MultiTenancy.Dto;
 
 namespace Shesha.MultiTenancy

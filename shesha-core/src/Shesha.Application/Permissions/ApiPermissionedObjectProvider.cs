@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services;
 using Abp.AspNetCore.Mvc.Extensions;
-using Abp.Collections.Extensions;
 using Abp.Modules;
 using Abp.Reflection;
 using Microsoft.AspNetCore.Mvc;

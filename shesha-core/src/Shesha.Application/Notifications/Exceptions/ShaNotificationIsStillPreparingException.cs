@@ -1,5 +1,4 @@
-﻿using Abp.Notifications;
-using System;
+﻿using System;
 
 namespace Shesha.Notifications.Exceptions
 {

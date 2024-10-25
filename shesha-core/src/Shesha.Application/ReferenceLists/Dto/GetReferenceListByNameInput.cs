@@ -1,7 +1,4 @@
-﻿using Abp.Application.Services.Dto;
-using System;
-
-namespace Shesha.ReferenceLists.Dto
+﻿namespace Shesha.ReferenceLists.Dto
 {
     /// <summary>
     /// Get by name input

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Globalization;
-using Abp.Configuration;
 using Abp.Dependency;
-using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
 using Abp.Runtime.Session;
 using Shesha.Configuration.Email;

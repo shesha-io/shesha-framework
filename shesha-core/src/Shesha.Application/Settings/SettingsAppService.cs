@@ -1,5 +1,4 @@
-﻿using Abp.Runtime.Session;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.Settings.Dto;

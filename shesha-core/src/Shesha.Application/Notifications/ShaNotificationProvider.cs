@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Abp.Authorization;
-using Abp.Localization;
+﻿using Abp.Localization;
 using Abp.Notifications;
 
 namespace Shesha.Notifications

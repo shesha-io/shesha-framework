@@ -13,7 +13,6 @@ using Shesha.GraphQL.Provider.GraphTypes;
 using Shesha.JsonLogic;
 using Shesha.QuickSearch;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

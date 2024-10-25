@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using ConcurrentCollections;
-using Shesha.AutoMapper.Dto;
-using Shesha.Permissions.Dtos;
 
 namespace Shesha.ShaRoles.Dto
 {

@@ -1,6 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Shesha.Application.Services.Dto;
-using System.Collections.Generic;
 
 namespace Shesha.EntityHistory
 {
