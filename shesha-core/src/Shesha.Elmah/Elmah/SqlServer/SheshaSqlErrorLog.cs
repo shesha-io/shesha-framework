@@ -1,5 +1,4 @@
 ﻿using ElmahCore;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using Shesha.Services;
 using System;
