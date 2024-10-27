@@ -88,6 +88,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
             setState(prev => ({ ...prev, componentName: e.target.value }));
             onValuesChange({ componentName: e.target.value });
           }}
+          size={model.size}
         />
       </Form.Item>
       <Form.Item {...{ label: contextlabel, readOnly }} hidden={mode === 'formData'} >

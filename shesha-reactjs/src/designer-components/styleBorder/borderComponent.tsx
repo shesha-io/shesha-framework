@@ -25,7 +25,7 @@ const BorderComponent: FC<IBorderProps> = (props) => {
                 <SettingInput label='Radius' propertyName={`inputStyles.border.radius.${selectedCorner}`} readOnly={readOnly} />
                 <SettingInput label='Select Side' propertyName={`inputStyles.border.selectedSide`} readOnly={readOnly}
                     inputType='radio' buttonGroupOptions={borderOptions} tooltip='Select a border side to which the style will be applied' />
-                <InputRow inputs={[{ label: 'Color', propertyName: `inputStyles.border.border.${selectedSide}.color`, readOnly, inputType: 'color' }, { label: 'Width', propertyName: `inputStyles.border.border.${selectedSide}.width`, readOnly }]} />
+                <InputRow readOnly={readOnly} inputs={[{ label: 'Color', propertyName: `inputStyles.border.border.${selectedSide}.color`, readOnly: readOnly, inputType: 'color' }, { label: 'Width', propertyName: `inputStyles.border.border.${selectedSide}.width`, readOnly: readOnly }]} />
                 <SettingInput label='Style' propertyName={`inputStyles.border.border.${selectedSide}.style`} readOnly={readOnly} inputType='radio' buttonGroupOptions={styleOptions} />
             </>}
         </>

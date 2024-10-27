@@ -26,6 +26,7 @@ const FontComponent: FC<IFontType> = (props) => {
     return <>
         {inputConfigurations.map((config, index) => (
             <InputRow
+                readOnly={readOnly}
                 key={index}
                 inputs={config.map(input => ({
                     ...input,

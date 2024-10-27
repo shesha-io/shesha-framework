@@ -42,7 +42,7 @@ export interface IDropdownOption {
 export interface IInputProps extends IComponentLabelProps {
     label: string;
     propertyName: string;
-    inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'imageUploader' | 'editModeSelector' | 'permisions';
+    inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'imageUploader' | 'editModeSelector' | 'permissions';
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -73,13 +73,14 @@ interface IInputComponentProps extends IInputProps {
 
 const { Option } = Select;
 
-const UnitSelector: FC<{ property: string; value: any; onChange }> = ({ value, onChange }) => {
+const UnitSelector: FC<{ property: string; value: any; onChange, readOnly }> = ({ value, onChange, readOnly }) => {
     const { styles } = useStyles();
 
     return (
         <Select
             value={value?.unit || 'px'}
             defaultValue={'px'}
+            disabled={readOnly}
             dropdownStyle={{ minWidth: '70px' }}
             onChange={(unit) => {
                 onChange({ unit, value: value?.value || '' });
@@ -98,7 +99,10 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
 
     const metadataBuilderFactory = useMetadataBuilderFactory();
     const { data: formData } = useFormData();
-    const { size, className, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits, propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression, allowClear, dropdownMode } = props;
+    const { size, className, value, inputType: type, dropdownOptions, buttonGroupOptions, hasUnits,
+        propertyName, tooltip: description, onChange, readOnly, label, availableConstantsExpression,
+        allowClear, dropdownMode } = props;
+
     const allData = useAvailableConstantsData();
 
     const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
@@ -136,6 +140,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                 size={size}
                 mode={dropdownMode}
                 allowClear={allowClear}
+                disabled={readOnly}
                 onChange={
                     onChange}
                 options={typeof dropdownOptions === 'string' ? getValueFromString(dropdownOptions) : dropdownOptions}
@@ -155,7 +160,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
         case 'customDropdown':
             return <CustomDropdown value={value} options={dropdownOptions} readOnly={readOnly} onChange={onChange} size={size} />;
         case 'textArea':
-            return <TextArea readOnly={readOnly} size={size} value={value} />;
+            return <TextArea readOnly={readOnly} size={size} value={value} onChange={onChange} />;
         case 'codeEditor':
             return editor;
         case 'iconPicker':
@@ -177,14 +182,14 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                     <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
                 ))}
             </Radio.Group>;
-        case 'permisions':
+        case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         default:
             return hasUnits ? <InputNumber value={hasUnits ? value?.value : value}
                 readOnly={readOnly}
                 onChange={(value) => onChange(hasUnits ? { ...value, value } : value)}
                 size={size}
-                addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={propertyName} value={value} /> : null} /> :
+                addonAfter={hasUnits ? <UnitSelector onChange={onChange} property={propertyName} value={value} readOnly={readOnly} /> : null} /> :
                 <Input
                     size={size}
                     onChange={(e) => onChange(hasUnits ? { ...value, value: e.target.value } : e.target.value)}
@@ -196,20 +201,24 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
 };
 
 
-interface InputRowProps {
+export interface IInputRowProps {
     inputs: Array<IInputProps>;
+    readOnly: boolean;
 }
 
-export const InputRow: React.FC<InputRowProps> = ({ inputs }) => {
+export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly }) => {
 
     return <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0px 8px' }}>
         {inputs.map((props, i) => (
-            <SettingInput key={i + props.label} {...props} />
+            <SettingInput key={i + props.label} {...props} readOnly={props.readOnly || readOnly} />
         ))}
     </div>;
 };
 
-const styleLabels = ['size', 'weight', 'color', 'type', 'align', 'overflow', 'family', 'width',
+const styles = ["size", "weight", "color", "align", "max width", "min width", "max height",
+    "min height", "width", "height", "blur", "border raduis", " color", " image", " gradient",
+    "padding", "margin", "position", "repeat", "hide border", "select corner", "select side", "type", "direction", "offset x", "offset y",
+    "url", "file", "spread", "style", "styling box", 'size', 'weight', 'color', 'type', 'align', 'overflow', 'family', 'width',
     'height', 'minWidth', 'minHeight', 'maxHeight', 'maxWidth', 'hide border', 'selected corner radius',
     'selected border side', 'radius', 'style', 'position', 'repeat', 'offset x', 'offset y', 'blur',
     'spread', 'direction', 'url', 'file', 'file id', 'owner type', 'owner id', 'file catergory'];
@@ -219,7 +228,10 @@ export const filterDynamicComponents = (components, query) => {
     const filterResult = components.map(c => {
 
         if (c.type === 'collapsiblePanel') {
-            return c;
+
+            const shouldHidePanel = !styles.some(label => label.toLowerCase().includes(query.toLowerCase()));
+            const shouldHideComponents = c.content.components.some(comp => comp.label && !comp.label.toLowerCase().includes(query.toLowerCase()));
+            return { ...c, hidden: shouldHidePanel || shouldHideComponents };
         }
 
         if (c.type === 'settingsInputRow') {

@@ -8,7 +8,7 @@ export interface IBackgroundValue {
     gradient?: { direction: string, colors: {} };
     color?: string;
     url?: string;
-    file?: any;
+    file?: { url: string, name: string, uid: string };
     storedFile?: { id: string, ownerId: string, fileCatergory: string, ownerType: string };
 }
 

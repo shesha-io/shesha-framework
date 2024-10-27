@@ -1,10 +1,8 @@
-import React from 'react';
-
-import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces";
-import { SettingOutlined } from "@ant-design/icons";
-import { useSearchQuery } from "../tabs/context";
+import { IConfigurableFormComponent } from "@/providers";
 import { IInputProps, InputComponent } from "../utils";
+import { useSearchQuery } from "../tabs/context";
 import FormItem from "../formItem";
+import React, { useEffect, useState } from "react";
 
 export interface ISettingsInputProps extends IInputProps, Omit<IConfigurableFormComponent, 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName'> {
 }
@@ -13,16 +11,19 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
     buttonGroupOptions, dropdownOptions, readOnly, hasUnits, jsSetting, tooltip, hidden,
     size, ...rest }) => {
     const { searchQuery } = useSearchQuery();
+const [isHidden, setIsHidden] = useState(hidden);
 
+useEffect(()=>{
     const group = property?.split(".")[1]?.trim();
     const stringToFind = `${group ?? ''} ${label.toLowerCase()}`?.trim();
+    setIsHidden(stringToFind.includes(searchQuery.toLowerCase()?.trim()))
+},[searchQuery])
+    
 
-    if (stringToFind.includes(searchQuery.toLowerCase()?.trim())) {
-
-        return (hidden ? null :
+        return (isHidden || hidden ? null :
             <div key={label} style={children || property === 'labelAlign' ? { width: 'max-content' } : { flex: '1 1 120px' }}>
                 <FormItem
-                    name={property}
+                    name={`${property}`}
                     hideLabel={hideLabel}
                     label={label}
                     tooltip={tooltip}
@@ -44,35 +45,5 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
                 </FormItem>
             </div>
         );
-    }
-
-    return null;
 
 };
-
-const SettingsInput: IToolboxComponent<ISettingsInputProps> = {
-    type: 'settingsInput',
-    isInput: true,
-    isOutput: true,
-    name: 'SettingsInput',
-    icon: <SettingOutlined />,
-    Factory: ({ model }) => {
-        const { label, inputType, dropdownOptions, buttonGroupOptions, hasUnits, propertyName: property, tooltip: description, readOnly } = model;
-        return model.hidden ? null : (
-            <SettingInput size='small'
-                label={label}
-                inputType={inputType}
-                dropdownOptions={dropdownOptions}
-                buttonGroupOptions={buttonGroupOptions}
-                hasUnits={hasUnits} propertyName={property}
-                tooltip={description}
-                readOnly={readOnly}
-                jsSetting={model.jsSetting}
-                layout={model.layout}
-                {...model} />
-
-        );
-    }
-};
-
-export default SettingsInput;

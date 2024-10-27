@@ -72,6 +72,7 @@ export interface IStyleType {
   font?: IFontValue;
   shadow?: IShadowValue;
   dimensions?: IDimensionsValue;
+  style?: IConfigurableFormComponent["style"];
 }
 
 export type ConfigurableFormComponentTypes =

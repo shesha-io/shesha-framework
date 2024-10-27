@@ -11,12 +11,13 @@ const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
 
     useEffect(() => {
         if (backgroundImage?.file) {
+            const { uid, name, url } = backgroundImage;
             setFileList([
                 {
-                    uid: '-1',
-                    name: '',
+                    uid,
+                    name,
                     status: 'done',
-                    url: backgroundImage.file,
+                    url,
                 },
             ]);
         }
@@ -32,9 +33,10 @@ const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
         setFileList(newFileList);
         if (newFileList.length > 0 && newFileList[0].originFileObj) {
             const base64Image = await toBase64(newFileList[0].originFileObj as File);
-            onChange({ file: base64Image });
+            const newFile = fileList[fileList.length - 1];
+            onChange({ url: base64Image, name: newFile.fileName, uid: newFile.uid });
         } else if (newFileList.length === 0) {
-            onChange({ file: null });
+            onChange({});
         }
     };
     const uploadButton = (

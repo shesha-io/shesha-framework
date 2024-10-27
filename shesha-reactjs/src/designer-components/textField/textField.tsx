@@ -63,7 +63,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     const border = model?.inputStyles?.border;
     const font = model?.inputStyles?.font;
     const shadow = model?.inputStyles?.shadow;
-    const background = model?.inputStyles?.background
+    const background = model?.inputStyles?.background;
 
     const dimensionsStyles = useMemo(() => getSizeStyle(dimensions), [dimensions]);
     const borderStyles = useMemo(() => getBorderStyle(border), [border]);
@@ -109,7 +109,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     });
 
     const jsStyle = getStyle(model.style, formData);
-    const finalStyle = removeUndefinedProps({ ...jsStyle, ...additionalStyles });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles });
 
     const InputComponentType = renderInput(model.textType);
 
@@ -123,7 +123,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
       size: model.size,
       disabled: model.readOnly,
       readOnly: model.readOnly,
-      style: { ...finalStyle },
+      style: { ...finalStyle, ...jsStyle },
       defaultValue: model.initialValue && evaluateString(model.initialValue, { formData, formMode: form.formMode, globalState })
     };
 

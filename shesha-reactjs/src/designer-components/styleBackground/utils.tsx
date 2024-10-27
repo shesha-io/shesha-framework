@@ -24,7 +24,7 @@ export const getBackgroundStyle = async (input?: IBackgroundValue, url?: string)
     } else if (input.type === 'url') {
         style.backgroundImage = `url(${input.url})`;
     } else if (input.type === 'upload') {
-        style.backgroundImage = `url(${input?.file?.file})`;
+        style.backgroundImage = `url(${input?.file?.url})`;
     } else if (input.type === 'storedFile') {
         style.backgroundImage = `url(${url})`;
     }

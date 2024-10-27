@@ -27,8 +27,9 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
             setColors({ '1': theme.application.primaryColor, '2': '#fff' });
             onChange({ ...value, gradient: { colors: { 1: theme.application.primaryColor, 2: '#fff' } } });
         }
-    }, []);
+    }, [value]);
 
+    console.log("BG:::", props)
     const renderBackgroundInput = (type: IBackgroundValue['type']) => {
         switch (type) {
             case 'gradient':
@@ -51,10 +52,9 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                         bordered={false}
                                         closable={id !== '1' && id !== '2'}
                                         onClose={() => {
-                                            const newColors = { ...value?.gradient.colors };
-                                            delete newColors[id];
-                                            setColors(removeNullUndefined(newColors));
-                                            onChange({ ...value, gradient: { ...value.gradient?.colors, colors: removeNullUndefined(newColors) } });
+                                            const newColors = removeNullUndefined({ ...value?.gradient.colors, [id]: null });
+                                            setColors(newColors);
+                                            onChange({ ...value, gradient: { ...value.gradient?.colors, colors: newColors } });
                                         }}
                                         style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', width: 'max-content' }}
                                     >
@@ -73,6 +73,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                     setColors({ ...colors, [id]: newColor });
                                     onChange({ ...value, background: { ...value, gradient: { ...value?.gradient, colors: { ...value?.gradient?.colors, [id]: newColor } } } });
                                 }}
+                                disabled={readOnly}
                                 icon={<PlusOutlined />}
                             >
                                 Add Color
@@ -95,7 +96,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
             case 'storedFile':
                 return (
                     <>
-                        <InputRow inputs={[{
+                        <InputRow readOnly={readOnly} inputs={[{
                             label: 'File Id',
                             propertyName: 'inputStyles.background.storedFile.id',
                             readOnly: readOnly

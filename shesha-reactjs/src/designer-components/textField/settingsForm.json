@@ -10,7 +10,6 @@
       "size": "small",
       "parentId": "root",
       "isDynamic": false,
-      "version": 4,
       "tabs": [
         {
           "key": "1",
@@ -45,7 +44,6 @@
               "propertyName": "placeholder",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Placeholder",
-              "version": 3,
               "textType": "text",
               "size": "small",
               "jsSettings": true
@@ -54,10 +52,9 @@
               "id": "2d32fe70-99a0-4825-ae6c-8b933004e119",
               "type": "settingsInput",
               "inputType": "textArea",
-              "propertyName": "Tooltip",
+              "propertyName": "description",
               "parentId": "s4gmBg31azZC0UjZjpfTm",
               "label": "Tooltip",
-              "version": 2,
               "jsSettings": true
             },
             {
@@ -78,7 +75,7 @@
                   "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
                   "type": "settingsInput",
                   "inputType": "switch",
-                  "propertyName": "hide",
+                  "propertyName": "hidden",
                   "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Hide",
                   "jsSettings": true,
@@ -122,12 +119,13 @@
             {
               "id": "prefix-s4gmBg31azZC0UjZjpfTm",
               "type": "settingsInputRow",
+              "parentId": "s4gmBg31azZC0UjZjpfTm",
               "inputs": [
                 {
-                  "id": "prefix-s4gmBg31azZC0UjZjpfTm",
+                  "id": "prefix-str-s4gmBg31azZC0UjZjpfTm",
                   "type": "settingsInput",
                   "propertyName": "prefix",
-                  "parentId": "prefix-s4gmBg31azZC0UjZjpfTm",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Prefix",
                   "jsSettings": true
                 },
@@ -136,12 +134,11 @@
                   "type": "settingsInput",
                   "inputType": "iconPicker",
                   "propertyName": "prefixIcon",
-                  "parentId": "prefix-s4gmBg31azZC0UjZjpfTm",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Prefix Icon",
                   "jsSettings": true
                 }
-              ],
-              "parentId": "s4gmBg31azZC0UjZjpfTm"
+              ]
             },
             {
               "id": "suffix-s4gmBg31azZC0UjZjpfTm",
@@ -151,7 +148,7 @@
                   "id": "suffix-s4gmBg31azZC0UjZjpfTm",
                   "type": "settingsInput",
                   "propertyName": "Suffix",
-                  "parentId": "suffix-s4gmBg31azZC0UjZjpfTm",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Suffix",
                   "jsSettings": true
                 },
@@ -160,7 +157,7 @@
                   "type": "settingsInput",
                   "inputType": "iconPicker",
                   "propertyName": "suffixIcon",
-                  "parentId": "suffix-s4gmBg31azZC0UjZjpfTm",
+                  "parentId": "s4gmBg31azZC0UjZjpfTm",
                   "label": "Suffix Icon",
                   "jsSettings": true
                 }
@@ -170,7 +167,7 @@
           ]
         },
         {
-          "key": "3",
+          "key": "2",
           "id": "6eBJvoll3xtLJxdvOAlnB",
           "label": "Validation",
           "components": [
@@ -215,7 +212,6 @@
                   "parentId": "6eBJvoll3xtLJxdvOAlnB",
                   "label": "Min Length",
                   "validate": {},
-                  "version": 2,
                   "size": "small"
                 },
                 {
@@ -225,7 +221,6 @@
                   "parentId": "6eBJvoll3xtLJxdvOAlnB",
                   "label": "Max Length",
                   "validate": {},
-                  "version": 2,
                   "size": "small"
                 }
               ]
@@ -237,14 +232,13 @@
               "parentId": "6eBJvoll3xtLJxdvOAlnB",
               "label": "Message",
               "validate": {},
-              "version": 3,
               "textType": "text",
               "size": "small"
             }
           ]
         },
         {
-          "key": "2",
+          "key": "3",
           "id": "Cc47W08MWrKdhoGqFKMI2",
           "label": "Events",
           "components": [
@@ -315,7 +309,7 @@
                   {
                     "id": "try26voxhs-HxJ5k5ngYE",
                     "type": "fontStyle",
-                    "parentId": "root",
+                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
                     "propertyName": "inputStyles.font"
                   }
                 ]
@@ -326,7 +320,7 @@
               "type": "collapsiblePanel",
               "label": "Dimension",
               "labelAlign": "right",
-              "parentId": "root",
+              "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
               "hidden": false,
               "isDynamic": false,
               "version": 6,
@@ -345,7 +339,7 @@
                   {
                     "id": "dimesnsionsStyle",
                     "type": "dimensionsStyle",
-                    "parentId": "dimensionsStylePnl",
+                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
                     "propertyName": "inputStyles.dimensions"
                   }
                 ]
@@ -356,7 +350,7 @@
               "type": "collapsiblePanel",
               "label": "Border",
               "labelAlign": "right",
-              "parentId": "root",
+              "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
               "hidden": false,
               "isDynamic": false,
               "version": 6,
@@ -375,7 +369,7 @@
                   {
                     "id": "borderStyle",
                     "type": "borderStyle",
-                    "parentId": "BorderStylePnl",
+                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
                     "propertyName": "inputStyles.border"
                   }
                 ]
@@ -386,7 +380,7 @@
               "type": "collapsiblePanel",
               "label": "Background",
               "labelAlign": "right",
-              "parentId": "root",
+              "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
               "hidden": false,
               "isDynamic": false,
               "version": 6,
@@ -405,7 +399,7 @@
                   {
                     "id": "backgroundStyle",
                     "type": "backgroundStyle",
-                    "parentId": "backgroundStylePnl",
+                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
                     "propertyName": "inputStyles.background"
                   }
                 ]
@@ -416,7 +410,7 @@
               "type": "collapsiblePanel",
               "label": "Shadow",
               "labelAlign": "right",
-              "parentId": "root",
+              "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
               "hidden": false,
               "isDynamic": false,
               "version": 6,
@@ -435,7 +429,7 @@
                   {
                     "id": "shadowStyle",
                     "type": "shadowStyle",
-                    "parentId": "shadowStylePnl",
+                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
                     "propertyName": "inputStyles.shadow"
                   }
                 ]
@@ -446,9 +440,9 @@
               "type": "collapsiblePanel",
               "label": "Styles",
               "labelAlign": "right",
-              "parentId": "root",
               "hidden": false,
               "isDynamic": false,
+              "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
               "version": 6,
               "expandIconPosition": "start",
               "collapsible": "header",
@@ -463,23 +457,25 @@
                 "id": "stylePnl",
                 "components": [
                   {
-                    "id": "styleCodeEditorPnl",
+                    "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
                     "type": "settingsInput",
                     "inputType": "codeEditor",
                     "propertyName": "style",
-                    "label": "Style",
-                    "parentId": "stylePnl",
+                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                    "label": "Custom CSS",
                     "validate": {},
+                    "labelAlign": "right",
+                    "hidden": false,
+                    "jsSetting": false,
                     "tooltip": "A script that returns the style of the element as an object. This should conform to CSSProperties"
                   },
                   {
                     "id": "styleBoxPnl",
                     "type": "styleBox",
                     "propertyName": "stylingBox",
-                    "parentId": "stylePnl",
+                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
                     "validate": {},
                     "label": "Margin Padding",
-                    "hideLabel": true,
                     "jsSetting": false,
                     "version": 2
                   }
@@ -496,13 +492,12 @@
             {
               "id": "1adea529-1f0c-4def-bd41-ee166a5dfcd7",
               "type": "settingsInput",
-              "inputType": "persmissions",
+              "inputType": "permissions",
               "propertyName": "permissions",
               "parentId": "SsWPpiJfTbgl4iHlFA_or",
               "label": "Permissions",
               "size": "small",
-              "validate": {},
-              "version": 1
+              "validate": {}
             }
           ]
         }

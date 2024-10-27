@@ -20,7 +20,7 @@ const BackgroundConfigurator: IToolboxComponent<IBackgroundProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                <BackgroundComponent />
+                <BackgroundComponent readOnly={model.readOnly} />
             </ConfigurableFormItem>
         );
     },

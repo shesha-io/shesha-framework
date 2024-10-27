@@ -17,13 +17,13 @@ const DimensionsComponent: FC<IDimensionsType> = (props) => {
 
     const { readOnly } = props;
 
-    const commonProps = { hasUnits: true, readOnly };
+    const commonProps = { hasUnits: true, readOnly: readOnly };
 
     return (
         <>
-            <SettingInput label="Size" propertyName='size' readOnly={false} inputType='dropdown' tooltip="The size of the element" dropdownOptions={sizeOptions} />
+            <SettingInput label="Size" propertyName='size' readOnly={readOnly} inputType='dropdown' tooltip="The size of the element" dropdownOptions={sizeOptions} />
             {dimensionInputs.map((input, index) => (
-                <InputRow key={index} inputs={input.map(input => ({ ...input, ...commonProps }))} />
+                <InputRow readOnly={readOnly} key={index} inputs={input.map(input => ({ ...input, ...commonProps }))} />
             ))}
             {<SettingInput label='Overflow' propertyName='inputStyles.dimensions.overflow' inputType='radio' readOnly={readOnly} buttonGroupOptions={overflowOptions} />}
         </>
