@@ -1,5 +1,5 @@
 import React from "react";
-import { BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, LinkOutlined, UploadOutlined } from "@ant-design/icons";
+import { AliwangwangOutlined, BgColorsOutlined, DatabaseOutlined, FormatPainterOutlined, InsertRowBelowOutlined, InsertRowLeftOutlined, LinkOutlined, PicCenterOutlined, TableOutlined, UploadOutlined } from "@ant-design/icons";
 import { IBackgroundValue } from "./interfaces";
 
 
@@ -65,8 +65,14 @@ export const backgroundTypeOptions = [
 ];
 
 export const repeatOptions = [
-    { value: 'no-repeat', label: 'No Repeat' },
-    { value: 'repeat', label: 'Repeat' },
-    { value: 'repeat-x', label: 'Repeat X' },
-    { value: 'repeat-y', label: 'Repeat Y' },
+    { value: 'no-repeat', label: 'No Repeat', icon: <PicCenterOutlined /> },
+    { value: 'repeat', label: 'Repeat', icon: <TableOutlined /> },
+    { value: 'repeat-x', label: 'Repeat X', icon: <InsertRowBelowOutlined /> },
+    { value: 'repeat-y', label: 'Repeat Y', icon: <InsertRowLeftOutlined /> },
 ];
+
+export const sizeOptions = [{ value: 'cover', label: 'Cover' }, { value: 'contain', label: 'Contain' }, { value: 'auto', label: 'Auto' }];
+
+export const positionOptions = [{ value: 'center', label: 'Center' }, { value: 'top', label: 'Top' }, { value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }, { value: 'bottom', label: 'Bottom' },
+{ value: 'top left', label: 'Top Left' }, { value: 'top right', label: 'Top Right' }, { value: 'bottom left', label: 'Bottom Left' }, { value: 'bottom right', label: 'Bottom Right' }];
+

@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC } from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
@@ -23,7 +23,6 @@ export interface ICollapsiblePanelProps extends CollapseProps {
   isSimpleDesign?: boolean;
   hideCollapseContent?: boolean;
   hideWhenEmpty?: boolean;
-  dynamicBorderRadius?: number;
 }
 
 /**
@@ -34,6 +33,12 @@ export interface ICollapsiblePanelProps extends CollapseProps {
  * https://stackoverflow.com/questions/43900035/ts4023-exported-variable-x-has-or-is-using-name-y-from-external-module-but
  * 
  */
+export const isHidden = (ref, value?: number) => {
+  if (ref.current) {
+    return ref?.current === null ? false : ref?.current.offsetWidth < value || ref?.current.offsetHeight < value;
+  }
+  return false;
+};
 
 const StyledCollapse: any = styled(Collapse) <
   Omit<ICollapsiblePanelProps, 'collapsible' | 'showArrow' | 'header' | 'extraClassName' | 'extra' | 'radius'>
@@ -68,48 +73,40 @@ export const CollapsiblePanel: FC<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'r
   isSimpleDesign,
   hideCollapseContent,
   hideWhenEmpty = false,
-  dynamicBorderRadius
 }) => {
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
   const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => event?.stopPropagation();
-  const { styles } = useStyles({ borderRadius: dynamicBorderRadius });
-
-  const [isHidden, setIsHidden] = useState(false);
+  const { styles } = useStyles();
   const ref = React.useRef(null);
   const shaCollapsiblePanelStyle = isSimpleDesign ? {} : styles.shaCollapsiblePanel;
 
-  useEffect(() => {
-    if (ref.current) {
-      setIsHidden(ref?.current.offsetHeight < 100);
-    }
-  }, [ref?.current?.offsetHeight]);
-
-  return hideWhenEmpty && isHidden ? null : (
-    <StyledCollapse
-      ref={ref}
-      defaultActiveKey={collapsedByDefault ? [] : ['1']}
-      onChange={onChange}
-      expandIconPosition={expandIconPosition}
-      className={classNames(shaCollapsiblePanelStyle, className, { [styles.noContentPadding]: noContentPadding, [styles.hideWhenEmpty]: hideWhenEmpty })}
-      style={{ ...style, borderTopLeftRadius: dynamicBorderRadius, borderTopRightRadius: dynamicBorderRadius }}
-      ghost={ghost}
-      bodyColor={bodyColor}
-      hideCollapseContent={hideCollapseContent}
-    >
-      <Panel
-        key="1"
-        collapsible={collapsible}
-        showArrow={showArrow}
-        header={header || ' '}
-        extra={
-          <span onClick={onContainerClick} className={extraClassName}>
-            {extra}
-          </span>
-        }
+  return (
+    isHidden(ref, 100) && ref.current ? null :
+      <StyledCollapse
+        defaultActiveKey={collapsedByDefault ? [] : ['1']}
+        onChange={onChange}
+        expandIconPosition={expandIconPosition}
+        className={classNames(shaCollapsiblePanelStyle, className, { [styles.noContentPadding]: noContentPadding, [styles.hideWhenEmpty]: hideWhenEmpty })}
+        style={style}
+        ghost={ghost}
+        bodyColor={bodyColor}
+        hideCollapseContent={hideCollapseContent}
       >
-        <Skeleton loading={loading}>{children}</Skeleton>
-      </Panel>
-    </StyledCollapse>
+        <Panel
+          ref={ref}
+          key="1"
+          collapsible={collapsible}
+          showArrow={showArrow}
+          header={header || ' '}
+          extra={
+            <span onClick={onContainerClick} className={extraClassName}>
+              {extra}
+            </span>
+          }
+        >
+          <Skeleton loading={loading}>{children}</Skeleton>
+        </Panel>
+      </StyledCollapse>
   );
 };
 

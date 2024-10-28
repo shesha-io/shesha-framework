@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { PlusOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import { Image, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import { toBase64 } from './utils';
 
-const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
+interface IImageUploaderProps {
+    onChange: (value: any) => void;
+    value: UploadFile;
+    readOnly: boolean;
+}
+
+const ImageUploader = ({ onChange, value, readOnly }: IImageUploaderProps) => {
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [fileList, setFileList] = useState<UploadFile[]>(value ? [{ ...value }] : []);
+
+    const uploadBtnRef = useRef(null);
 
     useEffect(() => {
-        if (backgroundImage?.file) {
-            const { uid, name, url } = backgroundImage;
-            setFileList([
-                {
-                    uid,
-                    name,
-                    status: 'done',
-                    url,
-                },
-            ]);
+        if (value?.uid) {
+            setFileList([value]);
         }
-    }, [backgroundImage]);
+    }, [value]);
+
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
             file.preview = await toBase64(file.originFileObj as File);
@@ -29,34 +30,54 @@ const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
         setPreviewImage(file.url || (file.preview as string));
         setPreviewOpen(true);
     };
-    const handleChange: UploadProps['onChange'] = async ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-        if (newFileList.length > 0 && newFileList[0].originFileObj) {
-            const base64Image = await toBase64(newFileList[0].originFileObj as File);
-            const newFile = fileList[fileList.length - 1];
-            onChange({ url: base64Image, name: newFile.fileName, uid: newFile.uid });
-        } else if (newFileList.length === 0) {
-            onChange({});
+
+    const handleChange: UploadProps['onChange'] = async ({ fileList }) => {
+        if (fileList.length > 1) fileList.shift();
+        const file = fileList[0];
+
+        if (file?.originFileObj) {
+            const base64Image = await toBase64(file.originFileObj as File);
+            onChange({ ...file, url: base64Image });
         }
     };
+
+    const handleRemove = () => {
+        setFileList([]);
+        onChange({});
+    };
+
+    const handleReplace = (file: UploadFile) => {
+        setFileList([file]);
+        onChange(file);
+    };
+
+    const fileControls = (file: UploadFile) => {
+        return (
+            <a onClick={() => handleReplace(file)} style={{ position: 'relative', top: 52 }}>
+                <SyncOutlined title="Replace" />
+            </a>
+        );
+    };
+
     const uploadButton = (
-        <button style={{ border: 0, background: 'none' }} type="button">
-            <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
+        <button ref={uploadBtnRef} style={{ border: 0, background: 'none' }} type="button">
+            <UploadOutlined title='upload' />
         </button>
     );
+
     return (
-        <div style={{ position: 'relative' }}>
+        <div>
             <Upload
                 listType="picture"
                 fileList={fileList}
                 onPreview={handlePreview}
-                onRemove={() => setFileList([])}
+                onRemove={handleRemove}
                 onChange={handleChange}
                 beforeUpload={() => false}
                 disabled={readOnly}
             >
-                {fileList.length >= 1 ? null : uploadButton}
+                {!fileList[0]?.uid && uploadButton}
+
             </Upload>
             <Image
                 style={{ display: 'none' }}
@@ -66,7 +87,9 @@ const ImageUploader = ({ onChange, backgroundImage, readOnly }) => {
                 }}
                 src={previewImage}
             />
+            {fileControls(fileList[0])}
         </div>
     );
 };
+
 export default ImageUploader;

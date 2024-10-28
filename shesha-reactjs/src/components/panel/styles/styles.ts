@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, {borderRadius}) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const extraMargin = "28px";
 
   const noContentPadding = "no-content-padding";
@@ -34,8 +34,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {borderRad
         > .${prefixCls}-collapse-item {
           > .${prefixCls}-collapse-header {
             border-left: 3px solid ${token.colorPrimary};
-            border-top-left-radius: ${borderRadius ?? token.borderRadiusLG}px;
-            border-top-right-radius: ${borderRadius ?? token.borderRadiusLG}px;
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
             background-color: #f0f0f0;

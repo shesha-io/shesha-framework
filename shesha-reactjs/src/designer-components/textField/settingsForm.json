@@ -340,7 +340,8 @@
                     "id": "dimesnsionsStyle",
                     "type": "dimensionsStyle",
                     "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
-                    "propertyName": "inputStyles.dimensions"
+                    "propertyName": "inputStyles.dimensions",
+                    "noOverflow": true
                   }
                 ]
               }
@@ -436,51 +437,70 @@
               }
             },
             {
-              "id": "styleCollapsiblePanel",
-              "type": "collapsiblePanel",
-              "label": "Styles",
+              "id": "kp3afwRnhZk2958QCUvFTFeGWOokZY",
+              "type": "propertyRouter",
+              "propertyName": "propertyRouter1",
+              "componentName": "propertyRouter1",
+              "label": "Property router1",
               "labelAlign": "right",
+              "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
               "hidden": false,
               "isDynamic": false,
-              "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
-              "version": 6,
-              "expandIconPosition": "start",
-              "collapsible": "header",
-              "ghost": true,
-              "hideWhenEmpty": true,
-              "settingsValidationErrors": [],
-              "header": {
-                "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
-                "components": []
+              "propertyRouteName": {
+                "_mode": "code",
+                "_code": "    return contexts.canvasContext?.designerDevice || 'desktop';",
+                "_value": ""
               },
-              "content": {
-                "id": "stylePnl",
-                "components": [
-                  {
-                    "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
-                    "type": "settingsInput",
-                    "inputType": "codeEditor",
-                    "propertyName": "style",
-                    "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
-                    "label": "Custom CSS",
-                    "validate": {},
-                    "labelAlign": "right",
-                    "hidden": false,
-                    "jsSetting": false,
-                    "tooltip": "A script that returns the style of the element as an object. This should conform to CSSProperties"
+              "components": [
+                {
+                  "id": "styleCollapsiblePanel",
+                  "type": "collapsiblePanel",
+                  "label": "Styles",
+                  "labelAlign": "right",
+                  "hidden": false,
+                  "isDynamic": false,
+                  "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                  "version": 6,
+                  "expandIconPosition": "start",
+                  "collapsible": "header",
+                  "ghost": true,
+                  "hideWhenEmpty": true,
+                  "settingsValidationErrors": [],
+                  "header": {
+                    "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
+                    "components": []
                   },
-                  {
-                    "id": "styleBoxPnl",
-                    "type": "styleBox",
-                    "propertyName": "stylingBox",
+                  "content": {
+                    "id": "stylePnl",
                     "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
-                    "validate": {},
-                    "label": "Margin Padding",
-                    "jsSetting": false,
-                    "version": 2
+                    "components": [
+                      {
+                        "id": "22725416-3a3c-412c-8461-4c8d55e5c073",
+                        "type": "settingsInput",
+                        "inputType": "codeEditor",
+                        "propertyName": "style",
+                        "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                        "label": "Custom CSS",
+                        "validate": {},
+                        "labelAlign": "right",
+                        "hidden": false,
+                        "jsSetting": false,
+                        "tooltip": "A script that returns the style of the element as an object. This should conform to CSSProperties"
+                      },
+                      {
+                        "id": "styleBoxPnl",
+                        "type": "styleBox",
+                        "propertyName": "stylingBox",
+                        "parentId": "elgrlievlfwehhh848r8hsdnflsdnclurbd",
+                        "validate": {},
+                        "label": "Margin Padding",
+                        "jsSetting": false,
+                        "version": 2
+                      }
+                    ]
                   }
-                ]
-              }
+                }
+              ]
             }
           ]
         },

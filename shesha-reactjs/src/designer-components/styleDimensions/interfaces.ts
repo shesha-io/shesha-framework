@@ -22,5 +22,6 @@ export interface IDimensionsValue {
 
 export interface IDimensionsType {
     readOnly?: boolean;
+    value?: IDimensionsValue;
     noOverflow?: boolean;
 }

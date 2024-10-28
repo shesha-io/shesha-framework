@@ -15,7 +15,7 @@ const dimensionInputs = [
 
 const DimensionsComponent: FC<IDimensionsType> = (props) => {
 
-    const { readOnly } = props;
+    const { readOnly, noOverflow } = props;
 
     const commonProps = { hasUnits: true, readOnly: readOnly };
 
@@ -25,7 +25,7 @@ const DimensionsComponent: FC<IDimensionsType> = (props) => {
             {dimensionInputs.map((input, index) => (
                 <InputRow readOnly={readOnly} key={index} inputs={input.map(input => ({ ...input, ...commonProps }))} />
             ))}
-            {<SettingInput label='Overflow' propertyName='inputStyles.dimensions.overflow' inputType='radio' readOnly={readOnly} buttonGroupOptions={overflowOptions} />}
+            {!noOverflow && <SettingInput label='Overflow' propertyName='inputStyles.dimensions.overflow' inputType='radio' readOnly={readOnly} buttonGroupOptions={overflowOptions} />}
         </>
     );
 };

@@ -20,6 +20,7 @@ import { CodeEditorWithStandardConstants } from '@/designer-components/codeEdito
 import { CopyOutlined, EditOutlined, StopOutlined } from '@ant-design/icons';
 import { IconPickerWrapper } from '@/designer-components/iconPicker/iconPickerWrapper';
 import { getValueFromString } from './settingsInput/utils';
+import { Autocomplete } from '@/components/autocomplete';
 
 const units = ['px', '%', 'em', 'rem', 'vh', 'svh', 'vw', 'svw', 'auto'];
 interface IRadioOption {
@@ -42,7 +43,10 @@ export interface IDropdownOption {
 export interface IInputProps extends IComponentLabelProps {
     label: string;
     propertyName: string;
-    inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number' | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' | 'imageUploader' | 'editModeSelector' | 'permissions';
+    inputType?: 'color' | 'dropdown' | 'radio' | 'switch' | 'number'
+    | 'customDropdown' | 'textArea' | 'codeEditor' | 'iconPicker' |
+    'imageUploader' | 'editModeSelector' | 'permissions' | 'typeAutocomplete';
+
     buttonGroupOptions?: IRadioOption[];
     dropdownOptions?: IDropdownOption[];
     readOnly: boolean;
@@ -167,7 +171,7 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
             return <IconPickerWrapper iconSize={30} selectBtnSize={size} value={value} readOnly={readOnly} onChange={onChange} applicationContext={allData} />;
         case 'imageUploader':
             return <ImageUploader
-                backgroundImage={value}
+                value={value}
                 readOnly={readOnly}
                 onChange={onChange}
             />;
@@ -182,6 +186,13 @@ export const InputComponent: FC<IInputComponentProps> = (props) => {
                     <Radio.Button key={value} value={value} title={title}>{icon}</Radio.Button>
                 ))}
             </Radio.Group>;
+        case 'typeAutocomplete':
+            return <Autocomplete.Raw
+                dataSourceType="url"
+                dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
+                readOnly={readOnly}
+                value={value}
+            />
         case 'permissions':
             return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={onChange} size={size} />;
         default:
@@ -215,23 +226,12 @@ export const InputRow: React.FC<IInputRowProps> = ({ inputs, readOnly }) => {
     </div>;
 };
 
-const styles = ["size", "weight", "color", "align", "max width", "min width", "max height",
-    "min height", "width", "height", "blur", "border raduis", " color", " image", " gradient",
-    "padding", "margin", "position", "repeat", "hide border", "select corner", "select side", "type", "direction", "offset x", "offset y",
-    "url", "file", "spread", "style", "styling box", 'size', 'weight', 'color', 'type', 'align', 'overflow', 'family', 'width',
-    'height', 'minWidth', 'minHeight', 'maxHeight', 'maxWidth', 'hide border', 'selected corner radius',
-    'selected border side', 'radius', 'style', 'position', 'repeat', 'offset x', 'offset y', 'blur',
-    'spread', 'direction', 'url', 'file', 'file id', 'owner type', 'owner id', 'file catergory'];
-
 export const filterDynamicComponents = (components, query) => {
 
     const filterResult = components.map(c => {
 
         if (c.type === 'collapsiblePanel') {
-
-            const shouldHidePanel = !styles.some(label => label.toLowerCase().includes(query.toLowerCase()));
-            const shouldHideComponents = c.content.components.some(comp => comp.label && !comp.label.toLowerCase().includes(query.toLowerCase()));
-            return { ...c, hidden: shouldHidePanel || shouldHideComponents };
+            return { ...c, content: { ...c.content, components: filterDynamicComponents(c.content.components, query) } };
         }
 
         if (c.type === 'settingsInputRow') {
@@ -248,11 +248,12 @@ export const filterDynamicComponents = (components, query) => {
             filteredComponent.components = filterDynamicComponents(c.components, query);
         }
 
-        const shouldHideComponent =
-            (c.label && !c.label.toLowerCase().includes(query.toLowerCase()) || c?.label?.props?.children[0].toLowerCase().includes(query.toLowerCase())) ||
+        const shouldHideComponent = (c.label && !c.label.toLowerCase().includes(query.toLowerCase()) || c?.label?.props?.children[0].toLowerCase().includes(query.toLowerCase())) ||
             (filteredComponent.components && filteredComponent.components.length === 0);
 
         filteredComponent.hidden = shouldHideComponent;
+        console.log("FILTERED COMPONENTS:::", filteredComponent);
+
         filteredComponent.className = [c.className, shouldHideComponent ? 'hidden' : ''].filter(Boolean).join(' ');
 
         return filteredComponent;

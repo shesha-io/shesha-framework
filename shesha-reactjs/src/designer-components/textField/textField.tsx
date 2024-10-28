@@ -95,7 +95,7 @@ const TextFieldComponent: IToolboxComponent<ITextFieldComponentProps> = {
     if (model?.inputStyles?.background?.type === 'storedFile' && model?.inputStyles?.background.storedFile?.id && !isValidGuid(model?.inputStyles?.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
-
+    console.log("Model::", model)
     const styling = JSON.parse(model.stylingBox || '{}');
     const stylingBoxAsCSS = pickStyleFromModel(styling);
 

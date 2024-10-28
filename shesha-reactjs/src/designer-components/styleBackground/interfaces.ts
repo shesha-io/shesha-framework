@@ -1,4 +1,5 @@
 import { IConfigurableFormComponent } from "@/providers";
+import { UploadFile } from "antd";
 
 export interface IBackgroundValue {
     type: 'color' | 'url' | 'upload' | 'storedFile' | 'gradient';
@@ -8,7 +9,7 @@ export interface IBackgroundValue {
     gradient?: { direction: string, colors: {} };
     color?: string;
     url?: string;
-    file?: { url: string, name: string, uid: string };
+    file?: UploadFile;
     storedFile?: { id: string, ownerId: string, fileCatergory: string, ownerType: string };
 }
 

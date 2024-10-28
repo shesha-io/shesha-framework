@@ -20,7 +20,7 @@ const DimensionsStyle: IToolboxComponent<IDimensionsProps> = {
 
         return (
             <ConfigurableFormItem model={model}>
-                <DimensionsComponent readOnly={model.readOnly} />
+                <DimensionsComponent readOnly={model.readOnly} {...model} />
             </ConfigurableFormItem>
         );
     },

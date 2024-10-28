@@ -29,7 +29,6 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
         }
     }, [value]);
 
-    console.log("BG:::", props)
     const renderBackgroundInput = (type: IBackgroundValue['type']) => {
         switch (type) {
             case 'gradient':
@@ -49,14 +48,15 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                 return (
                                     <Tag
                                         key={id}
+                                        style={{ backgroundColor: '#fff', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
                                         bordered={false}
                                         closable={id !== '1' && id !== '2'}
                                         onClose={() => {
-                                            const newColors = removeNullUndefined({ ...value?.gradient.colors, [id]: null });
+                                            const newColors = { ...colors };
+                                            delete newColors[id];
                                             setColors(newColors);
-                                            onChange({ ...value, gradient: { ...value.gradient?.colors, colors: newColors } });
+                                            onChange({ ...value, gradient: { ...value.gradient, colors: newColors } });
                                         }}
-                                        style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', width: 'max-content' }}
                                     >
                                         <SettingInput propertyName={`inputStyles.background.gradient.colors.${id}`} label='color' hideLabel={true} readOnly={readOnly} inputType='color' />
                                     </Tag>
@@ -69,7 +69,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                                 size='small'
                                 onClick={() => {
                                     const id = nanoid();
-                                    const newColor = '#000000';
+                                    const newColor = '';
                                     setColors({ ...colors, [id]: newColor });
                                     onChange({ ...value, background: { ...value, gradient: { ...value?.gradient, colors: { ...value?.gradient?.colors, [id]: newColor } } } });
                                 }}
@@ -100,18 +100,22 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
                             label: 'File Id',
                             propertyName: 'inputStyles.background.storedFile.id',
                             readOnly: readOnly
+                        }, {
+                            propertyName: "inputStyles.background.storedFile.ownerId",
+                            label: "Owner Id",
+                            readOnly: readOnly
                         }]} />
-                        <FormItem name="inputStyles.background.storedFile.ownerType" label="Owner Type" jsSetting>
-                            <Autocomplete.Raw
-                                dataSourceType="url"
-                                dataSourceUrl="/api/services/app/Metadata/TypeAutocomplete"
-                                readOnly={readOnly}
-                                style={{ width: '100%' }}
-                                value={value?.storedFile?.ownerType}
-                            />
-                        </FormItem>
-                        <SettingInput propertyName="inputStyles.background.storedFile.ownerId" label="Owner Id" readOnly={readOnly} />
-                        <SettingInput propertyName="inputStyles.background.storedFile.fileCatergory" label="File Catergory" readOnly={readOnly} />
+                        <InputRow readOnly={readOnly} inputs={[{
+                            propertyName: "inputStyles.background.storedFile.ownerType",
+                            label: "Owner Type",
+                            inputType: "typeAutocomplete",
+                            readOnly: readOnly
+                        },
+                        {
+                            propertyName: "inputStyles.background.storedFile.fileCatergory",
+                            label: "File Catergory",
+                            readOnly: readOnly
+                        }]} />
                     </>
                 );
             default:
@@ -130,7 +134,7 @@ const BackgroundComponent: FC<IBackgroundProps> = (props) => {
         <>
             <SettingInput buttonGroupOptions={backgroundTypeOptions} propertyName='inputStyles.background.type' readOnly={readOnly} inputType='radio' label='Type' />
             {renderBackgroundInput(value?.type)}
-            <SizeAndRepeat readOnly={readOnly} backgroundSize={value?.size} backgroundPosition={value?.position} backgroundRepeat={value?.repeat} />
+            <SizeAndRepeat readOnly={readOnly} />
         </>
     );
 };

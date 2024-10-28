@@ -15,7 +15,7 @@ export const SettingInput: React.FC<IInputProps> = ({ children, label, hideLabel
     const { searchQuery } = useSearchQuery();
 
     const group = property?.split(".")[1]?.trim();
-    const stringToFind = `${group ?? ''} ${label.toLowerCase()}`?.trim();
+    const stringToFind = `${group} ${label.toLowerCase()}`?.trim();
 
     if (stringToFind.includes(searchQuery.toLowerCase()?.trim())) {
 
