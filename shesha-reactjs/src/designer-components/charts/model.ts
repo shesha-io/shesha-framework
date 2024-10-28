@@ -11,6 +11,7 @@ export interface IChartData {
  * Chart props, used in the chart component and some of its children
  */
 export interface IChartsProps {
+    width?: number;
     dataMode?: TDataMode;
     url?: string;
     chartType?: TChartType;

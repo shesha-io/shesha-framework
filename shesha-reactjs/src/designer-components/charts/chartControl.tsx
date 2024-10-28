@@ -135,7 +135,10 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
   }
 
   return (
-    <div className={cx(styles.chartControlContainer)}>
+    <div className={cx(styles.chartControlContainer)} style={{
+      width: props.width ?? '100%',
+      height: 'auto'
+    }}>
       {allowFilter && (
         <>
           <Flex justify='start' align='center' className={cx(styles.chartControlButtonContainer)}>

@@ -40,6 +40,16 @@ export const settingsForm = new DesignerToolbarSettings()
             validate: { required: true },
             defaultValue: 'entityType',
           })
+          .addNumberField({
+            id: nanoid(),
+            propertyName: 'width',
+            parentId: 'root',
+            label: 'Width',
+            description: 'The width of the chart. The height will be calculated automatically based on the width. If not provided, the width will be 100% of the parent container.',
+            defaultValue: 0,
+            stepNumeric: 1,
+            hidden: false,
+          })
           .toJson()
         ]
     }
@@ -60,7 +70,6 @@ export const settingsForm = new DesignerToolbarSettings()
     },
     content: {
       id: nanoid(),
-      // each propery is a text field beacuse they are not dynamic
       components:
         [...new DesignerToolbarSettings()
           .addTextField({
@@ -353,7 +362,7 @@ export const settingsForm = new DesignerToolbarSettings()
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showXAxisScale',
-            label: 'Show X Axis Scale',
+            label: 'Show X Axis',
             parentId: 'root',
             defaultValue: true,
           })
@@ -372,7 +381,7 @@ export const settingsForm = new DesignerToolbarSettings()
           .addCheckbox({
             id: nanoid(),
             propertyName: 'showYAxisScale',
-            label: 'Show Y Axis Scale',
+            label: 'Show Y Axis',
             parentId: 'root',
             defaultValue: true,
           })
@@ -401,9 +410,7 @@ export const settingsForm = new DesignerToolbarSettings()
             dataSourceType: 'values',
             values: [
               { id: nanoid(), label: 'Top', value: 'top' },
-              { id: nanoid(), label: 'Left', value: 'left' },
               { id: nanoid(), label: 'Bottom', value: 'bottom' },
-              { id: nanoid(), label: 'Right', value: 'right' },
             ],
             validate: { required: true },
             defaultValue: 'top',
@@ -433,7 +440,7 @@ export const settingsForm = new DesignerToolbarSettings()
             id: nanoid(),
             propertyName: 'strokeColor',
             parentId: 'root',
-            label: 'Stroke Color',
+            label: 'Border Stroke Color',
             defaultValue: '#000000',
           })
           .toJson()
