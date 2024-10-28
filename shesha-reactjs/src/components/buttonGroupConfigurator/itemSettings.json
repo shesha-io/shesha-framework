@@ -159,27 +159,6 @@
                 "version": 5
               },
               {
-                "id": "hpm6rN_aj-L_KaG5MLIZt",
-                "type": "propertyAutocomplete",
-                "propertyName": "entityDisplayProperty",
-                "label": "Display Property",
-                "labelAlign": "right",
-                "parentId": "uEFBpy19tApJMiBuFyj9s",
-                "hidden": {
-                  "_code": "return !getSettingValue(data?.entityTypeShortAlias);",
-                  "_mode": "code",
-                  "_value": false
-                },
-                "isDynamic": false,
-                "placeholder": "",
-                "description": "Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.",
-                "validate": {},
-                "modelType": "{{data.entityTypeShortAlias}}",
-                "autoFillProps": false,
-                "settingsValidationErrors": [],
-                "version": 2
-              },
-              {
                 "id": "n4enebtmhFgvkP5ukQK1f",
                 "type": "queryBuilder",
                 "propertyName": "filter",

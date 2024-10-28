@@ -18,4 +18,8 @@ export interface IBaseButtonGroupProps {
   spaceSize?: SizeType;
   isInline?: boolean;
   noStyles?: boolean;
+  filter?: string;
+  entityTypeShortAlias?: string;
+  dataSourceType?: string;
+
 }

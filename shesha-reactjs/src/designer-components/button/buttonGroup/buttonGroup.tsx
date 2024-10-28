@@ -165,6 +165,7 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
     const {handleDynamicItems} = useTemplateActions();  
     const [combinedItems, setCombinedItems] = useState([]);
     // Fetch templates for dynamic items and update state
+    
     useEffect(() => {
         const fetchData = async () => {
           try {

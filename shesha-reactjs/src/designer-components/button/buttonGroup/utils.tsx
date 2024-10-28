@@ -3,7 +3,6 @@ import { IDynamicItem } from '@/providers/buttonGroupConfigurator/models';
 import { buildUrl } from '@/utils/url';
 import { MenuProps } from 'antd';
 import React, { Key } from 'react';
-
 interface IQueryParams {
   [name: string]: Key;
 }
@@ -13,7 +12,7 @@ export const useTemplateActions = () => {
   const { globalState } = useGlobalState();
   const pageContext = useDataContextManager(false)?.getPageContext();
   const { refetch } = useGet({ path: '', lazy: true });
-  
+
   const getQueryParams = (item: any): IQueryParams => {
     const queryParamObj: IQueryParams = {};
     if (item.queryParams && item.queryParams?.length) {
@@ -30,18 +29,18 @@ export const useTemplateActions = () => {
   };
 
   const getTemplateState = (items: any, customUrl: string) => {
-   
     if (items.dataSourceType === 'url') {
       return {
         path: customUrl,
       };
     }
-   
+
     return {
       path: `/api/services/app/Entities/GetAll`,
       queryParams: {
         entityType: items.entityTypeShortAlias,
         maxResultCount: 100,
+        filter: JSON.stringify(items.filter || {}),
       },
     };
   };
@@ -49,17 +48,14 @@ export const useTemplateActions = () => {
     try {
       const path = buildUrl(item.dataSourceUrl, getQueryParams(item));
       const response = await refetch(getTemplateState(item, path));
-      
       if (!response?.success || response?.result === undefined) {
         return [];
       }
-  
-      const result = typeof response.result === 'object' 
-        ? response.result.items 
-        : response.result;
-  
+
+      const result = typeof response.result === 'object' ? response.result.items : response.result;
+
       if (!result) return [];
-  
+
       return result.map((template: any) => ({
         ...item,
         data: template,
@@ -78,7 +74,6 @@ export const useTemplateActions = () => {
       return [];
     }
   };
-  
 
   return { handleDynamicItems };
 };
