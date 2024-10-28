@@ -90,7 +90,9 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
   }
 
   return (
-    <div className={cx(styles.chartControlContainer)}>
+    <div className={cx(styles.chartControlContainer)} style={{
+      height: props?.height ?? 'auto'
+    }}>
       {
         (() => {
           switch (chartType) {

@@ -42,10 +42,10 @@ export const settingsForm = new DesignerToolbarSettings()
           })
           .addNumberField({
             id: nanoid(),
-            propertyName: 'width',
+            propertyName: 'height',
             parentId: 'root',
-            label: 'Width',
-            description: 'The width of the chart. The height will be calculated automatically based on the width. If not provided, the width will be 100% of the parent container.',
+            label: 'Height',
+            description: 'The height (px) of the chart. The width will be calculated automatically based on the width. Id not provided, the default height will be used.',
             defaultValue: 0,
             stepNumeric: 1,
             hidden: false,
@@ -217,6 +217,37 @@ export const settingsForm = new DesignerToolbarSettings()
             modelType: '{{data.entityType}}',
             autoFillProps: false,
             settingsValidationErrors: [],
+          })
+          .addPropertyAutocomplete({
+            id: nanoid(),
+            propertyName: 'orderBy',
+            label: 'Order By',
+            labelAlign: 'right',
+            parentId: 'root',
+            hidden: false,
+            isDynamic: false,
+            description: 'The properties you want to order the data by. Use the propeties that you have selected for axis, value (and legend).',
+            modelType: '{{data.entityType}}',
+            autoFillProps: false,
+            settingsValidationErrors: [],
+          })
+          .addDropdown({
+            id: nanoid(),
+            propertyName: 'orderDirection',
+            parentId: 'root',
+            label: 'Order Direction',
+            dataSourceType: 'values',
+            values: [
+              { id: nanoid(), label: 'Ascending', value: 'asc' },
+              { id: nanoid(), label: 'Descending', value: 'desc' },
+            ],
+            validate: { required: true },
+            defaultValue: 'asc',
+            hidden: {
+              _code: "return !(getSettingValue(data?.orderBy))",
+              _mode: "code",
+              _value: true
+            },
           })
           .addCheckbox({
             id: nanoid(),
@@ -412,6 +443,8 @@ export const settingsForm = new DesignerToolbarSettings()
             values: [
               { id: nanoid(), label: 'Top', value: 'top' },
               { id: nanoid(), label: 'Bottom', value: 'bottom' },
+              { id: nanoid(), label: 'Left', value: 'left' },
+              { id: nanoid(), label: 'Right', value: 'right' },
             ],
             validate: { required: true },
             defaultValue: 'top',

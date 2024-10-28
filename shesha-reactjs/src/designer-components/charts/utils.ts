@@ -1,4 +1,4 @@
-import { IChartData, IFilter, TAggregationMethod, TChartType, TOperator, TTimeSeriesFormat } from "./model";
+import { IChartData, IFilter, TAggregationMethod, TChartType, TOperator, TOrderDirection, TTimeSeriesFormat } from "./model";
 
 /**
  * @param str the enjoined properties string to remove duplicates from
@@ -56,7 +56,7 @@ function convertNestedPropertiesToObjectFormat(array) {
  * @param filterProperties properties to filter on (not the same as shesha filters)
  * @returns getChartData mutate path and queryParams
  */
-export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, legendProperty?: string, axisProperty?: string, filterProperties?: string[]) => {
+export const getChartDataRefetchParams = (entityType: string, dataProperty: string, filters: string, legendProperty?: string, axisProperty?: string, filterProperties?: string[], orderBy?: string, orderDirection?: TOrderDirection) => {
   filterProperties = convertNestedPropertiesToObjectFormat(filterProperties);
   return {
     path: `/api/services/app/Entities/GetAll`,
@@ -64,6 +64,7 @@ export const getChartDataRefetchParams = (entityType: string, dataProperty: stri
       entityType: entityType,
       properties: removePropertyDuplicates((dataProperty + (legendProperty ? ',' + legendProperty : '') + (axisProperty ? ',' + axisProperty : ''))?.replace(/(\w+)\.(\w+)/, '$1{$2}')) + ", " + filterProperties,
       filter: filters,
+      sorting: orderBy ? `${orderBy} ${orderDirection ?? 'asc'}` : '',
       maxResultCount: -1
     },
   };

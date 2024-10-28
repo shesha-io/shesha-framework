@@ -20,7 +20,7 @@ import { applyFilters, formatDate, getAllProperties, getChartDataRefetchParams, 
 const ChartControl: React.FC<IChartsProps> = (props) => {
   const { chartType, entityType, valueProperty, filters, legendProperty, aggregationMethod,
     axisProperty, simpleOrPivot, filterProperties, borderWidth, strokeColor,
-    allowFilter, isAxisTimeSeries, timeSeriesFormat
+    allowFilter, isAxisTimeSeries, timeSeriesFormat, orderBy, orderDirection
   } = props;
   const { refetch } = useGet({ path: '', lazy: true });
   const state = useChartDataStateContext();
@@ -45,7 +45,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
     if (!entityType || !valueProperty || !axisProperty) {
       return;
     }
-    refetch(getChartDataRefetchParams(entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, filterProperties))
+    refetch(getChartDataRefetchParams(entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, filterProperties, orderBy, orderDirection))
       .then((data) => {
         if (isAxisTimeSeries) {
           data.result.items = data?.result?.items?.sort((a: { [key: string]: any }, b: { [key: string]: any }) => new Date(a[axisProperty]).getTime() - new Date(b[axisProperty]).getTime());
@@ -81,7 +81,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
       })
       .then(() => setIsLoaded(true))
       .catch((err: any) => console.error('getChartDataRefetchParams, err data', err));
-  }, [entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, isAxisTimeSeries, timeSeriesFormat, filterProperties, formData]);
+  }, [entityType, valueProperty, evaluatedFilters, legendProperty, axisProperty, isAxisTimeSeries, timeSeriesFormat, filterProperties, orderBy, orderDirection, formData]);
 
   useEffect(() => {
     if (state.data) {
@@ -136,8 +136,7 @@ const ChartControl: React.FC<IChartsProps> = (props) => {
 
   return (
     <div className={cx(styles.chartControlContainer)} style={{
-      width: props.width ?? '100%',
-      height: 'auto'
+      height: props?.height ?? 'auto'
     }}>
       {allowFilter && (
         <>
