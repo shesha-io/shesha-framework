@@ -126,7 +126,9 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
         sb.incIndent();
         await this.#iterateProperties(entityMetadata.properties, async (prop) => {
             const propertyName = verifiedCamelCase(prop.path);
-            const dataType = await this.#getTypescriptType(prop);
+            const dataType = await this.#getTypescriptType(prop, { onUseComplexType: (typeInfo) => {
+                typesImporter.import({ typeName: typeInfo.typeName, filePath: typeInfo.filePath });
+            } });
 
             if (dataType) {
                 if (dataType.filePath !== fileName)
